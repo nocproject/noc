@@ -1,5 +1,5 @@
 {
-    "name": "Maipu | NSS3530 | NSS4330-32TXP",
+    "name": "Maipu | NSS4330 | NSS4330-32TXP",
     "$collection": "inv.objectmodels",
     "uuid": "0125d0b3-63b0-4d07-8c06-753a3eaa3484",
     "vendor__code": "MAIPU",
@@ -710,7 +710,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["NSS4330-32TXP(V1)"]
+            "value": ["NSS4330-32TXP(V1)", "NSS4330-32TXP(V2)"]
         },
         {
             "attr": "managed",
@@ -722,5 +722,6 @@
             "interface": "rackmount",
             "value": 1.0
         }
-    ]
+    ],
+    "front_facade__name": "Maipu | NSS4330 | NSS4330-32TXP"
 }
