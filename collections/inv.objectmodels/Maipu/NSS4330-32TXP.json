@@ -1,9 +1,9 @@
 {
-    "name": "Maipu | NSS3530 | NSS3530-54TXP",
+    "name": "Maipu | NSS3530 | NSS4330-32TXP",
     "$collection": "inv.objectmodels",
-    "uuid": "395976d7-0f61-4b0b-ba63-813b935eb4cc",
+    "uuid": "0125d0b3-63b0-4d07-8c06-753a3eaa3484",
     "vendor__code": "MAIPU",
-    "description": "NSS3530 series switch is a high-performance stackable wirespeed nonblocking L3 MPLS access routing switch. 48*10/100/1000M Base-T 6*1/10G SFP+ interfaces",
+    "description": "NSS4330 series switch is a high-performance stackable L3 MPLS aggregation routing switch. 24*10/100/1000M Base-T 6*1/10G SFP+ interfaces",
     "connection_rule__name": "Maipu | Switch",
     "cr_context": "CHASSIS",
     "labels": [
@@ -591,594 +591,90 @@
         {
             "name": "25",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
+                    "protocol__code": "TransEth1G"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth10G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "name": "26",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
+                    "protocol__code": "TransEth1G"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth10G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "name": "27",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
+                    "protocol__code": "TransEth1G"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth10G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "name": "28",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
+                    "protocol__code": "TransEth1G"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth10G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "name": "29",
             "description": null,
-            "direction": "s",
+            "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "10BASET"
+                    "protocol__code": "TransEth1G"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
+                    "protocol__code": "TransEth10G"
                 }
             ],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Transceiver | SFP+"
         },
         {
             "name": "30",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "31",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "32",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "33",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "34",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "35",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "36",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "37",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "38",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "39",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "40",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "41",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "42",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "43",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "44",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "45",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "46",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "47",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "48",
-            "description": null,
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "1000BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "49",
-            "description": null,
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "name": "50",
-            "description": null,
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "name": "51",
-            "description": null,
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "name": "52",
-            "description": null,
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "name": "53",
-            "description": null,
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
-            "type__name": "Transceiver | SFP+"
-        },
-        {
-            "name": "54",
             "description": null,
             "direction": "i",
             "gender": "f",
@@ -1204,7 +700,7 @@
         {
             "attr": "depth",
             "interface": "dimensions",
-            "value": 380
+            "value": 420
         },
         {
             "attr": "height",
@@ -1214,7 +710,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["NSS3530-54TXP(V1)"]
+            "value": ["NSS4330-32TXP(V1)"]
         },
         {
             "attr": "managed",
@@ -1226,6 +722,5 @@
             "interface": "rackmount",
             "value": 1.0
         }
-    ],
-    "front_facade__name": "Maipu | NSS3530 | NSS3530-54TXP"
+    ]
 }
