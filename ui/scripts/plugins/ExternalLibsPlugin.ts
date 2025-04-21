@@ -47,6 +47,17 @@ export class ExternalLibsPlugin{
         {name: "web/locale/en/ext-locale-en.js", format: "iife"},
         {name: "pkg/jquery/jquery.min.js", format: "iife"},
         
+        // CodeMirror and addons
+        // {name: "pkg/codemirror/lib/codemirror.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/dialog/dialog.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/search/search.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/search/searchcursor.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/selection/active-line.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/mode/loadmode.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/edit/matchbrackets.js", format: "iife"},
+        // {name: "common/diff_match_patch.js", format: "iife"},
+        // {name: "pkg/codemirror/addon/merge/merge.js", format: "iife"},
+        
         // JointJS
         {name: "pkg/lodash/lodash.min.js", format: "iife"},
         {name: "pkg/backbone/backbone.min.js", format: "iife"},
@@ -57,8 +68,8 @@ export class ExternalLibsPlugin{
         {name: "web/wf/workflow/js/joint.element.Tools.js", format: "iife"},
       
         // Other libraries
-        {name: "pkg/moment/moment.min.js", format: "iife"},
-        {name: "pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js", format: "iife"},
+        // {name: "pkg/moment/moment.min.js", format: "iife"},
+        // {name: "pkg/moment-timezone/moment-timezone-with-data-1970-2030.min.js", format: "iife"},
         {name: "pkg/viz-js/viz-standalone.js", format: "iife"},
         
         // NOC modules
