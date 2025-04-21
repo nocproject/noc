@@ -100,23 +100,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
           xtype: "container",
           itemId: "container",
           flex: 4,
+          listeners: {
+            scope: me,
+            afterRender: this.initMap,
+          },
         },
       ],
     });
-    me.callParent();
-  },
-  //
-  afterRender: function(){
-    var me = this;
-        new_load_scripts([
-            "/ui/pkg/lodash/lodash.min.js",
-            "/ui/pkg/backbone/backbone.min.js",
-            "/ui/pkg/dagre/dagre.min.js",
-            "/ui/pkg/graphlib/graphlib.min.js",
-            "/ui/pkg/joint/joint.min.js",
-            "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
-            "/ui/web/wf/workflow/js/joint.element.Tools.js"
-        ], me, me.initMap);
     me.callParent();
   },
   // Initialize JointJS Map
