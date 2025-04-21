@@ -11,8 +11,8 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
   app: null,
   alias: "widget.sa.confdb",
   requires: [
-    "NOC.core.CMText",
     "NOC.core.ComboBox",
+    "NOC.core.CodeViewer",
   ],
   layout: "border",
   //
@@ -133,20 +133,18 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
         me.confDBTree,
       ],
     });
-      
-    me.queryField = Ext.create({
-      xtype: "cmtext",
-      itemId: "query",
-      mode: "python",
-      listeners: {
-        scope: me,
-        change: function(field, value){
-          me.runButton.setDisabled(!value);
-        },
-        run: me.runQuery,
+    
+    me.queryField = Ext.create("NOC.core.CodeViewer", {
+      value: "",
+      language: "python",
+      readOnly: false,
+      theme: "vs-dark",
+      automaticLayout: true,
+      contentChanged: function(viewer, value){
+        me.runButton.setDisabled(!value);
       },
     });
-
+      
     me.confDBQueryField = Ext.create({
       xtype: "core.combo",
       restUrl: "/cm/confdbquery/lookup/",
@@ -154,12 +152,13 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
       listeners: {
         scope: me,
         change: function(field, value){
+          if(Ext.isEmpty(value)) return
           Ext.Ajax.request({
             url: "/cm/confdbquery/" + value + "/",
             scope: me,
             success: function(response){
               var data = Ext.decode(response.responseText);
-              me.queryField.setValue(data.query)
+              me.queryField.setValue(data.source);
             },
             failure: function(){
               NOC.error(__("Failed to load data"));
@@ -355,7 +354,7 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
     me.mask(__("Querying ..."));
     query["cleanup"] = me.cleanupButton.value;
     query["query"] = Ext.String.trim(
-      me.queryPanel.down("[itemId=query]").getValue(),
+      me.queryField.getValue(),
     );
     Ext.Ajax.request({
       url: me.url,
@@ -365,7 +364,6 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
       success: function(response){
         var result,
           data = Ext.decode(response.responseText);
-        me.unmask();
         if(data.status){
           me.resultPanel.destroy();
           result = data.result.map(function(element){
@@ -381,8 +379,10 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
         }
       },
       failure: function(){
-        me.unmask();
         NOC.error(__("Query failure"))
+      },
+      callback: function(){
+        me.unmask();
       },
     });
   },

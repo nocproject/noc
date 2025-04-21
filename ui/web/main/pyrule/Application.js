@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.pyrule.Application");
 Ext.define("NOC.main.pyrule.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.CMText",
+        // "NOC.core.CMText",
         "NOC.main.pyrule.Model"
     ],
     model: "NOC.main.pyrule.Model",

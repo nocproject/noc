@@ -9,7 +9,6 @@ Ext.define("NOC.main.desktop.Application", {
   extend: "Ext.Viewport",
   layout: "border",
   requires: [
-    "NOC.core.CMText",
     "NOC.core.PasswordField",
     "NOC.core.ObservableModel",
     "NOC.core.Observable",

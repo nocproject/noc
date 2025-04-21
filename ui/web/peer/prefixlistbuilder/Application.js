@@ -9,7 +9,7 @@ console.debug("Defining NOC.peer.prefixlistbuilder.Application");
 Ext.define("NOC.peer.prefixlistbuilder.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.core.CMText",
+        // "NOC.core.CMText",
         "NOC.peer.peeringpoint.LookupField",
         "Ext.ux.form.UCField"
     ],

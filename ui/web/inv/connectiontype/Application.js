@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.connectiontype.Application");
 Ext.define("NOC.inv.connectiontype.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.core.TemplatePreview",
     "Ext.ux.form.ModelDataField",
     "NOC.inv.connectiontype.LookupField",
@@ -26,13 +26,13 @@ Ext.define("NOC.inv.connectiontype.Application", {
     },
   ],
   //
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/inv/connectiontype/{id}/json/"),
-      previewName: new Ext.XTemplate("Connection Type: {name}"),
+      restUrl: "/inv/connectiontype/{0}/json/",
+      previewName: "Connection Type: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
     // Test panel
@@ -150,8 +150,8 @@ Ext.define("NOC.inv.connectiontype.Application", {
               text: __("Value"),
               dataIndex: "value",
               editor: "textfield",
-            }
-          ]
+            },
+          ],
         },
         {
           name: "c_group",
@@ -200,23 +200,23 @@ Ext.define("NOC.inv.connectiontype.Application", {
     me.callParent();
   },
   //
-  onJSON: function () {
+  onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
   //
-  onTest: function () {
+  onTest: function(){
     var me = this;
     Ext.Ajax.request({
       url: "/inv/connectiontype/" + me.currentRecord.get("id") + "/compatible/",
       method: "GET",
       scope: me,
-      success: function (response) {
+      success: function(response){
         var data = Ext.decode(response.responseText);
-        me.showItem(me.ITEM_TEST).preview(me.currentRecord, { data: data });
+        me.showItem(me.ITEM_TEST).preview(me.currentRecord, {data: data});
       },
-      failure: function () {
+      failure: function(){
         NOC.error(__("Failed to get data"));
       },
     });
