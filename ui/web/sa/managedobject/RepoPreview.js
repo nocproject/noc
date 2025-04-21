@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.managedobject.RepoPreview");
 
 Ext.define("NOC.sa.managedobject.RepoPreview", {
-  extend: "NOC.core.RepoPreview",
+  // extend: "NOC.core.RepoPreview",
   alias: "widget.sa.repopreview",
   requires: [
     "NOC.core.ComboBox",

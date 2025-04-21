@@ -171,7 +171,7 @@ Ext.define("NOC.core.MonacoPanel", {
       scope: this,
       success: function(response){
         var text = Ext.decode(response.responseText);
-        this.down("codeviewer").setValue(text);
+        this.setContent(text);
       },
       failure: function(){
         NOC.error(__("Failed to get text"));
@@ -180,6 +180,11 @@ Ext.define("NOC.core.MonacoPanel", {
         this.unmask();
       },
     });
+  },
+  setContent: function(text){
+    var codeViewer = this.down("codeviewer");
+    if(Ext.isEmpty(codeViewer) || Ext.isEmpty(codeViewer.editor)) return;
+    codeViewer.exitDiffMode(text);
   },
   requestRevisions: function(id){
     if(Ext.isEmpty(this.down("#revCombo"))) return;
