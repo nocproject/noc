@@ -188,8 +188,7 @@ Ext.define("NOC.core.MonacoPanel", {
   },
   requestRevisions: function(id){
     if(Ext.isEmpty(this.down("#revCombo"))) return;
-    var currentTZ = moment.tz.guess(),
-      url = (id ? Ext.String.format(this.restUrl, id) : this.rootUrl) + "revisions/";
+    var url = (id ? Ext.String.format(this.restUrl, id) : this.rootUrl) + "revisions/";
     Ext.Ajax.request({
       url: url,
       method: "GET",
@@ -198,7 +197,7 @@ Ext.define("NOC.core.MonacoPanel", {
         var data = Ext.decode(response.responseText).map(function(item){
           return {
             id: item.id,
-            ts_label: moment.tz(item.ts, NOC.settings.timezone).clone().tz(currentTZ).format("YYYY-MM-DD HH:mm:ss"),
+            ts_label: Ext.Date.format(Ext.Date.parse(item.ts, "c"), "Y-m-d H:i:s"),// "YYYY-MM-DD HH:mm:ss"
             ts: item.ts,
           }
         });
