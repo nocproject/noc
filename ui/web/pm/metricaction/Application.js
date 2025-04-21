@@ -10,7 +10,7 @@ Ext.define("NOC.pm.metricaction.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.pm.metricaction.Model",
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.core.ComboBox",
     "NOC.core.ListFormField",
     "Ext.ux.form.GridField",
@@ -260,10 +260,10 @@ Ext.define("NOC.pm.metricaction.Application", {
       };
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/pm/metricaction/{id}/json/"),
-      previewName: new Ext.XTemplate("Metric Action: {name}"),
+      restUrl: "/pm/metricaction/{0}/json/",
+      previewName: "Metric Action: {0}",
     });
 
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
@@ -762,6 +762,6 @@ Ext.define("NOC.pm.metricaction.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
 });

@@ -9,7 +9,7 @@ console.debug("Defining NOC.support.crashinfo.Application");
 Ext.define("NOC.support.crashinfo.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.core.CMText",
+        // "NOC.core.CMText",
         "NOC.support.crashinfo.Model"
     ],
     model: "NOC.support.crashinfo.Model",

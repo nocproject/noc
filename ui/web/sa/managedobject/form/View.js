@@ -25,12 +25,12 @@ Ext.define("NOC.sa.managedobject.form.View", {
     "NOC.core.InlineModelStore",
     "NOC.core.PasswordField",
     "NOC.core.StateField",
+    "NOC.core.MonacoPanel",
     "NOC.core.plugins.DynamicModalEditing",
     "NOC.sa.managedobject.AttributesModel",
     "NOC.sa.managedobject.CapabilitiesModel",
     "NOC.sa.managedobject.form.FormController",
     "NOC.sa.managedobject.SchemeLookupField",
-    "NOC.sa.managedobject.RepoPreview",
     "NOC.sa.managedobject.ConfDBPanel",
     "NOC.sa.managedobject.ConsolePanel",
     "NOC.sa.managedobject.ScriptPanel",
@@ -1565,7 +1565,8 @@ Ext.define("NOC.sa.managedobject.form.View", {
     {
       activeItem: 1,
       itemId: "sa-config",
-      xtype: "sa.repopreview",
+      // xtype: "sa.repopreview",
+      xtype: "core.monacopanel",
       historyHashPrefix: "config", // suffix from itemId
       app: this,
       previewName: "{0} config",

@@ -50,10 +50,6 @@
       "version": "4.7.0"
     },
     {
-      "name": "codemirror",
-      "version": "5.28.0"
-    },
-    {
       "name": "nocsound",
       "version": "1.0.0"
     },
@@ -84,14 +80,6 @@
     {
       "name": "django-media",
       "version": "3.1.8"
-    },
-    {
-      "name": "moment",
-      "version": "2.24.0"
-    },
-    {
-      "name": "moment-timezone",
-      "version": "0.5.25-2019a"
     },
     {
       "name": "viz-js",

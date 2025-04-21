@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.modeltemplate.Application");
 Ext.define("NOC.main.modeltemplate.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreview",
+    "NOC.core.JSONPreviewII",
     "NOC.main.modeltemplate.Model",
     "NOC.sa.profile.LookupField",
     "NOC.inv.capability.LookupField",
@@ -24,10 +24,10 @@ Ext.define("NOC.main.modeltemplate.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/main/modeltemplate/{id}/json/"),
-      previewName: new Ext.XTemplate("Model Template: {name}"),
+      restUrl: "/main/modeltemplate/{0}/json/",
+      previewName: "Model Template: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
@@ -93,7 +93,7 @@ Ext.define("NOC.main.modeltemplate.Application", {
           valueField: "id",
           triggers: {
             clear: {
-              cls: 'x-form-clear-trigger',
+              cls: "x-form-clear-trigger",
               hidden: true,
               weight: -1,
               handler: function(field){
@@ -448,6 +448,6 @@ Ext.define("NOC.main.modeltemplate.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
 });

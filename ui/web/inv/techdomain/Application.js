@@ -8,16 +8,19 @@ console.debug("Defining NOC.inv.techdomain.Application");
 
 Ext.define("NOC.inv.techdomain.Application", {
   extend: "NOC.core.ModelApplication",
-  requires: ["NOC.inv.techdomain.Model"],
+  requires: [
+    "NOC.core.JSONPreviewII",
+    "NOC.inv.techdomain.Model",
+  ],
   model: "NOC.inv.techdomain.Model",
   search: true,
   initComponent: function(){
     var me = this;
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: new Ext.XTemplate("/inv/techdomain/{id}/json/"),
-      previewName: new Ext.XTemplate("Object Model: {name}"),
+      restUrl: "/inv/techdomain/{0}/json/",
+      previewName: "Object Model: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
     //
@@ -218,6 +221,6 @@ Ext.define("NOC.inv.techdomain.Application", {
   onJSON: function(){
     var me = this;
     me.showItem(me.ITEM_JSON);
-    me.jsonPanel.preview(me.currentRecord);
+    me.jsonPanel.preview(me.currentRecord, me.ITEM_FORM);
   },
 });

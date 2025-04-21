@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.jsonimport.Application");
 Ext.define("NOC.main.jsonimport.Application", {
     extend: "NOC.core.Application",
     requires: [
-        "NOC.core.CMText"
+        // "NOC.core.CMText"
     ],
     initComponent: function() {
         var me = this;
