@@ -28,9 +28,9 @@ class ObjectDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
-        data = Object.objects.all()
+        data = Object.objects.all().scalar("name", "model")
         row_num = 0
-        for o in data:
+        for name, model in data:
             row_num += 1
-            yield row_num, "name", o.name
-            yield row_num, "model", o.model.name
+            yield row_num, "name", name
+            yield row_num, "model", model.name
