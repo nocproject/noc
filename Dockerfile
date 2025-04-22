@@ -71,6 +71,49 @@ RUN \
     && npm install -g eslint@8\
     && rm -rf /var/lib/apt/lists/*
 
+# Devcontainer
+FROM python AS devcontainer
+ENV\
+    DJANGO_SETTINGS_MODULE=noc.settings \
+    NOC_THREAD_STACK_SIZE=524288 \
+    NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
+    NOC_LISTEN="auto:1200" \
+    PROJ_DIR=/usr
+COPY .requirements/* /tmp
+RUN \
+    set -x \
+    && apt-get update\
+    && apt-get install -y --no-install-recommends \
+    bzip2 \
+    curl \
+    libjemalloc2 \
+    libpq-dev \
+    snmp \
+    vim \
+    git \
+    nodejs \
+    npm \
+    && pip3 install --upgrade pip \
+    && pip3 install\
+    -r /tmp/node.txt\
+    -r /tmp/bh.txt\
+    -r /tmp/activator.txt\
+    -r /tmp/classifier.txt\
+    -r /tmp/cache-redis.txt\
+    -r /tmp/login-ldap.txt\
+    -r /tmp/login-pam.txt\
+    -r /tmp/login-radius.txt\
+    -r /tmp/prod-tools.txt\
+    -r /tmp/testing.txt\
+    -r /tmp/sender-kafka.txt\
+    -r /tmp/ping.txt\
+    -r /tmp/dev.txt\
+    -r /tmp/lint.txt\
+    -r /tmp/test.txt\
+    -r /tmp/docs.txt\
+    && npm install -g eslint@8\
+    && pip cache purge \
+    && rm -rf /var/lib/apt/lists/* /tmp/*.whl
 #
 # Self-serving static ui files
 #
