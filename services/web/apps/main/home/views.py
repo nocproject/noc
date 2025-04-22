@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 #  main.home application
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2024 The NOC Project
+#  Copyright (C) 2007-2025 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from typing import Optional, Dict, Any
+import importlib.resources
 import os
 
 # Third-party modules
@@ -67,16 +68,10 @@ class HomeAppplication(ExtApplication):
         Returns:
             Rendered template as text.
         """
-        for p in config.get_customized_paths(
-            os.path.join("services", "web", "apps", "main", "home", "templates", name),
-            prefer_custom=True,
-        ):
-            if not os.path.exists(p):
-                continue
-            with open(p) as f:
-                tpl = Template(f.read())
+        pkg = "noc.services.web.apps.main.home.templates"
+        with importlib.resources.files(pkg).joinpath(name).open("r") as fp:
+            tpl = Template(fp.read())
             return tpl.render()
-        return ""
 
     def get_welcome(self, user: User) -> Optional[Dict[str, Any]]:
         """
