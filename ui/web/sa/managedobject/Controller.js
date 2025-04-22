@@ -696,6 +696,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
       formPanel = view.down("[itemId=managedobject-form-panel]");
     formPanel.up().getController().onNewRecord();
     formPanel.up().form = formPanel.getForm();
+    formPanel.up().setActiveItem(0);
     view.getLayout().setActiveItem("managedobject-form");
   },
   editManagedObject: function(gridView, id, suffix, isEmbedded){
