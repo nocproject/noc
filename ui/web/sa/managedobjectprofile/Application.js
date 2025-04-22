@@ -186,6 +186,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     name: "name",
                     xtype: "textfield",
                     fieldLabel: __("Name"),
+                    autoFocus: true,
                     allowBlank: false
                 },
                 {
