@@ -1,4 +1,60 @@
-# Black section
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.2", "wheel"]
+
+[project]
+authors = [{name = "Gufo Labs"}]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Telecommunications Industry",
+  "Programming Language :: Rust",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Networking",
+  "Topic :: System :: Networking :: Monitoring",
+  "Operating System :: POSIX :: Linux",
+  "Typing :: Typed",
+]
+description = "NOC is an Operation Support System (OSS) for telecom companies, service providers, and enterprise Network Operation Centers"
+dynamic = ["version"]
+keywords = ["monitoring", "inventory", "fault management", "performance management", "ipam"]
+license = {file = "LICENSE.md"}
+name = "noc"
+requires-python = ">=3.9"
+
+[project.readme]
+content-type = "text/markdown"
+file = "README.md"
+
+[project.urls]
+"Bug Tracker" = "https://github.com/gufolabs/gufo_snmp/issues"
+Changelog = "https://github.com/gufolabs/gufo_snmp/blob/master/CHANGELOG.md"
+Documentation = "https://docs.gufolabs.com/gufo_snmp/"
+Homepage = "https://github.com/gufolabs/gufo_snmp/"
+"Source Code" = "https://github.com/gufolabs/gufo_snmp/"
+
+[tool.setuptools]
+include-package-data = true
+package-dir = {"" = "."}
+zip-safe = false
+
+[tool.setuptools.packages.find]
+namespaces = true
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[tool.setuptools.package-data]
+"noc" = ["py.typed", "**/*.j2"]
+
 [tool.black]
 line-length = 100 # Must be same as tool.ruff.line-length
 target-version = ['py310'] 
