@@ -16,7 +16,7 @@ from noc.config import config
 from noc.core.http.async_client import HttpClient
 from noc.core.comp import DEFAULT_ENCODING
 
-ConsulRepeatableCodes = {500, 598, 599}
+ConsulRepeatableCodes = {500, 503, 598, 599}
 ConsulRepeatableErrors = consul.base.Timeout
 
 
