@@ -1861,6 +1861,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
       "->",
       {
         itemId: "helpBtn",
+        text: __("Help"),
         glyph: NOC.glyph.question_circle,
         tooltip: __("Form Help"),
         handler: "onHelpOpener",
