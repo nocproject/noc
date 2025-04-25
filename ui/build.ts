@@ -1,14 +1,23 @@
-import type {BuilderOptions} from "./scripts/builders/BaseBuilder.ts";
+import type {BuilderOptions, Theme} from "./scripts/builders/BaseBuilder.ts";
 import {BaseBuilder} from "./scripts/builders/BaseBuilder.ts";
 import {DevBuilder} from "./scripts/builders/DevBuilder.ts";
 import {MonacoEditorBuilder} from "./scripts/builders/MonacoEditorBuilder.ts";
 import {ProdBuilder} from "./scripts/builders/ProdBuilder.ts";
 import {VendorBuilder} from "./scripts/builders/VendorBuilder.ts";
 
-const mode = process.argv[2] as "prod" | "dev" | "vendor" | "vendor-dev" | "monaco" | "monaco-dev";
-if(!mode || !["prod", "dev", "vendor", "vendor-dev", "monaco", "monaco-dev"].includes(mode)){
+type ModeType = "prod" | "dev" | "vendor" | "vendor-dev" | "monaco" | "monaco-dev"
+
+if(!process.argv[2] || !["prod", "dev", "vendor", "vendor-dev", "monaco", "monaco-dev"].includes(process.argv[2])){
   throw new Error('Mode must be either "prod", "dev", "vendor", "vendor-dev", "monaco" or "monaco-dev"');
 }
+const mode = process.argv[2] as ModeType;
+
+if(["prod", "dev", "vendor", "vendor-dev"].includes(mode) && process.argv[3]){
+  if(!["gray", "noc"].includes(process.argv[3])){
+    throw new Error('Theme must be either "gray" or "noc"');
+  }
+}
+const theme = process.argv[3] as Theme || "noc";
 
 const isDev = ["dev", "vendor-dev", "monaco-dev"].includes(mode);
 
@@ -16,6 +25,7 @@ const commonOptions: BuilderOptions = {
   buildDir: "dist",
   entryPoint: "web/main/desktop/app.js",
   cacheDir: ".cache",
+  theme: theme,
   pluginDebug: false,
   isDev,
   htmlTemplate: `scripts/index-template.html`,
@@ -24,6 +34,7 @@ const commonOptions: BuilderOptions = {
   aliases: {
     "@cssPkg": "./pkg",
     "@cssWeb": "./web/css",
+    "@theme": theme,
     "/ui/web/img": "./web/img",
   },
   toReplaceMethods: [

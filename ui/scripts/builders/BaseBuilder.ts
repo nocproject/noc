@@ -9,8 +9,11 @@ import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
 // import {CopyLibPlugin} from "../plugins/CopyLibPlugin.ts";
 import {AliasPlugin} from "../plugins/AliasPlugin.ts";
 import {HtmlPlugin} from "../plugins/HtmlPlugin.ts";
+import {ImageCheckPlugin} from "../plugins/ImageCheckPlugin.ts";
 import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
 import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
+
+export type Theme = "gray" | "noc";
 
 export interface BuilderOptions {
   buildDir: string;
@@ -28,6 +31,7 @@ export interface BuilderOptions {
   cssEntryPoints?: string[];
   cssOutdir?: string;
   aliases?: Record<string, string>;
+  theme: Theme;
 }
 
 export abstract class BaseBuilder{
@@ -85,6 +89,11 @@ export abstract class BaseBuilder{
       parserOptions: this.options.parserOptions,
       generateOptions: this.options.generateOptions,
     });
+
+    const imageCheckPlugin = new ImageCheckPlugin({
+      // debug: this.options.pluginDebug,
+      debug: true,
+    });
     // const applicationPlugin = new ApplicationLoaderPlugin({
     //   basePath: process.cwd(),
     //   paths: {"NOC": "src/ui"},
@@ -134,6 +143,8 @@ export abstract class BaseBuilder{
       });
       plugins.push(aliasPlugin.getPlugin());
     }
+    plugins.push(imageCheckPlugin.getPlugin());
+    
     return {
       entryPoints: [
         this.options.entryPoint,

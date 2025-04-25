@@ -21,24 +21,27 @@ export class AliasPlugin{
       name: "alias-plugin",
       setup: (build) => {
         build.onResolve({filter: /.*/}, (args) => {
+          if(!args.path.includes("@") && !args.path.startsWith("/")){
+            return null;
+          }
           const aliasPath = args.path;
+          let resolvedPath = aliasPath;
 
           for(const [alias, target] of Object.entries(aliases)){
-            if(aliasPath.startsWith(alias)){
-              const resolvedPath = aliasPath.replace(alias, target);
-              const fullResolvedPath = resolvedPath.startsWith("/") 
-                ? resolvedPath 
-                : path.join(basePath, resolvedPath);
-                
-              this.log(`Resolved ${aliasPath} to ${fullResolvedPath}`);
-                
-              return {
-                path: fullResolvedPath,
-                external: false,
-              };
+            if(aliasPath.includes(alias)){
+              resolvedPath = resolvedPath.replace(new RegExp(alias, "g"), target);
             }
-          }
-          return null;
+          }  
+          const fullResolvedPath = resolvedPath.startsWith("/") 
+            ? resolvedPath 
+            : path.join(basePath, resolvedPath);
+                
+          this.log(`Resolved ${aliasPath} to ${fullResolvedPath}`);
+             
+          return {
+            path: fullResolvedPath,
+            external: false,
+          };
         });
       },
     };

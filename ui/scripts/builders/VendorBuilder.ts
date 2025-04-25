@@ -42,6 +42,7 @@ export class VendorBuilder extends BaseBuilder{
       isDev: this.options.isDev,
       outputDir: this.options.buildDir,
       outputFileName: this.options.esbuildOptions.entryNames!,
+      theme: this.options.theme,
     });
     this.options.esbuildOptions = {
       ...this.getBaseBuildOptions(),
