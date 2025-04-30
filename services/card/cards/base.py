@@ -1,11 +1,12 @@
 # ---------------------------------------------------------------------
 # Base card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from importlib.resources import files
 import os
 import datetime
 import operator
@@ -112,8 +113,9 @@ class BaseCard(object):
         if name not in self.template_cache:
             self.template_cache[name] = None
             for p in self.TEMPLATE_PATH:
-                tp = os.path.join(p, name + ".html.j2")
-                if os.path.exists(tp):
+                p = f"noc.{p.replace('/', '.')}"
+                tp = files(p).joinpath(name + ".html.j2")
+                if tp.is_file():
                     env = Environment()
                     env.filters.update(
                         {
@@ -126,8 +128,7 @@ class BaseCard(object):
                             "object_console": self.f_object_console,
                         }
                     )
-                    with open(tp) as f:
-                        self.template_cache[name] = env.from_string(f.read())
+                    self.template_cache[name] = env.from_string(tp.read_text())
 
         return self.template_cache[name]
 

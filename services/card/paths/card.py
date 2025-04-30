@@ -1,11 +1,12 @@
 # ----------------------------------------------------------------------
 # Card API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
+from importlib.resources import files
 import os
 import inspect
 from threading import Lock
@@ -72,7 +73,7 @@ class CardAPI(BaseAPI):
 
     def __init__(self, router: APIRouter):
         if not self.CARD_TEMPLATE:
-            with open(self.CARD_TEMPLATE_PATH) as f:
+            with files("noc").joinpath(self.CARD_TEMPLATE_PATH).open("r") as f:
                 self.CARD_TEMPLATE = Template(f.read())
         self.load_cards()
         super().__init__(router)
@@ -89,12 +90,6 @@ class CardAPI(BaseAPI):
     def get_current_user(self, name):
         with ErrorReport():
             return self.get_user_by_name(name)
-
-    def get_card_template(self):
-        if not self.CARD_TEMPLATE:
-            with open(self.CARD_TEMPLATE_PATH) as f:
-                self.CARD_TEMPLATE = Template(f.read())
-        return self.CARD_TEMPLATE
 
     CARDS_PREFIX = os.path.join("services", "card", "cards")
 
@@ -201,7 +196,7 @@ class CardAPI(BaseAPI):
         refresh = request.query_params.get("refresh")
         if refresh:
             headers["Refresh"] = str(refresh)
-        content = self.get_card_template().render(
+        content = self.CARD_TEMPLATE.render(
             {
                 "card_data": data,
                 "card_title": str(card.object),
