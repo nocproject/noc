@@ -1,15 +1,16 @@
 # ---------------------------------------------------------------------
 # Base dynamic dashboard
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+from importlib.resources import files
 import logging
 import os
 
-# Third-Partu modules
+# Third-Party modules
 import orjson
 
 BAD_CHARS = r"!\"%'()+,:;<>?@\^`{|}~\\\n\r"
@@ -68,7 +69,7 @@ class BaseDashboard(object):
                 if ".json" not in f:
                     self.logger.info("Extension file %s is not .json" % f)
                     continue
-                with open(os.path.join(t_path, f)) as data_file:
+                with files("noc").joinpath(t_path, f).open() as data_file:
                     try:
                         t[f.split(".")[0]] = orjson.loads(data_file.read())
                     except ValueError:
@@ -79,7 +80,7 @@ class BaseDashboard(object):
                 if ".json" not in fl:
                     self.logger.info("Extension file %s is not .json" % fl)
                     continue
-                with open(os.path.join(t_path, f, fl)) as data_file:
+                with files("noc").joinpath(t_path, f, fl).open() as data_file:
                     try:
                         t[".".join((f, fl.split(".")[0]))] = orjson.loads(data_file.read())
                     except ValueError:
