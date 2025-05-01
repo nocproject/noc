@@ -13,6 +13,7 @@ from noc.core.clickhouse.fields import (
     StringField,
     ReferenceField,
     UInt64Field,
+    UInt8Field,
     IPv4Field,
     MapField,
     ArrayField,
@@ -60,6 +61,8 @@ class Events(Model):
     resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
     vars = MapField(StringField(), description=_("Vars"))
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
+    #
+    severity = UInt8Field(description="EventSeverity")
     #
     remote_system = ReferenceField(RemoteSystem, description="Remote System")
     remote_id = StringField(description="Event Id on Remote System")

@@ -21,7 +21,7 @@ from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.core.clickhouse.fields import DateField, DateTimeField
 from .enum import EventSeverity, EventSource
 
-MAX_DISPOSE_DELAY = datetime.timedelta(hours=1)
+MAX_DISPOSE_DELAY = datetime.timedelta(hours=12)
 
 EVENT_QUERY = f"""
     SELECT
@@ -36,6 +36,7 @@ EVENT_QUERY = f"""
         dictGetOrNull('{config.clickhouse.db_dictionaries}.profile', 'name', e.profile) as sa_profile,
         e.start_ts as start_timestamp,
         e.source,
+        e.severity,
         e.raw_vars,
         e.resolved_vars,
         e.vars,
@@ -185,6 +186,8 @@ class Event(BaseModel):
                 "profile": data.get("sa_profile", "Generic.Host"),
             },
         }
+        if "severity" in data:
+            r["type"]["severity"] = EventSeverity(data["severity"])
         if "target" not in data or not data["target"]:
             r["data"] = [{"name": k, "value": v} for k, v in data["resolved_vars"].items()]
             if data["source"] == "SNMP Trap":
@@ -206,7 +209,7 @@ class Event(BaseModel):
         else:
             r["target"] = data["target"]
             r["data"] = orjson.loads(data["data"])
-        if "id" not in r["target"] and data["managed_object"]["id"]:
+        if "id" not in r["target"] and "managed_object" in data:
             r["target"]["id"] = data["managed_object"]["id"]
         if data.get("remote_system"):
             r["remote_system"] = data["remote_system"]
@@ -214,13 +217,15 @@ class Event(BaseModel):
         return Event.model_validate(r)
 
     @classmethod
-    def get_by_id(cls, id: str, /, client: ClickhouseClient | None = None) -> Optional["Event"]:
+    def get_by_id(
+        cls, event_id: str, /, client: ClickhouseClient | None = None
+    ) -> Optional["Event"]:
         """
 
         :param event_id:
         :return:
         """
-        event_id = str(ObjectId(id))
+        event_id = str(ObjectId(event_id))
         # Determine possible date
         oid = ObjectId(event_id)
         ts: datetime.datetime = oid.generation_time.astimezone(config.timezone)
@@ -269,6 +274,7 @@ class Event(BaseModel):
             data:
             description:
             profile:
+            snmp_trap_oid:
         """
         profiles = []
         if profile:

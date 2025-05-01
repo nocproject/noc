@@ -85,6 +85,9 @@ class AlarmSeverity(Document):
             labels:
 
         """
+        for ll in labels:
+            if ll.startswith("noc::severity::"):
+                return AlarmSeverity.get_by_code(ll[15:].upper())
         return None
 
     @classmethod

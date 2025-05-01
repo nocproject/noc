@@ -65,7 +65,7 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
-from noc.core.fm.event import Event
+from noc.core.fm.event import Event, EventSeverity
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 
@@ -526,7 +526,6 @@ class CorrelatorService(FastAPIService):
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
-        a.affected_services = Service.get_services_by_alarm(a)
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
@@ -534,7 +533,7 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
-        escalation_profile = None
+        escalation_profile, severity_policy = None, None
         a_severity: Optional[AlarmSeverity] = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
@@ -545,17 +544,23 @@ class CorrelatorService(FastAPIService):
                     a_severity = ai.severity
             if rule.escalation_profile:
                 escalation_profile = rule.escalation_profile
-            if a.severity_policy != rule.severity_policy:
-                a.severity_policy = rule.severity_policy
+            if severity_policy != rule.severity_policy:
+                severity_policy = rule.severity_policy
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups
         # Calculate Alarm Severities
+        if severity_policy:
+            a.severity_policy = severity_policy
+        elif a.alarm_class.affected_service:
+            a.severity_policy = "AB"
         if a_severity:
             a.severity = a_severity.severity
         else:
             # If changed policy
             a.severity = a.get_effective_severity(summary)
+        # Required Severity for match
+        a.affected_services = Service.get_services_by_alarm(a)
         # @todo: Fix
         self.logger.info(
             "[%s|%s|%s] Calculated alarm severity is: %s",
@@ -629,11 +634,13 @@ class CorrelatorService(FastAPIService):
         if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
-        if event.type.severity:
+        if not event.type.severity:
+            severity = None
+        elif event.type.severity == EventSeverity.CLEARED:
+            return await self.clear_alarm_from_rule(rule, event, managed_object)
+        else:
             severity = AlarmSeverity.get_by_code(event.type.severity.name)
             self.logger.info("Try request severity %s -> %s", event.type.severity, severity)
-        else:
-            severity = None
         if event.remote_system:
             rs = RemoteSystem.get_by_name(event.remote_system)
         else:

@@ -460,6 +460,18 @@ class EventClass(Document):
                 }
             )
         r["actions"] += DispositionRule.get_actions(event_class=event_class)
+        if len(event_class.disposition) > 0:
+            r["actions"] = [
+                {
+                    "name": event_class.name,
+                    "is_active": True,
+                    "preference": 99999,
+                    "stop_processing": False,
+                    "match_expr": [],
+                    "event_classes": [],
+                    "action": 3,
+                }
+            ]
         return r
 
 

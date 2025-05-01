@@ -376,7 +376,7 @@ class DispositionRule(Document):
             "stop_processing": rule.stop_processing,
             "match_expr": [],
             "event_classes": [],
-            "action": rule.default_action,
+            "action": 1 if rule.default_action == "I" else 3,
         }
         if rule.notification_group:
             r |= {
