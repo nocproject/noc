@@ -121,6 +121,7 @@ class ActiveAlarm(Document):
     custom_style = ForeignKeyField(Style, required=False)
     #
     reopens = IntField(required=False)
+    # flap_ts = DateTimeField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
     root = ObjectIdField(required=False)
@@ -600,10 +601,10 @@ class ActiveAlarm(Document):
                 * ST - By Tokens
 
         """
-        if not policy and self.alarm_class.affected_service:
-            policy = "AB"
-        elif not policy:
-            policy = self.severity_policy
+        # if not policy and self.alarm_class.affected_service:
+        #    policy = "AB"
+        # elif not policy:
+        policy = policy or self.severity_policy
         if severity:
             severity = severity.severity
         elif self.base_severity:
