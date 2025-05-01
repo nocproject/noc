@@ -600,7 +600,7 @@ class ClassifierService(FastAPIService):
                     managed_object.address,
                 )
             metrics[EventMetrics.CR_DELETED] += 1
-            return False
+            return EventAction.DROP
         elif action == "L":
             # Do not dispose
             if iface:
@@ -620,7 +620,7 @@ class ClassifierService(FastAPIService):
                     managed_object.address,
                 )
             event.type.severity = EventSeverity.IGNORED  # do_not_dispose
-        return False
+        return
 
     def resolve_vars(self, event: Event) -> Dict[str, Any]:
         """
@@ -742,7 +742,7 @@ class ClassifierService(FastAPIService):
             return
         duplicate_vars = resolved_vars.copy()
         # Additionally check link events
-        e_action = await self.check_link_event(event, e_cfg, resolved_vars, mo)
+        e_action = await self.check_link_event(event, e_cfg, resolved_vars, mo) or e_action
         # Calculate rule variables
         event.vars = e_cfg.eval_vars(resolved_vars)
         self.logger.info(
@@ -953,7 +953,7 @@ class ClassifierService(FastAPIService):
         """Apply Event Config changes"""
         self.event_config[data["id"]] = EventConfig.from_config(data)
         if data["actions"]:
-            self.action_set.update_rule(data["id"], data["actions"], data[""])
+            self.action_set.update_rule(data["id"], data["actions"])
         self.add_configs += 1
 
     async def delete_config(self, ec_id: str) -> None:
