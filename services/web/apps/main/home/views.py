@@ -8,7 +8,6 @@
 # Python modules
 from typing import Optional, Dict, Any
 import importlib.resources
-import os
 
 # Third-party modules
 from jinja2 import Template
