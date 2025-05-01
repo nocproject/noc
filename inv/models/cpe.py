@@ -330,7 +330,7 @@ class CPE(Document):
                 f"local_id::{cpe.controller.local_id}",
             ]
             if cpe.controller.interface:
-                iface = cpe.controller.get_cpe_interface()
+                iface = cpe.get_cpe_interface()
                 if iface and iface.ifindex:
                     hints += [f"ifindex::{iface.ifindex}"]
             yield MetricCollectorConfig(
