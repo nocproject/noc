@@ -466,7 +466,6 @@ class EventClass(Document):
                     "name": event_class.name,
                     "is_active": True,
                     "preference": 99999,
-                    "alarm_class": event_class.disposition[0].alarm_class.name,
                     "stop_processing": False,
                     "match_expr": [],
                     "event_classes": [],
