@@ -242,7 +242,8 @@ class ReportMetricsDetailApplication(ExtApplication):
                 {"name": "maxMerge(load_in_max)", "value": [0], "op": "!="},
                 {"name": "maxMerge(load_out_max)", "value": [0], "op": "!="},
             ]
-
+        if not object_data:
+            return HttpResponse(_("Not object found for set Report Param."), status=200)
         data = report(
             fields=fields,
             allobjectids=False,
