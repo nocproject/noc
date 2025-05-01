@@ -48,7 +48,7 @@ EVENT_QUERY = f"""
     WHERE
         event_id = %s
         AND ts BETWEEN %s AND %s
-        AND date BETWEEN %s AND %s        
+        AND date BETWEEN %s AND %s
     FORMAT JSON
 """
 
