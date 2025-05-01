@@ -5,10 +5,6 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
-# Python modules
-from collections import defaultdict
-import orjson
-
 # NOC Modules
 from .base import CHTableReportDataSource, ReportField
 
