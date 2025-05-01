@@ -21,7 +21,7 @@ from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.core.clickhouse.fields import DateField, DateTimeField
 from .enum import EventSeverity, EventSource
 
-MAX_DISPOSE_DELAY = datetime.timedelta(hours=1)
+MAX_DISPOSE_DELAY = datetime.timedelta(hours=12)
 
 EVENT_QUERY = f"""
     SELECT
@@ -47,6 +47,8 @@ EVENT_QUERY = f"""
     FROM events e
     WHERE
         event_id = %s
+        AND ts BETWEEN %s AND %s
+        AND date BETWEEN %s AND %s        
     FORMAT JSON
 """
 
@@ -235,7 +237,13 @@ class Event(BaseModel):
         dtf = DateTimeField()
         data = conn.execute(
             EVENT_QUERY,
-            args=[event_id],
+            args=[
+                event_id,
+                dtf.to_json(from_ts),
+                dtf.to_json(to_ts),
+                df.to_json(from_ts),
+                df.to_json(to_ts),
+            ],
             return_raw=True,
         )
         if not data:
