@@ -27,6 +27,12 @@ logger = logging.getLogger(__name__)
 
 
 class EventAction(enum.Enum):
+    """Event Action.
+      * Drop - do not save
+      * Ignored - do not disposition
+      * Log - Save only
+      * Disposition - Create Alarm
+    """
     DROP = 1
     LOG = 2
     DISPOSITION = 3
@@ -46,7 +52,7 @@ class ActionSet(object):
         self.add_actions: int = 0
         self.add_notifications: int = 0
 
-    def iter_actions(self, event_class: str, ctx: Dict[str, Any]) -> Iterable[Callable]:
+    def iter_actions(self, event_class: str, ctx: Dict[str, Any], categories=None) -> Iterable[Callable]:
         """"""
         if event_class not in self.actions:
             return
@@ -117,6 +123,8 @@ class ActionSet(object):
                 )
             ]
             self.add_handlers += 1
+        if "action" in data and data["action"] == 3:
+            r += [(lambda event, mo: EventAction.DISPOSITION, None)]
         return r
 
     def load(self, skip_load_rules: bool = False):

@@ -190,14 +190,14 @@ class ClassifierService(FastAPIService):
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
+        report_callback = PeriodicCallback(self.report, 1000)
+        report_callback.start()
         await self.subscribe_stream(
             "events.%s" % config.pool,
             self.slot_number,
             self.on_event,
             async_cursor=config.classifier.allowed_async_cursor,
         )
-        report_callback = PeriodicCallback(self.report, 1000)
-        report_callback.start()
 
     async def get_event_rules_mappings(self):
         """Subscribe and track datastream changes"""
@@ -600,7 +600,7 @@ class ClassifierService(FastAPIService):
                     managed_object.address,
                 )
             metrics[EventMetrics.CR_DELETED] += 1
-            return True
+            return False
         elif action == "L":
             # Do not dispose
             if iface:
@@ -742,7 +742,7 @@ class ClassifierService(FastAPIService):
             return
         duplicate_vars = resolved_vars.copy()
         # Additionally check link events
-        await self.check_link_event(event, e_cfg, resolved_vars, mo)
+        e_action = await self.check_link_event(event, e_cfg, resolved_vars, mo)
         # Calculate rule variables
         event.vars = e_cfg.eval_vars(resolved_vars)
         self.logger.info(
@@ -896,6 +896,7 @@ class ClassifierService(FastAPIService):
             "labels": event.labels or [],
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "message": event.message or "",
+            "severity": event.type.severity.value,
             #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
@@ -952,7 +953,7 @@ class ClassifierService(FastAPIService):
         """Apply Event Config changes"""
         self.event_config[data["id"]] = EventConfig.from_config(data)
         if data["actions"]:
-            self.action_set.update_rule(data["id"], data["actions"])
+            self.action_set.update_rule(data["id"], data["actions"], data[""])
         self.add_configs += 1
 
     async def delete_config(self, ec_id: str) -> None:

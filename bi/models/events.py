@@ -13,6 +13,7 @@ from noc.core.clickhouse.fields import (
     StringField,
     ReferenceField,
     UInt64Field,
+    UInt8Field,
     IPv4Field,
     MapField,
     ArrayField,
@@ -28,6 +29,7 @@ from noc.core.bi.dictionaries.profile import Profile
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.eventclass import EventClass
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.eventcategory import EventCategory
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
@@ -51,6 +53,7 @@ class Events(Model):
     event_id = StringField(description=_("Id"))  #
     source = StringField(description=_("Event Source"), low_cardinality=True)
     event_class = ReferenceField(EventClass, description=_("Event Class"))
+    categories = ArrayField(ReferenceField(EventCategory), description=_("Categories List"))
     # Data
     labels = ArrayField(StringField(), description=_("Labels"))
     data = StringField(description="All data on JSON")
@@ -60,6 +63,8 @@ class Events(Model):
     resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
     vars = MapField(StringField(), description=_("Vars"))
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
+    #
+    severity = UInt8Field(description="EventSeverity")
     #
     remote_system = ReferenceField(RemoteSystem, description="Remote System")
     remote_id = StringField(description="Event Id on Remote System")
