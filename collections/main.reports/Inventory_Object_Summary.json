@@ -1,0 +1,70 @@
+{
+    "name": "Inventory Object Summary",
+    "$collection": "main.reports",
+    "uuid": "cc439a76-3897-4003-ade0-a5da65721b50",
+    "title": "Inventory Object Summary (New)",
+    "description": "Сводка по инвентаризации объектов",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "objectds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select model, count(*) as count from Root group by model order by count desc, model"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "model",
+                    "title": "Model",
+                    "format_type": "string"
+                },
+                {
+                    "name": "count",
+                    "title": "Count",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Сводка по инвентаризации объектов (Новый)"
+        },
+        "columns.model": {
+            "ru": "Модель"
+        },
+        "columns.count": {
+            "ru": "Количество"
+        }
+    },
+    "parameters": [
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
