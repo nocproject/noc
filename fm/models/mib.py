@@ -16,6 +16,7 @@ from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DateTimeField, IntField, ListField, DictField
 import cachetools
+from pymongo import InsertOne
 
 # NOC modules
 from noc.core.validators import is_oid
@@ -108,6 +109,31 @@ class MIB(Document):
             s["display_hint"] = syntax["format"]
         return s
 
+    def _init_mib(self, data):
+        """
+        Initialize new mib.
+
+        Optimize initial MIB loading.
+        """
+        bulk = []
+        for v in data:
+            syntax = v.get("syntax")
+            if syntax:
+                syntax = MIB.parse_syntax(syntax)
+            bulk.append(
+                InsertOne(
+                    {
+                        "mib": self.id,
+                        "oid": v["oid"],
+                        "name": v["name"],
+                        "description": v.get("description", None),
+                        "syntax": syntax,
+                    }
+                )
+            )
+        if bulk:
+            MIBData._get_collection().bulk_write(bulk)
+
     def load_data(self, data):
         """
         Load mib data from list of {oid:, name:, description:, syntax:}
@@ -121,6 +147,10 @@ class MIB(Document):
         # Prefetch existing MIB data
         oids = [v["oid"] for v in data]
         md_cache = {md["oid"]: md for md in MIBData.objects.filter(oid__in=oids)}
+        # Initial load?
+        if not md_cache:
+            self._init_mib(data)
+            return
         # Load data
         for v in data:
             oid = v["oid"]
