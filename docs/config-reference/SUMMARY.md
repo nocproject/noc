@@ -49,6 +49,7 @@
 * [[ping] section](ping.md)
 * [[proxy] section](proxy.md)
 * [[redis] section](redis.md)
+* [[redpanda] section](redpanda.md)
 * [[rpc] section](rpc.md)
 * [[runner] section](runner.md)
 * [[sae] section](sae.md)
