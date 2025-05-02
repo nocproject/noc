@@ -13,6 +13,9 @@ import glob
 import logging
 from typing import List, Dict
 
+# NOC modules
+from noc.config import config
+
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
 DOC_ROOT = os.path.join(ROOT, "docs")
@@ -192,6 +195,32 @@ def define_env(env):
         Renders neat UI button.
         """
         return f"`{title}`"
+
+    @env.macro
+    def config_param(param: str) -> str:
+        """
+        Generate definition table for config params.
+        """
+        p = config._params[param]
+        r = [""]
+        default = getattr(p, "default", None)
+        if default:
+            r.append(f"- **Default value:** `{default}`")
+        choices = getattr(p, "choices", None)
+        if choices:
+            r.append("- **Possible values:**")
+            r.append("")
+            for x in choices:
+                r.append(f"       - `{x}`")
+            r.append("")
+        # Paths
+        r.append(f"- **YAML Path:** `{param}`")
+        kv_path = param.replace(".", "/")
+        r.append(f"- **Key-value Path:** `{kv_path}`")
+        env_path = f"NOC_{param.replace('.','_').upper()}"
+        r.append(f"- **Environment:** `{env_path}`")
+        r.append("")
+        return "\n".join(r)
 
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
