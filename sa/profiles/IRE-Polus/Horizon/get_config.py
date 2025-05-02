@@ -41,7 +41,7 @@ class Script(BaseScript):
                 name = pp["nam"]
                 if name in {"SetFactory"}:
                     continue
-                value = pp["val"].strip()
+                value = pp.get("val", "").strip()
                 if value == "::" or not value:
                     continue
                 description = None
