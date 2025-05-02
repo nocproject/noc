@@ -32,14 +32,14 @@ def pytest_runtest_protocol(item, nextitem):
     duration = perf_counter_ns() - start
 
     # Get base function name, without parameter suffix
-    func_name = item.originalname or item.name.split("[")[0]
+    func_name: str = item.originalname or item.name.split("[")[0]
     _durations[func_name] += duration
 
 
 def pytest_terminal_summary(terminalreporter, exitstatus, config):
     terminalreporter.write_sep("=", "Test execution time summary")
     total = 0.0
-    for func_name, duration in sorted(durations.items(), key=lambda x: x[1], reverse=True):
+    for func_name, duration in sorted(_durations.items(), key=lambda x: x[1], reverse=True):
         d = float(duration) / 1_000_000_000
         terminalreporter.write_line(f"{func_name:<40} {d:.3f}s")
         total += d
