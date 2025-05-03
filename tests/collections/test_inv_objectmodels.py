@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test inv.objectmodels collection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,10 @@ import pytest
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.protocol import ProtocolVariant
 from .utils import CollectionTestHelper
+
+from noc.core.mongo.connection import connect
+
+connect()
 
 helper = CollectionTestHelper(ObjectModel)
 
@@ -45,31 +49,13 @@ def test_cr_context(model):
 
 
 def test_connection_gender(model):
+    fail = []
     for c in model.connections:
-        with pytest.assume:
-            assert c.gender in c.type.genders, "%s: Invalid gender '%s' (Must be in %s)" % (
-                c.name,
-                c.gender,
-                ", ".join("'%s'" % x for x in c.type.genders),
-            )
-
-
-def check_direction(c, directions):
-    __tracebackhide__ = True
-    if c.direction not in directions:
-        pytest.fail(
-            "%s: Invalid direction '%s' (Must be in %s)"
-            % (c.name, c.direction, ", ".join("'%s'" % x for x in directions))
-        )
-
-
-def check_protocols(c, protocols):
-    __tracebackhide__ = True
-    if not any(True for p in c.protocols if p in protocols):
-        pytest.fail(
-            "%s: Must have at least one of protocols %s"
-            % (c.name, ", ".join("'%s'" % x for x in protocols))
-        )
+        if c.gender not in c.type.genders:
+            valid_genders = ", ".join(f"'{x}'" for x in c.type.genders)
+            fail.append(f"{c.name}: Invalid gender '{c.gender}' (Must be in {valid_genders})")
+    if fail:
+        pytest.fail("\n".join(fail))
 
 
 def test_data_format(model):
@@ -77,22 +63,40 @@ def test_data_format(model):
         assert isinstance(model.data, list), 'Object model field "data" must have type "list"'
 
 
-def test_connection_checklist(model):
+def test_connection_direction(model: ObjectModel) -> None:
+    fail = []
     for c in model.connections:
         checklist = CONNECTION_CHECKLIST.get(c.type.name)
         if not checklist:
             continue
         if c.direction and "directions" in checklist:
-            with pytest.assume:
-                check_direction(c, checklist["directions"])
-        if "protocols" in checklist and not model.get_data("length", "length"):
+            if c.direction not in checklist["directions"]:
+                valid_directions = ", ".join("'%s'" % x for x in directions)
+                fail.append(
+                    f"{c.name}: Invalid direction '{c.direction}' (Must be in {valid_directions})"
+                )
+    if fail:
+        pytest.fail("\n".join(fail))
+
+
+def test_connection_protocols(model: ObjectModel) -> None:
+    if model.get_data("length", "length"):
+        pytest.skip("is wire")
+    fail = []
+    for c in model.connections:
+        checklist = CONNECTION_CHECKLIST.get(c.type.name)
+        if not checklist:
+            continue
+        if "protocols" in checklist:
             p_checks = _CT_PROTOCOLS.get(c.type.name)
             if p_checks is None:
                 p_checks = [ProtocolVariant.get_by_code(p) for p in checklist["protocols"]]
                 _CT_PROTOCOLS[c.type.name] = p_checks
-            # Empty protocols on Ware
-            with pytest.assume:
-                check_protocols(c, p_checks)
+            if not any(p in p_checks for p in c.protocols):
+                valid_protocols = ", ".join(f"'{x}'" for x in checklist["protocols"])
+                fail.append(f"{c.name}: Must have at least one of protocols {valid_protocols}")
+    if fail:
+        pytest.fail("\n".join(fail))
 
 
 _CT_PROTOCOLS = {}
