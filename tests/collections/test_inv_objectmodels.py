@@ -86,11 +86,16 @@ def test_connection_checklist(model):
             with pytest.assume:
                 check_direction(c, checklist["directions"])
         if "protocols" in checklist and not model.get_data("length", "length"):
-            p_checks = [ProtocolVariant.get_by_code(p) for p in checklist["protocols"]]
+            p_checks = _CT_PROTOCOLS.get(c.type.name)
+            if p_checks is None:
+                p_checks = [ProtocolVariant.get_by_code(p) for p in checklist["protocols"]]
+                _CT_PROTOCOLS[c.type.name] = p_checks
             # Empty protocols on Ware
             with pytest.assume:
                 check_protocols(c, p_checks)
 
+
+_CT_PROTOCOLS = {}
 
 # dict must have one or more keys:
 # * direction - list of possible directions
