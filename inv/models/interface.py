@@ -153,7 +153,9 @@ class Interface(Document):
 
     @classmethod
     def get_by_ifindex(
-        cls, managed_object_id: int, ifindex: int,
+        cls,
+        managed_object_id: int,
+        ifindex: int,
     ) -> Optional["Interface"]:
         return Interface.objects.filter(managed_object=managed_object_id, ifindex=ifindex).first()
 

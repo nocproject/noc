@@ -128,7 +128,7 @@ class EventConfig:
                     name=vv["name"],
                     type=ValueType(vv["type"]),
                     required=vv["required"],
-                    resource_model="inv.Interface" if vv["type"] == "interface_name" else None,
+                    resource_model=vv.get("resource_model"),
                 ),
             ]
         # for rr in data["resources"]:

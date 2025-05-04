@@ -117,7 +117,7 @@ class ClassifierService(FastAPIService):
         self.version: str = version.version
         self.ruleset: RuleSet = RuleSet()
         self.pattern_set: PatternSet = PatternSet()
-        self.action_set: ActionSet = ActionSet()
+        self.action_set: ActionSet = ActionSet(logger=self.logger)
         self.event_config: Dict[str, EventConfig] = {}
         self.default_event_config: EventConfig = None
         self.alter_handlers: List[Tuple[str, bool, Callable]] = []
