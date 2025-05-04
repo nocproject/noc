@@ -426,8 +426,8 @@ class ClassifierService(FastAPIService):
         """
         Register Alarm
         Args:
-            event:
-            mo:
+            event: Event instance
+            mo: ManagedObject Instance
         """
         self.logger.info(
             "[%s|%s|%s] Disposing",
@@ -521,106 +521,6 @@ class ClassifierService(FastAPIService):
                 metrics[EventMetrics.CR_UDUPLICATED] += 1
                 return True
         return False
-
-    async def check_link_event(
-        self,
-        event: Event,
-        event_config: EventConfig,
-        event_vars: Dict[str, Any],
-        managed_object: ManagedObject,
-    ):
-        """
-        Additional link events check
-        Args:
-            event:
-            event_class:
-            event_vars:
-            managed_object:
-        :return: True - stop processing, False - continue
-        """
-        if_name, ifindex = event_vars.get("interface"), event_vars.pop("interface__ifindex", None)
-        if not managed_object or (not if_name and not ifindex):
-            return
-        iface = self.get_interface(managed_object.id, if_name, ifindex)
-        if iface:
-            if_name, profile = iface
-            self.logger.info(
-                "[%s|%s|%s] Found interface %s",
-                event.id,
-                managed_object.name,
-                managed_object.address,
-                if_name,
-            )
-            action = profile.link_events
-            event_vars["interface"] = if_name
-        else:
-            self.logger.info(
-                "[%s|%s|%s] Interface not found:%s",
-                event.id,
-                managed_object.name,
-                managed_object.address,
-                if_name,
-            )
-            profile = None
-            action = self.default_link_action
-        if "if" not in event_config.resolvers:
-            return
-        # Abduct detection
-        # link_status = event.get_hint("link_status")
-        # if (
-        #     link_status is not None
-        #     and iface
-        #     and profile.enable_abduct_detection
-        #     and managed_object.object_profile.abduct_detection_window
-        #     and managed_object.object_profile.abduct_detection_threshold
-        # ):
-        #     ts = int(event.timestamp.timestamp())
-        #     if link_status:
-        #         self.abduct_detector.register_up(ts, iface)
-        #     else:
-        #         if self.abduct_detector.register_down(ts, iface):
-        #             await self.raise_abduct_event(event)
-        # Link actions
-        if action == "I":
-            # Ignore
-            if iface:
-                self.logger.info(
-                    "[%s|%s|%s] Marked as ignored by interface profile '%s' (%s)",
-                    event.id,
-                    managed_object.name,
-                    managed_object.address,
-                    profile.name,
-                    if_name,
-                )
-            else:
-                self.logger.info(
-                    "[%s|%s|%s] Marked as ignored by default interface profile",
-                    event.id,
-                    managed_object.name,
-                    managed_object.address,
-                )
-            metrics[EventMetrics.CR_DELETED] += 1
-            return EventAction.DROP
-        elif action == "L":
-            # Do not dispose
-            if iface:
-                self.logger.info(
-                    "[%s|%s|%s] Marked as not disposable by interface profile '%s' (%s)",
-                    event.id,
-                    managed_object.name,
-                    managed_object.address,
-                    profile.name,
-                    if_name,
-                )
-            else:
-                self.logger.info(
-                    "[%s|%s|%s] Marked as not disposable by default interface",
-                    event.id,
-                    managed_object.name,
-                    managed_object.address,
-                )
-            event.type.severity = EventSeverity.IGNORED  # do_not_dispose
-        return
 
     def resolve_vars(self, event: Event) -> Dict[str, Any]:
         """
@@ -742,9 +642,8 @@ class ClassifierService(FastAPIService):
             return
         duplicate_vars = resolved_vars.copy()
         # Additionally check link events
-        e_action = await self.check_link_event(event, e_cfg, resolved_vars, mo) or e_action
         # Calculate rule variables
-        event.vars = e_cfg.eval_vars(resolved_vars)
+        event.vars, e_res = e_cfg.eval_vars(resolved_vars, mo)
         self.logger.info(
             "[%s|%s|%s] Event processed successfully: %s",
             event.id,
@@ -763,26 +662,10 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
-        for a in self.action_set.iter_actions(
-            e_cfg.event_class_id,
-            {
-                "labels": frozenset(event.labels or []),
-                "service_groups": frozenset(mo.effective_service_groups or []) if mo else [],
-                "remote_system": event.remote_system,
-            },
-        ):
-            self.logger.info("[%s] Run action: %s", event.id, a)
-            r = a(event, mo)
-            if not r:
-                continue
-            elif r == EventAction.DROP:
-                e_action = r
-                break
-            elif e_action != EventAction.DISPOSITION:
-                e_action = r
+        e_action = self.action_set.run_actions(event, mo, e_res) or e_action
         if e_action == EventAction.DROP:
             self.logger.info(
-                "[%s|%s|%s] Dropped by handler",
+                "[%s|%s|%s] Dropped by action",
                 event.id,
                 event.target.name,
                 event.target.address,

@@ -38,6 +38,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.interactionlog import Interaction
+from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -212,6 +213,19 @@ class DispositionRule(Document):
     object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
         ObjectActionItem, required=False
     )
+    update_avail_status = StringField(
+        choices=[("D", "Disable"), ("A", "Available"), ("U", "Unavail")],
+        default="D",
+    )
+    update_oper_status = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("U", "Set Up"),
+            ("D", "Set Down"),
+            ("V", "By Var (Enum)"),
+        ],
+        default="D",
+    )
     #
     default_action = StringField(
         choices=[
@@ -224,7 +238,7 @@ class DispositionRule(Document):
     # allow_update
     alarm_disposition: Optional["AlarmClass"] = PlainReferenceField(AlarmClass, required=False)
     # RCA
-    root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
+    # root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
     #
     # severity_policy = StringField(
     #     choices=[
@@ -364,7 +378,7 @@ class DispositionRule(Document):
 
     @classmethod
     def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
-        """Generate Datastream Config"""
+        """Generate DataStream Config from rule"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
             # Merge Rule ?
             return DispositionRule.get_rule_config(rule.replace_rule)
@@ -374,10 +388,15 @@ class DispositionRule(Document):
             "preference": rule.preference,
             "alarm_class": rule.alarm_disposition.name if rule.alarm_disposition else None,
             "stop_processing": rule.stop_processing,
+            # disposition_var_map
             "match_expr": [],
             "event_classes": [],
-            "action": 1 if rule.default_action == "I" else 3,
+            "action": EventAction.LOG.value,
         }
+        if rule.default_action == "I":
+            r["action"] = EventAction.DROP.value
+        elif rule.alarm_disposition:
+            r["action"] = EventAction.DISPOSITION.value
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),
