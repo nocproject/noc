@@ -8,9 +8,11 @@
 # Python modules
 import datetime
 import logging
+import operator
 from typing import Optional, Iterable, List, Union, Dict, Any
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document
 from mongoengine.fields import (
@@ -36,6 +38,7 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.label import Label
 from noc.project.models.project import Project
 from noc.sa.models.service import Service
+from noc.inv.models.endpoint import Endpoint
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.wf.decorator import workflow
@@ -139,6 +142,7 @@ class Interface(Document):
     extra_labels = DictField()
 
     PROFILE_LINK = "profile"
+    _component_cache = cachetools.TTLCache(maxsize=2000, ttl=60)
 
     def __str__(self):
         return "%s: %s" % (self.managed_object.name, self.name)
@@ -146,6 +150,12 @@ class Interface(Document):
     @classmethod
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Interface"]:
         return Interface.objects.filter(id=oid).first()
+
+    @classmethod
+    def get_by_ifindex(
+        cls, managed_object_id: int, ifindex: int,
+    ) -> Optional["Interface"]:
+        return Interface.objects.filter(managed_object=managed_object_id, ifindex=ifindex).first()
 
     def clean(self):
         if self.extra_labels:
@@ -165,6 +175,7 @@ class Interface(Document):
         return
 
     @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_component_cache"))
     def get_component(
         cls, managed_object: "ManagedObject", interface=None, ifindex=None, **kwargs
     ) -> Optional["Interface"]:
@@ -443,13 +454,13 @@ class Interface(Document):
             s += ["-", "-"]
         return "/".join(s)
 
-    def set_oper_status(self, status):
+    def set_oper_status(self, status: bool, timestamp: Optional[datetime.datetime] = None):
         """
         Set current oper status
         """
         if self.oper_status == status:
             return
-        now = datetime.datetime.now()
+        now = timestamp or datetime.datetime.now()
         if self.oper_status != status and (
             not self.oper_status_change or self.oper_status_change < now
         ):

@@ -6,13 +6,20 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Literal, Dict
+from typing import Optional, List, Dict, Any
 
 # Third-party modules
 from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
+from noc.core.fm.enum import EventAction
+
+
+class TargetAction(BaseModel):
+    interaction_audit: int
+    run_discovery: bool = False
+    update_avail: bool = False
 
 
 class VarItem(BaseModel):
@@ -20,33 +27,30 @@ class VarItem(BaseModel):
     type: ValueType
     required: bool = False
     match_suppress: bool = False
+    resource_model: Optional[str] = None
 
 
-class ResourceMap(BaseModel):
-    resource: Literal["if", "si", "ip"]
-    include_path: bool = False
-    admin_status: Optional[bool] = None
-    oper_status: Optional[bool] = None
-
-
-class ObjectResolver(BaseModel):
-    scope: Literal["O", "S", "M"] = "M"
-    # CPE (DyingGasp), RemoteSystem
-    include_path: bool = True
-    oper_status: Optional[bool] = None
-    # workflow_event
-    # diagnostic_status
-
-
-class Action(BaseModel):
-    # From rule
-    rule_name: str
-    handlers: List[str] = None
-    notification_group: Optional[str] = None
-    run_discovery: bool = False
-    audit: Optional[int] = None
+class Rule(BaseModel):
+    name: str
+    is_active: bool
+    preference: int
+    event_classes: List[str]
+    action: EventAction = EventAction.LOG
+    # Disposition
+    alarm_class: Optional[str] = None
+    stop_processing: bool = False
     # Conditions
-    condition: Optional[str] = None
+    match_expr: Optional[Any] = None
+    # combo_condition
+    vars_match_expr: Optional[str] = None
+    # Actions
+    handlers: Optional[List[str]] = None
+    # Notification
+    notification_group: Optional[str] = None
+    subject_template: Optional[str] = None
+    # Target Actions
+    object_actions: Optional[TargetAction] = None
+    resource_oper_status: Optional[str] = None
 
 
 class FilterConfig(BaseModel):
@@ -64,17 +68,13 @@ class CfgEvent(BaseModel):
     id: str
     name: str
     bi_id: str
-    is_unique: bool = False
     event_class: EventClass
-    managed_object_required: Optional[bool] = True
+    is_unique: bool = False
     filters: Dict[str, FilterConfig] = None
     # vars
     vars: Optional[List[VarItem]] = None
-    # Object
-    object_map: Optional[ObjectResolver] = None
-    # Resource
-    resources: Optional[List[ResourceMap]] = None
     # subject:
     handlers: List[str] = None
-    actions: Optional[List[Action]] = None
+    rules: List[Rule]
+    actions: Optional[List[Rule]] = None
     #

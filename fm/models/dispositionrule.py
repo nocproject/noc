@@ -121,6 +121,10 @@ class ObjectActionItem(EmbeddedDocument):
     action_command: Optional["Action"] = ReferenceField(Action, required=False)
     interaction_audit: Optional[Interaction] = EnumField(Interaction, required=False)
     run_discovery: bool = BooleanField(default=False)
+    update_avail_status = StringField(
+        choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
+        default="N",
+    )
     # resource as context
     # Set Diagnostic
     # affected_service ?
@@ -213,10 +217,6 @@ class DispositionRule(Document):
     object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
         ObjectActionItem, required=False
     )
-    update_avail_status = StringField(
-        choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
-        default="N",
-    )
     update_oper_status = StringField(
         choices=[
             ("N", "Disable"),
@@ -291,6 +291,7 @@ class DispositionRule(Document):
             "description": self.description,
             "preference": self.preference,
             "match": [],
+            "update_oper_status": self.update_oper_status,
             "stop_processing": self.stop_processing,
         }
         if self.conditions:
@@ -306,6 +307,7 @@ class DispositionRule(Document):
             r["object_actions"] = {
                 "interaction_audit": self.object_actions.interaction_audit.value,
                 "run_discovery": self.object_actions.run_discovery,
+                "update_avail_status": self.object_actions.update_avail_status,
             }
         if self.combo_condition:
             r |= {
@@ -421,6 +423,7 @@ class DispositionRule(Document):
             r["object_actions"]["update_avail"] = rule.update_avail_status == "A"
         if rule.update_oper_status != "N":
             r["resource_oper_status"] = rule.update_oper_status
+            # enum_state
         if not rule.conditions:
             return r
         elif len(rule.conditions) == 1:

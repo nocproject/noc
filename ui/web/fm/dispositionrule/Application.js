@@ -236,6 +236,19 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               value: null,
               uiStyle: "medium",
             },
+            {
+              name: "update_avail_status",
+              xtype: "combobox",
+              fieldLabel: __("Avail Status"),
+              allowBlank: true,
+              store: [
+                ["N", __("Not Update")],
+                ["A", __("Available")],
+                ["U", __("Unavailable")],
+              ],
+              value: null,
+              uiStyle: "medium",
+            }
           ],
         },
         {
@@ -255,17 +268,6 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
           ],
-        },
-        {
-          name: "update_avail_status",
-          xtype: "combobox",
-          fieldLabel: __("Update Object Avail Status"),
-          store: [
-            ["N", __("Disable Update")],
-            ["A", __("Available")],
-            ["U", __("Unavailable")]
-          ],
-          uiStyle: "medium",
         },
         {
           name: "update_oper_status",

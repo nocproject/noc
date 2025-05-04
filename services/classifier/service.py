@@ -662,7 +662,7 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
-        e_action = self.action_set.run_actions(event, mo, e_res) or e_action
+        e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
         if e_action == EventAction.DROP:
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",

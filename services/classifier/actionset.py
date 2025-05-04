@@ -23,8 +23,9 @@ from noc.core.handler import get_handler
 from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.interactionlog import Interaction, InteractionLog
+from noc.services.classifier.eventconfig import EventConfig
 
-logger = logging.getLogger(__name__)
+action_logger = logging.getLogger(__name__)
 
 
 @dataclass(slots=True)
@@ -41,7 +42,7 @@ class ActionSet(object):
 
     def __init__(self, logger=None):
         # EventClass
-        self.logger = logger or logger
+        self.logger = logger or action_logger
         self.actions: Dict[str, List[Action]] = {}
         self.add_handlers: int = 0
         self.add_actions: int = 0
@@ -56,7 +57,6 @@ class ActionSet(object):
         """"""
         if event_class not in self.actions:
             return
-
         for a in self.actions[event_class]:
             if a.match and not a.match(ctx):
                 continue
@@ -87,11 +87,6 @@ class ActionSet(object):
     def from_config(self, data: Dict[str, Any]) -> List[Action]:
         """Create actions"""
 
-        r = []
-        a = Action(
-            name=data["name"],
-            match=build_matcher(data["match_expr"]) if data["match_expr"] else None,
-        )
         event_a = []
         for h in data.get("handlers") or []:
             try:
@@ -99,7 +94,6 @@ class ActionSet(object):
             except ImportError:
                 self.logger.error("Failed to load handler '%s'. Ignoring", h)
             self.add_handlers += 1
-        a.event = tuple(event_a) or None
         target_a = []
         if "notification_group" in data:
             target_a += [
@@ -127,7 +121,26 @@ class ActionSet(object):
             self.add_handlers += 1
         if "action" in data and data["action"] == EventAction.DISPOSITION.value:
             target_a += [self.dispose_event]
-        return r
+        resource = {
+            "action": partial(self.run_resources_action, handler=partial(self.get_resource_action))
+        }
+        if "resource_oper_status" in data and data["resource_oper_status"] != "N":
+            resource["oper_status"] = partial(
+                self.run_resources_action,
+                handler=partial(
+                    self.set_resource_status, status=data["resource_oper_status"] == "U"
+                ),
+            )
+        return [
+            Action(
+                name=data["name"],
+                match=build_matcher(data["match_expr"]) if data["match_expr"] else None,
+                event=tuple(event_a),
+                target=tuple(target_a),
+                resource=resource,
+                stop_processing=data["stop_processing"],
+            )
+        ]
 
     def load(self, skip_load_rules: bool = False):
         """
@@ -146,6 +159,7 @@ class ActionSet(object):
         event: Event,
         target: ManagedObject,
         resources: List[Any],
+        config: EventConfig,
     ) -> EventAction:
         """Processed actions on Event"""
         ctx = {
@@ -156,7 +170,7 @@ class ActionSet(object):
         action = EventAction.LOG
         r_actions: Dict[str, Callable] = {}
         # Event and Target action
-        for a, ra in self.iter_actions(event.type.event_class, ctx):
+        for a in self.iter_actions(config.event_class_id, ctx):
             r = a(event, target, resources)
             if r == EventAction.DROP:
                 return r
@@ -202,7 +216,7 @@ class ActionSet(object):
         notification_group: Optional[str] = None,
     ):
         """Send Event Notification"""
-        logger.debug("Sending status change notification")
+        action_logger.debug("Sending status change notification")
         headers = managed_object.get_mx_message_headers(event.labels)
         headers[MX_NOTIFICATION_GROUP_ID] = str(notification_group).encode()
         msg = event.get_message_context(managed_object)
@@ -268,7 +282,7 @@ class ActionSet(object):
         """"""
 
     @staticmethod
-    def set_resource_state(event, resource, status: bool):
+    def set_resource_status(event, resource, status: bool):
         """"""
         resource.set_oper_status(status=status, timestamp=event.timestamp)
 
@@ -325,7 +339,7 @@ class ActionSet(object):
                     resource.managed_object.name,
                     resource.managed_object.address,
                     resource.profile.name,
-                    resource.if_name,
+                    resource.name,
                 )
             else:
                 self.logger.info(
