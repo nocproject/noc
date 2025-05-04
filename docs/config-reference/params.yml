@@ -1,0 +1,979 @@
+# This file is auto-generated
+# Do not edit manually!
+# Rebuild with:
+# ./noc config compile-docs
+params:
+  activator.buffer_size:
+    default: '1048576'
+  activator.connect_retries:
+    default: '3'
+  activator.connect_timeout:
+    default: '55.0'
+  activator.http_connect_timeout:
+    default: '20'
+  activator.http_request_timeout:
+    default: '30'
+  activator.http_validate_cert: {}
+  activator.script_threads:
+    default: '10'
+  activator.tos:
+    max: '255'
+    min: '0'
+  audit.command_ttl:
+    default: '2592000'
+  audit.config_changed_ttl:
+    default: '31536000'
+  audit.config_ttl:
+    default: '31536000'
+  audit.db_ttl:
+    default: '157680000'
+  audit.login_ttl:
+    default: '2592000'
+  audit.reboot_ttl: {}
+  backup.keep_day_of_month:
+    default: '1'
+  backup.keep_day_of_week:
+    default: '6'
+  backup.keep_days:
+    default: '1209600'
+  backup.keep_months:
+    default: '12'
+  backup.keep_weeks:
+    default: '7257600'
+  bh.bulk_ping_interval:
+    default: '0.1'
+  bh.bulk_ping_max_jobs:
+    default: '6'
+  bh.bulk_ping_timeout:
+    default: '5'
+  bh.bulk_snmp_max_jobs:
+    default: '6'
+  bh.bulk_snmp_timeout:
+    default: '10'
+  bh.traceroute_tries:
+    default: '3'
+  bi.alarmlogs_interval:
+    default: '60'
+  bi.alarms_archive_batch_limit:
+    default: '10000'
+  bi.alarms_archive_policy:
+    default: '{{doc["clear_timestamp"].strftime("y%Yw%W")}}'
+  bi.chunk_size:
+    default: '500'
+  bi.clean_delay_alarms:
+    default: '86400'
+  bi.clean_delay_reboots:
+    default: '86400'
+  bi.enable_alarmlogs: {}
+  bi.enable_alarms: {}
+  bi.enable_alarms_archive: {}
+  bi.enable_managedobjects: {}
+  bi.enable_reboots: {}
+  bi.extract_delay_alarms:
+    default: '3600'
+  bi.extract_delay_reboots:
+    default: '3600'
+  bi.extract_window:
+    default: '86400'
+  bi.language:
+    default: en
+  bi.query_threads:
+    default: '10'
+  bi.reboot_interval:
+    default: '60'
+  biosegmentation.processed_trials_ttl:
+    default: '604800'
+  brand:
+    default: NOC
+  cache.cache_class:
+    default: noc.core.cache.mongo.MongoCache
+  cache.default_ttl:
+    default: '86400'
+  cache.pool_size:
+    default: '8'
+  cache.vcinterfacescount:
+    default: '3600'
+  cache.vcprefixes:
+    default: '3600'
+  card.alarmheat_tooltip_limit:
+    default: '5'
+  card.language:
+    default: en
+  card.metric_request_interval:
+    default: '3600'
+  chwriter.batch_delay_ms:
+    default: '10000'
+  chwriter.batch_size:
+    default: '50000'
+  chwriter.replica_id: {}
+  chwriter.shard_id: {}
+  chwriter.write_to: {}
+  classifier.allowed_async_cursor:
+    default: 'True'
+  classifier.allowed_time_drift:
+    default: '300'
+  classifier.default_interface_profile:
+    default: default
+  classifier.default_rule:
+    default: Unknown | Default
+  classifier.ds_limit:
+    default: '1000'
+  classifier.lookup_handler:
+    default: noc.services.classifier.rulelookup.RuleLookup
+  clickhouse.cluster: {}
+  clickhouse.cluster_topology:
+    default: '1'
+  clickhouse.connect_timeout:
+    default: '10'
+  clickhouse.db:
+    default: noc
+  clickhouse.db_dictionaries:
+    default: noc_dict
+  clickhouse.default_Float32:
+    default: '-2147483647.0'
+  clickhouse.default_Float64:
+    default: '-9.223372036854776e+18'
+  clickhouse.default_Int16:
+    default: '-32767'
+  clickhouse.default_Int32:
+    default: '-2147483647'
+  clickhouse.default_Int64:
+    default: '-9223372036854775807'
+  clickhouse.default_Int8:
+    default: '-127'
+  clickhouse.default_UInt16:
+    default: '65534'
+  clickhouse.default_UInt32:
+    default: '4294967294'
+  clickhouse.default_UInt64:
+    default: '18446744073709551614'
+  clickhouse.default_UInt8:
+    default: '254'
+  clickhouse.default_merge_tree_granularity:
+    default: '8192'
+  clickhouse.enable_default_value: {}
+  clickhouse.encoding:
+    choices:
+    - ''
+    - deflate
+    - gzip
+  clickhouse.request_timeout:
+    default: '3600'
+  clickhouse.ro_addresses: {}
+  clickhouse.ro_password: {}
+  clickhouse.ro_user:
+    default: readonly
+  clickhouse.rw_addresses: {}
+  clickhouse.rw_password: {}
+  clickhouse.rw_user:
+    default: default
+  collections.allow_overwrite:
+    default: 'True'
+  collections.allow_sharing:
+    default: 'True'
+  consul.base:
+    default: noc
+  consul.check_interval:
+    default: '10'
+  consul.check_timeout:
+    default: '1'
+  consul.connect_timeout:
+    default: '5'
+  consul.host:
+    default: consul
+  consul.keepalive_attempts:
+    default: '5'
+  consul.lock_delay:
+    default: '20'
+  consul.near_retry_timeout:
+    default: '1'
+  consul.port:
+    default: '8500'
+  consul.release:
+    default: '60'
+  consul.request_timeout:
+    default: '3600'
+  consul.retry_timeout:
+    default: '1'
+  consul.session_ttl:
+    default: '10'
+  consul.token: {}
+  correlator.allowed_async_cursor: {}
+  correlator.auto_escalation:
+    default: 'True'
+  correlator.discovery_delay:
+    default: '600'
+  correlator.max_threads:
+    default: '20'
+  correlator.object_status_update_interval:
+    default: '2'
+  correlator.rca_lock_dev:
+    default: '0.1'
+  correlator.rca_lock_expiry:
+    default: '10'
+  correlator.rca_lock_initial_timeout:
+    default: '0.1'
+  correlator.rca_lock_max_timeout:
+    default: '3.0'
+  correlator.rca_lock_rate:
+    default: '1.61'
+  correlator.topology_rca_window: {}
+  customization.branding_background_color:
+    default: '#34495e'
+  customization.branding_color:
+    default: '#ffffff'
+  customization.favicon_url:
+    default: /ui/web/img/logo_24x24_deep_azure.png
+  customization.logo_height:
+    default: '24'
+  customization.logo_url:
+    default: /ui/web/img/logo_white.svg
+  customization.logo_width:
+    default: '24'
+  customization.preview_theme:
+    default: midnight
+  datasource.chunk_size:
+    default: '1000'
+  datasource.default_ttl:
+    default: '3600'
+  datasource.max_threads:
+    default: '10'
+  datastream.address_ttl: {}
+  datastream.administrativedomain_ttl: {}
+  datastream.alarm_ttl:
+    default: '1209600'
+  datastream.cfgevent_ttl: {}
+  datastream.cfgeventrules_ttl: {}
+  datastream.cfgmetricrules_ttl: {}
+  datastream.cfgmetrics_ttl: {}
+  datastream.cfgmetricsources_ttl: {}
+  datastream.cfgmxroute_ttl: {}
+  datastream.cfgtarget_ttl: {}
+  datastream.dnszone_ttl: {}
+  datastream.enable_address: {}
+  datastream.enable_address_wait:
+    default: 'True'
+  datastream.enable_administrativedomain: {}
+  datastream.enable_administrativedomain_wait:
+    default: 'True'
+  datastream.enable_alarm: {}
+  datastream.enable_alarm_wait:
+    default: 'True'
+  datastream.enable_cfgevent:
+    default: 'True'
+  datastream.enable_cfgevent_wait:
+    default: 'True'
+  datastream.enable_cfgeventrules:
+    default: 'True'
+  datastream.enable_cfgeventrules_wait:
+    default: 'True'
+  datastream.enable_cfgmetricrules:
+    default: 'True'
+  datastream.enable_cfgmetricrules_wait:
+    default: 'True'
+  datastream.enable_cfgmetrics:
+    default: 'True'
+  datastream.enable_cfgmetrics_wait:
+    default: 'True'
+  datastream.enable_cfgmetricsources:
+    default: 'True'
+  datastream.enable_cfgmetricsources_wait:
+    default: 'True'
+  datastream.enable_cfgmxroute:
+    default: 'True'
+  datastream.enable_cfgmxroute_wait:
+    default: 'True'
+  datastream.enable_cfgtarget:
+    default: 'True'
+  datastream.enable_cfgtarget_wait:
+    default: 'True'
+  datastream.enable_dnszone: {}
+  datastream.enable_dnszone_wait:
+    default: 'True'
+  datastream.enable_managedobject: {}
+  datastream.enable_managedobject_wait:
+    default: 'True'
+  datastream.enable_prefix: {}
+  datastream.enable_prefix_wait:
+    default: 'True'
+  datastream.enable_resourcegroup: {}
+  datastream.enable_resourcegroup_wait:
+    default: 'True'
+  datastream.enable_vrf: {}
+  datastream.enable_vrf_wait:
+    default: 'True'
+  datastream.managedobject_ttl: {}
+  datastream.max_await_time:
+    default: '30'
+  datastream.prefix_ttl: {}
+  datastream.resourcegroup_ttl: {}
+  datastream.vrf_ttl: {}
+  dcs.resolution_timeout:
+    default: '300'
+  dcs.resolver_expiration_timeout:
+    default: '600'
+  discovery.interface_metric_service:
+    default: 'True'
+  discovery.job_check_interval:
+    default: '1000'
+    min: '1000'
+  discovery.max_threads:
+    default: '20'
+  discovery.min_metric_interval:
+    default: '60'
+  discovery.proxy_metric: {}
+  discovery.sample: {}
+  discovery.sync_diagnostic_labels:
+    default: 'True'
+  dns.warn_before_expired:
+    default: '2592000'
+  escalator.ets:
+    default: '60'
+  escalator.job_check_interval:
+    default: '5000'
+    min: '1000'
+  escalator.max_threads:
+    default: '5'
+  escalator.retry_timeout:
+    default: '60'
+  escalator.sample: {}
+  escalator.tt_escalation_limit:
+    default: '10'
+  escalator.wait_tt_check_interval:
+    default: '60'
+  etl.compression:
+    choices:
+    - plain
+    - gzip
+    - bz2
+    - lzma
+    default: gzip
+  features.consul_healthchecks:
+    default: 'True'
+  features.cp:
+    default: 'True'
+  features.cpclient: {}
+  features.forensic: {}
+  features.sentry: {}
+  features.service_registration:
+    default: 'True'
+  features.telemetry: {}
+  features.traefik: {}
+  features.use_uvloop: {}
+  fm.active_window:
+    default: '86400'
+  fm.alarm_close_retries:
+    default: '5'
+  fm.generate_message_id: {}
+  fm.keep_events_with_alarm:
+    default: '-1'
+  fm.keep_events_wo_alarm: {}
+  fm.outage_refresh:
+    default: '60'
+  fm.total_outage_refresh:
+    default: '60'
+  geocoding.google_key: {}
+  geocoding.google_language:
+    default: en
+  geocoding.negative_ttl:
+    default: '604800'
+  geocoding.order:
+    default: yandex,google
+  geocoding.ui_geocoder: {}
+  geocoding.yandex_apikey: {}
+  gis.default_layer:
+    default: osm
+  gis.ellipsoid:
+    default: PZ-90
+  gis.enable_blank: {}
+  gis.enable_google_hybrid: {}
+  gis.enable_google_roadmap: {}
+  gis.enable_google_sat: {}
+  gis.enable_google_terrain: {}
+  gis.enable_metric_scopes: {}
+  gis.enable_osm:
+    default: 'True'
+  gis.enable_tile1: {}
+  gis.enable_tile2: {}
+  gis.enable_tile3: {}
+  gis.enable_yandex_hybrid: {}
+  gis.enable_yandex_roadmap: {}
+  gis.enable_yandex_sat: {}
+  gis.tile1_name:
+    default: Custom 1
+  gis.tile1_subdomains: {}
+  gis.tile1_url:
+    default: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+  gis.tile2_name:
+    default: Custom 2
+  gis.tile2_subdomains: {}
+  gis.tile2_url:
+    default: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+  gis.tile3_name:
+    default: Custom 3
+  gis.tile3_subdomains: {}
+  gis.tile3_url:
+    default: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+  gis.tile_size:
+    default: '256'
+  gis.yandex_supported: {}
+  global_n_instances:
+    default: '1'
+  grafanads.db_threads:
+    default: '10'
+  help.base_url:
+    default: https://docs.getnoc.com
+  help.branch:
+    default: microservices
+  help.language:
+    default: en
+  http_client.buffer_size:
+    default: '131072'
+  http_client.connect_timeout:
+    default: '10'
+  http_client.http_port:
+    default: '80'
+  http_client.https_port:
+    default: '443'
+  http_client.max_redirects:
+    default: '5'
+  http_client.ns_cache_size:
+    default: '1000'
+  http_client.request_timeout:
+    default: '3600'
+  http_client.resolver_ttl:
+    default: '3'
+  http_client.user_agent:
+    default: noc
+  http_client.validate_certs: {}
+  initial.admin_email:
+    default: test@example.com
+  initial.admin_password:
+    default: admin
+  initial.admin_user_name:
+    default: admin
+  installation_id: {}
+  installation_name:
+    default: Unconfigured installation
+  instance: {}
+  kafkasender.bootstrap_servers: {}
+  kafkasender.max_batch_size:
+    default: '16384'
+  kafkasender.password: {}
+  kafkasender.sasl_mechanism:
+    choices:
+    - PLAIN
+    - GSSAPI
+    - SCRAM-SHA-256
+    - SCRAM-SHA-512
+    default: PLAIN
+  kafkasender.security_protocol:
+    choices:
+    - PLAINTEXT
+    - SASL_PLAINTEXT
+    - SSL
+    - SASL_SSL
+    default: PLAINTEXT
+  kafkasender.username: {}
+  language:
+    default: en
+  language_code:
+    default: en
+  layout.ring_chain_edge:
+    default: '150'
+  layout.ring_chain_spacing:
+    default: '100'
+  layout.ring_ring_edge:
+    default: '150'
+  layout.spring_bubble_force:
+    default: '2.0'
+  layout.spring_edge_force:
+    default: '1.2'
+  layout.spring_edge_spacing:
+    default: '190'
+  layout.spring_iterations:
+    default: '50'
+  layout.spring_propulsion_force:
+    default: '1.5'
+  layout.tree_horizontal_step:
+    default: '100'
+  layout.tree_max_levels:
+    default: '4'
+  layout.tree_vertical_step:
+    default: '100'
+  liftbridge.addresses: {}
+  liftbridge.compression_method:
+    choices:
+    - ''
+    - zlib
+    - lzma
+    default: zlib
+  liftbridge.compression_threshold:
+    default: '524288'
+  liftbridge.enable_http_proxy: {}
+  liftbridge.publish_async_ack_timeout:
+    default: '10'
+  listen:
+    default: auto:0
+  log_format:
+    default: '%(asctime)s [%(name)s] %(message)s'
+  logging.log_api_calls: {}
+  logging.log_sql_statements: {}
+  login.idle_timeout:
+    default: '604800'
+  login.jwt_algorithm:
+    choices:
+    - HS256
+    - HS384
+    - HS512
+    default: HS256
+  login.jwt_cookie_name:
+    default: noc_jwt
+  login.language:
+    default: en
+  login.max_inactivity: {}
+  login.methods:
+    default: local
+  login.min_password_len: {}
+  login.min_password_lowercase: {}
+  login.min_password_numbers: {}
+  login.min_password_specials: {}
+  login.min_password_uppercase: {}
+  login.mutual_exclusive_group: {}
+  login.pam_service:
+    default: noc
+  login.password_history: {}
+  login.password_ttl: {}
+  login.radius_secret:
+    default: noc
+  login.radius_server: {}
+  login.register_last_login:
+    default: 'True'
+  login.restrict_to_group: {}
+  login.session_ttl:
+    default: '604800'
+  login.single_session_group: {}
+  loglevel:
+    default: '20'
+  mailsender.from_address:
+    default: noc@example.com
+  mailsender.helo_hostname:
+    default: noc
+  mailsender.smtp_password: {}
+  mailsender.smtp_port:
+    default: '25'
+  mailsender.smtp_server: {}
+  mailsender.smtp_user: {}
+  mailsender.use_tls: {}
+  memcached.addresses: {}
+  memcached.default_ttl:
+    default: '86400'
+  memcached.pool_size:
+    default: '8'
+  message.ds_limit:
+    default: '1000'
+  message.embedded_router:
+    default: 'True'
+  message.enable_alarm: {}
+  message.enable_diagnostic_change: {}
+  message.enable_event: {}
+  message.enable_managedobject: {}
+  message.enable_metric_scopes: {}
+  message.enable_metrics: {}
+  message.enable_reboot: {}
+  message.enable_snmptrap: {}
+  message.enable_syslog: {}
+  metrics.check_interval:
+    default: '20'
+  metrics.check_timeout:
+    default: '15'
+  metrics.compact_interval:
+    default: '300'
+  metrics.compact_on_start: {}
+  metrics.compact_on_stop: {}
+  metrics.disable_spool: {}
+  metrics.ds_limit:
+    default: '1000'
+  metrics.flush_interval:
+    default: '60'
+  metricscollector.ds_limit:
+    default: '1000'
+  mongo.addresses: {}
+  mongo.app_name: {}
+  mongo.db:
+    default: noc
+  mongo.max_idle_time:
+    default: '60'
+  mongo.password: {}
+  mongo.retries:
+    default: '20'
+  mongo.retry_writes: {}
+  mongo.rs: {}
+  mongo.timeout:
+    default: '3'
+  mongo.user: {}
+  mrt.enable_command_logging: {}
+  mrt.max_concurrency:
+    default: '50'
+  msgstream.ch.auto_pause_disable_if_subscribers: {}
+  msgstream.ch.auto_pause_time: {}
+  msgstream.ch.replication_factor:
+    default: '1'
+  msgstream.ch.retention_max_age:
+    default: '3600'
+  msgstream.ch.retention_max_bytes:
+    default: '104857600'
+  msgstream.ch.segment_max_age:
+    default: '1800'
+  msgstream.ch.segment_max_bytes:
+    default: '52428800'
+  msgstream.client_class:
+    default: noc.core.msgstream.liftbridge.LiftBridgeClient
+  msgstream.dispose.auto_pause_disable_if_subscribers: {}
+  msgstream.dispose.auto_pause_time: {}
+  msgstream.dispose.retention_max_age:
+    default: '86400'
+  msgstream.dispose.retention_max_bytes: {}
+  msgstream.dispose.segment_max_age:
+    default: '3600'
+  msgstream.dispose.segment_max_bytes: {}
+  msgstream.events.auto_pause_disable_if_subscribers: {}
+  msgstream.events.auto_pause_time: {}
+  msgstream.events.retention_max_age:
+    default: '86400'
+  msgstream.events.retention_max_bytes: {}
+  msgstream.events.segment_max_age:
+    default: '3600'
+  msgstream.events.segment_max_bytes: {}
+  msgstream.jobs.auto_pause_time: {}
+  msgstream.jobs.retention_max_age:
+    default: '86400'
+  msgstream.jobs.retention_max_bytes: {}
+  msgstream.jobs.segment_max_age:
+    default: '3600'
+  msgstream.jobs.segment_max_bytes: {}
+  msgstream.kafkasender.auto_pause_disable_if_subscribers: {}
+  msgstream.kafkasender.auto_pause_time: {}
+  msgstream.kafkasender.retention_max_age:
+    default: '3600'
+  msgstream.kafkasender.retention_max_bytes: {}
+  msgstream.kafkasender.segment_max_age:
+    default: '1800'
+  msgstream.kafkasender.segment_max_bytes: {}
+  msgstream.max_message_size:
+    default: '921600'
+  msgstream.message.auto_pause_disable_if_subscribers: {}
+  msgstream.message.auto_pause_time: {}
+  msgstream.message.retention_max_age:
+    default: '3600'
+  msgstream.message.retention_max_bytes: {}
+  msgstream.message.segment_max_age:
+    default: '1800'
+  msgstream.message.segment_max_bytes: {}
+  msgstream.metrics.auto_pause_disable_if_subscribers: {}
+  msgstream.metrics.auto_pause_time: {}
+  msgstream.metrics.retention_max_age:
+    default: '3600'
+  msgstream.metrics.retention_max_bytes: {}
+  msgstream.metrics.segment_max_age:
+    default: '1800'
+  msgstream.metrics.segment_max_bytes: {}
+  msgstream.metrics_send_delay:
+    default: '0.25'
+  msgstream.submit.auto_pause_time: {}
+  msgstream.submit.retention_max_age:
+    default: '86400'
+  msgstream.submit.retention_max_bytes: {}
+  msgstream.submit.segment_max_age:
+    default: '3600'
+  msgstream.submit.segment_max_bytes: {}
+  nbi.max_threads:
+    default: '10'
+  nbi.objectmetrics_max_interval:
+    default: '10800'
+  network_scan.purgatorium_ttl:
+    default: '2419200'
+  path.backup_dir:
+    default: /var/backup
+  path.bi_data_prefix:
+    default: /var/lib/noc/bi
+  path.card_template_path:
+    default: services/card/templates/card.html.j2
+  path.cdn_url: {}
+  path.collection_fm_mibs:
+    default: collections/fm.mibs/
+  path.cp_new:
+    default: /var/lib/noc/cp/crashinfo/new
+  path.custom_path: {}
+  path.dig: {}
+  path.etl_import:
+    default: /var/lib/noc/import
+  path.legacy_config:
+    default: etc/noc.yml
+  path.mac_vendor_medium_url:
+    default: https://standards-oui.ieee.org/oui28/mam.txt
+  path.mac_vendor_url:
+    default: https://standards-oui.ieee.org/oui/oui.txt
+  path.mib_path:
+    default: /var/lib/noc/mibs/
+  path.npkg_root:
+    default: /var/lib/noc/var/pkg
+  path.pm_templates:
+    default: templates/ddash/
+  path.repo:
+    default: /var/repo
+  path.smidump: {}
+  path.smilint: {}
+  path.ssh_key_prefix:
+    default: etc/noc_ssh
+  path.supervisor_cfg:
+    default: etc/noc_services.conf
+  path.vcs_path:
+    default: /usr/local/bin/hg
+  peer.enable_arin:
+    default: 'True'
+  peer.enable_radb:
+    default: 'True'
+  peer.enable_ripe:
+    default: 'True'
+  peer.max_prefix_length:
+    default: '24'
+  peer.prefix_list_optimization:
+    default: 'True'
+  peer.prefix_list_optimization_threshold:
+    default: '1000'
+  peer.rpsl_inverse_pref_style: {}
+  perfomance.default_hist:
+    default: '[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]'
+  perfomance.default_quantiles:
+    default: '[0.5, 0.9, 0.95]'
+  perfomance.enable_mongo_hist: {}
+  perfomance.enable_mongo_quantiles: {}
+  perfomance.enable_postgres_hist: {}
+  perfomance.enable_postgres_quantiles: {}
+  perfomance.mongo_hist:
+    default: '[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]'
+  perfomance.postgres_hist:
+    default: '[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]'
+  pg.addresses: {}
+  pg.connect_timeout:
+    default: '5'
+  pg.db:
+    default: noc
+  pg.password: {}
+  pg.user: {}
+  ping.ds_limit:
+    default: '1000'
+  ping.receive_buffer:
+    default: '4194304'
+  ping.restore_threshold: {}
+  ping.send_buffer:
+    default: '4194304'
+  ping.throttle_threshold: {}
+  ping.tos:
+    max: '255'
+    min: '0'
+  pool: {}
+  proxy.ftp_proxy: {}
+  proxy.http_proxy: {}
+  proxy.https_proxy: {}
+  redis.addresses: {}
+  redis.db: {}
+  redis.default_ttl:
+    default: '86400'
+  redpanda.addresses: {}
+  redpanda.bootstrap_servers: {}
+  redpanda.max_batch_size:
+    default: '16384'
+  redpanda.password: {}
+  redpanda.retry_backoff_ms:
+    default: '3'
+  redpanda.sasl_mechanism:
+    choices:
+    - PLAIN
+    - GSSAPI
+    - SCRAM-SHA-256
+    - SCRAM-SHA-512
+    default: PLAIN
+  redpanda.security_protocol:
+    choices:
+    - PLAINTEXT
+    - SASL_PLAINTEXT
+    - SSL
+    - SASL_SSL
+    default: PLAINTEXT
+  redpanda.username: {}
+  rpc.async_connect_timeout:
+    default: '20'
+  rpc.async_request_timeout:
+    default: '3600'
+  rpc.retry_timeout:
+    default: 0.1,0.5,1,3,10,30
+  rpc.sync_connect_timeout:
+    default: '20'
+  rpc.sync_request_timeout:
+    default: '3600'
+  rpc.sync_retries:
+    default: '5'
+  rpc.sync_retry_delta:
+    default: '2.0'
+  rpc.sync_retry_timeout:
+    default: '1.0'
+  runner.max_running:
+    default: '10'
+  sae.activator_resolution_retries:
+    default: '5'
+  sae.activator_resolution_timeout:
+    default: '2'
+  sae.db_threads:
+    default: '20'
+  scheduler.autointervaljob_initial_submit_interval:
+    default: '86400'
+  scheduler.autointervaljob_interval:
+    default: '86400'
+  scheduler.cache_default_ttl:
+    default: '86400'
+  scheduler.max_chunk_factor:
+    default: '1'
+  scheduler.max_threads:
+    default: '20'
+  scheduler.submit_threshold_factor:
+    default: '10'
+  scheduler.updates_per_check:
+    default: '4'
+  script.caller_timeout:
+    default: '60'
+  script.calling_service:
+    default: script
+  script.session_idle_timeout:
+    default: '60'
+  script.timeout:
+    default: '120'
+  secret_key:
+    default: '12345'
+  selfmon.enable_fm: {}
+  selfmon.enable_inventory: {}
+  selfmon.enable_liftbridge: {}
+  selfmon.enable_managedobject:
+    default: 'True'
+  selfmon.enable_task: {}
+  selfmon.fm_ttl:
+    default: '30'
+  selfmon.inventory_ttl:
+    default: '30'
+  selfmon.liftbridge_ttl:
+    default: '30'
+  selfmon.managedobject_ttl:
+    default: '30'
+  selfmon.task_ttl:
+    default: '30'
+  sentry.debug: {}
+  sentry.default_integrations: {}
+  sentry.max_breadcrumbs:
+    default: '10'
+    max: '100'
+    min: '1'
+  sentry.shutdown_timeout:
+    default: '2'
+    max: '10'
+    min: '1'
+  sentry.url: {}
+  syslogcollector.ds_limit:
+    default: '1000'
+  syslogcollector.enable_freebind: {}
+  syslogcollector.enable_reuseport:
+    default: 'True'
+  syslogcollector.listen:
+    default: 0.0.0.0:514
+  tests.beef_paths: {}
+  tests.events_paths: {}
+  tests.fixtures_paths:
+    default: '[''tests/data'']'
+  tgsender.proxy_address: {}
+  tgsender.retry_timeout:
+    default: '2'
+  tgsender.token: {}
+  tgsender.use_proxy: {}
+  thread_stack_size: {}
+  threadpool.idle_timeout:
+    default: '30'
+  threadpool.shutdown_timeout:
+    default: '60'
+  timezone:
+    default: Europe/Moscow
+  topo.check:
+    default: 'True'
+  topo.dry_run: {}
+  topo.ds_limit:
+    default: '1000'
+  topo.enable_scheduler_task:
+    default: 'True'
+  topo.interval:
+    default: '60'
+  traceback.reverse:
+    default: 'True'
+  trapcollector.ds_limit:
+    default: '1000'
+  trapcollector.enable_freebind: {}
+  trapcollector.enable_reuseport:
+    default: 'True'
+  trapcollector.listen:
+    default: 0.0.0.0:162
+  trapcollector.storm_record_ttl:
+    default: '10'
+  trapcollector.storm_round_duration:
+    default: '60'
+  trapcollector.storm_threshold_reduction:
+    default: '0.9'
+  ui.max_avatar_size:
+    default: '262144'
+  ui.max_rest_limit:
+    default: '100'
+  version_format:
+    default: '%(version)s+%(branch)s.%(number)s.%(changeset)s'
+  watchdog.check_interval:
+    default: '30'
+  watchdog.enable_watchdog:
+    default: 'True'
+  watchdog.failed_count:
+    default: '6'
+  web.api_alarm_comments_limit:
+    default: '10'
+  web.api_arch_alarm_limit:
+    default: '345600'
+  web.api_row_limit: {}
+  web.api_unlimited_row_limit:
+    default: '1000'
+  web.enable_remote_system_last_extract_info: {}
+  web.enable_report_history: {}
+  web.heatmap_lat:
+    default: '66.050063'
+  web.heatmap_lon:
+    default: '108.567849'
+  web.heatmap_zoom:
+    default: '4'
+  web.install_collection: {}
+  web.language:
+    default: en
+  web.macdb_window:
+    default: '345600'
+  web.map_lat:
+    default: '66.050063'
+  web.map_lon:
+    default: '108.567849'
+  web.max_image_size:
+    default: '2097152'
+  web.max_threads:
+    default: '10'
+  web.max_upload_size:
+    default: '16777216'
+  web.report_csv_delimiter:
+    choices:
+    - ;
+    - ','
+    default: ;
+  web.theme:
+    default: gray
+  web.topology_map_grid_size:
+    default: '25'
+    min: '5'

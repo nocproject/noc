@@ -12,6 +12,9 @@ import json
 import glob
 import logging
 from typing import List, Dict
+import yaml
+from pathlib import Path
+
 
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
@@ -193,6 +196,39 @@ def define_env(env):
         """
         return f"`{title}`"
 
+    @env.macro
+    def config_param(param: str) -> str:
+        """
+        Generate definition table for config params.
+        """
+        nonlocal config_params
+        if not config_params:
+            path = Path("docs", "config-reference", "params.yml")
+            with open(path) as fp:
+                defs = yaml.load(fp.read(), yaml.SafeLoader)
+                config_params = defs["params"]
+        p = config_params[param]
+        r = [""]
+        default = p.get("default")
+        if default is not None:
+            r.append(f"- **Default value:** `{default}`")
+        choices = p.get("choices")
+        if choices is not None:
+            r.append("- **Possible values:**")
+            r.append("")
+            for x in choices:
+                r.append(f"       - `{x}`")
+            r.append("")
+        # Paths
+        r.append(f"- **YAML Path:** `{param}`")
+        kv_path = param.replace(".", "/")
+        r.append(f"- **Key-value Path:** `{kv_path}`")
+        env_path = f"NOC_{param.replace('.','_').upper()}"
+        r.append(f"- **Environment:** `{env_path}`")
+        r.append("")
+        return "\n".join(r)
+
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
     script_profiles = defaultdict(set)  # script -> {profile}
+    config_params = {}
