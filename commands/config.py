@@ -24,7 +24,7 @@ class Command(BaseCommand):
             nargs=argparse.REMAINDER,
             default=None,
         )
-        compile_parser = subparsers.add_parser("compile-docs")
+        subparsers.add_parser("compile-docs")
 
     def handle(self, cmd, *args, **options):
         getattr(self, f"handle_{cmd.replace('-','_')}")(*args, **options)
