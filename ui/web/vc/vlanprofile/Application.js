@@ -111,7 +111,7 @@ Ext.define("NOC.vc.vlanprofile.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_vlanprofile": true
+                        "allow_models": "vc.VLANProfile"
                     },
                 }
             ]
