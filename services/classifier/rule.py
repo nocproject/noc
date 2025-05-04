@@ -38,7 +38,7 @@ class VarTransformRule:
     def transform(self, v: Dict[str, Any], var_ctx: Dict[str, Any]):
         if self.f_type == "ifindex":
             # Magic vars name
-            v[f"{self.name}__ifindex"] = v[self.var]
+            v["ifindex"] = v[self.var]
         elif self.f_type == "enum":
             v[self.name] = self.enums[self.args[0]][v.pop(self.var).lower()]
         elif self.f_type and self.var in v:

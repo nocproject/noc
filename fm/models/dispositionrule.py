@@ -418,9 +418,8 @@ class DispositionRule(Document):
             r["object_actions"] = {
                 "interaction_audit": rule.object_actions.interaction_audit.value,
                 "run_discovery": rule.object_actions.run_discovery,
+                "update_avail_status": rule.object_actions.update_avail_status,
             }
-        if rule.update_avail_status != "N":
-            r["object_actions"]["update_avail"] = rule.update_avail_status == "A"
         if rule.update_oper_status != "N":
             r["resource_oper_status"] = rule.update_oper_status
             # enum_state

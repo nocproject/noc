@@ -7,13 +7,10 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Dict, Callable, List, Optional, Any
+from typing import Dict, Callable, List, Optional
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
-from noc.sa.interfaces.base import InterfaceTypeError
-from noc.models import get_model
-from .exception import EventProcessingFailed
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,58 +50,6 @@ class EventConfig:
     @property
     def id(self):
         return self.event_class_id
-
-    @classmethod
-    def resolve_resource(cls, v: VarItem, vv: Dict[str, Any], managed_object: Any):
-        """"""
-        m = get_model(v.resource_model)
-        if "interface__ifindex" in vv:
-            vv["ifindex"] = vv["interface__ifindex"]
-        x = m.get_component(managed_object=managed_object, **vv)
-        if x:
-            vv[v.name] = x.name
-            # self.logger.info(
-            #     "[%s|%s] Interface not found:%s",
-            #     # event.id,
-            #     managed_object.name,
-            #     managed_object.address,
-            #     x,
-            # )
-            print(
-                f"[{managed_object.name}|{managed_object.address}] Interface found: {x}",
-            )
-        else:
-            print(
-                f"[{managed_object.name}|{managed_object.address}] Interface not found: {vv}",
-            )
-        return x
-
-    def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any):
-        """Evaluate rule variables"""
-        r = {}
-        # Resolve resource
-        # resource -> var
-        resources = []
-        # Resolve e_vars
-        for ecv in self.vars:
-            # Check variable is present
-            if ecv.resource_model:
-                res = self.resolve_resource(ecv, r_vars, managed_object)
-                if res:
-                    resources.append(res)
-            if ecv.name not in r_vars:
-                if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
-                continue
-            # Decode variable
-            try:
-                v = ecv.type.clean_value(r_vars[ecv.name])
-            except InterfaceTypeError:
-                raise EventProcessingFailed(
-                    "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
-                )
-            r[ecv.name] = v
-        return r, resources
 
     @classmethod
     def from_config(cls, data) -> "EventConfig":

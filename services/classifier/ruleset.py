@@ -15,6 +15,8 @@ from typing import Dict, Any, Tuple, Optional, Callable
 from .rule import Rule
 from .exception import InvalidPatternException, EventProcessingFailed
 from .rulelookup import RuleLookup
+from .eventconfig import EventConfig, VarItem
+from noc.models import get_model
 from noc.config import config
 from noc.fm.models.eventclassificationrule import EventClassificationRule
 from noc.fm.models.enumeration import Enumeration
@@ -180,30 +182,56 @@ class RuleSet(object):
             return self.default_rule, {}
         return None, None
 
-    def eval_vars(self, event: Event, event_class, r_vars: Dict[str, Any]):
+    @classmethod
+    def resolve_resource(cls, v: VarItem, vv: Dict[str, Any], managed_object: Any):
+        """"""
+        m = get_model(v.resource_model)
+        x = m.get_component(managed_object=managed_object, **vv)
+        if x:
+            vv[v.name] = x.name
+            logger.info(
+                "[%s|%s] Interface found: %s",
+                # event.id,
+                managed_object.name,
+                managed_object.address,
+                x.name,
+            )
+        else:
+            logger.info(
+                "[%s|%s] Interface not found:%s",
+                # event.id,
+                managed_object.name,
+                managed_object.address,
+                vv,
+            )
+        return x
+
+    def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig):
         """Evaluate rule variables"""
         r = {}
+        # Resolve resource
+        # resource -> var
+        resources = []
         # Resolve e_vars
-        for ecv in event_class.vars:
+        for ecv in e_cfg.vars:
             # Check variable is present
+            if ecv.resource_model:
+                res = self.resolve_resource(ecv, r_vars, managed_object)
+                if res:
+                    resources.append(res)
             if ecv.name not in r_vars:
                 if ecv.required:
                     raise Exception("Required variable '%s' is not found" % ecv.name)
                 continue
             # Decode variable
-            v = r_vars[ecv.name]
-            decoder = getattr(RuleSet, f"decode_{ecv.type}", None)
-            # resolve_ interface, instance
-            if decoder:
-                try:
-                    v = decoder(event, v)
-                except InterfaceTypeError:
-                    raise EventProcessingFailed(
-                        "Cannot decode variable '%s'. Invalid %s: %s"
-                        % (ecv.name, ecv.type, repr(v))
-                    )
+            try:
+                v = ecv.type.clean_value(r_vars[ecv.name])
+            except InterfaceTypeError:
+                raise EventProcessingFailed(
+                    "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
+                )
             r[ecv.name] = v
-        return r
+        return r, resources
 
     @staticmethod
     def decode_str(event, value):

@@ -643,7 +643,7 @@ class ClassifierService(FastAPIService):
         duplicate_vars = resolved_vars.copy()
         # Additionally check link events
         # Calculate rule variables
-        event.vars, e_res = e_cfg.eval_vars(resolved_vars, mo)
+        event.vars, e_res = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
         self.logger.info(
             "[%s|%s|%s] Event processed successfully: %s",
             event.id,
@@ -834,8 +834,6 @@ class ClassifierService(FastAPIService):
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
-        if "event_class" not in data:
-            return
         self.event_config[data["id"]] = EventConfig.from_config(data)
         if data["actions"]:
             self.action_set.update_rule(data["id"], data["actions"])
