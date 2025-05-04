@@ -58,6 +58,8 @@ class EventConfig:
     def resolve_resource(cls, v: VarItem, vv: Dict[str, Any], managed_object: Any):
         """"""
         m = get_model(v.resource_model)
+        if "interface__ifindex" in vv:
+            vv["ifindex"] = vv["interface__ifindex"]
         x = m.get_component(managed_object=managed_object, **vv)
         if x:
             vv[v.name] = x.name
@@ -68,6 +70,13 @@ class EventConfig:
             #     managed_object.address,
             #     x,
             # )
+            print(
+                f"[{managed_object.name}|{managed_object.address}] Interface found: {x}",
+            )
+        else:
+            print(
+                f"[{managed_object.name}|{managed_object.address}] Interface not found: {vv}",
+            )
         return x
 
     def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any):
@@ -75,16 +84,14 @@ class EventConfig:
         r = {}
         # Resolve resource
         # resource -> var
-        resources = {}
+        resources = []
         # Resolve e_vars
         for ecv in self.vars:
             # Check variable is present
             if ecv.resource_model:
-                resources[ecv.resource_model] = self.resolve_resource(
-                    ecv,
-                    r_vars,
-                    managed_object,
-                )
+                res = self.resolve_resource(ecv, r_vars, managed_object)
+                if res:
+                    resources.append(res)
             if ecv.name not in r_vars:
                 if ecv.required:
                     raise Exception("Required variable '%s' is not found" % ecv.name)

@@ -214,17 +214,17 @@ class DispositionRule(Document):
         ObjectActionItem, required=False
     )
     update_avail_status = StringField(
-        choices=[("D", "Disable"), ("A", "Available"), ("U", "Unavail")],
-        default="D",
+        choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
+        default="N",
     )
     update_oper_status = StringField(
         choices=[
-            ("D", "Disable"),
-            ("U", "Set Up"),
+            ("N", "Disable"),
             ("D", "Set Down"),
+            ("U", "Set Up"),
             ("V", "By Var (Enum)"),
         ],
-        default="D",
+        default="N",
     )
     #
     default_action = StringField(
@@ -417,6 +417,10 @@ class DispositionRule(Document):
                 "interaction_audit": rule.object_actions.interaction_audit.value,
                 "run_discovery": rule.object_actions.run_discovery,
             }
+        if rule.update_avail_status != "N":
+            r["object_actions"]["update_avail"] = rule.update_avail_status == "A"
+        if rule.update_oper_status != "N":
+            r["resource_oper_status"] = rule.update_oper_status
         if not rule.conditions:
             return r
         elif len(rule.conditions) == 1:

@@ -686,7 +686,7 @@ class ClassifierService(FastAPIService):
             for m in EventMetrics:
                 ov = self.stats.get(m, 0)
                 nv = metrics[m].value
-                r += ["%s: %d" % (m[7:], nv - ov)]
+                r += [f"{m.name}: {nv - ov}"]
                 self.stats[m] = nv
             nt = metrics[EventMetrics.CR_PROCESSED].value
             ot = self.stats.get(EventMetrics.CR_PROCESSED, 0)
@@ -834,6 +834,8 @@ class ClassifierService(FastAPIService):
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
+        if "event_class" not in data:
+            return
         self.event_config[data["id"]] = EventConfig.from_config(data)
         if data["actions"]:
             self.action_set.update_rule(data["id"], data["actions"])

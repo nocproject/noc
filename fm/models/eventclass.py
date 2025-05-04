@@ -428,7 +428,6 @@ class EventClass(Document):
             "vars": [],
             "filters": [],
             "handlers": [],
-            "resources": [],
             "actions": [],
         }
         if event_class.deduplication_window:
@@ -439,12 +438,6 @@ class EventClass(Document):
             r["filters"].append(
                 {"name": "suppress", "window": event_class.suppression_window},
             )
-        if event_class.link_event:
-            r["resources"].append({"resource": "if"})
-            if "noc.fm.handlers.event.link.oper_down" in event_class.handlers:
-                r["resources"][-1]["oper_status"] = False
-            elif "noc.fm.handlers.event.link.oper_up" in event_class.handlers:
-                r["resources"][-1]["oper_status"] = True
         for vv in event_class.vars:
             r["vars"].append(
                 {
@@ -452,6 +445,7 @@ class EventClass(Document):
                     "type": vv.type.value,
                     "required": vv.required,
                     "match_suppress": vv.match_suppress,
+                    "resource_model": "inv.Interface" if event_class.link_event else None,
                 }
             )
         r["actions"] += DispositionRule.get_actions(event_class=event_class)
