@@ -10,7 +10,7 @@ import re
 import datetime
 import argparse
 import time
-from typing import Optional
+from typing import Optional, List
 from html.entities import name2codepoint
 
 # Third-party modules
@@ -75,6 +75,7 @@ class Command(BaseCommand):
         inject_event.add_argument("--syslog"),
         inject_event.add_argument("-o", "--object", dest="objects"),
         inject_event.add_argument("--remote-system", dest="remote_system"),
+        inject_event.add_argument("-p", "--paths", nargs=argparse.REMAINDER),
         inject_event.add_argument("args", nargs=argparse.REMAINDER)
         test_rule = subparsers.add_parser("test-rule")
         test_rule.add_argument(
@@ -114,6 +115,7 @@ class Command(BaseCommand):
         syslog: Optional[str] = None,
         object: Optional[str] = None,
         remote_system: Optional[str] = None,
+        paths: Optional[List[str]] = None,
         **options,
     ):
         # Inject syslog messages
@@ -125,8 +127,8 @@ class Command(BaseCommand):
             self.syslog_message(object, syslog)
             return
         # Load jsons
-        if len(args) > 0:
-            for f in args:
+        if paths:
+            for f in paths:
                 self.load_events(f, remote_system=remote_system)
         else:
             self.load_events("/dev/stdin", remote_system=remote_system)
@@ -164,14 +166,13 @@ class Command(BaseCommand):
         """Load event from JSON File"""
         rs = RemoteSystem.get_by_name(remote_system)
         with open(path) as f:
-            for line in f:
-                try:
-                    data = orjson.loads(line)
-                except ValueError as e:
-                    self.die(f"Failed to decode JSON file '{path}': {str(e)}")
-                e = FMEventObject.model_validate(data)
-                e = self.get_fm_event(e, rs)
-                publish(orjson.dumps(e.model_dump()), "events.default", partition=0)
+            try:
+                data = orjson.loads(f.read())
+            except ValueError as e:
+                self.die(f"Failed to decode JSON file '{path}': {str(e)}")
+            e = FMEventObject.model_validate(data)
+            e = self.get_fm_event(e, rs)
+            publish(orjson.dumps(e.model_dump()), "events.default", partition=0)
 
     def syslog_message(self, obj: ManagedObject, msg: str):
         stream, partition = obj.events_stream_and_partition
@@ -203,19 +204,19 @@ class Command(BaseCommand):
                         f"[{event_class_rule.name}] Testing with result: Cannot find matching rule"
                     )
                 self.print(
-                    f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class}': {e_vars}"
+                    f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class_name}': {e_vars}"
                 )
-                assert (
-                    rule.event_class == event_class_rule.event_class
-                ), f"Mismatched event class '{rule.event_class.name}' vs '{event_class_rule.event_class.name}'"
+                assert rule.event_class_id == str(
+                    event_class_rule.event_class.id
+                ), f"Mismatched event class '{rule.event_class_name}' vs '{event_class_rule.event_class.name}'"
                 var_ctx = {"message": event.message}
                 var_ctx |= v
                 var_ctx |= e_vars
                 for t in rule.vars_transform or []:
                     t.transform(e_vars, var_ctx)
-                if "interface__ifindex" in e_vars and "interface_mock" in v:
+                if "ifindex" in e_vars and "interface_mock" in v:
                     e_vars["interface"] = v.pop("interface_mock")
-                elif "interface__ifindex" in e_vars:
+                elif "ifindex" in e_vars:
                     assert (
                         "interface_mock" in e_vars
                     ), "interface_mock Required for ifindex transform test"
@@ -223,7 +224,7 @@ class Command(BaseCommand):
                     cfg = EventConfig.from_config(
                         EventClass.get_event_config(event_class_rule.event_class),
                     )
-                    cfg.eval_vars(e_vars)
+                    ruleset.eval_vars(e_vars, managed_object=None, e_cfg=cfg)
                     self.print("End variables: ", e_vars)
                 except Exception as e:
                     self.print(e)

@@ -137,11 +137,11 @@ def test_rules_collection_cases(ruleset, event_class_rule):
         var_ctx |= e_vars
         for t in rule.vars_transform or []:
             t.transform(e_vars, var_ctx)
-        if "interface__ifindex" in e_vars and "interface_mock" in v:
+        if "ifindex" in e_vars and "interface_mock" in v:
             e_vars["interface"] = v.pop("interface_mock")
-        elif "interface__ifindex" in e_vars:
+        elif "ifindex" in e_vars:
             assert "interface_mock" in e_vars, "interface_mock Required for ifindex transform test"
         cfg = EventConfig.from_config(
             EventClass.get_event_config(event_class_rule.event_class),
         )
-        cfg.eval_vars(e_vars)
+        ruleset.eval_vars(e_vars, managed_object=None, e_cfg=cfg)
