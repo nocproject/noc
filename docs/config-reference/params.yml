@@ -457,8 +457,18 @@ params:
     default: Unconfigured installation
   instance: {}
   kafkasender.bootstrap_servers: {}
+  kafkasender.compression_type:
+    choices:
+    - none
+    - gzip
+    - snappy
+    - lz4
+    - zstd
+    default: none
   kafkasender.max_batch_size:
     default: '16384'
+  kafkasender.max_request_size:
+    default: '1048576'
   kafkasender.password: {}
   kafkasender.sasl_mechanism:
     choices:
@@ -783,8 +793,18 @@ params:
     default: '86400'
   redpanda.addresses: {}
   redpanda.bootstrap_servers: {}
+  redpanda.compression_type:
+    choices:
+    - none
+    - gzip
+    - snappy
+    - lz4
+    - zstd
+    default: lz4
   redpanda.max_batch_size:
     default: '16384'
+  redpanda.max_request_size:
+    default: '1048576'
   redpanda.password: {}
   redpanda.retry_backoff_ms:
     default: '3'
