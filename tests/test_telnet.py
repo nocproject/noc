@@ -45,7 +45,7 @@ class CLIStub(BaseCLI):
         self.profile = ProfileStub()
 
 
-class TestTelnetStream(TelnetStream):
+class MyTelnetStream(TelnetStream):
     def __init__(self):
         super().__init__(CLIStub())
         self.writer = BytesIO()
@@ -129,7 +129,7 @@ class TestTelnetStream(TelnetStream):
     ],
 )
 def test_telnet_scenario(scenario):
-    stream = TestTelnetStream()
+    stream = MyTelnetStream()
     for feed, expected, sent_expected in scenario:
         with IOLoopContext() as loop:
             data = loop.run_until_complete(stream.feed(feed))
@@ -149,9 +149,9 @@ def test_telnet_scenario(scenario):
     ],
 )
 def test_telnet_escape(data, expected):
-    assert TestTelnetStream().escape(data) == expected
+    assert MyTelnetStream().escape(data) == expected
 
 
 @pytest.mark.parametrize("cmd, opt, expected", [])
 def test_telnet_iac_repr(cmd, opt, expected):
-    assert TestTelnetStream().iac_repr(cmd, opt) == expected
+    assert MyTelnetStream().iac_repr(cmd, opt) == expected
