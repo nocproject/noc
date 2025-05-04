@@ -55,7 +55,19 @@ class MatchData(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     field = StringField(required=True)
-    op = StringField(choices=["regex", "contains", "eq", "ne", "gte", "lte"], default="eq")
+    op = StringField(
+        choices=[
+            "regex",
+            "contains",
+            "eq",
+            "ne",
+            "gte",
+            "ge",
+            "lte",
+            "le",
+        ],
+        default="eq",
+    )
     value = StringField(required=True)
 
     def __str__(self):
@@ -63,7 +75,7 @@ class MatchData(EmbeddedDocument):
 
     def get_match_expr(self) -> Dict[str, Any]:
         """"""
-        return {self.field: self.value}
+        return {self.field: {f"${self.op}": self.value}}
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -167,6 +179,13 @@ class DispositionRule(Document):
     conditions: List[Match] = EmbeddedDocumentListField(Match)
     #
     vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
+    vars_conditions_op: str = StringField(
+        choices=[
+            ("AND", "Raise Disposition Alarm"),
+            ("OR", "Clear Disposition Alarm"),
+        ],
+        default="AND",
+    )
     # time_pattern
     # Combo Condition
     combo_condition = StringField(
@@ -196,6 +215,10 @@ class DispositionRule(Document):
     combo_window = IntField(required=False, default=0)
     # Applicable for frequency.
     combo_count = IntField(required=False, default=0)
+    # Applicable for sequence, all and any combo_condition
+    combo_event_classes = ListField(
+        PlainReferenceField("fm.EventClass"), required=False, default=[]
+    )
     #
     replace_rule_policy = StringField(
         required=True,
@@ -290,8 +313,8 @@ class DispositionRule(Document):
             "uuid": self.uuid,
             "description": self.description,
             "preference": self.preference,
-            "match": [],
             "update_oper_status": self.update_oper_status,
+            "vars_conditions_op": self.vars_conditions_op,
             "stop_processing": self.stop_processing,
         }
         if self.conditions:
@@ -391,7 +414,8 @@ class DispositionRule(Document):
             "alarm_class": rule.alarm_disposition.name if rule.alarm_disposition else None,
             "stop_processing": rule.stop_processing,
             # disposition_var_map
-            "match_expr": [],
+            "match_expr": {},
+            "vars_match_expr": {},
             "event_classes": [],
             "action": EventAction.LOG.value,
         }
@@ -412,8 +436,11 @@ class DispositionRule(Document):
             }
         if rule.handlers:
             r["handlers"] = [str(h.handler) for h in rule.handlers]
-        if rule.vars_conditions:
-            r["vars_match_expr"] = rule.vars_conditions[0].get_match_expr()
+        if rule.vars_conditions_op == "OR":
+            r["vars_match_expr"] = {"$or": [c.get_match_expr() for c in rule.vars_conditions]}
+        else:
+            for c in rule.vars_conditions or []:
+                r["vars_match_expr"] |= c.get_match_expr()
         if rule.object_actions:
             r["object_actions"] = {
                 "interaction_audit": rule.object_actions.interaction_audit.value,

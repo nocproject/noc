@@ -33,6 +33,7 @@ class Action:
     name: str
     stop_processing: bool = False
     match: Optional[Callable] = None
+    event_match: Optional[Callable] = None
     event: Tuple[Callable, ...] = None
     target: Tuple[Callable, ...] = None
     resource: Dict[str, Callable] = None
@@ -53,12 +54,16 @@ class ActionSet(object):
         self,
         event_class: str,
         ctx: Dict[str, Any],
+        e_vars: Dict[str, Any],
     ) -> Iterable[Callable]:
         """"""
         if event_class not in self.actions:
             return
+        self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
         for a in self.actions[event_class]:
             if a.match and not a.match(ctx):
+                continue
+            if a.event_match and not a.event_match(e_vars):
                 continue
             if a.stop_processing:
                 continue
@@ -135,6 +140,9 @@ class ActionSet(object):
             Action(
                 name=data["name"],
                 match=build_matcher(data["match_expr"]) if data["match_expr"] else None,
+                event_match=(
+                    build_matcher(data["vars_match_expr"]) if data.get("vars_match_expr") else None
+                ),
                 event=tuple(event_a),
                 target=tuple(target_a),
                 resource=resource,
@@ -170,7 +178,7 @@ class ActionSet(object):
         action = EventAction.LOG
         r_actions: Dict[str, Callable] = {}
         # Event and Target action
-        for a in self.iter_actions(config.event_class_id, ctx):
+        for a in self.iter_actions(config.event_class_id, ctx, event.vars):
             r = a(event, target, resources)
             if r == EventAction.DROP:
                 return r

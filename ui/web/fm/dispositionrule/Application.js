@@ -316,6 +316,16 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           boxLabel: __("Stop Processing Rules"),
         },
         {
+          name: "vars_conditions_op",
+          xtype: "combobox",
+          fieldLabel: __("Condition Op Vars"),
+          store: [
+            ["AND", __("Raise Alarm")],
+            ["OR", __("Ignore Disposition")]
+          ],
+          uiStyle: "medium",
+        },
+        {
           name: "vars_conditions",
           xtype: "gridfield",
           fieldLabel: __("Vars Conditions"),
@@ -338,7 +348,9 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                   ["eq", __("Equal")],
                   ["ne", __("Not Equal")],
                   ["gte", __("Greater Equal")],
+                  ["gt", __("Greater")],
                   ["lte", __("Less Equal")],
+                  ["lt", __("Less")],
                 ],
               },
               renderer: NOC.render.Choices({
@@ -347,7 +359,9 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                 "eq": __("Equal"),
                 "ne": __("Not Equal"),
                 "gte": __("Greater Equal"),
+                "gt": __("Greater"),
                 "lte": __("Less Equal"),
+                "lt": __("Less"),
               }),
             },
             {
