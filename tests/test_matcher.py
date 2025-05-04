@@ -224,3 +224,15 @@ def test_between(raw, config, expected):
 )
 def test_or(raw, config, expected):
     assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    "raw,config,expected",
+    [
+        ({"x": "y", "y": "y"}, {"x": "==y"}, True),
+        ({"x": "20", "y": "30"}, {"x": {"$lte": "==y"}}, True),
+        ({"x": "20", "y": "30"}, {"x": {"$gte": "==y"}}, False),
+    ],
+)
+def test_field_eq(raw, config, expected):
+    assert match(raw, config) is expected

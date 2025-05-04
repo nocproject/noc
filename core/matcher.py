@@ -22,6 +22,8 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
     """getting matcher function by operation"""
     if op not in matchers:
         raise ValueError("Unknown matcher: %s" % op)
+    elif isinstance(value, str) and value.startswith("=="):
+        return partial(match_ctx, value[2:], partial(matchers[op], field=field))
     # Clean Argument
     match op:
         case "$regex":
@@ -38,12 +40,19 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
     return partial(matchers[op], value, field)
 
 
+def match_ctx(cv: str, handler: Callable, ctx: Dict[str, Any]) -> bool:
+    if cv not in ctx:
+        return False
+    return handler(cv=ctx[cv], ctx=ctx)
+
+
 def iter_matchers(expr: Dict[str, Any]) -> Iterable[Callable]:
     for field, matcher in expr.items():
         if field == "$or":
             yield partial(match_or, (build_matcher(m) for m in matcher))
         elif not isinstance(matcher, dict):
-            yield partial(match_eq, matcher, field)
+            # yield partial(match_eq, matcher, field)
+            yield get_matcher("$eq", field, matcher)
         else:
             for op, value in matcher.items():
                 yield get_matcher(op, field, value)
