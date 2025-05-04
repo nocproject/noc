@@ -79,18 +79,9 @@ before a RequestDataTooBig is raised.
 
 ## macdb_window
 
-|                |                        |
-| -------------- | ---------------------- |
-| Default value  | `4 * 86400`            |
-| YAML Path      | `web.macdb_window`     |
-| Key-Value Path | `web/macdb_window`     |
-| Environment    | `NOC_WEB_MACDB_WINDOW` |
+{{ config_param("web.macdb_window") }}
+
 
 ## enable_remote_system_last_extract_info
 
-|                |                                                  |
-| -------------- | ------------------------------------------------ |
-| Default value  | `False`                                          |
-| YAML Path      | `web.enable_remote_system_last_extract_info`     |
-| Key-Value Path | `web/enable_remote_system_last_extract_info`     |
-| Environment    | `NOC_WEB_ENABLE_REMOTE_SYSTEM_LAST_EXTRACT_INFO` |
+{{ config_param("web.enable_remote_system_last_extract_info") }}

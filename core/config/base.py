@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Configuration class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import inspect
 import re
 import os
-from typing import Dict
+from typing import Dict, Iterable, Tuple
 
 # NOC modules
 from .params import BaseParameter
@@ -156,3 +156,12 @@ class BaseConfig(object, metaclass=ConfigBase):
                     break
             if c and parts[-1] in c:
                 self.set_parameter(name, c[parts[-1]])
+
+    def iter_params(self) -> Iterable[Tuple[str, BaseParameter]]:
+        """
+        Iterate over all known parameters.
+
+        Returns:
+            Yields of tuples of (parameter name, `BaseParameter instance)
+        """
+        yield from self._params.items()

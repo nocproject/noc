@@ -12,9 +12,9 @@ import json
 import glob
 import logging
 from typing import List, Dict
+import yaml
+from pathlib import Path
 
-# NOC modules
-from noc.config import config
 
 ROOT = os.getcwd()
 PROFILES_ROOT = os.path.join(ROOT, "sa", "profiles")
@@ -201,13 +201,19 @@ def define_env(env):
         """
         Generate definition table for config params.
         """
-        p = config._params[param]
+        nonlocal config_params
+        if not config_params:
+            path = Path("docs", "config-reference", "params.yml")
+            with open(path) as fp:
+                defs = yaml.load(fp.read(), yaml.SafeLoader)
+                config_params = defs["params"]
+        p = config_params[param]
         r = [""]
-        default = getattr(p, "default", None)
-        if default:
+        default = p.get("default")
+        if default is not None:
             r.append(f"- **Default value:** `{default}`")
-        choices = getattr(p, "choices", None)
-        if choices:
+        choices = p.get("choices")
+        if choices is not None:
             r.append("- **Possible values:**")
             r.append("")
             for x in choices:
@@ -225,3 +231,4 @@ def define_env(env):
     scripts = []  # Ordered list of scripts
     platforms = defaultdict(set)  # vendor -> {platform}
     script_profiles = defaultdict(set)  # script -> {profile}
+    config_params = {}
