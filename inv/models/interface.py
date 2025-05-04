@@ -38,7 +38,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.label import Label
 from noc.project.models.project import Project
 from noc.sa.models.service import Service
-from noc.inv.models.endpoint import Endpoint
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.wf.decorator import workflow
