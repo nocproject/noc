@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Configuration class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import inspect
 import re
 import os
+from typing import Dict, Iterable, Tuple
 
 # NOC modules
 from .params import BaseParameter
@@ -46,8 +47,7 @@ class ConfigBase(type):
                 cls._params[k].name = k
             elif inspect.isclass(attrs[k]) and issubclass(attrs[k], ConfigSection):
                 for kk in attrs[k]._params:
-                    sn = "%s.%s" % (k, kk)
-                    cls._params[sn] = attrs[k]._params[kk]
+                    cls._params[f"{k}.{kk}"] = attrs[k]._params[kk]
         cls._params_order = sorted(cls._params, key=lambda x: cls._params[x].param_number)
         return cls
 
@@ -61,6 +61,7 @@ class BaseConfig(object, metaclass=ConfigBase):
     }
 
     _rx_env_sh = re.compile(r"\${([^:}]+)(:-[^}]+)?}")
+    _params: Dict[str, BaseParameter]
 
     def __iter__(self):
         yield from self._params_order
@@ -72,10 +73,7 @@ class BaseConfig(object, metaclass=ConfigBase):
             if default is None:
                 default = ""
             ev = os.environ.get(name)
-            if ev is None:
-                return default
-            else:
-                return ev
+            return default if ev is None else ev
 
         if value.startswith("_env:"):
             # Perform registry like environment expansion
@@ -90,10 +88,9 @@ class BaseConfig(object, metaclass=ConfigBase):
             if value is None:
                 value = default
             return value
-        else:
-            # Perform shell-style environment expansion
-            # ${VAR}, ${VAR:-default}
-            return cls._rx_env_sh.sub(env_repl, value)
+        # Perform shell-style environment expansion
+        # ${VAR}, ${VAR:-default}
+        return cls._rx_env_sh.sub(env_repl, value)
 
     def set_parameter(self, path, value):
         if value is None:
@@ -125,8 +122,8 @@ class BaseConfig(object, metaclass=ConfigBase):
             module_name, handler_class = h.rsplit(".", 1)
             module = __import__(module_name, {}, {}, [handler_class])
             return getattr(module, handler_class)
-        else:
-            raise ValueError("Invalid protocol %s" % p)
+        msg = f"Invalid protocol: {p}"
+        raise ValueError(msg)
 
     def load(self):
         paths = os.environ.get("NOC_CONFIG", DEFAULT_CONFIG)
@@ -159,3 +156,12 @@ class BaseConfig(object, metaclass=ConfigBase):
                     break
             if c and parts[-1] in c:
                 self.set_parameter(name, c[parts[-1]])
+
+    def iter_params(self) -> Iterable[Tuple[str, BaseParameter]]:
+        """
+        Iterate over all known parameters.
+
+        Returns:
+            Yields of tuples of (parameter name, `BaseParameter instance)
+        """
+        yield from self._params.items()

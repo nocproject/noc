@@ -297,6 +297,7 @@ markdown_extensions:
 watch:
   - docs/
   - mkdocs.yml
+  - macros.py
 plugins:
   - search
   - macros:
