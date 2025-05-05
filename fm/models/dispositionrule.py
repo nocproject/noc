@@ -38,6 +38,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.interactionlog import Interaction
+from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -54,7 +55,19 @@ class MatchData(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     field = StringField(required=True)
-    op = StringField(choices=["regex", "contains", "eq", "ne", "gte", "lte"], default="eq")
+    op = StringField(
+        choices=[
+            "regex",
+            "contains",
+            "eq",
+            "ne",
+            "gte",
+            "ge",
+            "lte",
+            "le",
+        ],
+        default="eq",
+    )
     value = StringField(required=True)
 
     def __str__(self):
@@ -62,7 +75,7 @@ class MatchData(EmbeddedDocument):
 
     def get_match_expr(self) -> Dict[str, Any]:
         """"""
-        return {self.field: self.value}
+        return {self.field: {f"${self.op}": self.value}}
 
     @property
     def json_data(self) -> Dict[str, Any]:
@@ -120,6 +133,10 @@ class ObjectActionItem(EmbeddedDocument):
     action_command: Optional["Action"] = ReferenceField(Action, required=False)
     interaction_audit: Optional[Interaction] = EnumField(Interaction, required=False)
     run_discovery: bool = BooleanField(default=False)
+    update_avail_status = StringField(
+        choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
+        default="N",
+    )
     # resource as context
     # Set Diagnostic
     # affected_service ?
@@ -162,6 +179,13 @@ class DispositionRule(Document):
     conditions: List[Match] = EmbeddedDocumentListField(Match)
     #
     vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
+    vars_conditions_op: str = StringField(
+        choices=[
+            ("AND", "Raise Disposition Alarm"),
+            ("OR", "Clear Disposition Alarm"),
+        ],
+        default="AND",
+    )
     # time_pattern
     # Combo Condition
     combo_condition = StringField(
@@ -191,6 +215,10 @@ class DispositionRule(Document):
     combo_window = IntField(required=False, default=0)
     # Applicable for frequency.
     combo_count = IntField(required=False, default=0)
+    # Applicable for sequence, all and any combo_condition
+    combo_event_classes = ListField(
+        PlainReferenceField("fm.EventClass"), required=False, default=[]
+    )
     #
     replace_rule_policy = StringField(
         required=True,
@@ -212,6 +240,15 @@ class DispositionRule(Document):
     object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
         ObjectActionItem, required=False
     )
+    update_oper_status = StringField(
+        choices=[
+            ("N", "Disable"),
+            ("D", "Set Down"),
+            ("U", "Set Up"),
+            ("V", "By Var (Enum)"),
+        ],
+        default="N",
+    )
     #
     default_action = StringField(
         choices=[
@@ -224,7 +261,7 @@ class DispositionRule(Document):
     # allow_update
     alarm_disposition: Optional["AlarmClass"] = PlainReferenceField(AlarmClass, required=False)
     # RCA
-    root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
+    # root_cause = EmbeddedDocumentListField(AlarmRootCauseCondition)
     #
     # severity_policy = StringField(
     #     choices=[
@@ -276,7 +313,8 @@ class DispositionRule(Document):
             "uuid": self.uuid,
             "description": self.description,
             "preference": self.preference,
-            "match": [],
+            "update_oper_status": self.update_oper_status,
+            "vars_conditions_op": self.vars_conditions_op,
             "stop_processing": self.stop_processing,
         }
         if self.conditions:
@@ -292,12 +330,14 @@ class DispositionRule(Document):
             r["object_actions"] = {
                 "interaction_audit": self.object_actions.interaction_audit.value,
                 "run_discovery": self.object_actions.run_discovery,
+                "update_avail_status": self.object_actions.update_avail_status,
             }
-        if self.combo_condition:
+        if self.combo_condition and self.combo_event_classes:
             r |= {
                 "combo_condition": self.combo_condition,
                 "combo_window": self.combo_window,
                 "combo_count": self.combo_count,
+                "combo_event_classes__name": [ec.name for ec in self.combo_event_classes],
             }
         if self.alarm_disposition:
             r |= {
@@ -364,7 +404,7 @@ class DispositionRule(Document):
 
     @classmethod
     def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
-        """Generate Datastream Config"""
+        """Generate DataStream Config from rule"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
             # Merge Rule ?
             return DispositionRule.get_rule_config(rule.replace_rule)
@@ -374,30 +414,44 @@ class DispositionRule(Document):
             "preference": rule.preference,
             "alarm_class": rule.alarm_disposition.name if rule.alarm_disposition else None,
             "stop_processing": rule.stop_processing,
-            "match_expr": [],
+            # disposition_var_map
+            "match_expr": {},
+            "vars_match_expr": {},
             "event_classes": [],
-            "action": 1 if rule.default_action == "I" else 3,
+            "action": EventAction.LOG.value,
         }
+        if rule.default_action == "I":
+            r["action"] = EventAction.DROP.value
+        elif rule.alarm_disposition:
+            r["action"] = EventAction.DISPOSITION.value
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),
                 "subject_template": rule.subject_template,
             }
-        if rule.combo_condition:
+        if rule.combo_condition and rule.combo_event_classes:
             r["combo_condition"] = {
                 "combo_condition": rule.combo_condition,
                 "combo_window": rule.combo_window,
                 "combo_count": rule.combo_count,
+                "combo_event_classes": [str(ec.id) for ec in rule.combo_event_classes],
             }
         if rule.handlers:
             r["handlers"] = [str(h.handler) for h in rule.handlers]
-        if rule.vars_conditions:
-            r["vars_match_expr"] = rule.vars_conditions[0].get_match_expr()
+        if rule.vars_conditions_op == "OR":
+            r["vars_match_expr"] = {"$or": [c.get_match_expr() for c in rule.vars_conditions]}
+        else:
+            for c in rule.vars_conditions or []:
+                r["vars_match_expr"] |= c.get_match_expr()
         if rule.object_actions:
             r["object_actions"] = {
                 "interaction_audit": rule.object_actions.interaction_audit.value,
                 "run_discovery": rule.object_actions.run_discovery,
+                "update_avail_status": rule.object_actions.update_avail_status,
             }
+        if rule.update_oper_status != "N":
+            r["resource_oper_status"] = rule.update_oper_status
+            # enum_state
         if not rule.conditions:
             return r
         elif len(rule.conditions) == 1:

@@ -64,3 +64,21 @@ class EventSource(enum.Enum):
     INTERNAL = "internal"
     WINEVENT = "winevent"
     OTHER = "other"
+
+
+class EventAction(enum.Enum):
+    """Event Action.
+    * Drop - do not save
+    * Ignored - do not disposition
+    * Log - Save only
+    * Disposition - Create Alarm
+    """
+
+    DROP = 1
+    LOG = 2
+    DISPOSITION = 3
+
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value < other.value
+        return NotImplemented

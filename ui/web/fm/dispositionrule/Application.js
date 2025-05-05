@@ -236,6 +236,19 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               value: null,
               uiStyle: "medium",
             },
+            {
+              name: "update_avail_status",
+              xtype: "combobox",
+              fieldLabel: __("Avail Status"),
+              allowBlank: true,
+              store: [
+                ["N", __("Not Update")],
+                ["A", __("Available")],
+                ["U", __("Unavailable")],
+              ],
+              value: null,
+              uiStyle: "medium",
+            }
           ],
         },
         {
@@ -255,6 +268,18 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
           ],
+        },
+        {
+          name: "update_oper_status",
+          xtype: "combobox",
+          fieldLabel: __("Update Resource Oper Status"),
+          store: [
+            ["N", __("Disable Update")],
+            ["D", __("Set Down")],
+            ["U", __("Set Up")],
+            ["V", __("Set Var")]
+          ],
+          uiStyle: "medium",
         },
         {
           xtype: "fieldset",
@@ -291,6 +316,16 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           boxLabel: __("Stop Processing Rules"),
         },
         {
+          name: "vars_conditions_op",
+          xtype: "combobox",
+          fieldLabel: __("Condition Op Vars"),
+          store: [
+            ["AND", __("Raise Alarm")],
+            ["OR", __("Ignore Disposition")]
+          ],
+          uiStyle: "medium",
+        },
+        {
           name: "vars_conditions",
           xtype: "gridfield",
           fieldLabel: __("Vars Conditions"),
@@ -313,7 +348,9 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                   ["eq", __("Equal")],
                   ["ne", __("Not Equal")],
                   ["gte", __("Greater Equal")],
+                  ["gt", __("Greater")],
                   ["lte", __("Less Equal")],
+                  ["lt", __("Less")],
                 ],
               },
               renderer: NOC.render.Choices({
@@ -322,7 +359,9 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                 "eq": __("Equal"),
                 "ne": __("Not Equal"),
                 "gte": __("Greater Equal"),
+                "gt": __("Greater"),
                 "lte": __("Less Equal"),
+                "lt": __("Less"),
               }),
             },
             {
