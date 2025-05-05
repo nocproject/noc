@@ -7,12 +7,10 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Dict, Callable, List, Optional, Any
+from typing import Dict, Callable, List, Optional
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
-from noc.sa.interfaces.base import InterfaceTypeError
-from .exception import EventProcessingFailed
 
 
 @dataclass(frozen=True, slots=True)
@@ -20,6 +18,7 @@ class VarItem:
     name: str
     type: ValueType
     required: bool = False
+    resource_model: Optional[str] = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -28,7 +27,7 @@ class FilterConfig:
     vars: Optional[List[str]] = None
 
 
-@dataclass
+@dataclass(slots=True)
 class EventConfig:
     name: str
     bi_id: int
@@ -38,7 +37,10 @@ class EventConfig:
     vars: List[VarItem]
     managed_object_required: bool = True
     filters: Optional[Dict[str, FilterConfig]] = None
-    resolvers: Optional[Dict[str, Callable]] = None
+    resources: Optional[Dict[str, Callable]] = None
+    # EventActions
+    # TargetActions
+    # Resources
     actions: Optional[List[Callable]] = None
 
     @property
@@ -49,46 +51,31 @@ class EventConfig:
     def id(self):
         return self.event_class_id
 
-    def eval_vars(self, r_vars: Dict[str, Any]):
-        """Evaluate rule variables"""
-        r = {}
-        # Resolve e_vars
-        for ecv in self.vars:
-            # Check variable is present
-            if ecv.name not in r_vars:
-                if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
-                continue
-            # Decode variable
-            try:
-                v = ecv.type.clean_value(r_vars[ecv.name])
-            except InterfaceTypeError:
-                raise EventProcessingFailed(
-                    "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
-                )
-            r[ecv.name] = v
-        return r
-
     @classmethod
-    def from_config(self, data) -> "EventConfig":
+    def from_config(cls, data) -> "EventConfig":
         ec = EventConfig(
             name=data["name"],
             bi_id=data["bi_id"],
             event_class=data["event_class"]["name"],
             event_class_id=data["event_class"]["id"],
             managed_object_required=data["managed_object_required"],
-            vars=[
-                VarItem(name=vv["name"], type=ValueType(vv["type"]), required=vv["required"])
-                for vv in data["vars"]
-            ],
+            vars=[],
             filters={},
-            resolvers={},
         )
         for ff in data["filters"]:
             ec.filters[ff["name"]] = FilterConfig(
                 window=ff["window"],
                 vars=[vv["name"] for vv in data["vars"] if vv["match_suppress"]],
             )
-        for rr in data["resources"]:
-            ec.resolvers[rr["resource"]] = lambda x: True
+        for vv in data["vars"]:
+            ec.vars += [
+                VarItem(
+                    name=vv["name"],
+                    type=ValueType(vv["type"]),
+                    required=vv["required"],
+                    resource_model=vv.get("resource_model"),
+                ),
+            ]
+        # for rr in data["resources"]:
+        #     ec.resolvers[rr["resource"]] = lambda x: True
         return ec

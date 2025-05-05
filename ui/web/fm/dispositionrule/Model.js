@@ -93,6 +93,16 @@ Ext.define("NOC.fm.dispositionrule.Model", {
             type: "auto"
         },
         {
+            name: "update_oper_status",
+            type: "string",
+            defaultValue: "N"
+        },
+        {
+            name: "vars_conditions_op",
+            type: "string",
+            defaultValue: "AND"
+        },
+        {
             name: "root_cause",
             type: "auto"
         },

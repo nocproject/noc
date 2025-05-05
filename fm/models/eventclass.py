@@ -427,13 +427,7 @@ class EventClass(Document):
             },
             "vars": [],
             "filters": [],
-            "object_map": {
-                "scope": "M",
-                "managed_object_required": True,
-                "include_path": True,
-            },
             "handlers": [],
-            "resources": [],
             "actions": [],
         }
         if event_class.deduplication_window:
@@ -444,12 +438,6 @@ class EventClass(Document):
             r["filters"].append(
                 {"name": "suppress", "window": event_class.suppression_window},
             )
-        if event_class.link_event:
-            r["resources"].append({"resource": "if"})
-            if "noc.fm.handlers.event.link.oper_down" in event_class.handlers:
-                r["resources"][-1]["oper_status"] = False
-            elif "noc.fm.handlers.event.link.oper_up" in event_class.handlers:
-                r["resources"][-1]["oper_status"] = True
         for vv in event_class.vars:
             r["vars"].append(
                 {
@@ -457,21 +445,10 @@ class EventClass(Document):
                     "type": vv.type.value,
                     "required": vv.required,
                     "match_suppress": vv.match_suppress,
+                    "resource_model": "inv.Interface" if event_class.link_event else None,
                 }
             )
         r["actions"] += DispositionRule.get_actions(event_class=event_class)
-        if len(event_class.disposition) > 0:
-            r["actions"] = [
-                {
-                    "name": event_class.name,
-                    "is_active": True,
-                    "preference": 99999,
-                    "stop_processing": False,
-                    "match_expr": [],
-                    "event_classes": [],
-                    "action": 3,
-                }
-            ]
         return r
 
 
