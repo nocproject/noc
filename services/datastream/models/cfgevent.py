@@ -30,6 +30,13 @@ class VarItem(BaseModel):
     resource_model: Optional[str] = None
 
 
+class ComboCondition(BaseModel):
+    combo_condition: str
+    combo_event_classes: List[str]
+    combo_window: int = 0
+    combo_count: int = 0
+
+
 class Rule(BaseModel):
     name: str
     is_active: bool
@@ -40,9 +47,9 @@ class Rule(BaseModel):
     alarm_class: Optional[str] = None
     stop_processing: bool = False
     # Conditions
-    match_expr: Optional[Any] = None
-    # combo_condition
-    vars_match_expr: Optional[str] = None
+    match_expr: Optional[Dict[str, Any]] = None
+    vars_match_expr: Optional[Dict[str, Any]] = None
+    combo_condition: Optional[ComboCondition] = None
     # Actions
     handlers: Optional[List[str]] = None
     # Notification
@@ -75,6 +82,5 @@ class CfgEvent(BaseModel):
     vars: Optional[List[VarItem]] = None
     # subject:
     handlers: List[str] = None
-    rules: List[Rule]
     actions: Optional[List[Rule]] = None
     #

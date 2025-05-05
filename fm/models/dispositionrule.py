@@ -332,11 +332,12 @@ class DispositionRule(Document):
                 "run_discovery": self.object_actions.run_discovery,
                 "update_avail_status": self.object_actions.update_avail_status,
             }
-        if self.combo_condition:
+        if self.combo_condition and self.combo_event_classes:
             r |= {
                 "combo_condition": self.combo_condition,
                 "combo_window": self.combo_window,
                 "combo_count": self.combo_count,
+                "combo_event_classes__name": [ec.name for ec in self.combo_event_classes]
             }
         if self.alarm_disposition:
             r |= {
@@ -428,11 +429,12 @@ class DispositionRule(Document):
                 "notification_group": str(rule.notification_group.id),
                 "subject_template": rule.subject_template,
             }
-        if rule.combo_condition:
+        if rule.combo_condition and rule.combo_event_classes:
             r["combo_condition"] = {
                 "combo_condition": rule.combo_condition,
                 "combo_window": rule.combo_window,
                 "combo_count": rule.combo_count,
+                "combo_event_classes": [str(ec.id) for ec in rule.combo_event_classes],
             }
         if rule.handlers:
             r["handlers"] = [str(h.handler) for h in rule.handlers]
