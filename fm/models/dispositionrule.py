@@ -337,7 +337,7 @@ class DispositionRule(Document):
                 "combo_condition": self.combo_condition,
                 "combo_window": self.combo_window,
                 "combo_count": self.combo_count,
-                "combo_event_classes__name": [ec.name for ec in self.combo_event_classes]
+                "combo_event_classes__name": [ec.name for ec in self.combo_event_classes],
             }
         if self.alarm_disposition:
             r |= {
