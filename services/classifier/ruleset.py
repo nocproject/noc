@@ -206,7 +206,9 @@ class RuleSet(object):
             )
         return x
 
-    def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig, by_test: bool = False):
+    def eval_vars(
+        self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig, by_test: bool = False
+    ):
         """Evaluate rule variables"""
         r = {}
         # Resolve resource
