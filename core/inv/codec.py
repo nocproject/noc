@@ -63,7 +63,7 @@ class PointItem(BaseModel):
 
 
 class ConnectionItem(BaseModel):
-    id: str
+    id: Optional[str] = None
     connection: list[PointItem]
 
 
@@ -179,7 +179,6 @@ def encode(iter: Iterable[Object]) -> InvData:
             if obj1_oci.object.id in object_ids and obj2_oci.object.id in object_ids:
                 cable_connections.append(
                     ConnectionItem(
-                        id="-virtual-",
                         connection=[
                             point_item(obj1_oci),
                             point_item(obj2_oci),
