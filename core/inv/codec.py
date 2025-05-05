@@ -10,7 +10,7 @@ from typing import Iterable, Optional, Union
 
 # Third-party modules
 from bson import ObjectId
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # NOC modules
 from .result import Result
@@ -70,6 +70,8 @@ class ConnectionItem(BaseModel):
 class InvData(BaseModel):
     """Structure for encode/decode Inventory Objects"""
 
+    type: str = Field(serialization_alias="$type")
+    version: str = Field(serialization_alias="$version")
     objects: list[ObjectItem]
     connections: list[ConnectionItem]
 
@@ -198,7 +200,12 @@ def encode(iter: Iterable[Object]) -> InvData:
     connections = []
     for conn in get_connections(object_ids):
         connections.append(conn)
-    return InvData(objects=objects, connections=connections)
+    return InvData(
+        type="inventory",
+        version="1.0",
+        objects=objects,
+        connections=connections,
+    )
 
 
 def decode(root: Object, data: InvData) -> Result:
