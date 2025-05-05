@@ -116,7 +116,6 @@ class EventCategory(Document):
             * Disable - for information only Classes
             * By Profile - By Profile method
             * By Source - By Target mappings
-        managed_object_required: Mapping Is Required, if not - dropped message
         resources: Resource Map rules
     """
 
@@ -257,8 +256,6 @@ class EventCategory(Document):
             )
         # if category.oper_status:
         #    r["object_map"]["oper_status"] = category.oper_status == "UP"
-        for rr in category.affected_resources:
-            r["resources"].append({"resource": rr})
         for vv in category.vars:
             r["vars"].append(
                 {
