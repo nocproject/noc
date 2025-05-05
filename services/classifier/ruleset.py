@@ -206,7 +206,7 @@ class RuleSet(object):
             )
         return x
 
-    def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig):
+    def eval_vars(self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig, by_test: bool = False):
         """Evaluate rule variables"""
         r = {}
         # Resolve resource
@@ -215,7 +215,7 @@ class RuleSet(object):
         # Resolve e_vars
         for ecv in e_cfg.vars:
             # Check variable is present
-            if ecv.resource_model:
+            if ecv.resource_model and not by_test:
                 res = self.resolve_resource(ecv, r_vars, managed_object)
                 if res:
                     resources.append(res)

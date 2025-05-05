@@ -144,4 +144,4 @@ def test_rules_collection_cases(ruleset, event_class_rule):
         cfg = EventConfig.from_config(
             EventClass.get_event_config(event_class_rule.event_class),
         )
-        ruleset.eval_vars(e_vars, managed_object=None, e_cfg=cfg)
+        ruleset.eval_vars(e_vars, managed_object=None, e_cfg=cfg, by_test=True)
