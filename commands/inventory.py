@@ -27,13 +27,13 @@ class Command(BaseCommand):
         )
         # export command
         export_parser = subparsers.add_parser("export", help="Export Inventory tree to JSON-file")
-        export_parser.add_argument("--filename", "-f", help="Destination JSON-file", required=True)
+        export_parser.add_argument("--output", "-o", help="Destination JSON-file")
         export_parser.add_argument(
             "objects", nargs=argparse.REMAINDER, help="List of parent objects to export"
         )
         # import command
         import_parser = subparsers.add_parser("import", help="Import Inventory tree from JSON-file")
-        import_parser.add_argument("--filename", "-f", help="Source JSON-file", required=True)
+        import_parser.add_argument("--input", "-i", help="Source JSON-file", required=True)
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
@@ -75,19 +75,24 @@ class Command(BaseCommand):
         for n, sr in enumerate(reversed(list(iter_obj(obj)))):
             self.print("%s * %s" % ("  " * n, sr))
 
-    def handle_export(self, filename, objects):
+    def handle_export(self, objects, output=None):
         connect()
         inv_data: InvData = encode(Object.objects.filter(id__in=objects))
-        with open(filename, "w") as f:
-            f.write(inv_data.model_dump_json(indent=2))
+        json_data = inv_data.model_dump_json(indent=2)
+        if not output:
+            self.print(json_data)
+        else:
+            with open(output, "w") as f:
+                f.write(json_data)
         self.print("------------------------------------------")
         self.print("Export finished.")
         self.print(f"Exported Objects: {len(inv_data.objects)}")
         self.print(f"Exported Connections: {len(inv_data.connections)}")
+        if output:
+            self.print(f"Wrote to file: {output}")
 
-    def handle_import(self, filename):
+    def handle_import(self, input):
         self.print("* handle_import")
-        self.print("* filename", filename, type(filename))
         connect()
 
 
