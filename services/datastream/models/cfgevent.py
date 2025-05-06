@@ -42,7 +42,7 @@ class Rule(BaseModel):
     is_active: bool
     preference: int
     event_classes: List[str]
-    action: EventAction = EventAction.LOG
+    action: str = "ignore"
     # Disposition
     alarm_class: Optional[str] = None
     stop_processing: bool = False
