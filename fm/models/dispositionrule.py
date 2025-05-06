@@ -38,7 +38,6 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.interactionlog import Interaction
-from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -255,6 +254,7 @@ class DispositionRule(Document):
             ("R", "Raise Disposition Alarm"),
             ("C", "Clear Disposition Alarm"),
             ("I", "Ignore Disposition Alarm"),
+            ("D", "Drop Event"),
         ],
         required=False,
     )
@@ -418,12 +418,12 @@ class DispositionRule(Document):
             "match_expr": {},
             "vars_match_expr": {},
             "event_classes": [],
-            "action": EventAction.LOG.value,
+            "action": "ignore",
         }
-        if rule.default_action == "I":
-            r["action"] = EventAction.DROP.value
-        elif rule.alarm_disposition:
-            r["action"] = EventAction.DISPOSITION.value
+        if rule.default_action:
+            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[
+                rule.default_action
+            ]
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),

@@ -124,8 +124,10 @@ class ActionSet(object):
                 ),
             ]
             self.add_handlers += 1
-        if "action" in data and data["action"] == EventAction.DISPOSITION.value:
+        if data["action"] in ["raise", "clear"]:
             target_a += [self.dispose_event]
+        elif data["action"] == "drop":
+            target_a += [self.drop_event]
         resource = {
             "action": partial(self.run_resources_action, handler=partial(self.get_resource_action))
         }

@@ -13,7 +13,6 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
-from noc.core.fm.enum import EventAction
 
 
 class TargetAction(BaseModel):
@@ -42,7 +41,7 @@ class Rule(BaseModel):
     is_active: bool
     preference: int
     event_classes: List[str]
-    action: EventAction = EventAction.LOG
+    action: str = "ignore"
     # Disposition
     alarm_class: Optional[str] = None
     stop_processing: bool = False
