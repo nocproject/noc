@@ -75,7 +75,7 @@ class EventApplication(ExtApplication):
         r = []
         if managed_object:
             mo = ManagedObject.get_by_id(managed_object)
-            r.append(f"managed_object = {mo.bi_id}")
+            r.append(f"managed_object_bi_id = {mo.bi_id}")
         if segment:
             r.append(f"segment = {segment}")
         if event_class:

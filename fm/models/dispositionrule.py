@@ -61,9 +61,9 @@ class MatchData(EmbeddedDocument):
             "eq",
             "ne",
             "gte",
-            "ge",
+            "gt",
             "lte",
-            "le",
+            "lt",
         ],
         default="eq",
     )
