@@ -82,4 +82,5 @@ class ValueType(enum.Enum):
         return OIDParameter().clean(value)
 
     def clean_value(self, value):
-        return value
+        decoder = getattr(self, f"decode_{self.value}")
+        return decoder(value)

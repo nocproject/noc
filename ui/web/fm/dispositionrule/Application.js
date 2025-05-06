@@ -320,8 +320,8 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           xtype: "combobox",
           fieldLabel: __("Condition Op Vars"),
           store: [
-            ["AND", __("Raise Alarm")],
-            ["OR", __("Ignore Disposition")]
+            ["AND", __("AND")],
+            ["OR", __("OR")]
           ],
           uiStyle: "medium",
         },
