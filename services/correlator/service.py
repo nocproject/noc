@@ -35,7 +35,7 @@ from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service, SVC_REF_PREFIX
 from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
-from noc.services.correlator.rule import Rule
+from noc.services.correlator.rule import EventAlarmRule
 from noc.services.correlator.rcacondition import RCACondition
 from noc.services.correlator.trigger import Trigger
 from noc.services.correlator.models.disposereq import DisposeRequest
@@ -65,7 +65,8 @@ from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
-from noc.core.fm.event import Event, EventSeverity
+from noc.core.fm.event import Event
+from noc.core.fm.enum import EventSeverity
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmrule import GroupItem
 
@@ -85,11 +86,12 @@ class CorrelatorService(FastAPIService):
     def __init__(self):
         super().__init__()
         self.version = version.version
-        self.rules: Dict[ObjectId, List[Rule]] = {}
-        self.back_rules: Dict[ObjectId, List[Rule]] = {}
+        self.rules: Dict[ObjectId, List[EventAlarmRule]] = {}
+        self.back_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
         self.rca_reverse = defaultdict(set)  # alarm_class -> set([alarm_class])
+        self.de: Dict[bytes, List[Tuple[int, Event]]] = {}  # Delayed Event
         self.alarm_rule_set = AlarmRuleSet()
         self.alarm_class_vars = defaultdict(dict)
         self.status_changes = deque([])  # Save status changes
@@ -159,19 +161,23 @@ class CorrelatorService(FastAPIService):
         nr = 0
         nbr = 0
         for c in EventClass.objects.all():
-            if c.disposition:
-                r = []
-                for dr in c.disposition:
-                    rule = Rule(c, dr)
-                    r += [rule]
-                    nr += 1
-                    if dr.combo_condition != "none" and dr.combo_window:
-                        for cc in dr.combo_event_classes:
-                            try:
-                                self.back_rules[cc.id] += [dr]
-                            except KeyError:
-                                self.back_rules[cc.id] = [dr]
-                            nbr += 1
+            cfg = EventClass.get_event_config(c)
+            r = []
+            for dr in cfg["actions"]:
+                if not dr["alarm_class"]:
+                    continue
+                rule = EventAlarmRule.from_config(dr, c)
+                r += [rule]
+                nr += 1
+                if "combo_condition" not in dr or not dr["combo_condition"]["combo_window"]:
+                    continue
+                for cc in dr.combo_event_classes:
+                    try:
+                        self.back_rules[cc.id] += [dr]
+                    except KeyError:
+                        self.back_rules[cc.id] = [dr]
+                    nbr += 1
+            if r:
                 self.rules[c.id] = r
         self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
 
@@ -619,7 +625,7 @@ class CorrelatorService(FastAPIService):
         return a
 
     async def raise_alarm_from_rule(
-        self, rule: Rule, event: Event, managed_object
+        self, rule: EventAlarmRule, event: Event, managed_object
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm from incoming event
@@ -646,12 +652,19 @@ class CorrelatorService(FastAPIService):
         else:
             rs = None
         # Extract variables
-        vars = rule.get_vars(event, managed_object)
+        r_vars = rule.get_vars(event.vars)
+        if rule.alarm_class.id in self.alarm_class_vars:
+            # Calculate dynamic defaults
+            context = {"components": ComponentHub(rule.alarm_class, managed_object, r_vars.copy())}
+            for k, v in self.alarm_class_vars[rule.alarm_class.id].items():
+                x = eval(v, {}, context)
+                if x:
+                    r_vars[k] = str(x)
         return await self.raise_alarm(
             managed_object=managed_object,
             timestamp=event.timestamp,
             alarm_class=rule.alarm_class,
-            vars=vars,
+            vars=r_vars,
             event=event,
             severity=severity,
             remote_system=rs,
@@ -704,7 +717,7 @@ class CorrelatorService(FastAPIService):
 
     async def clear_alarm_from_rule(
         self,
-        rule: "Rule",
+        rule: "EventAlarmRule",
         event: "Event",
         managed_object: ManagedObject,
     ) -> Optional["ActiveAlarm"]:
@@ -719,9 +732,9 @@ class CorrelatorService(FastAPIService):
             return
         if not rule.unique:
             return
-        vars = rule.get_vars(event, managed_object)
+        r_vars = rule.get_vars(event.vars)
         reference = self.get_default_reference(
-            managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
+            managed_object=managed_object, alarm_class=rule.alarm_class, vars=r_vars
         )
         ref_hash = self.get_reference_hash(reference)
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
@@ -740,45 +753,45 @@ class CorrelatorService(FastAPIService):
         alarm.closing_event = ObjectId(event.id)
         alarm.last_update = max(alarm.last_update, event.timestamp)
         groups = alarm.groups
-        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.u_name, ts=event.timestamp)
+        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.name, ts=event.timestamp)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=event.timestamp)
         return alarm
 
-    def get_delayed_event(self, rule: Rule, event: Event, managed_object: ManagedObject):
+    def get_delayed_event(
+        self, rule: "EventAlarmRule", event: Event, managed_object: ManagedObject
+    ) -> Optional[Event]:
         """
-        Check werever all delayed conditions are met
-
-        :param rule: Delayed rule
-        :param event: Event which can trigger delayed rule
-        :param managed_object: Managed Object on event
+        Check wherever all delayed conditions are met
+        Args:
+            rule: Delayed rule
+            event: Event which can trigger delayed rule
+            managed_object: Managed Object on event
         """
         # @todo: Rewrite to scheduler
-        vars = rule.get_vars(event, managed_object)
+        r_vars = rule.get_vars(event.vars)
         reference = self.get_default_reference(
-            managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
+            managed_object=managed_object, alarm_class=rule.alarm_class, vars=r_vars
         )
         ref_hash = self.get_reference_hash(reference)
         ws = event.timestamp - datetime.timedelta(seconds=rule.combo_window)
-        de = Event.objects.filter(
-            managed_object=event.managed_object_id,
-            event_class=rule.event_class,
-            reference=ref_hash,
-            timestamp__gte=ws,
-        ).first()
+        de = tuple(
+            de
+            for ts, de in self.de[ref_hash]
+            if ts > ws and de.type.event_class == rule.event_class.name
+        )
         if not de:
             # No starting event
             return None
+        else:
+            de = de[0]
         # Probable starting event found, get all interesting following event classes
-        fe = [
-            ee.event_class.id
-            for ee in Event.objects.filter(
-                managed_object=event.managed_object_id,
-                event_class__in=rule.combo_event_classes,
-                reference=ref_hash,
-                timestamp__gte=ws,
-            ).order_by("timestamp")
-        ]
+        fe = tuple(
+            e
+            for ts, e in self.de[ref_hash]
+            if ts > ws and de.type.event_class in rule.combo_event_classes
+        )
+        # Order by ts
         if rule.combo_condition == "sequence":
             # Exact match
             if fe == rule.combo_event_classes:
@@ -1187,44 +1200,46 @@ class CorrelatorService(FastAPIService):
             return
         # Apply disposition rules
         for rule in drc:
-            if not self.eval_expression(rule.condition, event=e):
+            if not rule.match_event(e):
                 continue  # Rule is not applicable
             # Process action
             if rule.action == "drop":
                 self.logger.info("[%s] Dropped by action", event_id)
                 # e.delete()
-                save_to_disposelog("drop")
+                save_to_disposelog("drop")  # ignore + stop
                 return
             elif rule.action == "ignore":
                 self.logger.info("[%s] Ignored by action", event_id)
                 save_to_disposelog("ignore")
-                return
+                continue
             elif rule.action == "raise" and rule.combo_condition == "none":
                 alarm = await self.raise_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("raise", alarm)
             elif rule.action == "clear" and rule.combo_condition == "none":
                 alarm = await self.clear_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("clear", alarm)
-            if rule.action in ("raise", "clear"):
-                # Write reference if can trigger delayed event
-                if rule.unique and rule.event_class.id in self.back_rules:
-                    vars = rule.get_vars(e, managed_object)
-                    reference = self.get_default_reference(
-                        managed_object=managed_object, alarm_class=rule.alarm_class, vars=vars
-                    )
-                    e.reference = self.get_reference_hash(reference)
-                    # e.save()
-                # Process delayed combo conditions
-                if event_class.id in self.back_rules:
-                    for br in self.back_rules[event_class.id]:
-                        de = self.get_delayed_event(br, e, managed_object)
-                        if de:
-                            if br.action == "raise":
-                                alarm = await self.raise_alarm_from_rule(br, de, managed_object)
-                                save_to_disposelog("raise", alarm)
-                            elif br.action == "clear":
-                                alarm = await self.clear_alarm_from_rule(br, de, managed_object)
-                                save_to_disposelog("clear", alarm)
+            # Write reference if can trigger delayed event
+            # Save reference and event_class
+            if rule.unique and rule.event_class.id in self.back_rules:
+                a_vars = rule.get_vars(e.vars)
+                reference = self.get_default_reference(
+                    managed_object=managed_object, alarm_class=rule.alarm_class, vars=a_vars
+                )
+                reference = self.get_reference_hash(reference)
+                if reference not in self.de:
+                    self.de[reference] = []
+                # e.save()
+            # Process delayed combo conditions
+            if event_class.id in self.back_rules:
+                for br in self.back_rules[event_class.id]:
+                    de = self.get_delayed_event(br, e, managed_object)
+                    if de:
+                        if br.action == "raise":
+                            alarm = await self.raise_alarm_from_rule(br, de, managed_object)
+                            save_to_disposelog("raise", alarm)
+                        elif br.action == "clear":
+                            alarm = await self.clear_alarm_from_rule(br, de, managed_object)
+                            save_to_disposelog("clear", alarm)
             if rule.stop_disposition:
                 break
         self.logger.info("[%s] Disposition complete", event_id)
