@@ -38,7 +38,6 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.interactionlog import Interaction
-from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change

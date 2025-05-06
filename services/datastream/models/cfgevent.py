@@ -13,7 +13,6 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
-from noc.core.fm.enum import EventAction
 
 
 class TargetAction(BaseModel):
