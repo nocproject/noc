@@ -59,13 +59,13 @@ class ActionSet(object):
         """"""
         if event_class not in self.actions:
             return
-        self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
+        self.logger.debug(
+            "[|%s] Processed action: %s/%s", event_class, self.actions[event_class], e_vars
+        )
         for a in self.actions[event_class]:
             if a.match and not a.match(ctx):
                 continue
             if a.event_match and not a.event_match(e_vars):
-                continue
-            if a.stop_processing:
                 continue
             yield from a.event or []
             yield from a.target or []
@@ -170,6 +170,7 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
+        categories=None,
     ) -> EventAction:
         """Processed actions on Event"""
         ctx = {
@@ -177,17 +178,14 @@ class ActionSet(object):
             "service_groups": frozenset(target.effective_service_groups or []) if target else [],
             "remote_system": event.remote_system,
         }
-        action = EventAction.LOG
-        r_actions: Dict[str, Callable] = {}
+        action = None
         # Event and Target action
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
             r = a(event, target, resources)
             if r == EventAction.DROP:
                 return r
-            elif r != EventAction.LOG:
+            elif r and r != EventAction.LOG:
                 action = EventAction.DISPOSITION
-        if not r_actions:
-            return action
         return action
 
     @staticmethod

@@ -24,6 +24,7 @@ class EventAlarmRule:
     action: str
     unique: bool
     var_mapping: Dict[str, Any]
+    managed_object: str = "managed_object"
     match: Optional[Callable] = None
     match_vars: Optional[Callable] = None
     combo_condition: Optional[str] = None
@@ -45,6 +46,7 @@ class EventAlarmRule:
             action=data["action"],
             unique=alarm_class.is_unique,
             stop_disposition=data["stop_processing"],
+            combo_condition="none",
             var_mapping={v: v for v in a_vars.intersection(e_vars)},
         )
         if "combo_condition" in data:
