@@ -58,7 +58,7 @@ class ActionSet(object):
         categories: Optional[List[str]] = None
     ) -> Iterable[Callable]:
         """"""
-        self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
+        # self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
         for a in self.actions.get(event_class, []):
             if a.match and not a.match(ctx):
                 continue
