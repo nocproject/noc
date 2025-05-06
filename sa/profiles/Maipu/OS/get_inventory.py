@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 import re
+
 # NOC modules
 from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 
@@ -20,7 +21,7 @@ class Script(BaseScript):
         r"\s+Part Number\s+:\s+(?P<part_no>[^ ,]+)$"
         r"\s+Revision Number\s+:\s*$"
         r"\s+Serial Number\s+:\s+(?P<serial>[^ ,]+)",
-        re.MULTILINE | re.DOTALL | re.IGNORECASE
+        re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
     def execute_cli(self):
@@ -39,14 +40,14 @@ class Script(BaseScript):
         ]
 
         # show system power
-        #idata-stand01-nss3530#show system module brief
+        # idata-stand01-nss3530#show system module brief
         #
-        #module information display:
+        # module information display:
         #
-        #Module          Online State          Name                            SN                               userSN
-        #----------------------------------------------------------------------------------------------------------------------
-        #Mpu 0           online Start Ok       NSS3530-30TXF(V1)               23006706000128
-        #Power 1         online Normal         AD75M-HS0N(V1)                  23165720000586
+        # Module          Online State          Name                            SN                               userSN
+        # ----------------------------------------------------------------------------------------------------------------------
+        # Mpu 0           online Start Ok       NSS3530-30TXF(V1)               23006706000128
+        # Power 1         online Normal         AD75M-HS0N(V1)                  23165720000586
 
         v = self.cli("show system module brief")
         for m in self.profile.rx_module_info.finditer(v):

@@ -24,4 +24,3 @@ class Script(BaseScript):
         r = self.cli("show lldp")
         m = re.match(r"\s+Global status of LLDP\s+:\s+Enable", r)
         return bool(m)
-

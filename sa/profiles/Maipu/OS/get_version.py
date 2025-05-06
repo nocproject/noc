@@ -9,6 +9,7 @@ tested on:
 Maipu SM3220-28TF(E1)
 Maipu NSS3530-30TXF(V1)
 """
+
 # Python modules
 import re
 
@@ -63,8 +64,6 @@ class Script(BaseScript):
         if not serial:
             v = self.cli("show system module brief")
             for m in self.profile.rx_module_info.finditer(v):
-#                print(m)
-#                print("|%s|" % m["module_name"])
                 if m.group("module_name") == "Mpu 0":
                     serial = m.group("serial")
 
