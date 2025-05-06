@@ -255,6 +255,7 @@ class DispositionRule(Document):
             ("R", "Raise Disposition Alarm"),
             ("C", "Clear Disposition Alarm"),
             ("I", "Ignore Disposition Alarm"),
+            ("D", "Drop Event"),
         ],
         required=False,
     )
@@ -418,12 +419,10 @@ class DispositionRule(Document):
             "match_expr": {},
             "vars_match_expr": {},
             "event_classes": [],
-            "action": EventAction.LOG.value,
+            "action": "ignore",
         }
-        if rule.default_action == "I":
-            r["action"] = EventAction.DROP.value
-        elif rule.alarm_disposition:
-            r["action"] = EventAction.DISPOSITION.value
+        if rule.default_action:
+            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[rule.default_action]
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),
