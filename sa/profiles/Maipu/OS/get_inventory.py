@@ -83,6 +83,7 @@ class Script(BaseScript):
             # tengigabitethernet0/25
             iface_parts = m["iface"].split("/")
             if len(iface_parts) != 2:
+                self.logger.debug("[%s] has not contain 2 parts", m["iface"])
                 continue
 
             r["number"] = iface_parts[1]

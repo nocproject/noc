@@ -1214,7 +1214,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["NSS3530-54TXP(V1)"]
+            "value": ["IDS3730-48P-6X(V1)", "NSS3530-54TXP(V1)"]
         },
         {
             "attr": "managed",

@@ -18,6 +18,7 @@ class Profile(BaseProfile):
         (rb"^---MORE---\r", b" "),
         (rb"^---MORE---", b" "),
         (rb"^....press ENTER to next line, Q to quit, other key to next page....", b"\n"),
+#        (rb"Are you sure to overwrite /flash/startup (Yes|No)?", b"Yes"),
         (rb"Startup config in flash will be updated, are you sure", b"y"),
     ]
 
@@ -31,7 +32,7 @@ class Profile(BaseProfile):
     pattern_unprivileged_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)*>$"
     pattern_prompt = rb"^(?P<hostname>[a-zA-Z0-9-_\.]+)(?:-[a-zA-Z0-9/]+)(\(config\))*[*\)>#]$"
 
-    rogue_chars = [b"             \r", "\r"]
+    rogue_chars = [b"             \r", b"\r"]
 
     INTERFACE_TYPES = {
         "te": "physical",  # tengigabitethernet

@@ -905,12 +905,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -918,12 +916,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -931,12 +927,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -944,12 +938,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -957,12 +949,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -970,12 +960,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -983,12 +971,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         },
         {
@@ -996,12 +982,10 @@
             "description": null,
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
             "type__name": "Transceiver | QSFP28"
         }
     ],
