@@ -422,7 +422,9 @@ class DispositionRule(Document):
             "action": "ignore",
         }
         if rule.default_action:
-            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[rule.default_action]
+            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[
+                rule.default_action
+            ]
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),
