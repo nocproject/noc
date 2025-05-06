@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import re
 import os
 import operator
 from dataclasses import dataclass
@@ -49,6 +50,7 @@ from noc.core.protodcsources.base import BaseDiscriminatorSource
 id_lock = Lock()
 
 PROTOCOL_DIRECTION_CODES = {">", "<", "*"}
+rx_mode = re.compile(r"^(.+?)\s*\((.+)\)")
 
 
 @dataclass(frozen=True)
@@ -108,20 +110,30 @@ class ProtocolVariant(object):
             d_code, p_code = code[0], code[1:]
         else:
             d_code, p_code = "*", code
+        # Split modes
+        match = rx_mode.match(p_code)
+        if match:
+            p_code, m = match.groups()
+            modes = [x.strip() for x in m.split(",")]
+        else:
+            modes = None
+        #
         p_code, *vd_code = p_code.strip("::").split("::")
         # Detect Protocol Code
         if len(vd_code) > 1:
             raise ValueError("Unknown variant format: %s" % code)
         elif vd_code:
             vd_code = vd_code[0]
+        #
         protocol = Protocol.get_by_code(p_code)
         if not protocol and "-" in p_code:
             # Old format
             p_code, vd_code = p_code.rsplit("-", 1)
             protocol = Protocol.get_by_code(p_code)
         if not protocol:
-            raise ValueError("Unknown protocol code: %s" % p_code)
-        return ProtocolVariant(protocol, d_code, vd_code)
+            msg = f"Unknown protocol code: {p_code}"
+            raise ValueError(msg)
+        return ProtocolVariant(protocol, d_code, vd_code, modes=modes)
 
     def get_discriminator(
         self,
