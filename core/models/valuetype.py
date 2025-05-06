@@ -50,6 +50,15 @@ class ValueType(enum.Enum):
         return 0
 
     @staticmethod
+    def decode_float(value):
+        if value is not None:
+            try:
+                return float(value)
+            except ValueError:
+                pass
+        return 0
+
+    @staticmethod
     def decode_ipv4_address(value):
         return IPv4Parameter().clean(value)
 
@@ -80,6 +89,10 @@ class ValueType(enum.Enum):
     @staticmethod
     def decode_oid(value):
         return OIDParameter().clean(value)
+
+    @staticmethod
+    def decode_interface_name(value):
+        return value
 
     def clean_value(self, value):
         decoder = getattr(self, f"decode_{self.value}")
