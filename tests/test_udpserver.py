@@ -38,7 +38,7 @@ class UDPServerStub(UDPServer):
 
     def setup_socket(self, sock: socket.socket):
         super().setup_socket(sock)
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, DATAGRAMS_ALL * MAX_MSG_SIZE)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 4 * DATAGRAMS_ALL * MAX_MSG_SIZE)
 
 
 async def server_routine(udpserver: UDPServerStub):
@@ -75,7 +75,7 @@ async def client_routine(server: UDPServerStub, datagrams_quantity: int) -> None
         lambda: asyncio.DatagramProtocol(), remote_addr=server.sock_addr
     )
     sock = transport.get_extra_info("socket")
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, DATAGRAMS_FOR_CLIENT * MAX_MSG_SIZE)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_SNDBUF, 4 * DATAGRAMS_FOR_CLIENT * MAX_MSG_SIZE)
     # Send messages
     for _ in range(datagrams_quantity):
         data = random_string().encode()
