@@ -24,6 +24,14 @@ def test_eq(raw, config, expected):
 
 @pytest.mark.parametrize(
     "raw,config,expected",
+    [({"x": "y"}, {"x": {"$ne": "y"}}, False), ({"x": "x"}, {"x": {"$ne": "y"}}, True)],
+)
+def test_ne(raw, config, expected):
+    assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    "raw,config,expected",
     [
         ({"x": "y", "m": "n"}, {"x": "y", "m": "k"}, False),
         ({"x": "y", "m": "n"}, {"x": "y", "m": "n"}, True),
@@ -82,6 +90,9 @@ def test_in(raw, config, expected):
         ({"version": "12.2(50)SE"}, {"version": {"$gt": "12.2(48)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$gt": "12.2(50)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$gt": "12.2(51)SE"}}, False),
+        ({"x": 20}, {"x": {"$gt": "10"}}, True),
+        ({"x": 10}, {"x": {"$gt": "10"}}, False),
+        ({"x": 5}, {"x": {"$gt": "10"}}, False),
     ],
 )
 def test_gt(raw, config, expected):
@@ -94,6 +105,9 @@ def test_gt(raw, config, expected):
         ({"version": "12.2(50)SE"}, {"version": {"$gte": "12.2(48)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$gte": "12.2(50)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$gte": "12.2(51)SE"}}, False),
+        ({"x": 20}, {"x": {"$gte": "10"}}, True),
+        ({"x": 10}, {"x": {"$gte": "10"}}, True),
+        ({"x": 5}, {"x": {"$gte": "10"}}, False),
     ],
 )
 def test_gte(raw, config, expected):
@@ -106,6 +120,9 @@ def test_gte(raw, config, expected):
         ({"version": "12.2(50)SE"}, {"version": {"$lt": "12.2(48)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$lt": "12.2(50)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$lt": "12.2(51)SE"}}, True),
+        ({"x": 20}, {"x": {"$lt": "10"}}, False),
+        ({"x": 10}, {"x": {"$lt": "10"}}, False),
+        ({"x": 5}, {"x": {"$lt": "10"}}, True),
     ],
 )
 def test_lt(raw, config, expected):
@@ -118,6 +135,9 @@ def test_lt(raw, config, expected):
         ({"version": "12.2(50)SE"}, {"version": {"$lte": "12.2(48)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$lte": "12.2(50)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$lte": "12.2(51)SE"}}, True),
+        ({"x": 20}, {"x": {"$lte": "10"}}, False),
+        ({"x": 10}, {"x": {"$lte": "10"}}, True),
+        ({"x": 5}, {"x": {"$lte": "10"}}, True),
     ],
 )
 def test_lte(raw, config, expected):
