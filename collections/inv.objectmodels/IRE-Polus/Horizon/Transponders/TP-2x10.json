@@ -1,0 +1,168 @@
+{
+    "name": "IRE-Polus | Horizon | Transponders | TP-2x10",
+    "$collection": "inv.objectmodels",
+    "uuid": "1ac95bcc-b69b-476f-96bf-26f8d615f9cd",
+    "vendor__code": "IRE-POLUS",
+    "description": "Линейная карта TP-2x10 предназначена для агрегации клиентского трафика класса 10G в линейный кадр OTU2. На лицевой панели карты TP-2x10 шириной 4U и высотой 6HP размещаются 2 клиентских порта SFP+ и 2 линейных порта SFP+. Изделие может работать как сдвоенный транспондер 10G и транспондер с резервированием 1+1. ",
+    "connection_rule__name": "IRE-Polus | Horizon",
+    "cr_context": "LINECARD",
+    "plugins": ["pconf"],
+    "labels": ["noc::inv::lc"],
+    "connections": [
+        {
+            "name": "in",
+            "description": "Chassis connector",
+            "direction": "o",
+            "gender": "m",
+            "type__name": "IRE-Polus | Horizon | H4 Card"
+        },
+        {
+            "name": "LINE1",
+            "description": "Посадочное место под линейный SFP модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "LINE2",
+            "description": "Посадочное место под линейный SFP модуль 2",
+            "cross_direction": "o",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "OTU2"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT1",
+            "description": "Посадочное место под клиентский SFP модуль 1",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth2_5G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "CLIENT2",
+            "description": "Посадочное место под клиентский SFP модуль 2",
+            "cross_direction": "i",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth2_5G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM1"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM4"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "STM64"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "data": [
+        {
+            "attr": "power",
+            "interface": "power",
+            "value": 20.0
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["TP-2x10-SFP+/SFP+-H4"]
+        },
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 280
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 150
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 30
+        }
+    ],
+    "short_label": "TP-2x10"
+}
