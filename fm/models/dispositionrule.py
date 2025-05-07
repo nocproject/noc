@@ -76,10 +76,10 @@ class MatchData(EmbeddedDocument):
     def get_match_expr(self) -> Dict[str, Any]:
         """"""
         if self.field == "vars":
-            return {self.field: {f"$in": self.value}}
+            return {self.field: {"$in": self.value}}
         if self.choices:
             # ?OR
-            return {self.field: {f"$any": self.choices}}
+            return {self.field: {"$any": self.choices}}
         return {self.field: {f"${self.op}": self.value}}
 
     @property
