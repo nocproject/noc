@@ -101,7 +101,7 @@ class Command(BaseCommand):
                 cls_cnt += 1
             out_record = {
                 "event": event.model_dump(),
-                "event_class__name": rule.event_class.name,
+                "event_class__name": rule.event_class_name,
                 "vars": r_vars,
             }
             out_data += [out_record]
