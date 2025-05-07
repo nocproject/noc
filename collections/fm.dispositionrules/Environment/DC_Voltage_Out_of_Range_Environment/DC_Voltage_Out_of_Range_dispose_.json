@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Environment | DC Voltage Out of Range",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Environment | DC Voltage Out of Range"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

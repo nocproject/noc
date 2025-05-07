@@ -5,13 +5,15 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | BGP | Prefix Limit Exceeded",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Network | BGP | Peer State Changed"
     }],
     "default_action": "C",
-    "match": [],
-    "stop_processing": false
+    "stop_processing": false,
+    "vars_conditions": [{
+        "field": "to_state",
+        "op": "eq",
+        "value": "ESTABLISHED"
+    }],
+    "vars_conditions_op": "AND"
 }

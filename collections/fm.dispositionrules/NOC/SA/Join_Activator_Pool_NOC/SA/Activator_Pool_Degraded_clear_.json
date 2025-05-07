@@ -5,13 +5,22 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "NOC | SA | Activator Pool Degraded",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "NOC | SA | Join Activator Pool"
     }],
     "default_action": "C",
-    "match": [],
-    "stop_processing": false
+    "stop_processing": true,
+    "vars_conditions": [
+        {
+            "field": "pool_sessions",
+            "op": "gte",
+            "value": "==min_sessions"
+        },
+        {
+            "field": "pool_members",
+            "op": "gte",
+            "value": "==min_members"
+        }
+    ],
+    "vars_conditions_op": "AND"
 }

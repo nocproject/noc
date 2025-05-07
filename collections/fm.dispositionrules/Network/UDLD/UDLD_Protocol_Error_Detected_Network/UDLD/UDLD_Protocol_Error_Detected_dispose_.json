@@ -5,15 +5,11 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | UDLD | UDLD Protocol Error Detected",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [
         {
             "event_class_re": "Network | UDLD | UDLD Protocol Error Detected"
         }
     ],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }
