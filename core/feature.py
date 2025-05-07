@@ -91,13 +91,13 @@ def _get_features() -> Set[Feature]:
             try:
                 feature = Feature(fx[1:])
                 r.discard(feature)
-            except ValueError as e:
+            except ValueError:
                 logger.info("Unknown feature '%s', ignoring", fx[1:])
         else:
             try:
                 feature = Feature(fx)
                 r.add(feature)
-            except ValueError as e:
+            except ValueError:
                 logger.info("Unknown feature '%s', ignoring", fx)
     _current_features = frozenset(r)
     if _current_features:
