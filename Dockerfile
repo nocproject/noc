@@ -22,19 +22,7 @@ RUN \
     libpq-dev \
     iproute2 \
     && pip3 install --upgrade pip \
-    && pip3 install\
-    -r ./.requirements/node.txt\
-    -r ./.requirements/bh.txt\
-    -r ./.requirements/activator.txt\
-    -r ./.requirements/classifier.txt\
-    -r ./.requirements/cache-redis.txt\
-    -r ./.requirements/login-ldap.txt\
-    -r ./.requirements/login-pam.txt\
-    -r ./.requirements/login-radius.txt\
-    -r ./.requirements/prod-tools.txt\
-    -r ./.requirements/testing.txt\
-    -r ./.requirements/sender-kafka.txt\
-    -r ./.requirements/ping.txt\
+    && pip install -e .[bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping] \
     && python3 ./scripts/deploy/install-packages requirements/web.json \
     && python3 ./scripts/deploy/install-packages requirements/card.json \
     && python3 ./scripts/deploy/install-packages requirements/bi.json \
@@ -63,11 +51,8 @@ RUN \
     git \
     nodejs \
     npm \
-    && pip3 install\
-    -r ./.requirements/dev.txt\
-    -r ./.requirements/lint.txt\
-    -r ./.requirements/test.txt\
-    -r ./.requirements/docs.txt\
+    && pip install --upgrade pip\
+    && pip install -e .[dev,docs,lint,test]\
     && npm install -g eslint@8\
     && rm -rf /var/lib/apt/lists/*
 
@@ -79,7 +64,7 @@ ENV\
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
     PROJ_DIR=/usr
-COPY .requirements/* /tmp
+COPY pyproject.toml /tmp/
 RUN \
     set -x \
     && apt-get update\
@@ -94,23 +79,7 @@ RUN \
     nodejs \
     npm \
     && pip3 install --upgrade pip \
-    && pip3 install\
-    -r /tmp/node.txt\
-    -r /tmp/bh.txt\
-    -r /tmp/activator.txt\
-    -r /tmp/classifier.txt\
-    -r /tmp/cache-redis.txt\
-    -r /tmp/login-ldap.txt\
-    -r /tmp/login-pam.txt\
-    -r /tmp/login-radius.txt\
-    -r /tmp/prod-tools.txt\
-    -r /tmp/testing.txt\
-    -r /tmp/sender-kafka.txt\
-    -r /tmp/ping.txt\
-    -r /tmp/dev.txt\
-    -r /tmp/lint.txt\
-    -r /tmp/test.txt\
-    -r /tmp/docs.txt\
+    && (cd /tmp/ && pip install -e .[bh,activator,classifier,cache-redis,dev,docs,lint,node,test,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]) \
     && npm install -g eslint@8\
     && pip cache purge \
     && rm -rf /var/lib/apt/lists/* /tmp/*.whl
