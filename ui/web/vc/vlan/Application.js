@@ -202,7 +202,7 @@ Ext.define("NOC.vc.vlan.Application", {
                     fieldLabel: __("Labels"),
                     allowBlank: true,
                     query: {
-                        "enable_vlan": true
+                        "allow_models": "vc.VLAN"
                     },
                 }
             ],
