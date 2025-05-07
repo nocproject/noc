@@ -1,0 +1,10 @@
+{
+    "name": "TransEth2_5G",
+    "code": "TransEth2_5G",
+    "$collection": "inv.protocols",
+    "uuid": "690e942a-f521-43bb-a908-7a3298d807ab",
+    "description": "Interface for device transceivers module",
+    "data": [],
+    "connection_schema": "BO",
+    "technology__name": "Transceiver"
+}
