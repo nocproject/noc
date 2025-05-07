@@ -63,15 +63,15 @@ class Command(BaseCommand):
             if not line:
                 continue
             # Parse priority
-            priority = 0
+            # priority = 0
             if line.startswith("<"):
                 idx = line.find(">")
                 if idx == -1:
                     continue
-                try:
-                    priority = int(line[1:idx])
-                except ValueError:
-                    pass
+                # try:
+                #     priority = int(line[1:idx])
+                # except ValueError:
+                #     pass
                 line = line[idx + 1 :].strip()
             # Get timestamp
             ts = int(time.time())
