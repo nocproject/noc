@@ -4,12 +4,8 @@
     "uuid": "72d429de-c959-49b2-98d2-01c9393db405",
     "description": null,
     "preference": 1000,
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Network | MAC | MAC Learned"
     }],
-    "match": [],
     "stop_processing": false
 }

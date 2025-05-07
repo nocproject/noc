@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Security | Attack | Smurf Attack",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Security | Attack | Smurf Attack"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

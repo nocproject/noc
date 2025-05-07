@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "NOC | Periodic | Periodic Failed",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "NOC | Periodic | Periodic Failed"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

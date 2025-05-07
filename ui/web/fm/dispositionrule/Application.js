@@ -14,6 +14,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
     "NOC.core.ListFormField",
     "NOC.core.StringListField",
     "NOC.core.tagfield.Tagfield",
+    "NOC.core.StringListField",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
     "NOC.fm.eventclass.LookupField",
@@ -368,8 +369,14 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               text: __("Value"),
               dataIndex: "value",
               editor: "textfield",
-              flex: 1,
+              width: 100
             },
+            {
+              text: __("Choices (for multi)"),
+              dataIndex: "choices",
+              flex: 1,
+              editor: "stringlistfield"
+            }
           ],
         },
         {

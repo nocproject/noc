@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | DOCSIS | Bad Timing Offset",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Network | DOCSIS | Bad Timing Offset"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

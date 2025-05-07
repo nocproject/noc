@@ -4,16 +4,13 @@
     "uuid": "f60e5f32-5725-4663-b0df-65d4845c6bfc",
     "description": null,
     "preference": 1000,
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Config | Config Changed"
     }],
-    "match": [],
     "object_actions": {
         "interaction_audit": 6,
-        "run_discovery": true
+        "run_discovery": true,
+        "update_avail_status": "N"
     },
     "stop_processing": false
 }

@@ -4,16 +4,13 @@
     "uuid": "9c8122ba-c5e2-4978-ad28-3e9529c0f593",
     "description": null,
     "preference": 1000,
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Security | Authentication | Rejected"
     }],
-    "match": [],
     "object_actions": {
         "interaction_audit": 2,
-        "run_discovery": false
+        "run_discovery": false,
+        "update_avail_status": "N"
     },
     "stop_processing": false
 }

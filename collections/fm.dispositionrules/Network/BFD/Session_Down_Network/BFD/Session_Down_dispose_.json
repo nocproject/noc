@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | BFD | Session Down",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Network | BFD | Session Down"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

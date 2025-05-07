@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Security | Access | Case Open",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Security | Access | Case Close"
     }],
     "default_action": "C",
-    "match": [],
     "stop_processing": false
 }

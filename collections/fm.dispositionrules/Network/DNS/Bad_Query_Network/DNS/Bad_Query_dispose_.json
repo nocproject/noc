@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | DNS | Bad Query",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Network | DNS | Bad Query"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }

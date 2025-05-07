@@ -5,15 +5,11 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Network | IMPB | Unauthenticated IP-MAC",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [
         {
             "event_class_re": "Network | IMPB | Recover IMPB stop learning state"
         }
     ],
     "default_action": "C",
-    "match": [],
     "stop_processing": false
 }

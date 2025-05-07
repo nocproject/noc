@@ -5,15 +5,11 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Vendor | Cisco | IOS | Network | Load Balance | vserver Out of Service",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [
         {
             "event_class_re": "Vendor | Cisco | IOS | Network | Load Balance | vserver In Service"
         }
     ],
     "default_action": "C",
-    "match": [],
     "stop_processing": false
 }
