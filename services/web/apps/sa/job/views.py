@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # sa.job application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from typing import Iterable
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.sa.models.job import Job, JobStatus
+from noc.core.feature import Feature
 from noc.core.translation import ugettext as _
 
 SELECTABLE_CLASS = "job-selectable"
@@ -48,6 +49,7 @@ class JobApplication(ExtDocApplication):
     model = Job
     glyph = "truck"
     default_ordering = ["-id"]
+    require_feature = Feature.JOBS
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = super().instance_to_dict(o, fields, nocustom)
