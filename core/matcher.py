@@ -30,13 +30,20 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
             value = re.compile(value)
         case "$in" | "$all" | "$any":
             value = frozenset(v for v in value)
-        case "$eq":
+        case "$eq" | "$ne":
             value = value
+        case "$gt" | "$gte" | "$lt" | "$lte":
+            if field == "version":
+                value = alnum_key(value)
+            else:
+                value = int(value)
         case _:
             value = alnum_key(value)
     if field == "caps":
         # For caps - context is dict. Maybe add has_key matcher
         op = "$any"
+    elif field == "version" and op in {"$gt", "$gte", "$lt", "$lte"}:
+        return partial(partial(match_version, value, op))
     return partial(matchers[op], value, field)
 
 
@@ -44,6 +51,20 @@ def match_ctx(cv: str, handler: Callable, ctx: Dict[str, Any]) -> bool:
     if cv not in ctx:
         return False
     return handler(cv=ctx[cv], ctx=ctx)
+
+
+def match_version(cv: str, op: str, ctx: Dict[str, Any]) -> bool:
+    match op:
+        case "$gt":
+            return alnum_key(ctx["version"]) > cv
+        case "$lt":
+            return alnum_key(ctx["version"]) < cv
+        case "$gte":
+            return alnum_key(ctx["version"]) >= cv
+        case "$lte":
+            return alnum_key(ctx["version"]) <= cv
+        case _:
+            raise ValueError("Unknown operation")
 
 
 def iter_matchers(expr: Dict[str, Any]) -> Iterable[Callable]:
@@ -105,23 +126,27 @@ def match_any(c_iter: FrozenSet, field: str, ctx: Dict[str, Any]) -> bool:
 
 
 def match_gt(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
-    return alnum_key(ctx[field]) > cv
+    return ctx[field] > cv
 
 
 def match_gte(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
-    return alnum_key(ctx[field]) >= cv
+    return ctx[field] >= cv
 
 
 def match_lt(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
-    return alnum_key(ctx[field]) < cv
+    return ctx[field] < cv
 
 
 def match_lte(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
-    return alnum_key(ctx[field]) <= cv
+    return ctx[field] <= cv
 
 
 def match_eq(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
     return ctx[field] == cv
+
+
+def match_ne(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
+    return ctx[field] != cv
 
 
 matchers = {
@@ -134,4 +159,5 @@ matchers = {
     "$lt": match_lt,
     "$lte": match_lte,
     "$eq": match_eq,
+    "$ne": match_ne,
 }
