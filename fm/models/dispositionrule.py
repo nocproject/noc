@@ -67,7 +67,7 @@ class MatchData(EmbeddedDocument):
         ],
         default="eq",
     )
-    value = StringField(required=True)
+    value = StringField(required=False)
     choices = ListField(StringField(required=True))
 
     def __str__(self):
