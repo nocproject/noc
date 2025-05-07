@@ -67,17 +67,25 @@ class MatchData(EmbeddedDocument):
         ],
         default="eq",
     )
-    value = StringField(required=True)
+    value = StringField(required=False)
+    choices = ListField(StringField(required=True))
 
     def __str__(self):
         return f"{self.field} {self.op} {self.value}"
 
     def get_match_expr(self) -> Dict[str, Any]:
         """"""
+        if self.field == "vars":
+            return {self.field: {"$in": self.value}}
+        if self.choices:
+            # ?OR
+            return {self.field: {"$any": self.choices}}
         return {self.field: {f"${self.op}": self.value}}
 
     @property
     def json_data(self) -> Dict[str, Any]:
+        if self.choices:
+            return {"field": self.field, "op": self.op, "choices": self.choices}
         return {"field": self.field, "op": self.op, "value": self.value}
 
 
@@ -313,14 +321,15 @@ class DispositionRule(Document):
             "uuid": self.uuid,
             "description": self.description,
             "preference": self.preference,
-            "update_oper_status": self.update_oper_status,
-            "vars_conditions_op": self.vars_conditions_op,
             "stop_processing": self.stop_processing,
         }
         if self.conditions:
             r["conditions"] = [m.json_data for m in self.conditions]
         if self.vars_conditions:
             r["vars_conditions"] = [m.json_data for m in self.vars_conditions]
+            r["vars_conditions_op"] = self.vars_conditions_op
+        if self.update_oper_status != "N":
+            r["update_oper_status"] = self.update_oper_status
         if self.replace_rule:
             r |= {
                 "replace_rule__name": self.replace_rule.name,
@@ -328,7 +337,11 @@ class DispositionRule(Document):
             }
         if self.object_actions:
             r["object_actions"] = {
-                "interaction_audit": self.object_actions.interaction_audit.value,
+                "interaction_audit": (
+                    self.object_actions.interaction_audit.value
+                    if self.object_actions.interaction_audit
+                    else None
+                ),
                 "run_discovery": self.object_actions.run_discovery,
                 "update_avail_status": self.object_actions.update_avail_status,
             }

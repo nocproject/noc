@@ -4,16 +4,13 @@
     "uuid": "007c223d-3146-4c6e-ab61-4ecd4f880f57",
     "description": null,
     "preference": 1000,
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "Security | Audit | Command"
     }],
-    "match": [],
     "object_actions": {
         "interaction_audit": 0,
-        "run_discovery": false
+        "run_discovery": false,
+        "update_avail_status": "N"
     },
     "stop_processing": false
 }

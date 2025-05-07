@@ -5,13 +5,9 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "OTN | ODU | PM | SF",
-    "combo_condition": "none",
-    "combo_window": 0,
-    "combo_count": 0,
     "conditions": [{
         "event_class_re": "OTN | ODU | PM | SF"
     }],
     "default_action": "R",
-    "match": [],
     "stop_processing": false
 }
