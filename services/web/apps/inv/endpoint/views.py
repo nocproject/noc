@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # inv.endpoint application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,6 @@
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.inv.models.endpoint import Endpoint
 from noc.core.translation import ugettext as _
-from noc.core.resource import resource_label
 from noc.core.feature import Feature
 
 
