@@ -28,10 +28,10 @@ def get_svg_for_facade(facade: Facade, /, cache: dict[ObjectId, SVG] | None = No
     if cache:
         svg = cache.get(facade.id)
         if svg:
-            return svg
+            return svg.clone()
     # Serialize
     svg = SVG.from_string(facade.data)
     # Save to cache
     if cache is not None:
-        cache[facade.id] = svg
+        cache[facade.id] = svg.clone()
     return svg
