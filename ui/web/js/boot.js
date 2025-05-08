@@ -13,6 +13,7 @@ if(httpRequest.status === 200){
   NOC.settings = {
     systemId: setup.system_uuid ? setup.system_uuid : null,
     brand: setup.brand,
+    features: setup.features || [],
     installation_name: setup.installation_name,
     preview_theme: setup.preview_theme,
     language: setup.language,

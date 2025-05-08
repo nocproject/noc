@@ -1,19 +1,21 @@
 # ---------------------------------------------------------------------
 # inv.inv job plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.inv.models.object import Object
 from noc.sa.models.job import Job
+from noc.core.feature import Feature
 from .base import InvPlugin
 
 
 class JobPlugin(InvPlugin):
     name = "job"
     js = "NOC.inv.inv.plugins.job.JobPanel"
+    required_feature = Feature.JOBS
 
     def init_plugin(self):
         super().init_plugin()

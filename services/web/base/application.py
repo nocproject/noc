@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Application class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import os
 import datetime
 import functools
 from collections import OrderedDict
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Optional
 
 # Third-party modules
 from django.http import (
@@ -36,6 +36,7 @@ import jinja2
 from noc.core.forms import NOCForm
 from noc import settings
 from noc.sa.interfaces.base import DictParameter
+from noc.core.feature import Feature
 from noc.core.cache.base import cache
 from noc.core.comp import smart_text
 from noc.models import is_document
@@ -84,12 +85,13 @@ class ApplicationBase(type):
     Application metaclass. Registers application class to site
     """
 
-    def __new__(mcs, name, bases, attrs):
+    def __new__(mcs: "Type[Application]", name: str, bases, attrs):
         m = type.__new__(mcs, name, bases, attrs)
         for name in attrs:
             m.add_to_class(name, attrs[name])
         if "apps" in m.__module__:
-            site.register(m)
+            if not m.require_feature or m.require_feature.is_active():
+                site.register(m)
         return m
 
 
@@ -116,6 +118,7 @@ class Application(object, metaclass=ApplicationBase):
     config = settings.config  # @fixme remove
 
     app_alias = None  # Django 1.5 application aliases
+    require_feature: Optional[Feature] = None  # Feature required for application
 
     TZ = get_current_timezone()
 
