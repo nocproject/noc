@@ -1,74 +1,109 @@
 # Connecting Zabbix Remote System as Managed Object Source
  
-**Zabbix** is often used as a monitoring system. When collecting data from network equipment,
-NOC is frequently integrated, which can lead to situations where the equipment needs to be
-entered into two systems, making it quite inconvenient.
-In cases where Zabbix is the master system (where equipment is primarily added),
-it can be integrated with NOC through an ETL mechanism, adding it as an external
-system and synchronizing devices (Managed Object) with it.  
+**Zabbix** is quite often used as a monitoring system. When collecting data on network equipment, **NOC** is often connected, in this case there may be a situation when the equipment needs to be entered into two systems, which is quite inconvenient. For the case when Zabbix is a master system (equipment is added first), it can be integrated with NOCa through the **ETL** mechanism by adding it as an external system and synchronizing devices with it (*Managed Object*).
 
-For this scheme, there is an adapter for integration with Zabbix within the NOC, which allows:  
- 
-* Synchronizing Zabbix Groups with their corresponding Resource Groups in NOC  
-* Loading Zabbix Hosts that support SNMP as Managed Objects in NOC  
-* If the Host has coordinates filled in, a Point of Presence (PoP) can be created on the map based on it  
-* Integrating via the API Key or through a User the following: Managed Object, Object, Resource Group  
+For this scheme, NOCa includes an adapter for integration with Zabbix, it allows:
 
-In the Environment field, enter the connection details for Zabbix:
+* Synchronize **Groups** (*Group*) of *Zabbix* to their corresponding *Resource Groups* (*Resource Group*) of NOCa
+* Load *Zabbix* **Hosts** (*Host*) that support SNMP as *Devices* (*Managed Object*) of NOC.
+* If a *Host** (*Host*) has filled in coordinates, a *PoP* can be created on its base on the map.
+* Integrate by *API Key* or through a user (*User*)
+* Specify groups (*Group*) from which the equipment will be received.
 
-* **API_URL** - the name (or IP address) on which Zabbix is installed  
-* **API_TOKEN** - the token string for access  
-3. We will get a form filled out similarly to the image below  
-4. Click the Save button
+> [!WARNING]
+>
+> The [python-zabbix-utils](https://github.com/zabbix/python-zabbix-utils) library will need to be installed for the adapter to work, this can be done with the `./bin/pip install -r .requirements/zabbix.txt` command from the `noc` directory.
+
+
+## Adding an external system
+
+Thanks to the *ETL* mechanism, NOC can fetch cluster composition information by integrating with *vCenter*. NOC has an integration adapter located in `noc.core.etl.extractor.zabbix.Zabbix.ZabbixRemoteSystem`. To enable it, you need to configure **Remote System** (*Remote System*), menu section *Main -> Setup -> Remote System*. In it, perform the following steps:
+
+1. Click the *Add* button. The Add System form will open
+2. Enter data in the fields provided:
+   1. **Name** (*Name*) can be any word, the instructions use `ZABBIX`.
+   2. **Handler** (*Handler*) is the path to the adapter, enter `noc.core.etl.extractor.zabbix.ZabbixRemoteSystem`.
+   3. Among the checkboxes presented, check the following: `Managed Object`, `Object`, `Resource Group`.
+   4. In the **Environment** field enter the details of connection to *Zabbix*:
+      1. *API_URL* - name (or IP address) where *Zabbix* is installed.
+      2. *API_TOKEN* - access token string
+3. We will get a form filled out similarly to the image below
+4. Click the *Save* button.
 
 ![Zabbix RemoteSystem Add Form](remote_system_zabbix_add_form_en.png)
 
-If everything has gone smoothly, the added entry with the specified name should appear in the list.  
+If everything went through without errors, the list should show the added record with the specified name.
+
+
+Translated with DeepL.com (free version)
 
 ### Configuring Rules
 
-The export creates an **Authentication Profile** (*Auth Profile*) - ZB.AUTO,
-which is assigned to the devices. By default, it does not have access credentials assigned.
-Therefore, it is necessary to specify them in the 
-**Device Management section** (*Service Activation*) -> Settings (Setup) -> Authentication Profile (Auth Profile),
-or set up rules for credential matching in `Device Management (Service Activation) -> (Settings) Setup -> Credential Check Rules`.  
+The upload creates an **Auth Profile** (*Auth Profile*) - `ZB.AUTO`, it is also assigned to devices. By default, it does not have access credentials. Therefore, to work it is necessary to specify them in *Service Activation -> Setup -> Auth Profile*, or set up *Credential Check Rules* in *Service Activation -> Setup -> Credential Check Rules*.
 
-For placing export devices, an Administrative Domain is used - holding a geographic address string.
-For placing equipment on the map. Used if latitude or longitude are not specified: lan/lot.  
+The **Administrative Domain** (*Administrative Domain*) is `default`, and the **Network Segment** (*Network Segment*) is `ALL` to host offload devices.
 
-!!! warning  
-    The setting **LOCATION_FIELD** is currently not supported.  
+For devices (*Managed Object*) a **Object Profile** (*Object Profile*) is created - `zb.std.sw`.
 
-## Using the Purgatorium  
+!!! warning
 
-By default, devices (Managed Objects) are created from hosts (Host) in Zabbix during the data export process,
-but it is possible to use the Purgatorium mechanism to store hosts from Zabbix.
-In this case, the results are first registered as discovered addresses (Discovered Objects) and become
-available in the Service Activation -> Setup -> Discovered Objects section. Instruction for use (link)  
-To send devices to the Purgatorium, it is necessary to change the setting of the Managed Object Loader Policy of the external system to Discovered Object.  
+    If a field is changed during synchronization, it will overwrite the changes made by the user in the system.
 
-!!! note  
-    The functionality of the *Purgatorium* (*Discovered Objects*) is available starting from version *24.1* in experimental mode.  
+### Configuring the adapter
 
-## Data export  
 
-After adding an external system, it is necessary to initiate the data export procedure. This is done through When transitioning to the adapter out of the box, the following changes will occur during synchronization:
-* The Administrative Domain will change to Default
-* The Network Segment will change to ALL
-* The Point of Presence (PoP) will be removed
+In the *Environment* field of the *Remote System* you can specify settings for the adapter, for Zabbix the following are available:
 
-To avoid such changes, you can copy the code from the built-in adapter to the current one (from Contrib),
-replacing the values of the fields administrative_domain and segment accordingly:
+* **API_URL** - a link to *Zabbix* in the format `https://<host>` is placed
+* **API_TOKEN** - the authentication token is specified - if a scheme with it is used
+* **GROUPS_FILTER** - lists the names of *Zabbix* groups whose hosts will be unloaded. Semicolon separator. The names must *EXACTLY* match those in *Zabbix*.
+* **DEFAULT_SCHEME** - default access scheme for the devices to be offloaded. If not specified, it will be SSH:
+  * 1 - *TELNET*
+  * 2 - *SSH*
+* **DEFAULT_POOL** - pool (*Pool*) to host the devices. If not specified, it will be *default*
+* **LOCATION_FIELD** - name of the field in *Inventory Zabbix* that contains the geographic address string. To locate the equipment on the map. Used if no width or longitude is specified: `lan/lot`.
+
+!!! warning
+
+    The **LOCATION_FIELD** setting is not currently supported
+
+### Using a Purgatorium
+
+By default, *Zabbix* hosts (*Host*) are used to create devices (*Managed Obejct*) during the upload process, but it is possible to use the *Purgatorium* mechanism to store hosts from *Zabbix*. In this case the results are first registered as *Discovered Objects* and are available under *Service Activation -> Setup -> Discovered Objects*. ~~Instruction manual (link)~~.
+
+To send devices to the *Discovered Objects*, the *Managed Object Loader Policy* setting of the *External System* must be changed to `Discovered Object`.
+
+
+!!! note
+
+    The *Discovered Objects* functionality is available from version *24.1* in experimental mode.
+
+## Data unloading
+
+After adding an external system, the data unloading procedure must be started. This is done through the `./noc etl` console command. To run it, go to the folder with the installed NOC - `/opt/noc` and do the following steps:
+
+1. Start getting data from *vCenter* with the command `./noc etl extract ZABBIX`, instead of `ZABBIX` you should specify the name given when adding the external system.
+2. To check that some records have been unloaded, use the `./noc etl diff --summary ZABBIX` command, the screen will display statistics on the records received.
+3. After the synchronization is complete (if there are no errors), check the data with the `./noc etl check ZABBIX` command. If errors are detected, you should return to the previous step and check the settings made.
+4. To load the obtained records into the system, run the `./noc etl load ZABBIX` command.
+
+## Migration from Contrib
+
+If the adapter from [Contrib](https://code.getnoc.com/noc/contrib/etl-zabbix/-/blob/master/zabbix.py) was used for synchronization with `Zabbix`, then to use the adapter out of the box, you need to change the `Handler` field in the external system settings. If no changes were made to the `contrib` code - the following changes will occur during synchronization when switching to the adapter *out of the box*:
+
+* *Administrative Domain* will change to `Default'.
+*Network Segment* will change to `ALL'.
+*PoP* will be deleted.
+
+To avoid such changes, you can copy the code from the built-in adapter into the current adapter (from `Contrib`), replacing the values of the `administrative_domain` and `segment` fields respectively:
 
 * `administrative_domain` - `zb.root`
 * `segment` - `!new`
 
 !!! warning
 
-    If any custom modifications have been made, they must be transferred :)
+    If any customizations were made, they should be moved :)
 
 ## Adapter modification
-If it is necessary to supplement/change the logic of the adapter or to use your own,
-a mechanism for placing system modifications (Custom) is provided for this purpose.
-When using it, modifications are placed in a separate folder, allowing the system
-to be updated without having to restore your changes after the update. `Instructions for using Custom`
+
+If you need to add/change the adapter's logic or use your own, you can use the mechanism for placing system modifications (*Custom*). When using this mechanism, customizations are placed in a separate folder, which allows you to update the system without having to restore your changes after an update. Instructions for using Custom
