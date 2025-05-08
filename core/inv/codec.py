@@ -14,8 +14,9 @@ from pydantic import BaseModel, Field
 
 # NOC modules
 from .result import Result
-from noc.inv.models.object import Object
+from noc.inv.models.object import Object, ObjectAttr, ObjectConnectionData
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
+from noc.inv.models.objectmodel import Crossing, ObjectModel
 
 
 class ModelItem(BaseModel):
@@ -25,7 +26,7 @@ class ModelItem(BaseModel):
 
 class ObjectConnectionItem_(BaseModel):
     name: str  # имя connection (из модели)
-    object: str  # (ссылку надо на объект чтоли?) - структура Object (для connection типа o )
+    interface_name: str  # (ссылку надо на объект чтоли?) - структура Object (для connection типа o )
     # todo
     # по факту сейчас сюда пишутся поля из ObjectConnectionData
     # в name - name, в object - interface_name
@@ -50,10 +51,12 @@ class ObjectItem(BaseModel):
     id: str
     name: Optional[str] = None
     model: ModelItem
+    parent: Optional[str] = None
+    parent_connection: Optional[str] = None
     mode: Optional[str] = None
+    data: list[ObjectDataItem]
     connections: Optional[list[ObjectConnectionItem_]] = None
     additional_connections: Optional[list[str]] = None
-    data: list[ObjectDataItem]
     cross: Optional[list[CrossItem]] = None
 
 
@@ -70,8 +73,8 @@ class ConnectionItem(BaseModel):
 class InvData(BaseModel):
     """Structure for encode/decode Inventory Objects"""
 
-    type: str = Field(serialization_alias="$type")
-    version: str = Field(serialization_alias="$version")
+    type: str = Field("inventory", alias="$type")
+    version: str = Field("1.0", alias="$version")
     objects: list[ObjectItem]
     connections: list[ConnectionItem]
 
@@ -94,16 +97,9 @@ def encode(iter: Iterable[Object]) -> InvData:
                 continue
             yield from iter_object_tree(child, exclude_cables)
 
-    def generate_object_item(object: Object) -> ObjectItem:
+    def generate_object_item(object: Object, is_root: bool) -> ObjectItem:
         """Generate ObjectItem structure for Object"""
         o_model: ModelItem = ModelItem(uuid=str(object.model.uuid), name=object.model.name)
-        o_connections: list[ObjectConnectionItem_] = [
-            ObjectConnectionItem_(
-                name=c.name,
-                object=c.interface_name,
-            )
-            for c in object.connections
-        ]
         o_data: list[ObjectDataItem] = [
             ObjectDataItem(
                 interface=d.interface,
@@ -112,6 +108,13 @@ def encode(iter: Iterable[Object]) -> InvData:
                 value=d.value,
             )
             for d in object.data
+        ]
+        o_connections: list[ObjectConnectionItem_] = [
+            ObjectConnectionItem_(
+                name=c.name,
+                interface_name=c.interface_name,
+            )
+            for c in object.connections
         ]
         o_cross: list[CrossItem] = [
             CrossItem(
@@ -127,11 +130,13 @@ def encode(iter: Iterable[Object]) -> InvData:
             "id": str(object.id),
             "name": object.name,
             "model": o_model,
+            "parent": None if is_root else str(object.parent.id),
+            "parent_connection": object.parent_connection,
             "mode": getattr(object, "mode", None),
-            "connections": o_connections,
-            "additional_connections": object.additional_connections,
             "data": o_data,
-            "cross": o_cross,
+            "connections": o_connections or None,
+            "additional_connections": object.additional_connections or None,
+            "cross": o_cross or None,
         }
         return ObjectItem(**oi_d)
 
@@ -193,20 +198,84 @@ def encode(iter: Iterable[Object]) -> InvData:
 
     objects = []
     object_ids = []
-    for parent_object in iter:
-        for obj in iter_object_tree(parent_object, exclude_cables=True):
-            objects.append(generate_object_item(obj))
+    for root_object in iter:
+        for obj in iter_object_tree(root_object, exclude_cables=True):
+            objects.append(generate_object_item(obj, obj is root_object))
             object_ids.append(obj.id)
     connections = []
     for conn in get_connections(object_ids):
         connections.append(conn)
     return InvData(
-        type="inventory",
-        version="1.0",
         objects=objects,
         connections=connections,
     )
 
 
-def decode(root: Object, data: InvData) -> Result:
+def decode(container: Object, data: InvData) -> Result:
+    """
+    Decode Inventory Objects from pydatic-structure InvData and write it to database.
+    Following information is written:
+    - all objects from structure
+    - all connections from structure
+    """
+
+    print("container", container, type(container))
+    print("data", type(data))
+    print("len objects", len(data.objects))
+    print("len connections", len(data.connections))
+
+    # Create objects
+    #
+    # Map for Object IDs
+    # ID of Object in ObjectItem (JSON) -> ID of created in database Object
+    # types:                        str -> ObjectId
+    o_map = {}
+    o_counter = 0
+    for o in data.objects:
+        parent = o_map[o.parent] if o.parent else container
+        o_connections = (
+            [ObjectConnectionData(**oci.dict()) for oci in o.connections] if o.connections else None
+        )
+        o_cross = [Crossing(**ci.dict()) for ci in o.cross] if o.cross else None
+        obj = Object(
+            name=o.name,
+            model=ObjectModel.get_by_name(o.model.name),
+            parent=parent,
+            parent_connection=o.parent_connection,
+            mode=o.mode,
+            data=[ObjectAttr(**odi.dict()) for odi in o.data],
+            connections=o_connections,
+            additional_connections=o.additional_connections,
+            cross=o_cross,
+        ).save()
+        o_map[o.id] = obj.id
+        o_counter += 1
+
+    #print("o_map", o_map, type(o_map))
+    print(f"Imported objects: {o_counter}")
+
+    # Create connections
+    c_counter_dir, c_counter_cab = 0, 0
+    for c in data.connections:
+        if c.id:
+            # direct connections
+            conn0 = c.connection[0].dict()
+            conn0["object"] = o_map[conn0["object"]]
+            conn1 = c.connection[1].dict()
+            conn1["object"] = o_map[conn1["object"]]
+            ObjectConnection(
+                connection=[
+                    ObjectConnectionItem(**conn0),
+                    ObjectConnectionItem(**conn1),
+                ],
+                # временный флаг для удаления добавленных документов
+                type="testing",
+            ).save()
+            c_counter_dir += 1
+        else:
+            # cable connections
+            c_counter_cab += 1
+    print(f"Connections direct: {c_counter_dir}")
+    print(f"Connections cable: {c_counter_cab}")
+
     return Result(status=True, message="Objects imported successfully")
