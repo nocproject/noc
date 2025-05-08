@@ -92,13 +92,15 @@ Permit consul self registration
 ## gate
 
 Enables or disables specific features using the [Feature Gates](../feature-gates-reference/index.md).
-Specify a comma-separated list of feature names. To explicitly disable a feature,
+Specify a list of feature names. To explicitly disable a feature,
 prefix its name with a `-`.
 
 Example:
 ``` yaml
 features:
-    gate: channel,-jobs
+    gate:
+        - channel
+        - -jobs
 ```
 
 {{ config_param("features.gate") }}

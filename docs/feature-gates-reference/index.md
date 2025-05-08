@@ -10,7 +10,9 @@ See the [configuration reference](../config-reference/features.md#gate) for deta
 Example:
 ``` yaml
 features:
-    gate: channel,jobs
+    gate:
+        - channel
+        - -jobs
 ```
 
 ## States

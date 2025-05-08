@@ -239,8 +239,10 @@ class ListParameter(BaseParameter):
 
     def clean(self, v):
         if isinstance(v, str):
-            # Alter format - ['value1','value2']
-            v = v[1:-1].split(",")
+            # Alter format - [value1,value2]
+            if v.startswith("[") and v.endswith("]"):
+                v = v[1:-1]
+            v = [x.strip() for x in v.split(",")]
         return [self.item.clean(x) for x in v]
 
 

@@ -82,7 +82,7 @@ def _get_features() -> Set[Feature]:
     # Features enabled by default
     print(config.features.gate)
     r = {f for f in _FEATURE_DEFAULT if _FEATURE_DEFAULT[f]}
-    for fx in config.features.gate.strip().split(","):
+    for fx in config.features.gate:
         fx = fx.strip()
         if not fx:
             continue
