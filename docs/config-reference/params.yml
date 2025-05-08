@@ -354,6 +354,7 @@ params:
     default: 'True'
   features.cpclient: {}
   features.forensic: {}
+  features.gate: {}
   features.sentry: {}
   features.service_registration:
     default: 'True'

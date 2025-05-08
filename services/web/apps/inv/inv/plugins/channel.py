@@ -29,12 +29,14 @@ from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
 from noc.sa.models.job import Job
+from noc.core.feature import Feature
 from .base import InvPlugin
 
 
 class ChannelPlugin(InvPlugin):
     name = "channel"
     js = "NOC.inv.inv.plugins.channel.ChannelPanel"
+    required_feature = Feature.CHANNEL
 
     def init_plugin(self):
         super().init_plugin()

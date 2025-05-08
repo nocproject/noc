@@ -13,7 +13,6 @@ import threading
 from typing import Optional, Dict, List, Any, Tuple, Iterable
 from collections import defaultdict
 
-
 # Third-party modules
 import cachetools
 from mongoengine import ValidationError
@@ -92,11 +91,8 @@ class InvApplication(ExtApplication):
             for on in dir(m):
                 o = getattr(m, on)
                 if inspect.isclass(o) and issubclass(o, InvPlugin) and o.__module__.startswith(mn):
-                    assert o.name
-                    self.plugins[o.name] = o(self)
-
-    def get_plugin_data(self, name):
-        return {"name": name, "xtype": self.plugins[name].js}
+                    if not o.required_feature or o.required_feature.is_active():
+                        self.plugins[o.name] = o(self)
 
     @view("^node/$", method=["GET"], access="read", api=True)
     def api_node(self, request):
@@ -153,8 +149,8 @@ class InvApplication(ExtApplication):
         r = []
         # Build node interface
         for name, o in children:
-            m_plugins = o.model.plugins or []
-            disabled_plugins = set(p[1:] for p in m_plugins if p.startswith("-"))
+            model_plugins = o.model.plugins or []
+            disabled_plugins = set(p[1:] for p in model_plugins if p.startswith("-"))
             n = {
                 "id": str(o.id),
                 "name": name,
@@ -169,40 +165,44 @@ class InvApplication(ExtApplication):
             else:
                 n["leaf"] = True
             if o.model.front_facade or o.model.rear_facade:
-                plugins.append(self.get_plugin_data("facade"))
+                plugins.append("facade")
             if o.is_rack:
-                plugins.append(self.get_plugin_data("rack"))
+                plugins.append("rack")
             if o.model.connections:
-                plugins.append(self.get_plugin_data("inventory"))
+                plugins.append("inventory")
             if o.get_data("geopoint", "layer"):
-                plugins.append(self.get_plugin_data("map"))
+                plugins.append("map")
             if o.get_data("contacts", "has_contacts"):
-                plugins.append(self.get_plugin_data("contacts"))
+                plugins.append("contacts")
             if self.can_show_topo(o):
-                plugins.append(self.get_plugin_data("channel"))
-                plugins.append(self.get_plugin_data("commutation"))
-                plugins.append(self.get_plugin_data("bom"))
-                plugins.append(self.get_plugin_data("job"))
+                plugins.append("channel")
+                plugins.append("commutation")
+                plugins.append("bom")
+                plugins.append("job")
             if o.model.cross or o.cross or o.get_data("caps", "dynamic_crossing"):
-                plugins.append(self.get_plugin_data("crossing"))
+                plugins.append("crossing")
             if o.model.sensors or Sensor.objects.filter(object=o.id).first():
-                plugins.append(self.get_plugin_data("sensor"))
-                plugins.append(self.get_plugin_data("metric"))
+                plugins.append("sensor")
+                plugins.append("metric")
             if o.model.configuration_rule:
-                plugins.append(self.get_plugin_data("param"))
+                plugins.append("param")
             # Append model's plugins
-            plugins += [self.get_plugin_data(p) for p in m_plugins if not p.startswith("-")]
+            plugins += [p for p in model_plugins if not p.startswith("-")]
             # Common plugins
             plugins += [
-                self.get_plugin_data("data"),
-                self.get_plugin_data("comment"),
-                self.get_plugin_data("file"),
-                self.get_plugin_data("log"),
+                "data",
+                "comment",
+                "file",
+                "log",
             ]
             if o.is_container:
-                plugins.append(self.get_plugin_data("sensor"))
+                plugins.append("sensor")
             # Process disabled plugins
-            n["plugins"] = [p for p in plugins if p["name"] not in disabled_plugins]
+            n["plugins"] = [
+                {"name": p, "xtype": self.plugins[p].js}
+                for p in plugins
+                if p in self.plugins and p not in disabled_plugins
+            ]
             # Navigation glyphs
             icon_cls = o.model.glyph_css_class
             if icon_cls:

@@ -298,6 +298,7 @@ class Config(BaseConfig):
             default=True, help="Permit consul self registration"
         )
         forensic = BooleanParameter(default=False)
+        gate = ListParameter(item=StringParameter(), default=[], help="Feature gates")
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")

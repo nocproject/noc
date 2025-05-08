@@ -1,21 +1,24 @@
 # ---------------------------------------------------------------------
 # inv.inv plugins
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
+from typing import Optional
 
 # NOC modules
 from noc.inv.models.object import Object
+from noc.core.feature import Feature
 from ..views import InvApplication
 
 
 class InvPlugin(object):
     name = None
     js = None
+    required_feature: Optional[Feature] = None
 
     def __init__(self, app: InvApplication):
         self.app = app

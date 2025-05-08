@@ -58,6 +58,7 @@ nav:
       - Alarm Reference Format: alarm-reference-format/index.md
       - Date and Time Formats: datetime-format/index.md
       - Man Pages: man/
+      - Feature Gates: feature-gates-reference/index.md
       - Operational Alerts: operational-alerts-reference/
       - Supported Standards: supported-standards/index.md
   - How-to:

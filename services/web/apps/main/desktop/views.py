@@ -22,6 +22,7 @@ from noc.support.cp import CPClient
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
 from noc.core.translation import ugettext as _
+from noc.core.feature import active_features
 
 
 class DesktopApplication(ExtApplication):
@@ -90,6 +91,7 @@ class DesktopApplication(ExtApplication):
         return {
             "system_uuid": cp.system_uuid or None,
             "brand": version.brand,
+            "features": [f.value for f in active_features()],
             "installation_name": config.installation_name,
             "preview_theme": config.customization.preview_theme,
             "language": language,

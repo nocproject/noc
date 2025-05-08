@@ -88,3 +88,19 @@ Permit consul self registration
 | YAML Path      | `features.forensic`     |
 | Key-Value Path | `features/forensic`     |
 | Environment    | `NOC_FEATURES_FORENSIC` |
+
+## gate
+
+Enables or disables specific features using the [Feature Gates](../feature-gates-reference/index.md).
+Specify a list of feature names. To explicitly disable a feature,
+prefix its name with a `-`.
+
+Example:
+``` yaml
+features:
+    gate:
+        - channel
+        - -jobs
+```
+
+{{ config_param("features.gate") }}
