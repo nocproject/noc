@@ -6,6 +6,7 @@ This section contains step-by-step instructions for initial learning of the NOC 
 
 - [Quickstart](../quickstart-guide/index.md) - A concise introduction to getting started with NOC
 - [Community](../community-guide/index.md) - Introduction to the NOC community.
+- [DNS sync](../noc-dns-sync-guide/index.md) - Guide for noc-dns-sync service
 
 ## Guides for Developers
 
