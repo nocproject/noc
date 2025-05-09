@@ -2,29 +2,92 @@
     "": {
         "Content-Transfer-Encoding": "8bit",
         "Content-Type": "text/plain; charset=utf-8",
-        "Generated-By": "Babel 2.3.4",
+        "Generated-By": "Babel 2.13.1",
         "Language": "pt_BR",
         "Language-Team": "pt_BR <LL@li.org>",
         "Last-Translator": "Gabriela Todeschini <gabrielat@cpd.ufrgs.br>",
         "MIME-Version": "1.0",
         "PO-Revision-Date": "2016-07-15 16:29-0300",
-        "POT-Creation-Date": "2016-07-15 09:59-0300",
+        "POT-Creation-Date": "2025-05-09 14:49+0300",
         "Plural-Forms": "nplurals=2; plural=(n > 1);",
         "Project-Id-Version": "The NOC Project VERSION",
-        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS",
-        "X-Generator": "Poedit 1.8.8"
+        "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
     },
+    " - Failed": [
+        null,
+        "Falhou"
+    ],
+    " - Success": [
+        null,
+        "Permissão"
+    ],
+    " : Failed to get data for menu items": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "15 min": [
+        null,
+        "L1 (mín)"
+    ],
+    "5 min": [
+        null,
+        "L2 (mín)"
+    ],
+    "ACTIVE": [
+        null,
+        "Ativo"
+    ],
+    "ALL": [
+        null,
+        "Todos"
+    ],
+    "AND": [
+        null,
+        "Comandos"
+    ],
     "ANY": [
         null,
         "QUALQUER"
+    ],
+    "API": [
+        null,
+        "Formato"
+    ],
+    "API Key Required": [
+        null,
+        "Obrigatório"
+    ],
+    "API key required": [
+        null,
+        "Obrigatório"
+    ],
+    "API key saved": [
+        null,
+        "Perfil salvo"
     ],
     "AS or AS-set": [
         null,
         "AS ou AS-set"
     ],
+    "ATT": [
+        null,
+        "Padrão"
+    ],
+    "Abduct Detection Window": [
+        null,
+        "Janelas de Desduplicação"
+    ],
+    "About System": [
+        null,
+        "Sobre o sistema ..."
+    ],
     "About system ...": [
         null,
         "Sobre o sistema ..."
+    ],
+    "Absolute": [
+        null,
+        "Valor"
     ],
     "Access": [
         null,
@@ -33,6 +96,18 @@
     "Access Level": [
         null,
         "Nível de Acesso"
+    ],
+    "Access Preference": [
+        null,
+        "Preferência"
+    ],
+    "Account": [
+        null,
+        "Contagem"
+    ],
+    "Account ID": [
+        null,
+        "Contagem"
     ],
     "Account is not registred. Please register account to get access to additional support and services": [
         null,
@@ -50,9 +125,25 @@
         null,
         "Ação"
     ],
+    "Actions": [
+        null,
+        "Ação"
+    ],
+    "Activation": [
+        null,
+        "Validação"
+    ],
+    "Activation Window": [
+        null,
+        "Janelas de Desduplicação"
+    ],
     "Active": [
         null,
         "Ativo"
+    ],
+    "Active Alarms": [
+        null,
+        "Mostrar alertas ativos"
     ],
     "Active?": [
         null,
@@ -62,13 +153,73 @@
         null,
         "Adicionar"
     ],
-    "Add First Free": [
+    "Add ": [
         null,
-        "Adicionar o Primeiro Livre"
+        "Adicionar"
     ],
-    "Add Interfaces": [
+    "Add Address": [
+        null,
+        "Até o IP"
+    ],
+    "Add Conduits": [
+        null,
+        "Conduítes"
+    ],
+    "Add Interface": [
         null,
         "Adicionar Interfaces"
+    ],
+    "Add Mapping": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "Add Prefix": [
+        null,
+        "Prefixo"
+    ],
+    "Add State": [
+        null,
+        "Estado"
+    ],
+    "Add To Maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Add User": [
+        null,
+        "Filtro de Bind"
+    ],
+    "Add log": [
+        null,
+        "Log de Comandos"
+    ],
+    "Add object to ": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Add objects": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Add row": [
+        null,
+        "Adicionar"
+    ],
+    "Add to Favorites": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Add to Maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Add to Subscription": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Add to favorites": [
+        null,
+        "Esconder manutenção"
     ],
     "Address": [
         null,
@@ -78,19 +229,51 @@
         null,
         "Limitação de IP"
     ],
+    "Address Discovery": [
+        null,
+        "Status da Descoberta"
+    ],
+    "Address Discovery Policy": [
+        null,
+        "Política de Descoberta"
+    ],
     "Address Family": [
         null,
         "Família do IP"
     ],
+    "Address Pools": [
+        null,
+        "Família do IP"
+    ],
+    "Address Profile": [
+        null,
+        "Família do IP"
+    ],
+    "Address Ranges": [
+        null,
+        "Limitação de IP"
+    ],
+    "Address Usage": [
+        null,
+        "Até o IP"
+    ],
     "Address/Platform": [
         null,
         "IP/Plataforma"
+    ],
+    "Addresses": [
+        null,
+        "IP"
     ],
     "Adm. Domain": [
         null,
         "Domínio Adm."
     ],
     "Adm. domain": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "Admin. Domain": [
         null,
         "Domínio Administrativo"
     ],
@@ -105,6 +288,42 @@
     "Administrative Domain": [
         null,
         "Domínio Administrativo"
+    ],
+    "Administrative-Territorial Division": [
+        null,
+        "Divisão Administrativa"
+    ],
+    "Affected Instance": [
+        null,
+        "Interface Remota"
+    ],
+    "Affected Limit": [
+        null,
+        "Objetos Combinados"
+    ],
+    "Affected Objects": [
+        null,
+        "Objetos Combinados"
+    ],
+    "Agent": [
+        null,
+        "Alvo"
+    ],
+    "Agent Collector": [
+        null,
+        "Conexão do Alvo"
+    ],
+    "Aggregated": [
+        null,
+        "Criar"
+    ],
+    "Agreement": [
+        null,
+        "Gerência"
+    ],
+    "Agreement ID": [
+        null,
+        "Gerência"
     ],
     "Alarm": [
         null,
@@ -130,6 +349,18 @@
         null,
         "Alerta Comentado"
     ],
+    "Alarm Disposition": [
+        null,
+        "Disposição"
+    ],
+    "Alarm Group": [
+        null,
+        "Alerta reaberto"
+    ],
+    "Alarm Labels": [
+        null,
+        "Classe de Alerta"
+    ],
     "Alarm Reopened": [
         null,
         "Alerta Reaberto"
@@ -137,6 +368,26 @@
     "Alarm Risen": [
         null,
         "Alerta Elevado"
+    ],
+    "Alarm Severity": [
+        null,
+        "Criticidade"
+    ],
+    "Alarm Status Rules": [
+        null,
+        "Status do Alerta"
+    ],
+    "Alarm Subject": [
+        null,
+        "Assunto"
+    ],
+    "Alarm TT": [
+        null,
+        "Status do Alerta"
+    ],
+    "Alarm Transfer": [
+        null,
+        "Alerta elevado"
     ],
     "Alarm Weight": [
         null,
@@ -170,37 +421,189 @@
         null,
         "Alertas"
     ],
+    "Alarms cleared successfully": [
+        null,
+        "Alerta Excluído"
+    ],
+    "Alarms source": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Aliases": [
+        null,
+        "Classe"
+    ],
     "All": [
         null,
         "Todos"
+    ],
+    "All Maps": [
+        null,
+        "AS Local"
+    ],
+    "All Message": [
+        null,
+        "Nova mensagem"
+    ],
+    "All interface addresses": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "Allocate VLAN": [
+        null,
+        "Ocupado até"
+    ],
+    "Allocated": [
+        null,
+        "Ocupado até"
+    ],
+    "Allocated Prefixes": [
+        null,
+        "Ocupado até"
     ],
     "Allocated till": [
         null,
         "Ocupado até"
     ],
-    "Alrm Status": [
+    "Allocation Group": [
         null,
-        "Status do Alerta"
+        "Grupo de Notificação"
     ],
-    "Alrm.": [
+    "Allow": [
         null,
-        "Alerta"
+        "Seguir"
+    ],
+    "Allow Auto Create": [
+        null,
+        "Ocupado até"
+    ],
+    "Allow Bunch": [
+        null,
+        "Seguir"
+    ],
+    "Allow Config Diff Filter": [
+        null,
+        "Regra de Filtragem de Comparação de Configuração"
+    ],
+    "Allow Config Validation": [
+        null,
+        "Validação de Configuração pyRule"
+    ],
+    "Allow Manual": [
+        null,
+        "Parâmetro"
+    ],
+    "Allow P2MP": [
+        null,
+        "Parâmetro"
+    ],
+    "Allow P2P": [
+        null,
+        "Seguir"
+    ],
+    "Allow Params": [
+        null,
+        "Parâmetro"
+    ],
+    "Allow Parent": [
+        null,
+        "Parâmetro"
+    ],
+    "Allow Resources": [
+        null,
+        "Permissão"
+    ],
+    "Allow Star": [
+        null,
+        "Parâmetro"
+    ],
+    "Allow Subscribe": [
+        null,
+        "Ocupado até"
+    ],
+    "Allow Unidirectional P2MP": [
+        null,
+        "Direção"
+    ],
+    "Allow Unidirectional P2P": [
+        null,
+        "Direção"
+    ],
+    "Always Enable": [
+        null,
+        "Ativo"
+    ],
+    "Always Validate": [
+        null,
+        "Revalidar"
     ],
     "Anonymous": [
         null,
         "Anônimo"
     ],
+    "Answers": [
+        null,
+        "Camadas"
+    ],
+    "Any": [
+        null,
+        "Dia"
+    ],
+    "Application Help": [
+        null,
+        "Regra de Validação"
+    ],
     "Apply": [
         null,
         "Aplicar"
     ],
-    "Archive": [
+    "Apply changes": [
         null,
-        "Arquivar"
+        "última mudança"
+    ],
+    "Archived Alarms": [
+        null,
+        "Mostrar alertar arquivados"
+    ],
+    "Args": [
+        null,
+        "Variáveis"
+    ],
+    "Argument": [
+        null,
+        "Alvo"
+    ],
+    "As Depended": [
+        null,
+        "Alerta reaberto"
+    ],
+    "As Discovered": [
+        null,
+        "Descoberta"
+    ],
+    "As Managed Object": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "As New": [
+        null,
+        "Novo"
     ],
     "Asset": [
         null,
         "Patrimônio"
+    ],
+    "Asset Peer": [
+        null,
+        "Visto pela Última Vez"
+    ],
+    "Asset#": [
+        null,
+        "Patrimônio"
+    ],
+    "Attach": [
+        null,
+        "Seguir"
     ],
     "Attach account": [
         null,
@@ -210,6 +613,14 @@
         null,
         "Incluir conta existente"
     ],
+    "Attach to": [
+        null,
+        "Padrões"
+    ],
+    "Attachments": [
+        null,
+        "Padrões"
+    ],
     "Attic": [
         null,
         "Sótão"
@@ -218,27 +629,111 @@
         null,
         "Atributos"
     ],
+    "Audit": [
+        null,
+        "Editar"
+    ],
+    "Auth Key": [
+        null,
+        "Perfil de Autenticação"
+    ],
     "Auth Profile": [
         null,
         "Perfil de Autenticação"
     ],
-    "Auto Update MAC": [
+    "Auth Proto": [
         null,
-        "Atualizar MAC Automaticamente"
+        "Perfil de Autenticação"
+    ],
+    "Author": [
+        null,
+        "Caminho"
     ],
     "Auto generated?": [
         null,
         "Gerado automaticamente?"
     ],
+    "Auto reload : ": [
+        null,
+        "Carregamento automático de alternância"
+    ],
+    "Autogenerated": [
+        null,
+        "Gerado automaticamente?"
+    ],
+    "Avail": [
+        null,
+        "E-mail"
+    ],
+    "Avail Status": [
+        null,
+        "Status do Alerta"
+    ],
+    "Available": [
+        null,
+        "Buscável"
+    ],
+    "BGP Peer": [
+        null,
+        "Reverter"
+    ],
+    "BGP Peer Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Backend: failed to clear alarms": [
+        null,
+        "Falha ao apagar alerta"
+    ],
+    "Background": [
+        null,
+        "Cor de Fundo"
+    ],
     "Background Color": [
         null,
         "Cor de Fundo"
+    ],
+    "Background Image": [
+        null,
+        "Cor de Fundo"
+    ],
+    "Band Name": [
+        null,
+        "nome"
+    ],
+    "Bands": [
+        null,
+        "Comandos"
+    ],
+    "Basket": [
+        null,
+        "Patrimônio"
     ],
     "Bearing": [
         null,
         "Comportamento"
     ],
-    "Bind filter": [
+    "Beef Test Config": [
+        null,
+        "Buscar configuração AGORA"
+    ],
+    "Bidirectional over One Connection": [
+        null,
+        "Conexão do Alvo"
+    ],
+    "Bind": [
+        null,
+        "Prédio"
+    ],
+    "Bind Addresses": [
+        null,
+        "IP"
+    ],
+    "Bind Password": [
+        null,
+        "Senha Atual"
+    ],
+    "Bind User": [
         null,
         "Filtro de Bind"
     ],
@@ -258,7 +753,27 @@
         null,
         "Negrito"
     ],
+    "Both": [
+        null,
+        "Mês"
+    ],
+    "Box Discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "Box Duration": [
+        null,
+        "Duração"
+    ],
+    "Box Last status": [
+        null,
+        "Último Status"
+    ],
     "Box discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "Box discovery intervals": [
         null,
         "Box de descoberta"
     ],
@@ -282,21 +797,285 @@
         null,
         "Nativo"
     ],
+    "By Action": [
+        null,
+        "Ação"
+    ],
+    "By Active": [
+        null,
+        "Ativo"
+    ],
+    "By Adm. Domain": [
+        null,
+        "Por Dom. Administrativo"
+    ],
+    "By Adm. Domain:": [
+        null,
+        "Por Dom. Administrativo"
+    ],
     "By Adm. domain": [
         null,
         "Por Dom. Administrativo"
+    ],
+    "By Administrative Domain": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "By Alarm Class": [
+        null,
+        "Classe de Alerta"
+    ],
+    "By Builtin": [
+        null,
+        "Nativo"
+    ],
+    "By Can Change": [
+        null,
+        "Pode Modificar"
+    ],
+    "By Can View": [
+        null,
+        "Pode Visualizar"
+    ],
+    "By Community Type": [
+        null,
+        "Comunidade RW"
     ],
     "By Date": [
         null,
         "Por Data"
     ],
+    "By Default": [
+        null,
+        "Padrão"
+    ],
+    "By Enabled": [
+        null,
+        "Habilitado"
+    ],
+    "By Event Class": [
+        null,
+        "Classe do Evento"
+    ],
+    "By Filter": [
+        null,
+        "Filtrável"
+    ],
+    "By Filtered": [
+        null,
+        "Filtrável"
+    ],
+    "By Geo Address:": [
+        null,
+        "Até o IP"
+    ],
+    "By Group": [
+        null,
+        "Grupo"
+    ],
+    "By Hidden": [
+        null,
+        "Está Escondido"
+    ],
+    "By Instance": [
+        null,
+        "Instâncias"
+    ],
+    "By Interface Profile": [
+        null,
+        "Perfil de Interface"
+    ],
+    "By Is Active": [
+        null,
+        "Ativo"
+    ],
+    "By Is Builtin": [
+        null,
+        "É Nativo"
+    ],
+    "By Is Enabled": [
+        null,
+        "Ativo"
+    ],
+    "By Is Locked": [
+        null,
+        "Bloqueado"
+    ],
+    "By L2 Domain": [
+        null,
+        "Por Dom. Administrativo"
+    ],
+    "By Labels": [
+        null,
+        "Mostrar Rótulos"
+    ],
+    "By Last Update:": [
+        null,
+        "Última Atualização"
+    ],
+    "By Link Event": [
+        null,
+        "Ligar ao Evento"
+    ],
+    "By Max Status": [
+        null,
+        "Status do Alerta"
+    ],
+    "By Min Status": [
+        null,
+        "Status do Alerta"
+    ],
+    "By Notification": [
+        null,
+        "Notificação"
+    ],
+    "By Obj. Profile:": [
+        null,
+        "Perfil de Objeto"
+    ],
+    "By Object": [
+        null,
+        "Mostrar objeto"
+    ],
+    "By Parent": [
+        null,
+        "Nível Superior"
+    ],
+    "By Platform:": [
+        null,
+        "Plataforma"
+    ],
+    "By Profile": [
+        null,
+        "Perfil de Objeto"
+    ],
+    "By Project": [
+        null,
+        "projeto"
+    ],
+    "By Protocol": [
+        null,
+        "Protocolo"
+    ],
+    "By Rule:": [
+        null,
+        "Regras"
+    ],
     "By SA Profile": [
         null,
         "Por Perfil de AS"
     ],
+    "By SA Profile:": [
+        null,
+        "Por Perfil de AS"
+    ],
+    "By Searchable": [
+        null,
+        "Buscável"
+    ],
+    "By Segment": [
+        null,
+        "Segmento"
+    ],
+    "By Segment:": [
+        null,
+        "Segmento"
+    ],
+    "By Service": [
+        null,
+        "serviço"
+    ],
+    "By Service Group": [
+        null,
+        "serviço"
+    ],
+    "By State": [
+        null,
+        "Estado"
+    ],
+    "By State:": [
+        null,
+        "Estado"
+    ],
+    "By Tech Domai": [
+        null,
+        "Por Dom. Administrativo"
+    ],
+    "By Technology": [
+        null,
+        "Tecnologias"
+    ],
+    "By Tokens": [
+        null,
+        "Ação"
+    ],
+    "By Type": [
+        null,
+        "tipo"
+    ],
+    "By Types": [
+        null,
+        "tipo"
+    ],
+    "By Vendor": [
+        null,
+        "Fabricante"
+    ],
+    "By Vendor:": [
+        null,
+        "Fabricante"
+    ],
+    "By Version:": [
+        null,
+        "Versão"
+    ],
+    "By Workflow": [
+        null,
+        "Fluxos de Trabalho"
+    ],
+    "CONNECT": [
+        null,
+        "Conectar"
+    ],
+    "CPE": [
+        null,
+        "Escopo"
+    ],
+    "CPE Inspector": [
+        null,
+        "Inspeto de Objeto"
+    ],
+    "CPE status": [
+        null,
+        "Status da interface"
+    ],
     "CR. Context": [
         null,
         "Contexto CR."
+    ],
+    "CRM Users": [
+        null,
+        "Usuário"
+    ],
+    "Cable": [
+        null,
+        "Tabela"
+    ],
+    "Calc Severity Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Calcified Name Template": [
+        null,
+        "Nome do template"
+    ],
+    "Calculate Oper Status": [
+        null,
+        "Status da interface"
+    ],
+    "Calculate Status Rules": [
+        null,
+        "Último Status"
     ],
     "Can Change": [
         null,
@@ -306,6 +1085,14 @@
         null,
         "Pode Visualizar"
     ],
+    "Cancel": [
+        null,
+        "Modificar"
+    ],
+    "Cancel Sort": [
+        null,
+        "Modificar"
+    ],
     "Capabilities": [
         null,
         "Capacidades"
@@ -313,6 +1100,10 @@
     "Capability": [
         null,
         "Capacidade"
+    ],
+    "Caps Profile": [
+        null,
+        "Perfil de Usuário"
     ],
     "Card": [
         null,
@@ -330,6 +1121,14 @@
         null,
         "Porão"
     ],
+    "Center": [
+        null,
+        "Gênero"
+    ],
+    "Center to object": [
+        null,
+        "Objeto gerenciado"
+    ],
     "Change": [
         null,
         "Modificar"
@@ -337,6 +1136,10 @@
     "Change Password": [
         null,
         "Alterar Senha"
+    ],
+    "Change address": [
+        null,
+        "Até o IP"
     ],
     "Change configuration": [
         null,
@@ -350,6 +1153,10 @@
         null,
         "Alterar senha ..."
     ],
+    "Change records?": [
+        null,
+        "Alterar senha"
+    ],
     "Changed": [
         null,
         "Modificado"
@@ -358,9 +1165,33 @@
         null,
         "Mudanças"
     ],
+    "Changes saved successfully": [
+        null,
+        "Até o IP"
+    ],
     "Changing language": [
         null,
         "Alterando idioma"
+    ],
+    "Channel": [
+        null,
+        "Modificar"
+    ],
+    "Channel Discriminators": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Channels": [
+        null,
+        "Mudanças"
+    ],
+    "Check Interval": [
+        null,
+        "Falha no intervalo"
+    ],
+    "Check Match": [
+        null,
+        "Combinar"
     ],
     "Check on config change after ": [
         null,
@@ -370,19 +1201,71 @@
         null,
         "Verificar o início do sistema após "
     ],
+    "Check update interval (sec)": [
+        null,
+        "Intervalo (s)"
+    ],
+    "Checked": [
+        null,
+        "Método"
+    ],
+    "Choice": [
+        null,
+        "Arquivar"
+    ],
+    "Choice (combo)": [
+        null,
+        "Arquivar"
+    ],
+    "Choice (radio)": [
+        null,
+        "Arquivar"
+    ],
+    "Choices": [
+        null,
+        "Tecnologias"
+    ],
     "Class": [
         null,
         "Classe"
+    ],
+    "Class Based Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Clean Basket": [
+        null,
+        "projeto"
     ],
     "Clear": [
         null,
         "Limpar"
     ],
+    "Clear Alarm": [
+        null,
+        "Apagar alerta?"
+    ],
+    "Clear Handlers": [
+        null,
+        "Apagar alerta?"
+    ],
     "Clear Template": [
         null,
         "Limpar Template"
     ],
+    "Clear Value": [
+        null,
+        "Apagar alerta?"
+    ],
     "Clear alarm?": [
+        null,
+        "Apagar alerta?"
+    ],
+    "Clear alarms": [
+        null,
+        "Apagar alerta?"
+    ],
+    "Clear all rows": [
         null,
         "Apagar alerta?"
     ],
@@ -390,7 +1273,43 @@
         null,
         "Limpar links"
     ],
+    "Clear objects": [
+        null,
+        "projeto"
+    ],
+    "Clearing alarms...": [
+        null,
+        "Apagar alerta?"
+    ],
+    "Client": [
+        null,
+        "Gênero"
+    ],
+    "Clipboard": [
+        null,
+        "Ficha"
+    ],
     "Clone": [
+        null,
+        "Copiar"
+    ],
+    "Clone N times": [
+        null,
+        "Comentário"
+    ],
+    "Clone Rows": [
+        null,
+        "Copiar"
+    ],
+    "Clone connections": [
+        null,
+        "Conexões"
+    ],
+    "Clone object?": [
+        null,
+        "projeto"
+    ],
+    "Cloned": [
         null,
         "Copiar"
     ],
@@ -398,15 +1317,55 @@
         null,
         "Fechar"
     ],
+    "Close TT": [
+        null,
+        "Fechar"
+    ],
+    "Close Template": [
+        null,
+        "Nome do template"
+    ],
+    "Closed": [
+        null,
+        "Fechar"
+    ],
+    "Cloud Inspector": [
+        null,
+        "Inspeto de Objeto"
+    ],
     "Code": [
         null,
         "Código"
+    ],
+    "Collapse": [
+        null,
+        "Escopo"
+    ],
+    "Collapse All": [
+        null,
+        "Recolher painéis"
     ],
     "Collapse panels": [
         null,
         "Recolher painéis"
     ],
+    "Collect interval": [
+        null,
+        "Falha no intervalo"
+    ],
+    "Collect on Change": [
+        null,
+        "Versão alterada"
+    ],
+    "Collector": [
+        null,
+        "Seletor"
+    ],
     "Color": [
+        null,
+        "Cor"
+    ],
+    "Colors": [
         null,
         "Cor"
     ],
@@ -414,9 +1373,25 @@
         null,
         "Colunas"
     ],
+    "Combo Condition": [
+        null,
+        "Condição"
+    ],
+    "Combo Window (sec)": [
+        null,
+        "Tempo (s)"
+    ],
+    "Combo count": [
+        null,
+        "Contagem"
+    ],
     "Command Log": [
         null,
         "Log de Comandos"
+    ],
+    "Command Snippet": [
+        null,
+        "Comandos"
     ],
     "Commands": [
         null,
@@ -426,15 +1401,43 @@
         null,
         "Comentário"
     ],
+    "Comment Message": [
+        null,
+        "Nova mensagem"
+    ],
+    "Comment Source": [
+        null,
+        "Recursos"
+    ],
+    "Comment Time": [
+        null,
+        "Comentário"
+    ],
+    "Comments Qty": [
+        null,
+        "Comentário"
+    ],
+    "Common": [
+        null,
+        "Comentário"
+    ],
     "Community": [
         null,
         "Comunidade"
+    ],
+    "Commutation": [
+        null,
+        "Comentário"
     ],
     "Company": [
         null,
         "Companhia"
     ],
     "Compare": [
+        null,
+        "Comparar"
+    ],
+    "Compare With": [
         null,
         "Comparar"
     ],
@@ -446,13 +1449,49 @@
         null,
         "Completo"
     ],
+    "Completed At": [
+        null,
+        "Completo"
+    ],
+    "Component Scope": [
+        null,
+        "Recursos"
+    ],
+    "Compose": [
+        null,
+        "Escopo"
+    ],
+    "Compose Expression": [
+        null,
+        "Expressão"
+    ],
+    "Compose Metric Type": [
+        null,
+        "Tipo de Métrica"
+    ],
     "Condition": [
+        null,
+        "Condição"
+    ],
+    "Condition Op Vars": [
+        null,
+        "Condição"
+    ],
+    "Condition Param": [
+        null,
+        "Condição"
+    ],
+    "Condition Value": [
         null,
         "Condição"
     ],
     "Conduits": [
         null,
         "Conduítes"
+    ],
+    "ConfDB": [
+        null,
+        "Ícone"
     ],
     "Config": [
         null,
@@ -462,19 +1501,39 @@
         null,
         "Modificação de Configuração"
     ],
-    "Config Diff Filter Rule": [
+    "Config Diff Filter Handler": [
         null,
         "Regra de Filtragem de Comparação de Configuração"
     ],
-    "Config Filter pyRule": [
+    "Config Fetching": [
+        null,
+        "Configuração alterada"
+    ],
+    "Config Filter Handler": [
         null,
         "Filtro de Configuração pyRule"
+    ],
+    "Config Mirror": [
+        null,
+        "Alerta Alto de Erro"
+    ],
+    "Config Policy": [
+        null,
+        "Violação na política de configuração"
     ],
     "Config Policy Violation": [
         null,
         "Violação na Política de Configuração"
     ],
-    "Config Validation pyRule": [
+    "Config Upload": [
+        null,
+        "Modo de Configuração"
+    ],
+    "Config Validation": [
+        null,
+        "Validação de Configuração pyRule"
+    ],
+    "Config Validation Handler": [
         null,
         "Validação de Configuração pyRule"
     ],
@@ -482,17 +1541,61 @@
         null,
         "Configuração alterada"
     ],
+    "Config fetch": [
+        null,
+        "Configuração alterada"
+    ],
+    "Config handler": [
+        null,
+        "Configuração alterada"
+    ],
     "Config policy violation": [
         null,
         "Violação na política de configuração"
+    ],
+    "Config saved": [
+        null,
+        "Perfil salvo"
     ],
     "Config. Mode": [
         null,
         "Modo de Configuração"
     ],
+    "Configuration Rule": [
+        null,
+        "Regra de Conexão"
+    ],
+    "Configuration Scopes": [
+        null,
+        "Modificar a configuração"
+    ],
+    "Confirm": [
+        null,
+        "Configurar"
+    ],
+    "Confirm New Password": [
+        null,
+        "Nova Senha"
+    ],
+    "Confirm Reset": [
+        null,
+        "Configurar"
+    ],
+    "Confirmation": [
+        null,
+        "Condição"
+    ],
     "Connect": [
         null,
         "Conectar"
+    ],
+    "Connect ports": [
+        null,
+        "Conectar a"
+    ],
+    "Connect timeout": [
+        null,
+        "Conectar a"
     ],
     "Connect to": [
         null,
@@ -510,6 +1613,14 @@
         null,
         "Regra de Conexão"
     ],
+    "Connection Rules": [
+        null,
+        "Regra de Conexão"
+    ],
+    "Connection Schema": [
+        null,
+        "Conexões"
+    ],
     "Connection Type": [
         null,
         "Tipo de Conexão"
@@ -518,7 +1629,15 @@
         null,
         "Conexões"
     ],
+    "Connections removed": [
+        null,
+        "Regra de Conexão"
+    ],
     "Constraint": [
+        null,
+        "Limitação"
+    ],
+    "Constraints": [
         null,
         "Limitação"
     ],
@@ -530,7 +1649,19 @@
         null,
         "Contatos"
     ],
+    "Container": [
+        null,
+        "Mantenedor"
+    ],
+    "Contains": [
+        null,
+        "Mantenedor"
+    ],
     "Content": [
+        null,
+        "Conteúdo"
+    ],
+    "Content Type": [
         null,
         "Conteúdo"
     ],
@@ -538,7 +1669,27 @@
         null,
         "Contexto"
     ],
+    "Context Name": [
+        null,
+        "Contexto"
+    ],
+    "Contribution Details": [
+        null,
+        "Iniciando"
+    ],
+    "Contribution URL": [
+        null,
+        "Iniciando"
+    ],
+    "Contribution sent": [
+        null,
+        "Iniciando"
+    ],
     "Control Time 0": [
+        null,
+        "Controle de Tempo 0"
+    ],
+    "Control Time 0 (sec)": [
         null,
         "Controle de Tempo 0"
     ],
@@ -546,9 +1697,17 @@
         null,
         "Controle de Tempo 1"
     ],
+    "Control Time 1 (sec)": [
+        null,
+        "Controle de tempo (1 reabertura)"
+    ],
     "Control Time N": [
         null,
         "Controle de Tempo N"
+    ],
+    "Control Time N (sec)": [
+        null,
+        "Controle de tempo (1 reabertura)"
     ],
     "Control time (1 reopen)": [
         null,
@@ -562,6 +1721,18 @@
         null,
         "Controle de tempo (sem reaberturas)"
     ],
+    "Control time to reopen alarm after 1 reopen": [
+        null,
+        "Controle de tempo (1 reabertura)"
+    ],
+    "Controller": [
+        null,
+        "Cor da Fonte"
+    ],
+    "Controllers": [
+        null,
+        "Cor da Fonte"
+    ],
     "Count": [
         null,
         "Contagem"
@@ -569,6 +1740,10 @@
     "Country": [
         null,
         "País"
+    ],
+    "Covered Objects": [
+        null,
+        "Objetos Combinados"
     ],
     "Create": [
         null,
@@ -578,13 +1753,69 @@
         null,
         "Criar Bloco"
     ],
-    "Create Ignore Pattern": [
+    "Create Ignore": [
         null,
-        "Criar Ignorar Padrão"
+        "Criar Regra"
+    ],
+    "Create Item": [
+        null,
+        "Criar Regra"
+    ],
+    "Create Model": [
+        null,
+        "Criar Regra"
     ],
     "Create Rule": [
         null,
         "Criar Regra"
+    ],
+    "Create channel": [
+        null,
+        "Criar Regra"
+    ],
+    "Create internal connection from": [
+        null,
+        "Conexão de Correspondência"
+    ],
+    "Create maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Create new": [
+        null,
+        "Criar Regra"
+    ],
+    "Create new address": [
+        null,
+        "Endereço Remoto"
+    ],
+    "Create new channel": [
+        null,
+        "Endereço Remoto"
+    ],
+    "Create new channel ...": [
+        null,
+        "Endereço Remoto"
+    ],
+    "Create new...": [
+        null,
+        "Criar Regra"
+    ],
+    "Create or update channel": [
+        null,
+        "Criar Regra"
+    ],
+    "Created": [
+        null,
+        "Criar"
+    ],
+    "Created At": [
+        null,
+        "Criar"
+    ],
+    "Created interface: ": [
+        null,
+        "Interface Remota"
     ],
     "Credentials": [
         null,
@@ -594,19 +1825,55 @@
         null,
         "Credenciais alteradas  com sucesso"
     ],
-    "Current": [
+    "CronTab": [
         null,
-        "Atual"
+        "Frente"
+    ],
+    "Crossing": [
+        null,
+        "Aprovisionamento"
     ],
     "Current, mA": [
         null,
         "Corrente, mA"
     ],
+    "Custom Fields": [
+        null,
+        "Campo"
+    ],
+    "Custom Zoom": [
+        null,
+        "Zoom Mínimo"
+    ],
+    "DEGRADED": [
+        null,
+        "Atrasar"
+    ],
+    "DOWN": [
+        null,
+        "Janela"
+    ],
+    "Dashboard Label": [
+        null,
+        "Ver dashboard"
+    ],
     "Data": [
         null,
         "Dados"
     ],
+    "Data Match": [
+        null,
+        "Combinar"
+    ],
+    "Data Sources": [
+        null,
+        "Fonte de Dados"
+    ],
     "Datasource": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Datastream": [
         null,
         "Fonte de Dados"
     ],
@@ -614,9 +1881,13 @@
         null,
         "Data"
     ],
-    "Day": [
+    "Deactivation": [
         null,
-        "Dia"
+        "Validação"
+    ],
+    "Deactivation Window": [
+        null,
+        "Janelas de Desduplicação"
     ],
     "Deduplication Window": [
         null,
@@ -626,11 +1897,43 @@
         null,
         "Padrão"
     ],
-    "Default Severity": [
+    "Default Action": [
         null,
-        "Criticidade Padrão"
+        "Seção"
+    ],
+    "Default Address Profile": [
+        null,
+        "Família do IP"
+    ],
+    "Default Domain": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "Default Interval, sec": [
+        null,
+        "Intervalo (s)"
+    ],
+    "Default State": [
+        null,
+        "Intervalo (s)"
+    ],
+    "Default Template": [
+        null,
+        "Nome do template"
+    ],
+    "Default Value": [
+        null,
+        "Intervalo (s)"
+    ],
+    "Default expression": [
+        null,
+        "Expressão"
     ],
     "Delay": [
+        null,
+        "Atrasar"
+    ],
+    "Delayed": [
         null,
         "Atrasar"
     ],
@@ -638,9 +1941,33 @@
         null,
         "Excluir"
     ],
+    "Delete address?": [
+        null,
+        "Endereço Remoto"
+    ],
+    "Delete object": [
+        null,
+        "Selecionar objeto gerenciado ..."
+    ],
     "Deleted": [
         null,
         "Excluído"
+    ],
+    "Deleting ...": [
+        null,
+        "Selecionar a configuração..."
+    ],
+    "Deny": [
+        null,
+        "Atrasar"
+    ],
+    "Deny Group": [
+        null,
+        "Grupo Peer"
+    ],
+    "Deny Params": [
+        null,
+        "Parâmetro"
     ],
     "Description": [
         null,
@@ -650,9 +1977,29 @@
         null,
         "Descrição #"
     ],
+    "Device Neighbors": [
+        null,
+        "serviço"
+    ],
+    "Device SN changed (by BI)": [
+        null,
+        "última modificação feita por"
+    ],
     "Diameter (mm)": [
         null,
         "Diâmetro (mm)"
+    ],
+    "Dictionary": [
+        null,
+        "Direção"
+    ],
+    "Dictionary not found": [
+        null,
+        "Testar Som"
+    ],
+    "Direct Uplink": [
+        null,
+        "Direção"
     ],
     "Direction": [
         null,
@@ -662,29 +2009,85 @@
         null,
         "Desabilitar"
     ],
+    "Disable Update": [
+        null,
+        "Desabilitar"
+    ],
+    "Disable ping": [
+        null,
+        "Mesmo Nível"
+    ],
+    "Disabled": [
+        null,
+        "Desabilitar"
+    ],
     "Disconnect": [
         null,
         "Desconectar"
+    ],
+    "Discovered": [
+        null,
+        "Descoberta"
     ],
     "Discovery": [
         null,
         "Descoberta"
     ],
+    "Discovery Alarm": [
+        null,
+        "Descoberta"
+    ],
+    "Discovery Job Log": [
+        null,
+        "Política de Descoberta"
+    ],
     "Discovery Policy": [
         null,
         "Política de Descoberta"
     ],
-    "Discriminator": [
+    "Discovery Problem": [
         null,
-        "Discriminador"
+        "Política de Descoberta"
     ],
-    "Display Name": [
+    "Discovery interval": [
+        null,
+        "Falha no intervalo"
+    ],
+    "Discrimiator": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Discriminator Source": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Display Order": [
         null,
         "Nome de Exibição"
+    ],
+    "Display filters": [
+        null,
+        "Filtro de Bind"
+    ],
+    "Dispose": [
+        null,
+        "Disposição"
+    ],
+    "Dispose Alarm": [
+        null,
+        "Descoberta"
+    ],
+    "Dispose Rule": [
+        null,
+        "Criar Regra"
     ],
     "Disposition": [
         null,
         "Disposição"
+    ],
+    "Do not delete": [
+        null,
+        "Pós-Excluir"
     ],
     "Do you wish to unlink interface {0}?": [
         null,
@@ -694,25 +2097,93 @@
         null,
         "Domínio"
     ],
+    "Don't Raise": [
+        null,
+        "Raio do Ponto"
+    ],
+    "DotALL": [
+        null,
+        "Instalar"
+    ],
+    "Download content": [
+        null,
+        "Conteúdo"
+    ],
     "Drag and drop to reorganize": [
         null,
         "Arraste e solte para reorganizar"
     ],
-    "Dur.": [
+    "Drop Alarm": [
         null,
-        "Duração"
+        "Apagar alerta?"
+    ],
+    "Duplicated": [
+        null,
+        "Janelas de Desduplicação"
     ],
     "Duration": [
         null,
         "Duração"
     ],
+    "ESTABLISHED": [
+        null,
+        "Habilitado"
+    ],
+    "ETL": [
+        null,
+        "Definir"
+    ],
+    "Eat": [
+        null,
+        "Definir"
+    ],
     "Edit": [
         null,
         "Editar"
     ],
+    "Edit Address": [
+        null,
+        "Até o IP"
+    ],
+    "Edit MO": [
+        null,
+        "Editar mapa"
+    ],
+    "Edit Thresholds": [
+        null,
+        "Até o IP"
+    ],
     "Edit map": [
         null,
         "Editar mapa"
+    ],
+    "Edit model": [
+        null,
+        "Nome do Objeto"
+    ],
+    "Edit value": [
+        null,
+        "Desabilitar"
+    ],
+    "Editable": [
+        null,
+        "Desabilitar"
+    ],
+    "Effective": [
+        null,
+        "Ativo"
+    ],
+    "Effective Client Groups": [
+        null,
+        "Configurações Efetivas"
+    ],
+    "Effective Labels": [
+        null,
+        "Configurações Efetivas"
+    ],
+    "Effective Service Groups": [
+        null,
+        "Configurações Efetivas"
     ],
     "Effective Settings": [
         null,
@@ -726,9 +2197,29 @@
         null,
         "Habilitar"
     ],
-    "Enable IPAM synchronization": [
+    "Enable Box": [
         null,
-        "Habilitar sincronização de IPAM"
+        "Habilitar"
+    ],
+    "Enable FM Event": [
+        null,
+        "Nova mensagem"
+    ],
+    "Enable IP Scan Discovery": [
+        null,
+        "Descoberta"
+    ],
+    "Enable L2": [
+        null,
+        "Habilitar"
+    ],
+    "Enable L3": [
+        null,
+        "Habilitar"
+    ],
+    "Enable Message": [
+        null,
+        "Nova mensagem"
     ],
     "Enable Prefix-List Provisioning": [
         null,
@@ -738,13 +2229,33 @@
         null,
         "Habilitar Aprovisionamento"
     ],
-    "Enable VC Bind filter": [
-        null,
-        "Habilitar filtro de Bind de VC"
-    ],
     "Enabled": [
         null,
         "Habilitado"
+    ],
+    "End": [
+        null,
+        "Som"
+    ],
+    "End Condition": [
+        null,
+        "Condição"
+    ],
+    "End of Sale": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Endpoint": [
+        null,
+        "Nível Superior"
+    ],
+    "Endpoint Discriminators": [
+        null,
+        "Fonte de Dados"
+    ],
+    "Endpoints": [
+        null,
+        "Nível Superior"
     ],
     "Enter list valid ASnumber (ex., AS1234) or as sets (ex. AS-MEGASET, AS-MEGA-SET)": [
         null,
@@ -762,9 +2273,85 @@
         null,
         "Grupo Enum"
     ],
+    "Enumeration": [
+        null,
+        "Duração"
+    ],
+    "Equal": [
+        null,
+        "E-mail"
+    ],
     "Error Type": [
         null,
         "Tipo de Erro"
+    ],
+    "Error changing password": [
+        null,
+        "Alterar senha"
+    ],
+    "Error getting information": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Error loading data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Error template": [
+        null,
+        "Nome do template"
+    ],
+    "Error updating statuses": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Errors In (Summary)": [
+        null,
+        "Mostrar no resumo"
+    ],
+    "Escalate": [
+        null,
+        "Revalidar"
+    ],
+    "Escalate Maintenance Policy": [
+        null,
+        "Escalações"
+    ],
+    "Escalate failed": [
+        null,
+        "Falha no script"
+    ],
+    "Escalate failed : ": [
+        null,
+        "Falha no script"
+    ],
+    "Escalate to": [
+        null,
+        "Escalações"
+    ],
+    "Escalated": [
+        null,
+        "Revalidar"
+    ],
+    "Escalation": [
+        null,
+        "Escalações"
+    ],
+    "Escalation Policy": [
+        null,
+        "Escalações"
+    ],
+    "Escalation Profile": [
+        null,
+        "Escalações"
+    ],
+    "Escalation Retries": [
+        null,
+        "Escalações"
+    ],
+    "Escalation Time": [
+        null,
+        "Escalações"
     ],
     "Escalations": [
         null,
@@ -782,6 +2369,10 @@
         null,
         "Estado 2"
     ],
+    "Event": [
+        null,
+        "Reverter"
+    ],
     "Event Class": [
         null,
         "Classe do Evento"
@@ -790,9 +2381,21 @@
         null,
         "Classe do Evento RE"
     ],
-    "Event Role": [
+    "Event Inspector": [
+        null,
+        "Inspetor de Segmento"
+    ],
+    "Event Policy": [
         null,
         "Papel do Evento"
+    ],
+    "Event Sources": [
+        null,
+        "Recursos"
+    ],
+    "Event Sync Interval, sec": [
+        null,
+        "Intervalo (s)"
     ],
     "Event TTL": [
         null,
@@ -806,9 +2409,21 @@
         null,
         "ID do evendo ou código JSON"
     ],
+    "Event reclassified": [
+        null,
+        "Classe do Evento"
+    ],
     "Events": [
         null,
         "Eventos"
+    ],
+    "Exclude Expression": [
+        null,
+        "Expressão"
+    ],
+    "Expand All": [
+        null,
+        "Expandir painéis"
     ],
     "Expand panels": [
         null,
@@ -822,6 +2437,26 @@
         null,
         "Expiração"
     ],
+    "Expired": [
+        null,
+        "Expiração"
+    ],
+    "Expired At": [
+        null,
+        "Expiração"
+    ],
+    "Expires": [
+        null,
+        "Expiração"
+    ],
+    "Exponent": [
+        null,
+        "Conteúdo"
+    ],
+    "Export": [
+        null,
+        "Relatório"
+    ],
     "Export Filter": [
         null,
         "Exportar Filtro"
@@ -834,13 +2469,25 @@
         null,
         "Exportar MED"
     ],
-    "Expression": [
+    "Export to CSV": [
+        null,
+        "Relatório"
+    ],
+    "Expose Condition": [
+        null,
+        "Condição"
+    ],
+    "Expresseion": [
         null,
         "Expressão"
     ],
     "Extend": [
         null,
         "Ampliar"
+    ],
+    "Extend Condition": [
+        null,
+        "Condição"
     ],
     "Extension": [
         null,
@@ -850,13 +2497,13 @@
         null,
         "Template FQDN"
     ],
-    "FQDN template": [
+    "Facade": [
         null,
-        "Template de FQDN"
+        "Código"
     ],
-    "Facts": [
+    "Fail": [
         null,
-        "Fatos"
+        "Falhou"
     ],
     "Failed": [
         null,
@@ -866,11 +2513,39 @@
         null,
         "Falha no Intervalo (s)"
     ],
+    "Failed get MO detail": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed get map menu": [
+        null,
+        "Falha ao carregar dados"
+    ],
     "Failed interval": [
         null,
         "Falha no intervalo"
     ],
+    "Failed save data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to  favorites": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to add VLAN": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to change credentials:": [
+        null,
+        "Falha ao alterar as credenciais"
+    ],
     "Failed to change credentials: ": [
+        null,
+        "Falha ao alterar as credenciais"
+    ],
+    "Failed to change layer settings": [
         null,
         "Falha ao alterar as credenciais"
     ],
@@ -878,13 +2553,69 @@
         null,
         "Falha ao apagar alerta"
     ],
+    "Failed to clear alarms": [
+        null,
+        "Falha ao apagar alerta"
+    ],
+    "Failed to clone": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to clone object.": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
     "Failed to connect interfaces": [
         null,
         "Falha ao conectar interfaces"
     ],
+    "Failed to connect objects : ": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Failed to delete file": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to delete group": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
+    "Failed to delete: ": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to disable tasks": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to disconnect objects : ": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Failed to fetch data!": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to find node": [
+        null,
+        "Falha ao corrigir"
+    ],
     "Failed to fix": [
         null,
         "Falha ao corrigir"
+    ],
+    "Failed to get JSON": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get MAC history": [
+        null,
+        "Falha ao buscar a lista de interfaces"
+    ],
+    "Failed to get MACs": [
+        null,
+        "Falha ao carregar dados"
     ],
     "Failed to get STP status": [
         null,
@@ -894,21 +2625,137 @@
         null,
         "Falha ao obter alerta"
     ],
+    "Failed to get config": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get configs list": [
+        null,
+        "Falha ao buscar a lista de interfaces"
+    ],
+    "Failed to get connection information": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
     "Failed to get data": [
         null,
         "Falha ao carregar dados"
+    ],
+    "Failed to get data for job": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get data for plugin": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get home data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get interfaces": [
+        null,
+        "Falha ao buscar a lista de interfaces"
     ],
     "Failed to get interfaces list": [
         null,
         "Falha ao buscar a lista de interfaces"
     ],
+    "Failed to get layer": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to get neighbors": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to get object data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get params form": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to get path": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get remote sync time": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
+    "Failed to get revisions": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Failed to get shared info: ": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get text": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to get user settings": [
+        null,
+        "Falha ao obter o status STP"
+    ],
+    "Failed to get vendor information": [
+        null,
+        "Falha ao carregar dados"
+    ],
     "Failed to load data": [
         null,
         "Falha ao carregar dados"
     ],
+    "Failed to load instances": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to load map resources": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to load override.js": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to log in": [
+        null,
+        "Falha ao salvar"
+    ],
     "Failed to post message": [
         null,
         "Falha ao enviar mensagem"
+    ],
+    "Failed to reclassify": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to remove connections : ": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Failed to remove interface": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Failed to reset layout": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to run command": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to run report": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to run script": [
+        null,
+        "Falha ao executar tarefas"
     ],
     "Failed to run tasks": [
         null,
@@ -918,9 +2765,57 @@
         null,
         "Falha ao salvar"
     ],
+    "Failed to save API key: ": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to save JSON": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to save changes": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to save conduits": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to save config": [
+        null,
+        "Falha ao salvar"
+    ],
+    "Failed to save data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to save group comment": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
     "Failed to search": [
         null,
         "Falha ao buscar"
+    ],
+    "Failed to send contribution: ": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
+    "Failed to set data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to set parameter": [
+        null,
+        "Falha ao definir seguidor"
+    ],
+    "Failed to set password": [
+        null,
+        "Falha ao definir seguidor"
+    ],
+    "Failed to set position": [
+        null,
+        "Falha ao definir a causa raiz"
     ],
     "Failed to set root cause": [
         null,
@@ -930,17 +2825,85 @@
         null,
         "Falha ao definir seguidor"
     ],
+    "Failed to test rule": [
+        null,
+        "Falha ao definir a causa raiz"
+    ],
+    "Failed to update instance": [
+        null,
+        "Falha ao buscar a lista de interfaces"
+    ],
+    "Failed to update subscription": [
+        null,
+        "Falha ao executar tarefas"
+    ],
+    "Failed to upload MIB": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Failed to upload files": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Fatal": [
+        null,
+        "Dados"
+    ],
+    "Fatal Alarm Weight": [
+        null,
+        "Peso do alarme"
+    ],
+    "Fault Management": [
+        null,
+        "Gerência"
+    ],
     "Fax-no": [
         null,
         "Fax"
+    ],
+    "Female": [
+        null,
+        "E-mail"
     ],
     "Field": [
         null,
         "Campo"
     ],
+    "Field Name": [
+        null,
+        "Nome de usuário"
+    ],
+    "Field Type": [
+        null,
+        "Estilo de Linha"
+    ],
+    "Fields": [
+        null,
+        "Campo"
+    ],
+    "Fields Selector": [
+        null,
+        "Seletor"
+    ],
     "File #": [
         null,
         "Arquivo #"
+    ],
+    "File Name": [
+        null,
+        "Nome de usuário"
+    ],
+    "File name": [
+        null,
+        "Nome de usuário"
+    ],
+    "Filename pattern": [
+        null,
+        "Padrão de Tempo"
+    ],
+    "Files": [
+        null,
+        "Perfil"
     ],
     "Fill Color": [
         null,
@@ -954,73 +2917,25 @@
         null,
         "Filtrar"
     ],
-    "Filter By Tags": [
+    "Filter Query": [
         null,
-        "Filtrar por Tags"
-    ],
-    "Filter by Address (REGEXP)": [
-        null,
-        "Filtrar por IP (REGEXP)"
-    ],
-    "Filter by Administrative Domain": [
-        null,
-        "Filtrar por Domínio Administrativo"
+        "Filtrável"
     ],
     "Filter by Description (REGEXP)": [
         null,
         "Filtrar por Descrição (REGEXP)"
     ],
-    "Filter by ID": [
+    "Filter interface has zero load": [
         null,
-        "Filtrar por ID"
-    ],
-    "Filter by Is Managed": [
-        null,
-        "Filtrar por É Gerenciado"
-    ],
-    "Filter by Name (REGEXP)": [
-        null,
-        "Filtrar por Nome (REGEXP)"
-    ],
-    "Filter by Object Profile": [
-        null,
-        "Filtrar por Perfil de Objeto"
-    ],
-    "Filter by Prefix Table": [
-        null,
-        "Filtrar pela Tabela de Prefixo"
-    ],
-    "Filter by Profile": [
-        null,
-        "Filtrar por Perfil"
-    ],
-    "Filter by Remote Path (REGEXP)": [
-        null,
-        "Filtrar por Caminho Remoto (REGEXP)"
-    ],
-    "Filter by User (REGEXP)": [
-        null,
-        "Filtrar por Usuário (REGEXP)"
-    ],
-    "Filter by VC Domain": [
-        null,
-        "Filtrar por VC Domain"
-    ],
-    "Filter by VRF": [
-        null,
-        "Filtrar por VRF"
-    ],
-    "Filter by service terminator": [
-        null,
-        "Filtrar por terminador de serviço"
-    ],
-    "Filter by termination group": [
-        null,
-        "Filtrar por grupo de terminação"
+        "Mostrar carga de interface"
     ],
     "Filtered": [
         null,
         "Filtrável"
+    ],
+    "Filters": [
+        null,
+        "Filtrar"
     ],
     "First Discovered": [
         null,
@@ -1034,21 +2949,53 @@
         null,
         "Primeiro Piso"
     ],
+    "First MAC": [
+        null,
+        "Primeira Entrada"
+    ],
+    "First Name": [
+        null,
+        "Primeira Entrada"
+    ],
     "First Number": [
         null,
         "Primeiro Número"
+    ],
+    "Fit Height": [
+        null,
+        "Peso mínimo"
+    ],
+    "Fit Page": [
+        null,
+        "Primeira Entrada"
+    ],
+    "Fit Width": [
+        null,
+        "Espessura da Linha"
     ],
     "Fix": [
         null,
         "Corrigir"
     ],
-    "Flap Threshold": [
+    "Flap Condition": [
+        null,
+        "Condição"
+    ],
+    "Flap Threshold (pcs)": [
         null,
         "Aba de Threshold"
     ],
-    "Flap Window": [
+    "Flap Window (sec)": [
         null,
         "Aba de Janela"
+    ],
+    "Floating": [
+        null,
+        "Iniciando"
+    ],
+    "Floating Name Template": [
+        null,
+        "Nome do template"
     ],
     "Floors": [
         null,
@@ -1058,9 +3005,25 @@
         null,
         "Seguir"
     ],
+    "Font": [
+        null,
+        "Mês"
+    ],
     "Font Color": [
         null,
         "Cor da Fonte"
+    ],
+    "Form": [
+        null,
+        "Plataforma"
+    ],
+    "Format": [
+        null,
+        "Plataforma"
+    ],
+    "Free slot": [
+        null,
+        "Resultado"
     ],
     "From": [
         null,
@@ -1070,13 +3033,29 @@
         null,
         "Do IP"
     ],
-    "From Router": [
+    "From Interface Down": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "From Interface Name": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "From Loader": [
+        null,
+        "Do IP"
+    ],
+    "From Number": [
         null,
         "Do Roteador"
     ],
     "From Serial": [
         null,
         "Do Serial"
+    ],
+    "From State": [
+        null,
+        "Estado"
     ],
     "From serial": [
         null,
@@ -1086,6 +3065,14 @@
         null,
         "Frente"
     ],
+    "Front Facade": [
+        null,
+        "Definir causa raiz"
+    ],
+    "Full Name": [
+        null,
+        "nome"
+    ],
     "Full Number": [
         null,
         "Número Completo"
@@ -1093,6 +3080,14 @@
     "Full Path": [
         null,
         "Caminho Completo"
+    ],
+    "Function": [
+        null,
+        "Duração"
+    ],
+    "GIS Division": [
+        null,
+        "divisão"
     ],
     "Gate Id": [
         null,
@@ -1106,13 +3101,45 @@
         null,
         "Gênero"
     ],
+    "Genderless": [
+        null,
+        "Gêneros"
+    ],
     "Genders": [
         null,
         "Gêneros"
     ],
+    "Generate": [
+        null,
+        "Gerado automaticamente?"
+    ],
+    "Generate RPSL": [
+        null,
+        "Gerado automaticamente?"
+    ],
+    "Generator": [
+        null,
+        "Terminadores"
+    ],
+    "Get JSON": [
+        null,
+        "Som de alternância"
+    ],
     "Get config NOW": [
         null,
         "Buscar configuração AGORA"
+    ],
+    "Getting Information": [
+        null,
+        "Falha ao conectar interfaces"
+    ],
+    "Global ID": [
+        null,
+        "Limite global"
+    ],
+    "Global Id": [
+        null,
+        "Limite global"
     ],
     "Global limit": [
         null,
@@ -1122,57 +3149,201 @@
         null,
         "Glifo"
     ],
+    "Go to Parent": [
+        null,
+        "Nível Superior"
+    ],
+    "Graph": [
+        null,
+        "Formato"
+    ],
     "Graphic": [
         null,
         "Formato"
+    ],
+    "Greater": [
+        null,
+        "Criar"
+    ],
+    "Greater Equal": [
+        null,
+        "Criar Regra"
     ],
     "Group": [
         null,
         "Grupo"
     ],
+    "Group Alarm": [
+        null,
+        "Suprimir alertas"
+    ],
     "Group Edit": [
         null,
         "Editar Grupo"
+    ],
+    "Group Escalation Policy": [
+        null,
+        "Escalações"
+    ],
+    "Group Operation": [
+        null,
+        "Operação"
+    ],
+    "Group comment": [
+        null,
+        "Alerta comentado"
+    ],
+    "Group_DN": [
+        null,
+        "Grupo"
+    ],
+    "Grouped": [
+        null,
+        "Grupo"
+    ],
+    "Groups": [
+        null,
+        "Grupo"
     ],
     "Habitated": [
         null,
         "Habitado"
     ],
+    "Halted": [
+        null,
+        "Habitado"
+    ],
+    "Hanlder": [
+        null,
+        "Gênero"
+    ],
+    "Has Preview": [
+        null,
+        "Visualizar"
+    ],
+    "Header": [
+        null,
+        "Gênero"
+    ],
     "Help": [
         null,
         "Ajuda"
+    ],
+    "Helper ModelID": [
+        null,
+        "Modelo"
     ],
     "Hidden": [
         null,
         "Escondido"
     ],
-    "Hide alarms covered by maintenance": [
+    "Hide": [
         null,
-        "Esconder alertas cobertos pela manutenção"
+        "Escondido"
     ],
-    "Hide maintenance": [
+    "Hide details": [
         null,
-        "Esconder manutenção"
+        "Configurações"
     ],
-    "High Error": [
+    "Hierarchy": [
         null,
-        "Alerta Alto de Erro"
+        "Busca"
     ],
-    "High Warn": [
+    "Hint": [
         null,
-        "Alerta Alto de Aviso"
+        "Interfaces"
+    ],
+    "History": [
+        null,
+        "Descoberta"
+    ],
+    "Hostname": [
+        null,
+        "nome"
+    ],
+    "IDLE": [
+        null,
+        "Escondido"
+    ],
+    "IP Address": [
+        null,
+        "Até o IP"
+    ],
+    "IP Address Range": [
+        null,
+        "Até o IP"
+    ],
+    "IP Discovery (Ping)": [
+        null,
+        "Box de descoberta"
+    ],
+    "IP Prefix": [
+        null,
+        "Prefixo"
+    ],
+    "IP Prefix Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "IP Scan Discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "IP VRF": [
+        null,
+        "Prefixo"
+    ],
+    "IP address": [
+        null,
+        "Até o IP"
+    ],
+    "IP1": [
+        null,
+        "Dica"
+    ],
+    "IP2": [
+        null,
+        "Dica"
+    ],
+    "IPAM (Address)": [
+        null,
+        "Até o IP"
+    ],
+    "IPAM Field": [
+        null,
+        "Falha no script"
     ],
     "Icon": [
         null,
         "Ícone"
     ],
+    "IfDesc Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "IfDesc Settings": [
+        null,
+        "Configurações Efetivas"
+    ],
     "Ignore CLI Errors": [
         null,
         "Ignorar Erros da CLI"
     ],
-    "Import": [
+    "Ignore CLI errors": [
         null,
-        "Importar"
+        "Ignorar Erros da CLI"
+    ],
+    "Ignore Disposition": [
+        null,
+        "Disposição"
+    ],
+    "Ignored": [
+        null,
+        "É Filtrável"
+    ],
+    "Image": [
+        null,
+        "Hora"
     ],
     "Import Communities": [
         null,
@@ -1190,19 +3361,55 @@
         null,
         "Importar MED"
     ],
+    "In Labels": [
+        null,
+        "Rótulo"
+    ],
+    "In maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Include ASN Expression": [
+        null,
+        "Expressão"
+    ],
+    "Include Expression": [
+        null,
+        "Expressão"
+    ],
     "Indexed": [
         null,
         "Indexado"
     ],
-    "Install": [
+    "Info": [
         null,
-        "Instalar"
+        "Janela"
     ],
-    "Instance": [
+    "Inner": [
         null,
-        "Instância"
+        "Usuário"
+    ],
+    "Input Metric Type": [
+        null,
+        "Tipo de Métrica"
+    ],
+    "Inputs": [
+        null,
+        "Interfaces"
+    ],
+    "Insert": [
+        null,
+        "Usuário"
+    ],
+    "Instance Type": [
+        null,
+        "Instâncias"
     ],
     "Instances": [
+        null,
+        "Instâncias"
+    ],
+    "Instances loaded": [
         null,
         "Instâncias"
     ],
@@ -1210,17 +3417,105 @@
         null,
         "Interfaces"
     ],
+    "Integer": [
+        null,
+        "Filtrar"
+    ],
+    "Integration": [
+        null,
+        "Operação"
+    ],
+    "Interaction": [
+        null,
+        "Operação"
+    ],
+    "Interaction Settings": [
+        null,
+        "Configurações Efetivas"
+    ],
+    "Interface <Bind>": [
+        null,
+        "Nome interno"
+    ],
+    "Interface Description": [
+        null,
+        "Descrição Remota"
+    ],
+    "Interface Filter": [
+        null,
+        "Perfil de Interface"
+    ],
+    "Interface Flap count": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "Interface Last Change (days)": [
+        null,
+        "Interface alterada"
+    ],
+    "Interface Load URL": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "Interface Name": [
+        null,
+        "Nome interno"
+    ],
     "Interface Profile": [
         null,
         "Perfil de Interface"
     ],
+    "Interface Speed": [
+        null,
+        "Interface alterada"
+    ],
+    "Interface Validation": [
+        null,
+        "Mostrar carga de interface"
+    ],
     "Interface changed": [
+        null,
+        "Interface alterada"
+    ],
+    "Interface count by type": [
         null,
         "Interface alterada"
     ],
     "Interface status": [
         null,
         "Status da interface"
+    ],
+    "Interface1": [
+        null,
+        "Interfaces de VC"
+    ],
+    "Interface1 Description": [
+        null,
+        "Descrição Remota"
+    ],
+    "Interface1 Speed": [
+        null,
+        "Interface alterada"
+    ],
+    "Interface2": [
+        null,
+        "Interfaces de VC"
+    ],
+    "Interface2 Description": [
+        null,
+        "Descrição Remota"
+    ],
+    "Interface2 Speed": [
+        null,
+        "Interface alterada"
+    ],
+    "Internal Error": [
+        null,
+        "Nome interno"
+    ],
+    "Internal error": [
+        null,
+        "Nome interno"
     ],
     "Internal name": [
         null,
@@ -1238,9 +3533,29 @@
         null,
         "Intervalo (s)"
     ],
+    "Interval,sec": [
+        null,
+        "Intervalo (s)"
+    ],
     "Introduced": [
         null,
         "Incluído"
+    ],
+    "Invalid IP address format": [
+        null,
+        "Até o IP"
+    ],
+    "Invalid Input": [
+        null,
+        "Revalidar"
+    ],
+    "Invalid connections": [
+        null,
+        "Conexões"
+    ],
+    "Invalid data!": [
+        null,
+        "Revalidar"
     ],
     "Inventory": [
         null,
@@ -1250,9 +3565,17 @@
         null,
         "Ativo"
     ],
+    "Is Active?": [
+        null,
+        "Ativo"
+    ],
     "Is Builtin": [
         null,
         "É Nativo"
+    ],
+    "Is Default": [
+        null,
+        "Padrão"
     ],
     "Is Enabled": [
         null,
@@ -1266,6 +3589,10 @@
         null,
         "Está Escondido"
     ],
+    "Is Hide": [
+        null,
+        "Está Escondido"
+    ],
     "Is Indexed": [
         null,
         "É Indexado"
@@ -1274,59 +3601,95 @@
         null,
         "Bloqueado"
     ],
-    "Is Managed?": [
+    "Is Managed": [
         null,
         "É Gerenciado?"
+    ],
+    "Is Required": [
+        null,
+        "Obrigatório"
+    ],
+    "Is Root": [
+        null,
+        "Raiz"
     ],
     "Is Searchable": [
         null,
         "É Buscável"
     ],
+    "Is Stored": [
+        null,
+        "É Filtrável"
+    ],
+    "Is Synced": [
+        null,
+        "É Filtrável"
+    ],
     "Italic": [
         null,
         "Itálico"
+    ],
+    "JSON saved": [
+        null,
+        "Salvos"
     ],
     "Job": [
         null,
         "Tarefa"
     ],
+    "Job Details": [
+        null,
+        "Configurações"
+    ],
     "Job scheduled to start": [
         null,
         "Tarefa agendada para iniciar"
+    ],
+    "Jump to Group": [
+        null,
+        "Grupo Enum"
     ],
     "Jump to Segment": [
         null,
         "Ir para o Segmento"
     ],
+    "KB Entry": [
+        null,
+        "Tentativas"
+    ],
+    "Keep connections": [
+        null,
+        "Conexões"
+    ],
     "Key": [
         null,
         "Chave"
     ],
-    "Key (RE)": [
+    "Key Expression": [
         null,
-        "Chave (RE)"
+        "Expressão"
     ],
     "Key RE": [
         null,
         "Chave RE"
     ],
-    "L1 (max)": [
+    "Kind": [
         null,
-        "L1 (máx)"
+        "zÍndice "
     ],
-    "L1 (min)": [
+    "L2 Domain": [
         null,
-        "L1 (mín)"
+        "Domínio Administrativo"
     ],
-    "L2 (max)": [
+    "LDP": [
         null,
-        "L2 (máx)"
-    ],
-    "L2 (min)": [
-        null,
-        "L2 (mín)"
+        "Antigo"
     ],
     "Label": [
+        null,
+        "Rótulo"
+    ],
+    "Labels": [
         null,
         "Rótulo"
     ],
@@ -1334,17 +3697,45 @@
         null,
         "Idioma"
     ],
+    "Large": [
+        null,
+        "Alvo"
+    ],
     "Last Changed": [
         null,
         "Última Mudança"
+    ],
+    "Last Extract": [
+        null,
+        "última mudança"
     ],
     "Last Floor": [
         null,
         "Último Piso"
     ],
+    "Last Load": [
+        null,
+        "Último Piso"
+    ],
+    "Last Login": [
+        null,
+        "Último Piso"
+    ],
+    "Last MAC": [
+        null,
+        "última mudança"
+    ],
+    "Last Name": [
+        null,
+        "última mudança"
+    ],
     "Last Run": [
         null,
         "Última Execução"
+    ],
+    "Last Seen": [
+        null,
+        "Visto pela Última Vez"
     ],
     "Last Status": [
         null,
@@ -1358,29 +3749,65 @@
         null,
         "Visto pela Última Vez"
     ],
-    "Late": [
+    "Last status": [
         null,
-        "Atraso"
+        "Último Status"
     ],
-    "Layers": [
+    "Last update": [
         null,
-        "Camadas"
+        "Última Atualização"
+    ],
+    "Launch": [
+        null,
+        "Ramo"
+    ],
+    "Layout": [
+        null,
+        "Novo layout"
+    ],
+    "Left": [
+        null,
+        "Excluir"
     ],
     "Left RE": [
         null,
         "RE Esquerda"
     ],
+    "Legend": [
+        null,
+        "Segmento"
+    ],
+    "Less": [
+        null,
+        "Regras"
+    ],
+    "Less Equal": [
+        null,
+        "E-mail"
+    ],
     "Level": [
         null,
         "Nível"
     ],
-    "Limit": [
+    "Level Limit": [
         null,
-        "Limite"
+        "Limite global"
+    ],
+    "Level Up": [
+        null,
+        "Nível"
     ],
     "Line Style": [
         null,
         "Estilo de Linha"
+    ],
+    "Link Count": [
+        null,
+        "Ligar ao Evento"
+    ],
+    "Link Discovery Policy": [
+        null,
+        "Política de Descoberta"
     ],
     "Link Event": [
         null,
@@ -1393,6 +3820,34 @@
     "Link Inspector": [
         null,
         "Inspetor de Link"
+    ],
+    "Link Last Seen": [
+        null,
+        "Visto pela Última Vez"
+    ],
+    "Link Managed Object": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Link status": [
+        null,
+        "Status do Alerta"
+    ],
+    "Loading": [
+        null,
+        "Construção"
+    ],
+    "Loading job panel ...": [
+        null,
+        "Construção"
+    ],
+    "Loading tab with": [
+        null,
+        "Construção"
+    ],
+    "Loca Id": [
+        null,
+        "Carregar"
     ],
     "Local AS": [
         null,
@@ -1410,7 +3865,19 @@
         null,
         "Descrição Local"
     ],
+    "Local Group": [
+        null,
+        "Grupos compatíveis"
+    ],
+    "Local ID": [
+        null,
+        "IP Local"
+    ],
     "Local IP": [
+        null,
+        "IP Local"
+    ],
+    "Local Id": [
         null,
         "IP Local"
     ],
@@ -1418,9 +3885,25 @@
         null,
         "Interface Local"
     ],
+    "Local Name": [
+        null,
+        "AS Local"
+    ],
+    "Local Object": [
+        null,
+        "Mostrar objeto"
+    ],
     "Local Pref": [
         null,
         "Prefixo Local"
+    ],
+    "LocalID": [
+        null,
+        "IP Local"
+    ],
+    "Localization": [
+        null,
+        "Validação"
     ],
     "Location": [
         null,
@@ -1430,33 +3913,73 @@
         null,
         "Bloqueado?"
     ],
+    "LogOut": [
+        null,
+        "Sair"
+    ],
     "Logout": [
         null,
         "Sair"
     ],
-    "Low Error": [
+    "Loopback address": [
         null,
-        "Alerta Baixo de Erro"
+        "Até o IP"
     ],
-    "Low Warn": [
+    "Lying": [
         null,
-        "Alerta Baixo de Aviso"
+        "Mesmo Nível"
     ],
-    "MAC Discovery": [
+    "MAC DB": [
         null,
-        "Descoberta de MAC"
+        "Seguir"
+    ],
+    "MAC Discovery Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "MAC History": [
+        null,
+        "Descoberta"
+    ],
+    "MIBs has been uploaded": [
+        null,
+        "Credenciais alteradas  com sucesso"
     ],
     "MIME Type": [
         null,
         "Tipos de MIME"
     ],
+    "Mac counter": [
+        null,
+        "Anexar conta"
+    ],
+    "Magic": [
+        null,
+        "Domínio"
+    ],
     "Mail": [
         null,
         "E-mail"
     ],
+    "Main": [
+        null,
+        "Domínio"
+    ],
     "Maintainer": [
         null,
         "Mantenedor"
+    ],
+    "Maintainers": [
+        null,
+        "Mantenedor"
+    ],
+    "Maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "Male": [
+        null,
+        "E-mail"
     ],
     "Managed": [
         null,
@@ -1466,11 +3989,35 @@
         null,
         "Objeto Gerenciado"
     ],
-    "Managed Object Selector": [
+    "Managed Object Address": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Managed Object Description": [
         null,
         "Seletor de Objeto Gerenciado"
     ],
+    "Managed Object Level": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Managed Object Loader Policy": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Managed Object Name": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "Managed Object Profile": [
+        null,
+        "Objeto gerenciado"
+    ],
     "Managed object": [
+        null,
+        "Objeto gerenciado"
+    ],
+    "ManagedObject": [
         null,
         "Objeto gerenciado"
     ],
@@ -1478,15 +4025,59 @@
         null,
         "Gerência"
     ],
+    "Management Address": [
+        null,
+        "Gerência"
+    ],
+    "Management VLAN": [
+        null,
+        "Gerência"
+    ],
+    "Management console": [
+        null,
+        "Gerência"
+    ],
+    "Manual Scan Failed": [
+        null,
+        "Falha no script"
+    ],
     "Map Distange (m)": [
         null,
         "Mapa de Distância (m)"
     ],
-    "Map Script": [
+    "Map has been saved": [
         null,
-        "Mapear Script"
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Map settings": [
+        null,
+        "Configurações"
+    ],
+    "Mapping": [
+        null,
+        "Domínio"
+    ],
+    "Mappings": [
+        null,
+        "Configurações"
+    ],
+    "Markup Language": [
+        null,
+        "Alterando idioma"
+    ],
+    "Mask": [
+        null,
+        "Tarefas"
+    ],
+    "Mass": [
+        null,
+        "Tarefas"
     ],
     "Match": [
+        null,
+        "Combinar"
+    ],
+    "Match Ack": [
         null,
         "Combinar"
     ],
@@ -1494,29 +4085,85 @@
         null,
         "Condição de Correspondência"
     ],
+    "Match Conditions": [
+        null,
+        "Condição de Correspondência"
+    ],
     "Match Connection": [
         null,
         "Conexão de Correspondência"
+    ],
+    "Match Expression": [
+        null,
+        "Expressão"
+    ],
+    "Match Labels": [
+        null,
+        "Regras de Correspondência"
+    ],
+    "Match Level": [
+        null,
+        "Regras de Correspondência"
     ],
     "Match Rules": [
         null,
         "Regras de Correspondência"
     ],
+    "Match Slot/Ctx": [
+        null,
+        "Conexão de Correspondência"
+    ],
+    "Match State": [
+        null,
+        "Tipo de Correspondência"
+    ],
     "Match Type": [
         null,
         "Tipo de Correspondência"
     ],
-    "Matched Objects": [
+    "Matched": [
         null,
-        "Objetos Combinados"
+        "Seguir"
+    ],
+    "Matchers": [
+        null,
+        "Regras de Correspondência"
+    ],
+    "Math rule": [
+        null,
+        "Regras de Correspondência"
     ],
     "Max": [
         null,
         "Máx"
     ],
+    "Max  Windows": [
+        null,
+        "Aba de Janela"
+    ],
+    "Max Links": [
+        null,
+        "Limpar links"
+    ],
+    "Max Objects": [
+        null,
+        "Objetos"
+    ],
     "Max Zoom": [
         null,
         "Zoom Máximo"
+    ],
+    "Max. Critical": [
+        null,
+        "Máximo de Scripts"
+    ],
+    "Max. Duration": [
+        null,
+        "Duração"
+    ],
+    "Max. Endpoints": [
+        null,
+        "Comprimento Máximo"
     ],
     "Max. Length": [
         null,
@@ -1526,23 +4173,55 @@
         null,
         "Prefixos Máximos"
     ],
+    "Max. Repeats": [
+        null,
+        "Máximo de Scripts"
+    ],
     "Max. Scripts": [
         null,
         "Máximo de Scripts"
+    ],
+    "Max. Severity": [
+        null,
+        "Criticidade"
+    ],
+    "Max. Status": [
+        null,
+        "Status do Alerta"
+    ],
+    "Max. Warning": [
+        null,
+        "Duração"
     ],
     "Max. Zoom": [
         null,
         "Zoom Máximo"
     ],
-    "Measure": [
-        null,
-        "Medida"
-    ],
     "Members": [
         null,
         "Membros"
     ],
+    "Merge Downlinks": [
+        null,
+        "Limpar links"
+    ],
     "Message": [
+        null,
+        "Mensagem"
+    ],
+    "Message Pattern": [
+        null,
+        "Padrão de Tempo"
+    ],
+    "Message Registry Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Message Type": [
+        null,
+        "Mensagem"
+    ],
+    "Message Types": [
         null,
         "Mensagem"
     ],
@@ -1554,9 +4233,29 @@
         null,
         "Métrica"
     ],
+    "Metric Action": [
+        null,
+        "Notificação"
+    ],
+    "Metric Scale": [
+        null,
+        "Métricas"
+    ],
+    "Metric Threshold bind": [
+        null,
+        "Tipo de Métrica"
+    ],
     "Metric Type": [
         null,
         "Tipo de Métrica"
+    ],
+    "Metric Type inputs": [
+        null,
+        "Tipo de Métrica"
+    ],
+    "Metric source": [
+        null,
+        "Recursos"
     ],
     "Metrics": [
         null,
@@ -1566,13 +4265,37 @@
         null,
         "Mín"
     ],
+    "Min Duration": [
+        null,
+        "Duração"
+    ],
     "Min Zoom": [
         null,
         "Zoom Mínimo"
     ],
-    "Min. Labels": [
+    "Min. Critical": [
         null,
-        "Min. Rótulos"
+        "Duração"
+    ],
+    "Min. Duration": [
+        null,
+        "Duração"
+    ],
+    "Min. Objects": [
+        null,
+        "Objetos"
+    ],
+    "Min. Severity": [
+        null,
+        "Criticidade"
+    ],
+    "Min. Status": [
+        null,
+        "Status do Alerta"
+    ],
+    "Min. Warning": [
+        null,
+        "Peso mínimo"
     ],
     "Min. Weight": [
         null,
@@ -1582,25 +4305,69 @@
         null,
         "Zoom Mínimo"
     ],
+    "Mirror Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Mirror on Change": [
+        null,
+        "Versão alterada"
+    ],
     "Mnt. Ref": [
         null,
         "Referência do Mantenedor"
+    ],
+    "Mode": [
+        null,
+        "Código"
     ],
     "Model": [
         null,
         "Modelo"
     ],
-    "Model Data": [
+    "Model Interface": [
         null,
-        "Modelo de Dado"
+        "Interface Remota"
     ],
-    "Month": [
+    "ModelID": [
         null,
-        "Mês"
+        "Modelo"
+    ],
+    "Modes": [
+        null,
+        "Código"
+    ],
+    "Modify": [
+        null,
+        "Corpo"
+    ],
+    "Modify API Key": [
+        null,
+        "Corpo"
+    ],
+    "Move Up": [
+        null,
+        "Excluir"
+    ],
+    "Move nested objects to": [
+        null,
+        "Objetos Combinados"
+    ],
+    "Multiline": [
+        null,
+        "Nativo"
+    ],
+    "NOC Login": [
+        null,
+        "Último Piso"
     ],
     "Name": [
         null,
         "Nome"
+    ],
+    "Name Template": [
+        null,
+        "Nome do template"
     ],
     "Name template": [
         null,
@@ -1618,9 +4385,41 @@
         null,
         "Vizinho"
     ],
+    "Network": [
+        null,
+        "Selecionar Segmento..."
+    ],
+    "Network Ranges": [
+        null,
+        "Recursos"
+    ],
+    "Network Resources": [
+        null,
+        "Recursos"
+    ],
+    "Network Scan": [
+        null,
+        "Selecionar Segmento..."
+    ],
+    "Network Segment": [
+        null,
+        "Selecionar Segmento..."
+    ],
     "New": [
         null,
         "Novo"
+    ],
+    "New Event Notification": [
+        null,
+        "Notificação"
+    ],
+    "New Maintaince": [
+        null,
+        "Esconder manutenção"
+    ],
+    "New Maintenance": [
+        null,
+        "Esconder manutenção"
     ],
     "New Password": [
         null,
@@ -1630,6 +4429,10 @@
         null,
         "Nova Senha (Confirme)"
     ],
+    "New Password cannot be empty": [
+        null,
+        "Senha"
+    ],
     "New layout": [
         null,
         "Novo layout"
@@ -1638,9 +4441,81 @@
         null,
         "Nova mensagem"
     ],
+    "Next": [
+        null,
+        "Texto"
+    ],
     "Next Run": [
         null,
         "Próxima Execução"
+    ],
+    "Next Updated": [
+        null,
+        "Última Atualização"
+    ],
+    "Next change": [
+        null,
+        "última mudança"
+    ],
+    "No API token found": [
+        null,
+        "Testar Som"
+    ],
+    "No SubInterfaces": [
+        null,
+        "Interfaces de VC"
+    ],
+    "No interfaces found": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "No jobs": [
+        null,
+        "Mostrar objeto"
+    ],
+    "No possible transitions": [
+        null,
+        "transição ipv6"
+    ],
+    "Nodes": [
+        null,
+        "Gêneros"
+    ],
+    "None": [
+        null,
+        "Telefone"
+    ],
+    "Not Equal": [
+        null,
+        "E-mail"
+    ],
+    "Not Found": [
+        null,
+        "Testar Som"
+    ],
+    "Not Limited": [
+        null,
+        "Limite global"
+    ],
+    "Not Update": [
+        null,
+        "Última Atualização"
+    ],
+    "Not found": [
+        null,
+        "Testar Som"
+    ],
+    "Not saved": [
+        null,
+        "Salvos"
+    ],
+    "Nothing to copy": [
+        null,
+        "Configuração alterada"
+    ],
+    "Nothing was found": [
+        null,
+        "Testar Som"
     ],
     "Notification": [
         null,
@@ -1658,9 +4533,21 @@
         null,
         "Atrados de Notificação"
     ],
+    "Notification Delay (sec)": [
+        null,
+        "Atrados de Notificação"
+    ],
     "Notification Group": [
         null,
         "Grupo de Notificação"
+    ],
+    "Notification Group Settings": [
+        null,
+        "Grupo de Notificação"
+    ],
+    "Notify Changed": [
+        null,
+        "Configuração alterada"
     ],
     "Num": [
         null,
@@ -1678,6 +4565,34 @@
         null,
         "Número"
     ],
+    "ON": [
+        null,
+        "Telefone"
+    ],
+    "OPENCONFIRM": [
+        null,
+        "Configurar"
+    ],
+    "OPENSENT": [
+        null,
+        "Nível Superior"
+    ],
+    "OPM": [
+        null,
+        "Fim"
+    ],
+    "OR": [
+        null,
+        "Porta"
+    ],
+    "OTHER": [
+        null,
+        "Mês"
+    ],
+    "OTN ODU": [
+        null,
+        "Anexar conta"
+    ],
     "Obj. Profile": [
         null,
         "Perfil de Objeto"
@@ -1686,33 +4601,153 @@
         null,
         "Objeto"
     ],
-    "Object Count": [
+    "Object  Address": [
         null,
-        "Contagem de Objetos"
+        "Até o IP"
+    ],
+    "Object Actions": [
+        null,
+        "Conexões"
+    ],
+    "Object Adm. Domain": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "Object Administrative domain": [
+        null,
+        "Domínio Administrativo"
+    ],
+    "Object Filter": [
+        null,
+        "Perfil de Objeto"
+    ],
+    "Object Geo Address": [
+        null,
+        "Até o IP"
+    ],
+    "Object Groups": [
+        null,
+        "Objetos"
+    ],
+    "Object Hostname": [
+        null,
+        "Nome do Objeto"
     ],
     "Object Inspector": [
         null,
         "Inspeto de Objeto"
     ],
+    "Object Labels": [
+        null,
+        "Nome do Objeto"
+    ],
+    "Object Model": [
+        null,
+        "Nome do Objeto"
+    ],
     "Object Name": [
         null,
         "Nome do Objeto"
+    ],
+    "Object Platform": [
+        null,
+        "Seletor de Objeto"
     ],
     "Object Profile": [
         null,
         "Perfil de Objeto"
     ],
-    "Object Selector": [
+    "Object Segment": [
         null,
-        "Seletor de Objeto"
+        "Objeto/Segmento"
+    ],
+    "Object Settings": [
+        null,
+        "Objetos"
+    ],
+    "Object Software": [
+        null,
+        "Perfil de Objeto"
+    ],
+    "Object Status": [
+        null,
+        "Objetos"
+    ],
+    "Object URL Template": [
+        null,
+        "Assunto do Template"
+    ],
+    "Object Validation": [
+        null,
+        "Validação"
+    ],
+    "Object capabilities": [
+        null,
+        "Capacidades"
+    ],
+    "Object connections": [
+        null,
+        "Conexões"
+    ],
+    "Object has been loaded": [
+        null,
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Object settings": [
+        null,
+        "Objetos"
     ],
     "Object/Segment": [
         null,
         "Objeto/Segmento"
     ],
+    "Object1 Name": [
+        null,
+        "Nome do Objeto"
+    ],
+    "Object1 Platform": [
+        null,
+        "Seletor de Objeto"
+    ],
+    "Object1 Segment": [
+        null,
+        "Objeto/Segmento"
+    ],
+    "Object1 Tags": [
+        null,
+        "Objetos"
+    ],
+    "Object2 Name": [
+        null,
+        "Nome do Objeto"
+    ],
+    "Object2 Platform": [
+        null,
+        "Seletor de Objeto"
+    ],
+    "Object2 Segment": [
+        null,
+        "Objeto/Segmento"
+    ],
+    "Object2 Tags": [
+        null,
+        "Objetos"
+    ],
+    "ObjectGroup Inspector": [
+        null,
+        "Inspeto de Objeto"
+    ],
+    "ObjectSegment Inspector": [
+        null,
+        "Inspetor de Segmento"
+    ],
     "Objects": [
         null,
         "Objetos"
+    ],
+    "Oid": [
+        null,
+        "Para OID"
     ],
     "Old": [
         null,
@@ -1722,19 +4757,103 @@
         null,
         "Senha Atual"
     ],
+    "Old Password cannot be empty": [
+        null,
+        "Senha"
+    ],
+    "On Alarm Clear": [
+        null,
+        "Alerta excluído"
+    ],
+    "On Alarm Raise": [
+        null,
+        "Alerta elevado"
+    ],
+    "On Clear": [
+        null,
+        "Limpar"
+    ],
+    "On End": [
+        null,
+        "Conteúdo"
+    ],
+    "On New Platform": [
+        null,
+        "Plataforma"
+    ],
+    "On Start": [
+        null,
+        "Contato"
+    ],
     "On platform change": [
         null,
         "Na mudança de plataforma"
+    ],
+    "Once": [
+        null,
+        "Telefone"
     ],
     "Only": [
         null,
         "Apenas"
     ],
+    "Only Changed": [
+        null,
+        "Configuração alterada"
+    ],
+    "Only Favorites": [
+        null,
+        "Mostrar apenas causas raiz"
+    ],
+    "Only One Object": [
+        null,
+        "Mostrar objeto"
+    ],
+    "Only Root": [
+        null,
+        "Mostrar apenas causas raiz"
+    ],
+    "Only Watch": [
+        null,
+        "Seguir"
+    ],
+    "Op": [
+        null,
+        "Fim"
+    ],
     "Open Template": [
         null,
         "Abrir Template"
     ],
+    "Open card": [
+        null,
+        "Ver ficha"
+    ],
+    "Open tools": [
+        null,
+        "Protocolos"
+    ],
+    "Oper Status Transfer": [
+        null,
+        "Status da interface"
+    ],
+    "Oper Status.": [
+        null,
+        "Status da interface"
+    ],
+    "Oper. Status Transfer": [
+        null,
+        "Notificação de Modificação de Status"
+    ],
     "Operation": [
+        null,
+        "Operação"
+    ],
+    "Operation completed": [
+        null,
+        "Busca realizada"
+    ],
+    "Operation failed": [
         null,
         "Operação"
     ],
@@ -1754,6 +4873,18 @@
         null,
         "Organização"
     ],
+    "Orientation": [
+        null,
+        "Localização"
+    ],
+    "Other": [
+        null,
+        "Mês"
+    ],
+    "Outer": [
+        null,
+        "Mês"
+    ],
     "Overview": [
         null,
         "Visão geral"
@@ -1762,7 +4893,39 @@
         null,
         "Licenciado Até"
     ],
+    "Pair": [
+        null,
+        "Parâmetro"
+    ],
+    "Param": [
+        null,
+        "Parâmetro"
+    ],
+    "Param Rules": [
+        null,
+        "Parâmetro"
+    ],
+    "Param name": [
+        null,
+        "Abreviação"
+    ],
     "Parameter": [
+        null,
+        "Parâmetro"
+    ],
+    "Parameter Choices": [
+        null,
+        "Parâmetro"
+    ],
+    "Parameter has been set": [
+        null,
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Parameters": [
+        null,
+        "Parâmetro"
+    ],
+    "Parameters Schema": [
         null,
         "Parâmetro"
     ],
@@ -1770,17 +4933,49 @@
         null,
         "Parâmetro"
     ],
+    "Params Form": [
+        null,
+        "Parâmetro"
+    ],
     "Parent": [
         null,
         "Nível Superior"
     ],
+    "Parent Filter": [
+        null,
+        "Limpar filtro"
+    ],
+    "Parent filter": [
+        null,
+        "Limpar filtro"
+    ],
     "Password": [
+        null,
+        "Senha"
+    ],
+    "Password cannot be empty": [
+        null,
+        "Senha"
+    ],
+    "Password changed": [
+        null,
+        "Última Mudança"
+    ],
+    "Password empty": [
+        null,
+        "Senha"
+    ],
+    "Passwords do not match": [
         null,
         "Senha"
     ],
     "Path": [
         null,
         "Caminho"
+    ],
+    "Path Template": [
+        null,
+        "Nome do template"
     ],
     "Pattern": [
         null,
@@ -1794,11 +4989,59 @@
         null,
         "Padrões"
     ],
-    "Peer Group": [
+    "Peer": [
         null,
-        "Grupo Peer"
+        "Reverter"
+    ],
+    "Peer Data": [
+        null,
+        "Reverter"
+    ],
+    "Peer Discovery": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Peer Profile": [
+        null,
+        "Perfil de AS"
+    ],
+    "Peer Status": [
+        null,
+        "Status da interface"
+    ],
+    "Periodic Alarm": [
+        null,
+        "Apagar alerta?"
+    ],
+    "Periodic Completed Time": [
+        null,
+        "Busca realizada"
+    ],
+    "Periodic Discovery": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Periodic Duration": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Periodic Sample": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Periodic Status": [
+        null,
+        "Status da interface"
+    ],
+    "Periodic Telemetry": [
+        null,
+        "Descoberta periódica"
     ],
     "Periodic discovery": [
+        null,
+        "Descoberta periódica"
+    ],
+    "Periodic discovery intervals": [
         null,
         "Descoberta periódica"
     ],
@@ -1810,6 +5053,14 @@
         null,
         "Nome da Permissão"
     ],
+    "Permissions": [
+        null,
+        "Permissão"
+    ],
+    "Permissions were set": [
+        null,
+        "nome_da_permissão"
+    ],
     "Person/Role Name": [
         null,
         "Nome da Pessoa/Papel"
@@ -1817,6 +5068,10 @@
     "Phone": [
         null,
         "Telefone"
+    ],
+    "Ping fail": [
+        null,
+        "Filtro de Bind"
     ],
     "Platform": [
         null,
@@ -1826,53 +5081,85 @@
         null,
         "Plataforma (Regex)"
     ],
+    "Platfrom": [
+        null,
+        "Plataforma"
+    ],
     "Please confirm the alarm is closed and must be cleared?": [
         null,
         "Por favor, verifique que o alerta está fechado e precisa ser apagado"
+    ],
+    "Please enter a valid number.": [
+        null,
+        "Alerta comentado"
+    ],
+    "Please enter comment": [
+        null,
+        "Alerta comentado"
     ],
     "Please enter root cause alarm id": [
         null,
         "Por favor, digite o id da causa raiz do alerta"
     ],
+    "Please select a row": [
+        null,
+        "Seletores"
+    ],
+    "Pofile": [
+        null,
+        "Perfil"
+    ],
     "Point Radius": [
         null,
         "Raio do Ponto"
+    ],
+    "Point Style": [
+        null,
+        "Estilo de Linha"
     ],
     "Policy": [
         null,
         "Política"
     ],
-    "Pool Name": [
+    "Pool Active": [
         null,
-        "Nome do Pool"
+        "Ativo"
     ],
     "Port": [
         null,
         "Porta"
     ],
-    "Pos. Front": [
+    "Port name": [
         null,
-        "Posição Frontal"
+        "Abreviação"
     ],
-    "Pos. Rear": [
+    "Port profile name": [
         null,
-        "Posição de Fundos"
+        "Filtro de Importação"
     ],
-    "Post-Delete Rule": [
+    "Port status": [
         null,
-        "Regra de Pós-Exclusão"
+        "Último Status"
     ],
-    "Post-Save Rule": [
+    "Portal": [
         null,
-        "Regra de Pós-Salvamento"
+        "Relatório"
     ],
-    "PostDelete": [
+    "Portal Inspector": [
         null,
-        "Pós-Excluir"
+        "Inspeto de Objeto"
     ],
-    "PostSave": [
+    "Position": [
         null,
-        "Pós-Salvar"
+        "Disposição"
+    ],
+    "Position Front": [
+        null,
+        "Disposição"
+    ],
+    "Position Rear": [
+        null,
+        "Disposição"
     ],
     "Postal Code": [
         null,
@@ -1886,22 +5173,6 @@
         null,
         "Razões Iniciais"
     ],
-    "Pre-Delete Rule": [
-        null,
-        "Regra de Pré-Exclusão"
-    ],
-    "Pre-Save Rule": [
-        null,
-        "Regra de Pré-Salvamento"
-    ],
-    "PreDelete": [
-        null,
-        "Pré-Excluir"
-    ],
-    "PreSave": [
-        null,
-        "Pré-Salvar"
-    ],
     "Pref": [
         null,
         "Preferência"
@@ -1910,13 +5181,49 @@
         null,
         "Preferência"
     ],
+    "Preferred": [
+        null,
+        "Preferência"
+    ],
     "Preferred Language": [
+        null,
+        "Idioma Preferido"
+    ],
+    "Preferred Method": [
         null,
         "Idioma Preferido"
     ],
     "Prefix": [
         null,
         "Prefixo"
+    ],
+    "Prefix Deleted": [
+        null,
+        "Pré-Excluir"
+    ],
+    "Prefix Discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "Prefix Discovery Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Prefix Label": [
+        null,
+        "Prefixos"
+    ],
+    "Prefix List": [
+        null,
+        "Nome da Prefix-List ..."
+    ],
+    "Prefix Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Prefix Scope": [
+        null,
+        "Prefixos"
     ],
     "Prefix list name ...": [
         null,
@@ -1934,13 +5241,29 @@
         null,
         "Prefixos"
     ],
+    "Preparing Contribution": [
+        null,
+        "Iniciando"
+    ],
     "Preview": [
         null,
         "Visualizar"
     ],
+    "Preview zone": [
+        null,
+        "Visualizar"
+    ],
+    "Previous change": [
+        null,
+        "Versão alterada"
+    ],
     "Primary": [
         null,
         "Principal"
+    ],
+    "Primary Key": [
+        null,
+        "é primário"
     ],
     "Prio.": [
         null,
@@ -1950,6 +5273,14 @@
         null,
         "Prioridade"
     ],
+    "Priv Key": [
+        null,
+        "é primário"
+    ],
+    "Priv Proto": [
+        null,
+        "projeto"
+    ],
     "Probable Causes": [
         null,
         "Possíveis Causas"
@@ -1958,9 +5289,9 @@
         null,
         "Processo"
     ],
-    "Processed": [
+    "Productive": [
         null,
-        "Processado"
+        "Ativo"
     ],
     "Profile": [
         null,
@@ -1974,6 +5305,10 @@
         null,
         "Perfil salvo"
     ],
+    "Profiles": [
+        null,
+        "Perfil"
+    ],
     "Proj. Distange (m)": [
         null,
         "Projeto de Distância (m)"
@@ -1985,6 +5320,14 @@
     "Project distance (m)": [
         null,
         "Distância do projeto (m)"
+    ],
+    "Protected": [
+        null,
+        "projeto"
+    ],
+    "Proto": [
+        null,
+        "projeto"
     ],
     "Protocol": [
         null,
@@ -2002,6 +5345,22 @@
         null,
         "Aprovisionamento"
     ],
+    "Query": [
+        null,
+        "Tentativas"
+    ],
+    "Query Parameters": [
+        null,
+        "Parâmetro"
+    ],
+    "Question": [
+        null,
+        "Versão"
+    ],
+    "Questions": [
+        null,
+        "Versão"
+    ],
     "RO Community": [
         null,
         "Comunidade RO"
@@ -2018,17 +5377,89 @@
         null,
         "Remarcar RPSL"
     ],
+    "RT Export": [
+        null,
+        "Relatório"
+    ],
+    "RT Import": [
+        null,
+        "Importar"
+    ],
     "RW Community": [
         null,
         "Comunidade RW"
     ],
-    "Raw": [
+    "Rack": [
         null,
-        "Texto Claro"
+        "Traçar"
+    ],
+    "Raise": [
+        null,
+        "Traçar"
+    ],
+    "Raise & Clear Alarm": [
+        null,
+        "Falha ao apagar alerta"
+    ],
+    "Raise Alarm": [
+        null,
+        "Mostrar alertas ativos"
+    ],
+    "Random": [
+        null,
+        "De"
+    ],
+    "Range": [
+        null,
+        "Modificar"
+    ],
+    "Ranges": [
+        null,
+        "Modificar"
+    ],
+    "Rate limit": [
+        null,
+        "Limite global"
+    ],
+    "Raw Policy": [
+        null,
+        "Política"
+    ],
+    "Raw Vars": [
+        null,
+        "Variáveis"
+    ],
+    "Raw vars": [
+        null,
+        "Variáveis"
+    ],
+    "Read Only": [
+        null,
+        "Razão Inicial"
+    ],
+    "Read only": [
+        null,
+        "Razão Inicial"
     ],
     "Rear": [
         null,
         "Fundos"
+    ],
+    "Reason": [
+        null,
+        "Razão Inicial"
+    ],
+    "Rebase": [
+        null,
+        "Criar"
+    ],
+    "Rebased": [
+        null,
+        "Processado"
+    ],
+    "Reboot": [
+        null,
+        "Raiz"
     ],
     "Reclassify": [
         null,
@@ -2038,17 +5469,77 @@
         null,
         "Ações Recomendadas"
     ],
-    "Reduce pyRule": [
+    "Records": [
         null,
-        "Reduzir pyRule"
+        "Seletores"
+    ],
+    "Records has been saved": [
+        null,
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Records has been updated": [
+        null,
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Recover Time (sec)": [
+        null,
+        "Tempo (s)"
+    ],
+    "Reference": [
+        null,
+        "Preferência"
+    ],
+    "Reference Template": [
+        null,
+        "Abrir Template"
+    ],
+    "Referenced": [
+        null,
+        "Preferência"
     ],
     "Refresh": [
         null,
         "Atualizar"
     ],
+    "Refresh data": [
+        null,
+        "Atualizar"
+    ],
+    "Regex": [
+        null,
+        "Redefinir"
+    ],
+    "Register": [
+        null,
+        "Tentativas"
+    ],
+    "Register Instance": [
+        null,
+        "Interface Remota"
+    ],
+    "Relative": [
+        null,
+        "Criar"
+    ],
     "Reload": [
         null,
         "Recarregar"
+    ],
+    "Reload data": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Reloading {0} ...": [
+        null,
+        "Construção"
+    ],
+    "Reloading...": [
+        null,
+        "Construção"
+    ],
+    "Remote": [
+        null,
+        "Excluir"
     ],
     "Remote AS": [
         null,
@@ -2066,7 +5557,15 @@
         null,
         "Descrição Remota"
     ],
+    "Remote ID": [
+        null,
+        "IP Remoto"
+    ],
     "Remote IP": [
+        null,
+        "IP Remoto"
+    ],
+    "Remote Id": [
         null,
         "IP Remoto"
     ],
@@ -2074,23 +5573,107 @@
         null,
         "Interface Remota"
     ],
+    "Remote Mapping": [
+        null,
+        "IP Remoto"
+    ],
+    "Remote Name": [
+        null,
+        "AS Remoto"
+    ],
+    "Remote Object": [
+        null,
+        "Selecionar objeto gerenciado ..."
+    ],
+    "Remote System": [
+        null,
+        "Sobre o sistema ..."
+    ],
     "Remove": [
         null,
         "Excluir"
     ],
-    "Rep.": [
+    "Remove All": [
         null,
-        "Repetições"
+        "Excluir"
     ],
-    "Repeat Suppression": [
+    "Remove Group": [
         null,
-        "Repetir Supressão"
+        "Grupo Peer"
+    ],
+    "Remove Mapping": [
+        null,
+        "Excluir"
+    ],
+    "Remove Policy": [
+        null,
+        "Papel do Evento"
+    ],
+    "Remove User": [
+        null,
+        "Excluir"
+    ],
+    "Remove all connections": [
+        null,
+        "Conexões"
+    ],
+    "Remove interface": [
+        null,
+        "Interface Remota"
+    ],
+    "Remove me to this subscription": [
+        null,
+        "Descrição Remota"
+    ],
+    "Remove nested objects": [
+        null,
+        "Objetos Combinados"
+    ],
+    "Render Template": [
+        null,
+        "Abrir Template"
+    ],
+    "Repaint": [
+        null,
+        "Nível Superior"
+    ],
+    "Repeat": [
+        null,
+        "Nível Superior"
+    ],
+    "Repeat Delay": [
+        null,
+        "Redefinir Layout"
+    ],
+    "Repeat Escalations": [
+        null,
+        "Escalações"
+    ],
+    "Replace Policy": [
+        null,
+        "Política"
+    ],
+    "Replace Rule": [
+        null,
+        "Criar Regra"
     ],
     "Report": [
         null,
         "Relatório"
     ],
+    "Report Formatter": [
+        null,
+        "Origem de Trap"
+    ],
+    "Report Source": [
+        null,
+        "Origem de Trap"
+    ],
     "Report ping RTT": [
+        null,
+        "Reportar RTT de ping"
+    ],
+    "Report ping attempts": [
         null,
         "Reportar RTT de ping"
     ],
@@ -2098,17 +5681,45 @@
         null,
         "Obrigatório"
     ],
+    "Request failed with status": [
+        null,
+        "Falha ao obter o status STP"
+    ],
+    "Request failure": [
+        null,
+        "Limpar filtro"
+    ],
     "Require Confirmation": [
         null,
         "Solicitar Confirmação"
     ],
+    "Require Group": [
+        null,
+        "Grupo Peer"
+    ],
+    "Require Up": [
+        null,
+        "Obrigatório"
+    ],
     "Required": [
+        null,
+        "Obrigatório"
+    ],
+    "Required Rules": [
+        null,
+        "Obrigatório"
+    ],
+    "Required field": [
         null,
         "Obrigatório"
     ],
     "Reset": [
         null,
         "Redefinir"
+    ],
+    "Reset Filter": [
+        null,
+        "Limpar filtro"
     ],
     "Reset Layout": [
         null,
@@ -2118,13 +5729,49 @@
         null,
         "Redefinir Escopos"
     ],
-    "Reset filter": [
+    "Reset changes": [
+        null,
+        "última mudança"
+    ],
+    "Reset filters": [
         null,
         "Limpar filtro"
     ],
-    "Resources": [
+    "Reset values": [
+        null,
+        "Credenciais"
+    ],
+    "Resource": [
+        null,
+        "Fonte"
+    ],
+    "Resource Bind Rules": [
         null,
         "Recursos"
+    ],
+    "Resource Binding": [
+        null,
+        "serviço"
+    ],
+    "Resource Group": [
+        null,
+        "Recursos"
+    ],
+    "Resource Groups": [
+        null,
+        "Recursos"
+    ],
+    "Resource Map Policy": [
+        null,
+        "Recursos"
+    ],
+    "Resource Pool": [
+        null,
+        "Recursos"
+    ],
+    "Resources": [
+        null,
+        "Fonte"
     ],
     "Result": [
         null,
@@ -2142,10 +5789,6 @@
         null,
         "Confirme a senha"
     ],
-    "Revalidate": [
-        null,
-        "Revalidar"
-    ],
     "Reverse NSes": [
         null,
         "NSes Reversos"
@@ -2162,6 +5805,10 @@
         null,
         "Reescrever OID"
     ],
+    "Right": [
+        null,
+        "RE Direita"
+    ],
     "Right RE": [
         null,
         "RE Direita"
@@ -2170,17 +5817,37 @@
         null,
         "RE Direita"
     ],
+    "Role": [
+        null,
+        "Perfil"
+    ],
     "Root": [
         null,
         "Raiz"
     ],
-    "Root only": [
+    "Root Cause": [
         null,
-        "Apenas raiz"
+        "Definir causa raiz"
+    ],
+    "Rotate": [
+        null,
+        "Estado"
+    ],
+    "Route Maintainers": [
+        null,
+        "Mantenedor"
     ],
     "Router-ID": [
         null,
         "ID do Roteador"
+    ],
+    "Row read only": [
+        null,
+        "Razão Inicial"
+    ],
+    "Rule": [
+        null,
+        "Regras"
     ],
     "Rules": [
         null,
@@ -2190,6 +5857,30 @@
         null,
         "Executar"
     ],
+    "Run Action": [
+        null,
+        "Duração"
+    ],
+    "Run Command": [
+        null,
+        "Comandos"
+    ],
+    "Run Commands": [
+        null,
+        "Comandos"
+    ],
+    "Run Discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "Run Policy": [
+        null,
+        "Política"
+    ],
+    "Run discovery now": [
+        null,
+        "Box de descoberta"
+    ],
     "Running": [
         null,
         "Rodando"
@@ -2198,13 +5889,93 @@
         null,
         "Perfil de AS"
     ],
+    "SLA Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "SNMP Context Name": [
+        null,
+        "Abreviação"
+    ],
+    "SNMP Credentials": [
+        null,
+        "Credenciais"
+    ],
+    "SNMP Priv Proto": [
+        null,
+        "Prioridade"
+    ],
+    "SNMP RO Community": [
+        null,
+        "Comunidade RO"
+    ],
+    "SNMP RW Community": [
+        null,
+        "Comunidade RW"
+    ],
+    "SNMP Security Level": [
+        null,
+        "Resumo"
+    ],
+    "SNMP Username": [
+        null,
+        "Nome de usuário"
+    ],
+    "SRV": [
+        null,
+        "serviço"
+    ],
+    "STP blocked": [
+        null,
+        "Bloqueado"
+    ],
+    "SVI": [
+        null,
+        "serviço"
+    ],
+    "SW Version": [
+        null,
+        "Versão"
+    ],
+    "SYSLOG": [
+        null,
+        "Origem do Syslog"
+    ],
     "Save": [
         null,
         "Salvar"
     ],
+    "Save Workflow": [
+        null,
+        "Fluxos de Trabalho"
+    ],
+    "Save changes": [
+        null,
+        "última mudança"
+    ],
+    "Save screen": [
+        null,
+        "Visto pela Última Vez"
+    ],
     "Saved": [
         null,
         "Salvos"
+    ],
+    "Saving {0} ...": [
+        null,
+        "Iniciando {0}"
+    ],
+    "Saving...": [
+        null,
+        "Construção"
+    ],
+    "Scale": [
+        null,
+        "Desabilitar"
+    ],
+    "Scan": [
+        null,
+        "Desabilitar"
     ],
     "Scheme": [
         null,
@@ -2222,6 +5993,10 @@
         null,
         "Falha no script"
     ],
+    "Script, ConfDB": [
+        null,
+        "Descrição"
+    ],
     "Search": [
         null,
         "Busca"
@@ -2229,6 +6004,10 @@
     "Search ...": [
         null,
         "Busca ..."
+    ],
+    "Search Method": [
+        null,
+        "Busca realizada"
     ],
     "Search complete": [
         null,
@@ -2246,6 +6025,10 @@
         null,
         "Seção"
     ],
+    "Security Level": [
+        null,
+        "Resumo"
+    ],
     "Segment": [
         null,
         "Segmento"
@@ -2254,53 +6037,217 @@
         null,
         "Inspetor de Segmento"
     ],
+    "Segment Name": [
+        null,
+        "Nome de usuário"
+    ],
     "Segments": [
         null,
         "Segmentos"
+    ],
+    "Select Action": [
+        null,
+        "Seção"
+    ],
+    "Select Bookmark": [
+        null,
+        "Seletor"
     ],
     "Select Config ...": [
         null,
         "Selecionar a configuração..."
     ],
+    "Select File...": [
+        null,
+        "Selecione um arquivo..."
+    ],
+    "Select Image...": [
+        null,
+        "Selecione um arquivo..."
+    ],
     "Select MIB...": [
         null,
         "Selecionar MIB..."
+    ],
+    "Select Pool": [
+        null,
+        "Excluído"
+    ],
+    "Select band": [
+        null,
+        "Seção"
+    ],
+    "Select dictionary": [
+        null,
+        "Seção"
     ],
     "Select file...": [
         null,
         "Selecione um arquivo..."
     ],
+    "Select group": [
+        null,
+        "Seletores"
+    ],
     "Select managed object ...": [
         null,
         "Selecionar objeto gerenciado ..."
+    ],
+    "Select parent...": [
+        null,
+        "Selecionar Segmento..."
+    ],
+    "Select period": [
+        null,
+        "Excluído"
+    ],
+    "Select rows": [
+        null,
+        "Seletores"
     ],
     "Select segment...": [
         null,
         "Selecionar Segmento..."
     ],
-    "Selector": [
+    "Select sibling...": [
         null,
-        "Seletor"
+        "Selecione um arquivo..."
     ],
-    "Selectors": [
+    "Selected": [
         null,
-        "Seletores"
+        "Excluído"
     ],
-    "Service Terminator": [
+    "Self Status": [
+        null,
+        "Status da interface"
+    ],
+    "Send": [
+        null,
+        "Som"
+    ],
+    "Send Approve": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Send Approve (To Res)": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Sending contribution...": [
+        null,
+        "Iniciando"
+    ],
+    "Sensor": [
+        null,
+        "Fabricante"
+    ],
+    "Sensor Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Sensors": [
+        null,
+        "Recursos"
+    ],
+    "Sequence": [
+        null,
+        "Excluído"
+    ],
+    "Serial Number": [
+        null,
+        "Nome de usuário"
+    ],
+    "Server-side failed to get fields": [
+        null,
+        "Falha ao carregar dados"
+    ],
+    "Servers": [
+        null,
+        "serviço"
+    ],
+    "Service": [
+        null,
+        "serviço"
+    ],
+    "Service Activation": [
         null,
         "Terminador de Serviço"
+    ],
+    "Service Binding": [
+        null,
+        "serviço"
+    ],
+    "Service Expression": [
+        null,
+        "Expressão"
+    ],
+    "Service Model": [
+        null,
+        "serviço"
+    ],
+    "Service Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Service Profiles": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Service weight": [
+        null,
+        "serviço"
     ],
     "Set": [
         null,
         "Definir"
     ],
-    "Set Root Cause": [
+    "Set Down": [
         null,
-        "Definir Causa Raiz"
+        "Seção"
     ],
-    "Set root cause": [
+    "Set Label": [
+        null,
+        "Nome do Objeto"
+    ],
+    "Set Root": [
         null,
         "Definir causa raiz"
+    ],
+    "Set Status": [
+        null,
+        "Último Status"
+    ],
+    "Set Up": [
+        null,
+        "Definir"
+    ],
+    "Set Var": [
+        null,
+        "Início"
+    ],
+    "Set all permissions": [
+        null,
+        "Permissão"
+    ],
+    "Set managed": [
+        null,
+        "É Gerenciado?"
+    ],
+    "Set password": [
+        null,
+        "Confirme a senha"
+    ],
+    "Set position": [
+        null,
+        "Disposição"
+    ],
+    "Set root": [
+        null,
+        "Definir causa raiz"
+    ],
+    "Set unmanaged": [
+        null,
+        "É Gerenciado?"
     ],
     "Settings": [
         null,
@@ -2314,9 +6261,29 @@
         null,
         "Formato"
     ],
+    "Shape Name template": [
+        null,
+        "Nome do template"
+    ],
+    "Shard": [
+        null,
+        "Ficha"
+    ],
+    "Share": [
+        null,
+        "Formato"
+    ],
+    "Share Contribution": [
+        null,
+        "Iniciando"
+    ],
     "Short": [
         null,
         "Abreviação"
+    ],
+    "Short Label": [
+        null,
+        "Mostrar Rótulos"
     ],
     "Short Name": [
         null,
@@ -2326,6 +6293,14 @@
         null,
         "Mostrar"
     ],
+    "Show Dashboard": [
+        null,
+        "Ver dashboard"
+    ],
+    "Show IPSLA Dashboard": [
+        null,
+        "Ver dashboard"
+    ],
     "Show JSON": [
         null,
         "Mostrar JSON"
@@ -2334,9 +6309,17 @@
         null,
         "Mostrar Rótulos"
     ],
+    "Show MACs": [
+        null,
+        "Mostrar mapa"
+    ],
     "Show Map": [
         null,
         "Mostrar Mapa"
+    ],
+    "Show Map Button : Failed to get data": [
+        null,
+        "Falha ao carregar dados"
     ],
     "Show Object": [
         null,
@@ -2346,21 +6329,25 @@
         null,
         "Mostrar topologia STP"
     ],
-    "Show active alarms": [
+    "Show VLAN interfaces": [
         null,
-        "Mostrar alertas ativos"
+        "Mostrar carga de interface"
     ],
-    "Show all alarms": [
+    "Show all nodes": [
         null,
         "Mostrar todos os alertas"
-    ],
-    "Show archived alarms": [
-        null,
-        "Mostrar alertar arquivados"
     ],
     "Show dashboard": [
         null,
         "Ver dashboard"
+    ],
+    "Show details": [
+        null,
+        "Mostrar Rótulos"
+    ],
+    "Show in form": [
+        null,
+        "Mostrar no Menu"
     ],
     "Show in menu": [
         null,
@@ -2378,37 +6365,49 @@
         null,
         "Mostrar mapa"
     ],
+    "Show neighbor map": [
+        null,
+        "Mostrar mapa"
+    ],
     "Show object": [
         null,
         "Mostrar objeto"
-    ],
-    "Show only alarms covered by maintenance": [
-        null,
-        "Mostrar apenas alertas cobertos pela manutenção"
-    ],
-    "Show only root causes": [
-        null,
-        "Mostrar apenas causas raiz"
-    ],
-    "Show only waiting confirmantion": [
-        null,
-        "Mostrar apenas os alertas aguardando confirmação"
     ],
     "Show static map": [
         null,
         "Mostrar mapa estático"
     ],
+    "Show/Hide Filter": [
+        null,
+        "Filtro de Bind"
+    ],
     "Sibling": [
         null,
         "Mesmo Nível"
+    ],
+    "Single Service": [
+        null,
+        "serviço"
     ],
     "Size": [
         null,
         "Tamanho"
     ],
-    "Solution": [
+    "Skip Rule": [
         null,
-        "Solução"
+        "Criar Regra"
+    ],
+    "Slot": [
+        null,
+        "Resultado"
+    ],
+    "Slots": [
+        null,
+        "Resultado"
+    ],
+    "Small": [
+        null,
+        "Instalar"
     ],
     "Sound": [
         null,
@@ -2418,33 +6417,65 @@
         null,
         "Fonte"
     ],
-    "Source Combine Method": [
+    "Source Node": [
         null,
-        "Método de Combinar Origens"
+        "Recursos"
     ],
     "Sources": [
         null,
-        "Origens"
+        "Fonte"
+    ],
+    "Special addresses": [
+        null,
+        "Endereço Local"
+    ],
+    "Specify address": [
+        null,
+        "Até o IP"
     ],
     "Start": [
         null,
         "Início"
     ],
+    "Started": [
+        null,
+        "Estado"
+    ],
     "Starting": [
         null,
         "Iniciando"
+    ],
+    "Starting \"{0}\"": [
+        null,
+        "Iniciando {0}"
     ],
     "Starting search": [
         null,
         "Iniciando a busca"
     ],
-    "Starting {0}": [
-        null,
-        "Iniciando {0}"
-    ],
     "State": [
         null,
         "Estado"
+    ],
+    "State Inspector": [
+        null,
+        "Inspeto de Objeto"
+    ],
+    "State only": [
+        null,
+        "Apenas raiz"
+    ],
+    "Static Client Groups": [
+        null,
+        "Grupos compatíveis"
+    ],
+    "Static Instances": [
+        null,
+        "Instâncias"
+    ],
+    "Static Members": [
+        null,
+        "membros"
     ],
     "Status Change Notification": [
         null,
@@ -2454,6 +6485,10 @@
         null,
         "Status da Descoberta"
     ],
+    "Step  Number": [
+        null,
+        "Primeiro Número"
+    ],
     "Step to": [
         null,
         "Alterar para"
@@ -2462,9 +6497,33 @@
         null,
         "Fim"
     ],
+    "Stop Processing Rules": [
+        null,
+        "Expressão"
+    ],
+    "Storage": [
+        null,
+        "Estado"
+    ],
+    "Storm Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "Stream": [
+        null,
+        "Sistema"
+    ],
     "Street": [
         null,
         "Rua"
+    ],
+    "Strict": [
+        null,
+        "Início"
+    ],
+    "String": [
+        null,
+        "Iniciando"
     ],
     "Stroke Color": [
         null,
@@ -2482,6 +6541,22 @@
         null,
         "Estilo"
     ],
+    "SubInterface Apply Policy": [
+        null,
+        "Perfil de Interface"
+    ],
+    "SubInterface Tagged VLANs": [
+        null,
+        "Interface alterada"
+    ],
+    "SubInterface Untagged VLAN": [
+        null,
+        "Interface alterada"
+    ],
+    "Subinterface": [
+        null,
+        "Interfaces de VC"
+    ],
     "Subject": [
         null,
         "Assunto"
@@ -2494,7 +6569,39 @@
         null,
         "Assunto/Classe"
     ],
+    "Subscribe": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Subscriber Profile": [
+        null,
+        "Perfil de Usuário"
+    ],
+    "Subscription": [
+        null,
+        "Descrição"
+    ],
+    "Subscription Settings": [
+        null,
+        "Configurações Efetivas"
+    ],
+    "Success": [
+        null,
+        "Permissão"
+    ],
+    "Suggest Auth Profile": [
+        null,
+        "Perfil de Autenticação"
+    ],
+    "Sum": [
+        null,
+        "Número"
+    ],
     "Summary": [
+        null,
+        "Resumo"
+    ],
+    "Summary level": [
         null,
         "Resumo"
     ],
@@ -2505,6 +6612,14 @@
     "Super Password": [
         null,
         "Senha de Superusuário"
+    ],
+    "Superuser status": [
+        null,
+        "Status da interface"
+    ],
+    "Support": [
+        null,
+        "Relatório"
     ],
     "Suppress": [
         null,
@@ -2518,7 +6633,19 @@
         null,
         "Suprimir alertas"
     ],
+    "Suppression": [
+        null,
+        "Expressão"
+    ],
+    "Swap contents": [
+        null,
+        "Conteúdo"
+    ],
     "Switch to breadcrumb view": [
+        null,
+        "Alterar para visualização aninhada"
+    ],
+    "Switch to tree view": [
         null,
         "Alterar para visualização aninhada"
     ],
@@ -2526,17 +6653,37 @@
         null,
         "Sintomas"
     ],
-    "Sync": [
+    "Sync Approved Records": [
         null,
-        "Sincronizar"
+        "Seletores"
     ],
-    "Sync IPAM": [
+    "Sync Interval, sec": [
         null,
-        "Sincronizar IPAM"
+        "Intervalo (s)"
     ],
-    "Sync channel": [
+    "Sync ManagedObject": [
         null,
-        "Canal de sincronização"
+        "Objeto gerenciado"
+    ],
+    "Sync Notification Policy": [
+        null,
+        "Notificação"
+    ],
+    "Sync Policy": [
+        null,
+        "Política"
+    ],
+    "Sync Record": [
+        null,
+        "Seletores"
+    ],
+    "Sync Settings": [
+        null,
+        "Configurações Efetivas"
+    ],
+    "Synd Data": [
+        null,
+        "Sintaxe"
     ],
     "Syntax": [
         null,
@@ -2566,6 +6713,14 @@
         null,
         "Sistema de TT"
     ],
+    "TT System Config": [
+        null,
+        "Sobre o sistema ..."
+    ],
+    "TT System ID": [
+        null,
+        "Sobre o sistema ..."
+    ],
     "Table": [
         null,
         "Tabela"
@@ -2582,6 +6737,10 @@
         null,
         "Conexão do Alvo"
     ],
+    "Target Nodes": [
+        null,
+        "Tipo de Alvo"
+    ],
     "Target Number": [
         null,
         "Número do Alvo"
@@ -2590,11 +6749,11 @@
         null,
         "Tipo de Alvo"
     ],
-    "Tasks": [
+    "Tech Domain": [
         null,
-        "Tarefas"
+        "Domínio"
     ],
-    "Technologies": [
+    "Technology": [
         null,
         "Tecnologias"
     ],
@@ -2602,17 +6761,9 @@
         null,
         "Temp, °C"
     ],
-    "Term. Group": [
+    "Templates": [
         null,
-        "Grupo de Terminação"
-    ],
-    "Termination Group": [
-        null,
-        "Grupo de Terminação"
-    ],
-    "Terminators": [
-        null,
-        "Terminadores"
+        "Nome do template"
     ],
     "Test": [
         null,
@@ -2622,13 +6773,37 @@
         null,
         "Testar Som"
     ],
+    "Test cases": [
+        null,
+        "última mudança"
+    ],
+    "Test compatible types": [
+        null,
+        "Grupos compatíveis"
+    ],
+    "Test rule": [
+        null,
+        "Criar Regra"
+    ],
     "Text": [
         null,
         "Texto"
     ],
-    "Theme": [
+    "Text Style": [
         null,
-        "Tema"
+        "Estilo de Linha"
+    ],
+    "Threshold Type": [
+        null,
+        "Estilo de Linha"
+    ],
+    "Thresholds has been updated": [
+        null,
+        "Credenciais alteradas  com sucesso"
+    ],
+    "Thresholds update failed": [
+        null,
+        "Falha no script"
     ],
     "Time": [
         null,
@@ -2642,6 +6817,10 @@
         null,
         "Padrão de Tempo"
     ],
+    "Time Patterns": [
+        null,
+        "Padrão de Tempo"
+    ],
     "Time/Duration": [
         null,
         "Tempo/Duração"
@@ -2650,9 +6829,21 @@
         null,
         "Timeout (s)"
     ],
+    "Timeout, msec": [
+        null,
+        "Timeout (s)"
+    ],
+    "Timing": [
+        null,
+        "Mesmo Nível"
+    ],
     "Tip": [
         null,
         "Dica"
+    ],
+    "Title": [
+        null,
+        "Estilo"
     ],
     "Title Template": [
         null,
@@ -2666,37 +6857,89 @@
         null,
         "Até o IP"
     ],
+    "To Interface Down": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "To Interface Name": [
+        null,
+        "Mostrar carga de interface"
+    ],
+    "To Number": [
+        null,
+        "Número"
+    ],
     "To OID": [
         null,
         "Para OID"
+    ],
+    "To Prefix": [
+        null,
+        "Prefixo"
     ],
     "To Serial": [
         null,
         "Até o Serial"
     ],
-    "To address": [
+    "To State": [
         null,
-        "Até o IP"
+        "Estado"
+    ],
+    "To Status": [
+        null,
+        "Estado"
     ],
     "To serial": [
         null,
         "Até o serial"
     ],
-    "Toggle autoreload": [
-        null,
-        "Carregamento automático de alternância"
-    ],
     "Toggle sound": [
         null,
         "Som de alternância"
+    ],
+    "Tools": [
+        null,
+        "Protocolos"
+    ],
+    "Topo": [
+        null,
+        "Fim"
     ],
     "Topology": [
         null,
         "Topologia"
     ],
-    "Trace": [
+    "Topology Discovery": [
         null,
-        "Traçar"
+        "Box de descoberta"
+    ],
+    "Topology Neighbors": [
+        null,
+        "Falha ao obter alerta"
+    ],
+    "Total Out": [
+        null,
+        "Anexar conta"
+    ],
+    "Transit": [
+        null,
+        "transição ipv6"
+    ],
+    "Transition": [
+        null,
+        "transição ipv6"
+    ],
+    "Transition Inspector": [
+        null,
+        "Inspetor de Link"
+    ],
+    "Transition started": [
+        null,
+        "transição ipv6"
+    ],
+    "Transparent": [
+        null,
+        "Nível Superior"
     ],
     "Trap Community": [
         null,
@@ -2710,19 +6953,107 @@
         null,
         "IP da Origem de Trap"
     ],
+    "TrapID": [
+        null,
+        "Formato"
+    ],
     "Type": [
         null,
         "Tipo"
+    ],
+    "Type username and password:": [
+        null,
+        "Confirme a Nova Senha"
+    ],
+    "Unavailable": [
+        null,
+        "Buscável"
+    ],
+    "Unbind": [
+        null,
+        "Rodando"
+    ],
+    "Undefined": [
+        null,
+        "Sublinhado"
+    ],
+    "Under maintaintance": [
+        null,
+        "Esconder manutenção"
     ],
     "Underlined": [
         null,
         "Sublinhado"
     ],
+    "Unidirectional": [
+        null,
+        "Direção"
+    ],
     "Unique": [
         null,
         "Único"
     ],
+    "Unlink": [
+        null,
+        "Rodando"
+    ],
+    "Unlink failure": [
+        null,
+        "Desconectar interface"
+    ],
     "Unlink interface": [
+        null,
+        "Desconectar interface"
+    ],
+    "Unmanaged": [
+        null,
+        "Gerenciado"
+    ],
+    "Unselect All": [
+        null,
+        "Instalar"
+    ],
+    "Update": [
+        null,
+        "Atraso"
+    ],
+    "Update Addresses": [
+        null,
+        "Até o IP"
+    ],
+    "Update Expiration": [
+        null,
+        "Operação"
+    ],
+    "Update Last Seen": [
+        null,
+        "Visto pela Última Vez"
+    ],
+    "Update Resource Oper Status": [
+        null,
+        "Status da interface"
+    ],
+    "Update channel": [
+        null,
+        "última mudança"
+    ],
+    "Update/Unlink": [
+        null,
+        "Atraso"
+    ],
+    "Updating ...": [
+        null,
+        "Selecionar a configuração..."
+    ],
+    "Uplink Interface Description": [
+        null,
+        "Desconectar interface"
+    ],
+    "Uplink Interface Name": [
+        null,
+        "Desconectar interface"
+    ],
+    "Uplink Interface Speed": [
         null,
         "Desconectar interface"
     ],
@@ -2734,6 +7065,14 @@
         null,
         "Tempo de atividade"
     ],
+    "Usage": [
+        null,
+        "Mensagem"
+    ],
+    "Use connections from": [
+        null,
+        "Conexões"
+    ],
     "User": [
         null,
         "Usuário"
@@ -2741,6 +7080,18 @@
     "User Clearable": [
         null,
         "Usuário Eliminável"
+    ],
+    "User Interface": [
+        null,
+        "Interfaces de VC"
+    ],
+    "User Permissions": [
+        null,
+        "Permissão"
+    ],
+    "User Search Filter": [
+        null,
+        "Limpar filtro"
     ],
     "User name": [
         null,
@@ -2750,43 +7101,79 @@
         null,
         "Perfil de Usuário"
     ],
-    "VC Domain": [
+    "Username": [
         null,
-        "Domínio do Circuito Virtual"
+        "Nome de usuário"
     ],
-    "VC Filter": [
+    "Users": [
         null,
-        "Filtro de VC"
+        "Usuário"
     ],
-    "VC Filter Expression": [
+    "VC L2 Domain": [
         null,
-        "Filtro de Expressão de VC"
+        "Por Dom. Administrativo"
     ],
-    "VC Interfaces": [
+    "VLAN Discovery": [
+        null,
+        "Box de descoberta"
+    ],
+    "VLAN Discovery Policy": [
+        null,
+        "Política de Descoberta"
+    ],
+    "VLAN Filter": [
+        null,
+        "Filtro de Bind"
+    ],
+    "VLAN Interfaces": [
         null,
         "Interfaces de VC"
     ],
-    "VC Type": [
+    "VLAN Profile": [
         null,
-        "Tipo de VC"
+        "Perfil de AS"
     ],
-    "VCDomain": [
+    "VLAN Template": [
         null,
-        "Domínio do Circuito Virtual"
+        "Nome do template"
     ],
-    "VLANs From Switch": [
+    "VLAN Translation": [
         null,
-        "VLANs do Switch"
+        "transição ipv6"
+    ],
+    "VLANs": [
+        null,
+        "Classe"
+    ],
+    "VPN Profile": [
+        null,
+        "Perfil de AS"
     ],
     "VRF Group": [
         null,
         "Grupo de VRF"
     ],
+    "Validataion Expr.": [
+        null,
+        "Validação"
+    ],
+    "Validate on Change": [
+        null,
+        "última mudança"
+    ],
+    "Validating API key...": [
+        null,
+        "Regra de Validação"
+    ],
     "Validation": [
         null,
         "Validação"
     ],
-    "Validation Rule": [
+    "Validation AS Field": [
+        null,
+        "Validação"
+    ],
+    "Validation Policy": [
         null,
         "Regra de Validação"
     ],
@@ -2794,19 +7181,39 @@
         null,
         "Valor"
     ],
-    "Value (RE)": [
-        null,
-        "Valor (RE)"
-    ],
     "Value RE": [
         null,
         "Valor RE"
+    ],
+    "Value deleted.": [
+        null,
+        "Excluído"
+    ],
+    "Value saved.": [
+        null,
+        "Valor RE"
+    ],
+    "Values": [
+        null,
+        "Valor"
+    ],
+    "Variables": [
+        null,
+        "Buscável"
     ],
     "Vars": [
         null,
         "Variáveis"
     ],
+    "Vars Conditions": [
+        null,
+        "Condição"
+    ],
     "Vendor": [
+        null,
+        "Fabricante"
+    ],
+    "Vendor MAC": [
         null,
         "Fabricante"
     ],
@@ -2838,6 +7245,10 @@
         null,
         "Ver ficha"
     ],
+    "Visual": [
+        null,
+        "Desabilitar"
+    ],
     "Voltage, V": [
         null,
         "Voltagem, V"
@@ -2846,27 +7257,51 @@
         null,
         "Volume"
     ],
-    "WF Editor": [
-        null,
-        "Editor WF"
-    ],
     "Wait TT": [
         null,
         "Aguardar TT"
+    ],
+    "Waiting": [
+        null,
+        "Iniciando"
     ],
     "Watch": [
         null,
         "Seguir"
     ],
-    "Week": [
+    "Weight": [
         null,
-        "Semana"
+        "RE Direita"
+    ],
+    "When Do": [
+        null,
+        "Fabricante"
+    ],
+    "Whole": [
+        null,
+        "Perfil"
     ],
     "Window": [
         null,
         "Janela"
     ],
-    "Workflows": [
+    "Window (sec.)": [
+        null,
+        "Tempo (s)"
+    ],
+    "Wiping": [
+        null,
+        "Mesmo Nível"
+    ],
+    "WorkFlow": [
+        null,
+        "Fluxos de Trabalho"
+    ],
+    "Workflow": [
+        null,
+        "Fluxos de Trabalho"
+    ],
+    "Workflow State": [
         null,
         "Fluxos de Trabalho"
     ],
@@ -2874,69 +7309,125 @@
         null,
         "Você tem certeza que deseja redefinir o layout atual e gerar um novo?"
     ],
-    "Zoom Actual": [
+    "Zone": [
         null,
-        "Zoom Real"
+        "Telefone"
     ],
-    "Zoom In": [
-        null,
-        "Aumentar Zoom"
-    ],
-    "Zoom Out": [
+    "Zoom out...": [
         null,
         "Diminuir Zoom"
     ],
-    "customer": [
+    "admin down": [
         null,
-        "cliente"
+        "Janela"
     ],
-    "division": [
+    "check": [
         null,
-        "divisão"
+        "Método"
     ],
-    "ipv6 transition": [
+    "e-mail Address": [
         null,
-        "transição ipv6"
+        "Até o IP"
     ],
-    "is primary": [
+    "failed": [
         null,
-        "é primário"
+        "Falhou"
+    ],
+    "history": [
+        null,
+        "Descoberta"
     ],
     "is_active": [
         null,
         "Ativo"
     ],
-    "last changed": [
+    "loading": [
         null,
-        "última mudança"
-    ],
-    "last changed by": [
-        null,
-        "última modificação feita por"
+        "Construção"
     ],
     "members": [
         null,
         "membros"
     ],
+    "min": [
+        null,
+        "Mín"
+    ],
     "name": [
         null,
         "nome"
     ],
-    "origin": [
+    "no comments": [
         null,
-        "origem"
+        "Comentário"
+    ],
+    "no groups": [
+        null,
+        "Grupo"
+    ],
+    "no tables": [
+        null,
+        "Tabela"
+    ],
+    "none": [
+        null,
+        "Telefone"
+    ],
+    "offline": [
+        null,
+        "Perfil"
+    ],
+    "online": [
+        null,
+        "Rodando"
+    ],
+    "pattern": [
+        null,
+        "Padrão"
     ],
     "permission_name": [
         null,
         "nome_da_permissão"
     ],
-    "project": [
+    "search...": [
         null,
-        "projeto"
+        "Busca..."
     ],
-    "service": [
+    "sec": [
         null,
         "serviço"
+    ],
+    "starting": [
+        null,
+        "Iniciando"
+    ],
+    "string": [
+        null,
+        "Iniciando"
+    ],
+    "successfully": [
+        null,
+        "Permissão"
+    ],
+    "suspend": [
+        null,
+        "Som"
+    ],
+    "title-tag": [
+        null,
+        "Estilo"
+    ],
+    "to": [
+        null,
+        "Até"
+    ],
+    "to maintenance": [
+        null,
+        "Esconder manutenção"
+    ],
+    "tools": [
+        null,
+        "Protocolos"
     ],
     "type": [
         null,
