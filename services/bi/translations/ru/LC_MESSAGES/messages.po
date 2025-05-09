@@ -1,5 +1,5 @@
 # Russian translations for The NOC Project.
-# Copyright (C) 2017 The NOC Project
+# Copyright (C) 2017-25, Gufo Labs
 # This file is distributed under the same license as the The NOC Project
 # project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
@@ -80,11 +80,11 @@ msgstr "Число перезагрузок"
 
 #: bi/models/alarms.py:81
 msgid "Affected Services"
-msgstr ""
+msgstr "Затронуто сервисов"
 
 #: bi/models/alarms.py:82
 msgid "Affected Subscribers"
-msgstr ""
+msgstr "Затронуто абонентов"
 
 #: bi/models/mac.py:62
 msgid "MAC"
@@ -116,7 +116,7 @@ msgstr "Имя устройства"
 
 #: bi/models/managedobjects.py:52
 msgid "Hostaname"
-msgstr ""
+msgstr "Имя хоста"
 
 #: bi/models/managedobjects.py:54
 msgid "Is Managed"
