@@ -3,7 +3,7 @@
 The NOC system offers flexibility in installation,
 allowing you to choose the installation method that best suits your requirements:
 
-1. **[Using Gufo Thor:](install-using-gufo-thor.md)**
+1. **[Using Gufo Thor](install-using-gufo-thor.md):**
 
     - Quick system evaluation, testing, and development.
     - Requires Docker.
