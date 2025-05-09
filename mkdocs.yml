@@ -65,6 +65,7 @@ nav:
       - Overview: sections-overview/howto.md
       - Deploy NOC: deploy-noc-howto/index.md
       - Backup NOC: backup-noc-howto/index.md
+      - Shell: noc-shell-howto/index.md
       - Add devices from network scan: add-from-network-scan-howto/index.md
       - Sharing Collections Howto: sharing-collections-howto/index.md
       - Loading FIAS Data Howto: fias-loading-howto/
