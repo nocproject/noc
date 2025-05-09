@@ -90,6 +90,9 @@ echo 'include "/etc/bind/autozones/zones.conf";' >> /etc/bind/named.conf
 
 ## Start service
 
+!!! info
+    After creating new zone you must execute `rndc reconfig` manually
+
 ```
 systemctl enable noc-dns-sync
 systemctl start noc-dns-sync
