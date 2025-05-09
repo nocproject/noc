@@ -108,6 +108,8 @@ nav:
       - blog/index.md
   - Releases:
       - NOC Release and Tagging Policy: release-policy/index.md
+      - NOC 25.1 Generation:
+          - NOC 25.1: releases/25_1.md
       - NOC 24.1 Generation:
           - NOC 24.1: releases/24_1.md
           - NOC 24.1.1: releases/24_1_1.md
