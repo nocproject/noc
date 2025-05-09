@@ -37,6 +37,7 @@ fn run_bind_sync_service(args: &CmdArgs) -> Result<(), std::io::Error> {
     let mut client_service = HttpClientService::<DNSZone>::new()
         .url(&args.noc_url)
         .api_key(&args.api_key)
+        .insecure(args.insecure)
         .stream(&String::from("dnszone"))
         .filter(&format!("server({})", &args.host))
         .build()?;

@@ -11,15 +11,21 @@ use crate::client::ClientService;
 use crate::error::Error;
 use log::{debug, error, info, max_level, LevelFilter};
 use std::marker::PhantomData;
+use ureq::http::{Version, StatusCode};
+use core::option::Option;
+use std::time::Duration;
+use ureq::{Agent, tls};
 
 //
 const DEFAULT_USER_AGENT: &str = "NOC DataStream Client";
+//
+const DEFAULT_INSECURE: bool = false;
 // Default datastream limit
 const DEFAULT_LIMIT: usize = 1_000;
-// Default connection timeout, in millis
-const DEFAULT_CONNECT_TIMEOUT: u64 = 10_000;
-// Default request read timeout, in millis
-const DEFAULT_READ_TIMEOUT: u64 = 60_000;
+// Default connection timeout, in sec
+const DEFAULT_CONNECT_TIMEOUT: Option<Duration> = Some(Duration::from_secs(10));
+// Default request read timeout, in sec
+const DEFAULT_READ_TIMEOUT: Option<Duration> = Some(Duration::from_secs(60));
 
 pub struct HttpClientService<T> {
     url: String,
@@ -27,6 +33,7 @@ pub struct HttpClientService<T> {
     limit: usize,
     stream: String,
     filter: Option<String>,
+    insecure: bool,
     block: bool,
     phantom: PhantomData<T>,
 }
@@ -39,6 +46,7 @@ impl<T> HttpClientService<T> {
             api_key: None,
             limit: None,
             filter: None,
+            insecure: None,
             stream: None,
             phantom: PhantomData,
         }
@@ -51,6 +59,7 @@ pub struct HttpClientServiceBuilder<T> {
     api_key: Option<String>,
     limit: Option<usize>,
     filter: Option<String>,
+    insecure: Option<bool>,
     phantom: PhantomData<T>,
 }
 
@@ -84,6 +93,11 @@ impl<T> HttpClientServiceBuilder<T> {
         self
     }
 
+    pub fn insecure(&mut self, insecure: bool) -> &mut Self {
+        self.insecure = Some(insecure);
+        self
+    }
+
     pub fn build(&self) -> Result<HttpClientService<T>, Error> {
         info!("HTTP client service is started");
         Ok(HttpClientService {
@@ -101,6 +115,7 @@ impl<T> HttpClientServiceBuilder<T> {
                 .ok_or(Error::NotConfiguredError(String::from("stream")))?,
             limit: self.limit.unwrap_or(DEFAULT_LIMIT),
             filter: self.filter.clone(),
+            insecure: self.insecure.unwrap_or(DEFAULT_INSECURE),
             block: true,
             phantom: PhantomData,
         })
@@ -136,36 +151,57 @@ where
             url = format!("{url}&block=1", url = url);
         }
         debug!("GET {}", &url);
-        // @todo: Should we use Agent?
-        let resp = ureq::get(&url)
-            .set("Private-Token", &self.api_key)
-            .set("User-Agent", DEFAULT_USER_AGENT)
+
+        let tlsconfig = tls::TlsConfig::builder()
+            .disable_verification(self.insecure)
+            .build();
+
+        let agent: Agent = Agent::config_builder()
+            .https_only(false)
+            .tls_config(tlsconfig)
             .timeout_connect(DEFAULT_CONNECT_TIMEOUT)
-            .timeout_read(DEFAULT_READ_TIMEOUT)
-            .call();
+            .timeout_recv_response(DEFAULT_READ_TIMEOUT)
+            .build()
+            .into();
+
+        let request = agent.get(&url)
+            .header("Private-Token", &self.api_key)
+            .header("User-Agent", DEFAULT_USER_AGENT);
+
+        let result = request.call();
+
+        if result.is_err() {
+            return Err(Error::FetchError(String::from(format!("Error received on request: {}", result.err().unwrap()))))
+        }
+
+        let resp = result.unwrap();
+
         match resp.status() {
             // OK
-            200 => {
+            StatusCode::OK => {
                 debug!("Got response");
-                serde_json::from_reader(resp.into_reader())
+                let reader = resp.into_body().into_reader();
+                serde_json::from_reader(reader)
                     .map(|v: ChangeVec<T>| if v.is_empty() { None } else { Some(v) })
                     .map_err(|e| Error::ParseError(e.to_string()))
             }
             // Gateway timeout
-            504 => {
+            StatusCode::GATEWAY_TIMEOUT => {
                 debug!("Gateway timeout");
                 Ok(None)
             }
             //
-            code => {
+            other_status => {
+                let code = other_status.as_str();
+                let mut body = resp.into_body();
                 error!(
                     "Invalid HTTP response code: {} ({})",
                     code,
-                    resp.status_text()
+                    other_status.canonical_reason().unwrap()
                 );
                 if max_level() >= LevelFilter::Debug {
                     // Dump response
-                    debug!("Raw response:\n {}", resp.into_string()?);
+                    debug!("Raw response:\n {}", body.read_to_string().unwrap());
                 }
                 Err(Error::FetchError(String::from("Invalid response code")))
             }

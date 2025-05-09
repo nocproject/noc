@@ -15,5 +15,5 @@ client-http = ["ureq"]
 [dependencies]
 serde = {version = "1.0", features=["derive"]}
 serde_json = "1.0"
-ureq = {version = "0.11", optional = true}
+ureq = {version = "3", optional = true}
 log = "0.4"
