@@ -11,7 +11,13 @@ from typing import Optional, Dict, Callable, List, Union, Tuple, Any
 import weakref
 
 # Third-party modules
-from gufo.snmp import SnmpSession, SnmpVersion, SnmpError as GSNMPError
+from gufo.snmp import (
+    SnmpSession,
+    SnmpVersion,
+    SnmpError as GSNMPError,
+    SnmpAuthError,
+    NoSuchInstance,
+)
 from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 
@@ -25,6 +31,8 @@ from noc.core.error import (
     ERR_SNMP_TIMEOUT,
     ERR_SNMP_FATAL_TIMEOUT,
     ERR_SNMP_BAD_COMMUNITY,
+    ERR_SNMP_AUTH_FAILED,
+    ERR_SNMP_NO_SUCH_NAME,
 )
 from noc.core.ioloop.util import run_sync
 from noc.core.mib import mib
@@ -238,9 +246,15 @@ class SNMP(object):
                     if not self.timeouts:
                         raise self.FatalTimeoutError()
                 raise self.TimeOutError()
+            except SnmpAuthError:
+                self.logger.error("SNMPv3 Authentication error")
+                raise self.SNMPError(code=ERR_SNMP_AUTH_FAILED)
+            except NoSuchInstance:
+                self.logger.error("SNMP No Such Name")
+                raise self.SNMPError(code=ERR_SNMP_NO_SUCH_NAME)
             except GSNMPError as e:
                 self.logger.error("SNMP error code %s", e)
-                raise self.SNMPError(code=e)
+                raise self.SNMPError(code=str(e))
             # Render data if it has display hint
             for k in data:
                 if isinstance(data[k], bytes):
@@ -310,9 +324,15 @@ class SNMP(object):
                         result += 1
             except TimeoutError:
                 raise self.TimeOutError()
+            except SnmpAuthError:
+                self.logger.error("SNMPv3 Authentication error")
+                raise self.SNMPError(code=ERR_SNMP_AUTH_FAILED)
+            except NoSuchInstance:
+                self.logger.error("SNMP No Such Name")
+                raise self.SNMPError(code=ERR_SNMP_NO_SUCH_NAME)
             except GSNMPError as e:
                 self.logger.error("SNMP error code %s", e.code)
-                raise self.SNMPError(code=e.code)
+                raise self.SNMPError(code=str(e))
             self.logger.debug("[%s] COUNT result: %s", address, result)
             return result
 
@@ -393,9 +413,15 @@ class SNMP(object):
                     if not max_retries:
                         raise self.TimeOutError()
                     max_retries -= 1
+                except SnmpAuthError:
+                    self.logger.error("SNMPv3 Authentication error")
+                    raise self.SNMPError(code=ERR_SNMP_AUTH_FAILED)
+                except NoSuchInstance:
+                    self.logger.error("SNMP No Such Name")
+                    raise self.SNMPError(code=ERR_SNMP_NO_SUCH_NAME)
                 except GSNMPError as e:
                     self.logger.error("SNMP error code %s", e.code)
-                    raise self.SNMPError(code=e.code)
+                    raise self.SNMPError(code=str(e))
 
         if raw_varbinds:
             raise NotImplementedError(
