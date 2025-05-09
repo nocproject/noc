@@ -56,7 +56,7 @@ def test_vendor_doc_toc(toc, vendor):
     if vendor in XFAIL_VENDORS:
         pytest.xfail("Excluded")
     print(toc.items)
-    path = ("References", "Profiles", vendor, "Overview")
+    path = ("References", "Profiles", vendor)
     assert path in toc
     v = toc[path].split("/")
     assert v == ["profiles-reference", vendor, "index.md"]
