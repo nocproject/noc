@@ -81,6 +81,7 @@ nav:
           - Connection Rules: create-object-models-howto/connection-rule.md
           - Facades: facades-howto/index.md
       - Writing NOC Command: writing-noc-command-howto/index.md
+      - Language translation: language-translation-howto/index.md
       - Configure vCenter on NOC as Device Source: howto-add-vcenter-to-noc/index.md
   - Background:
       - Overview: sections-overview/background.md
@@ -235,7 +236,6 @@ nav:
 #           - Concepts:
 #   - Developer's Guide:
 #       - Tools:
-#           - Инструкция по локализации интерфейса пользователя: dev/tools/howto-language-translation.md
 #           - Использование консоли разработчика для настройки системы: dev/tools/howto-noc-shell-example-work-1.md
 #       - Handlers:
 #           - Удаление лишних данных из конфигурационного файла MO: dev/handlers/howto-delete-config-data.md
