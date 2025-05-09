@@ -32,6 +32,7 @@ ALLOW_XFAIL = {
     "noc.scripts.migrate-ignored-interfaces",
     "noc.gis.tile",
     "noc.core.etl.extractor.vcenter",
+    "noc.core.etl.extractor.zabbix",
 }
 
 

@@ -84,6 +84,7 @@ nav:
       - Writing NOC Command: writing-noc-command-howto/index.md
       - Language translation: language-translation-howto/index.md
       - Configure vCenter on NOC as Device Source: howto-add-vcenter-to-noc/index.md
+      - Connect Zabbix Remote System as Managed Object Source: howto-add-zabbix-rs-to-noc/index.md
   - Background:
       - Overview: sections-overview/background.md
       - Connection Restrictions: connection-restrictions/index.md
