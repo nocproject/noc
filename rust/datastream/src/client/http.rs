@@ -23,9 +23,9 @@ const DEFAULT_INSECURE: bool = false;
 // Default datastream limit
 const DEFAULT_LIMIT: usize = 1_000;
 // Default connection timeout, in sec
-const DEFAULT_CONNECT_TIMEOUT: Option<Duration> = Some(Duration::from_secs(10));
+const DEFAULT_CONNECT_TIMEOUT: u64 = 10;
 // Default request read timeout, in sec
-const DEFAULT_READ_TIMEOUT: Option<Duration> = Some(Duration::from_secs(60));
+const DEFAULT_READ_TIMEOUT: u64 = 60;
 
 pub struct HttpClientService<T> {
     url: String,
@@ -46,7 +46,7 @@ impl<T> HttpClientService<T> {
             api_key: None,
             limit: None,
             filter: None,
-            insecure: None,
+            insecure: DEFAULT_INSECURE,
             stream: None,
             phantom: PhantomData,
         }
@@ -59,7 +59,7 @@ pub struct HttpClientServiceBuilder<T> {
     api_key: Option<String>,
     limit: Option<usize>,
     filter: Option<String>,
-    insecure: Option<bool>,
+    insecure: bool,
     phantom: PhantomData<T>,
 }
 
@@ -94,7 +94,7 @@ impl<T> HttpClientServiceBuilder<T> {
     }
 
     pub fn insecure(&mut self, insecure: bool) -> &mut Self {
-        self.insecure = Some(insecure);
+        self.insecure = insecure;
         self
     }
 
@@ -115,7 +115,7 @@ impl<T> HttpClientServiceBuilder<T> {
                 .ok_or(Error::NotConfiguredError(String::from("stream")))?,
             limit: self.limit.unwrap_or(DEFAULT_LIMIT),
             filter: self.filter.clone(),
-            insecure: self.insecure.unwrap_or(DEFAULT_INSECURE),
+            insecure: self.insecure,
             block: true,
             phantom: PhantomData,
         })
@@ -159,8 +159,8 @@ where
         let agent: Agent = Agent::config_builder()
             .https_only(false)
             .tls_config(tlsconfig)
-            .timeout_connect(DEFAULT_CONNECT_TIMEOUT)
-            .timeout_recv_response(DEFAULT_READ_TIMEOUT)
+            .timeout_connect(Some(Duration::from_secs(DEFAULT_CONNECT_TIMEOUT)))
+            .timeout_recv_response(Some(Duration::from_secs(DEFAULT_READ_TIMEOUT)))
             .build()
             .into();
 
@@ -168,13 +168,14 @@ where
             .header("Private-Token", &self.api_key)
             .header("User-Agent", DEFAULT_USER_AGENT);
 
-        let result = request.call();
-
-        if result.is_err() {
-            return Err(Error::FetchError(String::from(format!("Error received on request: {}", result.err().unwrap()))))
-        }
-
-        let resp = result.unwrap();
+        let resp = match request.call() {
+            Ok(x) => {
+                x
+            }
+            Err(x) => {
+                return Err(Error::FetchError(String::from(format!("Error received on request: {}", x))))
+            }
+        };
 
         match resp.status() {
             // OK
@@ -195,9 +196,8 @@ where
                 let code = other_status.as_str();
                 let mut body = resp.into_body();
                 error!(
-                    "Invalid HTTP response code: {} ({})",
-                    code,
-                    other_status.canonical_reason().unwrap()
+                    "Invalid HTTP response code: {}",
+                    code
                 );
                 if max_level() >= LevelFilter::Debug {
                     // Dump response
