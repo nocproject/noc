@@ -5,7 +5,7 @@
 In some distros `cargo` utility may be outdate. So, install it from site
 
 ```
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sudo sh
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
 Go to directory with NOCProject code and build `dnssync` package
@@ -41,7 +41,7 @@ NOC_ZONES_CHROOT_PATH - prefix for generated zones path
 
 
 ```
-cat > /usr/local/etc/noc-dns-sync.cfg << EOF
+sudo tee /usr/local/etc/noc-dns-sync.cfg << EOF
 NOC_API_KEY=<API_KEY>
 NOC_HOST=<DNS_SERVER_NAME_IN_NOC>
 NOC_URL=<BASE_URL_FOR_NOC>
@@ -53,7 +53,7 @@ EOF
 Create systemd unit
 
 ```
-cat > /etc/systemd/system/noc-dns-sync.service << EOF
+sudo tee /etc/systemd/system/noc-dns-sync.service << EOF
 [Unit]
 Description=NOC Datastream Syncronization (bind)
 After=network.target
@@ -79,13 +79,16 @@ systemctl daemon-reload
 
 Create directory for automatically generated zones
 ```
-mkdir -p /etc/bind/autozones
+sudo mkdir -p /etc/bind/autozones
+sudo chown bind:bind /etc/bind/autozones
 ```
 
 Append include statement in bind config
 
 ```
-echo 'include "/etc/bind/autozones/zones.conf";' >> /etc/bind/named.conf
+sudo tee -a /etc/bind/named.conf  << EOF
+include "/etc/bind/autozones/zones.conf";
+EOF
 ```
 
 ## Start service
@@ -94,6 +97,6 @@ echo 'include "/etc/bind/autozones/zones.conf";' >> /etc/bind/named.conf
     After creating new zone you must execute `rndc reconfig` manually
 
 ```
-systemctl enable noc-dns-sync
-systemctl start noc-dns-sync
+sudo systemctl enable noc-dns-sync
+sudo systemctl start noc-dns-sync
 ```
