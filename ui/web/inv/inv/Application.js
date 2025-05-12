@@ -10,6 +10,7 @@ Ext.define("NOC.inv.inv.Application", {
   extend: "NOC.core.Application",
   layout: "card",
   requires: [
+    "NOC.core.plugins.StickyNodes",
     "NOC.inv.inv.CreateConnectionForm",
     "NOC.inv.inv.MaskComponent",
     "NOC.inv.inv.NavModel",
@@ -133,6 +134,9 @@ Ext.define("NOC.inv.inv.Application", {
       displayField: "name",
       allowDeselect: true,
       hideHeaders: true,
+      // ToDo: use bufferedRenderer
+      bufferedRenderer: false, // must be false for stickynodesview 
+      plugins: [{ptype: "stickynodesview"}],
       columns: [
         {
           xtype: "treecolumn", // Это обязательная колонка для отображения дерева
