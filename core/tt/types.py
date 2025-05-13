@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # EscalationContext
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024, The NOC Project
+# Copyright (C) 2007-2025, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,11 @@ from typing import List, Optional
 from datetime import datetime
 
 # Third-party modules
-from pydantic import BaseModel, PrivateAttr
+from bson import ObjectId
+from pydantic import BaseModel, PrivateAttr, Field
+
+# NOC modules
+from noc.core.models.escalationpolicy import EscalationPolicy
 
 
 class EscalationStatus(enum.Enum):
@@ -29,6 +33,7 @@ class EscalationStatus(enum.Enum):
     FAIL = "fail"
     SKIP = "skip"
     WAIT = "wait"
+    NEW = "new"
     # Ack - for acked alarm
 
 
@@ -292,3 +297,31 @@ class TTCommentRequest(BaseModel):
     login: Optional[str] = None
     subject: Optional[str] = None
     reply_to: Optional[str] = None
+
+
+class EscalationStep(BaseModel):
+    delay: int
+    member: EscalationMember
+    key: str
+    ack: str = "any"
+    time_pattern: Optional[str] = None
+    min_severity: Optional[str] = None
+    template: str = None
+    max_repeats: int = 0
+    close_template: Optional[str] = None
+    stop_processing: bool = False
+    # Timestamp?
+
+
+class EscalationRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(ObjectId()))
+    name: str
+    timestamp: datetime
+    steps: List[EscalationStep]
+    # ctx
+    # actions
+    items_policy: EscalationPolicy = EscalationPolicy.ROOT
+    maintenance_policy: str = "e"
+    end_condition: str = "a"
+    repeat_policy: str = "N"
+    repeat_delay: int = 60

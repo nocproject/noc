@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Escalation model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,15 +30,18 @@ from mongoengine.fields import (
 from bson import ObjectId
 
 # NOC modules
-from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
-from noc.core.tt.types import EscalationStatus, TTAction, EscalationMember
+from noc.core.tt.types import EscalationStatus, TTAction, EscalationMember, EscalationRequest
+from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.scheduler.job import Job
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
+from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.template import Template
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
@@ -70,14 +73,14 @@ class EscalationItem(EmbeddedDocument):
     """
     Escalation affected items. First item it escalation leader
     Attributes:
-        managed_object: Alarm managed_object
+        managed_object_id: Alarm managed_object
         target_reference: Unique resource key
         alarm: Alarm Id item
         status: Item status
     """
 
     meta = {"strict": False}
-    managed_object = ForeignKeyField(ManagedObject)
+    managed_object_id: int = IntField()
     target_reference = BinaryField(required=False)
     alarm = ObjectIdField()
     status = EnumField(ItemStatus, default=ItemStatus.NEW)
@@ -87,21 +90,27 @@ class EscalationItem(EmbeddedDocument):
         return f"{self.managed_object.name}:{self.alarm}"
 
     @property
+    def managed_object(self) -> "ManagedObject":
+        """"""
+        return ManagedObject.get_by_id(self.managed_object_id)
+
+    @property
     def is_new(self) -> bool:
-        """
-        Check if item is new (no escalation attempts)
-        """
+        """Check if item is new (no escalation attempts)"""
         return self.status == ItemStatus.NEW
 
     @property
     def is_already_escalated(self) -> bool:
-        """
-        Check if item is already escalated
-        """
+        """Check if item is already escalated"""
         return self.status == ItemStatus.EXISTS
 
+    @property
+    def is_maintenance(self) -> bool:
+        """Check ManagedObject in Maintenance"""
+        return self.managed_object.in_maintenance
 
-class EscalationLog(EmbeddedDocument):
+
+class EscalationStep(EmbeddedDocument):
     """
     Escalation Log item
     Attributes:
@@ -109,7 +118,7 @@ class EscalationLog(EmbeddedDocument):
         member: Escalation member
         key: Member Id
         document_id: Escalation ID on TTSystem
-        repeats: Escalation runs count
+        retries: Escalation runs count
         status: Escalation Status
         error: Error when status is not ok
         deescalation_status: End escalation status on TT System
@@ -119,16 +128,33 @@ class EscalationLog(EmbeddedDocument):
     meta = {"strict": False}
 
     timestamp = DateTimeField()
+    delay: int = IntField(default=0)
     member = EnumField(EscalationMember, required=True)
     key: str = StringField(required=True)
-    document_id = StringField()
-    repeats: int = IntField(default=0)
+    ack_policy: str = StringField(
+        choices=[
+            ("ack", "Alarm Acknowledge"),
+            ("nack", "Alarm not Acknowledge"),
+            # wait ack ?
+            ("any", "Any Acknowledge"),
+        ],
+        default="any",
+    )
+    time_pattern = StringField(required=False)
+    min_severity = IntField(default=0)
+    #
+    max_retries: int = IntField(default=1)
+    retries: int = IntField(default=0)
     # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
-    template = StringField(required=False)
+    stop_processing = BooleanField(default=False)
     # Wait handler
-    status: EscalationStatus = EnumField(EscalationStatus)
+    template: Template = ForeignKeyField(Template)
+    document_id = StringField()
+    status: EscalationStatus = EnumField(EscalationStatus, default=EscalationStatus.NEW)
     error = StringField()
+    # Deescalation Block
+    close_template: Template = ForeignKeyField(Template)
     deescalation_status: EscalationStatus = EnumField(EscalationStatus)
     deescalation_error = StringField()
 
@@ -136,6 +162,37 @@ class EscalationLog(EmbeddedDocument):
         if self.deescalation_status:
             return f"{self.timestamp}: {self.member}, {self.status}/{self.deescalation_status}"
         return f"{self.timestamp}: {self.member}, {self.status}"
+
+    @property
+    def notification_group(self) -> Optional[NotificationGroup]:
+        if self.member == EscalationMember.NOTIFICATION_GROUP:
+            return NotificationGroup.get_by_id(int(self.key))
+
+    @property
+    def tt_system(self) -> Optional["TTSystem"]:
+        if self.member == EscalationMember.TT_SYSTEM:
+            return TTSystem.get_by_id(self.key)
+
+    def set_status(
+        self,
+        status: EscalationStatus,
+        error: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        document_id: Optional[str] = None,
+    ):
+        """"""
+        ts = timestamp or datetime.datetime.now().replace(microsecond=0)
+        self.status = status
+        self.timestamp = ts
+        self.error = error
+        if error:
+            self.error = error
+        if document_id:
+            self.document_id = document_id
+
+    @property
+    def create_tt(self):
+        return self.member == EscalationMember.TT_SYSTEM
 
 
 class ActionLog(EmbeddedDocument):
@@ -173,20 +230,38 @@ class Escalation(Document):
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
-    profile: EscalationProfile = PlainReferenceField(EscalationProfile)
-    prev_profile = ObjectIdField()  # prev_escalation
+    # profile: EscalationProfile = PlainReferenceField(EscalationProfile)
+    # prev_profile = ObjectIdField()  # prev_escalation
     # Start escalation timestamp
+    name = StringField()
+    escalation_policy = EnumField(EscalationPolicy, default=EscalationPolicy.ROOT)
     timestamp: datetime.datetime = DateTimeField(default=datetime.datetime.now)
     end_timestamp = DateTimeField()
     # Escalation context
     ctx_id: int = LongField(required=False)  # Ctx
     sequence_num: int = IntField(min_value=0, default=0)
+    # Repeat
+    repeats: int = IntField(default=0)
+    repeat_delay: int = IntField(default=60)
+    # Policy
+    end_condition = StringField(
+        required=True,
+        choices=[
+            ("CR", "Close Root"),
+            ("CA", "Close All"),
+            ("E", "End Chain"),
+            ("CT", "Close TT"),  # By Adapter
+            ("M", "Manual"),  # By Adapter
+        ],
+        default="CR",
+    )
     # Document options
     is_dirty = BooleanField(default=True)  # Set if items was changed, Calculate by status
     forced = BooleanField(default=False)
+    telemetry_sample = IntField(default=0)
     # Escalation Item and Escalation Log
     items: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)
-    escalations: List[EscalationLog] = EmbeddedDocumentListField(EscalationLog)
+    escalations: List[EscalationStep] = EmbeddedDocumentListField(EscalationStep)
     actions: List[ActionLog] = EmbeddedDocumentListField(ActionLog)
     # List of group references, if any
     groups = ListField(BinaryField())
@@ -203,12 +278,12 @@ class Escalation(Document):
     # ttl - ttl field with index
 
     def __str__(self) -> str:
-        return f"{self.profile.name} ({self.sequence_num}): {str(self.id)}"
+        return f"{self.name} ({self.sequence_num}): {str(self.id)}"
 
     def get_timestamp(self) -> datetime.datetime:
         if not self.sequence_num:
             return self.timestamp
-        delay = sum(i.delay for i in self.profile.escalations[0 : self.sequence_num])
+        delay = sum(i.delay for i in self.escalations[0 : self.sequence_num])
         return self.timestamp + datetime.timedelta(seconds=delay)
 
     def get_lock_items(self) -> List[str]:
@@ -225,7 +300,17 @@ class Escalation(Document):
     @property
     def leader(self) -> EscalationItem:
         """Escalation Leader - First"""
+        for ii in self.items:
+            if ii.status == ItemStatus.REMOVED:
+                continue
+            return ii
         return self.items[0]
+
+    @property
+    def tt_id(self) -> str:
+        """Return first TT ID"""
+        r = self.get_tt_ids()
+        return r[0]
 
     @property
     def consequences(self) -> List[EscalationItem]:
@@ -233,11 +318,14 @@ class Escalation(Document):
 
     @property
     def alarm(self) -> Optional[ActiveAlarm]:
-        return get_alarm(self.items[0].alarm)
+        return get_alarm(self.leader.alarm)
 
     @property
     def managed_object(self) -> Optional[ManagedObject]:
-        return self.items[0].managed_object
+        for ii in self.items:
+            if ii.status == ItemStatus.REMOVED:
+                return ii.managed_object
+        return self.leader.managed_object
 
     @property
     def service(self) -> Optional[Service]:
@@ -262,22 +350,17 @@ class Escalation(Document):
         # Repeat
         if repeat:
             repeat_delay = datetime.timedelta(
-                seconds=(self.profile.escalations[-1].delay + self.profile.repeat_delay) * repeat
+                seconds=(self.escalations[-1].delay + self.repeat_delay) * repeat
             )
         else:
             repeat_delay = datetime.timedelta(seconds=0)
-        next_esc = self.profile.escalations[sequence_num]
+        next_esc = self.escalations[sequence_num]
         seq_delay = datetime.timedelta(seconds=int(next_esc.delay))
         return self.timestamp + repeat_delay + seq_delay
 
     def get_repeat(self) -> int:
         """Getting Repeat number"""
-        r = []
-        for i in self.escalations:
-            if not i.repeats:
-                continue
-            r.append(i.repeats)
-        return min(r) if r else 0
+        return self.repeats
 
     @staticmethod
     def summary_to_list(summary, model):
@@ -459,7 +542,6 @@ class Escalation(Document):
         timestamp: Optional[datetime.datetime] = None,
         error: Optional[str] = None,
         document_id: Optional[str] = None,
-        template: Optional[str] = None,
     ):
         """
         Args:
@@ -469,7 +551,6 @@ class Escalation(Document):
             timestamp: Escalation time
             error: Error message
             document_id: TT System document ID
-            template: Create TT Template
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         key = str(key)
@@ -477,23 +558,14 @@ class Escalation(Document):
             if member == esc.member and key == esc.key:
                 esc.status = status
                 esc.error = error
+                esc.timestamp = timestamp
                 if document_id:
                     esc.document_id = document_id
                 break
-        else:
-            self.escalations.append(
-                EscalationLog(
-                    timestamp=timestamp,
-                    key=key,
-                    member=member,
-                    status=status,
-                    document_id=document_id,
-                    template=template,
-                )
-            )
 
-    def get_escalation(self, member: EscalationMember, key: str) -> Optional[EscalationLog]:
+    def get_escalation(self, member: EscalationMember, key: str) -> Optional[EscalationStep]:
         """
+        get_step
         Getting escalation log for item
 
         Args:
@@ -592,26 +664,52 @@ class Escalation(Document):
             ts = datetime.datetime.now()
         else:
             ts = alarm.timestamp
-        affected = alarm.affected_services
-        groups = alarm.groups
+        req = EscalationProfile.get_job(profile, timestamp=ts)
+        doc = Escalation.from_request(req)
+        doc.severity = (alarm.severity,)
         if not alarm.affected_services and "service" in alarm.vars:
-            affected = [alarm.vars["service"]]
-            groups = [alarm.reference]
-        return Escalation(
-            timestamp=ts,
-            profile=profile,
-            severity=alarm.severity,
-            groups=groups,
-            affected_services=affected,
+            doc.affected_services = [alarm.vars["service"]]
+            doc.groups = [alarm.reference]
+        else:
+            doc.affected_services = alarm.affected_services
+            doc.groups = alarm.groups
+        doc.items = [
+            EscalationItem(
+                alarm=alarm.id,
+                target_reference=str(alarm.managed_object.bi_id).encode(),
+                managed_object=alarm.managed_object,
+            )
+        ]
+        return doc
+
+    @classmethod
+    def from_request(cls, request: EscalationRequest, force: bool = False) -> "Escalation":
+        """"""
+        doc = Escalation(
+            timestamp=request.timestamp,
+            name=request.name,
+            escalation_policy=request.items_policy,
+            end_condition=request.end_condition,
             forced=force,
-            items=[
-                EscalationItem(
-                    alarm=alarm.id,
-                    target_reference=str(alarm.managed_object.bi_id).encode(),
-                    managed_object=alarm.managed_object,
-                )
-            ],
         )
+        for step in request.steps:
+            doc.escalations.append(
+                EscalationStep(
+                    delay=step.delay,
+                    member=step.member,
+                    key=step.key,
+                    ack_policy=step.ack,
+                    time_pattern=step.time_pattern,
+                    min_severity=step.min_severity,
+                    max_retries=step.max_retries,
+                    stop_processing=step.stop_processing,
+                    template=step.template,
+                    close_template=step.close_template,
+                )
+            )
+        if request.repeat_policy == "D":
+            doc.repeats = 1
+        return doc
 
     @classmethod
     def ensure_job(cls, eid: str):
@@ -665,7 +763,7 @@ class Escalation(Document):
                 t_dict[item.profile] += item.summary
 
         # Dynamic (save to field)
-        policy = self.profile.escalation_policy.name.lower()
+        policy = self.escalation_policy
         iter_items = getattr(self, f"iter_alarms_{policy}", None)
         if not iter_items:
             logger.error("Unknown escalation policy `%s`. Skipping", policy)
@@ -702,14 +800,14 @@ class Escalation(Document):
             SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
         ]
 
-    def get_tt_ids(self) -> str:
+    def get_tt_ids(self) -> List[str]:
         """Return all escalated Document with TT system"""
         r = []
         for i in self.escalations:
             if i.member == EscalationMember.TT_SYSTEM and i.document_id:
                 tt = TTSystem.get_by_id(i.key)
                 r.append(f"{tt.name}:{i.document_id}")
-        return ";".join(r)
+        return r
 
     def get_item_by_key(self, key: str) -> Optional[EscalationItem]:
         for ii in self.profile.escalations:
@@ -728,13 +826,13 @@ class Escalation(Document):
         if self.end_timestamp or self.alarm.status != "A":
             return True
         # Check if alarm leader was closed
-        if self.profile.end_condition == "CR":
+        if self.end_condition == "CR":
             return self.leader.status == ItemStatus.REMOVED
-        elif self.profile.end_condition == "CA":
+        elif self.end_condition == "CA":
             return all(i.status == ItemStatus.REMOVED for i in self.items)
-        elif self.profile.end_condition == "CT":
+        elif self.end_condition == "CT":
             # Close TT
             return self.escalations and self.escalations[0].deescalation_status == "ok"
-        elif self.profile.end_condition == "M":
+        elif self.end_condition == "M":
             return bool(self.end_timestamp)
         return False

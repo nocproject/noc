@@ -4,6 +4,7 @@
 # Copyright (C) 2007-2024 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+import datetime
 
 # Python modules
 import operator
@@ -27,7 +28,13 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember, TTAction
+from noc.core.tt.types import (
+    TTSystemConfig,
+    EscalationMember,
+    TTAction,
+    EscalationRequest,
+    EscalationStep,
+)
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -68,7 +75,7 @@ class EscalationItem(EmbeddedDocument):
     create_tt = BooleanField(default=False)
     # Repeat escalation
     repeat = BooleanField(default=False)
-    max_repeats = IntField(default=0)
+    max_retry = IntField(default=0)
     # TT System that create escalation, Device by default
     tt_system = ReferenceField(TTSystem, required=False)
     # Processed condition
@@ -151,7 +158,7 @@ class EscalationProfile(Document):
     # )
     tt_system_config: List[TTSystemItem] = EmbeddedDocumentListField(TTSystemItem)
     actions: List[EscalationAction] = EmbeddedDocumentListField(EscalationAction)
-    maintenance_policy = StringField(choices=["w", "i", "e"], default="end")
+    maintenance_policy = StringField(choices=["w", "i", "e"], default="e")
     alarm_consequence_policy = StringField(
         required=True,
         choices=[
@@ -170,7 +177,7 @@ class EscalationProfile(Document):
             ("CT", "Close TT"),  # By Adapter
             ("M", "Manual"),  # By Adapter
         ],
-        default="a",
+        default="CR",
     )
     # Close alarm after End
     close_alarm = BooleanField(default=False)
@@ -184,6 +191,7 @@ class EscalationProfile(Document):
         default="N",
     )
     repeat_delay = IntField(default=60)
+    max_repeats = IntField(default=0)
     # set_labels ?
     telemetry_sample = IntField(default=0)
 
@@ -259,3 +267,45 @@ class EscalationProfile(Document):
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
         return self.end_condition == "CT" or self.end_condition == "M"
+
+    @classmethod
+    def get_job(
+        cls, profile: "EscalationProfile", timestamp: Optional[datetime.datetime] = None
+    ) -> EscalationRequest:
+        """"""
+        ts = timestamp or datetime.datetime.now()
+        job = EscalationRequest(
+            id=profile.id,
+            name=profile.name,
+            timestamp=ts,
+            maintenance_policy=profile.maintenance_policy,
+            end_condition=profile.end_condition,
+            repeat_policy=profile.repeat_escalations,
+            repeat_delay=profile.repeat_delay,
+        )
+        for s in profile.escalations:
+            if s.notification_group:
+                job.steps.append(
+                    EscalationStep(
+                        delay=s.delay,
+                        step=EscalationMember.NOTIFICATION_GROUP,
+                        key=str(s.notification_group.id),
+                        ack=s.alarm_ack,
+                        time_pattern=s.time_pattern.time_pattern if s.time_pattern else None,
+                        min_severity=s.min_severity,
+                        stop_processing=s.stop_processing,
+                    )
+                )
+            if s.tt_system and s.create_tt:
+                job.steps.append(
+                    EscalationStep(
+                        delay=s.delay,
+                        step=EscalationMember.TT_SYSTEM,
+                        key=str(s.tt_system.id),
+                        ack=s.alarm_ack,
+                        time_pattern=s.time_pattern.time_pattern if s.time_pattern else None,
+                        min_severity=s.min_severity,
+                        stop_processing=s.stop_processing,
+                    )
+                )
+        return job
