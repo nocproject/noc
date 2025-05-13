@@ -179,7 +179,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["AТP-2X200-QSFP28/CFP2-H8"]
+            "value": ["ATP-2x200-QSFP28/CFP2-H8"]
         },
         {
             "attr": "width",
@@ -195,6 +195,11 @@
             "attr": "height",
             "interface": "dimensions",
             "value": 30
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THATPX56128X01SR"]
         }
     ],
     "front_facade__name": "RBS | iData | ATP-2x200 CFP2 QSFP28 IP1652",
