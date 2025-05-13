@@ -665,7 +665,7 @@ class Escalation(Document):
         else:
             ts = alarm.timestamp
         req = EscalationProfile.get_job(profile, timestamp=ts)
-        doc = Escalation.from_request(req)
+        doc = Escalation.from_request(req, force=force)
         doc.severity = (alarm.severity,)
         if not alarm.affected_services and "service" in alarm.vars:
             doc.affected_services = [alarm.vars["service"]]
@@ -677,7 +677,7 @@ class Escalation(Document):
             EscalationItem(
                 alarm=alarm.id,
                 target_reference=str(alarm.managed_object.bi_id).encode(),
-                managed_object=alarm.managed_object,
+                managed_object_id=alarm.managed_object.id,
             )
         ]
         return doc

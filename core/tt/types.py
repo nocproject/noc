@@ -304,10 +304,10 @@ class EscalationStep(BaseModel):
     member: EscalationMember
     key: str
     ack: str = "any"
+    template: str
     time_pattern: Optional[str] = None
-    min_severity: Optional[str] = None
-    template: str = None
-    max_repeats: int = 0
+    min_severity: Optional[int] = None
+    max_retries: int = 0
     close_template: Optional[str] = None
     stop_processing: bool = False
     # Timestamp?

@@ -75,7 +75,7 @@ class EscalationItem(EmbeddedDocument):
     create_tt = BooleanField(default=False)
     # Repeat escalation
     repeat = BooleanField(default=False)
-    max_retry = IntField(default=0)
+    max_retries = IntField(default=0)
     # TT System that create escalation, Device by default
     tt_system = ReferenceField(TTSystem, required=False)
     # Processed condition
@@ -274,38 +274,43 @@ class EscalationProfile(Document):
     ) -> EscalationRequest:
         """"""
         ts = timestamp or datetime.datetime.now()
-        job = EscalationRequest(
-            id=profile.id,
+        steps = []
+        for s in profile.escalations:
+            if s.notification_group:
+                steps.append(
+                    EscalationStep(
+                        delay=s.delay,
+                        member=EscalationMember.NOTIFICATION_GROUP,
+                        key=str(s.notification_group.id),
+                        template=str(s.template.id),
+                        ack=s.alarm_ack,
+                        max_retries=s.max_retries,
+                        time_pattern=str(s.time_pattern.id) if s.time_pattern else None,
+                        min_severity=s.min_severity.severity if s.min_severity else 0,
+                        stop_processing=s.stop_processing,
+                    )
+                )
+            if s.tt_system and s.create_tt:
+                steps.append(
+                    EscalationStep(
+                        delay=s.delay,
+                        member=EscalationMember.TT_SYSTEM,
+                        key=str(s.tt_system.id),
+                        template=str(s.template.id),
+                        ack=s.alarm_ack,
+                        max_retries=s.max_retries,
+                        time_pattern=str(s.time_pattern) if s.time_pattern else None,
+                        min_severity=s.min_severity.severity if s.min_severity else 0,
+                        stop_processing=s.stop_processing,
+                    )
+                )
+        return EscalationRequest(
+            id=str(profile.id),
             name=profile.name,
             timestamp=ts,
+            steps=steps,
             maintenance_policy=profile.maintenance_policy,
             end_condition=profile.end_condition,
             repeat_policy=profile.repeat_escalations,
             repeat_delay=profile.repeat_delay,
         )
-        for s in profile.escalations:
-            if s.notification_group:
-                job.steps.append(
-                    EscalationStep(
-                        delay=s.delay,
-                        step=EscalationMember.NOTIFICATION_GROUP,
-                        key=str(s.notification_group.id),
-                        ack=s.alarm_ack,
-                        time_pattern=s.time_pattern.time_pattern if s.time_pattern else None,
-                        min_severity=s.min_severity,
-                        stop_processing=s.stop_processing,
-                    )
-                )
-            if s.tt_system and s.create_tt:
-                job.steps.append(
-                    EscalationStep(
-                        delay=s.delay,
-                        step=EscalationMember.TT_SYSTEM,
-                        key=str(s.tt_system.id),
-                        ack=s.alarm_ack,
-                        time_pattern=s.time_pattern.time_pattern if s.time_pattern else None,
-                        min_severity=s.min_severity,
-                        stop_processing=s.stop_processing,
-                    )
-                )
-        return job
