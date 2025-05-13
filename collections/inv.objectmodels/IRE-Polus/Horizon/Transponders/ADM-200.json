@@ -1266,6 +1266,11 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["ADM-200-SFP+/CFP2-H8"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THADMX41500XXXS"]
         }
     ],
     "front_facade__name": "RBS | iData | ADM-200 1438-1",
