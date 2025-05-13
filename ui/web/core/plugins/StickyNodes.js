@@ -36,12 +36,12 @@ Ext.define("NOC.core.plugins.StickyNodes", {
   },
   //
   setupGlobalObserver: function(){
-    // this.globalObserver = new IntersectionObserver(this.handleIntersect.bind(this), {
-      // root: this.view.getEl().dom,
-      // rootMargin: "0px 0px 0px 0px",
-      // threshold: [0],
-    // });
-    // console.log("Global IntersectionObserver created");
+    this.globalObserver = new IntersectionObserver(this.handleIntersect.bind(this), {
+      root: this.view.getEl().dom,
+      rootMargin: "0px 0px 0px 0px",
+      threshold: [0, 1],
+    });
+    console.log("Global IntersectionObserver created");
     Ext.fly(this.view.getEl().dom).down(".x-grid-item-container").setStyle("overflow", "unset");
     var nodes = this.view.getNodes(1);
     if(nodes.length > 0){
@@ -62,7 +62,7 @@ Ext.define("NOC.core.plugins.StickyNodes", {
     // Очистка от "мертвых" элементов (удалённых из DOM)
     for(const [node] of this.observerMap){
       if(!document.body.contains(node)){
-        // this.globalObserver.unobserve(node);
+        this.globalObserver.unobserve(node);
         this.observerMap.delete(node);
       }
     }
@@ -81,7 +81,7 @@ Ext.define("NOC.core.plugins.StickyNodes", {
     if(!Ext.isEmpty(record)){
     // if(!Ext.isEmpty(record) && !record.get("leaf")){
       var level = parseInt(record.get("depth"), 10);
-      // this.globalObserver.observe(node);
+      this.globalObserver.observe(node);
       this.observerMap.set(node, {internalId: record.internalId, level});
       Ext.fly(node).addCls(this.stickyCls + "-" + level);
       if(!this.isStickyCssExist(node)){
@@ -92,30 +92,30 @@ Ext.define("NOC.core.plugins.StickyNodes", {
   },
   //
   destroy: function(){
-    // for(const node of this.observerMap.keys()){
-      // this.globalObserver.unobserve(node);
-    // }
-    // this.globalObserver.disconnect();
+    for(const node of this.observerMap.keys()){
+      this.globalObserver.unobserve(node);
+    }
+    this.globalObserver.disconnect();
     this.observerMap.clear();
   },
   //
-  // handleIntersect: function(entries){
-  //   console.log("handleIntersect :", entries.length);
-  //   for(const entry of entries){
-  //     const record = this.view.getRecord(entry.target);
-  //     if(!record) continue;
-      
-  //     const isAboveTop = entry.boundingClientRect.top < entry.rootBounds.top;
-  //     console.log("Intersecting : ", record.get("name"), isAboveTop);
-  //     if(!entry.isIntersecting && isAboveTop){
-  //     // Строка ушла вверх
-  //       console.log("leave-top", record.get("name"));
-  //     } else if(entry.isIntersecting && isAboveTop){
-  //     // Строка вернулась сверху
-  //       console.log("enter-top", record.get("name"));
-  //     }
-  //   }
-  // },
+  handleIntersect: function(entries){
+    console.log("handleIntersect :", entries.length);
+    for(const entry of entries){
+      const record = this.view.getRecord(entry.target);
+      if(!record) continue;
+      // 
+      const isAboveTop = entry.boundingClientRect.top < entry.rootBounds.top;
+      console.log("Intersecting : ", record.get("name"), isAboveTop);
+      if(!entry.isIntersecting && isAboveTop){
+      // Строка ушла вверх
+        console.log("leave-top", record.get("name"));
+      } else if(entry.isIntersecting && isAboveTop){
+      // Строка вернулась сверху
+        console.log("enter-top", record.get("name"));
+      }
+    }
+  },
   //
   createStickyCss: function(level){
     var css = `.${this.stickyCls}-${level} { position: sticky; top: ${(level -1) * this.rowHeight}px; z-index: ${this.zIndex}; }`;
