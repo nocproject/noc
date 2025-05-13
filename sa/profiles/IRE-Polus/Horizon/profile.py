@@ -356,6 +356,7 @@ class PolusParam:
             pass
         if value == "None":
             value = None
+        name = name.replace(".", "_")
         prefix, *param = name.rsplit("_", 1)
         if param:
             return PolusParam(name, value, code=param[0], prefix=prefix, description=description)

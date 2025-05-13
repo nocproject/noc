@@ -39,6 +39,8 @@ class FRU:
     type: str = "LINECARD"
     vendor: str = "IRE-Polus"
     is_rbs: bool = False
+    order_part_no: str = None
+    state: bool = True
 
     # def parse_sensors(self, params: List[PolusParam]) -> List[Dict[str, Any]]:
     #     r = {}
@@ -127,6 +129,7 @@ class Script(BaseScript):
             "OTU2e": "ODU2e",
             "OTU2": "ODU2",
             "OTU1": "ODU1",
+            "10GE": "ODU2",
         }
 
         if datatype in OTU_MAP:
@@ -208,7 +211,7 @@ class Script(BaseScript):
             One morbid vendor tends to mix latin with cyrillic.
             Fix and relax.
             """
-            return s.replace("С", "C").replace("с", "c")
+            return s.replace("С", "C").replace("с", "c").replace("Т", "T")
 
         r = FRU("", "")
         for p in c.info_params:
@@ -219,6 +222,7 @@ class Script(BaseScript):
                 else:
                     r.part_no = fix_fru(p.value)
                 r.type = p.component_type
+#            elif p.code == ""
             elif p.code == "SrNumber":
                 r.serial = p.value
             elif p.code == "HwNumber":
@@ -227,8 +231,12 @@ class Script(BaseScript):
                 r.fw_version = p.value
             elif p.code == "Vendor":
                 r.vendor = p.value
-            # elif p.name == "State":
-            #    r[component]["state"] = p.value != "Отсутствует"
+            elif p.name == "State":
+                r.state = p.value != "Отсутствует" and p.value != "Absent"
+                self.logger.debug("FRU state is |%s|.", p.value)
+                if not r.state:
+                    self.logger.debug("FRU state is |%s|. Ignore it", p.value)
+                    return None
         if r.serial:
             return r
         return None
@@ -414,7 +422,6 @@ class Script(BaseScript):
         dst: Dict[str, str] = {}
         datatypes: Dict[str, str] = {}
         port_states: Dict[str, str] = {}
-        mode: Optional[str] = None
         enable_oduflex = set()
         crossings = []
 
@@ -444,12 +451,23 @@ class Script(BaseScript):
             if cname not in dst:
                 continue
 
+            print(cname)
+            print(src[cname])
+            print(dst[cname])
+
             input = self.get_port(self.get_raw_port(src[cname]))
             output = self.get_port(self.get_raw_port(dst[cname]))
             rest_dst = dst[cname].split("_", 2)[-1]
 
+            print(input, output, rest_dst)
+            print(datatypes)
+
             datatype = datatypes[output]
-            outer_odu = self.get_outer_odu(mode, output, datatype)
+            if not datatype:
+                self.logger.debug("datatype for |%s| is None. Ignore crossing |%s|->|%s|.", output, input, output)
+                continue
+
+            outer_odu = self.get_outer_odu(None, output, datatype)
 
             if cname in enable_oduflex and rest_dst != "ODUFlex":
                 continue
@@ -613,6 +631,7 @@ class Script(BaseScript):
 
         parser_mapping = {
             "atp": self.parse_cross_atp,
+            "agg2x200": self.parse_cross_atp,
             "sroadm7": self.parse_cross_roadm2x9,
             "sroadm5": self.parse_cross_roadm2,
             "adm200": self.parse_cross_adm200,
@@ -623,6 +642,7 @@ class Script(BaseScript):
                 continue
 
             # print("###CLS###|%s|" % (o["cls"]))
+            self.logger.debug("Parse card class |%s|", o["cls"])
             for cls_part in parser_mapping:
                 if cls_part in o["cls"]:
                     return parser_mapping[cls_part](o["PM"])
@@ -706,10 +726,11 @@ class Script(BaseScript):
             crossings, card_mode = self.get_crossings(config, d.crate_id - 1, slot)
             self.logger.debug("==|CROSS|==\n%s\n", crossings)
 
-            params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"]]
+            params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"] if "value" in p]
             self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
             # Getting components
             components = Component.get_components(params=params)
+            self.logger.debug("[%s] Components: %s", num, components)
             common = components["common"]
             c_fru = self.get_fru(common)
             sensors, cfgs = self.get_sensors(common, slot)

@@ -423,6 +423,11 @@
             "attr": "max_rx_power",
             "interface": "optical",
             "value": 1.0
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THATPX56125X00S"]
         }
     ],
     "front_facade__name": "RBS | iData | ATP 2x600 QSFP28",

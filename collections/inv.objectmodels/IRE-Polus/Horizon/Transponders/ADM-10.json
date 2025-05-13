@@ -728,6 +728,11 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["ADM-10-SFP/SFP+-H8"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THADMX41501XXXS"]
         }
     ],
     "front_facade__name": "RBS | iData | ADM-10 1459-1",

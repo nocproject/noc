@@ -86,6 +86,14 @@
             "target_connection": "{N}",
             "target_number": null,
             "target_type": "LINECARD"
+        },
+        {
+            "match_connection": "in",
+            "match_type": "XCVR",
+            "scope": "linecard",
+            "target_connection": "{N}",
+            "target_number": null,
+            "target_type": "LINECARDH4"
         }
     ]
 }
