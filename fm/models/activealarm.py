@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ from mongoengine.fields import (
     ObjectIdField,
     DictField,
     BinaryField,
+    BooleanField,
 )
 from mongoengine.errors import SaveConditionError
 
@@ -62,7 +63,6 @@ from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
-from .escalationprofile import EscalationProfile
 
 
 @change(audit=False)
@@ -78,7 +78,6 @@ class ActiveAlarm(Document):
             ("alarm_class", "managed_object"),
             "#reference",
             ("timestamp", "managed_object"),
-            "escalation_profile",
             "adm_path",
             "segment_path",
             "container_path",
@@ -133,9 +132,10 @@ class ActiveAlarm(Document):
     deferred_groups = ListField(BinaryField())
     # Escalated TT ID in form
     # <external system name>:<external tt id>
-    escalation_profile: Optional["EscalationProfile"] = PlainReferenceField(EscalationProfile)
     # span context
     escalation_ctx = LongField(required=False)
+    # Do not clear alarm until *wait_tt* is closed
+    wait_tt = BooleanField(default=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
@@ -215,7 +215,7 @@ class ActiveAlarm(Document):
         # Set is_dirty,
         from noc.fm.models.escalation import Escalation
 
-        if self.escalation_profile and self.id:
+        if self.escalation_ctx and self.id:
             Escalation.register_changes(self.id)
 
     def change_severity(
@@ -247,7 +247,15 @@ class ActiveAlarm(Document):
             self.safe_save()
             self.refresh_escalation()
 
-    def log_message(self, message, to_save=True, bulk=None, source=None):
+    def log_message(
+        self,
+        message,
+        to_save=True,
+        bulk=None,
+        source=None,
+        user: str = None,
+        doc_id: Optional[str] = None,
+    ):
         if bulk:
             bulk += [
                 UpdateOne(
@@ -291,7 +299,7 @@ class ActiveAlarm(Document):
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if self.escalation_profile and self.escalation_profile.alarm_wait_ended and not force:
+        if self.escalation_ctx and self.wait_tt and not force:
             self.log_message("Waiting Escalation for TT to close")
             return
         if self.alarm_class.clear_handlers:
@@ -317,7 +325,7 @@ class ActiveAlarm(Document):
             ack_user=self.ack_user,
             root=self.root,
             groups=self.groups,
-            escalation_profile=self.escalation_profile.id if self.escalation_profile else None,
+            # escalation_profile=self.escalation_profile.id if self.escalation_profile else None,
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
@@ -388,7 +396,7 @@ class ActiveAlarm(Document):
             )
         # Close TT
         # MUST be after .delete() to prevent race conditions
-        if self.escalation_profile:
+        if self.escalation_ctx:
             Escalation.register_changes(self.id, ItemStatus.REMOVED)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
@@ -430,8 +438,6 @@ class ActiveAlarm(Document):
     def escalation_tt(self) -> str:
         from noc.fm.models.escalation import Escalation, EscalationMember
 
-        if not self.escalation_profile:
-            return ""
         r = []
         for doc in Escalation.objects.filter(
             escalations__match={
@@ -440,7 +446,7 @@ class ActiveAlarm(Document):
             items__0__alarm=self.id,
             end_timestamp__exists=False,
         ):
-            r.append(doc.get_tt_ids())
+            r += doc.get_tt_ids()
         return ";".join(r)
 
     def subscribe(self, user: "User"):
@@ -926,12 +932,15 @@ class ActiveAlarm(Document):
             ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
     def escalate(self, escalation):
-        self.escalation_profile = escalation.profile
+        # self.escalation_profile = escalation.profile
+        self.escalation_ctx = escalation.ctx_id
         self.log_message("Escalated as %s" % escalation)
+        if self.escalation_ctx:
+            return
         q = {"_id": self.id}
         op = {
             "$set": {
-                "escalation_profile": self.escalation_profile.id,
+                "ctx_id": self.escalation_ctx,
             }
         }
         r = ActiveAlarm._get_collection().update_one(q, op)

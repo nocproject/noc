@@ -68,13 +68,13 @@ class EscalationJob(SequenceJob):
         Stop sequence
         """
         self.logger.info("Escalation sequence is completed")
-        if (
-            self.object.repeat_escalations == "D"
-            and self.object.max_repeats < self.object.get_repeat()
-        ):
-            self.object.sequence_num = 0
-            return
-        elif self.object.alarm == "A" and self.object.close_alarm:
+        # if (
+        #     self.object.repeat_escalations == "D"
+        #     and self.object.max_repeats < self.object.get_repeat()
+        # ):
+        #     self.object.sequence_num = 0
+        #     return
+        if self.object.alarm == "A" and self.object.close_alarm:
             # Clear Alarm after End
             self.object.alarm.register_clear("Cleared by End Escalation Sequence")
         elif self.object.end_condition == "E":
@@ -222,7 +222,7 @@ class EscalationJob(SequenceJob):
             # Check time pattern
             if item.time_pattern and not item.time_pattern.match(ts):
                 condition = False
-            if item.min_severity.severity and self.object.severity < item.min_severity.severity:
+            if item.min_severity and self.object.severity < item.min_severity:
                 condition = False
             if not condition:
                 continue

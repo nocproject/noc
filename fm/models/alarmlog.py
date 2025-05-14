@@ -17,6 +17,8 @@ class AlarmLog(EmbeddedDocument):
     to_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
     message = StringField()
     source = StringField(required=False)
+    user = StringField(required=False)
+    document_id = StringField(required=False)
 
     def __str__(self):
         return "%s [%s -> %s]: %s" % (

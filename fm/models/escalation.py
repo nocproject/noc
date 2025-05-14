@@ -666,7 +666,7 @@ class Escalation(Document):
             ts = alarm.timestamp
         req = EscalationProfile.get_job(profile, timestamp=ts)
         doc = Escalation.from_request(req, force=force)
-        doc.severity = (alarm.severity,)
+        doc.severity = alarm.severity
         if not alarm.affected_services and "service" in alarm.vars:
             doc.affected_services = [alarm.vars["service"]]
             doc.groups = [alarm.reference]
@@ -764,7 +764,7 @@ class Escalation(Document):
 
         # Dynamic (save to field)
         policy = self.escalation_policy
-        iter_items = getattr(self, f"iter_alarms_{policy}", None)
+        iter_items = getattr(self, f"iter_alarms_{policy.name.lower()}", None)
         if not iter_items:
             logger.error("Unknown escalation policy `%s`. Skipping", policy)
             return None
