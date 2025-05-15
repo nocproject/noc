@@ -494,7 +494,7 @@ class ReportDataSource(object):
 class CHTableReportDataSource(ReportDataSource):
     CHUNK_SIZE = 5000
     TABLE_NAME = None
-    object_field = "sa.ManagedObject"
+    object_field = "managed_object"
     ts_field = "ts"
 
     def get_client(self):
