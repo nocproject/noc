@@ -70,7 +70,7 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
                     "id", "name", "address", "profile", "pool", "is_managed"
                 )
             ]
-            if len(data) > 0:
+            if len(data) > 1:
                 if data[0]["address"] == data[1]["address"]:
                     reason = _("Duplicate MO")
                 elif not data[0]["is_managed"] == data[1]["is_managed"]:
