@@ -695,7 +695,7 @@ class Service(Document):
 
     def get_caps(self) -> Dict[str, Any]:
         # Update caps
-        return CapsItem.get_caps(self.caps, self.profile.caps)
+        return CapsItem.get_caps(self.caps)
 
     def set_caps(
         self, key: str, value: Any, source: str = "manual", scope: Optional[str] = ""
