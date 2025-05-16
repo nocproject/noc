@@ -33,7 +33,7 @@ from noc.core.perf import metrics
 from noc.sa.models.action import Action
 from noc.sa.models.service import Service
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.fm.models.escalation import Escalation, ItemStatus
+from noc.fm.models.escalation import Escalation
 from noc.fm.models.escalationprofile import EscalationItem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.ttsystem import TTSystem
