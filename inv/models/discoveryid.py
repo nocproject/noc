@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Discovery id
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,14 +9,14 @@
 import operator
 import bisect
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, Iterable, List, Set
 
 # Third-party modules
 import bson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import StringField, ListField, LongField, EmbeddedDocumentField
-from pymongo import ReadPreference
+from pymongo import ReadPreference, ReturnDocument
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
@@ -41,8 +41,32 @@ class MACRange(EmbeddedDocument):
     first_mac = StringField()
     last_mac = StringField()
 
-    def __str__(self):
-        return "%s - %s" % (self.first_mac, self.last_mac)
+    def __str__(self) -> str:
+        if self.first_mac == self.last_mac:
+            return self.first_mac
+        return f"{self.first_mac} - {self.last_mac}"
+
+    @classmethod
+    def from_str(self, first: str, last: str) -> "MACRange":
+        """
+        Create MACRange from two macs.
+
+        Rearrange when necessary.
+
+        Args:
+            first: First MAC.
+            last: Last MAC.
+
+        Returns:
+            New MACRange instance.
+        """
+        if first > last:
+            first, last = last, first
+        return MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
+
+    def iter_as_int(self) -> Iterable(int):
+        """Iterate all MACs in range as integers."""
+        return range(int(self.first_mac), int(self.last_mac) + 1)
 
 
 @change(audit=False)
@@ -84,81 +108,98 @@ class DiscoveryID(Document):
             yield "managedobject", self.object.id
 
     @staticmethod
-    def _macs_as_ints(ranges=None, additional=None):
+    def _macs_as_ints(
+        ranges: Optional[List[MACRange]] = None, additional: Optional[Iterable[str]] = None
+    ) -> List[int]:
         """
-        Get all MAC addresses within ranges as integers
-        :param ranges: list of dicts {first_chassis_mac: ..., last_chassis_mac: ...}
-        :param additional: Optional list of additional macs
-        :return: List of integers
+        Get all MAC addresses within ranges as integers.
+
+        Args:
+            ranges: List of MACRange
+            additionals: Additional MAC Addresses
+
+        Returns:
+            List of MACs in integer form
         """
-        ranges = ranges or []
-        additional = additional or []
-        # Apply ranges
-        macs = set()
-        for r in ranges:
-            if not r:
-                continue
-            first = MAC(r["first_chassis_mac"])
-            last = MAC(r["last_chassis_mac"])
-            macs.update(m for m in range(int(first), int(last) + 1))
-        # Append additional macs
-        macs.update(int(MAC(m)) for m in additional)
+        # Resulting set
+        macs: Set[int]
+        if additional:
+            macs = {int(MAC(mac)) for mac in additional}
+        else:
+            macs = set()
+        # Process ranges
+        if ranges:
+            for r in ranges:
+                macs.update(r.iter_as_int())
         return sorted(macs)
 
     @staticmethod
-    def _macs_to_ranges(macs):
+    def _macs_to_ranges(macs: Iterable[int]) -> Iterable[MACRange]:
         """
-        Convert list of macs (as integers) to MACRange
-        :param macs: List of integer
-        :return: List of MACRange
+        Compact MAC addresses to ranges.
+
+        Args:
+            macs: MAC addresses in integer form.
+
+        Returns:
+            Yields MACRanges
         """
-        ranges = []
-        for mi in macs:
-            if MACBlacklist.is_banned_mac(mi, is_ignored=True):
+        first: Optional[int] = None
+        last: Optional[int] = None
+        for mac in macs:
+            if MACBlacklist.is_banned_mac(mac, is_ignored=True):
                 continue
-            if ranges and mi - ranges[-1][1] == 1:
-                # Extend last range
-                ranges[-1][1] = mi
+            if last is None:
+                # First range
+                first = mac
+                last = mac
+            elif mac - last == 1:
+                # Continue range
+                last += 1
             else:
-                # New range
-                ranges += [[mi, mi]]
-        return [MACRange(first_mac=str(MAC(r[0])), last_mac=str(MAC(r[1]))) for r in ranges]
+                # Range stopped
+                yield MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
+                first = None
+                last = None
+        if last is not None:
+            yield MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
 
     @classmethod
-    def submit(cls, object, chassis_mac=None, hostname=None, router_id=None, additional_macs=None):
+    def submit(
+        cls,
+        object: ManagedObject,
+        chassis_mac: Optional[List[MACRange]] = None,
+        hostname: Optional[str] = None,
+        router_id: Optional[str] = None,
+        additional_macs: Optional[Iterable[str]] = None,
+    ):
         # Process ranges
         macs = cls._macs_as_ints(chassis_mac, additional_macs)
-        ranges = cls._macs_to_ranges(macs)
-        # Update database
-        o = cls.objects.filter(object=object.id).first()
-        if o:
-            old_macs = set(m.first_mac for m in o.chassis_mac)
-            o.chassis_mac = ranges
-            o.hostname = hostname
-            o.hostname_id = hostname.lower() if hostname else None
-            o.router_id = router_id
-            old_macs -= set(m.first_mac for m in o.chassis_mac)
-            if old_macs:
-                cache.delete_many(["discoveryid-mac-%s" % m for m in old_macs])
-            # MAC index
-            o.macs = macs
-            o.save()
-        else:
-            cls(
-                object=object,
-                chassis_mac=ranges,
-                hostname=hostname,
-                hostname_id=hostname.lower() if hostname else None,
-                router_id=router_id,
-                macs=macs,
-            ).save()
-
-    @classmethod
-    @cachedmethod(
-        operator.attrgetter("_mac_cache"), key="discoveryid-mac-%s", lock=lambda _: mac_lock
-    )
-    def get_by_mac(cls, mac):
-        return cls._get_collection().find_one({"macs": int(MAC(mac))}, {"_id": 0, "object": 1})
+        ranges = list(cls._macs_to_ranges(macs))
+        # Perform one-shot atomic upsert
+        # to protect against race conditions
+        r = cls._get_collection().find_one_and_update(
+            {"object": object.id},
+            {
+                "$set": {
+                    "chassis_mac": [mr.to_mongo() for mr in ranges],
+                    "hostname": hostname,
+                    "hostname_id": hostname.lower() if hostname else None,
+                    "router_id": router_id,
+                    "macs": macs,
+                }
+            },
+            upsert=True,
+            return_document=ReturnDocument.BEFORE,
+        )
+        if result is None and macs:
+            # Not seen before, invalidate all macs
+            cache.delete_many([f"discovery-id-{m}" for m in macs])
+        elif result is not None and macs:
+            # Invalidate dereferenced macs
+            old_macs: Optional[List[int]] = result.get("macs")
+            if old_macs and old_macs != macs:
+                cache.delete_many([f"discovery-id-{m}" for m in set(old_macs) - set(macs)])
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_udld_cache"), lock=lambda _: mac_lock)
@@ -166,59 +207,125 @@ class DiscoveryID(Document):
         return cls._get_collection().find_one({"udld_id": device_id}, {"_id": 0, "object": 1})
 
     @classmethod
-    def find_object(
-        cls, mac=None, ipv4_address=None, hostname: Optional[str] = None
-    ) -> Optional[ManagedObject]:
+    def find_object_by_mac(cls, mac: str) -> Optional[ManagedObject]:
         """
-        Find managed object
+        Find Managed Object by MAC.
+
         Args:
-            mac:
-            ipv4_address:
-            cls:
-        :return: Managed object instance or None
+            mac: MAC Address.
+
+        Returns:
+            ManagedObject instance, if found. None otherwise.
+        """
+        metrics["discoveryid_mac_requests"] += 1
+        # This method has high miss rate so we cannot use @cachedmethod
+        mi = int(str(MAC))
+        r = cache.get(f"discovery-id-{mi}")
+        if r is not None:
+            metrics["discoveryid_mac_hits"] += 1
+            return ManagedObject.get_by_id(r)  # cached
+        # Lookup database
+        r = cls._get_collection().find_one({"macs": mi}, {"_id": 0, "object": 1})
+        if not r:
+            return None  # miss
+        # Dereference
+        obj = ManagedObject.get_by_id(r["object"])
+        if obj is None:
+            return None  # dereference failed
+        cache.set(f"discovery-id-{mi}", obj.id)
+        return obj
+
+    @classmethod
+    def find_object_by_hostname(cls, hostname: str) -> Optional[ManagedObject]:
+        """
+        Find object by hostname.
+
+        Args:
+            hostname: Host name.
+
+        Returns:
+            Managed Object instance, if found, None otherwise.
+        """
+        metrics["discoveryid_hostname_requests"] += 1
+        r = cls._get_collection().find_one(
+            {"hostname_id": hostname.lower()}, {"_id": 0, "object": 1}
+        )
+        if r is None:
+            return None
+        return ManagedObject.get_by_id(r["object"])
+
+    @classmethod
+    def find_object_by_ip(cls, address: str) -> Optional[ManagedObject]:
+        """
+        Find object by ipv4_address.
+
+        Args:
+            address: IP address.
+
+        Returns:
+            Managed Object instance, if found. None otherwise.
         """
 
-        def has_ip(ip, addresses):
+        def has_ip(ip: str, addresses: list[str]) -> bool:
             x = ip + "/"
             for a in addresses:
                 if a.startswith(x):
                     return True
             return False
 
+        metrics["discoveryid_ip_requests"] += 1
+        # Try router id
+        r = cls._get_collection().find_one({"router_id": address}, {"_id": 0, "object": 1})
+        if r:
+            mo = ManagedObject.get_by_id(r["object"])
+            if mo:
+                return mo
+        # Fallback to interface addresses
+        o = set(
+            d["managed_object"]
+            for d in SubInterface._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find(
+                {"ipv4_addresses": {"$gt": address + "/", "$lt": address + "/99"}},
+                {"_id": 0, "managed_object": 1, "ipv4_addresses": 1},
+            )
+            if has_ip(ipv4_address, d["ipv4_addresses"])
+        )
+        if len(o) != 1:
+            return None
+        return ManagedObject.get_by_id(list(o)[0])
+
+    @classmethod
+    def find_object(
+        cls,
+        mac: Optional[str] = None,
+        ipv4_address: Optional[str] = None,
+        hostname: Optional[str] = None,
+    ) -> Optional[ManagedObject]:
+        """
+        Find managed object.
+        Args:
+            mac: MAC Address
+            ipv4_address: IPv4 Address
+            hostname: Hostname
+
+        Returns:
+            Managed object instance or None
+        """
+
         # Find by mac
         if mac:
-            metrics["discoveryid_mac_requests"] += 1
-            r = cls.get_by_mac(mac)
+            r = cls.find_object_by_mac(mac)
             if r:
-                return ManagedObject.get_by_id(r["object"])
+                return r
         if hostname:
-            metrics["discoveryid_hostname_requests"] += 1
-            d = DiscoveryID.objects.filter(hostname_id=hostname.lower()).first()
-            if d:
-                metrics["discoveryid_hostname"] += 1
-                return d.object
+            r = cls.find_object_by_hostname(hostname)
+            if r:
+                return r
         if ipv4_address:
-            metrics["discoveryid_ip_requests"] += 1
-            # Try router_id
-            d = DiscoveryID.objects.filter(router_id=ipv4_address).first()
-            if d:
-                metrics["discoveryid_ip_routerid"] += 1
-                return d.object
-            # Fallback to interface addresses
-            o = set(
-                d["managed_object"]
-                for d in SubInterface._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find(
-                    {"ipv4_addresses": {"$gt": ipv4_address + "/", "$lt": ipv4_address + "/99"}},
-                    {"_id": 0, "managed_object": 1, "ipv4_addresses": 1},
-                )
-                if has_ip(ipv4_address, d["ipv4_addresses"])
-            )
-            if len(o) == 1:
-                metrics["discoveryid_ip_interface"] += 1
-                return ManagedObject.get_by_id(list(o)[0])
-            metrics["discoveryid_ip_failed"] += 1
+            r = cls.find_object_by_ip(ipv4_address)
+            if r:
+                return r
         return None
 
     @classmethod
