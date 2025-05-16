@@ -144,6 +144,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("dns.DNSZoneProfile", "notification_group"),
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
+        ("fm.ActiveAlarm", "clear_notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
         ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),

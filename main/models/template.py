@@ -38,6 +38,7 @@ def template_validator(value):
 @on_delete_check(
     check=[
         ("fm.AlarmTrigger", "template"),
+        ("fm.ActiveAlarm", "clear_template"),
         ("fm.EventTrigger", "template"),
         ("inv.NetworkSegmentProfile", "calcified_name_template"),
         ("ip.AddressProfile", "name_template"),
