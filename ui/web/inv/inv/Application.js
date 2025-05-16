@@ -10,7 +10,6 @@ Ext.define("NOC.inv.inv.Application", {
   extend: "NOC.core.Application",
   layout: "card",
   requires: [
-    "NOC.core.plugins.StickyNodes",
     "NOC.inv.inv.CreateConnectionForm",
     "NOC.inv.inv.MaskComponent",
     "NOC.inv.inv.NavModel",
@@ -134,9 +133,10 @@ Ext.define("NOC.inv.inv.Application", {
       displayField: "name",
       allowDeselect: true,
       hideHeaders: true,
-      // ToDo: use bufferedRenderer
-      bufferedRenderer: false, // must be false for stickynodesview 
-      plugins: [{ptype: "stickynodesview"}],
+      stickyNode: "sticky-node",
+      zIndex: 100,
+      rowHeight: 36, // for noc theme
+      maxStickyLevel: 1,    
       columns: [
         {
           xtype: "treecolumn", // Это обязательная колонка для отображения дерева
@@ -288,11 +288,35 @@ Ext.define("NOC.inv.inv.Application", {
         beforecelldblclick: function(){
           return false;
         },
+        viewready: function(treePanel){
+          var view = treePanel.getView(),
+            nodes = view.getNodes(0, 0);
+          if(nodes.length > 0){
+            treePanel.rowHeight = Ext.fly(nodes[0]).getHeight();
+          }
+          Ext.fly(view.getEl().dom).down(".x-grid-item-container").setStyle("overflow", "unset");
+          treePanel.createStickyCss(1);
+        },
+      },
+      createStickyCss: function(level){
+        var css = `table.x-grid-item:has(tr.${this.stickyNode}-${level}) { position: sticky; top: ${(level - 1) * this.rowHeight}px; z-index: ${this.zIndex}; }`;
+        Ext.util.CSS.createStyleSheet(css);
+        this.maxStickyLevel = level;
       },
       viewConfig: {
         plugins: {
           ptype: "treeviewdragdrop",
           ddGroup: "navi-tree-to-form",
+        },
+        getRowClass: function(record){
+          var me = this.up("treepanel"),
+            depth = parseInt(record.get("depth"), 10),
+            isNewLevel = depth > me.maxStickyLevel;
+          
+          if(isNewLevel){
+            me.createStickyCss(depth);
+          }
+          return `${me.stickyNode}-${depth}`;
         },
       },
     });
