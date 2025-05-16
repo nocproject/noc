@@ -36,12 +36,12 @@ Ext.define("NOC.inv.inv.Application", {
         scope: me,
         beforeload: function(){
           if(this.navTree){
-            this.navTree.mask(__("Loading..."));
+            this.naviTreeMessageId = this.maskNaviTree.show(__("Loading..."));
           }
         },
         load: function(){
           if(this.navTree && this.navTree.isVisible()){
-            this.navTree.unmask();
+            this.maskNaviTree.hide(this.naviTreeMessageId);
           }
         },
       },
@@ -133,6 +133,11 @@ Ext.define("NOC.inv.inv.Application", {
       displayField: "name",
       allowDeselect: true,
       hideHeaders: true,
+      stickyNode: "sticky-node",
+      zIndex: 100,
+      rowHeight: 36, // for noc theme
+      maxStickyLevel: 1,    
+      bufferedRenderer: false,
       columns: [
         {
           xtype: "treecolumn", // Это обязательная колонка для отображения дерева
@@ -172,7 +177,6 @@ Ext.define("NOC.inv.inv.Application", {
             listeners: {
               scope: this,
               invPathSelected: function(pathId){
-                console.log("Selected:", pathId);
                 this.showObject(pathId, false);
               },
             },
@@ -284,15 +288,42 @@ Ext.define("NOC.inv.inv.Application", {
         beforecelldblclick: function(){
           return false;
         },
+        viewready: function(treePanel){
+          var view = treePanel.getView(),
+            nodes = view.getNodes(0, 0);
+          if(nodes.length > 0){
+            treePanel.rowHeight = Ext.fly(nodes[0]).getHeight();
+          }
+          Ext.fly(view.getEl().dom).down(".x-grid-item-container").setStyle("overflow", "unset");
+          treePanel.createStickyCss(1);
+        },
+      },
+      createStickyCss: function(level){
+        var css = `table.x-grid-item:has(tr.${this.stickyNode}-${level}) { position: sticky; top: ${(level - 1) * this.rowHeight}px; z-index: ${this.zIndex}; }`;
+        Ext.util.CSS.createStyleSheet(css);
+        this.maxStickyLevel = level;
       },
       viewConfig: {
         plugins: {
           ptype: "treeviewdragdrop",
           ddGroup: "navi-tree-to-form",
         },
+        getRowClass: function(record){
+          var me = this.up("treepanel"),
+            depth = parseInt(record.get("depth"), 10),
+            isNewLevel = depth > me.maxStickyLevel;
+          
+          if(isNewLevel){
+            me.createStickyCss(depth);
+          }
+          return `${me.stickyNode}-${depth}`;
+        },
       },
     });
     me.navTree.getView().on("beforedrop", me.onNavDrop, me);
+    me.maskNaviTree = Ext.create("NOC.inv.inv.MaskComponent", {
+      maskedComponent: me.navTree,
+    });
     me.tabPanel = Ext.create("Ext.tab.Panel", {
       layout: "fit",
       border: false,
