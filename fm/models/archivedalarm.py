@@ -32,7 +32,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.change.decorator import change
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
-from noc.fm.models.escalationprofile import EscalationProfile
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE
 from .alarmclass import AlarmClass
@@ -92,7 +91,6 @@ class ArchivedAlarm(Document):
     escalation_close_ts = DateTimeField(required=False)
     escalation_close_error = StringField(required=False)
     escalation_close_ctx = LongField(required=False)
-    escalation_profile = ObjectIdField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
@@ -197,7 +195,6 @@ class ArchivedAlarm(Document):
         reopens = self.reopens or 0
         ts = datetime.datetime.now()
         log = self.log + [AlarmLog(timestamp=ts, from_status="C", to_status="A", message=message)]
-        ep = EscalationProfile.get_by_id(self.escalation_profile)
         a = ActiveAlarm(
             id=self.id,
             timestamp=self.timestamp,
@@ -209,7 +206,10 @@ class ArchivedAlarm(Document):
             log=log,
             root=self.root,
             groups=self.groups,
-            escalation_profile=ep,
+            escalation_ts=self.escalation_ts,
+            escalation_tt=self.escalation_tt,
+            escalation_error=self.escalation_error,
+            escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             reference=self.reference,
             reopens=reopens + 1,
@@ -227,7 +227,6 @@ class ArchivedAlarm(Document):
             remote_id=self.remote_id,
         )
         a.save()
-        # Retry escalation
         # @todo: Clear related correlator jobs
         self.delete()
         # Send notifications

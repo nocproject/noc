@@ -57,7 +57,7 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 
 
-@change
+@change(audit=False)
 class ActiveAlarm(Document):
     meta = {
         "collection": "noc.alarms.active",
