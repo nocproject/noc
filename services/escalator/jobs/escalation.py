@@ -33,7 +33,7 @@ from noc.core.perf import metrics
 from noc.sa.models.action import Action
 from noc.sa.models.service import Service
 from noc.main.models.notificationgroup import NotificationGroup
-from noc.fm.models.escalation import Escalation, ItemStatus
+from noc.fm.models.escalation import Escalation
 from noc.fm.models.escalationprofile import EscalationItem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.ttsystem import TTSystem
@@ -362,12 +362,12 @@ class EscalationJob(SequenceJob):
             if not item.managed_object.can_escalate(True):
                 err = f"Cannot append object {item.managed_object.name} to group tt: Escalations are disabled"
                 self.log_alarm(err)
-                item.escalation_status = ItemStatus.FAIL
+                item.escalation_status = "fail"
                 continue
             if item.managed_object.tt_system != tt_system:
                 err = f"Cannot append object {item.managed_object.name} to group tt: Belongs to other TT system"
                 self.log_alarm(err)
-                item.escalation_status = ItemStatus.FAIL
+                item.escalation_status = "fail"
                 continue
             ei = ECtxItem(id=str(item.managed_object.id), tt_id=item.managed_object.tt_system_id)
             r.append(ei)
@@ -457,7 +457,7 @@ class EscalationJob(SequenceJob):
         for item in self.object.items:
             if (not esc_tt or item.alarm in esc_status) and item.is_new:
                 self.logger.info("Alarm %s is already escalated with TT %s", item.alarm, "")
-                item.escalation_status = ItemStatus.EXISTS
+                item.escalation_status = "exists"
                 # item.current_escalation = esc_status[item.alarm]
                 # item.current_tt_id = esc_tt[item.alarm]
 
@@ -510,7 +510,7 @@ class EscalationJob(SequenceJob):
         if tt_id:
             return r
         # Project result to escalation items
-        ctx_map: Dict[int:ItemStatus] = {}
+        ctx_map = {}
         for item in ctx.items:
             try:
                 e_status = item.get_status()
@@ -519,10 +519,10 @@ class EscalationJob(SequenceJob):
                 continue
             if e_status == EscalationStatus.OK:
                 self.log_alarm(f"{item.id} is appended successfully")
-                e_status = ItemStatus.CHANGED
+                e_status = "changed"
             else:
                 self.log_alarm(f"Failed to append {item.id}: {item._message} ({e_status})")
-                e_status = ItemStatus.FAIL
+                e_status = "fail"
             ctx_map[item.id] = e_status
         for item in self.object.items:
             if item.managed_object.id not in ctx_map:

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # escalation command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,19 +9,10 @@
 import argparse
 import operator
 import time
-from functools import partial
-from collections import defaultdict
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
-from noc.core.handler import get_handler
-from noc.core.scheduler.scheduler import Scheduler
-from noc.core.scheduler.job import Job
-from noc.core.span import Span, get_spans
-from noc.fm.models.escalationprofile import EscalationProfile
-from noc.fm.models.alarmrule import AlarmRule
-from noc.fm.models.escalation import Escalation, ESCALATION_JOB
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -49,13 +40,6 @@ class Command(BaseCommand):
             "run_alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
         )
         #
-        test_parser = subparsers.add_parser("test")
-        test_parser.add_argument("--profile", help="Escalation Profile", required=True)
-        test_parser.add_argument(
-            "--trace", action="store_true", default=False, help="Trace process"
-        )
-        test_parser.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
-        #
         close_parser = subparsers.add_parser("close")
         close_parser.add_argument(
             "close_alarms", nargs=argparse.REMAINDER, help="Close escalated TT"
@@ -73,13 +57,6 @@ class Command(BaseCommand):
                 self.check_alarm(alarm)
             else:
                 self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
-
-    def handle_test(self, alarms, profile, trace=False, *args, **options):
-        self.trace = trace
-        alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
-        profile = EscalationProfile.get_by_id(profile)
-        escalation_doc = Escalation.from_alarm(alarm, profile)
-        self.run_job(ESCALATION_JOB, escalation_doc)
 
     def handle_run(self, run_alarms=None, limit=0, *args, **kwargs):
         run_alarms = run_alarms or []
@@ -276,63 +253,8 @@ class Command(BaseCommand):
                     self.print("    @ Stop processing")
                     break
 
-    def run_alarm(self, alarm, profile):
-        if profile:
-            profile = EscalationProfile.objects.get(name=profile)
-        else:
-            rules = [r for r in AlarmRule.get_by_alarm(alarm) if r.escalation_profile]
-            if not rules:
-                self.die("Unknown profile for escalation")
-            profile = rules[0].escalation_profile
-        Escalation.register_escalation(alarm, profile)
-
-    def run_job(self, job, escalation_doc):
-        scheduler = Scheduler("escalator", pool=None, service=ServiceStub())
-        jcls = ESCALATION_JOB
-        # Try to dereference job
-        job_args = scheduler.get_collection().find_one(
-            {Job.ATTR_CLASS: jcls, Job.ATTR_KEY: escalation_doc.id}
-        )
-        if job_args:
-            self.print("Job ID: %s" % job_args["_id"])
-        else:
-            job_args = {Job.ATTR_ID: "fakeid", Job.ATTR_KEY: escalation_doc.id}
-        self.print("Job ID: %s" % job_args["_id"])
-        job: Job = get_handler(jcls)(scheduler, job_args, dry_run=True)
-        sample = 1 if self.trace else 0
-        with Span(sample=sample):
-            # job.dereference()
-            job.object = escalation_doc
-            job.handler()
-        if sample:
-            spans = get_spans()
-            self.print("Spans:")
-            self.print("\n".join(str(s) for s in spans))
-
-
-class ServiceStub(object):
-    def __init__(self):
-        self.metrics = defaultdict(list)
-        self.service_id = "stub"
-        self.address = "127.0.0.1"
-        self.port = 0
-        # self.publish = publish
-
-    def register_metrics(self, table, data, key=None):
-        self.metrics[table] += data
-
-    @staticmethod
-    def get_slot_limits(slot_name):
-        """
-        Get slot count
-        :param slot_name:
-        :return:
-        """
-        from noc.core.dcs.loader import get_dcs, DEFAULT_DCS
-        from noc.core.ioloop.util import run_sync
-
-        dcs = get_dcs(DEFAULT_DCS)
-        return run_sync(partial(dcs.get_slot_limit, slot_name))
+    def run_alarm(self, alarm):
+        AlarmEscalation.watch_escalations(alarm)
 
 
 if __name__ == "__main__":
