@@ -137,6 +137,7 @@ Ext.define("NOC.inv.inv.Application", {
       zIndex: 100,
       rowHeight: 36, // for noc theme
       maxStickyLevel: 1,    
+      bufferedRenderer: false,
       columns: [
         {
           xtype: "treecolumn", // Это обязательная колонка для отображения дерева
