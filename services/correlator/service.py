@@ -534,7 +534,7 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
-        severity_policy = None, None
+        severity_policy = None
         a_severity: Optional[AlarmSeverity] = None
         for rule in self.alarm_rule_set.iter_rules(a):
             for gi in rule.iter_groups(a):
