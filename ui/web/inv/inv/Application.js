@@ -36,12 +36,12 @@ Ext.define("NOC.inv.inv.Application", {
         scope: me,
         beforeload: function(){
           if(this.navTree){
-            this.navTree.mask(__("Loading..."));
+            this.naviTreeMessageId = this.maskNaviTree.show(__("Loading..."));
           }
         },
         load: function(){
           if(this.navTree && this.navTree.isVisible()){
-            this.navTree.unmask();
+            this.maskNaviTree.hide(this.naviTreeMessageId);
           }
         },
       },
@@ -177,7 +177,6 @@ Ext.define("NOC.inv.inv.Application", {
             listeners: {
               scope: this,
               invPathSelected: function(pathId){
-                console.log("Selected:", pathId);
                 this.showObject(pathId, false);
               },
             },
@@ -322,6 +321,9 @@ Ext.define("NOC.inv.inv.Application", {
       },
     });
     me.navTree.getView().on("beforedrop", me.onNavDrop, me);
+    me.maskNaviTree = Ext.create("NOC.inv.inv.MaskComponent", {
+      maskedComponent: me.navTree,
+    });
     me.tabPanel = Ext.create("Ext.tab.Panel", {
       layout: "fit",
       border: false,
