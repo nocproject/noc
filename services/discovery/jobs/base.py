@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Basic MO discovery job
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -1029,7 +1029,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Resolve neighbor by hostname
         """
         if mac not in self.neighbor_mac_cache:
-            mo = DiscoveryID.find_object(mac=mac)
+            mo = DiscoveryID.find_object_by_mac(mac)
             self.neighbor_mac_cache[mac] = mo
         return self.neighbor_mac_cache[mac]
 
@@ -1038,7 +1038,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         Resolve neighbor by hostname
         """
         if ip not in self.neighbor_ip_cache:
-            mo = DiscoveryID.find_object(ipv4_address=ip)
+            mo = DiscoveryID.find_object_by_ip(ip)
             self.neighbor_ip_cache[ip] = mo
         return self.neighbor_ip_cache[ip]
 
