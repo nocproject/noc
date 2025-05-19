@@ -613,9 +613,8 @@ Ext.define("NOC.core.ModelApplication", {
     var formInlines = [];
     me.inlineStores = [];
     if(me.inlines){
-      for(var i = 0; i < me.inlines.length; i++){
-        var inline = me.inlines[i],
-          istore = Ext.create("NOC.core.InlineModelStore", {
+      for(const inline of me.inlines){
+        var istore = Ext.create("NOC.core.InlineModelStore", {
             model: inline.model,
           }),
           gp = {
@@ -785,9 +784,11 @@ Ext.define("NOC.core.ModelApplication", {
     if(me.currentRecord){
       result[me.idField] = me.currentRecord.get(me.idField);
     }
+    // Process inlines on save, when parentField is set and isLocal is true
+    // add parentField to PUT payload. Save ONLY id of parent
     me.inlineStores
             .filter(function(store){
-              return Object.prototype.hasOwnProperty.call(store, "isLocal") && store.isLocal;
+              return Ext.isDefined(store.isLocal) && store.isLocal;
             })
             .forEach(function(store){
               result[store.rootProperty] = store.getData().items.map(function(item){

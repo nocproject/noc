@@ -21,6 +21,8 @@ Ext.define("NOC.core.InlineGrid", {
       clicksToEdit: 2,
       listeners: {
         canceledit: "onCancelEdit",
+        validateedit: "validator",
+        edit: "onEdit",
       },
     },
   ],
@@ -41,9 +43,6 @@ Ext.define("NOC.core.InlineGrid", {
       handler: "deleteHandler",
     },
   ],
-  listeners: {
-    validateedit: "validator",
-  },
   initComponent: function(){
     var me = this;
     this.columns = me.columns;
@@ -87,15 +86,25 @@ Ext.define("NOC.core.InlineGrid", {
     }
   },
   //
-  validator: function(editor, e){
-    // @todo: Bring to plugin
+  validator: function(editor, context){
     var form = editor.editor.getForm();
     // Process comboboxes
     form.getFields().each(function(field){
-      e.record.set(field.name, field.getValue());
+      context.record.set(field.name, field.getValue());
       if(Ext.isDefined(field.getLookupData))
-        e.record.set(field.name + "__label",
-                     field.getLookupData());
+        context.record.set(field.name + "__label",
+                           field.getLookupData());
+    });
+  },
+  //
+  onEdit: function(editor, context){
+    context.grid.getStore().sync({
+      success: function(){
+        NOC.info(__("Changes saved"));
+      },
+      failure: function(){
+        NOC.error(__("Error saving changes"));
+      },
     });
   },
 });
