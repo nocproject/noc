@@ -95,6 +95,7 @@ Ext.define("NOC.dns.dnszone.Application", {
           xtype: "textfield",
           fieldLabel: __("Domain"),
           allowBlank: false,
+          autoFocus: true,
         },
         {
           name: "description",
