@@ -524,8 +524,17 @@ Ext.define("NOC.core.ModelApplication", {
       formBind: true,
       disabled: true,
       scope: me,
-      // @todo: check access
-      handler: me.onSave,
+      handler: Ext.pass(me.onSave, [true], me),
+    });
+    me.applyButton = Ext.create("Ext.button.Button", {
+      itemId: "apply",
+      text: __("Apply"),
+      tooltip: __("Save changes and continue editing"),
+      glyph: NOC.glyph.save,
+      formBind: true,
+      disabled: true,
+      scope: me,
+      handler: Ext.pass(me.onSave, [false], me),
     });
     //
     me.closeButton = Ext.create("Ext.button.Button", {
@@ -572,6 +581,7 @@ Ext.define("NOC.core.ModelApplication", {
     // Default toolbar items
     var formToolbar = [
       me.saveButton,
+      me.applyButton,
       me.closeButton,
       "-",
       me.resetButton,
@@ -762,7 +772,7 @@ Ext.define("NOC.core.ModelApplication", {
     }
   },
   // Save changed data
-  saveRecord: function(data){
+  saveRecord: function(data, goToGrid){
     var me = this,
       Model = me.store.getModel(),
       record = new Model(data),
@@ -804,17 +814,23 @@ Ext.define("NOC.core.ModelApplication", {
       method: me.currentRecord ? "PUT" : "POST",
       scope: me,
       jsonData: result,
-      success: function(){
+      success: function(response){
+        this.currentRecord = Ext.create("Ext.data.Model", Ext.decode(response.responseText));
         // Process result
         // @todo: Update current record with data
-        if(me.currentQuery[me.idField]){
-          delete me.currentQuery[me.idField];
+        if(this.currentQuery[me.idField]){
+          delete this.currentQuery[this.idField];
         }
-        me.reloadStore();
-        // clean dirty for reload browser
-        me.form.reset();
-        me.unmask();
-        me.showGrid();
+        this.reloadStore();
+        if(goToGrid){
+          this.showGrid();
+          // clean dirty for reload browser
+          this.form.reset();
+        } else{
+          me.setHistoryHash(me.currentRecord.get(me.idField)); 
+        }
+        this.query("inlinegrid").forEach(function(grid){grid.setDisabled(false)});
+        Ext.each(me.inlineStores, function(store){ store.setParent(me.currentRecord.get(me.idField))});
         if(!Ext.Object.isEmpty(this.currentQuery)){ // Apply updated filter and fix url
           this.store.setFilterParams(this.currentQuery);
           this.saveFilterToUrl(this.currentQuery);
@@ -831,7 +847,9 @@ Ext.define("NOC.core.ModelApplication", {
           }
         }
         NOC.error(message);
-        me.unmask();
+      },
+      callback: function(){
+        this.unmask();
       },
     });
   },
@@ -905,6 +923,7 @@ Ext.define("NOC.core.ModelApplication", {
     // Activate delete button
     this.deleteButton.setDisabled(true);
     this.saveButton.setDisabled(!this.hasPermission("create"));
+    this.applyButton.setDisabled(!this.hasPermission("create"));
     this.resetButton.setDisabled(!this.hasPermission("create"));
     this.cloneButton.setDisabled(true);
     // Disable custom form toolbar
@@ -960,6 +979,7 @@ Ext.define("NOC.core.ModelApplication", {
     // Activate delete button
     me.deleteButton.setDisabled(!me.hasPermission("delete"));
     me.saveButton.setDisabled(!me.hasPermission("update"));
+    me.applyButton.setDisabled(!me.hasPermission("update"));
     me.resetButton.setDisabled(!me.hasPermission("update"));
     me.cloneButton.setDisabled(!me.hasPermission("create"));
     // Enable custom form toolbar
@@ -1115,7 +1135,8 @@ Ext.define("NOC.core.ModelApplication", {
   cleanData: function(){
   },
   // Save button pressed
-  onSave: function(){
+  // @Todo: check access
+  onSave: function(goToGrid){
     var me = this;
     if(!me.form.isValid()){
       NOC.error(__("Error in data"));
@@ -1133,7 +1154,7 @@ Ext.define("NOC.core.ModelApplication", {
         v[field.name + "__label"] = field.getLookupData();
       }
     });
-    me.saveRecord(v);
+    me.saveRecord(v, goToGrid);
   },
   // reset dirty flag
   dirtyReset: function(form){
@@ -1174,7 +1195,7 @@ Ext.define("NOC.core.ModelApplication", {
     switch(key.getKey()){
       case Ext.EventObject.ENTER:
         key.stopEvent();
-        me.onSave();
+        me.onSave(true);
         break;
       case Ext.EventObject.ESC:
         key.stopEvent();
@@ -1326,10 +1347,10 @@ Ext.define("NOC.core.ModelApplication", {
   //
   resetInlines: function(defaults){
     // preload default values
-    var me = this;
-    Ext.each(me.inlineStores, function(istore){
+    this.query("inlinegrid").forEach(function(grid){grid.setDisabled(true)});
+    Ext.each(this.inlineStores, function(istore){
       var value = [];
-      if(Object.prototype.hasOwnProperty.call(istore, "rootProperty") && Object.prototype.hasOwnProperty.call(this, istore.rootProperty)){
+      if(Ext.isDefined(istore, "rootProperty") && (istore.rootProperty in this)){
         value = this[istore.rootProperty];
       }
       istore.loadData(value);
@@ -1338,9 +1359,9 @@ Ext.define("NOC.core.ModelApplication", {
   // Load inline stores
   loadInlines: function(){
     // Do not load store on new record
-    if(!this.currentRecord || !this.inlineStores.length)
-      return;
+    if(!this.currentRecord || !this.inlineStores.length) return;
     var parentId = this.currentRecord.get(this.idField);
+    this.query("inlinegrid").forEach(function(grid){grid.setDisabled(false)});
     Ext.each(this.inlineStores, function(istore){
       istore.setParent(parentId);
       istore.load();

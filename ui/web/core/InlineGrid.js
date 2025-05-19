@@ -9,6 +9,7 @@ Ext.define("NOC.core.InlineGrid", {
   alias: "widget.inlinegrid",
   selType: "rowmodel",
   readOnly: false,
+  disabledTooltip: __("This grid is currently disabled. Fill all required fields and press 'Apply' button to enable it."),
   bbar: {
     xtype: "pagingtoolbar",
     dock: "bottom",
@@ -47,6 +48,11 @@ Ext.define("NOC.core.InlineGrid", {
     var me = this;
     this.columns = me.columns;
     this.bbar.store = this.store = me.store;
+    me.on({
+      afterrender: "setupDisabledTooltip",
+      disable: "onDisable",
+      enable: "onEnable",
+    });
     this.callParent();
     if(this.readOnly){
       this.down("[dock=top][xtype=toolbar]").hide(true)
@@ -111,5 +117,43 @@ Ext.define("NOC.core.InlineGrid", {
         NOC.error(__("Error" + " " + failure + " " + __("changes")));
       },
     });
+  },
+  //
+  setupDisabledTooltip: function(){
+    if(this.disabled){
+      this.addDisabledTooltip();
+    }
+  },
+  //
+  addDisabledTooltip: function(){
+    var me = this;
+    if(me.disabledTip){
+      me.disabledTip.destroy();
+      me.disabledTip = null;
+    }
+    //
+    me.disabledTip = Ext.create("Ext.tip.ToolTip", {
+      target: me.el,
+      html: me.disabledTooltip,
+      showDelay: 100,
+      hideDelay: 200,
+      dismissDelay: 10000, // 10 sec
+      trackMouse: true,
+    });
+  },
+  //
+  removeDisabledTooltip: function(){
+    if(this.disabledTip){
+      this.disabledTip.destroy();
+      this.disabledTip = null;
+    }
+  },
+  //
+  onDisable: function(){
+    this.addDisabledTooltip();
+  },  
+  //
+  onEnable: function(){
+    this.removeDisabledTooltip();
   },
 });
