@@ -84,6 +84,7 @@ Ext.define("NOC.core.InlineGrid", {
     if(store.getCount() > 0){
       sm.select(0);
     }
+    this.storeSync(store, __("deleted"), __("deleting"));
   },
   //
   validator: function(editor, context){
@@ -98,12 +99,16 @@ Ext.define("NOC.core.InlineGrid", {
   },
   //
   onEdit: function(editor, context){
-    context.grid.getStore().sync({
+    this.storeSync(context.grid.getStore(), __("saved"), __("saving"));
+  },
+  //
+  storeSync: function(store, success, failure){
+    store.sync({
       success: function(){
-        NOC.info(__("Changes saved"));
+        NOC.info(__("Changes") + " " + success);
       },
       failure: function(){
-        NOC.error(__("Error saving changes"));
+        NOC.error(__("Error" + " " + failure + " " + __("changes")));
       },
     });
   },
