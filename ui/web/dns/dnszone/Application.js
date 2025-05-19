@@ -164,7 +164,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             {
               text: __("TTL"),
               dataIndex: "ttl",
-              width: 90,
+              width: 110,
               align: "right",
               editor: "numberfield",
             },
