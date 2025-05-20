@@ -95,6 +95,7 @@ Ext.define("NOC.dns.dnszone.Application", {
           xtype: "textfield",
           fieldLabel: __("Domain"),
           allowBlank: false,
+          autoFocus: true,
         },
         {
           name: "description",
@@ -163,14 +164,14 @@ Ext.define("NOC.dns.dnszone.Application", {
             {
               text: __("TTL"),
               dataIndex: "ttl",
-              width: 50,
+              width: 110,
               align: "right",
               editor: "numberfield",
             },
             {
               text: __("Type"),
               dataIndex: "type",
-              width: 75,
+              width: 100,
               editor: {
                 xtype: "dns.dnszone.RRTypeField",
                 listeners: {
@@ -182,7 +183,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             {
               text: __("Prio."),
               dataIndex: "priority",
-              width: 50,
+              width: 75,
               align: "right",
               editor: "numberfield",
             },
@@ -198,7 +199,7 @@ Ext.define("NOC.dns.dnszone.Application", {
             {
               text: __("Labels"),
               dataIndex: "labels",
-              width: 100,
+              width: 150,
               editor: "labelfield",
             },
           ],

@@ -9,6 +9,7 @@ Ext.define("NOC.core.InlineGrid", {
   alias: "widget.inlinegrid",
   selType: "rowmodel",
   readOnly: false,
+  disabledTooltip: __("This grid is currently disabled. Fill all required fields and press 'Apply' button to enable it."),
   bbar: {
     xtype: "pagingtoolbar",
     dock: "bottom",
@@ -21,6 +22,8 @@ Ext.define("NOC.core.InlineGrid", {
       clicksToEdit: 2,
       listeners: {
         canceledit: "onCancelEdit",
+        validateedit: "validator",
+        edit: "onEdit",
       },
     },
   ],
@@ -41,13 +44,15 @@ Ext.define("NOC.core.InlineGrid", {
       handler: "deleteHandler",
     },
   ],
-  listeners: {
-    validateedit: "validator",
-  },
   initComponent: function(){
     var me = this;
     this.columns = me.columns;
     this.bbar.store = this.store = me.store;
+    me.on({
+      afterrender: "setupDisabledTooltip",
+      disable: "onDisable",
+      enable: "onEnable",
+    });
     this.callParent();
     if(this.readOnly){
       this.down("[dock=top][xtype=toolbar]").hide(true)
@@ -85,17 +90,70 @@ Ext.define("NOC.core.InlineGrid", {
     if(store.getCount() > 0){
       sm.select(0);
     }
+    this.storeSync(store, __("deleted"), __("deleting"));
   },
   //
-  validator: function(editor, e){
-    // @todo: Bring to plugin
+  validator: function(editor, context){
     var form = editor.editor.getForm();
     // Process comboboxes
     form.getFields().each(function(field){
-      e.record.set(field.name, field.getValue());
+      context.record.set(field.name, field.getValue());
       if(Ext.isDefined(field.getLookupData))
-        e.record.set(field.name + "__label",
-                     field.getLookupData());
+        context.record.set(field.name + "__label",
+                           field.getLookupData());
     });
+  },
+  //
+  onEdit: function(editor, context){
+    this.storeSync(context.grid.getStore(), __("saved"), __("saving"));
+  },
+  //
+  storeSync: function(store, success, failure){
+    store.sync({
+      success: function(){
+        NOC.info(__("Changes") + " " + success);
+      },
+      failure: function(){
+        NOC.error(__("Error" + " " + failure + " " + __("changes")));
+      },
+    });
+  },
+  //
+  setupDisabledTooltip: function(){
+    if(this.disabled){
+      this.addDisabledTooltip();
+    }
+  },
+  //
+  addDisabledTooltip: function(){
+    var me = this;
+    if(me.disabledTip){
+      me.disabledTip.destroy();
+      me.disabledTip = null;
+    }
+    //
+    me.disabledTip = Ext.create("Ext.tip.ToolTip", {
+      target: me.el,
+      html: me.disabledTooltip,
+      showDelay: 100,
+      hideDelay: 200,
+      dismissDelay: 10000, // 10 sec
+      trackMouse: true,
+    });
+  },
+  //
+  removeDisabledTooltip: function(){
+    if(this.disabledTip){
+      this.disabledTip.destroy();
+      this.disabledTip = null;
+    }
+  },
+  //
+  onDisable: function(){
+    this.addDisabledTooltip();
+  },  
+  //
+  onEnable: function(){
+    this.removeDisabledTooltip();
   },
 });

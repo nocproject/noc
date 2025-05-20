@@ -369,6 +369,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
       parentForm: formPanel,
     });
   },
+  setupDisabledTooltip: Ext.emptyFn,
   // Workaround labelField
   onChange: Ext.emptyFn,
 });
