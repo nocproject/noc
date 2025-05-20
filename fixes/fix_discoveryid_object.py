@@ -6,15 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from pymongo.errors import BulkWriteError
-from pymongo import DeleteOne
+from pymongo.collection import Collection
 
 # NOC modules
 from noc.inv.models.discoveryid import DiscoveryID
 
 
 def fix():
-    collection = DiscoveryID._get_collection()
+    collection: Collection = DiscoveryID._get_collection()
     objects = collection.aggregate(
         [
             {"$group": {"_id": "$object", "count": {"$sum": 1}, "ids": {"$push": "$_id"}}},
@@ -22,20 +21,13 @@ def fix():
         ],
         allowDiskUse=True,
     )
-    bulk = []
-    dbl_counter = 0
+    ids_to_delete = []
     for o in objects:
-        ids: list = o["ids"][1:]
-        for _id in ids:
-            bulk += [DeleteOne({"_id": _id})]
-            dbl_counter += 1
-    print(f"Found doubled by object documents: {dbl_counter}")
-    if bulk:
-        try:
-            collection.bulk_write(bulk)
-            print(f"Removed documents: {dbl_counter}")
-        except BulkWriteError as e:
-            print("Bulk write error: '%s'", e.details)
+        ids_to_delete += o["ids"][1:]
+    print(f"Found doubled by object documents: {len(ids_to_delete)}")
+    if ids_to_delete:
+        result = collection.delete_many({"_id": {"$in": ids_to_delete}})
+        print(f"Removed documents: {result.deleted_count}")
 
     # rebuild index for `object` field
     idx_info = collection.index_information()
