@@ -54,7 +54,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
         scope: this,
         handler: this.onSearch,
         minChars: 2,
-        queryDelay: 500,
+        typeAheadDelay: 100,
         triggers: {
           clear: {
             cls: "x-form-clear-trigger",
@@ -136,7 +136,12 @@ Ext.define("NOC.main.desktop.NavPanel", {
     var matchedNodes = [],
       visibleNodeIds = {},
       field = this.down("[itemId=filter]");
-  
+ 
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+    
     if(Ext.isEmpty(query)){
       field.getTrigger("clear").hide();
     } else{
@@ -165,22 +170,41 @@ Ext.define("NOC.main.desktop.NavPanel", {
     this.store.filterBy(function(record){
       return visibleNodeIds[record.getId()] === true;
     });
-    Ext.defer(function(){
+    this.searchTimer = Ext.defer(function(){
       for(const node of matchedNodes){
         let parent = node.parentNode;
         while(parent && !parent.isRoot()){
           parent = parent.parentNode;
         }
       }
-    }, 100);
-    this.expandAll()
+      if(this.store && this.store.getRootNode() && this.store.getRootNode().hasChildNodes()){
+        this.expandAll();
+      }
+    }, 300, this);
     if(matchedNodes.length < 1){
       NOC.info(__("No matches found"));
     }
   },
   //
   clearSearch: function(){
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+  
     this.store.clearFilter();
-    this.collapseAll();
+    this.searchTimer = Ext.defer(function(){
+      if(this.store && this.store.getRootNode() && this.store.getRootNode().hasChildNodes()){
+        this.collapseAll();
+      }
+    }, 300, this);
+  },
+  
+  onDestroy: function(){
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+    this.callParent();
   },
 });
