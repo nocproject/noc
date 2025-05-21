@@ -161,21 +161,20 @@ Ext.define("NOC.main.desktop.NavPanel", {
         }
       }
     });
-    if(matchedNodes.length > 0){
-      this.store.clearFilter();
-      this.store.filterBy(function(record){
-        return visibleNodeIds[record.getId()] === true;
-      });
-      Ext.defer(function(){
-        for(const node of matchedNodes){
-          let parent = node.parentNode;
-          while(parent && !parent.isRoot()){
-            parent = parent.parentNode;
-          }
+    this.store.clearFilter();
+    this.store.filterBy(function(record){
+      return visibleNodeIds[record.getId()] === true;
+    });
+    Ext.defer(function(){
+      for(const node of matchedNodes){
+        let parent = node.parentNode;
+        while(parent && !parent.isRoot()){
+          parent = parent.parentNode;
         }
-      }, 100);
-      this.expandAll()
-    } else{
+      }
+    }, 100);
+    this.expandAll()
+    if(matchedNodes.length < 1){
       NOC.info(__("No matches found"));
     }
   },
