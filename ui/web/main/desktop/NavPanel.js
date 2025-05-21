@@ -170,11 +170,11 @@ Ext.define("NOC.main.desktop.NavPanel", {
         for(const node of matchedNodes){
           let parent = node.parentNode;
           while(parent && !parent.isRoot()){
-            parent.expand();
             parent = parent.parentNode;
           }
         }
       }, 100);
+      this.expandAll()
     } else{
       NOC.info(__("No matches found"));
     }
