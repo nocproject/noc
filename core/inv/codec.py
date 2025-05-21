@@ -17,6 +17,7 @@ from .result import Result
 from noc.inv.models.object import Object, ObjectAttr, ObjectConnectionData
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
 from noc.inv.models.objectmodel import Crossing, ObjectModel
+from noc.inv.models.vendor import Vendor
 
 
 class ModelItem(BaseModel):
@@ -26,7 +27,7 @@ class ModelItem(BaseModel):
 
 class ObjectConnectionItem_(BaseModel):
     name: str  # имя connection (из модели)
-    interface_name: str  # (ссылку надо на объект чтоли?) - структура Object (для connection типа o )
+    interface_name: str
     # todo
     # по факту сейчас сюда пишутся поля из ObjectConnectionData
     # в name - name, в object - interface_name
@@ -250,9 +251,25 @@ def decode(container: Object, data: InvData) -> Result:
         ).save()
         o_map[o.id] = obj.id
         o_counter += 1
-
-    #print("o_map", o_map, type(o_map))
     print(f"Imported objects: {o_counter}")
+
+    # Create cable model if needed
+    CABLE_NAME = "optical cable sm"
+    cable_model = ObjectModel.get_by_name(CABLE_NAME)
+    if not cable_model:
+        vendor = Vendor.get_by_code("NOC")
+        cable_model = ObjectModel(
+            name=CABLE_NAME,
+            description=CABLE_NAME,
+            data=[
+                {
+                    "interface": "length",
+                    "attr": "length",
+                    "value": 5,
+                }
+            ],
+            vendor=vendor,
+        ).save()
 
     # Create connections
     c_counter_dir, c_counter_cab = 0, 0
@@ -274,6 +291,41 @@ def decode(container: Object, data: InvData) -> Result:
             c_counter_dir += 1
         else:
             # cable connections
+            # create cable
+            cable = Object(
+                name="xcable",
+                model=cable_model,
+                # "parent", "parent_connection", "mode", "data", "connections",
+                # "additional_connections", "cross" fields are empty for cables
+            ).save()
+            # create connection 1
+            conn0 = c.connection[0].dict()
+            conn0["object"] = o_map[conn0["object"]]
+            conn1 = {
+                "object": cable.id,
+                "name": "1",
+            }
+            ObjectConnection(
+                connection=[
+                    ObjectConnectionItem(**conn0),
+                    ObjectConnectionItem(**conn1),
+                ],
+                type="testing",
+            ).save()
+            # create connection 2
+            conn0 = c.connection[1].dict()
+            conn0["object"] = o_map[conn0["object"]]
+            conn1 = {
+                "object": cable.id,
+                "name": "2",
+            }
+            ObjectConnection(
+                connection=[
+                    ObjectConnectionItem(**conn0),
+                    ObjectConnectionItem(**conn1),
+                ],
+                type="testing",
+            ).save()
             c_counter_cab += 1
     print(f"Connections direct: {c_counter_dir}")
     print(f"Connections cable: {c_counter_cab}")
