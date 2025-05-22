@@ -218,6 +218,7 @@ def decode(container: Object, data: InvData) -> Result:
     Following information is written:
     - all objects from structure
     - all connections from structure
+    - also creates cable objects for cable connections (connections where id of connection is null)
     """
 
     print("container", container, type(container))
@@ -225,12 +226,11 @@ def decode(container: Object, data: InvData) -> Result:
     print("len objects", len(data.objects))
     print("len connections", len(data.connections))
 
+    # Mapping between IDs of objects in source JSON and IDs of created in database objects
+    # ID of object in JSON-file -> ID of created object
+    o_map: dict[str, ObjectId] = {}
+
     # Create objects
-    #
-    # Map for Object IDs
-    # ID of Object in ObjectItem (JSON) -> ID of created in database Object
-    # types:                        str -> ObjectId
-    o_map = {}
     o_counter = 0
     for o in data.objects:
         parent = o_map[o.parent] if o.parent else container
@@ -251,7 +251,7 @@ def decode(container: Object, data: InvData) -> Result:
         ).save()
         o_map[o.id] = obj.id
         o_counter += 1
-    print(f"Imported objects: {o_counter}")
+    print(f"Created objects: {o_counter}")
 
     # Create cable model if needed
     CABLE_NAME = "optical cable sm"
@@ -270,64 +270,42 @@ def decode(container: Object, data: InvData) -> Result:
             ],
             vendor=vendor,
         ).save()
+        print(f"Created model for cable objects: {CABLE_NAME}")
+
+    def create_connection(c1: PointItem, c2: PointItem):
+        c1 = c1.dict()
+        c1["object"] = o_map[c1["object"]]
+        c2 = c2.dict()
+        c2["object"] = o_map[c2["object"]]
+        ObjectConnection(
+            connection=[
+                ObjectConnectionItem(**c1),
+                ObjectConnectionItem(**c2),
+            ],
+            type="testing",  # todo: delete this flag
+        ).save()
 
     # Create connections
     c_counter_dir, c_counter_cab = 0, 0
     for c in data.connections:
         if c.id:
             # direct connections
-            conn0 = c.connection[0].dict()
-            conn0["object"] = o_map[conn0["object"]]
-            conn1 = c.connection[1].dict()
-            conn1["object"] = o_map[conn1["object"]]
-            ObjectConnection(
-                connection=[
-                    ObjectConnectionItem(**conn0),
-                    ObjectConnectionItem(**conn1),
-                ],
-                # временный флаг для удаления добавленных документов
-                type="testing",
-            ).save()
+            create_connection(c.connection[0], c.connection[1])
             c_counter_dir += 1
         else:
             # cable connections
-            # create cable
             cable = Object(
                 name="xcable",
                 model=cable_model,
                 # "parent", "parent_connection", "mode", "data", "connections",
                 # "additional_connections", "cross" fields are empty for cables
             ).save()
-            # create connection 1
-            conn0 = c.connection[0].dict()
-            conn0["object"] = o_map[conn0["object"]]
-            conn1 = {
-                "object": cable.id,
-                "name": "1",
-            }
-            ObjectConnection(
-                connection=[
-                    ObjectConnectionItem(**conn0),
-                    ObjectConnectionItem(**conn1),
-                ],
-                type="testing",
-            ).save()
-            # create connection 2
-            conn0 = c.connection[1].dict()
-            conn0["object"] = o_map[conn0["object"]]
-            conn1 = {
-                "object": cable.id,
-                "name": "2",
-            }
-            ObjectConnection(
-                connection=[
-                    ObjectConnectionItem(**conn0),
-                    ObjectConnectionItem(**conn1),
-                ],
-                type="testing",
-            ).save()
+            cable_virtual_id = f"c_{cable.id}"
+            # use o_map for cable objects
+            o_map[cable_virtual_id] = cable.id
+            create_connection(c.connection[0], PointItem(object=cable_virtual_id, name="1"))
+            create_connection(c.connection[1], PointItem(object=cable_virtual_id, name="2"))
             c_counter_cab += 1
-    print(f"Connections direct: {c_counter_dir}")
-    print(f"Connections cable: {c_counter_cab}")
-
+    print(f"Created direct connections: {c_counter_dir}")
+    print(f"Created cables and cable connections: {c_counter_cab}")
     return Result(status=True, message="Objects imported successfully")
