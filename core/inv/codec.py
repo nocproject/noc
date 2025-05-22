@@ -26,11 +26,8 @@ class ModelItem(BaseModel):
 
 
 class ObjectConnectionItem_(BaseModel):
-    name: str  # имя connection (из модели)
+    name: str
     interface_name: str
-    # todo
-    # по факту сейчас сюда пишутся поля из ObjectConnectionData
-    # в name - name, в object - interface_name
 
 
 class ObjectDataItem(BaseModel):
@@ -170,13 +167,6 @@ def encode(iter: Iterable[Object]) -> InvData:
                 # add direct connection
                 if x.object.id in object_ids and y.object.id in object_ids:
                     direct_connections.append(conn_item(conn))
-            # x = conn.connection[0].object
-            # y = conn.connection[1].object
-            # x_iw = conn.connection[0].object.is_wire
-            # y_iw = conn.connection[1].object.is_wire
-            # xxx = "+++++" if x_iw or y_iw else "-"
-            # print(f"* {conn.id} {conn} {x_iw} {y_iw} {xxx} {x.id} {y.id}")
-
         # exclude cables having less than 2 connections
         cables = {k: v for k, v in cables.items() if len(v) == 2}
         cable_connections: list[ConnectionItem] = []
