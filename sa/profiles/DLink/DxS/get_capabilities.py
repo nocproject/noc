@@ -68,7 +68,7 @@ class Script(BaseScript):
             or self.is_des_3026
             or self.is_des_35xx
         ):
-            return False;
+            return False
         cmd = self.cli("show ethernet_oam ports status")
         return self.rx_oam.search(cmd) is not None
 
