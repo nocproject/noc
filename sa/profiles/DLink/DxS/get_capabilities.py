@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
-from noc.sa.profiles.DLink.DxS.profile import DES3x2x, DES30xx
 
 
 class Script(BaseScript):
