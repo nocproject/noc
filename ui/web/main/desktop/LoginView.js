@@ -86,9 +86,10 @@ Ext.define("NOC.main.desktop.LoginView", {
     ],
   },
   initComponent: function(){
-    var param = Ext.urlDecode(location.search);
-    if("msg" in param){ // show message when timeout
-      this.items.items[0].value = param.msg + "<br/>" + this.items.items[0].value;
+    var restartReason = localStorage.getItem("NOC.restartReason");
+    if(!Ext.isEmpty(restartReason) || restartReason === "Autologout"){ // show message when timeodt
+      localStorage.removeItem("NOC.restartReason");
+      this.items.items[0].value = __("Session timeout.") + "<br/>" + this.items.items[0].value;
     }
     this.callParent();
   },

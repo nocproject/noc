@@ -28,7 +28,8 @@ Ext.define("NOC.main.desktop.NavPanel", {
   },
   rowHeight: 36, // for noc theme
   stickyNode: "nav-sticky-node",
-  maxStickyLevel: 1,
+  maxStickyLevel: 0,
+  zIndex: 100,
   bufferedRenderer: false,
   //
   viewConfig: {
@@ -59,10 +60,6 @@ Ext.define("NOC.main.desktop.NavPanel", {
         scope: me,
         itemclick: me.onItemClick,
         viewready: me._onViewReady,
-        afterrender: function(){
-          me.store.on("datachanged", me._calculateRowHeight, me);
-          me.store.on("rootchange", me._calculateRowHeight, me);
-        },
       },
     });
     me.callParent();
@@ -74,31 +71,24 @@ Ext.define("NOC.main.desktop.NavPanel", {
   },
   //
   _onViewReady: function(treePanel){
-    var uniqueId = "nav-panel-" + Ext.id();
+    var uniqueId = "nav-panel-" + Ext.id(),
+      rowForHeight = treePanel.getView().getNodes(0, 0)[0];
     
+    if(rowForHeight){
+      const root = treePanel.store.getRootNode();
+      this.rowHeight = Ext.fly(rowForHeight).getHeight();
+      root.eachChild(function(child){
+        if(child.get("measurementNode") === true){
+          root.removeChild(child);
+          return false;
+        }
+      });
+    }
+  
     treePanel.addCls(uniqueId);
     Ext.util.CSS.createStyleSheet(
       `.${uniqueId} .x-grid-item-container { overflow: unset !important; }`,
     );
-  },
-  _calculateRowHeight: function(){
-    var nodes,
-      view = this.getView();
-    Ext.defer(function(){
-      nodes = view.getNodes(0, 0);
-      if(Ext.isDefined(nodes.length) && nodes.length > 0){
-        this.rowHeight = Ext.fly(nodes[0]).getHeight();
-        if(this.maxStickyLevel > 0){
-          for(var i = 1; i <= this.maxStickyLevel; i++){
-            this.createStickyCss(i);
-          }
-        } else{
-          this.createStickyCss(1);
-        }
-      } else{
-        Ext.defer(this._calculateRowHeight, 100, this);
-      }
-    }, 100, this);
   },
   //
   createStickyCss: function(level){
