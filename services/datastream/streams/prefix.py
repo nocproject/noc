@@ -91,7 +91,7 @@ class PrefixDataStream(DataStream):
 
     @classmethod
     def get_meta(cls, data):
-        return {"vrf": data["vrf"]["id"]}
+        return {"vrf": data["vrf"]["id"] if "vrf" in data else None}
 
     @classmethod
     def filter_vrf(cls, vid):
