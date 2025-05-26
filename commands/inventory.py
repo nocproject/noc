@@ -19,6 +19,14 @@ from noc.inv.models.object import Object
 class Command(BaseCommand):
     help = "Query inventory"
 
+    PB_LENGTH = 80
+
+    def printbox(self, line: str):
+        self.print(f"| {line.ljust(self.PB_LENGTH)} |")
+
+    def printbox_border(self):
+        self.print("=" * (self.PB_LENGTH + 4))
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         # find-serial command
@@ -86,19 +94,25 @@ class Command(BaseCommand):
 
     def handle_export(self, objects: list[str], output: Optional[str] = None):
         connect()
-        inv_data: InvData = encode(Object.objects.filter(id__in=objects))
+        inv_data, result_info = encode(Object.objects.filter(id__in=objects))
         json_data = inv_data.model_dump_json(by_alias=True, indent=2)
-        if not output:
-            self.print(json_data)
-        else:
+        if output:
             with open(output, "w") as f:
                 f.write(json_data)
-        self.print("------------------------------------------")
-        self.print("Export finished.")
-        self.print(f"Exported Objects: {len(inv_data.objects)}")
-        self.print(f"Exported Connections: {len(inv_data.connections)}")
+        else:
+            self.print(json_data)
+        self.printbox_border()
         if output:
-            self.print(f"Wrote to file: {output}")
+            self.printbox(f"Export to file: '{output}'")
+        else:
+            self.printbox("Export to stdout")
+        self.printbox("-" * self.PB_LENGTH)
+        self.printbox("")
+        self.printbox("Found")
+        self.printbox(f"  - objects: {result_info.found_objects}")
+        self.printbox(f"  - direct connections: {result_info.found_connections_direct}")
+        self.printbox(f"  - cable connections: {result_info.found_connections_cable}")
+        self.printbox_border()
 
     def handle_import(self, input: str, container_id: Optional[str] = None):
         connect()
@@ -109,8 +123,22 @@ class Command(BaseCommand):
         with open(input, "r") as f:
             json_data = f.read()
         inv_data = InvData.model_validate_json(json_data)
-        result = decode(container, inv_data)
-        self.print("result", result, type(result))
+        result, result_info = decode(container, inv_data)
+        self.printbox_border()
+        self.printbox(f"Import from file: '{input}'")
+        self.printbox("-" * self.PB_LENGTH)
+        self.printbox("")
+        self.printbox("Found")
+        self.printbox(f"  - objects: {result_info.found_objects}")
+        self.printbox(f"  - direct connections: {result_info.found_connections_direct}")
+        self.printbox(f"  - cable connections: {result_info.found_connections_cable}")
+        self.printbox("Created")
+        self.printbox(f"  - objects: {result_info.created_objects}")
+        self.printbox(f"  - direct connections: {result_info.created_connections_direct}")
+        self.printbox(f"  - cable model: {result_info.created_cable_model}")
+        self.printbox(f"  - cables: {result_info.created_cable}")
+        self.printbox(f"  - cable connections: {result_info.created_connections_cable}")
+        self.printbox_border()
 
 
 if __name__ == "__main__":
