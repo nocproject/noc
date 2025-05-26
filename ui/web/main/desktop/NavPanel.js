@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Navigation panel
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2011 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.desktop.NavPanel");
@@ -46,6 +46,24 @@ Ext.define("NOC.main.desktop.NavPanel", {
   initComponent: function(){
     var me = this;
     Ext.apply(me, {
+      tbar: [{
+        xtype: "searchfield",
+        itemId: "filter",
+        width: "100%",
+        emptyText: __("Search"),
+        scope: this,
+        handler: this.onSearch,
+        minChars: 2,
+        typeAheadDelay: 100,
+        triggers: {
+          clear: {
+            cls: "x-form-clear-trigger",
+            hidden: true,
+            scope: this,
+            handler: this.onClearSearch,
+          },
+        },
+      }],
       tools: [{
         type: "up",
         tooltip: __("Switch to breadcrumb view"),
@@ -81,6 +99,7 @@ Ext.define("NOC.main.desktop.NavPanel", {
       `.${uniqueId} .x-grid-item-container { overflow: unset !important; }`,
     );
   },
+  //
   _calculateRowHeight: function(){
     var nodes,
       view = this.getView();
@@ -105,5 +124,87 @@ Ext.define("NOC.main.desktop.NavPanel", {
     var css = `table.x-grid-item:has(tr.${this.stickyNode}-${level}) { position: sticky; top: ${(level - 1) * this.rowHeight}px; z-index: ${this.zIndex}; }`;
     Ext.util.CSS.createStyleSheet(css);
     this.maxStickyLevel = level;
+  },
+  //
+  onClearSearch: function(field){
+    field.setValue("");
+    field.getTrigger("clear").hide();
+    this.clearSearch();
+  },
+  //
+  onSearch: function(query){
+    var matchedNodes = [],
+      visibleNodeIds = {},
+      field = this.down("[itemId=filter]");
+ 
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+    
+    if(Ext.isEmpty(query)){
+      field.getTrigger("clear").hide();
+    } else{
+      field.getTrigger("clear").show();
+    }
+    if(Ext.isEmpty(query) || query.length < field.minChars){
+      this.clearSearch();
+      return;
+    }
+    
+    query = query.toLowerCase();
+    
+    this.store.getRootNode().cascadeBy(function(record){
+      var name = record.get("text") || "";
+      if(name.toLowerCase().indexOf(query) !== -1 && record.isLeaf()){
+        matchedNodes.push(record);        
+        visibleNodeIds[record.getId()] = true;
+        var parent = record.parentNode;
+        while(parent && !parent.isRoot()){
+          visibleNodeIds[parent.getId()] = true;
+          parent = parent.parentNode;
+        }
+      }
+    });
+    this.store.clearFilter();
+    this.store.filterBy(function(record){
+      return visibleNodeIds[record.getId()] === true;
+    });
+    this.searchTimer = Ext.defer(function(){
+      for(const node of matchedNodes){
+        let parent = node.parentNode;
+        while(parent && !parent.isRoot()){
+          parent = parent.parentNode;
+        }
+      }
+      if(this.store && this.store.getRootNode() && this.store.getRootNode().hasChildNodes()){
+        this.expandAll();
+      }
+    }, 300, this);
+    if(matchedNodes.length < 1){
+      NOC.info(__("No matches found"));
+    }
+  },
+  //
+  clearSearch: function(){
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+  
+    this.store.clearFilter();
+    this.searchTimer = Ext.defer(function(){
+      if(this.store && this.store.getRootNode() && this.store.getRootNode().hasChildNodes()){
+        this.collapseAll();
+      }
+    }, 300, this);
+  },
+  
+  onDestroy: function(){
+    if(this.searchTimer){
+      clearTimeout(this.searchTimer);
+      this.searchTimer = null;
+    }
+    this.callParent();
   },
 });
