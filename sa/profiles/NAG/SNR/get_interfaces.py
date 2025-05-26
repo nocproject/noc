@@ -91,9 +91,7 @@ class Script(BaseScript):
         r"^MAC address\s+: (?P<mac>\S+)",
         re.MULTILINE,
     )
-    rx_lldp_foxgate = re.compile(
-        r"^\s*Interface Ethernet (?P<port>\S+)\n"
-        r"^\s*Port LLDP: rxtx\s.+\n",
+    rx_lldp_foxgate = re.compile(r"^\s*Interface Ethernet (?P<port>\S+)\n^\s*Port LLDP: rxtx\s.+\n",
         re.MULTILINE,
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
@@ -149,14 +147,16 @@ class Script(BaseScript):
                 sub["untagged_vlan"] = match.group("pvid")
                 if tagged:
                     sub["tagged_vlans"] = self.expand_rangelist(tagged)
-            interfaces += [{
-                "name": ifname,
-                "type": "physical",
-                "admin_status": match.group("admin_status") == "enabled",
-                "oper_status": match.group("oper_status") == "up",
-                "mac": match.group("mac"),
-                "subinterfaces": [sub],
-            }]
+            interfaces += [
+                {
+                    "name": ifname,
+                    "type": "physical",
+                    "admin_status": match.group("admin_status") == "enabled",
+                    "oper_status": match.group("oper_status") == "up",
+                    "mac": match.group("mac"),
+                    "subinterfaces": [sub],
+                }
+            ]
         if self.has_capability("Network | LLDP"):
             v = self.cli("show lldp interface", cached=True)
             for match in self.rx_lldp_foxgate.finditer(v):
@@ -171,24 +171,26 @@ class Script(BaseScript):
         if not match:
             match = self.rx_mgmt2.search(v)
         ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
-        interfaces += [{
-            "name": "system",
-            "type": "SVI",
-            "admin_status": True,
-            "oper_status": True,
-            "mac": match.group("mac"),
-            "subinterfaces": [
-                {
-                    "name": "system",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "mac": match.group("mac"),
-                    "enabled_afi": ["IPv4"],
-                    "ipv4_addresses": [ip_address],
-                    "vlan_ids": match.group("vlan_id"),
-                }
-            ],
-        }]
+        interfaces += [
+            {
+                "name": "system",
+                "type": "SVI",
+                "admin_status": True,
+                "oper_status": True,
+                "mac": match.group("mac"),
+                "subinterfaces": [
+                    {
+                        "name": "system",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "mac": match.group("mac"),
+                        "enabled_afi": ["IPv4"],
+                        "ipv4_addresses": [ip_address],
+                        "vlan_ids": match.group("vlan_id"),
+                    }
+                ],
+            }
+        ]
         return [{"interfaces": interfaces}]
 
     def execute_cli(self, **kwargs):

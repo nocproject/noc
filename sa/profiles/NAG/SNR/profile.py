@@ -67,9 +67,9 @@ class Profile(BaseProfile):
 
     def clean_lldp_neighbor(self, obj, neighbor):
         neighbor = super().clean_lldp_neighbor(obj, neighbor)
-        if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT and self.rx_lldp_port.search(
-            neighbor["remote_port"]
-        ):
+        if neighbor[
+            "remote_port_subtype"
+        ] == LLDP_PORT_SUBTYPE_COMPONENT and self.rx_lldp_port.search(neighbor["remote_port"]):
             neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
         return neighbor
 
