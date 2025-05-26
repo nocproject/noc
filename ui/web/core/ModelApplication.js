@@ -741,7 +741,7 @@ Ext.define("NOC.core.ModelApplication", {
     if(autoFocusFields && autoFocusFields.length > 0){
       focusField = autoFocusFields[0];
     } else{
-      focusField = me.form.getFields().items[1];
+      focusField = me.form.getFields().items[0];
     }
     me.restoreFilter(me.noc.filterValuesUrl);
     return me.formPanel;
