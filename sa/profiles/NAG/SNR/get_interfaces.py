@@ -91,7 +91,8 @@ class Script(BaseScript):
         r"^MAC address\s+: (?P<mac>\S+)",
         re.MULTILINE,
     )
-    rx_lldp_foxgate = re.compile(r"^\s*Interface Ethernet (?P<port>\S+)\n^\s*Port LLDP: rxtx\s.+\n",
+    rx_lldp_foxgate = re.compile(
+        r"^\s*Interface Ethernet (?P<port>\S+)\n^\s*Port LLDP: rxtx\s.+\n",
         re.MULTILINE,
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
