@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from dataclasses import dataclass
 from typing import Iterable, Optional, Union
 
 # Third-party modules
@@ -18,6 +19,25 @@ from noc.inv.models.object import Object, ObjectAttr, ObjectConnectionData
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
 from noc.inv.models.objectmodel import Crossing, ObjectModel
 from noc.inv.models.vendor import Vendor
+
+
+@dataclass
+class EncodeResultInfo:
+    found_objects: Optional[int] = None
+    found_connections_direct: Optional[int] = None
+    found_connections_cable: Optional[int] = None
+
+
+@dataclass
+class DecodeResultInfo:
+    found_objects: Optional[int] = None
+    found_connections_direct: Optional[int] = None
+    found_connections_cable: Optional[int] = None
+    created_objects: Optional[int] = None
+    created_connections_direct: Optional[int] = None
+    created_cable_model: Optional[int] = None
+    created_cable: Optional[int] = None
+    created_connections_cable: Optional[int] = None
 
 
 class ModelItem(BaseModel):
@@ -77,9 +97,10 @@ class InvData(BaseModel):
     connections: list[ConnectionItem]
 
 
-def encode(iter: Iterable[Object]) -> InvData:
+def encode(iter: Iterable[Object]) -> (InvData, EncodeResultInfo):
     """
     Encode several Inventory Objects with all it's descendants into pydatic-structure.
+    Uses in export Inventory Objects to file.
     Structure contains:
     - objects (all descendants of given in `iter` argument objects
     - connections between all found objects
@@ -183,38 +204,44 @@ def encode(iter: Iterable[Object]) -> InvData:
                         ],
                     )
                 )
-        print(f"Found direct connections: {len(direct_connections)}")
-        print(f"Found cable connections {len(cable_connections)}")
+        info.found_connections_direct = len(direct_connections)
+        info.found_connections_cable = len(cable_connections)
         return direct_connections + cable_connections
 
+    info = EncodeResultInfo()
     objects = []
     object_ids = []
     for root_object in iter:
         for obj in iter_object_tree(root_object, exclude_cables=True):
             objects.append(generate_object_item(obj, obj is root_object))
             object_ids.append(obj.id)
+    info.found_objects = len(objects)
     connections = []
     for conn in get_connections(object_ids):
         connections.append(conn)
-    return InvData(
-        objects=objects,
-        connections=connections,
+    return (
+        InvData(
+            objects=objects,
+            connections=connections,
+        ),
+        info,
     )
 
 
-def decode(container: Object, data: InvData) -> Result:
+def decode(container: Object, data: InvData) -> (Result, DecodeResultInfo):
     """
     Decode Inventory Objects from pydatic-structure InvData and write it to database.
+    Uses in import Inventory Objects from file.
     Following information is written:
     - all objects from structure
     - all connections from structure
-    - also creates cable objects for cable connections (connections where id of connection is null)
+    - also creates cable model and cable objects for cable connections.
+    Cable connections defined as connections with null id in source file
     """
-
-    print("container", container, type(container))
-    print("data", type(data))
-    print("len objects", len(data.objects))
-    print("len connections", len(data.connections))
+    info = DecodeResultInfo()
+    info.found_objects = len(data.objects)
+    info.found_connections_direct = sum(int(c.id is not None) for c in data.connections)
+    info.found_connections_cable = len(data.connections) - info.found_connections_direct
 
     # Mapping between IDs of objects in source JSON and IDs of created in database objects
     # ID of object in JSON-file -> ID of created object
@@ -241,7 +268,7 @@ def decode(container: Object, data: InvData) -> Result:
         ).save()
         o_map[o.id] = obj.id
         o_counter += 1
-    print(f"Created objects: {o_counter}")
+    info.created_objects = o_counter
 
     # Create cable model if needed
     CABLE_NAME = "optical cable sm"
@@ -260,7 +287,9 @@ def decode(container: Object, data: InvData) -> Result:
             ],
             vendor=vendor,
         ).save()
-        print(f"Created model for cable objects: {CABLE_NAME}")
+        info.created_cable_model = 1
+    else:
+        info.created_cable_model = 0
 
     def create_connection(c1: PointItem, c2: PointItem):
         c1 = c1.dict()
@@ -296,6 +325,7 @@ def decode(container: Object, data: InvData) -> Result:
             create_connection(c.connection[0], PointItem(object=cable_virtual_id, name="1"))
             create_connection(c.connection[1], PointItem(object=cable_virtual_id, name="2"))
             c_counter_cab += 1
-    print(f"Created direct connections: {c_counter_dir}")
-    print(f"Created cables and cable connections: {c_counter_cab}")
-    return Result(status=True, message="Objects imported successfully")
+    info.created_connections_direct = c_counter_dir
+    info.created_connections_cable = c_counter_cab
+    info.created_cable = c_counter_cab
+    return Result(status=True, message="Objects decoded and wrote successfully"), info
