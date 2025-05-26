@@ -175,6 +175,8 @@ def encode(iter: Iterable[Object]) -> (InvData, EncodeResultInfo):
         for conn in ObjectConnection.objects.filter(connection__object__in=object_ids):
             if len(conn.connection) != 2:
                 continue  # @todo: Process later
+            if conn.type == "pop_link":
+                continue
             x, y = conn.connection
             if x.object.is_wire or y.object.is_wire:
                 # add cable
