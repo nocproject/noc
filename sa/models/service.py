@@ -45,6 +45,7 @@ from noc.core.service.loader import get_service
 from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
+from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -412,7 +413,7 @@ class Service(Document):
                 self.id,
                 timestamp,
             )
-            timestamp = datetime.datetime.now().replace(microsecond=0)
+            # timestamp = datetime.datetime.now().replace(microsecond=0)
             return
         # Register Outage, Register Maintenance
         os, ots = self.oper_status, self.oper_status_change
@@ -423,25 +424,36 @@ class Service(Document):
             oper_status=self.oper_status, oper_status_change=self.oper_status_change
         )
         # Register outage
-        now = datetime.datetime.now().replace(microsecond=0)
         svcs = get_service()
         svcs.register_metrics(
             "serviceoutages",
             [
                 {
-                    "date": now.date().isoformat(),
-                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "date": timestamp.date().isoformat(),
+                    "ts": timestamp.replace(microsecond=0).isoformat(sep=" "),
                     "service": self.bi_id,
                     "service_id": str(self.id),
                     # Outage
                     "start": ots.isoformat(sep=" "),
                     "stop": self.oper_status_change.isoformat(sep=" "),
-                    "from_status": os,
+                    "from_status": {"id": os, "name": os.name},
                     "to_status": self.oper_status,
                     "in_maintenance": int(self.in_maintenance),
                 }
             ],
         )
+        if self.profile.is_enabled_notification:
+            logger.debug("Sending status change notification")
+            headers = self.get_mx_message_headers(self.effective_labels)
+            msg = self.get_message_context()
+            # msg["managed_object"] = self.managed_object.get_message_context()
+            msg["from_status"] = {"id": os, "name": os.name}
+            msg["ts"] = (timestamp.replace(microsecond=0).isoformat(),)
+            send_message(
+                data=msg,
+                message_type=MessageType.SERVICE_STATUS_CHANGE,
+                headers=headers,
+            )
         # Run Service Status Refresh
         # Set Outage
         if self.profile.raise_status_alarm_policy == "D":
@@ -450,6 +462,49 @@ class Service(Document):
             # Only Root service
             return
         self.register_alarm(os)
+
+    def get_message_context(self) -> Dict[str, Any]:
+        """Service Message Ctx"""
+        r = {
+            "id": str(self.id),
+            "label": self.label,
+            "description": self.description,
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            "status": {"id": self.oper_status, "name": self.oper_status.name},
+            "in_maintenance": int(self.in_maintenance),
+            "agreement_id": self.agreement_id,
+            "caps": self.get_caps(),
+        }
+        if self.remote_system:
+            r["remote_system"] = {
+                "id": str(self.remote_system.id),
+                "name": self.remote_system.name,
+            }
+            r["remote_id"] = self.remote_id
+        if self.profile.remote_system:
+            r["profile"]["remote_system"] = {
+                "id": str(self.profile.remote_system.id),
+                "name": self.profile.remote_system.name,
+            }
+            r["administrative_domain"]["remote_id"] = self.profile.remote_id
+        return r
+
+    def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
+        return {
+            key.config.header: key.clean_header_value(value)
+            for key, value in self.message_meta.items()
+        }
+
+    @property
+    def message_meta(self) -> Dict[MessageMeta, Any]:
+        """Message Meta for instance"""
+        return {
+            MessageMeta.WATCH_FOR: get_subscription_id(self),
+            # MessageMeta.ADM_DOMAIN: str(self.administrative_domain.id),
+            MessageMeta.PROFILE: get_subscription_id(self.profile),
+            MessageMeta.GROUPS: list(self.effective_service_groups),
+            MessageMeta.LABELS: list(self.effective_labels),
+        }
 
     def register_alarm(self, old_status: Status):
         """
@@ -744,15 +799,6 @@ class Service(Document):
                 return svc.agent
             svc = svc.parent
         return None
-
-    def get_message_context(self) -> Dict[str, Any]:
-        return {
-            "profile": {"id": str(self.profile.id), "name": self.profile.name},
-            "address": self.address,
-            "description": self.description,
-            "agreement_id": self.agreement_id,
-            "caps": self.get_caps(),
-        }
 
     def register_instance(
         self,
