@@ -58,7 +58,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             for mo in sorted(ManagedObject.objects.filter(id__in=f["_id"]), key=lambda x: x.name):
                 pool_c.add(mo.pool.name)
                 data_c.append((mo.name, mo.address, mo.profile.name, mo.pool.name, mo.is_managed))
-            if len(data_c) > 1:
+            if len(data_c) > 0:
                 if data_c[0][1] == data_c[1][1]:
                     reason = _("Duplicate MO")
                 elif not data_c[0][4] == data_c[1][4]:
