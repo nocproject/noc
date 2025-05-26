@@ -31,6 +31,9 @@ def test_string_parameter():
         default_string = StringParameter(default="default")
         choices = StringParameter(choices=["a", "b", "c", "1"])
         default_choices = StringParameter(choices=["a", "b", "c"], default="b")
+        default_choices_with_none = StringParameter(
+            choices=["a", "b", "c", "none"], default="none", none_value="none"
+        )
 
     config = Config()
     # Test string
@@ -51,6 +54,7 @@ def test_string_parameter():
         config.choices = "d"
     # Test choices with defaults
     assert config.default_choices == "b"
+    assert config.default_choices_with_none is None
 
 
 def test_secret_parameters():

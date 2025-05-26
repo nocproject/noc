@@ -50,8 +50,9 @@ class BaseParameter(object):
 
 
 class StringParameter(BaseParameter):
-    def __init__(self, default=None, help=None, choices=None):
+    def __init__(self, default=None, help=None, choices=None, none_value=None):
         self.choices = choices
+        self.none_value = none_value
         super().__init__(default=default, help=help)
 
     def clean(self, v):
@@ -60,6 +61,11 @@ class StringParameter(BaseParameter):
             if v not in self.choices:
                 raise ValueError(f"Invalid value: {v}")
         return v
+
+    def __get__(self, instance, owner):
+        if self.none_value and self.value == self.none_value:
+            return None
+        return super().__get__(instance, owner)
 
 
 class SecretParameter(BaseParameter):
