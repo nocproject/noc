@@ -2,7 +2,7 @@
 # Vendor: NAG
 # OS:     SNR
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ import re
 
 # NOC modules
 from noc.core.profile.base import BaseProfile
+from noc.core.lldp import LLDP_PORT_SUBTYPE_COMPONENT, LLDP_PORT_SUBTYPE_NAME
 
 
 class Profile(BaseProfile):
@@ -61,6 +62,22 @@ class Profile(BaseProfile):
         "vpls": "unknown",  # vpls_dev
         "l2ov": "tunnel",  # l2overgre
     }
+
+    rx_lldp_port = re.compile(r"port (?P<port>e\d\S+)")
+
+    def clean_lldp_neighbor(self, obj, neighbor):
+        neighbor = super().clean_lldp_neighbor(obj, neighbor)
+        if neighbor["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT and self.rx_lldp_port.search(
+            neighbor["remote_port"]
+        ):
+            neighbor["remote_port_subtype"] = LLDP_PORT_SUBTYPE_NAME
+        return neighbor
+
+    def convert_interface_name(self, s):
+        match = self.rx_lldp_port.match(s)
+        if match:
+            return match.group("port")
+        return s
 
     @classmethod
     def get_interface_type(cls, name):

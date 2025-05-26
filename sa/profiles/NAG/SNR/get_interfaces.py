@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -41,12 +41,14 @@ class Script(BaseScript):
         r"^\s+SetSpeed is .+\n"
         r"^\s+Current port type: .+\n"
         r"(?:^\s+Transceiver is .+\n)?"
+        r"(?:^\s+Transceiver does not exist!\n)?"
         r"(?:^\s+Transceiver Compliance: .+\n)?"
         r"^\s+Priority is \d+\s*\n"
         r"^\s+Flow control is .+\n"
         r"^\s+Broadcast storm control target rate is .+\n"
         r"^\s+PVID is (?P<pvid>\d+)\s*\n"
-        r"^\s+Port mode: (?P<mode>trunk|access)\s*\n"
+        r"^\s+Port mode: (?P<mode>trunk|access|hybrid)\s*\n"
+        r"(?:^\s+Tagged\s+VLAN ID: (?P<tagged1>\S+)\s*\n)?"
         r"(?:^\s+Untagged\s+VLAN ID: (?P<untagged>\d+)\s*\n)?"
         r"(?:^\s+Vlan\s+allowed: (?P<tagged>\S+)\s*\n)?",
         re.MULTILINE,
@@ -56,7 +58,7 @@ class Script(BaseScript):
         r"(,\s+address is (?P<mac>\S+))?\s*\n",
         re.MULTILINE,
     )
-    rx_alias = re.compile(r"\s+alias name is (?P<alias>.+),", re.MULTILINE)
+    rx_alias = re.compile(r"\s+alias name is (?P<alias>\S+)\s", re.MULTILINE)
     rx_index = re.compile(r", index is (?P<ifindex>\d+)")
     rx_alias_and_index = re.compile(r" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"MTU (?P<mtu>\d+) bytes")
@@ -78,6 +80,20 @@ class Script(BaseScript):
         r"^gateway\s+: .+\n"
         r"^ManageVLAN\s+: (?P<vlan_id>\d+)\s*\n"
         r"^MAC address\s+: (?P<mac>\S+)",
+        re.MULTILINE,
+    )
+    # on very old firmware, or firmware bug
+    rx_mgmt2 = re.compile(
+        r"^ip address\s+: (?P<ip>\S+)\s*\n"
+        r"^netmask\s+: (?P<mask>\S+)\s*\n"
+        r"^gateway\s+: .+\n"
+        r"^ManageVLAN\s+: 1,(?P<vlan_id>\d+)\s*\n"
+        r"^MAC address\s+: (?P<mac>\S+)",
+        re.MULTILINE,
+    )
+    rx_lldp_foxgate = re.compile(
+        r"^\s*Interface Ethernet (?P<port>\S+)\n"
+        r"^\s*Port LLDP: rxtx\s.+\n",
         re.MULTILINE,
     )
     rx_lag_port = re.compile(r"\s*\S+ is LAG member port, LAG port:(?P<lag_port>\S+)\n")
@@ -112,8 +128,8 @@ class Script(BaseScript):
         For FoxGate Like CLI syntax
         :return:
         """
+        interfaces = []
         v = self.cli("show interface", cached=True)
-        interfaces = {}
         for match in self.rx_sh_int_old.finditer(v):
             ifname = match.group("interface")
             sub = {
@@ -126,21 +142,36 @@ class Script(BaseScript):
             if match.group("mode") == "access":
                 sub["untagged_vlan"] = match.group("untagged")
             else:
+                if match.group("mode") == "trunk":
+                    tagged = match.group("tagged")
+                else:  # Hybrid
+                    tagged = match.group("tagged1")
                 sub["untagged_vlan"] = match.group("pvid")
-                sub["tagged_vlans"] = self.expand_rangelist(match.group("tagged"))
-            interfaces[ifname] = {
+                if tagged:
+                    sub["tagged_vlans"] = self.expand_rangelist(tagged)
+            interfaces += [{
                 "name": ifname,
                 "type": "physical",
                 "admin_status": match.group("admin_status") == "enabled",
                 "oper_status": match.group("oper_status") == "up",
                 "mac": match.group("mac"),
                 "subinterfaces": [sub],
-            }
+            }]
+        if self.has_capability("Network | LLDP"):
+            v = self.cli("show lldp interface", cached=True)
+            for match in self.rx_lldp_foxgate.finditer(v):
+                ifname = f'e{match.group("port")}'
+                for iface in interfaces:
+                    if iface["name"] == ifname:
+                        iface["enabled_protocols"] = ["LLDP"]
+                        break
 
         v = self.cli("show ip", cached=True)
         match = self.rx_mgmt.search(v)
+        if not match:
+            match = self.rx_mgmt2.search(v)
         ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
-        interfaces["system"] = {
+        interfaces += [{
             "name": "system",
             "type": "SVI",
             "admin_status": True,
@@ -157,8 +188,8 @@ class Script(BaseScript):
                     "vlan_ids": match.group("vlan_id"),
                 }
             ],
-        }
-        return [{"interfaces": list(interfaces.values())}]
+        }]
+        return [{"interfaces": interfaces}]
 
     def execute_cli(self, **kwargs):
         interfaces = {}

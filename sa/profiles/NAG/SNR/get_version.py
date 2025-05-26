@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # NAG.SNR.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ class Script(BaseScript):
     rx_ver = re.compile(
         r"^\s+(?:(?P<vendor>FoxGate) )?(?P<platform>\S+) Device, Compiled on.*\n"
         r"(^\s+sysLocation.*\n)?"
-        r"(^\s+CPU Mac \S+\s*\n)?"
-        r"(^\s+Vlan MAC \S+\s*\n)?"
-        r"^\s+Soft[Ww]are(?: Package)? Version (?P<version>\S+)\s*\n"
-        r"^\s+BootRom Version (?P<bootprom>\S+)\s*\n"
-        r"^\s+Hard[Ww]are Version (?P<hardware>\S+)\s*\n"
+        r"(^\s+CPU M[Aa][Cc]\s+\S+\s*\n)?"
+        r"(^\s+V[Ll][Aa][Nn] MAC\s+\S+\s*\n)?"
+        r"^\s+Soft[Ww]are(?: Package)? Version\s+(?P<version>\S+)\s*\n"
+        r"^\s+BootRom Version\s+(?P<bootprom>\S+)\s*\n"
+        r"^\s+Hard[Ww]are Version\s+(?P<hardware>\S+)\s*\n"
         r"^\s+CPLD Version.*\n"
-        r"^\s+(?:Serial No.:|Device serial number)\s*(?P<serial>\S+)\s*\n",
+        r"^\s+(?:Serial No(?:\.\:)?|Device serial number)\s*(?P<serial>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_ver_snmp = re.compile(
