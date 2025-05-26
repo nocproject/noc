@@ -1,0 +1,201 @@
+{
+    "name": "Availability",
+    "$collection": "main.reports",
+    "uuid": "d3291e4a-6283-4f58-8de1-8e3afc2dfaf5",
+    "title": "Availability (New)",
+    "description": "Доступность",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "managedobjectavailabilityds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "data",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "administrativedomain",
+                    "title": "ADM. DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "name",
+                    "title": "MANAGED OBJECT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "hostname",
+                    "title": "HOSTNAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "PROFILE",
+                    "format_type": "string"
+                },
+                {
+                    "name": "avail_percent",
+                    "title": "AVAIL. PERCENT",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "downtime",
+                    "title": "DOWNTIME",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "down_count",
+                    "title": "DOWN COUNT",
+                    "format_type": "integer"
+                },
+                {
+                    "name": "reboots",
+                    "title": "REBOOTS",
+                    "format_type": "integer"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "fm",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Доступность (Новый)"
+        },
+        "columns.address": {
+            "ru": "Адрес"
+        },
+        "columns.administrativedomain": {
+            "ru": "З.О."
+        },
+        "columns.avail_percent": {
+            "ru": "Доступность"
+        },
+        "columns.down_count": {
+            "ru": "Число периодов"
+        },
+        "columns.downtime": {
+            "ru": "Общее время недос.(сек)"
+        },
+        "columns.hostname": {
+            "ru": "Имя хоста"
+        },
+        "columns.name": {
+            "ru": "Объект управления"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.reboots": {
+            "ru": "Перезагрузки"
+        },
+        "parameters.administrative_domain": {
+            "ru": "З.О."
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.skip_full_avail": {
+            "ru": "Пропустить доступные за интервал"
+        },
+        "parameters.skip_zero_access": {
+            "ru": "Пропустить с неактивными портами доступа"
+        },
+        "parameters.skip_zero_avail": {
+            "ru": "Пропустить недоступные за интервал"
+        },
+        "parameters.start": {
+            "ru": "С"
+        }
+    },
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "hide": false,
+            "label": "From",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "hide": false,
+            "label": "To",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "skip_full_avail",
+            "description": null,
+            "hide": false,
+            "label": "Skip full available",
+            "type": "bool"
+        },
+        {
+            "name": "skip_zero_avail",
+            "description": null,
+            "hide": false,
+            "label": "Skip zero available",
+            "type": "bool"
+        },
+        {
+            "name": "skip_zero_access",
+            "description": null,
+            "hide": false,
+            "label": "Skip zero access port",
+            "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.administrativedomain,managedobjectds.name,managedobjectds.hostname,managedobjectds.address,managedobjectds.profile,avail_percent,downtime,down_count,reboots",
+            "hide": true,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
