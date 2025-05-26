@@ -123,6 +123,11 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         {
             name: "instance_policy_settings",
             type: "auto"
+        },
+        {
+            name: "status_change_notification",
+            type: "string",
+            defaultValue: "d"
         }
     ]
 });
