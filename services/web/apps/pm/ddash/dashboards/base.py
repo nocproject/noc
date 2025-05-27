@@ -7,8 +7,8 @@
 
 # Python modules
 from importlib.resources import files
+from importlib.resources.abc import Traversable
 import logging
-import os
 
 # Third-Party modules
 import orjson
@@ -53,40 +53,37 @@ class BaseDashboard(object):
         """
         Load dashboard templates from path and return template dict, key is folder.filename without .json
         """
-        if self.templates_path:
-            t_path = self.templates_path
-        else:
-            t_path = os.path.join(
-                "services", "web", "apps", "pm", "ddash", "dashboards", "templates"
-            )
-        t = {}
-        if not os.path.exists(t_path):
-            self.logger.warning("Templates path %s is not exist" % t_path)
-            return {}
-        for f in os.listdir(t_path):
-            path = os.path.join(t_path, f)
-            if os.path.isfile(path):
-                if ".json" not in f:
-                    self.logger.info("Extension file %s is not .json" % f)
-                    continue
-                with files("noc").joinpath(t_path, f).open() as data_file:
+
+        def load_file(file: Traversable):
+            if file.suffix == ".json":
+                with file.open() as data_file:
                     try:
-                        t[f.split(".")[0]] = orjson.loads(data_file.read())
+                        t[file.name.split(".")[0]] = orjson.loads(data_file.read())
                     except ValueError:
-                        self.logger.error("Dashboard template file %s not contains valid JSON" % f)
-                        continue
+                        self.logger.error(
+                            f"Dashboard template file '{file}' not contains valid JSON"
+                        )
+            else:
+                self.logger.info(f"Extension file '{file}' is not .json")
+
+        for prefix in ("noc.custom", "noc"):
+            t_path = self.templates_path or "services.web.apps.pm.ddash.dashboards.templates"
+            pkg: str = f"{prefix}.{t_path}"
+            try:
+                templates_dir: Traversable = files(pkg)
+            except ModuleNotFoundError:
+                self.logger.warning(f"Templates path '{pkg}' is not exist")
                 continue
-            for fl in os.listdir(path):
-                if ".json" not in fl:
-                    self.logger.info("Extension file %s is not .json" % fl)
-                    continue
-                with files("noc").joinpath(t_path, f, fl).open() as data_file:
-                    try:
-                        t[".".join((f, fl.split(".")[0]))] = orjson.loads(data_file.read())
-                    except ValueError:
-                        self.logger.error("Dashboard template file %s not contains valid JSON" % fl)
-                        continue
-        return t
+            t = {}
+            for f in templates_dir.iterdir():
+                if f.is_file():
+                    load_file(f)
+                elif f.is_dir():
+                    for fl in f.iterdir():
+                        if fl.is_file():
+                            load_file(fl)
+            return t
+        return {}
 
     def str_cleanup(self, data, remove_letters=None, translate_to=None):
         if data:
