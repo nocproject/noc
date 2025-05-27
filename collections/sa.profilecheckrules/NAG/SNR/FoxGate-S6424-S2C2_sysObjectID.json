@@ -1,0 +1,13 @@
+{
+    "name": "NAG | SNR | Foxgate S6424-S2C2 sysObjectID.0",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "d217e660-fe1c-4a2f-ada4-e5ff81efa261",
+    "description": null,
+    "preference": 10,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "eq",
+    "value": "1.3.6.1.4.1.5651.1.102.5059",
+    "action": "match",
+    "profile__name": "NAG.SNR"
+}
