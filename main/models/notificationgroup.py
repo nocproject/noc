@@ -374,8 +374,7 @@ class NotificationGroup(NOCModel):
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
         """List of currently active members: (method, param, language)"""
-        now = datetime.datetime.now()
-        return set((c.method, c.contact, c.language) for c in self.members if c.match(now))
+        return set((c.method, c.contact, c.language) for c in self.members)
 
     @property
     def languages(self) -> Set[str]:
