@@ -21,7 +21,7 @@ dnspython==2.7.0
 fs==2.4.16
 geojson==3.2.0
 geopy==2.4.1
-grpcio==1.59.3
+grpcio==1.59.5
 gufo-http==0.4.0
 manhole==1.8.1
 markerlib==0.6.0
