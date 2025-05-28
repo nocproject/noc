@@ -173,6 +173,12 @@ class RedPandaClient(object):
             security_protocol=config.redpanda.security_protocol,
             sasl_plain_username=config.redpanda.username,
             sasl_plain_password=config.redpanda.password,
+            compression_type=(
+                None
+                if config.redpanda.compression_type == "none"
+                else config.redpanda.compression_type
+            ),
+
         )
         while True:
             try:
