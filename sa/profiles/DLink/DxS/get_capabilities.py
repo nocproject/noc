@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
 from noc.sa.profiles.Generic.get_capabilities import false_on_cli_error, false_on_snmp_error
-from noc.sa.profiles.DLink.DxS.profile import DES3x2x, DES30xx
 
 
 class Script(BaseScript):
@@ -49,7 +48,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         # Spanning Tree Enabled/Disabled : Enabled
-        if self.match_version(DES3x2x) or self.match_version(DES30xx):
+        if self.is_des_32_33 or self.is_dgs_32_33:
             cmd = self.cli("show stp\nq")
         else:
             cmd = self.cli("show stp", cached=True)
@@ -60,6 +59,15 @@ class Script(BaseScript):
         """
         Check box has OAM supported
         """
+        if (
+            self.is_des_32_33
+            or self.is_dgs_32_33
+            or self.is_des_3010
+            or self.is_des_3018
+            or self.is_des_3026
+            or self.is_des_35xx
+        ):
+            return False
         cmd = self.cli("show ethernet_oam ports status")
         return self.rx_oam.search(cmd) is not None
 
