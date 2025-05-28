@@ -71,6 +71,7 @@ class Profile(BaseProfile):
                     "DGS-3650",
                     "DES-1210",
                     "DES-3010",
+                    "DES-3016",
                     "DES-3018",
                     "DES-3026",
                 ]
@@ -81,13 +82,16 @@ class Profile(BaseProfile):
         "is_bad_ifmib_snmp": {"platform": {"$regex": r"^DES-3200-\d\dF*/C1"}},
         "is_dgs": {"platform": {"$regex": r"^DGS-.+"}},
         "is_des_3200": {"platform": {"$regex": r"^DES-3200.+"}},
+        "is_des_32_33": {"platform": {"$regex": r"^DES-3[23]26S"}},
         "is_dgs_32_33": {"platform": {"$regex": r"^DGS-3[23]12SR.+"}},
         "is_des_1210": {"platform": {"$regex": r"^DES-1210.+"}},
+        "is_dgs_1210": {"platform": {"$regex": r"^DGS-1210.+"}},
         "is_des_1210_20": {"platform": {"$regex": r"^DES-1210-20.+"}},
         "is_des_1210_28": {"platform": {"$regex": r"^DES-1210-28.+"}},
         "is_des_3010": {"platform": {"$regex": r"^DES-3010.+"}},
         "is_des_3018": {"platform": {"$regex": r"^DES-3018.+"}},
         "is_des_3026": {"platform": {"$regex": r"^DES-3026.+"}},
+        "is_des_35xx": {"platform": {"$regex": r"^DES-35(?:26|52).*"}},
     }
     #
     # Version comparison
