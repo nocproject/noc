@@ -178,7 +178,6 @@ class RedPandaClient(object):
                 if config.redpanda.compression_type == "none"
                 else config.redpanda.compression_type
             ),
-
         )
         while True:
             try:
