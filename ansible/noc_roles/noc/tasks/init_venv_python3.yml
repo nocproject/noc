@@ -291,9 +291,9 @@
 - name: Install python packages
   pip:
     chdir: "{{ noc_root }}"
-    name: "-e .[{{ python_deps | join(',') }}]"
+    name: ".[{{ python_deps | join(',') }}]"
     virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
+    extra_args: "--upgrade -e"
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
