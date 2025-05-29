@@ -20,6 +20,7 @@ caps_dtype_map = {
     "str": FieldType.STRING,
     "int": FieldType.UINT,
     "float": FieldType.FLOAT,
+    "strlist": FieldType.LIST_STRING,
 }
 
 
