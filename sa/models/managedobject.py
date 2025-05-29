@@ -441,6 +441,9 @@ class ManagedObjectManager(Manager):
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
         ("fm.ArchivedAlarm", "managed_object"),
+        ("fm.ActiveEvent", "managed_object"),
+        ("fm.ArchivedEvent", "managed_object"),
+        ("fm.FailedEvent", "managed_object"),
     ],
     clean=[
         ("ip.Address", "managed_object"),
