@@ -120,6 +120,7 @@ from noc.core.script.scheme import (
     SNMPv3Credential,
     CLICredential,
     TELNET,
+    Protocol as CredProtocol,
 )
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
@@ -179,18 +180,30 @@ class Credentials(object):
             )
         return None
 
-    def get_cli_credential(self) -> Optional[CLICredential]:
+    def get_cli_credential(
+        self,
+        protocol: Optional[CredProtocol] = None,
+        raise_privilege=True,
+    ) -> Optional[CLICredential]:
         if not self.user:
             return None
+        if protocol:
+            return CLICredential(
+                username=self.user,
+                password=self.password,
+                super_password=self.super_password,
+                raise_privilege=raise_privilege,
+                enable_protocols=(protocol.value,),
+            )
         return CLICredential(
             username=self.user,
             password=self.password,
             super_password=self.super_password,
-            raise_privilege=True,
+            raise_privilege=raise_privilege,
         )
 
     def __eq__(self, other):
-        """Compare credentail"""
+        """Compare credential"""
         if isinstance(other, SNMPCredential):
             return self.get_snmp_credential() == other
         elif isinstance(other, SNMPv3Credential):
