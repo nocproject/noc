@@ -44,6 +44,7 @@ caps_dtype_map = {
     "str": FieldType.STRING,
     "int": FieldType.UINT,
     "float": FieldType.FLOAT,
+    "strlist": FieldType.LIST_STRING,
 }
 
 
@@ -266,7 +267,7 @@ class ManagedObjectDS(BaseDataSource):
         ]
         # Remote System
         + [
-            FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id))
+            FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id), is_vector=True)
             for rs in RemoteSystem.objects.filter()
         ]
         # Capabilities
@@ -560,7 +561,9 @@ class ManagedObjectDS(BaseDataSource):
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
             if not fields or "mappings" in fields:
-                async for c in cls.iter_mappings(mo.pop("mappings", []), requested_mappings=q_maps):
+                async for c in cls.iter_mappings(
+                    mo.pop("mappings", None) or [], requested_mappings=q_maps
+                ):
                     yield num, c[0], c[1]
             if adm_paths and "administrative_domain__name" in mo:
                 adm_name = mo["administrative_domain__name"]

@@ -186,11 +186,14 @@ class BaseDataSource(object):
 
     @classmethod
     def clean_interval(
-        cls, start: datetime.datetime, end: Optional[datetime.datetime] = None
+        cls,
+        start: datetime.datetime,
+        end: Optional[datetime.datetime] = None,
+        period: Optional[int] = None,
     ) -> Tuple[datetime.datetime, datetime.datetime]:
         """Clean datetime interval"""
         end = (end or datetime.datetime.now()).replace(microsecond=0)
-        start = start or end - datetime.timedelta(seconds=cls.DEFAULT_INTERVAL)
+        start = start or end - datetime.timedelta(seconds=period or cls.DEFAULT_INTERVAL)
         return start, end
 
     @classmethod
