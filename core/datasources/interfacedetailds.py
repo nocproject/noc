@@ -76,14 +76,19 @@ class InterfaceDetailDS(BaseDataSource):
             read_preference=ReadPreference.SECONDARY_PREFERRED,
         )
         match = {"type": iface_type}
+        mos_ex = frozenset(
+            ManagedObject.objects.filter(is_managed=False).values_list("id", flat=True)
+        )
         if admin_domain_ads:
-            managed_object_ids = list(
+            managed_object_ids = frozenset(
                 ManagedObject.objects.filter(
                     administrative_domain__in=admin_domain_ads,
                 ).values_list("id", flat=True)
             )
         if managed_object_ids:
-            match["managed_object"] = {"$in": managed_object_ids}
+            match["managed_object"] = {"$in": list(managed_object_ids - mos_ex)}
+        elif mos_ex:
+            match["managed_object"] = {"$nin": list(mos_ex)}
         lookup = {
             "from": "noc.subinterfaces",
             "localField": "_id",
