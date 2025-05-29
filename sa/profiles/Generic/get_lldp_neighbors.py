@@ -121,6 +121,9 @@ class Script(BaseScript):
                     port_num, port_index = index
                 else:
                     _, port_num, port_index = index
+                if port_num not in local_ports:
+                    self.logger.warning("[%s] Local ports not in map. Skipping", port_num)
+                    continue
                 # cleaning
                 if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_COMPONENT:
                     neigh["remote_port_subtype"] = LLDP_PORT_SUBTYPE_ALIAS
@@ -147,7 +150,25 @@ class Script(BaseScript):
                 if neigh["remote_chassis_id_subtype"] == 7 and isinstance(
                     neigh["remote_chassis_id"], bytes
                 ):
-                    neigh["remote_chassis_id"] = neigh["remote_chassis_id"].decode()
+                    try:
+                        neigh["remote_chassis_id"] = neigh["remote_chassis_id"].decode()
+                    except UnicodeDecodeError:
+                        self.logger.warning(
+                            "[%s] Not Decode remote_chassis_id for neighbors. Try decode as MAC",
+                            local_ports[port_num]["local_interface"],
+                        )
+
+                    try:
+                        neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
+                    except ValueError:
+                        self.logger.warning(
+                            "Bad MAC address on Remote Chassis ID: %s", neigh["remote_chassis_id"]
+                        )
+                        self.logger.warning(
+                            "[%s] Not Decode remote_chassis_id for neighbors. Skipping ",
+                            local_ports[port_num]["local_interface"],
+                        )
+                        continue
                 r += [
                     {
                         "local_interface": local_ports[port_num]["local_interface"],
