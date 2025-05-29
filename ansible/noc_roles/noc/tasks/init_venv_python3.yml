@@ -73,7 +73,7 @@
 
 # When existing python is 3.* version
 - block:
-    - block: # When target version equals system
+    - block:  # When target version equals system
         - name: Recreate noc dirs
           include_tasks: "clean_dir.yml"
           when:
@@ -88,7 +88,7 @@
         - system_python3_existing_family_version is defined
         - system_python3_existing_family_version == noc_py3_ver
 
-    - block: # When Target version not equals system and installed python not equals needed
+    - block:  # When Target version not equals system and installed python not equals needed
         - name: Recreate noc dirs
           include_tasks: "clean_dir.yml"
           when:
