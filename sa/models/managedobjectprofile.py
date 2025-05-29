@@ -39,7 +39,7 @@ from noc.core.scheduler.job import Job
 from noc.core.bi.decorator import bi_sync
 from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
-from noc.core.script.scheme import SSH, SNMPCredential
+from noc.core.script.scheme import SSH, SNMPCredential, Protocol as CredProtocol
 from noc.core.wf.interaction import Interaction
 from noc.core.wf.diagnostic import (
     PROFILE_DIAG,
@@ -1049,19 +1049,24 @@ class ManagedObjectProfile(NOCModel):
             # CLI Diagnostic
             if o:
                 blocked |= o.scheme not in {1, 2}
-                cli_cred = o.credentials.get_cli_credential()
                 checks = [
                     Check(
                         name="TELNET",
                         address=o.address,
                         port=o.port,
-                        credential=cli_cred,
+                        credential=o.credentials.get_cli_credential(
+                            protocol=CredProtocol.TELNET,
+                            raise_privilege=o.to_raise_privileges,
+                        ),
                     ),
                     Check(
                         name="SSH",
                         address=o.address,
                         port=o.port,
-                        credential=cli_cred,
+                        credential=o.credentials.get_cli_credential(
+                            protocol=CredProtocol.SSH,
+                            raise_privilege=o.to_raise_privileges,
+                        ),
                     ),
                 ]
                 if o.scheme == SSH:
