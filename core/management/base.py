@@ -30,7 +30,7 @@ class BaseCommand(object):
         self.stderr = stderr
         self.is_debug = False
 
-    def print(self, *args, **kwargs):
+    def print(self, *args, **kwargs) -> None:
         if "file" not in kwargs:
             kwargs["file"] = self.stdout
         if "flush" in kwargs and kwargs.pop("flush"):
