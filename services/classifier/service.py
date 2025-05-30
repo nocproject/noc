@@ -828,7 +828,7 @@ class ClassifierService(FastAPIService):
         """Apply Classification Rules changes"""
         self.ruleset.update_rule(data)
 
-    async def delete_rules(self, r_id: str) -> None:
+    async def delete_rule(self, r_id: str) -> None:
         """Remove rules for ID"""
         self.ruleset.delete_rule(r_id)
 
