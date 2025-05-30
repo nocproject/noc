@@ -426,10 +426,6 @@ class ManagedObjectManager(Manager):
     check=[
         # ("cm.ValidationRule.ObjectItem", ""),
         ("fm.ActiveAlarm", "managed_object"),
-        ("fm.ActiveEvent", "managed_object"),
-        ("fm.ArchivedAlarm", "managed_object"),
-        ("fm.ArchivedEvent", "managed_object"),
-        ("fm.FailedEvent", "managed_object"),
         ("inv.Interface", "managed_object"),
         ("inv.SubInterface", "managed_object"),
         ("inv.ForwardingInstance", "managed_object"),
@@ -444,6 +440,10 @@ class ManagedObjectManager(Manager):
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
+        ("fm.ArchivedAlarm", "managed_object"),
+        ("fm.ActiveEvent", "managed_object"),
+        ("fm.ArchivedEvent", "managed_object"),
+        ("fm.FailedEvent", "managed_object"),
     ],
     clean=[
         ("ip.Address", "managed_object"),
