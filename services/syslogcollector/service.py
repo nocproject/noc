@@ -107,6 +107,8 @@ class SyslogCollectorService(FastAPIService):
         message_id = None
         if config.fm.generate_message_id:
             message_id = str(uuid.uuid4())
+        if config.syslogcollector.min_severity <= severity:
+            return
         if cfg.process_events:
             # Send to classifier
             metrics["events_out"] += 1

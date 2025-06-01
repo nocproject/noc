@@ -758,6 +758,7 @@ class Config(BaseConfig):
         enable_reuseport = BooleanParameter(default=True)
         enable_freebind = BooleanParameter(default=False)
         # DataStream request limit
+        min_severity = IntParameter(min=0, max=7, default=7, help="Minimal Received Severity")
         ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
