@@ -956,6 +956,15 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream address records older days",
         )
+        enable_service = BooleanParameter(default=False)
+        enable_service_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for Service datastream (Mongo greater 3.6 needed)",
+        )
+        service_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream service records older days",
+        )
 
     class help(ConfigSection):
         base_url = StringParameter(default="https://docs.getnoc.com")
