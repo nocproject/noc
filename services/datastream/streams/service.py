@@ -15,7 +15,6 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from ..models.service import ServiceDataStreamItem
 from noc.core.comp import smart_text
 from noc.core.mx import (
-    MX_ADMINISTRATIVE_DOMAIN_ID,
     MX_LABELS,
     MX_PROFILE_ID,
     MX_H_VALUE_SPLITTER,
