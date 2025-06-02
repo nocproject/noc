@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from importlib.resources import files
 import logging
 import os
 import socket
@@ -1177,6 +1178,25 @@ class Config(BaseConfig):
                 return [cpath, rpath]
             return [rpath, cpath]
         return [rpath]
+
+    def get_customized_paths_(self, path, prefer_custom=False):
+        """
+        :param prefer_custom: True - customized path first, False - repo path first
+        :param path: Path to resource directory (joined by dots as python modules)
+        :return: List of possible paths
+        """
+        rpath = f"noc.{path}"
+        cpath = f"noc.custom.{path}"
+        if not self.path.custom_path:
+            return [rpath]
+        try:
+            files(cpath)
+            if prefer_custom:
+                return [cpath, rpath]
+            else:
+                return [rpath, cpath]
+        except ModuleNotFoundError:
+            return [rpath]
 
     def get_hist_config(self, name):
         """

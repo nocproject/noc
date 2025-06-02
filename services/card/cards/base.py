@@ -7,7 +7,6 @@
 
 # Python modules
 from importlib.resources import files
-import os
 import datetime
 import operator
 
@@ -27,9 +26,7 @@ class BaseCard(object):
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
     actions = []
-    TEMPLATE_PATH = config.get_customized_paths(
-        os.path.join("services", "card", "templates"), prefer_custom=True
-    )
+    TEMPLATE_PATH = config.get_customized_paths_("services.card.templates", prefer_custom=True)
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
     DEFAULT_SERVICE_TITLE_TEMPLATE = (
@@ -113,7 +110,6 @@ class BaseCard(object):
         if name not in self.template_cache:
             self.template_cache[name] = None
             for p in self.TEMPLATE_PATH:
-                p = f"noc.{p.replace('/', '.')}"
                 tp = files(p).joinpath(name + ".html.j2")
                 if tp.is_file():
                     env = Environment()
@@ -129,6 +125,7 @@ class BaseCard(object):
                         }
                     )
                     self.template_cache[name] = env.from_string(tp.read_text())
+                    break
 
         return self.template_cache[name]
 
