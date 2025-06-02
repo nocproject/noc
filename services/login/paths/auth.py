@@ -133,6 +133,8 @@ async def auth_authorization(
             return await auth_authorization_basic(request=request, data=data)
         elif schema == "Bearer":
             return await auth_authorization_bearer(request=request, data=data, svc=svc)
+        elif schema == "Apikey":
+            return await auth_private_token(request=request, private_token=data)
         logger.error(
             "[Authorization][%s] Denied: Unsupported authorization schema '%s'",
             request.client.host,

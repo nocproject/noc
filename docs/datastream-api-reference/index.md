@@ -46,6 +46,14 @@ due to timeout. Client should retry request immediately.
     ```
 
 <!-- prettier-ignore -->
+!!! example "Example Request with Authorization"
+    ```
+    GET /api/datastream/administrativedomain?limit=1 HTTP/1.1
+    Host: noc.example.com
+    Authorization: Apikey 12345
+    ```
+
+<!-- prettier-ignore -->
 !!! example "Example Response"
     ```
     HTTP/1.1 200 OK
@@ -88,7 +96,7 @@ Filter functions may be global or datastream-specific. Examples:
 
 ### Request Headers
 
-Private-Token
+Private-Token or Authorization: Apikey
 : [API Key](../concepts/apikey/index.md) with `datastream` API access
 
 ### Response Headers
