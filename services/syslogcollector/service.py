@@ -12,7 +12,7 @@ import asyncio
 import uuid
 from collections import defaultdict
 from dataclasses import asdict
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 # Third-party modules
 import orjson
@@ -33,10 +33,13 @@ from noc.core.mx import (
 )
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.fm.enum import EventSource, SyslogSeverity
+from noc.core.service.stormprotection import StormProtection
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.comp import DEFAULT_ENCODING
+
+SYSLOGCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | Syslog"
 
 
 class SyslogCollectorService(FastAPIService):
@@ -52,6 +55,7 @@ class SyslogCollectorService(FastAPIService):
         self.address_configs = {}  # address -> SourceConfig
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
+        self.storm_protection: Optional[StormProtection] = None
 
     async def on_activate(self):
         # Listen sockets
@@ -68,8 +72,36 @@ class SyslogCollectorService(FastAPIService):
         self.logger.info("Stating invalid sources reporting task")
         self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
+        self.storm_protection = StormProtection(
+            config.syslogcollector.storm_round_duration,
+            config.syslogcollector.storm_threshold_reduction,
+            config.syslogcollector.storm_record_ttl,
+            SYSLOGCOLLECTOR_STORM_ALARM_CLASS,
+        )
+        self.storm_protection.initialize()
+        self.storm_protection.raise_alarm_handler = self.on_storm_raise_alarm
+        self.storm_protection.close_alarm_handler = self.on_storm_close_alarm
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_object_mappings())
+
+    def on_storm_raise_alarm(self, ip_address):
+        cfg = self.address_configs[ip_address]
+        msg = {
+            "$op": "raise",
+            "managed_object": cfg.id,
+            "alarm_class": SYSLOGCOLLECTOR_STORM_ALARM_CLASS,
+        }
+        self._publish_message(cfg, msg)
+
+    def on_storm_close_alarm(self, ip_address):
+        cfg = self.address_configs[ip_address]
+        msg = {"$op": "clear"}
+        self._publish_message(cfg, msg)
+
+    def _publish_message(self, cfg, msg: Dict[str, Any]):
+        msg["timestamp"] = datetime.datetime.now().isoformat()
+        msg["reference"] = f"{SYSLOGCOLLECTOR_STORM_ALARM_CLASS}{cfg.id}"
+        self.publish(orjson.dumps(msg), stream=f"dispose.{config.pool}", partition=cfg.partition)
 
     async def get_pool_partitions(self, pool: str) -> int:
         parts = self.pool_partitions.get(pool)
@@ -104,6 +136,10 @@ class SyslogCollectorService(FastAPIService):
         """
         Spool message to be sent
         """
+        if cfg.storm_policy != "D" and severity >= config.syslogcollector.storm_min_severity:
+            need_block = self.storm_protection.process_message(source_address, cfg)
+            if need_block:
+                return
         message_id = None
         if config.fm.generate_message_id:
             message_id = str(uuid.uuid4())
