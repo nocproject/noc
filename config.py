@@ -758,7 +758,20 @@ class Config(BaseConfig):
         enable_reuseport = BooleanParameter(default=True)
         enable_freebind = BooleanParameter(default=False)
         # DataStream request limit
-        min_severity = IntParameter(min=0, max=7, default=7, help="Minimal Received Severity")
+        max_severity = MapParameter(
+            default="debug",
+            mappings={
+                "emergency": 0,
+                "alert": 1,
+                "critical": 2,
+                "error": 3,
+                "warning": 4,
+                "notice": 5,
+                "informational": 6,
+                "debug": 7,
+            },
+            help="Maximum severity level for received messages. More than will be dropped",
+        )
         ds_limit = IntParameter(default=1000)
 
     class tgsender(ConfigSection):
