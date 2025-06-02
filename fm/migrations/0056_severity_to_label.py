@@ -23,7 +23,7 @@ class Migration(BaseMigration):
         l_bulk, ac_bulk = [], []
         # Add severities labels
         for row in s_coll.find():
-            severity_weight_map[row["name"].lower()] = row.get("severity", 0)
+            severity_weight_map[row["name"].lower()] = row["_id"]
             l_name = f'noc::severity::{row["name"].lower()}'
             ac_bulk += [
                 UpdateMany({"default_severity": row["_id"]}, {"$set": {"labels": [l_name]}})
@@ -54,14 +54,14 @@ class Migration(BaseMigration):
             l_coll.bulk_write(l_bulk)
         bulk = []
         # Create AlarmRules
-        for s_name, s_weight in severity_weight_map.items():
+        for s_name, s_id in severity_weight_map.items():
             ar_id = ObjectId()
             bulk += [
                 InsertOne(
                     {
                         "_id": ar_id,
                         "name": f"{s_name.upper()} Alarms",
-                        "description": f"Up Alarm Severities to {s_name.upper()} ({s_weight})",
+                        "description": f"Up Alarm Severities to {s_name.upper()}",
                         "is_active": True,
                         "match": [
                             {
@@ -75,7 +75,7 @@ class Migration(BaseMigration):
                             {
                                 "when": "raise",
                                 "policy": "continue",
-                                "severity": max(s_weight - 1001, 1) if s_weight else 0,
+                                "severity": s_id,
                             }
                         ],
                         "bi_id": Int64(bi_hash(ar_id)),
