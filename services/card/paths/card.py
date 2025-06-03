@@ -66,15 +66,21 @@ class CardAPI(BaseAPI):
 
     CARDS = None
     CARDS_ACTION = None
-    CARD_TEMPLATE_PATH = config.path.card_template_path
     CARD_TEMPLATE = None
+    t_path, TEMPLATE_NAME = config.path.card_template_path.rsplit("/", 1)
+    t_path = t_path.replace("/", ".")
+    TEMPLATE_PATH = config.get_customized_paths_(t_path, prefer_custom=True)
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, router: APIRouter):
         if not self.CARD_TEMPLATE:
-            with files("noc").joinpath(self.CARD_TEMPLATE_PATH).open("r") as f:
-                self.CARD_TEMPLATE = Template(f.read())
+            for p in self.TEMPLATE_PATH:
+                fpath = files(p).joinpath(self.TEMPLATE_NAME)
+                if fpath.is_file():
+                    with fpath.open("r") as f:
+                        self.CARD_TEMPLATE = Template(f.read())
+                    break
         self.load_cards()
         super().__init__(router)
 
