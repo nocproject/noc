@@ -2944,7 +2944,7 @@ class ManagedObject(NOCModel):
                 return m["remote_id"]
         return None
 
-    def update_object_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
+    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
         """
         Update managed Object mappings
         Source Priority, for mappings on different sources
