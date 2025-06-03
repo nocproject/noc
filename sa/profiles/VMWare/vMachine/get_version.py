@@ -7,6 +7,9 @@
 
 # Python modules
 from ..vim import VIMScript
+
+# NOC modules
+from noc.core.error import NOCError, ERR_CLI_AUTH_FAILED
 from noc.sa.interfaces.igetversion import IGetVersion
 
 
@@ -24,4 +27,6 @@ class Script(VIMScript):
         }
 
     def execute(self, **kwargs):
+        if not self.controller:
+            raise NOCError(code=ERR_CLI_AUTH_FAILED, msg="Not set Controller")
         return self.execute_controller(hid=self.controller.global_id)
