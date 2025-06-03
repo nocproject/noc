@@ -67,7 +67,19 @@ SVC_REF_PREFIX = "svc"
 SVC_AC = "Service | Status | Change"
 
 
+class RemoteMappingItem(EmbeddedDocument):
+    """source priority: m - manual, e - etl, o - other"""
+
+    meta = {"strict": False, "auto_create_index": False}
+
+    remote_system = PlainReferenceField(RemoteSystem, required=True)
+    remote_id: str = StringField(required=True)
+    sources: str = StringField(default="o")
+
+
 class Instance(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
@@ -90,6 +102,8 @@ class ServiceStatusDependency(EmbeddedDocument):
         weight: Dependent weight (used for calculate own status)
         ignore: Ignore Dependent for calculate own status
     """
+
+    meta = {"strict": False, "auto_create_index": False}
 
     service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
@@ -257,11 +271,14 @@ class Service(Document):
     effective_service_groups = ListField(ObjectIdField())
     static_client_groups = ListField(ObjectIdField())
     effective_client_groups = ListField(ObjectIdField())
+    # Remote Mappings
+    mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
     _instance_cache = cachetools.TTLCache(maxsize=500, ttl=60)
+    _mapping_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -289,6 +306,14 @@ class Service(Document):
         # return ServiceInstance.objects.filter(static_instances__match={"address": address, "port": 0}).first()
         si = ServiceInstance.objects.filter(addresses__address=address).first()
         return si.service if si else None
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
+    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> Optional["Service"]:
+        return Service.objects.filter(
+            m_q(remote_system=str(remote_system.id), remote_id=remote_id)
+            | m_q(mappings__match={"remote_id": remote_id, "remote_system": remote_system.id})
+        ).first()
 
     def __str__(self):
         if self.label:
@@ -912,6 +937,89 @@ class Service(Document):
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
         if service:
             return Service.get_by_id(service)
+
+    def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
+        """
+        Set Object mapping
+        Args:
+            remote_system: Remote System Instance
+            remote_id: Id on Remote system
+        """
+        rid = remote_system.id
+        for m in self.mappings:
+            if m.remote_system.id == rid and m.remote_id != remote_id:
+                m.remote_id = remote_id
+                break
+            elif m.remote_system.id == rid:
+                break
+        else:
+            self.mappings += [RemoteMappingItem(remote_system=remote_system, remote_id=remote_id)]
+
+    def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
+        """return object mapping from"""
+        for m in self.mappings:
+            if m.remote_system.id == remote_system.id:
+                return m.remote_id
+        return None
+
+    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
+        """
+        Update managed Object mappings
+        Source Priority, for mappings on different sources
+        Attrs:
+            mappings: Map remote_system -> remote_id
+            source: Source Code
+              * m - manual
+              * e - elt
+              * o - other
+        """
+        priority = "oem"
+        new_mappings = []
+        changed = False
+        seen = set()
+        for m in self.mappings:
+            rs = m.remote_system
+            sources = set(m.sources or "o")
+            max_p = max(priority.index(x) for x in source)
+            if rs not in mappings and source in sources:
+                # Remove Source
+                sources.remove(source)
+            elif rs not in mappings:
+                # Set on different source
+                pass
+            elif mappings[rs] != m.remote_id and priority.index(source) >= max_p:
+                # Change ID
+                logger.info(
+                    "[%s] Mapping over priority and will be replace: %s -> %s",
+                    rs,
+                    m.remote_id,
+                    mappings[rs],
+                )
+                # replace, skip
+                m.remote_id = mappings[rs]
+                sources.add(source)
+                changed |= True
+            elif mappings[rs] != m.remote_id:
+                pass
+            elif source not in sources:
+                changed |= True
+                sources.add(source)
+            if not sources:
+                changed |= True
+                continue
+            elif sources != set(m.sources or "o"):
+                m.sources = "".join(sorted(sources))
+                changed |= True
+            new_mappings.append(m)
+            seen.add(rs)
+        for rs in set(mappings) - seen:
+            new_mappings.append(
+                RemoteMappingItem(remote_system=rs, remote_id=mappings[rs], sources=source)
+            )
+            changed |= True
+        if changed:
+            self.mappings = new_mappings
+        return changed
 
 
 def refresh_service_status(svc_ids: List[str]):

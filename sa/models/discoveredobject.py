@@ -968,7 +968,7 @@ class DiscoveredObject(Document):
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
             if changed:
                 logger.info("[%s] Update existing ManagedObject from data: %s", mo.name, ctx)
-        changed |= mo.update_object_mappings(ctx.mappings or {})
+        changed |= mo.update_remote_mappings(ctx.mappings or {})
         if dry_run:
             return
         if ctx.event == "duplicate":
