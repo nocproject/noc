@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # NOC Checker Base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import logging
 from functools import partial
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Iterable, Union
+from typing import List, Optional, Dict, Any, Iterable, Union, AsyncIterable
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -199,7 +199,7 @@ class CheckResult(object):
         return CheckResult(**v)
 
 
-class Checker(object):
+class BaseChecker(object):
     """
     Base class for Checkers. Check some facts and return result
     """
@@ -211,23 +211,20 @@ class Checker(object):
     def __init__(
         self,
         *,
-        logger=None,
-        **kwargs,
+        logger: Optional[logging.Logger] = None,
+        address: Optional[str] = None,
+        **kwargs: Any,
     ):
         self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
-        self.address = kwargs.get("address")
+        self.address = address
 
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
+    async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         """
         Iterate over result checks
         Args:
             checks: List checks param for run
-        """
 
-    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
+        Returns:
+            Yields CheckResult
         """
-        Iterate over result checks
-        Args:
-            checks: List checks param for run
-        """
-        return run_sync(partial(self.iter_result, checks))
+        raise NotImplementedError()

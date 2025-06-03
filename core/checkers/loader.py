@@ -11,13 +11,14 @@ from itertools import chain
 # NOC modules
 from noc.core.loader.base import BaseLoader
 from noc.core.interface.loader import loader as sa_interface_loader
-from .base import Checker
+from .base import BaseChecker
 
 
 class CheckersLoader(BaseLoader):
     name = "checkers"
-    base_cls = Checker
-    base_path = ("services", "activator", "checkers")
+    base_cls = BaseChecker
+    base_path = ("core", "checkers")
+    ignored_names = {"base", "loader"}
 
     def __init__(self):
         super().__init__()
