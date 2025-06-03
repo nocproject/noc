@@ -6,13 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 # Third-party modules
 from pydantic import BaseModel
 
 # NOC modules
-from .utils import StateItem, ProjectItem, RemoteSystemItem
+from .utils import StateItem, ProjectItem, RemoteSystemItem, RemoteMapItem
 
 
 class CapabilitiesItem(BaseModel):
@@ -49,3 +49,5 @@ class ServiceDataStreamItem(BaseModel):
     remote_system: Optional[RemoteSystemItem]
     service_groups: Optional[List[ResourceGroupItem]]
     client_groups: Optional[List[ResourceGroupItem]]
+    remote_mappings: Optional[List[RemoteMapItem]]
+    effective_remote_map: Optional[Dict[str, str]]

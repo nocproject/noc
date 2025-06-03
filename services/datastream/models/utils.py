@@ -33,3 +33,8 @@ class StateItem(BaseModel):
 class ProjectItem(BaseModel):
     id: str
     name: str
+
+
+class RemoteMapItem(BaseModel):
+    remote_system: RemoteSystemItem
+    remote_id: str
