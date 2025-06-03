@@ -278,6 +278,7 @@ class Service(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
     _instance_cache = cachetools.TTLCache(maxsize=500, ttl=60)
+    _mapping_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
