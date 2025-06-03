@@ -56,6 +56,7 @@ from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -292,6 +293,10 @@ class Service(Document):
         if self.label:
             return self.label
         return str(self.id) if self.id else "new"
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_service:
+            yield "service", self.id
 
     @property
     def service_instances(self) -> List["ServiceInstance"]:
