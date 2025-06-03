@@ -70,12 +70,16 @@ SVC_AC = "Service | Status | Change"
 class RemoteMappingItem(EmbeddedDocument):
     """source priority: m - manual, e - etl, o - other"""
 
-    remote_system = ReferenceField(RemoteSystem, required=True)
+    meta = {"strict": False, "auto_create_index": False}
+
+    remote_system = PlainReferenceField(RemoteSystem, required=True)
     remote_id: str = StringField(required=True)
     sources: str = StringField(default="o")
 
 
 class Instance(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
@@ -98,6 +102,8 @@ class ServiceStatusDependency(EmbeddedDocument):
         weight: Dependent weight (used for calculate own status)
         ignore: Ignore Dependent for calculate own status
     """
+
+    meta = {"strict": False, "auto_create_index": False}
 
     service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
@@ -266,7 +272,7 @@ class Service(Document):
     static_client_groups = ListField(ObjectIdField())
     effective_client_groups = ListField(ObjectIdField())
     # Remote Mappings
-    mappings = EmbeddedDocumentListField(RemoteMappingItem)
+    mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
@@ -946,7 +952,7 @@ class Service(Document):
             elif m.remote_system.id == rid:
                 break
         else:
-            self.mappings += [{"remote_system": remote_system, "remote_id": remote_id}]
+            self.mappings += [RemoteMappingItem(remote_system=remote_system, remote_id=remote_id)]
 
     def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
         """return object mapping from"""
@@ -1006,7 +1012,9 @@ class Service(Document):
             new_mappings.append(m)
             seen.add(rs)
         for rs in set(mappings) - seen:
-            new_mappings.append({"remote_system": rs, "remote_id": mappings[rs], "sources": source})
+            new_mappings.append(
+                RemoteMappingItem(remote_system=rs, remote_id=mappings[rs], sources=source)
+            )
             changed |= True
         if changed:
             self.mappings = new_mappings
