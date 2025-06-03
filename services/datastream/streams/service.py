@@ -61,6 +61,7 @@ class ServiceDataStream(DataStream):
         cls._apply_profile(svc, r)
         cls._apply_remote_system(svc, r)
         cls._apply_resource_groups(svc, r)
+        cls._apply_remote_mappings(svc, r)
         return r
 
     @staticmethod
@@ -110,6 +111,29 @@ class ServiceDataStream(DataStream):
             r["client_groups"] = ServiceDataStream._get_resource_groups(
                 svc.effective_client_groups, svc.static_client_groups
             )
+
+    @staticmethod
+    def _apply_remote_mappings(svc: Service, r):
+        x = {}
+        if "remote_system" in r:
+            mappings = [r["remote_system"]]
+            x[r["remote_system"]["name"]] = r["remote_id"]
+        else:
+            mappings = []
+        for m in svc.mappings or []:
+            mappings.append(
+                {
+                    "remote_system": {
+                        "id": str(m.remote_system.id),
+                        "name": qs(m.remote_system.name),
+                    },
+                    "remote_id": m.remote_id,
+                }
+            )
+            x[qs(m.remote_system.name)] = m.remote_id
+        if mappings:
+            r["remote_mappings"] = mappings
+            r["effective_remote_map"] = x
 
     @staticmethod
     def _get_resource_groups(groups, static_groups):

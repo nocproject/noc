@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Union
+from typing import Optional, List
 from datetime import datetime
 
 # Third-party modules
@@ -14,15 +14,10 @@ from pydantic import ConfigDict
 
 # NOC modules
 from .base import BaseModel, _BaseModel
-from .typing import Reference
+from .typing import Reference, MappingItem, CapsItem
 from .serviceprofile import ServiceProfile
 from .subscriber import Subscriber
 from noc.core.models.serviceinstanceconfig import InstanceType
-
-
-class CapsItem(_BaseModel):
-    name: str
-    value: Union[str, bool, int]
 
 
 class Instance(_BaseModel):
@@ -65,6 +60,7 @@ class Service(BaseModel):
     description: Optional[str] = None
     capabilities: Optional[List[CapsItem]] = None
     instances: Optional[List[Instance]] = None
+    mappings: Optional[List[MappingItem]] = None
     checkpoint: Optional[str] = None
 
     model_config = ConfigDict(populate_by_name=True)
