@@ -145,8 +145,8 @@ class MaintenanceApplication(ExtDocApplication):
             "direct_objects": [],
             "direct_segments": [],
             "subject": o.subject,
-            "template": o.template.id,
-            "template__label": str(o.template),
+            "template": o.template.id if o.template else None,
+            "template__label": str(o.template) if o.template else "",
             "time_pattern": o.time_pattern.id if o.time_pattern else None,
             "time_pattern__label": o.time_pattern.name if o.time_pattern else "",
         }
