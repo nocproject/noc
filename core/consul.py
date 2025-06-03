@@ -12,7 +12,7 @@ import consul.base
 from noc.config import config
 from noc.core.http.client import fetch
 
-ConsulRepeatableCodes = {500, 598, 599}
+ConsulRepeatableCodes = {500, 503, 598, 599}
 ConsulRepeatableErrors = consul.base.Timeout
 
 
