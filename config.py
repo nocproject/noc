@@ -311,7 +311,6 @@ class Config(BaseConfig):
             default=False, help="Generate UUID for received Syslog and SNMP message"
         )
 
-
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
         yandex_apikey = SecretParameter(default="")
@@ -777,7 +776,7 @@ class Config(BaseConfig):
                 "warning": 4,
                 "notice": 5,
                 "informational": 6,
-                "debug": 3,
+                "debug": 7,
             },
             help="Maximum severity level for received messages. More than will be dropped",
         )
