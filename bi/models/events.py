@@ -63,6 +63,8 @@ class Events(Model):
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
     #
     severity = UInt8Field(description="EventSeverity")
+    result_action = StringField(description="Result action for event")
+    error_message = StringField(description="Error message")
     #
     remote_system = ReferenceField(RemoteSystem, description="Remote System")
     remote_id = StringField(description="Event Id on Remote System")
