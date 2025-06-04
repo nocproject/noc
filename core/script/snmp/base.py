@@ -331,7 +331,7 @@ class SNMP(object):
                 self.logger.error("SNMP No Such Name")
                 raise self.SNMPError(code=ERR_SNMP_NO_SUCH_NAME)
             except GSNMPError as e:
-                self.logger.error("SNMP error code %s", e.code)
+                self.logger.error("SNMP error code %s", str(e))
                 raise self.SNMPError(code=str(e))
             self.logger.debug("[%s] COUNT result: %s", address, result)
             return result
