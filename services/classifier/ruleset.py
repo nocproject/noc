@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  RuleSet
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import logging
 from itertools import chain
 from collections import defaultdict
-from typing import Dict, Any, Tuple, Optional, Callable
+from typing import Dict, Any, Tuple, Optional, Callable, List
 
 # NOC modules
 from .rule import Rule
@@ -208,22 +208,37 @@ class RuleSet(object):
 
     def eval_vars(
         self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig, by_test: bool = False
-    ):
+    ) -> Tuple[Dict[str, Any], List[Any], Optional[str]]:
         """Evaluate rule variables"""
         r = {}
         # Resolve resource
         # resource -> var
         resources = []
+        error = None
         # Resolve e_vars
         for ecv in e_cfg.vars:
             # Check variable is present
             if ecv.resource_model and not by_test:
-                res = self.resolve_resource(ecv, r_vars, managed_object)
+                try:
+                    res = self.resolve_resource(ecv, r_vars, managed_object)
+                except AttributeError:
+                    error = f"Resource ({ecv.resource_model}) not found: {r_vars}"
+                    logger.info(
+                        "[%s|%s] Resource (%s) not found:%s",
+                        # event.id,
+                        managed_object.name if managed_object else "NOT_FOUND",
+                        managed_object.address if managed_object else "NOT_FOUND",
+                        ecv.resource_model,
+                        r_vars,
+                    )
+                    continue
                 if res:
                     resources.append(res)
             if ecv.name not in r_vars:
                 if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
+                    # raise Exception("Required variable '%s' is not found" % ecv.name)
+                    logger.error("Required variable '%s' is not found", ecv.name)
+                    return r, resources, f"Required variable '{ecv.name}' is not found"
                 continue
             # Decode variable
             try:
@@ -233,7 +248,7 @@ class RuleSet(object):
                     "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
                 )
             r[ecv.name] = v
-        return r, resources
+        return r, resources, error
 
     @staticmethod
     def decode_str(event, value):
