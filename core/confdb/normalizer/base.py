@@ -13,6 +13,7 @@ from typing import List
 
 # NOC modules
 from noc.core.ip import IP, IPv4, IPv6
+from noc.core.validators import ValidationError
 from ..syntax.patterns import ANY, REST, BOOL, Token, BasePattern
 from ..syntax.base import SYNTAX
 
@@ -188,12 +189,13 @@ class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
     # Custom syntax to enrich ConfDB
     SYNTAX = []
 
-    def __init__(self, object, tokenizer):
+    def __init__(self, object, tokenizer, errors_policy: str = "strict"):
         self.object = object
         self.tokenizer = tokenizer
         self.deferable_contexts = defaultdict(dict)  # Name -> Context
         self.context = {}
         self.rebase_id = itertools.count()
+        self.errors_policy = errors_policy
 
     def set_context(self, name, value):
         self.context[name] = value
@@ -220,13 +222,20 @@ class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
         for tokens in self.tokenizer:
             for node in self.mtree.iter_matched(tokens):
                 # Feed normalized
-                for rt in node.handler(self, tokens):
-                    if rt is None:
-                        continue  # Unresolved defer
-                    if callable(rt):  # Resolved defers
-                        yield from rt()
-                    else:
-                        yield rt
+                try:
+                    for rt in node.handler(self, tokens):
+                        if rt is None:
+                            continue  # Unresolved defer
+                        if callable(rt):  # Resolved defers
+                            yield from rt()
+                        else:
+                            yield rt
+                except (ValueError, ValidationError) as e:
+                    if self.errors_policy == "stop":
+                        raise StopIteration(str(e))
+                    elif self.errors_policy == "ignore":
+                        continue
+                    raise e
 
     def defer(self, context, gen=None, **kwargs):
         def yield_resolved():
