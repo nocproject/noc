@@ -8,7 +8,6 @@
 
 # Python modules
 import time
-import datetime
 import os
 import enum
 import operator
@@ -672,6 +671,7 @@ class ClassifierService(FastAPIService):
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
+        self.register_event(event, e_cfg, e_action, resolved_vars, mo)
         if config.message.enable_event:
             await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         if e_action == EventAction.DROP:
