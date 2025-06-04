@@ -58,7 +58,7 @@ class DiscoveryID(Document):
         "auto_create_index": False,
         "indexes": ["object", "hostname", "hostname_id", "udld_id", "router_id", "macs"],
     }
-    object = ForeignKeyField(ManagedObject)
+    object = ForeignKeyField(ManagedObject, unique=True)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
     hostname_id = StringField()
