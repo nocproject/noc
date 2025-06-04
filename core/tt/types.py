@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # EscalationContext
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024, The NOC Project
+# Copyright (C) 2007-2025, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,11 @@ from typing import List, Optional
 from datetime import datetime
 
 # Third-party modules
-from pydantic import BaseModel, PrivateAttr
+from bson import ObjectId
+from pydantic import BaseModel, PrivateAttr, Field
+
+# NOC modules
+from noc.core.models.escalationpolicy import EscalationPolicy
 
 
 class EscalationStatus(enum.Enum):
@@ -29,6 +33,7 @@ class EscalationStatus(enum.Enum):
     FAIL = "fail"
     SKIP = "skip"
     WAIT = "wait"
+    NEW = "new"
     # Ack - for acked alarm
 
 
@@ -120,6 +125,10 @@ class TTChange(BaseModel):
 class EscalationMember(enum.Enum):
     TT_SYSTEM = "tt_system"
     NOTIFICATION_GROUP = "notification_group"
+    # ack
+    # n_ack
+    # assign user
+    # Diagnostic
     HANDLER = "handler"
 
 
@@ -293,3 +302,40 @@ class TTCommentRequest(BaseModel):
     login: Optional[str] = None
     subject: Optional[str] = None
     reply_to: Optional[str] = None
+
+
+class ActinItem(BaseModel):
+    alarm: str
+    group: Optional[str] = None
+    service: Optional[str] = None
+
+
+class Action(BaseModel):
+    member: EscalationMember
+    key: Optional[str] = None
+    delay: int = 0
+    ack: str = "any"
+    time_pattern: Optional[str] = None
+    min_severity: Optional[int] = None
+    max_retries: int = 1
+    max_repeats: int = 0
+    # template: Optional[str] = None
+    # close_template: Optional[str] = None
+    stop_processing: bool = False
+    repeat_delay: int = 60
+    # root_only: bool = True
+
+
+class EscalationRequest(BaseModel):
+    id: str = Field(default_factory=lambda: str(ObjectId()))
+    # name: str
+    # Alarm | Group | Service
+    item: ActinItem
+    ctx: int
+    actions: List[Action]
+    timestamp: Optional[datetime] = None
+    items_policy: EscalationPolicy = EscalationPolicy.ROOT
+    maintenance_policy: str = "e"
+    end_condition: str = "a"
+    tt_system: Optional[str] = None
+    user: Optional[int] = None
