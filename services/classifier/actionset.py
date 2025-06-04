@@ -55,7 +55,7 @@ class ActionSet(object):
         event_class: str,
         ctx: Dict[str, Any],
         e_vars: Dict[str, Any],
-        categories: Optional[List[str]] = None
+        categories: Optional[List[str]] = None,
     ) -> Iterable[Callable]:
         """"""
         # self.logger.debug("[|%s] Processed action: %s", event_class, self.actions[event_class])
@@ -178,7 +178,7 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
-        categories: Optional[List[str]] = None
+        categories: Optional[List[str]] = None,
     ) -> EventAction:
         """Processed actions on Event"""
         ctx = {
