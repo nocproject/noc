@@ -9,7 +9,7 @@
 import logging
 from functools import partial
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Iterable, Union
+from typing import List, Optional, Dict, Any, Iterable, Union, AsyncIterable
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -217,17 +217,10 @@ class Checker(object):
         self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
         self.address = kwargs.get("address")
 
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
+    def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         """
         Iterate over result checks
         Args:
             checks: List checks param for run
         """
-
-    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
-        """
-        Iterate over result checks
-        Args:
-            checks: List checks param for run
-        """
-        return run_sync(partial(self.iter_result, checks))
+        raise NotImplementedError()
