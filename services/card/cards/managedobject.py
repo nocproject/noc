@@ -509,12 +509,8 @@ class ManagedObjectCard(BaseCard):
                 ManagedObjectAttribute.objects.filter(managed_object=self.object.id)
             ),
             "diagnostics": diagnostics,
-            "confdb": None,
+            "confdb": self.object.get_confdb(errors_policy="ignore"),
         }
-        try:
-            r["confdb"] = self.object.get_confdb()
-        except (SyntaxError, ValueError):
-            pass
         return r
 
     def get_service_glyphs(self, service):
