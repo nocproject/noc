@@ -8,7 +8,6 @@
 
 # Python modules
 import time
-import datetime
 import os
 import enum
 import operator
@@ -641,28 +640,40 @@ class ClassifierService(FastAPIService):
         if self.deduplicate_event(event, e_cfg, resolved_vars):
             return
         duplicate_vars = resolved_vars.copy()
-        # Additionally check link events
+        # Fill deduplication filter
+        self.dedup_filter.register(event, e_cfg, duplicate_vars)
         # Calculate rule variables
-        event.vars, e_res = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
-        self.logger.info(
-            "[%s|%s|%s] Event processed successfully: %s",
-            event.id,
-            event.target.name,
-            event.target.address,
-            e_cfg.event_class,
-        )
+        event.vars, e_res, error = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
+        if not error:
+            self.logger.info(
+                "[%s|%s|%s] Event processed successfully: %s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e_cfg.event_class,
+            )
+        else:
+            e_action = EventAction.LOG_ERROR
+            self.logger.info(
+                "[%s|%s|%s] Event processed with error: %s/%s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e_cfg.event_class,
+                error,
+            )
+            self.register_event(event, e_cfg, e_action, resolved_vars, mo, error=error)
+            return
         # Suppress repeats
         if event.vars and self.suppress_repeats(event, e_cfg):
             return
-        self.register_event(event, e_cfg, resolved_vars, mo)
-        # Fill deduplication filter
-        self.dedup_filter.register(event, e_cfg, duplicate_vars)
-        if config.message.enable_event:
-            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
+        self.register_event(event, e_cfg, e_action, resolved_vars, mo)
+        if config.message.enable_event:
+            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         if e_action == EventAction.DROP:
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
@@ -722,13 +733,10 @@ class ClassifierService(FastAPIService):
     def update_diagnostic(self, mo: ManagedObject, event: Event):
         """
         Update ManagedObject diagnostic
-        :param mo:
-        :param event:
-        :return:
+        Args:
+            mo: Managed Object Instance
+            event: Event Instance
         """
-        # Process event
-        event_ts = datetime.datetime.fromtimestamp(event.ts)
-
         # Check diagnostics
         if event.type.source == EventSource.SYSLOG and (
             SYSLOG_DIAG not in mo.diagnostics
@@ -738,7 +746,7 @@ class ClassifierService(FastAPIService):
                 diagnostic=SYSLOG_DIAG,
                 state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event_ts,
+                changed_ts=event.timestamp,
             )
         if event.type.source == EventSource.SNMP_TRAP and (
             SNMPTRAP_DIAG not in mo.diagnostics
@@ -748,23 +756,27 @@ class ClassifierService(FastAPIService):
                 diagnostic=SNMPTRAP_DIAG,
                 state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event_ts,
+                changed_ts=event.timestamp,
             )
 
     def register_event(
         self,
         event: Event,
         event_config: EventConfig,
+        action: EventAction,
         resolved_vars: Dict[str, Any],
         mo: Optional[ManagedObject] = None,
+        error: Optional[str] = None,
     ):
         """
         Send Event to Clickhouse (Archive)
         Args:
             event: Event instance
             event_config: Event Class
+            action: Event Action
             resolved_vars: Processed event data
             mo: Managed Object mapping
+            error: Error text on processed message
         """
         timestamp = event.timestamp
         data = {
@@ -780,6 +792,8 @@ class ClassifierService(FastAPIService):
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "message": event.message or "",
             "severity": event.type.severity.value,
+            "result_action": str(action.name),
+            "error_message": error or "",
             #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
