@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service Mapper check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -33,6 +33,7 @@ class NRIServiceCheck(DiscoveryCheck):
     def handler(self):
         self.logger.info("NRI Service Mapper")
         processed_instances = {}
+        profiles = {}
         resources: DefaultDict[ServiceInstance, List[Any]] = defaultdict(list)
         # Managed Object Binding
         for si in ServiceInstance.iter_object_instances(self.object):
@@ -68,13 +69,15 @@ class NRIServiceCheck(DiscoveryCheck):
             if si.config.allow_resources:
                 for addr in si.addresses:
                     p = IP.prefix(addr.address)
+                    if p.address != self.object.address:
+                        continue
                     address_map_instance[p.address] = si
         # Resolve resources by key
         if nri_map_instances:
-            self.map_nri_ports(nri_map_instances, resources)
+            self.map_nri_ports(nri_map_instances, resources, profiles)
         if address_map_instance:
-            self.map_address_port(address_map_instance, resources)
-        if not resources:
+            self.map_address_port(address_map_instance, resources, profiles)
+        if not resources and not processed_instances:
             self.logger.info("Nothing resource for updated")
             return
         # Refresh resources
@@ -82,6 +85,9 @@ class NRIServiceCheck(DiscoveryCheck):
             si.update_resources(rs, source=DISCOVERY_SOURCE, bulk=bulk)
         for si in set(processed_instances) - {x.id for x in resources}:
             processed_instances[si].update_resources([], source=DISCOVERY_SOURCE, bulk=bulk)
+        for iface, profile in profiles.items():
+            if iface.profile != profile:
+                self.logger.info("[%s] Set profile from service: %s", iface, profile)
         if bulk:
             si_col = ServiceInstance._get_collection()
             self.logger.info("Sending %d updates", len(bulk))
@@ -91,7 +97,10 @@ class NRIServiceCheck(DiscoveryCheck):
             change_tracker.register("update", "sa.ManagedObject", str(self.object.id), [])
 
     def map_nri_ports(
-        self, instances: Dict[str, ServiceInstance], resources: Dict[ServiceInstance, List[Any]]
+        self,
+        instances: Dict[str, ServiceInstance],
+        resources: Dict[ServiceInstance, List[Any]],
+        profiles: Dict[Any, Interface],
     ):
         """Resolve Resource by nri_name"""
         # Check object has interfaces
@@ -102,11 +111,14 @@ class NRIServiceCheck(DiscoveryCheck):
             if not iface.nri_name or iface.nri_name not in instances:
                 continue
             resources[instances[iface.nri_name]] += [iface]
+            if instances[iface.nri_name].service.profile.interface_profile:
+                profiles[iface] = instances[iface.nri_name].service.profile.interface_profile
 
     def map_address_port(
         self,
         addresses: Dict[str, ServiceInstance],
         resources: Dict[ServiceInstance, List[Any]],
+        profiles: Dict[Any, Interface],
     ):
         """Resolve Resource by IP Address"""
         if not self.has_capability("DB | Interfaces"):
@@ -119,4 +131,11 @@ class NRIServiceCheck(DiscoveryCheck):
                 addr = IP.prefix(addr)
                 if addr.address not in addresses:
                     continue
-                resources[addresses[addr.address]] += [si]
+                if si.name == si.interface.name or si.name == f"{si.interface.name}.0":
+                    resources[addresses[addr.address]] += [si.interface]
+                else:
+                    resources[addresses[addr.address]] += [si]
+                if addresses[addr.address].service.profile.interface_profile:
+                    profiles[si.interface] = addresses[
+                        addr.address
+                    ].service.profile.interface_profile
