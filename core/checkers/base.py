@@ -9,11 +9,10 @@
 import logging
 from functools import partial
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Iterable, Union, AsyncIterable
+from typing import List, Optional, Dict, Any, Union, AsyncIterable
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
-from noc.core.ioloop.util import run_sync
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
 
 

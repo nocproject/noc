@@ -1,12 +1,11 @@
 # ----------------------------------------------------------------------
 # TCP Port checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import asyncio
 from typing import List, AsyncIterable
 
