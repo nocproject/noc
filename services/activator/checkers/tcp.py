@@ -1,14 +1,13 @@
 # ----------------------------------------------------------------------
 # TCP Port checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import socket
 import asyncio
-from typing import List, Iterable
+from typing import List, AsyncIterable
 
 # NOC modules
 from noc.core.checkers.base import Checker, CheckResult, Check, TCP_CHECK
@@ -23,7 +22,7 @@ class TCPConnect(Checker):
     CHECKS: List[str] = [TCP_CHECK]
     SOCKET_TIMEOUT = 2
 
-    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
+    async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         for c in checks:
             if not c.port:
                 yield CheckResult(
@@ -51,27 +50,3 @@ class TCPConnect(Checker):
                 port=c.port,
                 status=avail,
             )
-
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            sock.settimeout(self.SOCKET_TIMEOUT)
-            # sock.setblocking(False)
-            for c in checks:
-                if not c.port:
-                    yield CheckResult(
-                        check=TCP_CHECK,
-                        port=c.port,
-                        status=True,
-                        skipped=True,
-                    )
-                    continue
-                if sock.connect_ex((c.address, c.port)) == 0:
-                    self.logger.debug("[%s] Port %s is open", c.address, c.port)
-                    avail = True
-                else:
-                    avail = False
-                yield CheckResult(
-                    check=TCP_CHECK,
-                    port=c.port,
-                    status=avail,
-                )
