@@ -1,0 +1,122 @@
+# ---------------------------------------------------------------------
+# Display system and dependencies information
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2025 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Python modules
+from importlib import metadata
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+# Third-party modules
+from colorama import Fore, Style
+
+# NOC modules
+from noc.config import config
+from noc.core.management.base import BaseCommand
+from noc.core.version import version
+
+
+class Command(BaseCommand):
+    help = "Display system and dependencies information"
+
+    def add_arguments(self, parser):
+        subparsers = parser.add_subparsers(dest="cmd")
+        subparsers.add_parser("system", help="Display system information")
+        subparsers.add_parser("dependencies", help="Display dependencies")
+
+    def handle(self, *args, **options):
+        cmd = options.pop("cmd")
+        cmd = cmd or "total"
+        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+
+    def handle_total(self, *args, **options):
+        self.handle_system(*args, **options)
+        self.handle_dependencies(*args, **options)
+
+    def handle_system(self, *args, **options):
+        self.print("System information")
+        self.print("==================")
+        self.print(f"NOC version       : {version.version}")
+        self.print(f"Python version    : {sys.version}")
+        self.print(f"Installation name : {config.installation_name}")
+        custom_path = config.path.custom_path
+        if custom_path:
+            cp_exists = "exists" if os.path.exists(custom_path) else "NOT exists"
+            self.print(f"Custom path       : {config.path.custom_path} ({cp_exists})")
+            custom_revision = "-"
+            if os.path.exists(custom_path):
+                try:
+                    custom_revision = subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"], cwd=custom_path, encoding="utf-8"
+                    )
+                    if custom_revision.endswith("\n"):
+                        custom_revision = custom_revision[:-1]
+                except subprocess.CalledProcessError:
+                    pass
+            self.print(f"Custom revision   : {custom_revision}")
+        else:
+            self.print("Custom path       : ---")
+            self.print("Custom revision   : ---")
+        self.print("")
+
+    REQUIREMENTS_PATH = ".requirements"
+    rx = re.compile(r"^(?P<lib_name>[a-zA-Z][-a-zA-Z0-9_\[\]]*)==(?P<version>.*)$")
+    flag_ok = f"{Fore.GREEN}\u2705{Style.RESET_ALL}"
+    flag_error = f"{Fore.RED}\u274C{Style.RESET_ALL}"
+    flag_missing = f"{Fore.BLUE}\u2796{Style.RESET_ALL}"
+
+    def handle_dependencies(self, *args, **options):
+        self.print("Dependencies")
+        self.print("============")
+        # Get required versions
+        root_path = Path(self.REQUIREMENTS_PATH)
+        libraries: dict[str, dict[str, str]] = {}
+        count = 0
+        for fp in root_path.glob("*.txt"):
+            if not fp.is_file:
+                continue
+            with open(fp, "r") as f:
+                btext = f.read()
+                lines = btext.split("\n")
+            for line in lines:
+                match = self.rx.match(line)
+                if match:
+                    lib_name, req_version = match.groups()
+                    libraries[lib_name] = {"req_version": req_version, "inst_version": ""}
+            count += 1
+        # Get installed versions
+        for distribution in metadata.distributions():
+            lib_name = distribution.metadata["Name"]
+            if lib_name in libraries:
+                libraries[lib_name]["inst_version"] = distribution.version
+        # Sorting
+        libraries: list[tuple[str, dict[str, str]]] = sorted(libraries.items())
+        # Display information
+        col_lib_name, col_required, col_installed = 40, 30, 30
+        self.print(
+            f"{'Library':{col_lib_name}} | {'Required':{col_required}} | "
+            f"{'Installed':{col_installed}}"
+        )
+        self.print(f"{'-'*col_lib_name}-|-{'-'*col_installed}-|-{'-'*col_required}")
+        for lib_name, vers in libraries:
+            if not vers["inst_version"]:
+                flag = self.flag_missing
+            else:
+                flag = (
+                    self.flag_ok if vers["req_version"] == vers["inst_version"] else self.flag_error
+                )
+            self.print(
+                f"{lib_name:{col_lib_name}} | {vers['req_version']:{col_required}} | "
+                f"{vers['inst_version']:{col_installed - 3}} {flag}"
+            )
+        self.print("")
+
+
+if __name__ == "__main__":
+    Command().run()
