@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Model Template
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,12 +23,13 @@ from mongoengine.fields import (
 )
 from mongoengine.errors import ValidationError
 from django.db.models.fields.related import ForeignKey
+from django.db.models.fields import CharField, IntegerField
 from pydantic import BaseModel
 from jinja2 import Template as Jinja2Template
 
 # NOC Modules
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.model.fields import DocumentReferenceField
+from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.models import get_model, get_model_id
@@ -46,6 +47,16 @@ def check_model(model_name: str):
         get_model(model_name)
     except AssertionError:
         raise ValidationError
+
+
+class TemplateField(BaseModel):
+    id: str
+    label: str
+    type: str = "string"
+    is_tree: bool = False
+    model_id: Optional[str] = None
+    choices: Optional[List[Any]] = None
+    rest_url: Optional[str] = None
 
 
 class ParamItem(BaseModel):
@@ -458,8 +469,67 @@ class ModelTemplate(Document):
         """
         if param.model_id:
             model = get_model(param.model_id)
-            return model.objects.get(id=value)
+            return model.objects.filter(id=value).first()
         return value
 
     def get_schema(self):
         """Return schema for Web UI"""
+
+    @classmethod
+    def get_templating_fields(cls) -> List[TemplateField]:
+        m = get_model("sa.ManagedObject")
+        r = []
+        ignored = {"id", "bi_id", "state", "tt_system", "remote_id", "remote_system"}
+        for f in m._meta.fields:
+            if (
+                f.name in ignored
+                or "handler" in f.name
+                or "effective" in f.name
+                or f.name.startswith("tt")
+            ):
+                continue
+            if isinstance(f, DocumentReferenceField):
+                d = f.document
+                if isinstance(d, str):
+                    d = get_model(f.document)
+                rest_url = get_model_id(d).lower().replace(".", "/")
+                r.append(
+                    TemplateField(
+                        id=f.name,
+                        label=f.verbose_name or f.name.capitalize(),
+                        is_tree=hasattr(d, "get_path"),
+                        model_id=get_model_id(d),
+                        type="lookup",
+                        rest_url=f"/{rest_url}/lookup",
+                    )
+                )
+            elif isinstance(f, CachedForeignKey):
+                rest_url = get_model_id(f.related_model).lower().replace(".", "/")
+                r.append(
+                    TemplateField(
+                        id=f.name,
+                        label=f.verbose_name or f.name.capitalize(),
+                        is_tree=hasattr(f.related_model, "get_path"),
+                        model_id=get_model_id(f.related_model),
+                        type="lookup",
+                        rest_url=f"/{rest_url}/lookup",
+                    )
+                )
+            elif isinstance(f, CharField):
+                r.append(
+                    TemplateField(
+                        id=f.name,
+                        label=f.verbose_name or f.name.capitalize(),
+                        choices=f.get_choices() if f.choices else [],
+                        type="string",
+                    )
+                )
+            elif isinstance(f, IntegerField):
+                r.append(
+                    TemplateField(
+                        id=f.name,
+                        label=f.verbose_name or f.name.capitalize(),
+                        type="number",
+                    )
+                )
+        return r
