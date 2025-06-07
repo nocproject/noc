@@ -304,25 +304,23 @@ class TTCommentRequest(BaseModel):
     reply_to: Optional[str] = None
 
 
-class ActinItem(BaseModel):
+class ActionItem(BaseModel):
     alarm: str
     group: Optional[str] = None
     service: Optional[str] = None
 
 
 class Action(BaseModel):
-    member: EscalationMember
+    actin: TTAction
     key: Optional[str] = None
     delay: int = 0
     ack: str = "any"
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     max_retries: int = 1
-    max_repeats: int = 0
     # template: Optional[str] = None
     # close_template: Optional[str] = None
     stop_processing: bool = False
-    repeat_delay: int = 60
     # root_only: bool = True
 
 
@@ -330,12 +328,14 @@ class EscalationRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(ObjectId()))
     # name: str
     # Alarm | Group | Service
-    item: ActinItem
+    item: ActionItem
     ctx: int
     actions: List[Action]
     timestamp: Optional[datetime] = None
     items_policy: EscalationPolicy = EscalationPolicy.ROOT
     maintenance_policy: str = "e"
     end_condition: str = "a"
+    max_repeats: int = 0
+    repeat_delay: int = 60
     tt_system: Optional[str] = None
     user: Optional[int] = None
