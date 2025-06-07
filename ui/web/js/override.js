@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // ExtJS overrides
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ Ext.override(Ext.form.field.Base, {
       }
       if(style.width && me.getTriggers){
         var triggers = me.getTriggers();
-        Ext.Array.each(Object.keys(triggers), function(v){
+        Ext.Array.each(Object.keys(triggers), function(){
           style.width += 25;
         });
       }
@@ -161,15 +161,15 @@ Ext.override(Ext.tree.Column, {
   },
 });
 // Trace events
-if(NOC.settings.traceExtJSEvents){
-  console.log("Enabling event tracing");
-  Ext.mixin.Observable.prototype.fireEvent =
-        Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function(){
-          console.log("EVENT", this.$className, arguments[0], Array.prototype.slice.call(arguments, 1));
-          console.log("Stack trace:\n" + printStackTrace().join("\n"));
-          return true;
-        });
-}
+// if(NOC.settings.traceExtJSEvents){
+//   console.log("Enabling event tracing");
+//   Ext.mixin.Observable.prototype.fireEvent =
+//         Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function(){
+//           console.log("EVENT", this.$className, arguments[0], Array.prototype.slice.call(arguments, 1));
+//           console.log("Stack trace:\n" + printStackTrace().join("\n"));
+//           return true;
+//         });
+// }
 
 Ext.define("EXTJS-15862.tab.Bar", {
   override: "Ext.tab.Bar",
@@ -178,8 +178,7 @@ Ext.define("EXTJS-15862.tab.Bar", {
     var me = this,
       initialLayout = me.initialConfig.layout,
       initialAlign = initialLayout && initialLayout.align,
-      initialOverflowHandler = initialLayout && initialLayout.overflowHandler,
-      layout;
+      initialOverflowHandler = initialLayout && initialLayout.overflowHandler;
 
 
     if(me.plain){
@@ -235,6 +234,7 @@ Ext.define("NOC.data.request.Ajax", {
       }
     }
     catch(e){
+      console.warn("Error parsing Ajax response status:", e);
       result = failure;
     }
 
