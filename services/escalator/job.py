@@ -4,13 +4,15 @@
 # Copyright (C) 2007-2023, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import datetime
 
 # Python modules
 import logging
+import datetime
+import operator
 import enum
 from dataclasses import dataclass
-from typing import List, Set, Iterable, Optional, Tuple, Dict, Any
+from collections import defaultdict
+from typing import List, Set, Iterable, Optional, Tuple, Dict, Any, DefaultDict
 
 # Third-party modules
 from bson import ObjectId
@@ -32,7 +34,8 @@ from noc.core.tt.types import (
     Action as ActionReq,
 )
 from noc.core.tt.base import TTSystemCtx
-from noc.core.scheduler.job import Job
+from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
@@ -46,24 +49,27 @@ from noc.fm.models.utils import get_alarm
 
 class ActionStatus(enum.Enum):
     """
-    Job status.
+    Action Result Status
 
     Attributes:
-        * `p` - Pending, waiting for manual approve.
-        * `w` - Waiting, ready to run.
-        * `f` - Failed with error
-        * `w` - Warning. Failed, but allowed to fail.
-        * 'e' - End Wait
+        NEW: new action
+        SUCCESS: run successed
+        FAILED: Failed with error
+        WARNING: Warning. Failed, but allowed to fail.
+        SKIP: Not running about condition
+        PENDING: Pending, waiting for manual approve.
+        CANCELLED: Cancelled, not repeat for run / OR Condition
     """
 
     NEW = "n"
     SUCCESS = "s"
     FAILED = "f"
-    WARNING = "W"
-    CANCELLED = "c"
+    WARNING = "w"
+    # CANCELLED = "c"
     SKIP = "s"
-    WAIT_END = "we"
-    STOP = "stop/break"
+    PENDING = "p"
+    # WAIT_END = "we"
+    # STOP = "stop/break"
 
 
 class JobStatus(enum.Enum):
@@ -71,15 +77,15 @@ class JobStatus(enum.Enum):
     Job status.
 
     Attributes:
-        * `p` - Pending, waiting for manual approve.
-        * `w` - Waiting, ready to run.
-        * `r` - Running
-        * `S` - Suspended
-        * `s` - Success
-        * `f` - Failed with error
-        * `w` - Warning. Failed, but allowed to fail.
-        * 'e' - End Wait
-        * `c` - Cancelled
+        PENDING: waiting for manual approve.
+        NEXT:
+        RUNNING:
+        CANCEL: Job cancelled fot run
+        WAIT: Waiting, ready to run.
+        FAILED: End with fail
+        WARNING: Failed, but allowed to fail.
+        END: End job
+        EXCEPTION: End for exception
     """
 
     PENDING = "p"  # Wait manual approve
@@ -89,6 +95,7 @@ class JobStatus(enum.Enum):
     WARNING = "w"  # Retry errors
     CANCEL = "c"  # Manually cancelled
     END = "e"  # Run End
+    EXCEPTION = "x"
 
 
 class ItemStatus(enum.Enum):
@@ -116,9 +123,21 @@ class Item(object):
     alarm: ObjectId
     status: ItemStatus = ItemStatus.NEW
 
+    @property
+    def managed_object(self) -> Optional[ManagedObject]:
+        return ManagedObject.objects.filter(id=self.managed_object_id).first()
+
 
 @dataclass(frozen=True)
 class ActionResult(object):
+    """
+    Action result class
+    Attributes:
+        status: Action Status Result
+        error: Error message
+        document_id: Id on remote system\
+        ctx: Action context data
+    """
     status: ActionStatus
     error: Optional[str] = None
     document_id: Optional[str] = None
@@ -132,6 +151,9 @@ class ActionLog(object):
         self,
         action: TTAction,
         key,
+        # Match
+        time_pattern: Optional[TimePattern] = None,
+        min_severity: Optional[int] = None,
         # Time ?
         delay: int = 0,
         timestamp: Optional[datetime.datetime] = None,
@@ -147,24 +169,30 @@ class ActionLog(object):
     ):
         self.action = action
         self.key = key
-        self.template: Template = None
-        self.timestamp = timestamp
+        # To ctx ?
+        self.template: Optional[Template] = None
+        self.timestamp = timestamp  # run_at
         self.status = status
         self.error = error
-        self.ctx = kwargs
         self.document_id = document_id
-        self.min_severity = 0
+        self.min_severity = min_severity
+        self.time_pattern: Optional[TimePattern] = time_pattern
         self.stop_processing = stop_processing
-        self.time_pattern = None
+        self.repeat_num = 0
+        self.ctx = kwargs
 
     def set_status(self, result: ActionResult):
         """Update Action Log"""
+        self.status = result.status
+        self.error = result.error
+        if result.ctx:
+            self.ctx |= result.ctx
 
-    def is_match(self, severity: int, timestamp):
+    def is_match(self, severity: int, timestamp: datetime.datetime):
         """Check job condition"""
-        if severity > self.min_severity:
+        if severity < self.min_severity:
             return False
-        elif self.timestamp and not self.timestamp.match(timestamp):
+        elif self.time_pattern and not self.time_pattern.match(timestamp):
             return False
         return True
 
@@ -194,6 +222,29 @@ class ActionLog(object):
         r["body"] = self.template.render_body(**e_ctx)
         return r
 
+    def get_repeat(self, delay: int) -> "ActionLog":
+        """Return repeated Action"""
+        return ActionLog(
+            action=self.action,
+            key=self.key,
+            status=ActionStatus.NEW,
+            timestamp=self.timestamp + datetime.timedelta(seconds=delay),
+            # @todo
+            repeat_num=self.repeat_num + 1
+        )
+
+    @classmethod
+    def from_request(cls, action: ActionReq, start_at: datetime.datetime) -> "ActionLog":
+        """"""
+        return ActionLog(
+            action=action.member,
+            key=action.key,
+            timestamp=start_at + datetime.timedelta(seconds=action.delay),
+            time_pattern=action.time_pattern,
+            min_severity=action.min_severity or 0,
+            stop_processing=action.stop_processing,
+        )
+
 
 class AlarmAutomationJob(object):
     """
@@ -207,6 +258,8 @@ class AlarmAutomationJob(object):
         items: List[Item],
         # alarms_ids
         actions: List[ActionLog],
+        end_condition: str = "CR",
+        items_policy: EscalationPolicy = EscalationPolicy.ROOT,
         ctx_id: Optional[int] = None,
         telemetry_sample: Optional[int] = None,
         id: Optional[str] = None,
@@ -221,33 +274,101 @@ class AlarmAutomationJob(object):
         self.ctx_id = ctx_id
         self.telemetry_sample = telemetry_sample
         self.allow_fail = allow_fail
+        self.items_policy = items_policy
+        self.end_condition = end_condition or "CR"
         self.logger = logger
         self.dry_run = dry_run
         self.tt_docs: Dict[str, str] = {}  # TTSystem -> doc_id
         self.alarm_log = []
+        self.end_at: Optional[datetime.datetime] = None
+        self.max_repeat = 0
+        self.repeat_delay = 60
         # Alarm Severity
         self.severity = 0
+        self.total_objects = []
+        self.total_services = []
+        self.total_subscribers = []
+
+    @property
+    def leader(self) -> "Item":
+        """Return first item"""
+        return self.items[0]
+
+    @property
+    def alarm(self) -> Optional[ActiveAlarm]:
+        """Getting document alarm"""
+        return get_alarm(self.leader.alarm)
+
+    def set_item_status(
+        self,
+        alarm: ActiveAlarm,
+        status: ItemStatus = ItemStatus.NEW,
+        error: Optional[str] = None,
+    ):
+        """
+        Set status for Escalation Item
+
+        Args:
+            alarm: Alarm for item
+            status: Status
+            error: Error text for Status
+        """
+        for item in self.items:
+            if str(item.alarm) == str(alarm.id) and status != ItemStatus.NEW:
+                item.status = status
+                break
+            elif str(item.alarm) == str(alarm.id):
+                break
+        else:
+            self.items += [
+                Item(
+                    managed_object_id=alarm.managed_object.id,
+                    # target_reference=
+                    alarm=alarm.id,
+                    status=status,
+                )
+            ]
 
     def run(self):
-        """Run Job"""
+        """
+        Run Job
+        Iterate over jobs, and run it
+        Repeating Job
+        Returb Job status and Next timestamp
+        """
         status = self.get_status()
-        is_end = False
-        delay = 0
+        is_end = self.check_end()
         ts = datetime.datetime.now()
-        for aa in self.actions:
+        actions = []
+        # Sorted by ts
+        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
             #
-            if not aa.is_match(self.severity, ts):
+            if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
+                # Skip already running job
                 continue
+            elif not aa.is_match(self.severity, ts):
+                # Set Skip (Condition)
+                continue
+            elif aa.timestamp > ts:
+                break
+            # if not aa.to_run(status, delay):
+            #    continue
+            try:
+                r = self.run_action(aa.action, **aa.get_ctx())  # aa.get_ctx for job
+            except Exception as e:
+                r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
+                # Job Status to Exception
+            if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
+                # If Repeat - add action to next on repeat delay
+                # Self register actions
+                actions.append(aa.get_repeat(self.repeat_delay))
+            aa.set_status(r)
+            if r.document_id:
+                self.tt_docs[aa.key] = r.document_id
+            # Processed Result
             if aa.stop_processing:
                 # Set Stop job status
                 break
-            if aa.to_run(status, delay):
-                self.run_action(aa.action, **aa.get_ctx())  # aa.get_ctx for job
-            elif aa.to_run(status, delay) is None:
-                # Stop processing ?Add stop action
-                break
-            # If Repeat - add action to next on repeat delay
-            # Self register actions
 
     def get_status(self):
         """Calculate current Job status"""
@@ -275,20 +396,19 @@ class AlarmAutomationJob(object):
         """Execute action"""
         match action:
             case TTAction.CREATE:
-                self.create_tt(**ctx)
+                r = self.create_tt(**ctx)
             case TTAction.CLOSE:
-                alarm.register_clear(
-                    f"Clear by TTSystem: {self.object.name}",
-                    user=user,
-                    timestamp=change.timestamp,
-                )
+                r = self.alarm_clear(**ctx)
             case TTAction.ACK:
-                self.alarm_ack(**ctx)
+                r = self.alarm_ack(**ctx)
             case TTAction.UN_ACK:
-                self.alarm_unack(**ctx)
+                r = self.alarm_unack(**ctx)
             case TTAction.NOTIFY:
                 # alarm.log_message(change.message, source=str(user))
-                self.notify(**ctx)
+                r = self.notify(**ctx)
+            case _:
+                raise NotImplementedError("Action %s not implemented" % action)
+        return r
 
     def get_state(self) -> Dict[str, Any]:
         """Return Job State"""
@@ -316,13 +436,93 @@ class AlarmAutomationJob(object):
             message: message for add to log
         """
         msg = message % args
-        self.logger.info("[%s] Log alarm: %s", self.object.alarm, msg)
-        if self.object.alarm.status == "C":
+        self.logger.info("[%s] Log alarm: %s", self.alarm, msg)
+        if self.alarm.status == "C":
             # For closed alarm
-            self.object.alarm.log_message(msg)
-            self.object.alarm.save()
+            self.alarm.log_message(msg)
+            self.alarm.save()
         else:
-            self.object.alarm.log_message(msg, bulk=self.alarm_log)
+            self.alarm.log_message(msg, bulk=self.alarm_log)
+
+    def check_end(self) -> bool:
+        """
+        Check Escalation End Condition:
+            * CR - Close Alarm Leader
+            * CA - Close All alarm on escalation
+            * CT - Close TT System Document (forced), supported get TT info
+            * M - Manual Escalation Close (from alarm forced, set end_timestamp)
+        """
+        # if self.end_timestamp or self.alarm.status != "A":
+        #    return True
+        # Check if alarm leader was closed
+        if self.end_condition == "CR":
+            return self.leader.status == ItemStatus.REMOVED
+        elif self.end_condition == "CA":
+            return all(i.status == ItemStatus.REMOVED for i in self.items)
+        # elif self.end_condition == "CT":
+            # Close TT
+        #    return self.alarm_log and self.escalations[0].deescalation_status == "ok"
+        elif self.end_condition == "M" or self.end_condition == "CT":
+            return bool(self.end_at)
+        return False
+
+    def update_items(self):
+        """Update escalation doc items. Run on is_dirty"""
+
+        def update_totals_from_summary(
+            t_dict: DefaultDict[ObjectId, int], t_items: Iterable[SummaryItem]
+        ) -> None:
+            """
+            Update totals from alarm summary
+            """
+            for item in t_items:
+                t_dict[item.profile] += item.summary
+
+        # Dynamic (save to field)
+        policy = self.items_policy.name.lower()
+        iter_items = getattr(self, f"iter_alarms_{policy}", None)
+        if not iter_items:
+            self.logger.error("Unknown escalation policy `%s`. Skipping", policy)
+            return None
+        items = list(iter_items())
+        if not items:
+            return None
+        # Total counters
+        total_objects: DefaultDict[int, int] = defaultdict(int)
+        total_services: DefaultDict[ObjectId, int] = defaultdict(int)
+        total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
+        # @todo: Append profile
+        for alarm in items:
+            if alarm.alarm_class.is_ephemeral:
+                # Group alarms are virtual and should be locked, but not escalated
+                # self.groups += [alarm.reference]
+                continue
+            if alarm.status == "C":
+                self.set_item_status(alarm, ItemStatus.REMOVED)
+            else:
+                self.set_item_status(alarm, ItemStatus.NEW)
+            # Update totals
+            total_objects[alarm.managed_object.object_profile.id] += 1
+            update_totals_from_summary(total_services, alarm.direct_services)
+            update_totals_from_summary(total_subscribers, alarm.direct_subscribers)
+
+        # if not self.items:
+        #    return None  # Only group alarms
+        self.total_objects = [
+            ObjectSummaryItem(profile=k, summary=v) for k, v in total_objects.items()
+        ]
+        self.total_services = [SummaryItem(profile=k, summary=v) for k, v in total_services.items()]
+        self.total_subscribers = [
+            SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
+        ]
+
+    def get_tt_ids(self) -> str:
+        """Return all escalated Document with TT system"""
+        r = []
+        for key, document_id in self.tt_docs.items():
+            tt = TTSystem.get_by_id(key)
+            r.append(f"{tt.name}:{document_id}")
+        return ";".join(r)
 
     def comment_tt(self, tt_system: TTSystem, tt_id: str, message: str) -> EscalationResult:
         """
@@ -392,6 +592,17 @@ class AlarmAutomationJob(object):
         self.alarm.unacknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
+    def alarm_clear(self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None):
+        """
+        Clear alarm by tt_system or settings
+
+        """
+        self.alarm.register_clear(
+            f"Clear by TTSystem: {tt_system.name}",
+            user=user,
+            timestamp=change.timestamp,
+        )
+
     def get_tt_system_context(
         self, tt_system: TTSystem, tt_id: Optional[str] = None
     ) -> TTSystemCtx:
@@ -402,18 +613,18 @@ class AlarmAutomationJob(object):
             tt_id: Document ID
 
         """
-        cfg = self.object.profile.get_tt_system_config(tt_system)
+        cfg = self.get_tt_system_config(tt_system)
         actions = self.get_action_context()
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
-            queue=self.object.managed_object.tt_queue,
+            queue=self.leader.managed_object.tt_queue,
             reason=None,
             login=cfg.login,
-            timestamp=self.object.timestamp,
+            timestamp=self.timestamp,
             actions=actions,
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
-            services=self.get_affected_services_items() or None,
+            # services=self.get_affected_services_items() or None,
         )
         return ctx
 
@@ -481,9 +692,9 @@ class AlarmAutomationJob(object):
                 e_status = "fail"
             ctx_map[item.id] = e_status
         for item in self.items:
-            if item.managed_object.id not in ctx_map:
+            if item.managed_object_id not in ctx_map:
                 continue
-            item.status = ctx_map[item.managed_object.id]
+            item.status = ctx_map[item.managed_object_id]
         metrics["escalation_tt_create"] += 1
         return ActionResult(status=ActionStatus.SUCCESS, document_id=tt_id)
 
