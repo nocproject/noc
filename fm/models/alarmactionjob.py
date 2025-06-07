@@ -211,7 +211,8 @@ class EscalationStep(EmbeddedDocument):
     # Match
     delay: int = IntField(default=0)
     run_policy: str = StringField(
-        choices=["start", "end", "both", "one", "manual"], default="both",
+        choices=["start", "end", "both", "one", "manual"],
+        default="both",
     )
     ack_policy: str = StringField(
         choices=[
@@ -249,7 +250,7 @@ class AlarmActionJob(Document):
         "collection": "alarm_action_jobs",
         "strict": False,
         "auto_create_index": False,
-        "indexes": [ ],
+        "indexes": [],
     }
 
     status: JobStatus = EnumField(JobStatus, default=JobStatus.WAITING)
@@ -363,8 +364,9 @@ class AlarmActionJob(Document):
                 if result:
                     action.acton_ctx |= result
 
-
-    def run_action(self, action: TTAction, key: str, **ctx: Dict[str, str]) -> Tuple[ActionStatus, str, Optional[Dict[str, str]]]:
+    def run_action(
+        self, action: TTAction, key: str, **ctx: Dict[str, str]
+    ) -> Tuple[ActionStatus, str, Optional[Dict[str, str]]]:
         """Execute action"""
 
     def get_tt_system_context(
@@ -392,7 +394,6 @@ class AlarmActionJob(Document):
             suppress_tt_trace=False,
         )
         return ctx
-
 
     def check_escalated(self, tt_system: TTSystem) -> bool:
         """Check item already escalated"""
