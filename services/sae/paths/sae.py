@@ -270,7 +270,7 @@ class SAEAPI(JSONRPCAPI):
             "access_preference": access_preference,
             "snmp_rate_limit": snmp_rate_limit,
         }
-        if snmp_ro:
+        if snmp_ro and snmp_security_level == "Community":
             credentials["snmp_ro"] = snmp_ro
             if capabilities.get("SNMP | v2c"):
                 credentials["snmp_version"] = "v2c"
