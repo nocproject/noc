@@ -21,6 +21,10 @@ from bson import ObjectId
 # NOC modules
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_DOWNLINK_MERGE
+from noc.core.span import Span
+from noc.core.lock.process import ProcessLock
+from noc.core.change.policy import change_tracker
+from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
 from noc.core.tt.types import (
     EscalationItem as ECtxItem,
@@ -39,12 +43,16 @@ from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.crm.models.subscriberprofile import SubscriberProfile
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
+from noc.maintenance.models.maintenance import Maintenance
 
 
 class ActionStatus(enum.Enum):
@@ -119,13 +127,13 @@ class ItemStatus(enum.Enum):
 class Item(object):
     """Over Job Item"""
 
-    managed_object_id: int
-    alarm: ObjectId
+    #! Replace to alarm List, status
+    alarm: ActiveAlarm
     status: ItemStatus = ItemStatus.NEW
 
     @property
     def managed_object(self) -> Optional[ManagedObject]:
-        return ManagedObject.objects.filter(id=self.managed_object_id).first()
+        return self.alarm.managed_object
 
 
 @dataclass(frozen=True)
@@ -138,6 +146,7 @@ class ActionResult(object):
         document_id: Id on remote system\
         ctx: Action context data
     """
+
     status: ActionStatus
     error: Optional[str] = None
     document_id: Optional[str] = None
@@ -165,12 +174,13 @@ class ActionLog(object):
         user: Optional[User] = None,
         tt_system: Optional[TTSystem] = None,
         document_id: Optional[str] = None,
+        template: Optional[str] = None,
         **kwargs,
     ):
         self.action = action
         self.key = key
         # To ctx ?
-        self.template: Optional[Template] = None
+        self.template: Optional[Template] = Template.get_by_id(template) if template else None
         self.timestamp = timestamp  # run_at
         self.status = status
         self.error = error
@@ -180,6 +190,9 @@ class ActionLog(object):
         self.stop_processing = stop_processing
         self.repeat_num = 0
         self.ctx = kwargs
+
+    def __str__(self):
+        return f"{self.action} ({self.key}): {self.status} ({self.timestamp})"
 
     def set_status(self, result: ActionResult):
         """Update Action Log"""
@@ -211,15 +224,15 @@ class ActionLog(object):
             return True
         return False
 
-    def get_ctx(self) -> Dict[str, Any]:
+    def get_ctx(self, item_ctx: Dict[str, Any]) -> Dict[str, Any]:
         """Build action CTX"""
-        r = {}
+        r = {"timestamp": self.timestamp}
         if self.action == TTAction.CREATE:
             r["tt_system"] = TTSystem.get_by_id(self.key)
         elif self.action == TTAction.NOTIFY:
-            r["notification_group"] = NotificationGroup.get_by_id(self.key)
-        r["subject"] = self.template.render_subject(**e_ctx)
-        r["body"] = self.template.render_body(**e_ctx)
+            r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
+        r["subject"] = self.template.render_subject(**item_ctx)
+        r["body"] = self.template.render_body(**item_ctx)
         return r
 
     def get_repeat(self, delay: int) -> "ActionLog":
@@ -230,16 +243,17 @@ class ActionLog(object):
             status=ActionStatus.NEW,
             timestamp=self.timestamp + datetime.timedelta(seconds=delay),
             # @todo
-            repeat_num=self.repeat_num + 1
+            repeat_num=self.repeat_num + 1,
         )
 
     @classmethod
-    def from_request(cls, action: ActionReq, start_at: datetime.datetime) -> "ActionLog":
+    def from_request(cls, action: ActionReq, started_at: datetime.datetime) -> "ActionLog":
         """"""
         return ActionLog(
-            action=action.member,
+            action=action.action,
             key=action.key,
-            timestamp=start_at + datetime.timedelta(seconds=action.delay),
+            template=action.template,
+            timestamp=started_at + datetime.timedelta(seconds=action.delay),
             time_pattern=action.time_pattern,
             min_severity=action.min_severity or 0,
             stop_processing=action.stop_processing,
@@ -250,6 +264,8 @@ class AlarmAutomationJob(object):
     """
     Runtime Alarm Automation
     """
+
+    lock = ProcessLock(category="escalator", owner="escalator")
 
     def __init__(
         self,
@@ -267,6 +283,7 @@ class AlarmAutomationJob(object):
         logger: Optional[Any] = None,
         dry_run: bool = False,
     ):
+        self.id = id
         self.name = name
         self.status = status
         self.items = items
@@ -276,7 +293,6 @@ class AlarmAutomationJob(object):
         self.allow_fail = allow_fail
         self.items_policy = items_policy
         self.end_condition = end_condition or "CR"
-        self.logger = logger
         self.dry_run = dry_run
         self.tt_docs: Dict[str, str] = {}  # TTSystem -> doc_id
         self.alarm_log = []
@@ -288,6 +304,9 @@ class AlarmAutomationJob(object):
         self.total_objects = []
         self.total_services = []
         self.total_subscribers = []
+        self.logger = logger or PrefixLoggerAdapter(
+            logging.getLogger(__name__), f"[{self.id}|{self.leader.alarm}"
+        )
 
     @property
     def leader(self) -> "Item":
@@ -295,9 +314,9 @@ class AlarmAutomationJob(object):
         return self.items[0]
 
     @property
-    def alarm(self) -> Optional[ActiveAlarm]:
+    def alarm(self) -> ActiveAlarm:
         """Getting document alarm"""
-        return get_alarm(self.leader.alarm)
+        return self.leader.alarm
 
     def set_item_status(
         self,
@@ -322,9 +341,9 @@ class AlarmAutomationJob(object):
         else:
             self.items += [
                 Item(
-                    managed_object_id=alarm.managed_object.id,
+                    # managed_object_id=alarm.managed_object.id,
                     # target_reference=
-                    alarm=alarm.id,
+                    alarm=alarm,
                     status=status,
                 )
             ]
@@ -340,9 +359,23 @@ class AlarmAutomationJob(object):
         is_end = self.check_end()
         ts = datetime.datetime.now()
         actions = []
+        self.logger.info("Processed actions from : %s", ts)
+        # with (
+        #     Span(
+        #         client="escalator",
+        #         sample=self.get_span_sample(),
+        #         context=self.ctx_id,
+        #     ),
+        #     self.lock.acquire(self.get_lock_items()),
+        #     change_tracker.bulk_changes(),
+        # ):
+        #     if not self.object.ctx_id:
+        #         # span_ctx.span_context
+        #         self.set_escalation_context()
+        ctx = self.get_ctx()
         # Sorted by ts
         for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
-            #
+            self.logger.info("[%s] Processed action", aa)
             if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
                 # Skip already running job
                 continue
@@ -354,10 +387,11 @@ class AlarmAutomationJob(object):
             # if not aa.to_run(status, delay):
             #    continue
             try:
-                r = self.run_action(aa.action, **aa.get_ctx())  # aa.get_ctx for job
+                r = self.run_action(aa.action, **aa.get_ctx(ctx))  # aa.get_ctx for job
             except Exception as e:
                 r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
                 # Job Status to Exception
+            self.logger.info("[%s] Action result: %s", aa, r)
             if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
                 # If Repeat - add action to next on repeat delay
                 # Self register actions
@@ -416,16 +450,24 @@ class AlarmAutomationJob(object):
     @classmethod
     def from_request(cls, req: EscalationRequest) -> "AlarmAutomationJob":
         """Build Job from Request"""
+        alarm = get_alarm(req.item.alarm)
         job = AlarmAutomationJob(
+            status=JobStatus.NEXT,
+            items=[Item(alarm=alarm)],
             name=str(req),
             ctx_id=req.ctx,
+            actions=[ActionLog.from_request(a, started_at=req.timestamp) for a in req.actions],
+            end_condition=req.end_condition,
+            items_policy=req.items_policy,
         )
         return job
 
     @classmethod
     def from_state(cls, state: Dict[str, Any]) -> "AlarmAutomationJob":
         """Restore Job from state"""
-        job = AlarmAutomationJob()
+        job = AlarmAutomationJob(
+            **state,
+        )
         return job
 
     def log_alarm(self, message: str, *args) -> None:
@@ -460,7 +502,7 @@ class AlarmAutomationJob(object):
         elif self.end_condition == "CA":
             return all(i.status == ItemStatus.REMOVED for i in self.items)
         # elif self.end_condition == "CT":
-            # Close TT
+        # Close TT
         #    return self.alarm_log and self.escalations[0].deescalation_status == "ok"
         elif self.end_condition == "M" or self.end_condition == "CT":
             return bool(self.end_at)
@@ -516,6 +558,70 @@ class AlarmAutomationJob(object):
             SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
         ]
 
+    @staticmethod
+    def summary_to_list(summary, model):
+        r = []
+        for k in summary:
+            p = model.get_by_id(k.profile)
+            if not p or getattr(p, "show_in_summary", True) is False:
+                continue
+            r += [
+                {
+                    "profile": p.name,
+                    "summary": k.summary,
+                    "order": (getattr(p, "display_order", 100), -k.summary),
+                }
+            ]
+        return sorted(r, key=operator.itemgetter("order"))
+
+    def has_merged_downlinks(self):
+        """
+        Check if alarm has merged downlinks
+        """
+        return bool(
+            ActiveAlarm.objects.filter(root=self.alarm.id, rca_type=RCA_DOWNLINK_MERGE).first()
+        )
+
+    def get_ctx(self):
+        """
+        Get escalation context
+        """
+        affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
+        segment = self.alarm.managed_object.segment
+        if segment.is_redundant:
+            uplinks = self.alarm.managed_object.uplinks
+            lost_redundancy = len(uplinks) > 1
+            affected_subscribers = self.summary_to_list(
+                segment.total_subscribers, SubscriberProfile
+            )
+            affected_services = self.summary_to_list(segment.total_services, ServiceProfile)
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        # cons_escalated = [
+        #     self.alarm_ids[x.alarm]
+        #     for x in self.escalation_doc.consequences
+        #     if x.is_already_escalated
+        # ]
+        # @todo Alarm notification Ctx, Escalation Message Ctx
+        return {
+            "alarm": self.alarm,
+            "managed_object": self.alarm.managed_object,
+            "affected_objects": affected_objects,
+            "cons_escalated": [],
+            "total_objects": self.summary_to_list(self.alarm.total_objects, ManagedObjectProfile),
+            "total_subscribers": self.summary_to_list(
+                self.alarm.total_subscribers, SubscriberProfile
+            ),
+            "total_services": self.summary_to_list(self.alarm.total_services, ServiceProfile),
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services,
+            "has_merged_downlinks": self.has_merged_downlinks(),
+        }
+
     def get_tt_ids(self) -> str:
         """Return all escalated Document with TT system"""
         r = []
@@ -554,7 +660,9 @@ class AlarmAutomationJob(object):
         self.logger.info(error)
         return r
 
-    def notify(self, notification_group, subject: str, body: Optional[str] = None) -> ActionResult:
+    def notify(
+        self, notification_group, subject: str, body: Optional[str] = None, **kwargs
+    ) -> ActionResult:
         """
         Send Notification
 
@@ -574,7 +682,9 @@ class AlarmAutomationJob(object):
         metrics["escalation_notify"] += 1
         return ActionResult(status=ActionStatus.SUCCESS)
 
-    def alarm_ack(self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None):
+    def alarm_ack(
+        self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None, **kwargs
+    ):
         """
         Acknowledge alarm by tt_system or settings
 
@@ -583,7 +693,9 @@ class AlarmAutomationJob(object):
         self.alarm.acknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
-    def alarm_unack(self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None):
+    def alarm_unack(
+        self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None, **kwargs
+    ):
         """
         Acknowledge alarm by tt_system or settings
 
@@ -592,16 +704,26 @@ class AlarmAutomationJob(object):
         self.alarm.unacknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
-    def alarm_clear(self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None):
+    def alarm_clear(
+        self,
+        tt_system: Optional[TTSystem],
+        user: User,
+        message: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        **kwargs,
+    ):
         """
         Clear alarm by tt_system or settings
 
         """
+        timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         self.alarm.register_clear(
             f"Clear by TTSystem: {tt_system.name}",
             user=user,
-            timestamp=change.timestamp,
+            timestamp=timestamp,
         )
+        # Delayed, checked action - status return other service
+        return ActionResult(status=ActionStatus.SUCCESS)
 
     def get_tt_system_context(
         self, tt_system: TTSystem, tt_id: Optional[str] = None
@@ -692,9 +814,9 @@ class AlarmAutomationJob(object):
                 e_status = "fail"
             ctx_map[item.id] = e_status
         for item in self.items:
-            if item.managed_object_id not in ctx_map:
+            if item.managed_object.id not in ctx_map:
                 continue
-            item.status = ctx_map[item.managed_object_id]
+            item.status = ctx_map[item.managed_object.id]
         metrics["escalation_tt_create"] += 1
         return ActionResult(status=ActionStatus.SUCCESS, document_id=tt_id)
 
