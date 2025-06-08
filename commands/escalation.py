@@ -13,6 +13,8 @@ import time
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.tt.types import EscalationRequest, Action, ActionItem, TTAction
+from noc.services.escalator.job import AlarmAutomationJob
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -39,6 +41,12 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "run_alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
         )
+        test_parser = subparsers.add_parser("test")
+        # test_parser.add_argument("--profile", help="Escalation Profile", required=True)
+        test_parser.add_argument(
+            "--trace", action="store_true", default=False, help="Trace process"
+        )
+        test_parser.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
         #
         close_parser = subparsers.add_parser("close")
         close_parser.add_argument(
@@ -73,6 +81,21 @@ class Command(BaseCommand):
                 self.print("ERROR: Alarm %s is cleared. Skipping" % alarm)
             else:
                 self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
+
+    def handle_test(self, alarms, trace=False, *args, **options):
+        self.trace = trace
+        alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
+        # profile = EscalationProfile.get_by_id(profile)
+        # escalation_doc = Escalation.from_alarm(alarm, profile)
+        req = EscalationRequest(
+            item=ActionItem(alarm=str(alarm.id)),
+            ctx=0,
+            actions=[Action(action=TTAction.NOTIFY, key="2", template="30",delay=50)],
+            timestamp=alarm.timestamp,
+        )
+        job = AlarmAutomationJob.from_request(req)
+        job.run()
+        # self.run_job(ESCALATION_JOB, escalation_doc)
 
     def handle_close(self, close_alarms=None, *args, **kwargs):
         close_alarms = close_alarms or []

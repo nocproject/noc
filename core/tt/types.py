@@ -311,16 +311,16 @@ class ActionItem(BaseModel):
 
 
 class Action(BaseModel):
-    actin: TTAction
+    action: TTAction
     key: Optional[str] = None
     delay: int = 0
     ack: str = "any"
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     max_retries: int = 1
-    # template: Optional[str] = None
-    # close_template: Optional[str] = None
+    template: Optional[str] = None
     stop_processing: bool = False
+    # Manual, Group Access
     # root_only: bool = True
 
 
