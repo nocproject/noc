@@ -86,6 +86,7 @@ class Command(BaseCommand):
         for fp in root_path.glob("*.txt"):
             if not fp.is_file:
                 continue
+            f_node = fp.name == "node.txt"
             with open(fp, "r") as f:
                 btext = f.read()
                 lines = btext.split("\n")
@@ -93,7 +94,11 @@ class Command(BaseCommand):
                 match = self.rx.match(line)
                 if match:
                     lib_name, req_version = match.groups()
-                    libraries[lib_name] = {"req_version": req_version, "inst_version": ""}
+                    libraries[lib_name] = {
+                        "req_version": req_version,
+                        "inst_version": "",
+                        "node": f_node,
+                    }
             count += 1
         # Get installed versions
         for distribution in metadata.distributions():
@@ -103,23 +108,38 @@ class Command(BaseCommand):
         # Sorting
         libraries: list[tuple[str, dict[str, str]]] = sorted(libraries.items())
         # Display information
-        col_lib_name, col_required, col_installed = 40, 30, 30
+        col_lib_name, col_required, col_installed, col_node = 35, 25, 25, 25
         self.print(
             f"{'Library':{col_lib_name}} | {'Required':{col_required}} | "
-            f"{'Installed':{col_installed}}"
+            f"{'Installed':{col_installed}} | {'Node/necessary':{col_node}}"
         )
-        self.print(f"{'-'*col_lib_name}-|-{'-'*col_installed}-|-{'-'*col_required}")
-        for lib_name, vers in libraries:
-            if not vers["inst_version"]:
+        self.print(
+            f"{'-'*col_lib_name}-|-{'-'*col_required}-|-{'-'*col_installed}-|-{'-'*col_node}"
+        )
+        for lib_name, lib_data in libraries:
+            if not lib_data["inst_version"]:
                 flag = self.flag_missing
             else:
                 flag = (
-                    self.flag_ok if vers["req_version"] == vers["inst_version"] else self.flag_error
+                    self.flag_ok
+                    if lib_data["req_version"] == lib_data["inst_version"]
+                    else self.flag_error
                 )
-            self.print(
-                f"{flag} {lib_name:{col_lib_name - 3}} | {vers['req_version']:{col_required}} | "
-                f"{vers['inst_version']:{col_installed}}"
+            flag_additional = (
+                self.flag_error if not lib_data["inst_version"] and lib_data["node"] else "  "
             )
+            p_node = "YES" if lib_data["node"] else "-"
+            self.print(
+                f"{flag}{flag_additional} {lib_name:{col_lib_name - 5}} | "
+                f"{lib_data['req_version']:{col_required}} | "
+                f"{lib_data['inst_version']:{col_installed}} | {p_node:{col_node}}"
+            )
+        self.print("")
+        self.print("Legend:")
+        self.print(f"{self.flag_ok}{'  '} Library version is correct")
+        self.print(f"{self.flag_error}{'  '} Library version is incorrect")
+        self.print(f"{self.flag_missing}{'  '} Library is missing")
+        self.print(f"{self.flag_missing}{self.flag_error} Library is necessary, but missing")
         self.print("")
 
 
