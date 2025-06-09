@@ -13,13 +13,18 @@ import re
 import subprocess
 import sys
 
-# Third-party modules
-from colorama import Fore, Style
-
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
 from noc.core.version import version
+
+# Obtained from the `colorama` python-library
+# see also: https://en.wikipedia.org/wiki/ANSI_escape_code
+CSI = "\033["
+FORE_GREEN = f"{CSI}{str(32)}m"
+FORE_RED = f"{CSI}{str(31)}m"
+FORE_BLUE = f"{CSI}{str(34)}m"
+STYLE_RESET_ALL = f"{CSI}{str(0)}m"
 
 
 class Command(BaseCommand):
@@ -39,9 +44,9 @@ class Command(BaseCommand):
         self.handle_system(*args, **options)
         self.handle_dependencies(*args, **options)
 
-    flag_ok = f"{Fore.GREEN}\u2705{Style.RESET_ALL}"
-    flag_error = f"{Fore.RED}\u274C{Style.RESET_ALL}"
-    flag_missing = f"{Fore.BLUE}\u2796{Style.RESET_ALL}"
+    flag_ok = f"{FORE_GREEN}\u2705{STYLE_RESET_ALL}"
+    flag_error = f"{FORE_RED}\u274C{STYLE_RESET_ALL}"
+    flag_missing = f"{FORE_BLUE}\u2796{STYLE_RESET_ALL}"
 
     def handle_system(self, *args, **options):
         self.print("System information")
