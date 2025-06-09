@@ -1247,6 +1247,7 @@ class ManagedObject(NOCModel):
 
             for aa in ActiveAlarm.objects.filter(managed_object=self.id):
                 aa.clear_alarm("Management is disabled")
+        if Interaction.ServiceActivation not in self.interactions:
             # Clear discovery id
             from noc.inv.models.discoveryid import DiscoveryID
 
