@@ -39,6 +39,10 @@ class Command(BaseCommand):
         self.handle_system(*args, **options)
         self.handle_dependencies(*args, **options)
 
+    flag_ok = f"{Fore.GREEN}\u2705{Style.RESET_ALL}"
+    flag_error = f"{Fore.RED}\u274C{Style.RESET_ALL}"
+    flag_missing = f"{Fore.BLUE}\u2796{Style.RESET_ALL}"
+
     def handle_system(self, *args, **options):
         self.print("System information")
         self.print("==================")
@@ -47,13 +51,17 @@ class Command(BaseCommand):
         self.print(f"Installation name : {config.installation_name}")
         custom_path = config.path.custom_path
         if custom_path:
-            cp_exists = "exists" if os.path.exists(custom_path) else "NOT exists"
+            cp_exists = (
+                f"exists {self.flag_ok}"
+                if os.path.exists(custom_path)
+                else f"NOT exists {self.flag_error}"
+            )
             self.print(f"Custom path       : {config.path.custom_path} ({cp_exists})")
             custom_revision = "-"
             if os.path.exists(custom_path):
                 try:
                     custom_revision = subprocess.check_output(
-                        ["git", "rev-parse", "HEAD"], cwd=custom_path, encoding="utf-8"
+                        ["cat", ".git/HEAD"], cwd=custom_path, encoding="utf-8"
                     )
                     if custom_revision.endswith("\n"):
                         custom_revision = custom_revision[:-1]
@@ -66,10 +74,7 @@ class Command(BaseCommand):
         self.print("")
 
     REQUIREMENTS_PATH = ".requirements"
-    rx = re.compile(r"^(?P<lib_name>[a-zA-Z][-a-zA-Z0-9_\[\]]*)==(?P<version>.*)$")
-    flag_ok = f"{Fore.GREEN}\u2705{Style.RESET_ALL}"
-    flag_error = f"{Fore.RED}\u274C{Style.RESET_ALL}"
-    flag_missing = f"{Fore.BLUE}\u2796{Style.RESET_ALL}"
+    rx = re.compile(r"^(?P<lib_name>[a-zA-Z][-a-zA-Z0-9_]*)\[*.*]*==(?P<version>[a-zA-Z0-9.]+).*$")
 
     def handle_dependencies(self, *args, **options):
         self.print("Dependencies")
@@ -112,8 +117,8 @@ class Command(BaseCommand):
                     self.flag_ok if vers["req_version"] == vers["inst_version"] else self.flag_error
                 )
             self.print(
-                f"{lib_name:{col_lib_name}} | {vers['req_version']:{col_required}} | "
-                f"{vers['inst_version']:{col_installed - 3}} {flag}"
+                f"{flag} {lib_name:{col_lib_name - 3}} | {vers['req_version']:{col_required}} | "
+                f"{vers['inst_version']:{col_installed}}"
             )
         self.print("")
 
