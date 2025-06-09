@@ -94,7 +94,8 @@ class Command(BaseCommand):
                 match = self.rx.match(line)
                 if match:
                     lib_name, req_version = match.groups()
-                    libraries[lib_name] = {
+                    libraries[lib_name.lower()] = {
+                        "original_name": lib_name,
                         "req_version": req_version,
                         "inst_version": "",
                         "node": f_node,
@@ -102,11 +103,13 @@ class Command(BaseCommand):
             count += 1
         # Get installed versions
         for distribution in metadata.distributions():
-            lib_name = distribution.metadata["Name"]
+            lib_name = distribution.metadata["Name"].lower()
             if lib_name in libraries:
                 libraries[lib_name]["inst_version"] = distribution.version
         # Sorting
-        libraries: list[tuple[str, dict[str, str]]] = sorted(libraries.items())
+        libraries: list[tuple[str, dict[str, str]]] = sorted(
+            libraries.items(), key=lambda item: item[1]["original_name"]
+        )
         # Display information
         col_lib_name, col_required, col_installed, col_node = 35, 25, 25, 25
         self.print(
@@ -130,7 +133,7 @@ class Command(BaseCommand):
             )
             p_node = "YES" if lib_data["node"] else "-"
             self.print(
-                f"{flag}{flag_additional} {lib_name:{col_lib_name - 5}} | "
+                f"{flag}{flag_additional} {lib_data['original_name']:{col_lib_name - 5}} | "
                 f"{lib_data['req_version']:{col_required}} | "
                 f"{lib_data['inst_version']:{col_installed}} | {p_node:{col_node}}"
             )
