@@ -347,13 +347,14 @@ class NotificationGroup(NOCModel):
         # Collect other notifications
         for ngo in self.static_members:
             for c in ngo["contact"].split(","):
-                contacts.append(
-                    NotificationContact(
-                        contact=c,
-                        method=ngo["notification_method"],
-                        time_pattern=ngo.get("time_pattern") or None,
+                if c not in contacts:
+                    contacts.append(
+                        NotificationContact(
+                            contact=c,
+                            method=ngo["notification_method"],
+                            time_pattern=ngo.get("time_pattern") or None,
+                        )
                     )
-                )
         if not self.subscription_settings:
             return contacts
         # Collect user notifications
@@ -367,7 +368,8 @@ class NotificationGroup(NOCModel):
             for c in ngu.contacts:
                 if c.time_pattern and not c.time_pattern.match(ts):
                     continue
-                contacts.append(c)
+                if c not in contacts:
+                    contacts.append(c)
         return contacts
 
     @property
