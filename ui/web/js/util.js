@@ -806,7 +806,7 @@ NOC.uiStyles = function(style, theme){
     case "small": {
       // 3 letters 33px for gray theme, 1 letter 11px
       return {
-        width: convertToNoc(50),
+        width: convertToNoc(55),
         anchor: null,
       }
     }
