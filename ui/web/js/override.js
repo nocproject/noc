@@ -1,11 +1,12 @@
 //---------------------------------------------------------------------
 // ExtJS overrides
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2014 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-
+var _nocTheme = document.getRootNode().documentElement.dataset.theme || "noc";
 console.debug("Patching ExtJS " + Ext.getVersion().version);
+console.debug("Using theme: " + _nocTheme);
 //---------------------------------------------------------------------
 // Patches for ExtJS 5.0.0 errors
 // Review after any ExtJS upgrade
@@ -34,7 +35,6 @@ Ext.override(Ext.grid.column.Column, {
 //
 // Override form field labels
 //
-
 //
 // Mark required fields and apply style templates
 //
@@ -47,14 +47,18 @@ Ext.override(Ext.form.field.Base, {
     }
     // Apply uiStyle
     if(me.uiStyle){
-      var style = Ext.apply({}, NOC.uiStyles(me.uiStyle) || {});
+      var style = Ext.apply({}, NOC.uiStyles(me.uiStyle, _nocTheme) || {});
       if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign === "right")){
         style.width += me.labelWidth;
       }
       if(style.width && me.getTriggers){
-        var triggers = me.getTriggers();
-        Ext.Array.each(Object.keys(triggers), function(v){
-          style.width += 25;
+        var triggerWidth = 25, // theme gray
+          triggers = me.getTriggers();
+        if(_nocTheme === "noc"){
+          triggerWidth = 32;
+        }
+        Ext.Array.each(Object.keys(triggers), function(){
+          style.width += triggerWidth;
         });
       }
       Ext.apply(me, style);
@@ -161,15 +165,15 @@ Ext.override(Ext.tree.Column, {
   },
 });
 // Trace events
-if(NOC.settings.traceExtJSEvents){
-  console.log("Enabling event tracing");
-  Ext.mixin.Observable.prototype.fireEvent =
-        Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function(){
-          console.log("EVENT", this.$className, arguments[0], Array.prototype.slice.call(arguments, 1));
-          console.log("Stack trace:\n" + printStackTrace().join("\n"));
-          return true;
-        });
-}
+// if(NOC.settings.traceExtJSEvents){
+//   console.log("Enabling event tracing");
+//   Ext.mixin.Observable.prototype.fireEvent =
+//         Ext.Function.createInterceptor(Ext.mixin.Observable.prototype.fireEvent, function(){
+//           console.log("EVENT", this.$className, arguments[0], Array.prototype.slice.call(arguments, 1));
+//           console.log("Stack trace:\n" + printStackTrace().join("\n"));
+//           return true;
+//         });
+// }
 
 Ext.define("EXTJS-15862.tab.Bar", {
   override: "Ext.tab.Bar",
@@ -178,8 +182,7 @@ Ext.define("EXTJS-15862.tab.Bar", {
     var me = this,
       initialLayout = me.initialConfig.layout,
       initialAlign = initialLayout && initialLayout.align,
-      initialOverflowHandler = initialLayout && initialLayout.overflowHandler,
-      layout;
+      initialOverflowHandler = initialLayout && initialLayout.overflowHandler;
 
 
     if(me.plain){
@@ -235,6 +238,7 @@ Ext.define("NOC.data.request.Ajax", {
       }
     }
     catch(e){
+      console.warn("Error parsing Ajax response status:", e);
       result = failure;
     }
 
