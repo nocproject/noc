@@ -309,7 +309,7 @@ class ExtApplication(Application):
                 total = unpaged_data.count()
             else:
                 total = ld
-            out = {"total": total, "success": True, "data": out}
+            out = {"total": total, "status": True, "data": out}
         return self.response(out, status=self.OK)
 
     def clean_list_data(self, data):
@@ -368,7 +368,7 @@ class ExtApplication(Application):
             result = op.result()
             if isinstance(result, Exception):
                 return self.render_json(
-                    {"success": False, "message": "Error", "traceback": str(result)},
+                    {"status": False, "message": "Error", "traceback": str(result)},
                     status=self.INTERNAL_ERROR,
                 )
             else:
