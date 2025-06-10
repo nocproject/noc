@@ -40,19 +40,21 @@ class EscalationStatus(enum.Enum):
 class TTAction(enum.Enum):
     """
     Attributes:
-        CREATE: Create Document on TT System
+        CREATE_TT: Create Document on TT System
+        CLOSE_TT: Close Document on TT System
         ACK: Acknowledge alarm
         UN_ACK: UnAcknowledge alarm
-        CLOSE: Clear Alarm
+        CLEAR: Clear Alarm
         LOG: Add Alarm Log
         SUBSCRIBE: Subscribe alarm changes
         NOTIFY: Send Notification
     """
 
-    CREATE = "create"
+    CREATE_TT = "create_tt"
+    CLOSE_TT = "close_tt"
     ACK = "ack"
     UN_ACK = "un_ack"
-    CLOSE = "clear"  # Reopen
+    CLEAR = "clear"  # Reopen
     LOG = "log"
     SUBSCRIBE = "subscribe"
     NOTIFY = "notify"
@@ -304,6 +306,37 @@ class TTCommentRequest(BaseModel):
     reply_to: Optional[str] = None
 
 
+class EscalationGroupPolicy(enum.Enum):
+    """
+    Attributes:
+        NEVER: Escalate only alarm
+        ROOT: Escalate Root Cause group
+        GROUP: Escalate group
+        SERVICE: Escalate Service Affected Group
+        CUSTOM: User former group
+    """
+
+    # Never Group, Alarm Only
+    NEVER = 0
+    # Escalate only first root cause in group
+    ROOT = 1
+    # Escalate any first alarm in the group
+    GROUP = 2
+    # Escalate
+    SERVICE = 3
+    #
+    CUSTOM = 4  # handler ?
+    # Escalate only first root cause in group
+    # ROOT_FIRST = 1
+    # Escalate only root causes
+    # ROOT = 2
+    # Escalate any first alarm in the group,
+    # prefer root causes
+    # ALWAYS_FIRST = 3
+    # Always escalate
+    # ALWAYS = 4
+
+
 class ActionItem(BaseModel):
     alarm: str
     group: Optional[str] = None
@@ -319,6 +352,8 @@ class Action(BaseModel):
     min_severity: Optional[int] = None
     max_retries: int = 1
     template: Optional[str] = None
+    # pre_reason: Optional[str] = None
+    login: Optional[str] = None
     stop_processing: bool = False
     # Manual, Group Access
     # root_only: bool = True
@@ -332,7 +367,7 @@ class EscalationRequest(BaseModel):
     ctx: int
     actions: List[Action]
     timestamp: Optional[datetime] = None
-    items_policy: EscalationPolicy = EscalationPolicy.ROOT
+    policy: EscalationGroupPolicy = EscalationGroupPolicy.ROOT
     maintenance_policy: str = "e"
     end_condition: str = "a"
     max_repeats: int = 0

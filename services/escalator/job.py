@@ -10,6 +10,7 @@ import logging
 import datetime
 import operator
 import enum
+import time
 from dataclasses import dataclass
 from collections import defaultdict
 from typing import List, Set, Iterable, Optional, Tuple, Dict, Any, DefaultDict
@@ -34,15 +35,18 @@ from noc.core.tt.types import (
     EscalationMember,
     TTActionContext,
     TTAction,
+    EscalationGroupPolicy,
     EscalationRequest,
     Action as ActionReq,
 )
 from noc.core.tt.base import TTSystemCtx
-from noc.core.models.escalationpolicy import EscalationPolicy
+
+# from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.main.models.remotesystem import RemoteSystem
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
@@ -61,7 +65,7 @@ class ActionStatus(enum.Enum):
 
     Attributes:
         NEW: new action
-        SUCCESS: run successed
+        SUCCESS: run success
         FAILED: Failed with error
         WARNING: Warning. Failed, but allowed to fail.
         SKIP: Not running about condition
@@ -74,7 +78,7 @@ class ActionStatus(enum.Enum):
     FAILED = "f"
     WARNING = "w"
     # CANCELLED = "c"
-    SKIP = "s"
+    SKIP = "k"
     PENDING = "p"
     # WAIT_END = "we"
     # STOP = "stop/break"
@@ -121,6 +125,12 @@ class ItemStatus(enum.Enum):
     FAIL = "fail"  # escalation fail
     EXISTS = "exists"  # Exists on another escalation
     REMOVED = "removed"  # item removed
+
+
+@dataclass
+class GroupItem(object):
+    reference: bytes
+    id: Optional[str] = None
 
 
 @dataclass
@@ -180,7 +190,7 @@ class ActionLog(object):
         self.action = action
         self.key = key
         # To ctx ?
-        self.template: Optional[Template] = Template.get_by_id(template) if template else None
+        self.template: Optional[Template] = Template.get_by_id(int(template)) if template else None
         self.timestamp = timestamp  # run_at
         self.status = status
         self.error = error
@@ -224,15 +234,19 @@ class ActionLog(object):
             return True
         return False
 
-    def get_ctx(self, item_ctx: Dict[str, Any]) -> Dict[str, Any]:
+    def get_ctx(self, item_ctx: Dict[str, Any], docs_ids: Dict[str, str]) -> Dict[str, Any]:
         """Build action CTX"""
         r = {"timestamp": self.timestamp}
-        if self.action == TTAction.CREATE:
+        if self.action == TTAction.CREATE_TT or self.action == TTAction.CLOSE_TT:
             r["tt_system"] = TTSystem.get_by_id(self.key)
+            r["tt_id"] = docs_ids.get(self.key)
         elif self.action == TTAction.NOTIFY:
             r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
-        r["subject"] = self.template.render_subject(**item_ctx)
-        r["body"] = self.template.render_body(**item_ctx)
+        if self.template:
+            r["subject"] = self.template.render_subject(**item_ctx)
+            r["body"] = self.template.render_body(**item_ctx)
+        if self.ctx:
+            r |= self.ctx
         return r
 
     def get_repeat(self, delay: int) -> "ActionLog":
@@ -257,6 +271,7 @@ class ActionLog(object):
             time_pattern=action.time_pattern,
             min_severity=action.min_severity or 0,
             stop_processing=action.stop_processing,
+            login=action.login,
         )
 
 
@@ -274,8 +289,10 @@ class AlarmAutomationJob(object):
         items: List[Item],
         # alarms_ids
         actions: List[ActionLog],
+        groups: Optional[List[GroupItem]] = None,
         end_condition: str = "CR",
-        items_policy: EscalationPolicy = EscalationPolicy.ROOT,
+        # items_policy: EscalationPolicy = EscalationPolicy.ROOT,
+        policy: EscalationGroupPolicy = EscalationGroupPolicy.ROOT,
         ctx_id: Optional[int] = None,
         telemetry_sample: Optional[int] = None,
         id: Optional[str] = None,
@@ -287,11 +304,13 @@ class AlarmAutomationJob(object):
         self.name = name
         self.status = status
         self.items = items
+        self.groups: List[GroupItem] = groups or []
         self.actions = actions
         self.ctx_id = ctx_id
         self.telemetry_sample = telemetry_sample
         self.allow_fail = allow_fail
-        self.items_policy = items_policy
+        # self.items_policy = items_policy
+        self.policy = policy or EscalationGroupPolicy.ROOT
         self.end_condition = end_condition or "CR"
         self.dry_run = dry_run
         self.tt_docs: Dict[str, str] = {}  # TTSystem -> doc_id
@@ -299,6 +318,7 @@ class AlarmAutomationJob(object):
         self.end_at: Optional[datetime.datetime] = None
         self.max_repeat = 0
         self.repeat_delay = 60
+        self.affected_services = []
         # Alarm Severity
         self.severity = 0
         self.total_objects = []
@@ -360,6 +380,8 @@ class AlarmAutomationJob(object):
         ts = datetime.datetime.now()
         actions = []
         self.logger.info("Processed actions from : %s", ts)
+        self.update_items()
+        print("ITEMS", self.items, self.affected_services)
         # with (
         #     Span(
         #         client="escalator",
@@ -382,12 +404,19 @@ class AlarmAutomationJob(object):
             elif not aa.is_match(self.severity, ts):
                 # Set Skip (Condition)
                 continue
+            elif self.dry_run:
+                wait_interval = (ts - aa.timestamp).total_seconds()
+                self.logger.info("Dry run mode, waiting interval: %s", wait_interval)
+                # time.sleep(abs(wait_interval) + 1)
+                time.sleep(10)
             elif aa.timestamp > ts:
                 break
             # if not aa.to_run(status, delay):
             #    continue
             try:
-                r = self.run_action(aa.action, **aa.get_ctx(ctx))  # aa.get_ctx for job
+                r = self.run_action(
+                    aa.action, **aa.get_ctx(ctx, docs_ids=self.tt_docs)
+                )  # aa.get_ctx for job
             except Exception as e:
                 r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
                 # Job Status to Exception
@@ -429,9 +458,11 @@ class AlarmAutomationJob(object):
     ) -> ActionResult:
         """Execute action"""
         match action:
-            case TTAction.CREATE:
+            case TTAction.CREATE_TT:
                 r = self.create_tt(**ctx)
-            case TTAction.CLOSE:
+            case TTAction.CLOSE_TT:
+                r = self.close_tt(**ctx)
+            case TTAction.CLEAR:
                 r = self.alarm_clear(**ctx)
             case TTAction.ACK:
                 r = self.alarm_ack(**ctx)
@@ -448,9 +479,12 @@ class AlarmAutomationJob(object):
         """Return Job State"""
 
     @classmethod
-    def from_request(cls, req: EscalationRequest) -> "AlarmAutomationJob":
+    def from_request(cls, req: EscalationRequest, dry_run: bool = False) -> "AlarmAutomationJob":
         """Build Job from Request"""
         alarm = get_alarm(req.item.alarm)
+        groups = []
+        if req.item.service:
+            groups += [GroupItem(id=str(req.item.service), reference=alarm.reference)]
         job = AlarmAutomationJob(
             status=JobStatus.NEXT,
             items=[Item(alarm=alarm)],
@@ -458,7 +492,9 @@ class AlarmAutomationJob(object):
             ctx_id=req.ctx,
             actions=[ActionLog.from_request(a, started_at=req.timestamp) for a in req.actions],
             end_condition=req.end_condition,
-            items_policy=req.items_policy,
+            groups=groups,
+            policy=req.policy,
+            dry_run=dry_run,
         )
         return job
 
@@ -508,6 +544,64 @@ class AlarmAutomationJob(object):
             return bool(self.end_at)
         return False
 
+    def iter_alarms_always_first(self) -> Iterable[ActiveAlarm]:
+        """
+        `always_first` escalation policy. Always escalate first alarm
+        """
+        if not self.groups:
+            yield from self.iter_alarms_root()
+            return
+        for aa in ActiveAlarm.objects.filter(
+            groups__in=[g.reference for g in self.groups]
+        ).order_by("timestamp"):
+            # if aa.managed_object.can_escalate():
+            #     # Skip Disabled Escalation
+            #     yield aa
+            #     break
+            yield aa
+        # yield from self.alarm.iter_grouped()
+
+    def iter_alarms_service(self) -> Iterable[ActiveAlarm]:
+        """
+        `root` escalation policy. If alarm is root cause, yield root alarm
+        and all the consequences
+        """
+        if not self.groups:
+            yield from self.iter_alarms_root()
+            return
+        for aa in ActiveAlarm.objects.filter(
+            groups__in=[g.reference for g in self.groups],
+        ).order_by("timestamp"):
+            # if aa.managed_object.can_escalate():
+            #     # Skip Disabled Escalation
+            #     yield aa
+            #     break
+            yield aa
+
+    def iter_alarms_root(self) -> Iterable[ActiveAlarm]:
+        """
+        `root` escalation policy. If alarm is root cause, yield root alarm
+        and all the consequences
+        """
+        if self.alarm.root:
+            self.logger.info("[root] Alarm is not a root cause. Skipping")
+            return
+        yield self.alarm
+        yield from self.alarm.iter_consequences()
+
+    def iter_alarms_items(self) -> List[ActiveAlarm]:
+        """"""
+        match self.policy:
+            case EscalationGroupPolicy.NEVER:
+                return [self.alarm]
+            case EscalationGroupPolicy.ROOT:
+                return list(self.iter_alarms_root())
+            case EscalationGroupPolicy.GROUP:
+                return list(self.iter_alarms_always_first())
+            case EscalationGroupPolicy.SERVICE:
+                return list(self.iter_alarms_service())
+        return [self.alarm]
+
     def update_items(self):
         """Update escalation doc items. Run on is_dirty"""
 
@@ -521,12 +615,12 @@ class AlarmAutomationJob(object):
                 t_dict[item.profile] += item.summary
 
         # Dynamic (save to field)
-        policy = self.items_policy.name.lower()
-        iter_items = getattr(self, f"iter_alarms_{policy}", None)
-        if not iter_items:
-            self.logger.error("Unknown escalation policy `%s`. Skipping", policy)
-            return None
-        items = list(iter_items())
+        # policy = self.policy.name.lower()
+        # iter_items = getattr(self, f"iter_alarms_{policy}", None)
+        # if not iter_items:
+        #    self.logger.error("Unknown escalation policy `%s`. Skipping", policy)
+        #    return None
+        items = self.iter_alarms_items()
         if not items:
             return None
         # Total counters
@@ -534,6 +628,7 @@ class AlarmAutomationJob(object):
         total_services: DefaultDict[ObjectId, int] = defaultdict(int)
         total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
         # @todo: Append profile
+        affected_services = set()
         for alarm in items:
             if alarm.alarm_class.is_ephemeral:
                 # Group alarms are virtual and should be locked, but not escalated
@@ -547,6 +642,8 @@ class AlarmAutomationJob(object):
             total_objects[alarm.managed_object.object_profile.id] += 1
             update_totals_from_summary(total_services, alarm.direct_services)
             update_totals_from_summary(total_subscribers, alarm.direct_subscribers)
+            if alarm.affected_services:
+                affected_services |= set(alarm.affected_services)
 
         # if not self.items:
         #    return None  # Only group alarms
@@ -557,6 +654,7 @@ class AlarmAutomationJob(object):
         self.total_subscribers = [
             SummaryItem(profile=k, summary=v) for k, v in total_subscribers.items()
         ]
+        self.affected_services = list(affected_services)
 
     @staticmethod
     def summary_to_list(summary, model):
@@ -586,7 +684,10 @@ class AlarmAutomationJob(object):
         """
         Get escalation context
         """
-        affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
+        # affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
+        affected_objects = sorted(
+            [aa.managed_object for aa in self.items], key=operator.attrgetter("name")
+        )
         segment = self.alarm.managed_object.segment
         if segment.is_redundant:
             uplinks = self.alarm.managed_object.uplinks
@@ -607,14 +708,19 @@ class AlarmAutomationJob(object):
         # @todo Alarm notification Ctx, Escalation Message Ctx
         return {
             "alarm": self.alarm,
+            # "leader": self.alarm,
+            "service": (
+                None
+                if self.policy != EscalationGroupPolicy.SERVICE
+                else Service.get_by_id(self.groups[0].id)
+            ),
+            "group": "",
             "managed_object": self.alarm.managed_object,
             "affected_objects": affected_objects,
             "cons_escalated": [],
-            "total_objects": self.summary_to_list(self.alarm.total_objects, ManagedObjectProfile),
-            "total_subscribers": self.summary_to_list(
-                self.alarm.total_subscribers, SubscriberProfile
-            ),
-            "total_services": self.summary_to_list(self.alarm.total_services, ServiceProfile),
+            "total_objects": self.summary_to_list(self.total_objects, ManagedObjectProfile),
+            "total_subscribers": self.summary_to_list(self.total_subscribers, SubscriberProfile),
+            "total_services": self.summary_to_list(self.total_services, ServiceProfile),
             "tt": None,
             "lost_redundancy": lost_redundancy,
             "affected_subscribers": affected_subscribers,
@@ -630,7 +736,14 @@ class AlarmAutomationJob(object):
             r.append(f"{tt.name}:{document_id}")
         return ";".join(r)
 
-    def comment_tt(self, tt_system: TTSystem, tt_id: str, message: str) -> EscalationResult:
+    def comment_tt(
+        self,
+        tt_system: TTSystem,
+        tt_id: str,
+        message: str,
+        timestamp: Optional[datetime.datetime] = None,
+        **kwargs,
+    ) -> EscalationResult:
         """
         Append Comment to Trouble Ticket
 
@@ -643,7 +756,7 @@ class AlarmAutomationJob(object):
             Escalation Resul instance
         """
         self.logger.info("Appending comment to TT %s:%s", tt_system, tt_id)
-        with self.get_tt_system_context(tt_system, tt_id) as ctx:
+        with self.get_tt_system_context(tt_system, tt_id, timestamp) as ctx:
             ctx.comment(message)
         r = ctx.get_result()
         if r.is_ok:
@@ -694,7 +807,12 @@ class AlarmAutomationJob(object):
         return ActionResult(status=ActionStatus.SUCCESS)
 
     def alarm_unack(
-        self, tt_system: Optional[TTSystem], user: User, message: Optional[str] = None, **kwargs
+        self,
+        tt_system: Optional[TTSystem],
+        user: User,
+        message: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        **kwargs,
     ):
         """
         Acknowledge alarm by tt_system or settings
@@ -725,28 +843,89 @@ class AlarmAutomationJob(object):
         # Delayed, checked action - status return other service
         return ActionResult(status=ActionStatus.SUCCESS)
 
+    def get_escalation_items(self, tt_system: TTSystem) -> List[ECtxItem]:
+        """
+        Build escalation items for Escalation Doc
+        Args:
+            tt_system: TTSystem for checked item
+
+        """
+        r = []
+        rs = RemoteSystem.get_by_name("CMDB")
+        for item in self.items:
+            # if item.is_already_escalated:
+            #     continue
+            rid = item.managed_object.get_mapping(rs)
+            if rid:
+                r.append(
+                    ECtxItem(id=str(item.managed_object.id), tt_id=rid),
+                )
+                continue
+            if not item.managed_object.can_escalate(True):
+                err = f"Cannot append object {item.managed_object.name} to group tt: Escalations are disabled"
+                self.log_alarm(err)
+                item.escalation_status = "fail"
+                continue
+            if item.managed_object.tt_system != tt_system:
+                err = f"Cannot append object {item.managed_object.name} to group tt: Belongs to other TT system"
+                self.log_alarm(err)
+                item.escalation_status = "fail"
+                continue
+            ei = ECtxItem(id=str(item.managed_object.id), tt_id=item.managed_object.tt_system_id)
+            r.append(ei)
+        return r
+
+    def get_affected_services_items(self) -> List[EscalationServiceItem]:
+        """Return Affected Service item for escalation doc"""
+        if self.policy == EscalationGroupPolicy.SERVICE:
+            svc = Service.get_by_id(self.groups[0].id)
+            return [
+                EscalationServiceItem(
+                    id=str(svc.id),
+                    tt_id=svc.remote_id or "",
+                )
+            ]
+        elif not self.affected_services:
+            return []
+        r = []
+        for svc in Service.objects.filter(id__in=self.affected_services):
+            r.append(
+                EscalationServiceItem(
+                    id=str(svc.id),
+                    tt_id=svc.remote_id or "",
+                )
+            )
+        return r
+
     def get_tt_system_context(
-        self, tt_system: TTSystem, tt_id: Optional[str] = None
+        self,
+        tt_system: TTSystem,
+        tt_id: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        login: Optional[str] = None,
     ) -> TTSystemCtx:
         """
         Build TTSystem Context
         Args:
             tt_system: TTSystem instance
             tt_id: Document ID
+            timestamp:
+            login:
 
         """
-        cfg = self.get_tt_system_config(tt_system)
-        actions = self.get_action_context()
+        # cfg = self.get_tt_system_config(tt_system)
+        cfg = tt_system.get_config()
+        # actions = self.get_action_context()
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
             queue=self.leader.managed_object.tt_queue,
             reason=None,
-            login=cfg.login,
-            timestamp=self.timestamp,
-            actions=actions,
+            login=login or cfg.login,
+            timestamp=timestamp,
+            actions=[],
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
-            # services=self.get_affected_services_items() or None,
+            services=self.get_affected_services_items() or None,
         )
         return ctx
 
@@ -757,6 +936,9 @@ class AlarmAutomationJob(object):
         body: str,
         context: Optional[Dict[str, Any]] = None,
         tt_id: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        login: Optional[str] = None,
+        **kwargs,
     ) -> ActionResult:
         """
         Create Trouble Ticket on TT System
@@ -777,14 +959,14 @@ class AlarmAutomationJob(object):
             body,
         )
         # Build Items for context
-        self.check_escalated()
+        # self.check_escalated()
         if tt_id:
             self.logger.info("Changed TT in system %s:%s", tt_system.name, tt_id)
             self.log_alarm(f"Changed TT in system {tt_system.name}")
         else:
-            self.logger.info("Creating TT in system %s", tt_system.name)
+            self.logger.info("Creating TT in system %s (%s)", tt_system.name, login)
             self.log_alarm(f"Creating TT in system {tt_system.name}")
-        with self.get_tt_system_context(tt_system, tt_id) as ctx:
+        with self.get_tt_system_context(tt_system, tt_id, timestamp, login) as ctx:
             ctx.create(subject=subject, body=body)
         r = ctx.get_result()
         if r.status == EscalationStatus.TEMP:
@@ -796,8 +978,9 @@ class AlarmAutomationJob(object):
             metrics["escalation_tt_fail"] += 1
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
-        if tt_id:
-            return ActionResult(status=ActionStatus.SUCCESS, document_id=tt_id)
+        if r.document:
+            return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
+        # @todo r.document != tt_id
         # Project result to escalation items
         ctx_map = {}
         for item in ctx.items:
@@ -821,7 +1004,13 @@ class AlarmAutomationJob(object):
         return ActionResult(status=ActionStatus.SUCCESS, document_id=tt_id)
 
     def close_tt(
-        self, tt_system: TTSystem, tt_id: str, reason: Optional[str] = None
+        self,
+        tt_system: TTSystem,
+        tt_id: str,
+        reason: Optional[str] = None,
+        timestamp: Optional[datetime.datetime] = None,
+        login: Optional[str] = None,
+        **kwargs,
     ) -> ActionResult:
         """
         Close Trouble Ticket on TT System
@@ -830,6 +1019,7 @@ class AlarmAutomationJob(object):
             tt_system: TT System instance
             tt_id: Number of document on TT System
             reason: comment message for close reason
+            timestamp:
 
         Returns:
             Escalation Resul instance
@@ -837,7 +1027,7 @@ class AlarmAutomationJob(object):
         if not tt_id:
             return ActionResult(status=ActionStatus.SKIP)
         self.logger.info("Closing TT %s:%s", tt_system, tt_id)
-        with self.get_tt_system_context(tt_system, tt_id) as ctx:
+        with self.get_tt_system_context(tt_system, tt_id, timestamp, login) as ctx:
             ctx.close()
         r = ctx.get_result()
         if r.is_ok:
