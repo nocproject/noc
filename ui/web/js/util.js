@@ -798,7 +798,7 @@ NOC.uiStyles = function(style, theme){
       if(theme === "noc"){
         value = value * nocLetter / grayLetter;
       }
-      return value;
+      return Math.trunc(value);
     },
     baseWidth = convertToNoc(Ext.create("NOC.core.modelfilter.Base").width);
   
