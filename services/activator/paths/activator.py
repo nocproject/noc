@@ -357,7 +357,7 @@ class ActivatorAPI(JSONRPCAPI):
             checker = checker_loader[checker](**kwargs)
             self.logger.debug("[%s] Run checker", ";".join(f"{c.name}({c.arg0})" for c in d_checks))
             try:
-                async for check in checker.iter_result_async(d_checks):
+                async for check in checker.iter_result(d_checks):
                     r.append(check)
                     if first_success and check.status:
                         break
