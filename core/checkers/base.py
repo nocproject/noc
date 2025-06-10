@@ -8,12 +8,15 @@
 # Python modules
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Union, AsyncIterable
+from typing import List, Optional, Dict, Any, Union, AsyncIterable, TypeVar, Callable
+import threading
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
+from noc.core.threadpool import ThreadPoolExecutor
 
+T = TypeVar("T")
 
 TCP_CHECK = "TCP"
 CHECKS = []
@@ -205,6 +208,8 @@ class BaseChecker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
+    _executor_lock = threading.Lock()
+    _executor: Optional[ThreadPoolExecutor] = None
 
     def __init__(
         self,
@@ -226,3 +231,13 @@ class BaseChecker(object):
             Yields CheckResult
         """
         raise NotImplementedError()
+
+    async def run_in_executor(self, fn: Callable[[], T]) -> T:
+        """Run function on executor."""
+        with BaseChecker._executor_lock:
+            executor = BaseChecker._executor
+            if not executor:
+                BaseChecker._executor = ThreadPoolExecutor(5)
+                executor = BaseChecker._executor
+
+        return await executor.submit(fn)

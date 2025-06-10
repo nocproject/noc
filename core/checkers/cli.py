@@ -144,8 +144,7 @@ class CLIProtocolChecker(BaseChecker):
             timeout=60,
         )
         try:
-            loop = asyncio.get_running_loop()
-            r = loop.run_in_executor(None, script.run)
+            r = await self.run_in_executor(script.run)
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
             return False, CheckError(code="0", message=f"Script error: {e.__doc__}")
