@@ -24,8 +24,8 @@ from noc.core.perf import metrics
 from noc.core.ip import IP
 from noc.config import config
 from noc.core.checkers.loader import loader
-from noc.core.checkers.base import Check, Checker, DataItem, TCP_CHECK
-from noc.services.activator.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
+from noc.core.checkers.base import Check, BaseChecker, DataItem, TCP_CHECK
+from noc.core.checkers.snmp import SNMPProtocolChecker, SUGGEST_CHECK
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, Protocol
 from noc.core.purgatorium import ProtocolCheckResult, register
 from noc.core.mib import mib
@@ -157,7 +157,7 @@ class Command(BaseCommand):
         snmp_creds = self.parse_credentials(community, snmp_user)
         if snmp_creds:
             self.get_checker(SUGGEST_CHECK, rules=snmp_creds)
-            self.print("SNMP Credentials: %s", snmp_creds)
+            self.print(f"SNMP Credentials: {snmp_creds}")
         # result = defaultdict(lambda: {"checks": [], "source": "network-scan", "data": {}})
         with progressbar.ProgressBar(max_value=len(addr_list)) as bar:
             run_sync(runner)
@@ -288,7 +288,7 @@ class Command(BaseCommand):
         return p.bi_id
 
     @staticmethod
-    def get_checker(name: str, **kwargs) -> Optional[Checker]:
+    def get_checker(name: str, **kwargs) -> Optional[BaseChecker]:
         """
         Return checker function by name
         """
