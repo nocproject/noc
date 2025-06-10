@@ -1035,7 +1035,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                         {
                           name: "box_discovery_system_start_delay",
                           xtype: "numberfield",
-                          labelWidth: 0,
+                          labelWidth: -5,
                           minValue: 0,
                           allowBlank: false,
                           uiStyle: "small",
@@ -1064,7 +1064,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                           name: "box_discovery_config_changed_delay",
                           xtype: "numberfield",
                           minValue: 0,
-                          labelWidth: 0,
+                          labelWidth: -5,
                           allowBlank: false,
                           uiStyle: "small",
                         },
