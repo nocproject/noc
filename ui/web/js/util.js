@@ -791,32 +791,43 @@ Ext.define("NOC.form.field.VTypes", {
 // Predefined set of size and settings.
 // Applied to field as uiStyle property
 //
-NOC.uiStyles = function(style){
+NOC.uiStyles = function(style, theme){
+  let convertToNoc = function(value){
+      let grayLetter = 11,
+        nocLetter = 16;
+      if(theme === "noc"){
+        value = value * nocLetter / grayLetter;
+      }
+      return Math.trunc(value);
+    },
+    baseWidth = convertToNoc(Ext.create("NOC.core.modelfilter.Base").width);
+  
   switch(style){
     case "small": {
-      // 3 letters
+      // 3 letters 33px for gray theme, 1 letter 11px
       return {
-        width: 50,
+        width: convertToNoc(55),
         anchor: null,
       }
     }
     case "medium": {
       // 20 letters
       return {
-        width: Ext.create("NOC.core.modelfilter.Base").width - 25,
+        width: baseWidth - convertToNoc(25),
         anchor: null,
       };
     }
     case "medium-combo": {
+
       return {
-        width: Ext.create("NOC.core.modelfilter.Base").width - 100,
+        width: baseWidth - convertToNoc(100),
         anchor: null,
       };
     }
     case "large": {
       // 40 letters
       return {
-        width: Ext.create("NOC.core.modelfilter.Base").width * 2,
+        width: baseWidth * 2,
         anchor: null,
       }
     }
