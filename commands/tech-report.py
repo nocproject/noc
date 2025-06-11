@@ -4,6 +4,12 @@
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+# Using:
+# ./noc tech-report system
+# ./noc tech-report dependencies
+# ./noc tech-report
+# ./noc tech-report --ansi-symbols system
+# and so on
 
 # Python modules
 from importlib import metadata
@@ -29,13 +35,24 @@ STYLE_RESET_ALL = f"{CSI}{str(0)}m"
 
 class Command(BaseCommand):
     help = "Display system and dependencies information"
+    flag_ok, flag_error, flag_missing = "v ", "x ", "- "
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
+        parser.add_argument(
+            "-a", "--ansi-symbols", action="store_true", help="Use ANSI instead of Unicode symbols"
+        )
         subparsers.add_parser("system", help="Display system information")
         subparsers.add_parser("dependencies", help="Display dependencies")
 
-    def handle(self, *args, **options):
+    def set_unicode_symbols(self):
+        self.flag_ok = f"{FORE_GREEN}\u2705{STYLE_RESET_ALL}"
+        self.flag_error = f"{FORE_RED}\u274C{STYLE_RESET_ALL}"
+        self.flag_missing = f"{FORE_BLUE}\u2796{STYLE_RESET_ALL}"
+
+    def handle(self, ansi_symbols, *args, **options):
+        if not ansi_symbols:
+            self.set_unicode_symbols()
         cmd = options.pop("cmd")
         cmd = cmd or "total"
         return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
@@ -43,10 +60,6 @@ class Command(BaseCommand):
     def handle_total(self, *args, **options):
         self.handle_system(*args, **options)
         self.handle_dependencies(*args, **options)
-
-    flag_ok = f"{FORE_GREEN}\u2705{STYLE_RESET_ALL}"
-    flag_error = f"{FORE_RED}\u274C{STYLE_RESET_ALL}"
-    flag_missing = f"{FORE_BLUE}\u2796{STYLE_RESET_ALL}"
 
     def handle_system(self, *args, **options):
         self.print("System information")
