@@ -773,7 +773,7 @@ class DiscoveredObject(Document):
         elif self.origin:
             self.origin = None
         # Check policy
-        if not mo and template and not self.origin:
+        if not mo and template and not self.origin and ctx.data:
             # Create New
             mo = template.render(ctx)
         elif not mo and not template:
