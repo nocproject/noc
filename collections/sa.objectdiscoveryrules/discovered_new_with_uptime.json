@@ -13,14 +13,14 @@
             "match_data": [{
                 "field": "uptime",
                 "op": "gte",
-                "value": "3600"
+                "value": "1800"
             }]
         }
     ],
     "default_action": "new",
     "enable_ip_scan_discovery": false,
     "ip_scan_discovery_interval": 0,
-    "is_active": false,
+    "is_active": true,
     "network_ranges": [],
     "preference": 100,
     "sources": [{
