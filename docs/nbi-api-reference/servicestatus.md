@@ -18,9 +18,13 @@ Get current statuses for one or more [Service](../concepts/service/index.md).
     Host: noc.example.com
     Private-Token: 12345
 
-    {
-        "objects": ["10", "11", "12", "13"]
-    }
+{
+ "services": [
+     {"id": "671b5838075fb524ae69f930"},
+     {"id": "673119a4024bddb8f273e9d2"},
+     {"remote_system": "RS1", "remote_id": "427"}
+ ]
+}
     ```
 
 <!-- prettier-ignore -->
@@ -29,14 +33,44 @@ Get current statuses for one or more [Service](../concepts/service/index.md).
     HTTP/1.1 200 OK
     Content-Type: text/json
 
+{
+  "statuses": [
     {
-        "statuses": [
-            {"id": "10", "status": True},
-            {"id": "11", "status": True},
-            {"id": "12", "status": True},
-            {"id": "13", "status": False}
-        ]
+      "id": "671b5838075fb524ae69f930",
+      "status": {
+        "id": 1,
+        "name": "UP"
+      },
+      "change": "2025-02-28T14:16:49",
+      "in_maintenance": false,
+      "parent": null,
+      "remote_mappings": null
+    },
+    {
+      "id": "673119a2024bddb8f273e92e",
+      "status": {
+        "id": 0,
+        "name": "UNKNOWN"
+      },
+      "change": "2024-11-10T23:37:54.771000",
+      "in_maintenance": false,
+      "parent": null,
+      "remote_mappings": null
+    },
+    {
+      "id": "673119a4024bddb8f273e9d2",
+      "status": {
+        "id": 1,
+        "name": "UP"
+      },
+      "change": "2024-12-16T13:36:40",
+      "in_maintenance": false,
+      "parent": null,
+      "remote_mappings": null
     }
+  ],
+  "not_found_queries": null
+}
     ```
 
 ### Request Parameters
