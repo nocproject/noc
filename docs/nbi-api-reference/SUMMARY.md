@@ -4,5 +4,6 @@
 * [getmappings](getmappings.md)
 * [objectmetrics](objectmetrics.md)
 * [objectstatus](objectstatus.md)
+* [servicestatus](servicestatus.md)
 * [path](path.md)
 * [telemetry](telemetry.md)
