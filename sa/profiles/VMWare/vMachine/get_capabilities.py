@@ -28,6 +28,8 @@ class Script(BaseScript, VIMScript):
         }
         if vm.summary.guest.toolsStatus not in {"toolsOk", "toolsOld"}:
             return
+        if not vm.guest.ipStack:
+            return
         si = vm.guest.ipStack[0]
         if si.dnsConfig and si.dnsConfig.ipAddress:
             caps["VM | DNS Servers"] = ",".join(si.dnsConfig.ipAddress)
