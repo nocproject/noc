@@ -47,7 +47,7 @@ class Command(BaseCommand):
         "service": "sa.Service",
         "cfgmxroute": ("main.MessageRoute", "main.NotificationGroup"),
         "cfgmetricrules": "pm.MetricRule",
-        "cfgeventrules": "fm.EventClassificationRule",
+        "cfgeventrules": ("fm.EventClassificationRule", "fm.IgnorePattern"),
         "cfgevent": "fm.EventClass",
     }
     OLD_MAP = {
