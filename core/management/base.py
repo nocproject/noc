@@ -193,6 +193,10 @@ class BaseCommand(object):
         for h in logger.handlers:
             h.setFormatter(fmt)
         for lg in logger.manager.loggerDict.values():
+            if isinstance(lg, logging.Logger) and lg.name.startswith("pymongo"):
+                # Fix spam debug messages on pymongo
+                lg.setLevel(logging.INFO)
+                continue
             if hasattr(lg, "setLevel"):
                 lg.setLevel(level)
         self.is_debug = level <= logging.DEBUG
