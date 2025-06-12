@@ -21,36 +21,36 @@ class EnvItem(BaseModel):
 class DefaultRemoteSystemItem(BaseModel):
     id: str
     name: str
-    description: Optional[str]
     handler: str
     # Environment variables
     environment: List[EnvItem]
+    description: Optional[str] = None
     # Enable extractors/loaders
-    enable_admdiv: bool
-    enable_administrativedomain: bool
-    enable_authprofile: bool
-    enable_container: bool
-    enable_link: bool
-    enable_managedobject: bool
-    enable_managedobjectprofile: bool
-    enable_networksegment: bool
-    enable_networksegmentprofile: bool
-    enable_object: bool
-    enable_service: bool
-    enable_serviceprofile: bool
-    enable_subscriber: bool
-    enable_subscriberprofile: bool
-    enable_resourcegroup: bool
-    enable_ttsystem: bool
-    enable_project: bool
-    enable_label: bool
+    enable_admdiv: bool = False
+    enable_administrativedomain: bool = False
+    enable_authprofile: bool = False
+    enable_container: bool = False
+    enable_link: bool = False
+    enable_managedobject: bool = False
+    enable_managedobjectprofile: bool = False
+    enable_networksegment: bool = False
+    enable_networksegmentprofile: bool = False
+    enable_object: bool = False
+    enable_service: bool = False
+    enable_serviceprofile: bool = False
+    enable_subscriber: bool = False
+    enable_subscriberprofile: bool = False
+    enable_resourcegroup: bool = False
+    enable_ttsystem: bool = False
+    enable_project: bool = False
+    enable_label: bool = False
     # Usage statistics
-    last_extract: Optional[datetime]
-    last_successful_extract: Optional[datetime]
-    extract_error: Optional[str]
-    last_load: Optional[datetime]
-    last_successful_load: Optional[datetime]
-    load_error: Optional[str]
+    last_extract: Optional[datetime] = None
+    last_successful_extract: Optional[datetime] = None
+    extract_error: Optional[str] = None
+    last_load: Optional[datetime] = None
+    last_successful_load: Optional[datetime] = None
+    load_error: Optional[str] = None
 
 
 class FormRemoteSystemItem(BaseModel):
@@ -60,21 +60,21 @@ class FormRemoteSystemItem(BaseModel):
     # Environment variables
     environment: List[EnvItem]
     # Enable extractors/loaders
-    enable_admdiv: bool
-    enable_administrativedomain: bool
-    enable_authprofile: bool
-    enable_container: bool
-    enable_link: bool
-    enable_managedobject: bool
-    enable_managedobjectprofile: bool
-    enable_networksegment: bool
-    enable_networksegmentprofile: bool
-    enable_object: bool
-    enable_service: bool
-    enable_serviceprofile: bool
-    enable_subscriber: bool
-    enable_subscriberprofile: bool
-    enable_resourcegroup: bool
-    enable_ttsystem: bool
-    enable_project: bool
-    enable_label: bool
+    enable_admdiv: bool = False
+    enable_administrativedomain: bool = False
+    enable_authprofile: bool = False
+    enable_container: bool = False
+    enable_link: bool = False
+    enable_managedobject: bool = False
+    enable_managedobjectprofile: bool = False
+    enable_networksegment: bool = False
+    enable_networksegmentprofile: bool = False
+    enable_object: bool = False
+    enable_service: bool = False
+    enable_serviceprofile: bool = False
+    enable_subscriber: bool = False
+    enable_subscriberprofile: bool = False
+    enable_resourcegroup: bool = False
+    enable_ttsystem: bool = False
+    enable_project: bool = False
+    enable_label: bool = False
