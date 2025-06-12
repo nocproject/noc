@@ -33,7 +33,7 @@ class EventClass(BaseModel):
 class ClassificationRule(BaseModel):
     id: str
     name: str
-    rule: Literal["classification", "ignore"] = Field(None, alias="$type")
+    rule: Literal["classification", "ignore_pattern"] = Field(None, alias="$type")
     event_class: Optional[EventClass] = None
     source: Optional[List[EventSource]] = None
     profiles: Optional[List[str]] = None

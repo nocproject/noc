@@ -55,9 +55,9 @@ class RuleSet(object):
         self.add_rules: int = 0
         # processed: int = 0
 
-    def update_rule(self, data):
+    def update_rule(self, data, r_format: Optional[str] = None):
         """Update rule from lookup"""
-        rule = Rule.from_config(data, self.enumerations)
+        rule = Rule.from_config(data, self.enumerations, r_format=r_format)
         changed = False
         for rl in self.rules.values():
             changed |= rl.update_rule(rule)

@@ -43,6 +43,7 @@ from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
+from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
@@ -842,11 +843,22 @@ class ClassifierService(FastAPIService):
 
     async def update_rule(self, data: Dict[str, Any]) -> None:
         """Apply Classification Rules changes"""
-        self.ruleset.update_rule(data)
+        rule_type = data.pop("$type", "old_rule")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Patterns
+            return
+        self.ruleset.update_rule(data, r_format=rule_type)
 
     async def delete_rule(self, r_id: str) -> None:
         """Remove rules for ID"""
-        self.ruleset.delete_rule(r_id)
+        rule_type, *r_id = r_id.split(":")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Pattern
+            return
+        if r_id:
+            self.ruleset.delete_rule(r_id[0])
+        else:
+            self.ruleset.delete_rule(rule_type)
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""

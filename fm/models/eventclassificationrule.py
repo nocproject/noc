@@ -301,7 +301,7 @@ class EventClassificationRule(Document):
         r = {
             "id": str(rule.id),
             "name": rule.name,
-            "$type": "rule",
+            "$type": "classification",
             "event_class": {
                 "id": str(rule.event_class.id),
                 "name": rule.event_class.name,

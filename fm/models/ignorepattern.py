@@ -19,6 +19,8 @@ from noc.config import config
 from noc.core.change.decorator import change
 from noc.core.fm.enum import EventSource
 
+DATASTREAM_RULE_PREFIX = "ignore_pattern"
+
 
 @change
 class IgnorePattern(Document):
@@ -43,7 +45,7 @@ class IgnorePattern(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgeventrules:
-            yield "cfgeventrules", f"ignore:{self.id}"
+            yield "cfgeventrules", f"ignore_pattern:{self.id}"
 
     @classmethod
     def get_rule_config(cls, pattern: "IgnorePattern"):
@@ -51,9 +53,9 @@ class IgnorePattern(Document):
         if not pattern.is_active:
             raise KeyError("Rule not activated")
         return {
-            "id": str(pattern.id),
+            "id": f"{DATASTREAM_RULE_PREFIX}:{pattern.id}",
+            "$type": DATASTREAM_RULE_PREFIX,
             "name": str(pattern),
             "message_rx": pattern.pattern,
             "sources": [pattern.source],
-            "$type": "ignore_pattern",
         }
