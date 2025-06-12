@@ -6,10 +6,10 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 # Third-party modules
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # NOC modules
 from noc.core.fm.enum import EventSource
@@ -25,11 +25,16 @@ class RuleVar(BaseModel):
     value: str
 
 
+class EventClass(BaseModel):
+    id: str
+    name: str
+
+
 class ClassificationRule(BaseModel):
     id: str
     name: str
-    event_class: str
-    event_class_id: str
+    rule: Literal["classification", "ignore"] = Field(None, alias="$type")
+    event_class: Optional[EventClass] = None
     source: Optional[List[EventSource]] = None
     profiles: Optional[List[str]] = None
     preference: int = 1000
