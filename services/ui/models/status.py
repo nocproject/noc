@@ -18,4 +18,4 @@ class ErrorItem(BaseModel):
 
 class StatusResponse(BaseModel):
     status: bool
-    errors: Optional[List[ErrorItem]]
+    errors: Optional[List[ErrorItem]] = None

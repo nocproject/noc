@@ -20,23 +20,23 @@ class DefaultResourceGroupItem(BaseModel):
     id: str
     name: str
     technology: Reference
-    parent: Optional[Reference]
-    description: Optional[str]
-    dynamic_service_labels: Optional[List[str]]
-    dynamic_client_labels: Optional[List[str]]
-    remote_system: Optional[Reference]
-    remote_id: Optional[str]
     bi_id: str
+    parent: Optional[Reference] = None
+    description: Optional[str] = None
+    dynamic_service_labels: Optional[List[str]] = None
+    dynamic_client_labels: Optional[List[str]] = None
+    remote_system: Optional[Reference] = None
+    remote_id: Optional[str] = None
     # Labels
-    labels: Optional[List[LabelItem]]
-    effective_labels: Optional[List[LabelItem]]
+    labels: Optional[List[LabelItem]] = None
+    effective_labels: Optional[List[LabelItem]] = None
 
 
 class FormResourceGroupItem(BaseModel):
     name: str
     technology: Reference
-    parent: Optional[Reference]
-    description: Optional[str]
-    dynamic_service_labels: Optional[List[str]]
-    dynamic_client_labels: Optional[List[str]]
-    labels: Optional[List[str]]
+    parent: Optional[Reference] = None
+    description: Optional[str] = None
+    dynamic_service_labels: Optional[List[str]] = None
+    dynamic_client_labels: Optional[List[str]] = None
+    labels: Optional[List[str]] = None
