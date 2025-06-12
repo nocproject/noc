@@ -15,6 +15,8 @@ class ICommands(BaseInterface):
     commands = StringListParameter()
     # Do not stop on CLI errors
     ignore_cli_errors = BooleanParameter(default=False)
+    # Execute command on Device Config Mode
+    config_mode = BooleanParameter(default=False)
     returns = DictParameter(
         attrs={
             "errors": BooleanParameter(default=False),  # Has CLI errors when execute
