@@ -292,6 +292,9 @@ class SyslogCollectorService(FastAPIService):
             return
         if config.message.enable_syslog and "opaque_data" in data:
             cfg.managed_object = ManagedObjectData(**data["opaque_data"])
+        if "storm_policy" in cfg_syslog:
+            cfg.storm_policy = cfg_syslog["storm_policy"]
+            cfg.storm_threshold = cfg_syslog["storm_threshold"]
         new_addresses = set(cfg.addresses)
         # Add new addresses, update remaining
         for addr in new_addresses:
