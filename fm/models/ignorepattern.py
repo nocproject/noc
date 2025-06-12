@@ -31,8 +31,8 @@ class IgnorePattern(Document):
         "indexes": [{"fields": ("source", "pattern"), "unique": True}],
     }
 
-    source = EnumField(EventSource, default=EventSource.SYSLOG)
-    pattern = StringField(required=True)
+    source: EventSource = EnumField(EventSource, default=EventSource.SYSLOG)
+    pattern: str = StringField(required=True)
     is_active = BooleanField(default=True)
     description = StringField(required=False)
 
@@ -57,5 +57,5 @@ class IgnorePattern(Document):
             "$type": DATASTREAM_RULE_PREFIX,
             "name": str(pattern),
             "message_rx": pattern.pattern,
-            "sources": [pattern.source],
+            "sources": [pattern.source.value],
         }
