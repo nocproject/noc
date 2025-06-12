@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # tgsender service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -24,6 +24,7 @@ from noc.core.text import split_text
 
 API = "https://api.telegram.org/bot"
 TGSENDER_STREAM = "tgsender"
+CHAT_THREAD_SPLITTER = "::"
 
 
 class TgSenderService(FastAPIService):
@@ -74,11 +75,14 @@ class TgSenderService(FastAPIService):
         else:
             self.logger.warning("[%s] Message without address", message_id)
             return
+        address, *message_thread_id = address.split(CHAT_THREAD_SPLITTER)
         send = {
             "chat_id": address,
             "text": f"{subject}\n\n{body}",
             "parse_mode": "HTML",
         }
+        if message_thread_id:
+            send["message_thread_id"] = message_thread_id[0]
         # HTML Style
         """
         <b>bold</b>, <strong>bold</strong>
