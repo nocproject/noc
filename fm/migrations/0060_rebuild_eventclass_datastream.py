@@ -42,3 +42,17 @@ class Migration(BaseMigration):
                 "data": {"model_id": "fm.DispositionRule"},
             }
         )
+        self.mongo_db["noc.schedules.scheduler"].insert_one(
+            {
+                "ts": datetime.datetime.now().replace(microsecond=0),
+                "s": "R",
+                "runs": 0,
+                "f": 0,
+                "o": 0,
+                "shard": 0,
+                "mruns": 1,
+                "jcls": "noc.core.scheduler.calljob.CallJob",
+                "key": "noc.main.handlers.rebuild_datastream.generate_changes",
+                "data": {"model_id": "fm.IgnorePattern"},
+            }
+        )

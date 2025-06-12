@@ -43,6 +43,7 @@ from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
+from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
@@ -173,7 +174,6 @@ class ClassifierService(FastAPIService):
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
-        self.pattern_set.load()
         self.load_link_action()
         # Heat up MIB cache
         MIBData.preload()
@@ -189,6 +189,8 @@ class ClassifierService(FastAPIService):
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
+        else:
+            self.pattern_set.load()
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
         await self.subscribe_stream(
@@ -839,14 +841,34 @@ class ClassifierService(FastAPIService):
         """
         self.event_rules_ready_event.set()
         self.logger.info("%d Event Classification Rules has been loaded", self.ruleset.add_rules)
+        self.logger.info(
+            "%d Ignore patterns are loaded in the %d chains",
+            self.pattern_set.add_patterns,
+            len(self.pattern_set.i_patterns),
+        )
 
     async def update_rule(self, data: Dict[str, Any]) -> None:
         """Apply Classification Rules changes"""
-        self.ruleset.update_rule(data)
+        rule_type = data.pop("$type", "old_rule")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Patterns
+            self.pattern_set.update_pattern(data["id"], data)
+            return
+        elif "event_class" not in data:
+            return
+        self.ruleset.update_rule(data, r_format=rule_type)
 
     async def delete_rule(self, r_id: str) -> None:
         """Remove rules for ID"""
-        self.ruleset.delete_rule(r_id)
+        rule_type, *_ = r_id.split(":")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Pattern
+            self.pattern_set.delete_pattern(r_id)
+            return
+        if r_id:
+            self.ruleset.delete_rule(r_id)
+        else:
+            self.ruleset.delete_rule(rule_type)
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""
