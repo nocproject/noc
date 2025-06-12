@@ -820,6 +820,8 @@ class ClassifierService(FastAPIService):
                     "platform": mo.platform.bi_id if mo.platform else None,
                     "version": mo.version.bi_id if mo.version else None,
                     "administrative_domain": mo.administrative_domain.bi_id,
+                    "segment": mo.segment.bi_id,
+                    "container": mo.container.bi_id if mo.container else None,
                 }
             )
         elif not mo and event.target.pool:

@@ -363,6 +363,9 @@ class MapField(BaseField):
     def get_db_type(self, name=None):
         return f"Map(String, {self.field_type.get_db_type()})"
 
+    def get_displayed_type(self):
+        return "Nested"
+
 
 class NestedField(ArrayField):
     db_type = "Nested"
