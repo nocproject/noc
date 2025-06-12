@@ -31,11 +31,15 @@ class Script(BaseScript):
         self.logger.info("[%s] Execute commands: %s", config_mode, commands)
         if not config_mode:
             return self.execute_commands(
-                commands, ignore_cli_errors=ignore_cli_errors, include_commands=include_commands,
+                commands,
+                ignore_cli_errors=ignore_cli_errors,
+                include_commands=include_commands,
             )
         with self.configure():
             return self.execute_commands(
-                commands, ignore_cli_errors=ignore_cli_errors, include_commands=include_commands,
+                commands,
+                ignore_cli_errors=ignore_cli_errors,
+                include_commands=include_commands,
             )
             # self.save_config()
 
