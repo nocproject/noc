@@ -39,7 +39,7 @@ from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
 from noc.core.comp import DEFAULT_ENCODING
 
-SYSLOGCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | Syslog"
+SYSLOGCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 
 
 class SyslogCollectorService(FastAPIService):
@@ -90,6 +90,7 @@ class SyslogCollectorService(FastAPIService):
             "$op": "raise",
             "managed_object": cfg.id,
             "alarm_class": SYSLOGCOLLECTOR_STORM_ALARM_CLASS,
+            "vars": {"collector": self.name},
         }
         self._publish_message(cfg, msg)
 

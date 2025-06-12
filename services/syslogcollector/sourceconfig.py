@@ -47,5 +47,5 @@ class SourceConfig(object):
     name: Optional[str] = None
     effective_labels: List[str] = None
     managed_object: Optional[ManagedObjectData] = None
-    storm_policy: str = "B"
+    storm_policy: str = "D"
     storm_threshold: int = 1000

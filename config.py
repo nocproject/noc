@@ -767,7 +767,7 @@ class Config(BaseConfig):
         storm_record_ttl = IntParameter(default=10)
         #
         storm_min_severity = MapParameter(
-            default="critical",
+            default="error",
             mappings={
                 "emergency": 0,
                 "alert": 1,
