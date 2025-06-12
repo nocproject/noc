@@ -20,28 +20,28 @@ from .label import LabelItem
 class DefaultPlatformItem(BaseModel):
     id: str
     name: str
-    full_name: Optional[str]
-    description: Optional[str]
     vendor: Reference
-    start_of_sale: Optional[datetime.datetime]
-    end_of_sale: Optional[datetime.datetime]
-    end_of_support: Optional[datetime.datetime]
-    end_of_xsupport: Optional[datetime.datetime]
-    snmp_sysobjectid: Optional[str]
-    aliases: Optional[List[str]]
     labels: List[LabelItem]
-    uuid: Optional[str]
     effective_labels: List[LabelItem]
-    bi_id: Optional[str]
+    full_name: Optional[str] = None
+    description: Optional[str] = None
+    start_of_sale: Optional[datetime.datetime] = None
+    end_of_sale: Optional[datetime.datetime] = None
+    end_of_support: Optional[datetime.datetime] = None
+    end_of_xsupport: Optional[datetime.datetime] = None
+    snmp_sysobjectid: Optional[str] = None
+    aliases: Optional[List[str]] = None
+    uuid: Optional[str] = None
+    bi_id: Optional[str] = None
 
 
 class FormPlatformItem(BaseModel):
     name: str
     vendor: Reference
-    description: Optional[str]
-    start_of_sale: Optional[datetime.datetime]
-    end_of_sale: Optional[datetime.datetime]
-    end_of_support: Optional[datetime.datetime]
-    end_of_xsupport: Optional[datetime.datetime]
-    snmp_sysobjectid: Optional[str]
-    labels: Optional[List[str]]
+    description: Optional[str] = None
+    start_of_sale: Optional[datetime.datetime] = None
+    end_of_sale: Optional[datetime.datetime] = None
+    end_of_support: Optional[datetime.datetime] = None
+    end_of_xsupport: Optional[datetime.datetime] = None
+    snmp_sysobjectid: Optional[str] = None
+    labels: Optional[List[str]] = None
