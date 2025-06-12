@@ -759,6 +759,27 @@ class Config(BaseConfig):
         enable_freebind = BooleanParameter(default=False)
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
+        # storm protection round duration in seconds
+        storm_round_duration = SecondsParameter(default="60s")
+        # conversion rate between ON and OFF storm protection thresholds
+        storm_threshold_reduction = FloatParameter(default=0.9)
+        # time to live (rounds quantity) of records in storm protection addresses dictionary
+        storm_record_ttl = IntParameter(default=10)
+        #
+        storm_min_severity = MapParameter(
+            default="error",
+            mappings={
+                "emergency": 0,
+                "alert": 1,
+                "critical": 2,
+                "error": 3,
+                "warning": 4,
+                "notice": 5,
+                "informational": 6,
+                "debug": 7,
+            },
+            help="Maximum severity level for received messages. More than will be dropped",
+        )
 
     class tgsender(ConfigSection):
         token = SecretParameter()
