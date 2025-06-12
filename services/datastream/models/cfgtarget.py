@@ -61,6 +61,8 @@ class TrapSettings(BaseModel):
 
 class SyslogSettings(BaseModel):
     archive_events: bool = False
+    storm_policy: str
+    storm_threshold: int
 
 
 class Dependency(BaseModel):
