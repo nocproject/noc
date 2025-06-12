@@ -96,12 +96,13 @@ class RuleSet(object):
         n = 0
         rules = defaultdict(list)
         self.default_rule = EventClassificationRule.objects.filter(
-            name=config.classifier.default_rule
+            name=config.classifier.default_rule,
         ).first()
         if self.default_rule:
             self.default_rule = Rule.from_config(
                 EventClassificationRule.get_rule_config(self.default_rule),
                 self.enumerations,
+                r_format="classification",
             )
         #
         self.load_enumerations()
@@ -113,6 +114,7 @@ class RuleSet(object):
                 rule = Rule.from_config(
                     EventClassificationRule.get_rule_config(r),
                     self.enumerations,
+                    r_format="classification",
                 )
             except InvalidPatternException as e:
                 logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
