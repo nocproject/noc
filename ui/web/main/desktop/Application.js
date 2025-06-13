@@ -48,7 +48,11 @@ Ext.define("NOC.main.desktop.Application", {
         id: "root",
         text: __("All"),
         expanded: true,
-        children: [],
+        children: [{
+          text: "[HIDDEN] Row height measurement node",
+          leaf: true, 
+          measurementNode: true,
+        }],
       },
     });
     // Create panels
