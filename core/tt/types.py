@@ -14,9 +14,6 @@ from datetime import datetime
 from bson import ObjectId
 from pydantic import BaseModel, PrivateAttr, Field
 
-# NOC modules
-from noc.core.models.escalationpolicy import EscalationPolicy
-
 
 class EscalationStatus(enum.Enum):
     """
@@ -338,12 +335,32 @@ class EscalationGroupPolicy(enum.Enum):
 
 
 class ActionItem(BaseModel):
+    """
+    Item for actions
+    Attributes:
+        alarm: Alarm instance Id
+        group: Alarm Group Reference
+        service: Service Id (for service-alarm escalation)
+    """
     alarm: str
-    group: Optional[str] = None
+    group: Optional[bytes] = None
     service: Optional[str] = None
 
 
 class Action(BaseModel):
+    """
+    Attributes:
+        action: Run Action
+        key: Action Key
+        delay: Skip seconds after start
+        ack: Alarm ack condition
+        time_pattern: Time pattern, when allowed run
+        min_severity: Min alarm severity for run
+        max_retries: Max retries when Warning
+        template: Template id for message
+        stop_processing: Stop execute escalation if SUCCESS
+        allow_fail: Allow run next actions if FAIL
+    """
     action: TTAction
     key: Optional[str] = None
     delay: int = 0
@@ -355,22 +372,41 @@ class Action(BaseModel):
     # pre_reason: Optional[str] = None
     login: Optional[str] = None
     stop_processing: bool = False
+    allow_fail: bool = True
+    manually: bool = False
     # Manual, Group Access
     # root_only: bool = True
 
 
 class EscalationRequest(BaseModel):
+    """
+    Attributes:
+        id: Escalation Id
+        item: Escalation Item: Alarm | Group | Service
+        policy: Item Policy
+        actions: Action executed list
+        start_at: start timestamp
+        maintenance_policy: Action when item on maintenance
+        end_condition: Condition when escalation end
+        max_repeats: Repeat actions after last
+        repeat_delay: Repeat interval
+        ctx: Span Context id
+        tt_system: Initial Action TT System Id
+        user: Initial Action User
+    """
     id: str = Field(default_factory=lambda: str(ObjectId()))
     # name: str
-    # Alarm | Group | Service
+    #
     item: ActionItem
-    ctx: int
-    actions: List[Action]
-    timestamp: Optional[datetime] = None
     policy: EscalationGroupPolicy = EscalationGroupPolicy.ROOT
+    actions: List[Action]
+    start_at: Optional[datetime] = None
     maintenance_policy: str = "e"
-    end_condition: str = "a"
+    end_condition: str = "CR"
     max_repeats: int = 0
     repeat_delay: int = 60
+    # Span
+    ctx: Optional[int] = None
+    # From
     tt_system: Optional[str] = None
     user: Optional[int] = None
