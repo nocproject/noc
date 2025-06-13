@@ -146,7 +146,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 52
+MANAGEDOBJECT_CACHE_VERSION = 53
 CREDENTIAL_CACHE_VERSION = 9
 
 
@@ -3165,6 +3165,7 @@ class ManagedObject(NOCModel):
         for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
             setattr(self, f, None)
             r[f] = None
+        return r
 
     def set_profile(self, profile: str) -> bool:
         """Set SA Profile"""
