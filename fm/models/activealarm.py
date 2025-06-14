@@ -9,27 +9,42 @@
 import datetime
 import logging
 import asyncio
+import enum
 from collections import defaultdict
 from itertools import chain
-from typing import Optional, Set, Any, Dict, Iterable, Protocol, runtime_checkable, Generic, Union
+from typing import (
+    Optional,
+    Set,
+    Any,
+    Dict,
+    Iterable,
+    Protocol,
+    runtime_checkable,
+    Generic,
+    Union,
+    List,
+    Callable,
+)
 
 # Third-party modules
 import orjson
 from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     DateTimeField,
     ListField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     IntField,
     LongField,
     BooleanField,
     ObjectIdField,
     DictField,
     BinaryField,
+    EnumField,
 )
 from mongoengine.errors import SaveConditionError
 
@@ -55,6 +70,49 @@ from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
+
+
+class Effect(enum.Enum):
+    TT_SYSTEM = "tt_system"
+    NOTIFICATION_GROUP = "notification_group"
+    SUBSCRIPTION = "subscription"
+    HANDLER = "handler"
+
+
+class WatchItem(EmbeddedDocument):
+    effect: Effect = EnumField(Effect, required=True)
+    key: str = StringField(required=True)
+    once: bool = BooleanField(default=True)
+    immediate: bool = BooleanField(default=False)
+    clear_only: bool = BooleanField(default=False)
+    args = DictField(default=dict)
+
+    def __str__(self):
+        return f"{self.effect}:{self.key}"
+
+    def get_args(self, alarm):
+        r = {"alarm": alarm}
+        if self.args:
+            r |= self.args
+        match self.effect.value:
+            case "subscription":
+                r["user"] = User.get_by_id(int(self.key))
+            case "notification_group":
+                r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
+        return r
+
+    def get_handler(self) -> Callable:
+        if self.effect == Effect.HANDLER:
+            return get_handler(self.key)
+        elif self.effect == Effect.NOTIFICATION_GROUP:
+            ng = NotificationGroup.get_by_id(int(self.key))
+            return ng.notify
+        elif self.effect == Effect.SUBSCRIPTION:
+            return
+
+    def run(self, alarm):
+        h = self.get_handler()
+        h(**self.get_args())
 
 
 @change(audit=False)
@@ -99,7 +157,7 @@ class ActiveAlarm(Document):
     # for external systems
     reference = BinaryField(required=False)
     #
-    log = ListField(EmbeddedDocumentField(AlarmLog))
+    log: List[AlarmLog] = EmbeddedDocumentListField(AlarmLog)
     # Manual acknowledgement timestamp
     ack_ts = DateTimeField(required=False)
     # Manual acknowledgement user name
@@ -108,7 +166,7 @@ class ActiveAlarm(Document):
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # List of subscribers
-    subscribers = ListField(ForeignKeyField(User))
+    watchers: List[WatchItem] = EmbeddedDocumentListField(WatchItem)
     #
     custom_subject = StringField(required=False)
     custom_style = ForeignKeyField(Style, required=False)
@@ -123,11 +181,6 @@ class ActiveAlarm(Document):
     min_group_size = IntField(min_value=0)
     # Groups waiting to min_threshold quorum
     deferred_groups = ListField(BinaryField())
-    # Escalated TT ID in form
-    # <external system name>:<external tt id>
-    escalation_ts = DateTimeField(required=False)
-    escalation_tt = StringField(required=False)
-    escalation_error = StringField(required=False)
     # span context
     escalation_ctx = LongField(required=False)
     # Close tt when alarm cleared
@@ -140,7 +193,7 @@ class ActiveAlarm(Document):
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     direct_services = ListField(EmbeddedDocumentField(SummaryItem))
     direct_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    # Indirectly affected services summary, groupped by profiles
+    # Indirectly affected services summary, grouped by profiles
     # (covered by this and all inferred alarms)
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
@@ -179,6 +232,18 @@ class ActiveAlarm(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
             yield "alarm", str(self.id)
+
+    @property
+    def escalation_tt(self) -> Optional[str]:
+        for ll in self.log:
+            if ll.tt_id:
+                return ll.tt_id
+
+    @property
+    def escalation_ts(self) -> Optional[datetime.datetime]:
+        for ll in self.log:
+            if ll.tt_id:
+                return ll.timestamp
 
     def clean(self):
         super().clean()
@@ -241,7 +306,14 @@ class ActiveAlarm(Document):
         if to_save:
             self.safe_save()
 
-    def log_message(self, message, to_save=True, bulk=None, source=None):
+    def log_message(
+        self,
+        message,
+        to_save=True,
+        bulk: Optional[List[Any]] = None,
+        source: Optional[str] = None,
+        tt_id: Optional[str] = None,
+    ):
         if bulk:
             bulk += [
                 UpdateOne(
@@ -254,6 +326,7 @@ class ActiveAlarm(Document):
                                 "to_status": self.status,
                                 "message": message,
                                 "source": source,
+                                "tt_id": tt_id,
                             }
                         }
                     },
@@ -266,6 +339,7 @@ class ActiveAlarm(Document):
                 to_status=self.status,
                 message=message,
                 source=source,
+                tt_id=tt_id,
             )
         ]
         if to_save and not bulk:
@@ -321,7 +395,6 @@ class ActiveAlarm(Document):
             groups=self.groups,
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
-            escalation_error=self.escalation_error,
             escalation_ctx=self.escalation_ctx,
             opening_event=self.opening_event,
             closing_event=self.closing_event,
@@ -348,6 +421,7 @@ class ActiveAlarm(Document):
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         a.save()
+        self.touch_watch(is_clear=True)
         # Send notifications
         # f not a.root and not self.reopens:
         #    a.managed_object.event(
@@ -457,26 +531,24 @@ class ActiveAlarm(Document):
         """
         Change alarm's subscribers
         """
-        if user.id not in self.subscribers:
-            self.subscribers += [user.id]
-            self.log_message(
-                "%s(%s): has been subscribed"
-                % ((" ".join([user.first_name, user.last_name]), user.username)),
-                to_save=False,
-                source=user.username,
-            )
-            self.save()
+        self.add_watch(Effect.SUBSCRIPTION, str(user.id))
+        self.log_message(
+            "%s(%s): has been subscribed"
+            % (" ".join([user.first_name, user.last_name]), user.username),
+            to_save=False,
+            source=user.username,
+        )
+        self.save()
 
     def unsubscribe(self, user: "User"):
-        if self.is_subscribed(user):
-            self.subscribers = [u.id for u in self.subscribers if u != user.id]
-            self.log_message(
-                "%s(%s) has been unsubscribed"
-                % ((" ".join([user.first_name, user.last_name]), user.username)),
-                to_save=False,
-                source=user.username,
-            )
-            self.save()
+        self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
+        self.log_message(
+            "%s(%s) has been unsubscribed"
+            % (" ".join([user.first_name, user.last_name]), user.username),
+            to_save=False,
+            source=user.username,
+        )
+        self.save()
 
     def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
@@ -545,6 +617,48 @@ class ActiveAlarm(Document):
             stream=stream,
             partition=partition,
         )
+
+    def add_watch(
+        self,
+        effect: Effect,
+        key: str,
+        once: bool = False,
+        immediate: bool = False,
+        clear_only: bool = False,
+        **kwargs,
+    ):
+        """Adding watch"""
+        for w in self.watchers:
+            if effect == w.effect and key == w.key:
+                break
+        else:
+            self.watchers.append(
+                WatchItem(
+                    effect=effect,
+                    key=key,
+                    once=once,
+                    immediate=immediate,
+                    clear_only=clear_only,
+                    args=kwargs,  # Convert to string
+                )
+            )
+
+    def stop_watch(self, effect: Effect, key: str):
+        """"""
+        r = []
+        for w in self.watchers:
+            if w.effect == effect and key == key:
+                continue
+            r.append(w)
+        if len(r) != len(self.watchers):
+            self.watchers = r
+
+    def touch_watch(self, is_clear: bool = False):
+        """Processed watchers"""
+        for w in self.watchers:
+            if w.clear_only and not is_clear:
+                continue
+            w.run(self)
 
     @property
     def duration(self) -> int:
@@ -933,26 +1047,29 @@ class ActiveAlarm(Document):
         if self.id:
             ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
-    def escalate(self, tt_id, close_tt=False, wait_tt=None):
-        self.escalation_tt = tt_id
-        self.escalation_ts = datetime.datetime.now()
-        self.close_tt = close_tt
+    def escalate(self, tt_id, close_tt: bool = False, wait_tt: bool = False):
+        if close_tt:
+            self.add_watch(
+                Effect.HANDLER,
+                "noc.services.escalator.escalation.notify_close",
+                immediate=True,
+                tt_id=tt_id,
+            )
+        # self.close_tt = close_tt
         self.wait_tt = wait_tt
-        self.log_message("Escalated to %s" % tt_id)
-        q = {"_id": self.id}
-        op = {
-            "$set": {
-                "escalation_tt": self.escalation_tt,
-                "escalation_ts": self.escalation_ts,
-                "close_tt": self.close_tt,
-                "wait_tt": self.wait_tt,
-                "escalation_error": None,
-            }
-        }
-        r = ActiveAlarm._get_collection().update_one(q, op)
-        if r.acknowledged and not r.modified_count:
-            # Already closed, update archive
-            ArchivedAlarm._get_collection().update_one(q, op)
+        self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)
+        # q = {"_id": self.id}
+        # op = {
+        #     "$set": {
+        #         "close_tt": self.close_tt,
+        #         "wait_tt": self.wait_tt,
+        #         "escalation_error": None,
+        #     }
+        # }
+        # r = ActiveAlarm._get_collection().update_one(q, op)
+        # if r.acknowledged and not r.modified_count:
+        #     # Already closed, update archive
+        #     ArchivedAlarm._get_collection().update_one(q, op)
 
     def set_escalation_context(self):
         current_context, current_span = get_current_span()
@@ -963,8 +1080,14 @@ class ActiveAlarm(Document):
             )
 
     def set_clear_notification(self, notification_group, template):
-        self.clear_notification_group = notification_group
-        self.clear_template = template
+        self.add_watch(
+            Effect.NOTIFICATION_GROUP,
+            str(notification_group.id),
+            template=str(template.id),
+            clear_only=True,
+        )
+        # self.clear_notification_group = notification_group
+        # self.clear_template = template
         self.safe_save(save_condition={"managed_object": {"$exists": True}, "id": self.id})
 
     def iter_consequences(self) -> Iterable["ActiveAlarm"]:
