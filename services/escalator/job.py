@@ -25,6 +25,7 @@ from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
+from noc.core.debug import error_report
 from noc.core.tt.types import (
     EscalationGroupPolicy,
     EscalationRequest,
@@ -145,9 +146,14 @@ class AlarmAutomationJob(object):
         is_end = self.check_end()
         now = datetime.datetime.now()
         actions = actions or []
-        self.logger.info("Start actions at: %s", now)
+        self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
         self.update_items()
-        print("ITEMS", self.items, self.affected_services)
+        self.logger.debug(
+            "Processed items: %s, services: %s, groups: %s",
+            self.items,
+            self.affected_services,
+            self.groups,
+        )
         runner = GroupAction(
             self.items,
             services=self.affected_services,
@@ -170,14 +176,14 @@ class AlarmAutomationJob(object):
                 self.set_escalation_context()
             # Sorted by ts
             for aa in sorted(actions[:] + self.actions, key=operator.attrgetter("timestamp")):
-                self.logger.info("[%s] Processed action", aa)
+                self.logger.debug("[%s] Processed action", aa)
                 if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
                     # Skip already running job
                     continue
                 elif not aa.is_match(self.severity, now):
                     # Set Skip (Condition)
                     continue
-                elif not is_end and aa.when != "on_end":
+                elif is_end and aa.when != "on_end":
                     continue
                 elif self.dry_run:
                     wait_interval = (now - aa.timestamp).total_seconds()
@@ -194,6 +200,7 @@ class AlarmAutomationJob(object):
                     )  # aa.get_ctx for job
                 except Exception as e:
                     r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
+                    error_report()
                     # Job Status to Exception
                 self.logger.info("[%s] Action result: %s", aa, r)
                 if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
@@ -339,7 +346,7 @@ class AlarmAutomationJob(object):
             ctx_id=req.ctx,
             actions=[
                 ActionLog.from_request(
-                    a, started_at=req.timestamp, user=req.user, tt_system=req.tt_system
+                    a, started_at=req.start_at, user=req.user, tt_system=req.tt_system
                 )
                 for a in req.actions
             ],
@@ -484,7 +491,7 @@ class AlarmAutomationJob(object):
         total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
         # @todo: Append profile
         affected_services = set()
-        if self.policy != EscalationGroupPolicy.SERVICE:
+        if self.policy == EscalationGroupPolicy.SERVICE:
             affected_services.add(Service.get_by_id(self.groups[0].id))
         for alarm in items:
             if alarm.alarm_class.is_ephemeral:
