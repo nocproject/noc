@@ -25,7 +25,7 @@ Ext.define("NOC.core.InactivityLogout", {
       listeners[eventName] = {
         fn: this.resetTimeout,
         scope: this,
-        buffer: 10 * 1000, // 10 seconds
+        buffer: 300000, // 5 minutes
       };
     });
     Ext.getDoc().on(listeners);
@@ -35,7 +35,9 @@ Ext.define("NOC.core.InactivityLogout", {
     if(this.timeoutTask){
       clearTimeout(this.timeoutTask);
     }    
-    this.timeoutTask = setTimeout(this.onInactivityTimeout.bind(this), this.inactivityTimeout);
+    this.timeoutTask = setTimeout(() => {
+      this.onInactivityTimeout();
+    }, this.inactivityTimeout);
   },
   //
   onInactivityTimeout: function(){
