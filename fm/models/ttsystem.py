@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # TTSystem
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,11 +10,11 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, List, FrozenSet
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     ListField,
@@ -22,6 +22,7 @@ from mongoengine.fields import (
     ReferenceField,
     DateTimeField,
     BooleanField,
+    EmbeddedDocumentListField,
 )
 import cachetools
 
@@ -29,8 +30,10 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.tt.base import BaseTTSystem
-from noc.core.tt.types import TTSystemConfig
 from noc.core.scheduler.job import Job
+from noc.core.tt.types import TTSystemConfig, TTAction
+from noc.aaa.models.user import User
+from noc.aaa.models.group import Group
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
@@ -39,6 +42,16 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TTSYSTEM_SHARD = "default"
 CHECK_TT_JOB = "noc.services.escalator.jobs.check_tt.CheckTTJob"
+
+
+class TTActionItem(EmbeddedDocument):
+    meta = {"strict": False}
+    # user = ForeignKeyField(User)
+    # group = ForeignKeyField(Group)
+    ack = BooleanField(default=False)
+    close = BooleanField(default=False)
+    log = BooleanField(default=False)
+    subscribe = BooleanField(default=False)
 
 
 @Label.match_labels("ttsystem", allowed_op={"="})
@@ -93,6 +106,9 @@ class TTSystem(Document):
         default="a",
     )
     check_updates_interval = IntField(default=0)
+    actions: List[TTActionItem] = EmbeddedDocumentListField(TTActionItem)
+    # authorization/login
+    update_handler = StringField()
     last_update_ts = DateTimeField()
     last_update_id = StringField()
     #
@@ -165,6 +181,31 @@ class TTSystem(Document):
             promote_item=self.promote_items if tts.processed_items else "T",
             promote_group_tt=tts.promote_group_tt,
         )
+
+    def get_actions(
+        self,
+        user: Optional[User] = None,
+        group: Optional[Group] = None,
+    ) -> FrozenSet[TTAction]:
+        """
+        Getting TT System Action support
+
+        Args:
+            user:
+            group:
+        """
+        r = []
+        for a in self.actions:
+            # if user and user != a.user:
+            #     # Group
+            #     continue
+            # if group and group != a.group:
+            #     continue
+            if a.ack:
+                r += [TTAction.ACK, TTAction.UN_ACK]
+            if a.close:
+                r.append(TTAction.CLEAR)
+        return frozenset(r)
 
     def is_failed(self):
         """

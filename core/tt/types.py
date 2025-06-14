@@ -7,7 +7,7 @@
 
 # Python modules
 import enum
-from typing import List, Optional
+from typing import List, Optional, Literal
 from datetime import datetime
 
 # Third-party modules
@@ -364,7 +364,8 @@ class Action(BaseModel):
     action: TTAction
     key: Optional[str] = None
     delay: int = 0
-    ack: str = "any"
+    ack: Literal["any", "ack", "unack"] = "any"
+    when: Literal["any", "on_start", "on_end"] = "any"
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     max_retries: int = 1
@@ -402,7 +403,7 @@ class EscalationRequest(BaseModel):
     actions: List[Action]
     start_at: Optional[datetime] = None
     maintenance_policy: str = "e"
-    end_condition: str = "CR"
+    end_condition: Literal["CR", "CA", "CT", "M", "E"] = "CR"
     max_repeats: int = 0
     repeat_delay: int = 60
     # Span
