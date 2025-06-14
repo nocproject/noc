@@ -270,6 +270,8 @@ class DocumentReferenceDescriptor(object):
             self.set_dereference()
         # If null=True, we can assign null here, but otherwise the value needs
         # to be an instance of the related class.
+        if value is None and self.field.has_default():
+                value = self.field.get_default()
         if value is None and self.field.null is False:
             raise ValueError(
                 'Cannot assign None: "%s.%s" does not allow null values.'
