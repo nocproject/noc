@@ -31,8 +31,8 @@ from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.aaa.models.user import User
 from noc.main.models.template import Template
+from noc.services.escalator.actionlog import ActionResult
 from .typing import ActionStatus
-from noc.services.escalator.job import ActionResult
 
 
 class GroupAction(object):
@@ -55,8 +55,10 @@ class GroupAction(object):
         total_services=None,
     ):
         self.items = items
-        self.alarm = None
-        self.services: List[Service] = services
+        self.alarm = items[0].alarm
+        self.services: List[Service] = (
+            list(Service.objects.filter(id__in=services)) if services else None
+        )
         self.logger = logger
         self.alarm_log = []
         self.total_objects = total_objects or []
