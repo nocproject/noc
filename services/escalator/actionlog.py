@@ -48,6 +48,7 @@ class ActionLog(object):
         time_pattern: Optional[TimePattern] = None,
         min_severity: Optional[int] = None,
         alarm_ack: str = "any",
+        when: str = "any",
         # Time ?
         timestamp: Optional[datetime.datetime] = None,
         status: ActionStatus = ActionStatus.NEW,
@@ -73,6 +74,7 @@ class ActionLog(object):
         self.min_severity = min_severity
         self.time_pattern: Optional[TimePattern] = time_pattern
         self.alarm_ack: str = alarm_ack or "any"
+        self.when: str = when or "any"
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
         self.repeat_num = 0
@@ -140,7 +142,12 @@ class ActionLog(object):
             key=self.key,
             status=ActionStatus.NEW,
             timestamp=self.timestamp + datetime.timedelta(seconds=delay),
-            # @todo
+            time_pattern=self.time_pattern,
+            alarm_ack=self.alarm_ack,
+            when=self.when,
+            min_severity=self.min_severity,
+            allow_fail=self.allow_fail,
+            stop_processing=self.stop_processing,
             repeat_num=self.repeat_num + 1,
         )
 
@@ -164,6 +171,7 @@ class ActionLog(object):
             #
             time_pattern=action.time_pattern,
             alarm_ack=action.ack,
+            when=action.when,
             min_severity=action.min_severity or 0,
             #
             allow_fail=action.allow_fail,
@@ -183,6 +191,7 @@ class ActionLog(object):
             time_pattern=data["time_pattern"],
             min_severity=data["min_severity"],
             alarm_ack=data["alarm_ack"],
+            when=data["when"],
             timestamp=data["timestamp"],
             status=ActionStatus(data["status"]),
             error=data["error"],
@@ -202,6 +211,7 @@ class ActionLog(object):
             "time_pattern": self.time_pattern,
             "min_severity": self.min_severity,
             "alarm_ack": self.alarm_ack,
+            "when": self.when,
             "timestamp": self.timestamp,
             "status": self.status.value,
             "error": self.error,
