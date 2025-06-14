@@ -11,6 +11,7 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetversion import IGetVersion
+from noc.core.mib import mib
 
 
 class Script(BaseScript):
@@ -28,7 +29,7 @@ class Script(BaseScript):
         r"System serial number:\s+(?P<serial>\S+)\s*\n"
     )
 
-    rx_ver_snmp = re.compile(r"^(?P<version>.*) \(date")
+    rx_ver_snmp = re.compile(r"^(?P<version>.*) \((date|\d+-\d+-\d+)")
 
     def execute_cli(self):
         c = self.scripts.get_system()
@@ -44,11 +45,11 @@ class Script(BaseScript):
         }
 
     def execute_snmp(self):
-        hw = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.8.680000")
-        version = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.9.680000")
+        hw = self.snmp.get(mib["ENTITY-MIB::entPhysicalHardwareRev", 680000])
+        version = self.snmp.get(mib["ENTITY-MIB::entPhysicalFirmwareRev", 680000])
         match = self.rx_ver_snmp.search(version)
-        sn = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.11.680000")
-        platform = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.13.680000")
+        sn = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 680000])
+        platform = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 680000])
         return {
             "vendor": "Eltex",
             "platform": "ESR-%s" % platform,
