@@ -17,8 +17,19 @@ class AlarmLog(EmbeddedDocument):
     to_status = StringField(max_length=1, regex=r"^[AC]$", required=True)
     message = StringField()
     source = StringField(required=False)
+    # Escalated TT ID in form
+    # <external system name>:<external tt id>
+    tt_id = StringField(required=False)
 
     def __str__(self):
+        if self.tt_id:
+            return "%s [%s -> %s]: [TT_ID: %s] %s" % (
+                self.timestamp,
+                self.from_status,
+                self.to_status,
+                self.tt_id,
+                self.message,
+            )
         return "%s [%s -> %s]: %s" % (
             self.timestamp,
             self.from_status,

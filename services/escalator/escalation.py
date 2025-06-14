@@ -481,7 +481,7 @@ class EscalationSequence(BaseSequence):
         self.alarm.escalate(
             tt,
             close_tt=esc_item.close_tt,
-            wait_tt=tt if esc_item.wait_tt else None,
+            wait_tt=tt if esc_item.wait_tt else False,
         )
         # Save to escalation context
         self.escalation_doc.tt_id = tt
@@ -721,9 +721,9 @@ class EscalationSequence(BaseSequence):
                 return
             elif maintenance.escalation_policy == "S":
                 delay: datetime.timedelta = maintenance.stop - self.escalation_doc.timestamp
-                self.retry_job("Escalation suspended, retry after Maintenance", delay.seconds)
                 self.logger.info("Escalation suspended, retry after Maintenance")
                 self.log_alarm(f"Escalation suspended. Object is under maintenance: {m_id}")
+                self.retry_job("Escalation suspended, retry after Maintenance", delay.seconds)
                 continue
             else:
                 self.log_alarm(f"Object is under maintenance: {m_id}")
