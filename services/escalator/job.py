@@ -148,8 +148,12 @@ class AlarmAutomationJob(object):
         self.logger.info("Start actions at: %s", now)
         self.update_items()
         print("ITEMS", self.items, self.affected_services)
-        action = GroupAction(
+        runner = GroupAction(
             self.items,
+            services=self.affected_services,
+            total_objects=self.total_objects,
+            total_subscribers=self.total_subscribers,
+            total_services=self.total_services,
             logger=self.logger,
         )
         with (
@@ -173,6 +177,8 @@ class AlarmAutomationJob(object):
                 elif not aa.is_match(self.severity, now):
                     # Set Skip (Condition)
                     continue
+                elif not is_end and aa.when != "on_end":
+                    continue
                 elif self.dry_run:
                     wait_interval = (now - aa.timestamp).total_seconds()
                     self.logger.info("Dry run mode, waiting interval: %s", wait_interval)
@@ -183,7 +189,7 @@ class AlarmAutomationJob(object):
                 # if not aa.to_run(status, delay):
                 #    continue
                 try:
-                    r = action.run_action(
+                    r = runner.run_action(
                         aa.action, **aa.get_ctx(document_id=self.tt_docs.get(aa.key))
                     )  # aa.get_ctx for job
                 except Exception as e:
@@ -193,7 +199,7 @@ class AlarmAutomationJob(object):
                 if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
                     # If Repeat - add action to next on repeat delay
                     # Self register actions
-                    actions.append(aa.get_repeat(self.repeat_delay))
+                    self.actions.append(aa.get_repeat(self.repeat_delay))
                 aa.set_status(r)
                 if r.document_id:
                     self.tt_docs[aa.key] = r.document_id
@@ -202,7 +208,8 @@ class AlarmAutomationJob(object):
                     # Set Stop job status
                     break
         if actions:
-            self.actions += actions
+            # Split one_time actions/sequenced action
+            self.actions = actions + self.actions
 
     def set_item_status(self, alarm: ActiveAlarm, status: ItemStatus = ItemStatus.NEW):
         """
@@ -307,6 +314,7 @@ class AlarmAutomationJob(object):
             "total_objects": self.total_objects,
             "total_services": self.total_services,
             "total_subscribers": self.total_subscribers,
+            "expired": None,
         }
         return r
 
@@ -353,7 +361,7 @@ class AlarmAutomationJob(object):
             status=JobStatus(state["status"]),
             items=[],
             actions=[ActionLog.from_dict(aa) for aa in state["actions"]],
-            groups=[],
+            groups=[GroupItem(reference=gg["reference"], id=gg["id"]) for gg in state["groups"]],
             end_condition=state["end_condition"],
             maintenance_policy=state["maintenance_policy"],
             policy=EscalationGroupPolicy(state["policy"]),
@@ -387,6 +395,8 @@ class AlarmAutomationJob(object):
         elif self.end_condition == "M" or self.end_condition == "CT":
             # Check Action, Action End - SuccessFul
             return bool(self.status == JobStatus.END)
+        elif self.end_condition == "E":
+            return self.actions[-1].status not in [ActionStatus.NEW, ActionStatus.PENDING]
         return False
 
     def iter_alarms_always_first(self) -> Iterable[ActiveAlarm]:
@@ -474,6 +484,8 @@ class AlarmAutomationJob(object):
         total_subscribers: DefaultDict[ObjectId, int] = defaultdict(int)
         # @todo: Append profile
         affected_services = set()
+        if self.policy != EscalationGroupPolicy.SERVICE:
+            affected_services.add(Service.get_by_id(self.groups[0].id))
         for alarm in items:
             if alarm.alarm_class.is_ephemeral:
                 # Group alarms are virtual and should be locked, but not escalated
