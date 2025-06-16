@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseReportDatasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -80,15 +80,12 @@ class BaseReportColumn(object):
         :param sync_ids:
         """
         self.sync_ids = sync_ids  # Sorted Index list
-        self.sync_count = itertools.count()
         self.sync_ids_i = iter(self.sync_ids)
-        self._current_id = next(self.sync_ids_i, None)  # Current id
+        self._current_id = self.next_id()
         self._value = None  #
         self._end_series = False  # Tre
 
-    def safe_next(self):
-        if next(self.sync_count) > self.MAX_ITERATOR:
-            raise StopIteration
+    def next_id(self):
         return next(self.sync_ids_i, None)
 
     def _extract(self):
@@ -121,6 +118,11 @@ class BaseReportColumn(object):
         raise NotImplementedError
 
     def __iter__(self):
+        def is_over() -> bool:
+            return next(sync_count) > self.MAX_ITERATOR
+
+        sync_count = itertools.count()
+
         for row in self._extract():
             if not self._current_id:
                 break
@@ -138,7 +140,9 @@ class BaseReportColumn(object):
                 while self._current_id and row_id > self._current_id:
                     # fill row unknown_value
                     yield self.unknown_value
-                    self._current_id = self.safe_next()
+                    if is_over():
+                        return
+                    self._current_id = self.next_id()
                 if row_id == self._current_id:
                     # Match sync_id and row_id = set value
                     self._value = row_value
@@ -147,7 +151,9 @@ class BaseReportColumn(object):
                     # self._value = self.unknown_value
                     continue
             yield self._value  # return current value
-            self._current_id = self.safe_next()  # Next sync_id
+            if is_over():
+                return
+            self._current_id = self.next_id()
         self._end_series = True
         # @todo Variant:
         # 1. if sync_ids use to filter in _extract - sync_ids and _extract ending together
