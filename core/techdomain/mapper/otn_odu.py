@@ -103,6 +103,8 @@ class DWDMOdUMapper(BaseMapper):
         )
         if path[0].channel.discriminator:
             otu = path[0].channel.discriminator.split("::")[-1]
+            if client_protocol == "10GE" and otu == "OTU2":
+                otu = "OTU2e"
             ch_label = f"{path[0].channel.name}\n{otu}"
         else:
             ch_label = path[0].channel.name
