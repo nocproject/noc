@@ -8,7 +8,7 @@ console.debug("Defining NOC.core.InactivityLogout");
 
 Ext.define("NOC.core.InactivityLogout", {
   singleton: true,
-  inactivityTimeout: 60 * 60 * 1000, // 1 hour
+  inactivityTimeout: 60 * 60 * 1000, // 1 hour if timeout don't set
   timeoutTask: null,
   //
   init: function(timeout){
@@ -25,7 +25,7 @@ Ext.define("NOC.core.InactivityLogout", {
       listeners[eventName] = {
         fn: this.resetTimeout,
         scope: this,
-        buffer: 300000, // 5 minutes
+        buffer: 60000, // 1 minutes
       };
     });
     Ext.getDoc().on(listeners);
