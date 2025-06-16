@@ -20,6 +20,32 @@ class CrossingPlugin(InvPlugin):
     js = "NOC.inv.inv.plugins.crossing.CrossingPanel"
 
     def get_data(self, request, o: Object) -> Dict[str, Any]:
+        def render_node(name: str, items: Set[str]) -> Dict[str, Any]:
+            """
+            Render Viz node
+            """
+
+            def get_label(s: str) -> str:
+                p = protocols.get(s)
+                if p:
+                    return f"{s}\\n{', '.join(p)}"
+                return s
+
+            label = "|".join(f"<{n}>{get_label(n)}" for n in sorted(items, key=alnum_key))
+            return {"name": name, "attributes": {"shape": "record", "label": label}}
+
+        # Get protocols
+        protocols = {}
+        for c in o.model.connections:
+            cp = set()
+            for pvi in o.iter_connection_effective_protocols(c.name):
+                if pvi.discriminator:
+                    cp.add(f"{pvi.protocol.code}({pvi.discriminator})")
+                else:
+                    cp.add(pvi.protocol.code)
+            if cp:
+                protocols[c.name] = cp
+        # Get crossings
         crossings = list(o.iter_effective_crossing())
         data = [
             {
@@ -69,10 +95,10 @@ class CrossingPlugin(InvPlugin):
             "edges": [],
             "subgraphs": [],
         }
-        viz["nodes"].append(self._render_node("i", inputs))
-        viz["nodes"].append(self._render_node("o", outputs))
+        viz["nodes"].append(render_node("i", inputs))
+        viz["nodes"].append(render_node("o", outputs))
         if mixed:
-            viz["nodes"].append(self._render_node("m", mixed))
+            viz["nodes"].append(render_node("m", mixed))
         # Add edges
         for n, c in enumerate(crossings):
             edge = {
@@ -105,10 +131,3 @@ class CrossingPlugin(InvPlugin):
                 edge["attributes"]["label"] = " ".join(label_parts)
             viz["edges"].append(edge)
         return {"id": str(o.id), "data": data, "viz": viz}
-
-    def _render_node(self, name: str, items: Set[str]) -> Dict[str, Any]:
-        """
-        Render Viz node
-        """
-        label = "|".join(f"<{n}>{n}" for n in sorted(items, key=alnum_key))
-        return {"name": name, "attributes": {"shape": "record", "label": label}}
