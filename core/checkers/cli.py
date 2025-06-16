@@ -7,7 +7,6 @@
 
 # Python modules
 from typing import List, Iterable, Dict, Tuple, Optional, AsyncIterable
-import asyncio
 
 # NOC modules
 from .base import BaseChecker, CheckResult, Check, CheckError
