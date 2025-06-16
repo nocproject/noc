@@ -9,6 +9,7 @@ Ext.define("NOC.main.desktop.Application", {
   extend: "Ext.Viewport",
   layout: "border",
   requires: [
+    "NOC.core.InactivityLogout",
     "NOC.core.PasswordField",
     "NOC.core.ObservableModel",
     "NOC.core.Observable",
@@ -39,9 +40,6 @@ Ext.define("NOC.main.desktop.Application", {
     NOC.launch = Ext.bind(me.launchApp, me);
     //
     me.launchedTabs = {};
-    me.idleTimeout = 0;
-    me.idleTimerId = -1;
-    me.idleDeadline = null;
     //
     me.navStore = Ext.create("Ext.data.TreeStore", {
       root: {
@@ -77,7 +75,8 @@ Ext.define("NOC.main.desktop.Application", {
     });
     me.callParent();
     // Set unload handler
-    Ext.EventManager.addListener(window, "beforeunload", me.onUnload, me, {normalized: false});
+    me.boundOnUnload = me.onUnload.bind(me);
+    window.addEventListener("beforeunload", me.boundOnUnload);
   },
   //
   afterRender: function(){
@@ -301,7 +300,7 @@ Ext.define("NOC.main.desktop.Application", {
         this.navStore.setRoot(settings.navigation);
         this.breadcrumbs.updateSelection("root");
         // Setup idle timer
-        this.setIdleTimeout(settings.idle_timeout);
+        NOC.core.InactivityLogout.init(settings.idle_timeout);
         // permissions cache
         NOC.permissions$.next(this.getPermissions(settings.navigation.children));
         NOC.info_icon("fa-sign-in", __("Logged in as ") + settings.username);
@@ -333,58 +332,13 @@ Ext.define("NOC.main.desktop.Application", {
     return result;
   },
   // Start logout sequence
-  onLogout: function(){
-    document.location = "/api/login/logout/";
-  },
-  //
-  // Process autologout
-  //
-
-  // Setup idle timeout
-  setIdleTimeout: function(timeout){
-    var me = this;
-
-    me.idleTimeout = timeout * 1000;
-    if(me.idleTimeout){
-      me.idleDeadline = Date.now() + me.idleTimeout;
-      me.idleTimerId = Ext.Function.defer(me.onCheckIdle, me.idleTimeout, me);
-      Ext.getDoc().on({
-        mousemove: {
-          fn: me.touchIdleTimer,
-          scope: me,
-          buffer: 1000,
-        },
-        keydown: {
-          fn: me.touchIdleTimer,
-          scope: me,
-          buffer: 1000,
-        },
-      });
+  onLogout: function(msg){
+    const url = "/api/login/logout/";
+    if(!Ext.isEmpty(msg)){
+      window.removeEventListener("beforeunload", this.boundOnUnload);
+      localStorage.setItem("NOC.restartReason", msg);
     }
-    //
-    window.NOCIdleHandler = Ext.bind(me.touchIdleTimer, me);
-  },
-  //
-  onCheckIdle: function(){
-    var me = this,
-      now = Date.now();
-    if(now >= me.idleDeadline){
-      // Deadline reached, logout
-      NOC.restartReason = "Autologout";
-      me.onLogout();
-    } else{
-      // Schedule next check
-      clearTimeout(me.idleTimerId);
-      me.idleTimerId = Ext.Function.defer(me.onCheckIdle, me.idleDeadline - now, me);
-    }
-  },
-  //
-  touchIdleTimer: function(){
-    var me = this;
-    if(me.idleTimeout){
-      // Set new idle deadline
-      me.idleDeadline = Date.now() + me.idleTimeout;
-    }
+    document.location = url;
   },
   //
   onUnload: function(e){
