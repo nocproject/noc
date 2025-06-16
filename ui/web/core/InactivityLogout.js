@@ -57,9 +57,7 @@ Ext.define("NOC.core.InactivityLogout", {
   showSessionTimeoutMessage: function(){
     Ext.Msg.show({
       title: __("Session Expired"),
-      message: __("Your session has expired due to inactivity.<br/><br/>") +
-        __("You have been automatically logged out of the application for security reasons.<br/><br/>") +
-        __("Please log in again to continue."),
+      message: __("Logged out for inactivity"),
       buttons: Ext.Msg.OK,
       icon: Ext.Msg.ERROR,
       modal: true,
@@ -67,7 +65,7 @@ Ext.define("NOC.core.InactivityLogout", {
       resizable: false,
       width: 500,  
       buttonText: {
-        ok: __("Login Again"),
+        ok: __("Ok"),
       },  
       fn: function(btn){
         if(btn === "ok"){
