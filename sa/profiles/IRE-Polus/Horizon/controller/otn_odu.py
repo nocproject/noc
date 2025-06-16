@@ -21,6 +21,7 @@ class Controller(ChannelMixin, BaseODUProfileController):
         "OTU2e": "9",
         "STM64": "131",
         "TransEth10G": "258",
+        "TransEth100G": "260",
         "8GFC": "515",
         "16GFC": "517",
     }
