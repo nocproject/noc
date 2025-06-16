@@ -59,7 +59,7 @@ Ext.define("NOC.core.InactivityLogout", {
       title: __("Session Expired"),
       message: __("Logged out for inactivity"),
       buttons: Ext.Msg.OK,
-      icon: Ext.Msg.ERROR,
+      icon: Ext.Msg.WARNING,
       modal: true,
       closable: false,
       resizable: false,
