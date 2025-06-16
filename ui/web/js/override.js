@@ -4,9 +4,9 @@
 // Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-var _nocTheme = document.getRootNode().documentElement.dataset.theme || "noc";
+NOC.theme = document.getRootNode().documentElement.dataset.theme || "noc";
 console.debug("Patching ExtJS " + Ext.getVersion().version);
-console.debug("Using theme: " + _nocTheme);
+console.debug("Using theme: " + NOC.theme);
 //---------------------------------------------------------------------
 // Patches for ExtJS 5.0.0 errors
 // Review after any ExtJS upgrade
@@ -47,16 +47,13 @@ Ext.override(Ext.form.field.Base, {
     }
     // Apply uiStyle
     if(me.uiStyle){
-      var style = Ext.apply({}, NOC.uiStyles(me.uiStyle, _nocTheme) || {});
+      var style = Ext.apply({}, NOC.uiStyles(me.uiStyle, NOC.theme) || {});
       if(me.labelWidth && style.width && (me.labelAlign === "left" || me.labelAlign === "right")){
         style.width += me.labelWidth;
       }
       if(style.width && me.getTriggers){
-        var triggerWidth = 25, // theme gray
+        var triggerWidth = NOC.uiTriggers[NOC.theme] || 25, // default theme gray
           triggers = me.getTriggers();
-        if(_nocTheme === "noc"){
-          triggerWidth = 32;
-        }
         Ext.Array.each(Object.keys(triggers), function(){
           style.width += triggerWidth;
         });

@@ -791,36 +791,42 @@ Ext.define("NOC.form.field.VTypes", {
 // Predefined set of size and settings.
 // Applied to field as uiStyle property
 //
+NOC.uiLetters = {
+  noc: 16,
+  gray: 11,
+};
+NOC.uiTriggers = {
+  noc: 32,
+  gray: 25,
+};
+NOC.uiConvertWidth = function(width, theme){
+  if(theme === "noc"){
+    width = width * NOC.uiLetters.noc / NOC.uiLetters.gray;
+  }
+  return Math.trunc(width);
+};
 NOC.uiStyles = function(style, theme){
-  let convertToNoc = function(value){
-      let grayLetter = 11,
-        nocLetter = 16;
-      if(theme === "noc"){
-        value = value * nocLetter / grayLetter;
-      }
-      return Math.trunc(value);
-    },
-    baseWidth = convertToNoc(Ext.create("NOC.core.modelfilter.Base").width);
+  let baseWidth = NOC.uiConvertWidth(Ext.create("NOC.core.modelfilter.Base").width, theme);
   
   switch(style){
     case "small": {
       // 3 letters 33px for gray theme, 1 letter 11px
       return {
-        width: convertToNoc(55),
+        width: NOC.uiConvertWidth(55, theme),
         anchor: null,
       }
     }
     case "medium": {
       // 20 letters
       return {
-        width: baseWidth - convertToNoc(25),
+        width: baseWidth - NOC.uiConvertWidth(25, theme),
         anchor: null,
       };
     }
     case "medium-combo": {
 
       return {
-        width: baseWidth - convertToNoc(100),
+        width: baseWidth - NOC.uiConvertWidth(100, theme),
         anchor: null,
       };
     }
