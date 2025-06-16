@@ -25,7 +25,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "modes": ["AGG-2x100"],
+                    "modes": ["AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "OTU4"
                 },
                 {
@@ -35,7 +35,7 @@
                 },
                 {
                     "direction": "*",
-                    "modes": ["AGG-2x100"],
+                    "modes": ["AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 },
                 {
@@ -61,22 +61,18 @@
                 },
                 {
                     "direction": "*",
-                    "modes": ["AGG-200"],
-                    "protocol__code": "OTUC2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "ODU4"
-                },
-                {
-                    "direction": "*",
                     "modes": ["AGG-2x100"],
                     "protocol__code": "QPSK"
                 },
                 {
                     "direction": "*",
-                    "modes": ["AGG-200"],
-                    "protocol__code": "16QAM"
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "ODU4"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "TransEth100G"
                 }
             ],
             "type__name": "Transceiver | CFP2"
@@ -90,35 +86,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -132,35 +121,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -174,35 +156,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -216,35 +191,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -258,35 +226,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -300,35 +261,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -342,35 +296,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -384,35 +331,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -426,35 +366,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -468,35 +401,28 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "STM64"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100", "TP-100+TP-10x10"],
+                    "protocol__code": "TransEth10G"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -510,38 +436,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -556,38 +486,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -602,38 +536,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -648,38 +586,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -694,38 +636,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -740,38 +686,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -786,38 +736,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -832,38 +786,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -878,38 +836,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
@@ -924,38 +886,42 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth10G"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "ODU2e"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2e"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "STM64"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "8GFC"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "16GFC"
-                },
-                {
-                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
                     "protocol__code": "ODU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "ODUflex"
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "STM64"
                 },
                 {
                     "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "8GFC"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-200", "AGG-2x100"],
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
+                    "protocol__code": "OTU2e"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["TP-100+TP-10x10"],
                     "protocol__code": "QPSK"
                 }
             ],
