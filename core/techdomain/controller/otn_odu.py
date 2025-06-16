@@ -286,6 +286,8 @@ class OTNODUController(BaseController):
             match s:
                 case "TransEth10G":
                     return "10GE"
+                case "TransEth100G":
+                    return "100GE"
                 case _:
                     return s
 
