@@ -1933,6 +1933,11 @@
             "attr": "max_rx_tx_frequency",
             "interface": "dwdm",
             "value": 196.1
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THODXX43108X10SR"]
         }
     ],
     "front_facade__name": "RBS | iData | OD-96-50-H13 IP1550",
