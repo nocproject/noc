@@ -105,6 +105,11 @@
             "attr": "height",
             "interface": "dimensions",
             "value": 179
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THKXXX47114X02SR"]
         }
     ],
     "front_facade__name": "IRE-Polus | Horizon | Chassis K4-H8",
