@@ -132,6 +132,11 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["RA2-H4"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THRAXX42014XXXSR"]
         }
     ],
     "front_facade__name": "RBS | iData | RBS-RA2-H4 IP1456",
