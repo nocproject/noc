@@ -274,7 +274,7 @@ class EscalationSequence(BaseSequence):
             ]
         return sorted(r, key=operator.itemgetter("order"))
 
-    def check_closed(self) -> None:
+    def check_closed(self, close_tt: bool = False) -> None:
         """
         Check if alarm has been closed during escalation. Try to deescalate
         """
@@ -297,12 +297,12 @@ class EscalationSequence(BaseSequence):
                     tt_id=alarm.escalation_tt,
                     subject="Closing",
                     body="Closing",
-                    notification_group_id=(
-                        self.alarm.clear_notification_group.id
-                        if self.alarm.clear_notification_group
-                        else None
-                    ),
-                    close_tt=self.alarm.close_tt,
+                    # notification_group_id=(
+                    #     self.alarm.clear_notification_group.id
+                    #     if self.alarm.clear_notification_group
+                    #     else None
+                    # ),
+                    close_tt=close_tt,
                     login=self.login,
                     queue=self.alarm.managed_object.tt_queue,
                 )
@@ -482,6 +482,7 @@ class EscalationSequence(BaseSequence):
             tt,
             close_tt=esc_item.close_tt,
             wait_tt=tt if esc_item.wait_tt else False,
+            template=esc_item.clear_template,
         )
         # Save to escalation context
         self.escalation_doc.tt_id = tt
@@ -742,6 +743,7 @@ class EscalationSequence(BaseSequence):
         self.escalation_doc = e_doc
         # Check maintenance out-of-the-lock
         self.check_maintenance()
+        close_tt = False
         # Perform escalations
         with (
             Span(client="escalator", sample=self.get_span_sample()) as ctx,
@@ -768,6 +770,7 @@ class EscalationSequence(BaseSequence):
                 ):
                     self.create_tt(esc_item, ctx)
                     self.notify_escalated_consequences()
+                    close_tt |= esc_item.close_tt
                 # Send notification
                 if not self.is_under_maintenance():
                     notify = notify or self.notify(esc_item, ctx)
@@ -777,7 +780,7 @@ class EscalationSequence(BaseSequence):
             if self.escalation_doc.tt_id or notify:
                 self.escalation_doc.save()
         # Check if alarm has been closed during escalation
-        self.check_closed()
+        self.check_closed(close_tt)
         # Escalation process complete
         self.logger.info("Escalation sequence is completed")
 

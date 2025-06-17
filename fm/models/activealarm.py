@@ -197,8 +197,6 @@ class ActiveAlarm(Document):
     deferred_groups = ListField(BinaryField())
     # span context
     escalation_ctx = LongField(required=False)
-    # Close tt when alarm cleared
-    close_tt = BooleanField(default=False)
     # Do not clear alarm until *wait_tt* is closed
     wait_tt = StringField()
     wait_ts = DateTimeField()
@@ -212,9 +210,6 @@ class ActiveAlarm(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    # Template and notification group to send close notification
-    clear_template = ForeignKeyField(Template, required=False)
-    clear_notification_group = ForeignKeyField(NotificationGroup, required=False)
     # Paths
     adm_path = ListField(IntField())
     segment_path = ListField(ObjectIdField())
@@ -620,7 +615,7 @@ class ActiveAlarm(Document):
         """"""
         r = []
         for w in self.watchers:
-            if w.effect == effect and key == key:
+            if w.effect == effect and w.key == key:
                 continue
             r.append(w)
         if len(r) != len(self.watchers):
