@@ -52,6 +52,11 @@
             "attr": "weight",
             "interface": "weight",
             "value": 0.4
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THPEMX46400XXXSR"]
         }
     ],
     "front_facade__name": "RBS | iData | PEM 1509-3",

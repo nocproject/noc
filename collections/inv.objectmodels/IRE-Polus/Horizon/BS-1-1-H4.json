@@ -100,6 +100,11 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["BS-1-1-H4"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THBSXX33138XXXSR"]
         }
     ],
     "front_facade__name": "RBS | iData | BS-1-1 H4 IP1540",

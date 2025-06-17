@@ -864,6 +864,11 @@
             "attr": "max_rx_tx_frequency",
             "interface": "dwdm",
             "value": 196.05
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THOMXX43003X10SR"]
         }
     ],
     "front_facade__name": "RBS | iData | OM-40V-100-H21 IP1550",
