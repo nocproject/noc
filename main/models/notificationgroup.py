@@ -615,7 +615,7 @@ class NotificationGroup(NOCModel):
             attachments: Include attachments
         """
 
-    def notify(self, subject, body, link=None, attachments=None):
+    def notify(self, subject, body, link=None, attachments=None, **kwargs):
         """
         Send message to active members
         Attrs:

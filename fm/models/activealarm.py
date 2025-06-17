@@ -99,26 +99,31 @@ class WatchItem(EmbeddedDocument):
         if "template" in self.args:
             template = Template.get_by_id(int(self.args["template"]))
             r |= {
-                "subject": template.render_subject(alarm=alarm),
-                "body": template.render_body(alarm=alarm),
+                "subject": template.render_subject(
+                    alarm=alarm, managed_object=alarm.managed_object
+                ),
+                "body": template.render_body(alarm=alarm, managed_object=alarm.managed_object),
             }
         else:
             r |= {
-                "subject": "Alarm cleared", "body": "Alarm has been cleared",
+                "subject": "Alarm cleared",
+                "body": "Alarm has been cleared",
             }
         return r
 
     def run(self, alarm, is_clear: bool = False):
         match self.effect:
             case Effect.TT_SYSTEM:
-                m = get_model("AlarmEscalation")
+                m = get_model("fm.AlarmEscalation")
                 m.watch_alarm(**self.get_args(alarm, is_clear))
             case Effect.NOTIFICATION_GROUP:
                 ng = NotificationGroup.get_by_id(int(self.key))
                 ng.notify(**self.get_args(alarm, is_clear))
             case Effect.SUBSCRIPTION:
                 u = User.get_by_id(int(self.key))
-                NotificationGroup.notify_user(u, MessageType.ALARM, **self.get_args(alarm, is_clear))
+                NotificationGroup.notify_user(
+                    u, MessageType.ALARM, **self.get_args(alarm, is_clear)
+                )
             case Effect.HANDLER:
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
@@ -137,8 +142,8 @@ class ActiveAlarm(Document):
             ("alarm_class", "managed_object"),
             "#reference",
             ("timestamp", "managed_object"),
-            "escalation_tt",
-            "escalation_ts",
+            # "escalation_tt",
+            # "escalation_ts",
             "adm_path",
             "segment_path",
             "container_path",
@@ -1015,14 +1020,20 @@ class ActiveAlarm(Document):
         if self.id:
             ActiveAlarm._get_collection().bulk_write(bulk, ordered=True)
 
-    def escalate(self, tt_id, close_tt: bool = False, wait_tt: bool = False, template: Optional[Template] = None):
+    def escalate(
+        self,
+        tt_id,
+        close_tt: bool = False,
+        wait_tt: Optional[str] = None,
+        template: Optional[Template] = None,
+    ):
         if close_tt:
             self.add_watch(
                 Effect.TT_SYSTEM,
                 tt_id,
                 immediate=True,
                 clear_only=True,
-                template=str(template.id),
+                template=str(template.id) if template else None,
             )
         # self.close_tt = close_tt
         self.wait_tt = wait_tt
