@@ -418,6 +418,17 @@ class NotificationGroup(NOCModel):
             attachments=attachments or [],
         )
 
+    @classmethod
+    def notify_user(
+        cls,
+        user: User,
+        message_type: MessageType,
+        subject: Optional[str] = None,
+        body: Optional[str] = None,
+        **kwargs,
+    ):
+        """"""
+
     def update_user_settings(
         self,
         user: User,
