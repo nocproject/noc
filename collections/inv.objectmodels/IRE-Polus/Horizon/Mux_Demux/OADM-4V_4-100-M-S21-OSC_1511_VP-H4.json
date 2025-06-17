@@ -349,6 +349,11 @@
             "attr": "max_rx_tx_frequency",
             "interface": "dwdm",
             "value": 192.4
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THOADM47244X21SR"]
         }
     ],
     "front_facade__name": "RBS | iData | OADM-4V/4-100-M-C21-OSC(1511) IP1550",
