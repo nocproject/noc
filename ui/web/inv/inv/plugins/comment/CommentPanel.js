@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.comment.CommentPanel");
 Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
   extend: "Ext.panel.Panel",
   requires: [
+    "NOC.core.MarkdownEditor",
   ],
   title: __("Comment"),
   closable: false,
@@ -23,15 +24,19 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
       autoScroll: true,
     });
 
-    me.editField = Ext.create("Ext.form.field.HtmlEditor", {
+    // me.editField = Ext.create("Ext.form.field.HtmlEditor", {
+    //   hidden: true,
+    //   defaultLinkValue: "https://",
+    //   createLink: function(){
+    //     var url = prompt(this.createLinkText, this.defaultLinkValue);
+    //     if(url && url !== this.defaultLinkValue){
+    //       this.relayCmd("insertHTML", "<a href='" + url + "' target='_blank'>" + url + "</a>");
+    //     }
+    //   },
+    // });
+
+    me.editField = Ext.create("NOC.core.MarkdownEditor", {
       hidden: true,
-      defaultLinkValue: "https://",
-      createLink: function(){
-        var url = prompt(this.createLinkText, this.defaultLinkValue);
-        if(url && url !== this.defaultLinkValue){
-          this.relayCmd('insertHTML', "<a href='" + url + "' target='_blank'>" + url + "</a>");
-        }
-      },
     });
 
     me.editButton = Ext.create("Ext.button.Button", {
