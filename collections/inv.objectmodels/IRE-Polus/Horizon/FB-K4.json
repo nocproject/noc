@@ -45,8 +45,17 @@
             "attr": "weight",
             "interface": "weight",
             "value": 0.27
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THFBK459002XXXSR"]
         }
     ],
     "front_facade__name": "RBS | iData | FAN IP1592",
+    "modes": [{
+        "name": null,
+        "is_default": true
+    }],
     "short_label": "FANB"
 }

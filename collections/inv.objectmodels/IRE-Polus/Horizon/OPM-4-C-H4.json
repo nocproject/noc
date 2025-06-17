@@ -76,8 +76,17 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["OPM-4-C-H4"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THOPMX46105X01SR"]
         }
     ],
     "front_facade__name": "RBS | iData | RBS-OPM-4-C-H4 IP1503",
+    "modes": [{
+        "name": null,
+        "is_default": true
+    }],
     "short_label": "OPM-4"
 }

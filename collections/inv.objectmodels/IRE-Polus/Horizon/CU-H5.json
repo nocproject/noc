@@ -101,6 +101,11 @@
             "attr": "weight",
             "interface": "weight",
             "value": 1.2
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THCUXX46103X04SR"]
         }
     ],
     "front_facade__name": "RBS | iData | CU-H5 IP1642",

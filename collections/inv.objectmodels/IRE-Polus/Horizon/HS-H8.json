@@ -59,6 +59,11 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["HS-H8"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THHSXX49004XXXSR"]
         }
     ],
     "front_facade__name": "RBS | iData | HS-H8",

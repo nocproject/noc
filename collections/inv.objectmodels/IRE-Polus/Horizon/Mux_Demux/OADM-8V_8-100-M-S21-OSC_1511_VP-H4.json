@@ -501,6 +501,11 @@
             "attr": "max_rx_tx_frequency",
             "interface": "dwdm",
             "value": 192.8
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THOADM47245X21SR"]
         }
     ],
     "front_facade__name": "RBS | iData | OADM-8V/8-100-M-C21-OSC",

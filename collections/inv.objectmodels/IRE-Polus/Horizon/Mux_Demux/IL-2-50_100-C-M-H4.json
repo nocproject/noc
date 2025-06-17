@@ -161,7 +161,16 @@
             "attr": "part_no",
             "interface": "asset",
             "value": ["IL-2-50/100-C-M-H4"]
+        },
+        {
+            "attr": "order_part_no",
+            "interface": "asset",
+            "value": ["THILXX43206XXXSR"]
         }
     ],
+    "modes": [{
+        "name": null,
+        "is_default": true
+    }],
     "short_label": "IL"
 }
