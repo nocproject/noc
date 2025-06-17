@@ -63,7 +63,7 @@ class MACRange(EmbeddedDocument):
             first, last = last, first
         return MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
 
-    def iter_as_int(self) -> Iterable(int):
+    def iter_as_int(self) -> Iterable[int]:
         """Iterate all MACs in range as integers."""
         return range(int(self.first_mac), int(self.last_mac) + 1)
 
