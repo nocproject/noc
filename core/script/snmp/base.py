@@ -214,16 +214,21 @@ class SNMP(object):
         timeout: int = 10,
         raw_varbinds=False,
         display_hints: Optional[Dict[str, Callable]] = None,
+        strict_value=False,
     ) -> Union[Any, Dict[str, Any]]:
         """
         Perform SNMP GET request by gufo_snmp library
-        :param oids: dict with oids in form {name: oid, ...} or string contains oid
-        :param cached: True if get results can be cached during session
-        :param version: SNMP Version used, if None - SNMP Capabilities used
-        :param timeout: Timeout for SNMP Response
-        :param raw_varbinds: Return value in BER encoding
-        :param display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
-        :returns: eigther result scalar or dict of name -> value
+        Args:
+            oids: dict with oids in form {name: oid, ...} or string contains oid
+            cached: True if get results can be cached during session
+            version: SNMP Version used, if None - SNMP Capabilities used
+            timeout: Timeout for SNMP Response
+            raw_varbinds: Return value in BER encoding
+            display_hints: Dict of  oid -> render_function. See BaseProfile.snmp_display_hints for details
+            strict_value: Behavior when received empty value, without error:
+               * True - Raise BAD_VALUE
+               * False - Return None
+        Return: eigther result scalar or dict of name -> value
         """
 
         async def run():
@@ -255,6 +260,8 @@ class SNMP(object):
                         self.logger.error("[%s] Invalid oid %s returned in reply", address, k)
             elif data:
                 result = data[oids[0]]
+            elif not strict_value:
+                return None
             else:
                 # Device return empty varbinds, perhaps need more info
                 raise SNMPError(code=BAD_VALUE, oid=oids)
