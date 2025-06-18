@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportavailability
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from collections import defaultdict
 
 # Third-party modules
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
 from pymongo import ReadPreference
 from mongoengine.queryset.visitor import Q
 
@@ -39,8 +38,12 @@ class ReportForm(forms.Form):
     ], label=_("Inteval"))
     """
 
-    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=True)
-    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    from_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("From Date"), required=True
+    )
+    to_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("To Date"), required=False
+    )
     adm_domain = forms.ModelChoiceField(
         label=_("Administrative Domain"),
         required=False,
@@ -134,12 +137,14 @@ class ReportAvailabilityApplication(SimpleReport):
         if not from_date:
             from_date = datetime.datetime.now() - datetime.timedelta(days=interval)
         else:
-            from_date = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            from_date = datetime.datetime.strptime(from_date, self.ISO_DATE_MASK)
 
         if not to_date or from_date == to_date:
             to_date = from_date + datetime.timedelta(days=1)
         else:
-            to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+            to_date = datetime.datetime.strptime(to_date, self.ISO_DATE_MASK) + datetime.timedelta(
+                days=1
+            )
 
         a = self.get_availability(
             start_date=from_date, stop_date=to_date, skip_zero_avail=skip_zero_avail

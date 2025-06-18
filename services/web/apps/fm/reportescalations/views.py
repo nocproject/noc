@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  fm.reportescalations
 # ----------------------------------------------------------------------
-#  Copyright (C) 2007-2019 The NOC Project
+#  Copyright (C) 2007-2025 The NOC Project
 #  See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import operator
 
 # Third-party modules
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
 from noc.services.web.base.simplereport import SimpleReport, PredefinedReport
@@ -27,8 +26,12 @@ class ReportForm(forms.Form):
         choices=[(0, _("Range")), (1, _("1 day")), (7, _("1 week")), (30, _("1 month"))],
         label=_("Interval"),
     )
-    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
-    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    from_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("From Date"), required=False
+    )
+    to_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("To Date"), required=False
+    )
 
 
 class ReportEscalationsApplication(SimpleReport):
@@ -48,11 +51,13 @@ class ReportEscalationsApplication(SimpleReport):
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
             q = {"timestamp": {"$gte": ts}}
         else:
-            t0 = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            t0 = datetime.datetime.strptime(from_date, self.ISO_DATE_MASK)
             if not to_date:
                 t1 = datetime.datetime.now()
             else:
-                t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+                t1 = datetime.datetime.strptime(to_date, self.ISO_DATE_MASK) + datetime.timedelta(
+                    days=1
+                )
             q = {"timestamp": {"$gte": t0, "$lte": t1}}
         q["escalation_tt"] = {"$exists": True}
         if not request.user.is_superuser:
