@@ -15,4 +15,5 @@ fi
 ./noc migrate-liftbridge
 ./noc migrate-ch
 ./noc sync-perm
+echo "# Syncing MIB"
 ./noc sync-mibs
