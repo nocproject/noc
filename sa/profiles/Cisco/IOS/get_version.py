@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,13 +21,13 @@ class Script(BaseScript):
     always_prefer = "S"
 
     rx_version = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Bengaluru)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE "
         r"Software,\s)?(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
         r"Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_snmp_ver = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Bengaluru)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
         r"Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
@@ -81,13 +81,19 @@ class Script(BaseScript):
             platform = match.group("platform")
             # inventory
             # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
-            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1001])
-            if p and (p.startswith("WS-C") or p.startswith("ME-3")):
+            try:
+                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1001])
+            except self.SNMPError:
+                p = ""
+            if p and (p.startswith("WS-C") or p.startswith("ME-3") or p.startswith("C6800")):
                 platform = p
                 s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1001])
             else:
                 # Found in WS-C3650-48TD
-                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1000])
+                try:
+                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1000])
+                except self.SNMPError:
+                    p = ""
                 if p and p.startswith("WS-C"):
                     platform = p
                     s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
