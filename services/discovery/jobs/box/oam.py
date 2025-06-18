@@ -10,6 +10,8 @@ from collections import defaultdict
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
+from noc.core.mac import MAC
+from noc.inv.models.macblacklist import MACBlacklist
 
 
 class OAMCheck(TopologyDiscoveryCheck):
@@ -27,7 +29,13 @@ class OAMCheck(TopologyDiscoveryCheck):
         remote_macs = defaultdict(list)  # remote mac -> local iface
         for n in result:
             if "L" in n["caps"]:
-                remote_macs[n["remote_mac"]] += [n["interface"]]
+                remote_mac = n["interface"]
+                if MACBlacklist.is_banned_mac(remote_mac, is_duplicated=True):
+                    self.logger.info("Banned MAC %s found. Skipping", remote_mac)
+                elif MAC(remote_mac).is_multicast:
+                    self.logger.info("MAC address %s is multicast. Skipping", remote_mac)
+                else:
+                    remote_macs[n["remote_mac"]] += [remote_mac]
         # Resolve links
         for rmac in remote_macs:
             if len(remote_macs[rmac]) == 1:

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # LLDP check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from noc.core.purgatorium import register, NEIGHBOR_SOURCE
 from noc.sa.interfaces.base import MACAddressParameter, InterfaceTypeError
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
+from noc.core.mac import MAC
 from noc.core.lldp import (
     LLDP_CHASSIS_SUBTYPE_MAC,
     LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
@@ -27,7 +28,7 @@ from noc.inv.models.macblacklist import MACBlacklist
 
 class LLDPCheck(TopologyDiscoveryCheck):
     """
-    OAM Topology discovery
+    LLDP Topology discovery
     """
 
     name = "lldp"
@@ -57,6 +58,15 @@ class LLDPCheck(TopologyDiscoveryCheck):
             if MACBlacklist.is_banned_mac(chassis_id, is_duplicated=True):
                 self.logger.info(
                     "Banned MAC %s found. Trying to negotiate via hostname", chassis_id
+                )
+                if "remote_system_name" in neighbor_id:
+                    n = self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
+                else:
+                    self.logger.info("No remote hostname for %s. Giving up.", neighbor_id)
+                    n = None
+            elif MAC(chassis_id).is_multicast:
+                self.logger.info(
+                    "MAC address %s is multicast. Trying to negotiate via hostname", chassis_id
                 )
                 if "remote_system_name" in neighbor_id:
                     n = self.get_neighbor_by_hostname(neighbor_id["remote_system_name"])
