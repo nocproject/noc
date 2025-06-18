@@ -10,14 +10,14 @@ from urllib.parse import urlparse
 from typing import List, AsyncIterable
 
 # NOC modules
-from noc.core.checkers.base import Checker, CheckResult, Check, CheckError
-from noc.core.http.async_client import HttpClient as ASyncHttpClient
+from .base import BaseChecker, CheckResult, Check, CheckError
+from noc.core.http.async_client import HttpClient
 
 HTTP_CHECK = "HTTP"
 HTTPS_CHECK = "HTTPS"
 
 
-class HTTPChecker(Checker):
+class HTTPChecker(BaseChecker):
     """
     Check address availability from remote device
     """
@@ -37,7 +37,7 @@ class HTTPChecker(Checker):
         return url.geturl()
 
     async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
-        client = ASyncHttpClient(
+        client = HttpClient(
             max_redirects=None,
             headers={"X-NOC-Calling-Service": b"noc-check"},
             connect_timeout=self.CONNECT_TIMEOUT,
@@ -46,7 +46,7 @@ class HTTPChecker(Checker):
         for c in checks:
             # url = urlparse()
             url = self.parse_url(c.args["url"], c.address, c.name)
-            code, headers, data = await client.get(url)
+            code, _headers, data = await client.get(url)
             # Process response
             if code == 200:
                 error = None
