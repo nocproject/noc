@@ -744,7 +744,7 @@ class InvApplication(ExtApplication):
         validate=DictParameter(
             attrs={
                 "container": ObjectIdParameter(required=True),
-                "clone_connections": StringParameter(required=True),
+                "clone_connections": BooleanParameter(required=True),
             }
         ),
     )
