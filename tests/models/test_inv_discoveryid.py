@@ -11,14 +11,14 @@ import pytest
 
 # NOC modules
 from noc.core.mac import MAC
-from noc.inv.models.discoveryid import DiscoveryID
+from noc.inv.models.discoveryid import DiscoveryID, MACRange
 
 
 @pytest.mark.parametrize(
     "ranges,additional,result",
     [
         (
-            [{"first_chassis_mac": "01:02:03:25:6C:80", "last_chassis_mac": "01:02:03:25:6C:80"}],
+            [MACRange(first_mac="01:02:03:25:6C:80", last_mac="01:02:03:25:6C:80")],
             [
                 "01:02:03:25:6C:8D",
                 "01:02:03:25:6C:8E",
