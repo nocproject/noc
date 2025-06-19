@@ -516,7 +516,7 @@ class Service(Document):
                 "id": str(self.profile.remote_system.id),
                 "name": self.profile.remote_system.name,
             }
-            r["administrative_domain"]["remote_id"] = self.profile.remote_id
+            r["profile"]["remote_id"] = self.profile.remote_id
         return r
 
     def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:

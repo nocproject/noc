@@ -391,6 +391,9 @@ class ServiceInstance(Document):
         cfg = self.config
         update_ts = datetime.datetime.now() or update_ts
         for o in res:
+            if not o:
+                # Bad resource value.
+                continue
             if not hasattr(o, "as_resource"):
                 raise AttributeError("Model %s not Supported Resource Method" % get_model_id(o))
             if hasattr(o, "state") and cfg.send_approve:
