@@ -106,12 +106,16 @@ class Rule:
     to_drop: bool = False
 
     @classmethod
-    def from_config(cls, data: Dict[str, Any], enumerations):
+    def from_config(cls, data: Dict[str, Any], enumerations, r_format: Optional[str] = None):
         """Create from EventClassification rule config"""
         matcher, message_rx = [], data["message_rx"] if data["message_rx"] else None
         source = EventSource(data["sources"][0]) if data["sources"] else EventSource.OTHER
         profiles = data.get("profiles") or []
         patterns, transform = [], {}
+        if not r_format or r_format == "old_rule":
+            event_class, event_class_id = data["event_class"], data["event_class_id"]
+        else:
+            event_class, event_class_id = data["event_class"]["name"], data["event_class"]["id"]
         for x in data["patterns"]:
             key_s, value_s = x["key_re"].strip("^$"), x["value_re"].strip("^$")
             # Store profile
@@ -177,8 +181,8 @@ class Rule:
         return Rule(
             id=data["id"],
             name=data["name"],
-            event_class_id=data["event_class_id"],
-            event_class_name=data["event_class"],
+            event_class_id=event_class_id,
+            event_class_name=event_class,
             source=source,
             profiles=frozenset(profiles),
             preference=int(data["preference"]),

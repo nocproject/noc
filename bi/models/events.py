@@ -29,6 +29,8 @@ from noc.core.bi.dictionaries.profile import Profile
 from noc.core.bi.dictionaries.administrativedomain import AdministrativeDomain
 from noc.core.bi.dictionaries.eventclass import EventClass
 from noc.core.bi.dictionaries.pool import Pool
+from noc.core.bi.dictionaries.networksegment import NetworkSegment
+from noc.core.bi.dictionaries.container import Container
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
@@ -63,6 +65,8 @@ class Events(Model):
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
     #
     severity = UInt8Field(description="EventSeverity")
+    result_action = StringField(description="Result action for event")
+    error_message = StringField(description="Error message")
     #
     remote_system = ReferenceField(RemoteSystem, description="Remote System")
     remote_id = StringField(description="Event Id on Remote System")
@@ -80,6 +84,8 @@ class Events(Model):
     platform = ReferenceField(Platform, description=_("Platform"))
     version = ReferenceField(Version, description=_("Version"))
     administrative_domain = ReferenceField(AdministrativeDomain, description=_("Admin. Domain"))
+    segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
+    container = ReferenceField(Container, description=_("Container"))
 
     @classmethod
     def transform_query(cls, query, user):

@@ -21,7 +21,7 @@ class ROPCGrantRequest(BaseModel):
     grant_type: Literal["password"]
     username: str
     password: str
-    scope: Optional[str]
+    scope: Optional[str] = None
 
 
 class CCGrantRequest(BaseModel):
@@ -31,7 +31,7 @@ class CCGrantRequest(BaseModel):
     """
 
     grant_type: Literal["client_credentials"]
-    scope: Optional[str]
+    scope: Optional[str] = None
 
 
 class RefreshRequest(BaseModel):
@@ -42,7 +42,7 @@ class RefreshRequest(BaseModel):
 
     grant_type: Literal["refresh_token"]
     refresh_token: str
-    scope: Optional[str]
+    scope: Optional[str] = None
 
 
 TokenRequest = Union[RefreshRequest, ROPCGrantRequest, CCGrantRequest]

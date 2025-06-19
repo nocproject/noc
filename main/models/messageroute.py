@@ -167,10 +167,10 @@ class MessageRoute(Document):
                         if match.administrative_domain
                         else None
                     ),
-                    MessageMeta.GROUPS.value: [str(g.id) for g in match.resource_groups],
+                    MessageMeta.GROUPS.value: [str(g.id) for g in match.resource_groups or []],
                     "headers": [
                         {"header": m.header, "op": m.op, "value": m.value}
-                        for m in match.headers_match
+                        for m in match.headers_match or []
                     ],
                 }
             ]

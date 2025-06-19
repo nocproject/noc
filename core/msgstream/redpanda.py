@@ -45,6 +45,7 @@ CLIENT_ID = "NOC"
 class RedPandaClient(object):
     TIMESTAMP_MULTIPLIER = 1_000
     SUBSCRIBE_BULK = True
+    RESOLVE_RETRY = 1.0
 
     def __init__(self):
         self.bootstrap = None
@@ -61,7 +62,13 @@ class RedPandaClient(object):
     async def resolve_broker(cls) -> str:
         # Getting addresses from config directly will block the loop on resolve() method.
         # So get parameter via .find_parameter() and resolve explicitly.
-        addresses = await config.find_parameter("redpanda.addresses").async_get()
+        logger.debug("Resolving broker addresses")
+        while True:
+            addresses = await config.find_parameter("redpanda.addresses").async_get()
+            if addresses:
+                break
+            logger.warning("Broker is not ready yet, waiting")
+            await retry_timeout(cls.RESOLVE_RETRY, name="kafka_broker_wait")
         # Use random broker from seed
         svc = random.choice(addresses)
         return f"{svc.host}:{svc.port}"

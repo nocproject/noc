@@ -626,7 +626,7 @@ class ExtModelApplication(ExtApplication):
                 "Bad request: %r (%s)", request.body if not request._read_started else request, e
             )
             return self.render_json(
-                {"success": False, "message": "Bad request", "traceback": str(e)},
+                {"status": False, "message": "Bad request", "traceback": str(e)},
                 status=self.BAD_REQUEST,
             )
         if self.has_uuid and not attrs.get("uuid"):
@@ -639,7 +639,7 @@ class ExtModelApplication(ExtApplication):
             # Check for duplicates
             self.queryset(request).get(**qattrs)
             return self.render_json(
-                {"success": False, "message": "Duplicated record"}, status=self.CONFLICT
+                {"status": False, "message": "Duplicated record"}, status=self.CONFLICT
             )
         except self.model.MultipleObjectsReturned:
             return self.render_json(
@@ -677,7 +677,7 @@ class ExtModelApplication(ExtApplication):
                 )
             # Check format
             if request.is_extjs:
-                rs = {"success": True, "data": self.instance_to_dict(o)}
+                rs = {"status": True, "data": self.instance_to_dict(o)}
             else:
                 rs = self.instance_to_dict(o)
             return self.response(rs, status=self.CREATED)
@@ -714,7 +714,7 @@ class ExtModelApplication(ExtApplication):
                 "Bad request: %r (%s)", request.body if not request._read_started else request, e
             )
             return self.render_json(
-                {"success": False, "message": "Bad request", "traceback": str(e)},
+                {"status": False, "message": "Bad request", "traceback": str(e)},
                 status=self.BAD_REQUEST,
             )
         except Exception as e:
@@ -761,15 +761,15 @@ class ExtModelApplication(ExtApplication):
                 self.update_file(request.FILES, o, file_attrs)
         except IntegrityError as e:
             return self.render_json(
-                {"success": False, "message": f"Integrity error {str(e)}"}, status=self.CONFLICT
+                {"status": False, "message": f"Integrity error {str(e)}"}, status=self.CONFLICT
             )
         except (ValidationError, ValueError) as e:
-            return self.response({"success": False, "message": str(e)}, status=self.BAD_REQUEST)
+            return self.response({"status": False, "message": str(e)}, status=self.BAD_REQUEST)
         except Exception as e:
             error_report()
             return self.response({"status": False, "message": str(e)}, status=self.INTERNAL_ERROR)
         if request.is_extjs:
-            r = {"success": True, "data": self.instance_to_dict(o)}
+            r = {"status": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
@@ -791,7 +791,7 @@ class ExtModelApplication(ExtApplication):
             o.delete()
         except ValueError as e:
             return self.render_json(
-                {"success": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
+                {"status": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
             )
         return HttpResponse(status=self.DELETED)
 

@@ -46,7 +46,7 @@ class Script(BaseScript):
             cmd = self.cli("show lldp")
         except self.CLISyntaxError:
             # FoxGate CLI
-            cmd = self.cli("show lldp interface")
+            cmd = self.cli("show lldp interface", cached=True)
             return "System LLDP: enable" in cmd, True
         return self.rx_lldp_en.search(cmd) is not None, False
 

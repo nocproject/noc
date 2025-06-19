@@ -7,40 +7,40 @@
 console.debug("Defining NOC.dns.dnszone.RecordsModel");
 
 Ext.define("NOC.dns.dnszone.RecordsModel", {
-    extend: "Ext.data.Model",
-    rest_url: "/dns/dnszone/{{parent}}/records/",
-    parentField: "zone_id",
+  extend: "Ext.data.Model",
+  rest_url: "/dns/dnszone/{{parent}}/records/",
+  parentField: "zone_id",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "ttl",
-            type: "integer",
-            allowNull: true
-        },
-        {
-            name: "priority",
-            type: "integer",
-            allowNull: true
-        },
-        {
-            name: "type",
-            type: "string"
-        },
-        {
-            name: "content",
-            type: "string"
-        },
-        {
-            name: "labels",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "ttl",
+      type: "integer",
+      allowNull: true,
+    },
+    {
+      name: "priority",
+      type: "integer",
+      allowNull: true,
+    },
+    {
+      name: "type",
+      type: "string",
+    },
+    {
+      name: "content",
+      type: "string",
+    },
+    {
+      name: "labels",
+      type: "auto",
+    },
+  ],
 });

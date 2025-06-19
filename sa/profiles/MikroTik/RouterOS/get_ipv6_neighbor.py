@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_ipv6_neighbor
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ class Script(BaseScript):
             return []
         nb = []
         for n, f, r in v:
-            if not r["status"] or r["status"] == "failed":
+            if not r.get("status") or r["status"] == "failed":
                 continue
             if "mac-address" in r and r["mac-address"]:
                 nb += [

@@ -122,7 +122,7 @@ class Script(VIMScript):
                 "enabled_afi": [],
                 "subinterfaces": [],
             }
-            if vnic.spec.distributedVirtualPort.switchUuid:
+            if vnic.spec.distributedVirtualPort and vnic.spec.distributedVirtualPort.switchUuid:
                 fis_nic[vnic.device] = {"fi": vnic.spec.distributedVirtualPort.switchUuid}
             if vnic.spec.ip:
                 ip = IPv4(vnic.spec.ip.ipAddress, vnic.spec.ip.subnetMask)

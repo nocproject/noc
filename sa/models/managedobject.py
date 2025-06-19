@@ -120,6 +120,7 @@ from noc.core.script.scheme import (
     SNMPv3Credential,
     CLICredential,
     TELNET,
+    Protocol as CredProtocol,
 )
 from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
@@ -145,7 +146,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 52
+MANAGEDOBJECT_CACHE_VERSION = 53
 CREDENTIAL_CACHE_VERSION = 9
 
 
@@ -179,18 +180,30 @@ class Credentials(object):
             )
         return None
 
-    def get_cli_credential(self) -> Optional[CLICredential]:
+    def get_cli_credential(
+        self,
+        protocol: Optional[CredProtocol] = None,
+        raise_privilege=True,
+    ) -> Optional[CLICredential]:
         if not self.user:
             return None
+        if protocol:
+            return CLICredential(
+                username=self.user,
+                password=self.password,
+                super_password=self.super_password,
+                raise_privilege=raise_privilege,
+                enable_protocols=(protocol.value,),
+            )
         return CLICredential(
             username=self.user,
             password=self.password,
             super_password=self.super_password,
-            raise_privilege=True,
+            raise_privilege=raise_privilege,
         )
 
     def __eq__(self, other):
-        """Compare credentail"""
+        """Compare credential"""
         if isinstance(other, SNMPCredential):
             return self.get_snmp_credential() == other
         elif isinstance(other, SNMPv3Credential):
@@ -413,10 +426,6 @@ class ManagedObjectManager(Manager):
     check=[
         # ("cm.ValidationRule.ObjectItem", ""),
         ("fm.ActiveAlarm", "managed_object"),
-        ("fm.ActiveEvent", "managed_object"),
-        ("fm.ArchivedAlarm", "managed_object"),
-        ("fm.ArchivedEvent", "managed_object"),
-        ("fm.FailedEvent", "managed_object"),
         ("inv.Interface", "managed_object"),
         ("inv.SubInterface", "managed_object"),
         ("inv.ForwardingInstance", "managed_object"),
@@ -431,6 +440,10 @@ class ManagedObjectManager(Manager):
         ("sa.ServiceSummary", "managed_object"),
         ("inv.DiscoveryID", "object"),
         ("inv.Sensor", "managed_object"),
+        ("fm.ArchivedAlarm", "managed_object"),
+        ("fm.ActiveEvent", "managed_object"),
+        ("fm.ArchivedEvent", "managed_object"),
+        ("fm.FailedEvent", "managed_object"),
     ],
     clean=[
         ("ip.Address", "managed_object"),
@@ -1234,6 +1247,7 @@ class ManagedObject(NOCModel):
 
             for aa in ActiveAlarm.objects.filter(managed_object=self.id):
                 aa.clear_alarm("Management is disabled")
+        if Interaction.ServiceActivation not in self.interactions:
             # Clear discovery id
             from noc.inv.models.discoveryid import DiscoveryID
 
@@ -2931,7 +2945,7 @@ class ManagedObject(NOCModel):
                 return m["remote_id"]
         return None
 
-    def update_object_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
+    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
         """
         Update managed Object mappings
         Source Priority, for mappings on different sources
@@ -3149,8 +3163,11 @@ class ManagedObject(NOCModel):
         """Reset credential"""
         r = {}
         for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
+            if f == "snmp_auth_proto" or f == "snmp_priv_proto":
+                continue
             setattr(self, f, None)
             r[f] = None
+        return r
 
     def set_profile(self, profile: str) -> bool:
         """Set SA Profile"""

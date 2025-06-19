@@ -29,7 +29,7 @@ class Script(VIMScript):
                 continue
             networks[n.config.key]["ports"] = list(n.portKeys)
             if isinstance(vlan.vlanId, list):
-                # Tunked ports
+                # Trunked ports
                 networks[n.config.key]["tagged_vlans"] = list(
                     range(vlan.vlanId[0].start or 1, vlan.vlanId[0].end + 1)
                 )

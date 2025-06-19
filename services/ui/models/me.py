@@ -23,12 +23,8 @@ class GroupItem(BaseModel):
 class MeResponse(BaseModel):
     id: str
     username: str
-    first_name: Optional[str]
-    last_name: Optional[str]
-    email: Optional[str]
-    groups: List[GroupItem]
     language: str
-    avatar_url: Optional[str]
+    groups: List[GroupItem]
     avatar_label: str = Field(
         title="Avatar Label", description="Letters to be used when avatar is missed or empty"
     )
@@ -40,3 +36,7 @@ class MeResponse(BaseModel):
         title="Avatar Label Background",
         description="CSS background to be used along with avatar_label",
     )
+    avatar_url: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None

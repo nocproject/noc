@@ -12,7 +12,6 @@ ENV\
     PROJ_DIR=/usr
 COPY . /opt/noc/
 WORKDIR /opt/noc/
-
 RUN \
     set -x \
     && apt-get update\
@@ -21,6 +20,7 @@ RUN \
     curl \
     libjemalloc2 \
     libpq-dev \
+    iproute2 \
     && pip3 install --upgrade pip \
     && pip3 install\
     -r ./.requirements/node.txt\

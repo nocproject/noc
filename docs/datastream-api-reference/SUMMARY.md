@@ -11,4 +11,5 @@
 * [dnszone](dnszone.md)
 * [prefix](prefix.md)
 * [resourcegroup](resourcegroup.md)
+* [service](service.md)
 * [vrf](vrf.md)

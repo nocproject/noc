@@ -301,8 +301,12 @@ class EventClassificationRule(Document):
         r = {
             "id": str(rule.id),
             "name": rule.name,
-            "event_class_id": str(rule.event_class.id),
-            "event_class": rule.event_class.name,
+            "$type": "classification",
+            "event_class": {
+                "id": str(rule.event_class.id),
+                "name": rule.event_class.name,
+                "bi_id": str(rule.event_class.bi_id),
+            },
             "sources": [s.value for s in rule.sources],
             "profiles": list(rule_profiles),
             "preference": rule.preference,

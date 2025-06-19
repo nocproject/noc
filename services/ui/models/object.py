@@ -25,18 +25,18 @@ class DefaultObjectItem(BaseModel):
     id: str
     name: str
     model: Reference
-    container: Optional[Reference]
-    layer: Optional[Reference]
-    point: Optional[PointItem]
+    bi_id: str
     labels: List[LabelItem]
     effective_labels: List[LabelItem]
-    remote_system: Optional[Reference]
-    remote_id: Optional[str]
-    bi_id: str
+    container: Optional[Reference] = None
+    layer: Optional[Reference] = None
+    point: Optional[PointItem] = None
+    remote_system: Optional[Reference] = None
+    remote_id: Optional[str] = None
 
 
 class FormObjectItem(BaseModel):
     name: str
     model: Reference
-    container: Optional[Reference]
     labels: List[LabelItem]
+    container: Optional[Reference] = None

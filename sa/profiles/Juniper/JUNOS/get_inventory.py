@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ class Script(BaseScript):
 
     env_part = re.compile(
         r"^(?P<type>(?:(?:Power|Temp|Fans))?\s+)?"
-        r"(?P<name>(?:FPC(?:.\S+)+)\s+)"
+        r"(?P<name>(?:(?:CB|FPC)(?:.\S+)+)\s+)"
         r"(?P<status>.\S+.)",
         re.IGNORECASE,
     )

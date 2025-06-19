@@ -103,7 +103,6 @@ class DiscoveredObjectApplication(ExtDocApplication):
         q = super().get_Q(request, query)
         query = query.strip()
         if query and is_ipv4_prefix(query):
-            print("GetQ, query", query)
             prefix = IP.prefix(query)
             q |= Q(address_bin__gte=int(prefix.first.d), address_bin__lte=int(prefix.last.d))
         return q
@@ -115,9 +114,19 @@ class DiscoveredObjectApplication(ExtDocApplication):
             template = ModelTemplate.get_by_id(req["args"]["template"])
         else:
             template = None
+        synced = 0
         for do in DiscoveredObject.objects.filter(id__in=req["ids"]):
             do.fire_event("approve")  # ?set state
             do.sync(force=True, template=template)
+            if not template and not do.rule.default_template:
+                continue
+            synced += 1
+        if synced != len(req["ids"]):
+            return {
+                "status": False,
+                "error": "Synced %s/%s. Set default_template on Object Discovery Rule"
+                % (synced, len(req["ids"])),
+            }
         return {"status": True}
 
     @view(url=r"actions/send_event/$", method=["POST"], access="action", api=True)

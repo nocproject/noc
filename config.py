@@ -330,15 +330,15 @@ class Config(BaseConfig):
         enable_tile1 = BooleanParameter(default=False)
         tile1_name = StringParameter(default="Custom 1")
         tile1_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile1_subdomains = enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
+        tile1_subdomains = ListParameter(item=StringParameter(), default=[])
         enable_tile2 = BooleanParameter(default=False)
         tile2_name = StringParameter(default="Custom 2")
         tile2_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile2_subdomains = enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
+        tile2_subdomains = ListParameter(item=StringParameter(), default=[])
         enable_tile3 = BooleanParameter(default=False)
         tile3_name = StringParameter(default="Custom 3")
         tile3_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile3_subdomains = enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
+        tile3_subdomains = ListParameter(item=StringParameter(), default=[])
         yandex_supported = BooleanParameter(default=False)
         enable_yandex_roadmap = BooleanParameter(default=False)
         enable_yandex_hybrid = BooleanParameter(default=False)
@@ -759,6 +759,27 @@ class Config(BaseConfig):
         enable_freebind = BooleanParameter(default=False)
         # DataStream request limit
         ds_limit = IntParameter(default=1000)
+        # storm protection round duration in seconds
+        storm_round_duration = SecondsParameter(default="60s")
+        # conversion rate between ON and OFF storm protection thresholds
+        storm_threshold_reduction = FloatParameter(default=0.9)
+        # time to live (rounds quantity) of records in storm protection addresses dictionary
+        storm_record_ttl = IntParameter(default=10)
+        #
+        storm_min_severity = MapParameter(
+            default="error",
+            mappings={
+                "emergency": 0,
+                "alert": 1,
+                "critical": 2,
+                "error": 3,
+                "warning": 4,
+                "notice": 5,
+                "informational": 6,
+                "debug": 7,
+            },
+            help="Maximum severity level for received messages. More than will be dropped",
+        )
 
     class tgsender(ConfigSection):
         token = SecretParameter()
@@ -955,6 +976,15 @@ class Config(BaseConfig):
         address_ttl = SecondsParameter(
             default="0",
             help="Removing datastream address records older days",
+        )
+        enable_service = BooleanParameter(default=False)
+        enable_service_wait = BooleanParameter(
+            default=True,
+            help="Activate Wait Mode for Service datastream (Mongo greater 3.6 needed)",
+        )
+        service_ttl = SecondsParameter(
+            default="0",
+            help="Removing datastream service records older days",
         )
 
     class help(ConfigSection):

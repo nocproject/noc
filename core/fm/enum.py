@@ -77,6 +77,7 @@ class EventAction(enum.Enum):
     DROP = 1
     LOG = 2
     DISPOSITION = 3
+    LOG_ERROR = 4
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:

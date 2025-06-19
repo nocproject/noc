@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # SNMP checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
-from typing import List, Iterable, Dict, Tuple, Union, Optional, Any
+from typing import List, Iterable, Dict, Tuple, Union, Optional, Any, AsyncIterable
 
 # Third-party modules
 from gufo.snmp.sync_client import SnmpSession as SyncSnmpSession
@@ -119,9 +119,10 @@ class SNMPProtocolChecker(Checker):
                     processed[key][cred].add(c)
         return processed
 
-    async def iter_result_async(self, checks: List[Check]) -> Iterable[CheckResult]:
+    async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         """ """
         processed = self.get_checks_by_address(checks)
+        self.logger.debug("Processed SNMP checks: %s", processed)
         # Process checks
         result = {}
         for cc in processed.values():
@@ -158,51 +159,6 @@ class SNMPProtocolChecker(Checker):
                         status=True,
                         skipped=True,
                     )
-
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
-        """ """
-        processed = self.get_checks_by_address(checks)
-        self.logger.debug("Processed SNMP checks: %s", processed)
-        # Process checks
-        result = {}
-        for cc in processed.values():
-            for cred, ccs in cc.items():
-                for c in ccs:
-                    if c in result and result[c].status:
-                        continue
-                    if not c.address:
-                        continue
-                    # skipped, data, message = run_sync(partial(self.do_snmp_check, c, cred))
-                    data, error = self.check_oids_sync(c.address, self.get_oids(c), cred)
-                    result[c] = CheckResult(
-                        check=c.name,
-                        address=c.address,
-                        port=c.port,
-                        args=c.args,
-                        status=not error,
-                        data=[DataItem(name=k, value=v) for k, v in data.items()] if data else None,
-                        credential=cred,
-                        error=error,
-                    )
-        self.logger.info("[XXXX] Processed checks result: %s", result)
-        for check in checks:
-            for c in self.iter_suggest_check(check):
-                if c in result:
-                    yield result[c]
-                else:
-                    yield CheckResult(
-                        check=c.name,
-                        address=c.address,
-                        port=c.port,
-                        args=c.args,
-                        status=True,
-                        skipped=True,
-                    )
-        # if any(c.status for c in result.values()):
-        #     yield CheckResult(
-        #         check=SUGGEST_CHECK,
-        #         status=True,
-        #     )
 
     @staticmethod
     def get_snmpv3_user(cred: SNMPv3Credential) -> User:

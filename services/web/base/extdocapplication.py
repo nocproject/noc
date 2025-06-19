@@ -452,7 +452,7 @@ class ExtDocApplication(ExtApplication):
             data = data.order_by(*ordering)
         count = data.count()
         data = [{"id": str(o.id), "label": trim(o)} for o in data]
-        return {"total": count, "success": True, "data": data}
+        return {"total": count, "status": True, "data": data}
 
     @view(method=["POST"], url="^$", access="create", api=True)
     def api_create(self, request):
@@ -485,19 +485,20 @@ class ExtDocApplication(ExtApplication):
             try:
                 self.set_file(request.FILES, o)
             except ValueError as e:
-                return self.response({"message": str(e)}, status=self.BAD_REQUEST)
+                return self.response({"status": False, "message": str(e)}, status=self.BAD_REQUEST)
         try:
             o.save()
         except ValidationError as e:
-            return self.response({"message": str(e)}, status=self.BAD_REQUEST)
+            return self.response({"status": False, "message": str(e)}, status=self.BAD_REQUEST)
         except NotUniqueError:
             return self.response(
-                {"message": "Duplicate Record (Already exists)"}, status=self.BAD_REQUEST
+                {"status": False, "message": "Duplicate Record (Already exists)"},
+                status=self.BAD_REQUEST,
             )
         # Reread result
         o = self.model.objects.get(**{self.pk: o.pk})
         if request.is_extjs:
-            r = {"success": True, "data": self.instance_to_dict(o)}
+            r = {"status": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.CREATED)
@@ -559,7 +560,7 @@ class ExtDocApplication(ExtApplication):
         # Reread result
         o = self.model.objects.get(**{self.pk: id})
         if request.is_extjs:
-            r = {"success": True, "data": self.instance_to_dict(o)}
+            r = {"status": True, "data": self.instance_to_dict(o)}
         else:
             r = self.instance_to_dict(o)
         return self.response(r, status=self.OK)
@@ -579,7 +580,7 @@ class ExtDocApplication(ExtApplication):
             o.delete()
         except ValueError as e:
             return self.render_json(
-                {"success": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
+                {"status": False, "message": "ERROR: %s" % e}, status=self.CONFLICT
             )
         return HttpResponse(status=self.DELETED)
 

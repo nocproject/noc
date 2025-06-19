@@ -1,0 +1,23 @@
+{
+    "name": "NOC | Managed Object | Storm Control",
+    "$collection": "fm.alarmclasses",
+    "uuid": "db216082-c226-430e-bade-0b165af256a2",
+    "description": "Message from device overload threshold value on collector",
+    "is_unique": true,
+    "reference": ["collector"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "collector",
+            "description": "Collector when storm detected"
+        }
+    ],
+    "subject_template": "Message Storm found on {{ collector }} collector",
+    "body_template": "NOC dropped message from device on {{ collector }}. Possible loosing some events from device",
+    "symptoms": "Received message on collector too high",
+    "probable_causes": "Too low severity level on Device config for message",
+    "recommended_actions": "",
+    "recover_time": 300,
+    "labels": []
+}

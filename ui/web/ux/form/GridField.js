@@ -14,6 +14,7 @@ Ext.define("Ext.ux.form.GridField", {
   alias: "widget.gridfield",
   columns: [],
   toolbar: null,
+  forceFit: true,
 
   initComponent: function(){
     var me = this,
@@ -23,6 +24,12 @@ Ext.define("Ext.ux.form.GridField", {
       return v.dataIndex;
     });
 
+    me.columns = me.columns.map(function(col){
+      if(Ext.isDefined(col.width) && Ext.isNumber(col.width)){
+        Ext.apply(col, {width: NOC.uiConvertWidth(col.width, NOC.theme)});
+      }
+      return col;
+    });
     // Add ghost __label fields
     me.fields = me.fields.concat(me.columns.map(function(v){
       return {

@@ -12,3 +12,4 @@
 * [SNMPTrap](snmptrap.md)
 * [Syslog](syslog.md)
 * [Managed Object Version Changed](version_changed.md)
+* [Service Status Change](service_status_change.md)

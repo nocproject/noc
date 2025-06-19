@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_license
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,8 +21,8 @@ class Script(BaseScript):
     rx_lic = re.compile(
         r"^\s*(?:software|system)-id: (?P<q>\"?)(?P<sid>\S+?)(?P=q)\n"
         r"(^\s*upgradable-to: (?P<upto>\S+)\n)?"
-        r"(^\s*nlevel: (?P<nlevel>\d+)\n)?"
-        r"(^\s*level: (?P<level>\S+)\n)?"
+        r"(^\s*nlevel: (?P<nlevel>\d+)\s*\n)?"
+        r"(^\s*level: (?P<level>\S+)\s*\n)?"
         r"(^\s*features:.*(?P<features>\.*)$)?",
         re.MULTILINE | re.DOTALL,
     )

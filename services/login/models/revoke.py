@@ -13,5 +13,5 @@ from pydantic import BaseModel
 
 
 class RevokeRequest(BaseModel):
-    access_token: Optional[str]
-    refresh_token: Optional[str]
+    access_token: Optional[str] = None
+    refresh_token: Optional[str] = None

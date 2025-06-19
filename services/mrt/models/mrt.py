@@ -29,6 +29,7 @@ from pydantic import BaseModel
 class MRTCommandsArgs(BaseModel):
     commands: List[str]
     include_commands: bool = False
+    config_mode: bool = False
     ignore_cli_errors: bool = False
 
 

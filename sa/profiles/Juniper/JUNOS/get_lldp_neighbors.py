@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,25 @@ from noc.sa.interfaces.base import IntParameter
 from noc.sa.interfaces.igetlldpneighbors import IGetLLDPNeighbors
 from noc.core.validators import is_int
 from noc.core.mib import mib
+from noc.core.lldp import (
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
+    LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
+    lldp_caps_to_bits,
+)
 
 
 class Script(BaseScript):
@@ -22,7 +41,7 @@ class Script(BaseScript):
     #
     # EX Series
     #
-    rx_localport = re.compile(r"^(\S+?)\s+?(\d+?)\s+?\S+?\s+?Up.+?$", re.MULTILINE | re.DOTALL)
+    rx_localport = re.compile(r"^(\S+)\s+(?:(?:ae\d+|\-)\s+)?(\d+)\s+\S+\s+?Up.+$", re.MULTILINE)
     rx_neigh = re.compile(r"^(?P<local_if>[x,g]e-\S+|me\d(\.\d)?|fxp0|et-\S+)\s.*?$", re.MULTILINE)
     # If <p_type>=='Interface alias', then <p_id> will match 'Port description'
     # else it will match 'Port ID'
@@ -44,13 +63,17 @@ class Script(BaseScript):
         r"\s+Address\s+:\s*(?P<address>\S+)\n",
         re.MULTILINE,
     )
-    CHASSIS_TYPE = {"Mac address": 4, "Network address": 5, "Locally assigned": 7}
+    CHASSIS_TYPE = {
+        "Mac address": LLDP_CHASSIS_SUBTYPE_MAC,
+        "Network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+        "Locally assigned": LLDP_CHASSIS_SUBTYPE_LOCAL,
+    }
     PORT_TYPE = {
-        "Interface alias": 1,
-        "Port component": 2,
-        "Mac address": 3,
-        "Interface name": 5,
-        "Locally assigned": 7,
+        "Interface alias": LLDP_PORT_SUBTYPE_ALIAS,
+        "Port component": LLDP_PORT_SUBTYPE_COMPONENT,
+        "Mac address": LLDP_PORT_SUBTYPE_MAC,
+        "Interface name": LLDP_PORT_SUBTYPE_NAME,
+        "Locally assigned": LLDP_PORT_SUBTYPE_LOCAL,
     }
 
     def get_local_iface(self):
@@ -90,14 +113,9 @@ class Script(BaseScript):
         for port, local_id in self.rx_localport.findall(v):
             local_port_ids[port] = IntParameter().clean(local_id)
         v = self.cli("show lldp neighbors")
-        ifs = [
-            {"local_interface": match.group("local_if"), "neighbors": []}
-            for match in self.rx_neigh.finditer(v)
-        ]
-        for i in ifs:
-            if i["local_interface"] in local_port_ids:
-                i["local_interface_id"] = local_port_ids[i["local_interface"]]
-            v = self.cli("show lldp neighbors interface %s" % i["local_interface"])
+        for match in self.rx_neigh.finditer(v):
+            ifname = match.group("local_if")
+            v = self.cli("show lldp neighbors interface %s" % ifname)
             n = {}
             match = self.rx_detail.search(v)
             n["remote_chassis_id_subtype"] = self.CHASSIS_TYPE[match.group("ch_type")]
@@ -132,20 +150,31 @@ class Script(BaseScript):
                 s = s.replace(" Access Point", "")
                 # Station Only
                 s = s.replace(" Only", "")
-                for c in s.strip().split(" "):
-                    cap |= {
-                        "Other": 1,
-                        "Repeater": 2,
-                        "Bridge": 4,
-                        "WLAN": 8,
-                        "Router": 16,
-                        "Telephone": 32,
-                        "Cable": 64,
-                        "Station": 128,
-                    }[c]
-                n["remote_capabilities"] = cap
-            i["neighbors"] += [n]
-            r += [i]
+                cap = lldp_caps_to_bits(
+                    s.strip().split(" "),
+                    {
+                        "other": LLDP_CAP_OTHER,
+                        "repeater": LLDP_CAP_REPEATER,
+                        "bridge": LLDP_CAP_BRIDGE,
+                        "wlan": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "router": LLDP_CAP_ROUTER,
+                        "telephone": LLDP_CAP_TELEPHONE,
+                        "cable": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                        "station": LLDP_CAP_STATION_ONLY,
+                    },
+                )
+            n["remote_capabilities"] = cap
+            iface_found = False
+            for i in r:
+                if i["local_interface"] == ifname:
+                    i["neighbors"] += [n]
+                    iface_found = True
+                    break
+            if not iface_found:
+                i = {"local_interface": ifname, "neighbors": [n]}
+                if ifname in local_port_ids:
+                    i["local_interface_id"] = local_port_ids[ifname]
+                r += [i]
         for q in r:
             if q["local_interface"].endswith(".0"):
                 q["local_interface"] = q["local_interface"][:-2]

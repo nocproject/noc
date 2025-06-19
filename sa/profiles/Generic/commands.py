@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generic.commands
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,24 @@ class Script(BaseScript):
     ERROR_PREFIX = "%ERROR: "
     CMD_SEP = "\n\n"
 
-    def execute(self, commands, ignore_cli_errors=False, include_commands=False):
+    def execute(self, commands, ignore_cli_errors=False, include_commands=False, config_mode=False):
+        self.logger.info("[%s] Execute commands: %s", config_mode, commands)
+        if not config_mode:
+            return self.execute_commands(
+                commands,
+                ignore_cli_errors=ignore_cli_errors,
+                include_commands=include_commands,
+            )
+        with self.configure():
+            return self.execute_commands(
+                commands,
+                ignore_cli_errors=ignore_cli_errors,
+                include_commands=include_commands,
+            )
+            # self.save_config()
+
+    def execute_commands(self, commands, ignore_cli_errors=False, include_commands=False):
+        """"""
         r = {"errors": False, "output": []}
         for cmd in self.format_multiline(commands):
             try:

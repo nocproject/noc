@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # CLI checker
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable, Dict, Tuple, Optional
+from typing import List, Iterable, Dict, Tuple, Optional, AsyncIterable
 
 # NOC modules
 from noc.core.checkers.base import Checker, CheckResult, Check, CheckError
@@ -65,7 +65,7 @@ class CLIProtocolChecker(Checker):
         if check.credential:
             yield self.PROTO_CHECK_MAP[check.name], check.credential
 
-    def iter_result(self, checks: List[Check]) -> Iterable[CheckResult]:
+    async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         """ """
         # Group by address
         for c in checks:

@@ -16,7 +16,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.fm.alarmseverity.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
-        "NOC.fm.escalationprofile.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmrule.Model",
@@ -78,13 +77,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     ],
                     uiStyle: "medium",
                     value: "AL",
-                },
-                {
-                    name: "escalation_profile",
-                    xtype: "fm.escalationprofile.LookupField",
-                    fieldLabel: __("Escalation Profile"),
-                    allowBlank: true,
-                    uiStyle: "medium"
                 },
                 {
                     name: "groups",

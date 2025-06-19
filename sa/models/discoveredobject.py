@@ -773,7 +773,7 @@ class DiscoveredObject(Document):
         elif self.origin:
             self.origin = None
         # Check policy
-        if not mo and template and not self.origin:
+        if not mo and template and not self.origin and ctx.data:
             # Create New
             mo = template.render(ctx)
         elif not mo and not template:
@@ -968,7 +968,7 @@ class DiscoveredObject(Document):
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
             if changed:
                 logger.info("[%s] Update existing ManagedObject from data: %s", mo.name, ctx)
-        changed |= mo.update_object_mappings(ctx.mappings or {})
+        changed |= mo.update_remote_mappings(ctx.mappings or {})
         if dry_run:
             return
         if ctx.event == "duplicate":

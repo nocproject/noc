@@ -181,7 +181,11 @@ class Target(
         """
         if self.syslog_source_type == "d" or not self.is_process_event:
             return None
-        return {"archive_events": self.get_syslog_archive_policy()}
+        return {
+            "archive_events": self.get_syslog_archive_policy(),
+            "storm_policy": self.mop_trapcollector_storm_policy,
+            "storm_threshold": self.mop_trapcollector_storm_threshold,
+        }
 
     def get_snmptrap_settings(self) -> Optional[Dict[str, Any]]:
         if self.trap_source_type == "d" or not self.is_process_event:

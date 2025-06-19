@@ -139,6 +139,19 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     uiStyle: "small"
                 },
                 {
+                    name: "status_change_notification",
+                    xtype: "combobox",
+                    fieldLabel: __("Status Change Notification"),
+                    allowBlank: true,
+                    labelWidth: 200,
+                    defaultValue: "d",
+                    store: [
+                        ["d", __("Disabled")],
+                        ["e", __("Enable Message")],
+                    ],
+                    uiStyle: "medium"
+                },
+                {
                     xtype: "fieldset",
                     title: __("Oper. Status Transfer"),
                     items: [

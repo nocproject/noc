@@ -345,6 +345,14 @@ class ServiceProfile(Document):
     instance_policy_settings: "InstancePolicySettings" = EmbeddedDocumentField(
         InstancePolicySettings, required=False
     )
+    # Send up/down notifications
+    status_change_notification = StringField(
+        choices=[
+            ("d", "Disabled"),
+            ("e", "Enable Message"),
+        ],
+        default="d",
+    )
     # Capabilities
     caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
     # Integration with external NRI and TT systems
@@ -398,6 +406,10 @@ class ServiceProfile(Document):
             if s.severity <= severity and status >= Status.SLIGHTLY_DEGRADED:
                 return status
         return Status.UNKNOWN
+
+    @property
+    def is_enabled_notification(self) -> bool:
+        return self.status_change_notification != "d"
 
     def get_resource_policy(self, type: str = "service"):
         """

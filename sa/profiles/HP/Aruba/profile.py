@@ -20,7 +20,7 @@ class Profile(BaseProfile):
 
     pattern_username = rb"Username: ?"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+[^#])\s*>\s*"
-    pattern_prompt = rb"^(?P<hostname>\S+[^#])\s*#"
+    pattern_prompt = rb"^(?P<hostname>\S+[^#])\s*?(?:\(config[^\)]*\))?#"
     pattern_syntax_error = rb"(% Ambiguous command.|Cannot execute command.)"
     command_disable_pager = "no page"
     command_super = b"enable"
@@ -28,6 +28,8 @@ class Profile(BaseProfile):
         (rb"\s--\s*MORE\s*--, next page: Space, next line: Enter, quit: q", b" "),
     ]
     rogue_chars = [re.compile(rb"\r +\r"), b"\r"]
+    command_enter_config = "configure terminal"
+    command_leave_config = "end"
     command_exit = "exit"
     config_tokenizer = "indent"
     config_tokenizer_settings = {"line_comment": "!"}

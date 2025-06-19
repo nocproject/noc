@@ -8,7 +8,6 @@
 
 # Python modules
 import time
-import datetime
 import os
 import enum
 import operator
@@ -44,6 +43,7 @@ from noc.main.models.pool import Pool
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.mib import MIB
 from noc.fm.models.mibdata import MIBData
+from noc.fm.models.ignorepattern import DATASTREAM_RULE_PREFIX
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import GENERIC_PROFILE
@@ -174,7 +174,6 @@ class ClassifierService(FastAPIService):
         """
         self.logger.info("Using rule lookup solution: %s", config.classifier.lookup_handler)
         self.ruleset.load(skip_load_rules=config.datastream.enable_cfgeventrules)
-        self.pattern_set.load()
         self.load_link_action()
         # Heat up MIB cache
         MIBData.preload()
@@ -190,6 +189,8 @@ class ClassifierService(FastAPIService):
         if config.datastream.enable_cfgeventrules:
             asyncio.get_running_loop().create_task(self.get_event_rules_mappings())
             await self.event_rules_ready_event.wait()
+        else:
+            self.pattern_set.load()
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
         await self.subscribe_stream(
@@ -641,28 +642,40 @@ class ClassifierService(FastAPIService):
         if self.deduplicate_event(event, e_cfg, resolved_vars):
             return
         duplicate_vars = resolved_vars.copy()
-        # Additionally check link events
+        # Fill deduplication filter
+        self.dedup_filter.register(event, e_cfg, duplicate_vars)
         # Calculate rule variables
-        event.vars, e_res = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
-        self.logger.info(
-            "[%s|%s|%s] Event processed successfully: %s",
-            event.id,
-            event.target.name,
-            event.target.address,
-            e_cfg.event_class,
-        )
+        event.vars, e_res, error = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
+        if not error:
+            self.logger.info(
+                "[%s|%s|%s] Event processed successfully: %s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e_cfg.event_class,
+            )
+        else:
+            e_action = EventAction.LOG_ERROR
+            self.logger.info(
+                "[%s|%s|%s] Event processed with error: %s/%s",
+                event.id,
+                event.target.name,
+                event.target.address,
+                e_cfg.event_class,
+                error,
+            )
+            self.register_event(event, e_cfg, e_action, resolved_vars, mo, error=error)
+            return
         # Suppress repeats
         if event.vars and self.suppress_repeats(event, e_cfg):
             return
-        self.register_event(event, e_cfg, resolved_vars, mo)
-        # Fill deduplication filter
-        self.dedup_filter.register(event, e_cfg, duplicate_vars)
-        if config.message.enable_event:
-            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
+        self.register_event(event, e_cfg, e_action, resolved_vars, mo)
+        if config.message.enable_event:
+            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         if e_action == EventAction.DROP:
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
@@ -722,13 +735,10 @@ class ClassifierService(FastAPIService):
     def update_diagnostic(self, mo: ManagedObject, event: Event):
         """
         Update ManagedObject diagnostic
-        :param mo:
-        :param event:
-        :return:
+        Args:
+            mo: Managed Object Instance
+            event: Event Instance
         """
-        # Process event
-        event_ts = datetime.datetime.fromtimestamp(event.ts)
-
         # Check diagnostics
         if event.type.source == EventSource.SYSLOG and (
             SYSLOG_DIAG not in mo.diagnostics
@@ -738,7 +748,7 @@ class ClassifierService(FastAPIService):
                 diagnostic=SYSLOG_DIAG,
                 state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event_ts,
+                changed_ts=event.timestamp,
             )
         if event.type.source == EventSource.SNMP_TRAP and (
             SNMPTRAP_DIAG not in mo.diagnostics
@@ -748,23 +758,27 @@ class ClassifierService(FastAPIService):
                 diagnostic=SNMPTRAP_DIAG,
                 state=DiagnosticState.enabled,
                 reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event_ts,
+                changed_ts=event.timestamp,
             )
 
     def register_event(
         self,
         event: Event,
         event_config: EventConfig,
+        action: EventAction,
         resolved_vars: Dict[str, Any],
         mo: Optional[ManagedObject] = None,
+        error: Optional[str] = None,
     ):
         """
         Send Event to Clickhouse (Archive)
         Args:
             event: Event instance
             event_config: Event Class
+            action: Event Action
             resolved_vars: Processed event data
             mo: Managed Object mapping
+            error: Error text on processed message
         """
         timestamp = event.timestamp
         data = {
@@ -780,6 +794,8 @@ class ClassifierService(FastAPIService):
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "message": event.message or "",
             "severity": event.type.severity.value,
+            "result_action": str(action.name),
+            "error_message": error or "",
             #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
@@ -806,6 +822,8 @@ class ClassifierService(FastAPIService):
                     "platform": mo.platform.bi_id if mo.platform else None,
                     "version": mo.version.bi_id if mo.version else None,
                     "administrative_domain": mo.administrative_domain.bi_id,
+                    "segment": mo.segment.bi_id,
+                    "container": mo.container.bi_id if mo.container else None,
                 }
             )
         elif not mo and event.target.pool:
@@ -823,14 +841,34 @@ class ClassifierService(FastAPIService):
         """
         self.event_rules_ready_event.set()
         self.logger.info("%d Event Classification Rules has been loaded", self.ruleset.add_rules)
+        self.logger.info(
+            "%d Ignore patterns are loaded in the %d chains",
+            self.pattern_set.add_patterns,
+            len(self.pattern_set.i_patterns),
+        )
 
     async def update_rule(self, data: Dict[str, Any]) -> None:
         """Apply Classification Rules changes"""
-        self.ruleset.update_rule(data)
+        rule_type = data.pop("$type", "old_rule")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Patterns
+            self.pattern_set.update_pattern(data["id"], data)
+            return
+        elif "event_class" not in data:
+            return
+        self.ruleset.update_rule(data, r_format=rule_type)
 
-    async def delete_rules(self, r_id: str) -> None:
+    async def delete_rule(self, r_id: str) -> None:
         """Remove rules for ID"""
-        self.ruleset.delete_rule(r_id)
+        rule_type, *_ = r_id.split(":")
+        if rule_type == DATASTREAM_RULE_PREFIX:
+            # Ignore Pattern
+            self.pattern_set.delete_pattern(r_id)
+            return
+        if r_id:
+            self.ruleset.delete_rule(r_id)
+        else:
+            self.ruleset.delete_rule(rule_type)
 
     async def update_config(self, data: Dict[str, Any]) -> None:
         """Apply Event Config changes"""

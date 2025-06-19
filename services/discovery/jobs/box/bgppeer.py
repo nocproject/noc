@@ -58,6 +58,8 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
 
     def handler(self):
         peers = self.get_bgp_peer()
+        if peers is None:
+            return
         self.sync_peers(peers)
         self.update_caps({"DB | BGP Peers": len(peers)}, source="bgppeer")
 
@@ -187,7 +189,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
     def get_data_from_script(self):
         """Not implemented for BGP Discovery"""
 
-    def get_data_from_confdb(self) -> List[Dict[str, Any]]:
+    def get_data_from_confdb(self) -> Optional[List[Dict[str, Any]]]:
         """Getting peer from database"""
         r = defaultdict(list)
         for peer in self.confdb.query(self.BGP_PEER_QUERY):
@@ -201,4 +203,11 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             vr = peer.pop("vr", "default")
             peer.pop("router_id", None)
             r[vr].append(peer)
-        return IGetBGPPeer().clean_result([{"virtual_router": k, "peers": v} for k, v in r.items()])
+        try:
+            return IGetBGPPeer().clean_result(
+                [{"virtual_router": k, "peers": v} for k, v in r.items()]
+            )
+        except ValueError as e:
+            self.logger.error("Error getting data by ConfDB query: %s", str(e))
+            # Set problem!
+            return None

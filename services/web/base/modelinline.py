@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ModelInline
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -384,8 +384,8 @@ class ModelInline(object):
         return self.list_data(request, self.instance_to_dict, parent=int(parent))
 
     def api_create(self, request, parent):
-        parent = self.app.get_object_or_404(self.parent_model, id=int(parent))
         try:
+            parent = self.app.get_object_or_404(self.parent_model, id=int(parent))
             attrs = self.clean(self.app.deserialize(request.body), parent)
         except ValueError as e:
             return self.app.render_json(

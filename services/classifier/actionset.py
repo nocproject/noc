@@ -112,7 +112,7 @@ class ActionSet(object):
             target_a += [
                 partial(
                     self.interaction_audit,
-                    interaction=data["object_actions"]["interaction_audit"],
+                    interaction=Interaction(data["object_actions"]["interaction_audit"]),
                 ),
             ]
             self.add_handlers += 1
@@ -120,7 +120,7 @@ class ActionSet(object):
             target_a += [
                 partial(
                     self.run_discovery,
-                    interaction=data["object_actions"]["interaction_audit"],
+                    interaction=Interaction(data["object_actions"]["interaction_audit"]),
                 ),
             ]
             self.add_handlers += 1

@@ -14,16 +14,16 @@ from pydantic import BaseModel
 
 class Reference(BaseModel):
     id: str
-    label: Optional[str]
+    label: Optional[str] = None
 
 
 class LabelItem(BaseModel):
     id: str
     label: str
     # For tree structure fields
-    parent: Optional[Reference]
-    level: Optional[int]
-    has_children: Optional[bool]
+    parent: Optional[Reference] = None
+    level: Optional[int] = None
+    has_children: Optional[bool] = None
 
 
 class SummaryItem(BaseModel):

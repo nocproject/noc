@@ -45,6 +45,7 @@ from noc.core.service.loader import get_service
 from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
+from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -56,6 +57,7 @@ from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +67,19 @@ SVC_REF_PREFIX = "svc"
 SVC_AC = "Service | Status | Change"
 
 
+class RemoteMappingItem(EmbeddedDocument):
+    """source priority: m - manual, e - etl, o - other"""
+
+    meta = {"strict": False, "auto_create_index": False}
+
+    remote_system = PlainReferenceField(RemoteSystem, required=True)
+    remote_id: str = StringField(required=True)
+    sources: str = StringField(default="o")
+
+
 class Instance(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     name_template = StringField()
     pool: "Pool" = PlainReferenceField(Pool, required=False)
     port_range = StringField()
@@ -88,6 +102,8 @@ class ServiceStatusDependency(EmbeddedDocument):
         weight: Dependent weight (used for calculate own status)
         ignore: Ignore Dependent for calculate own status
     """
+
+    meta = {"strict": False, "auto_create_index": False}
 
     service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
@@ -255,11 +271,14 @@ class Service(Document):
     effective_service_groups = ListField(ObjectIdField())
     static_client_groups = ListField(ObjectIdField())
     effective_client_groups = ListField(ObjectIdField())
+    # Remote Mappings
+    mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
     _instance_cache = cachetools.TTLCache(maxsize=500, ttl=60)
+    _mapping_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -288,10 +307,22 @@ class Service(Document):
         si = ServiceInstance.objects.filter(addresses__address=address).first()
         return si.service if si else None
 
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_mapping_cache"), lock=lambda _: id_lock)
+    def get_by_mapping(cls, remote_system: RemoteSystem, remote_id: str) -> Optional["Service"]:
+        return Service.objects.filter(
+            m_q(remote_system=str(remote_system.id), remote_id=remote_id)
+            | m_q(mappings__match={"remote_id": remote_id, "remote_system": remote_system.id})
+        ).first()
+
     def __str__(self):
         if self.label:
             return self.label
         return str(self.id) if self.id else "new"
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_service:
+            yield "service", self.id
 
     @property
     def service_instances(self) -> List["ServiceInstance"]:
@@ -412,7 +443,7 @@ class Service(Document):
                 self.id,
                 timestamp,
             )
-            timestamp = datetime.datetime.now().replace(microsecond=0)
+            # timestamp = datetime.datetime.now().replace(microsecond=0)
             return
         # Register Outage, Register Maintenance
         os, ots = self.oper_status, self.oper_status_change
@@ -423,25 +454,36 @@ class Service(Document):
             oper_status=self.oper_status, oper_status_change=self.oper_status_change
         )
         # Register outage
-        now = datetime.datetime.now().replace(microsecond=0)
         svcs = get_service()
         svcs.register_metrics(
             "serviceoutages",
             [
                 {
-                    "date": now.date().isoformat(),
-                    "ts": now.replace(microsecond=0).isoformat(sep=" "),
+                    "date": timestamp.date().isoformat(),
+                    "ts": timestamp.replace(microsecond=0).isoformat(sep=" "),
                     "service": self.bi_id,
                     "service_id": str(self.id),
                     # Outage
                     "start": ots.isoformat(sep=" "),
                     "stop": self.oper_status_change.isoformat(sep=" "),
-                    "from_status": os,
+                    "from_status": {"id": os, "name": os.name},
                     "to_status": self.oper_status,
                     "in_maintenance": int(self.in_maintenance),
                 }
             ],
         )
+        if self.profile.is_enabled_notification:
+            logger.debug("Sending status change notification")
+            headers = self.get_mx_message_headers(self.effective_labels)
+            msg = self.get_message_context()
+            # msg["managed_object"] = self.managed_object.get_message_context()
+            msg["from_status"] = {"id": os, "name": os.name}
+            msg["ts"] = (timestamp.replace(microsecond=0).isoformat(),)
+            send_message(
+                data=msg,
+                message_type=MessageType.SERVICE_STATUS_CHANGE,
+                headers=headers,
+            )
         # Run Service Status Refresh
         # Set Outage
         if self.profile.raise_status_alarm_policy == "D":
@@ -450,6 +492,49 @@ class Service(Document):
             # Only Root service
             return
         self.register_alarm(os)
+
+    def get_message_context(self) -> Dict[str, Any]:
+        """Service Message Ctx"""
+        r = {
+            "id": str(self.id),
+            "label": self.label,
+            "description": self.description,
+            "profile": {"id": str(self.profile.id), "name": self.profile.name},
+            "status": {"id": self.oper_status, "name": self.oper_status.name},
+            "in_maintenance": int(self.in_maintenance),
+            "agreement_id": self.agreement_id,
+            "caps": self.get_caps(),
+        }
+        if self.remote_system:
+            r["remote_system"] = {
+                "id": str(self.remote_system.id),
+                "name": self.remote_system.name,
+            }
+            r["remote_id"] = self.remote_id
+        if self.profile.remote_system:
+            r["profile"]["remote_system"] = {
+                "id": str(self.profile.remote_system.id),
+                "name": self.profile.remote_system.name,
+            }
+            r["administrative_domain"]["remote_id"] = self.profile.remote_id
+        return r
+
+    def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
+        return {
+            key.config.header: key.clean_header_value(value)
+            for key, value in self.message_meta.items()
+        }
+
+    @property
+    def message_meta(self) -> Dict[MessageMeta, Any]:
+        """Message Meta for instance"""
+        return {
+            MessageMeta.WATCH_FOR: get_subscription_id(self),
+            # MessageMeta.ADM_DOMAIN: str(self.administrative_domain.id),
+            MessageMeta.PROFILE: get_subscription_id(self.profile),
+            MessageMeta.GROUPS: list(self.effective_service_groups),
+            MessageMeta.LABELS: list(self.effective_labels),
+        }
 
     def register_alarm(self, old_status: Status):
         """
@@ -745,15 +830,6 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def get_message_context(self) -> Dict[str, Any]:
-        return {
-            "profile": {"id": str(self.profile.id), "name": self.profile.name},
-            "address": self.address,
-            "description": self.description,
-            "agreement_id": self.agreement_id,
-            "caps": self.get_caps(),
-        }
-
     def register_instance(
         self,
         type: InstanceType,
@@ -861,6 +937,89 @@ class Service(Document):
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
         if service:
             return Service.get_by_id(service)
+
+    def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
+        """
+        Set Object mapping
+        Args:
+            remote_system: Remote System Instance
+            remote_id: Id on Remote system
+        """
+        rid = remote_system.id
+        for m in self.mappings:
+            if m.remote_system.id == rid and m.remote_id != remote_id:
+                m.remote_id = remote_id
+                break
+            elif m.remote_system.id == rid:
+                break
+        else:
+            self.mappings += [RemoteMappingItem(remote_system=remote_system, remote_id=remote_id)]
+
+    def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
+        """return object mapping from"""
+        for m in self.mappings:
+            if m.remote_system.id == remote_system.id:
+                return m.remote_id
+        return None
+
+    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
+        """
+        Update managed Object mappings
+        Source Priority, for mappings on different sources
+        Attrs:
+            mappings: Map remote_system -> remote_id
+            source: Source Code
+              * m - manual
+              * e - elt
+              * o - other
+        """
+        priority = "oem"
+        new_mappings = []
+        changed = False
+        seen = set()
+        for m in self.mappings:
+            rs = m.remote_system
+            sources = set(m.sources or "o")
+            max_p = max(priority.index(x) for x in source)
+            if rs not in mappings and source in sources:
+                # Remove Source
+                sources.remove(source)
+            elif rs not in mappings:
+                # Set on different source
+                pass
+            elif mappings[rs] != m.remote_id and priority.index(source) >= max_p:
+                # Change ID
+                logger.info(
+                    "[%s] Mapping over priority and will be replace: %s -> %s",
+                    rs,
+                    m.remote_id,
+                    mappings[rs],
+                )
+                # replace, skip
+                m.remote_id = mappings[rs]
+                sources.add(source)
+                changed |= True
+            elif mappings[rs] != m.remote_id:
+                pass
+            elif source not in sources:
+                changed |= True
+                sources.add(source)
+            if not sources:
+                changed |= True
+                continue
+            elif sources != set(m.sources or "o"):
+                m.sources = "".join(sorted(sources))
+                changed |= True
+            new_mappings.append(m)
+            seen.add(rs)
+        for rs in set(mappings) - seen:
+            new_mappings.append(
+                RemoteMappingItem(remote_system=rs, remote_id=mappings[rs], sources=source)
+            )
+            changed |= True
+        if changed:
+            self.mappings = new_mappings
+        return changed
 
 
 def refresh_service_status(svc_ids: List[str]):

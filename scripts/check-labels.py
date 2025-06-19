@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # Check gitlab MR labels
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -49,8 +49,7 @@ class TestCase(object):
         if exc_type is AssertionError:
             if self.ref:
                 self.failure += (
-                    "\nRefer to https://docs.getnoc.com/master/en/go.html#%s for details."
-                    % self.ref
+                    f"\nRefer to https://docs.getnoc.com/master/en/go.html#{self.ref} for details."
                 )
             if self.fatal:
                 raise FatalError
@@ -63,19 +62,16 @@ class TestCase(object):
     def to_junit_xml(self):
         duration = self.stop - self.start
         if self.path:
-            test_name = "%s[%s]" % (self.name, self.path)
+            test_name = f"{self.name}[{self.path}]"
         else:
             test_name = self.name
         r = [
-            '  <testcase classname="%s" file="%s" line="1" '
-            'name="%s" '
-            'time="%.3f">' % (JUNIT_CLASS_NAME, JUNIT_FILE, test_name, duration),
+            f'  <testcase classname="{JUNIT_CLASS_NAME}" file="{JUNIT_FILE}" line="1" '
+            f'name="{test_name}" time="{duration:.3f}">'
         ]
         if self.is_failed:
-            r += ['    <failure message="%s"></failure>' % (escape(self.failure))]
-        r += [
-            "  </testcase>",
-        ]
+            r.append(f'    <failure message="{escape(self.failure)}"></failure>')
+        r.append("  </testcase>")
         return "\n".join(r)
 
 
@@ -137,12 +133,11 @@ class TestSuite(object):
         n_failures = sum(1 for t in self.tests if t.is_failed)
         r = [
             '<?xml version="1.0" encoding="utf-8"?>',
-            '<testsuite errors="0" failures="%d" name="check-labels" skipped="0" tests="%d" time="%.3f">'
-            % (n_failures, n_tests, duration),
+            f'<testsuite errors="0" failures="{n_failures}" name="check-labels" skipped="0" tests="{n_tests}" time="{duration:.3f}">',
         ]
         for t in self.tests:
-            r += [t.to_junit_xml()]
-        r += ["</testsuite>"]
+            r.append(t.to_junit_xml())
+        r.append("</testsuite>")
         report = "\n".join(r)
         # Write report
         rdir = os.path.dirname(path)
@@ -173,10 +168,9 @@ class TestSuite(object):
         :return:
         """
         with self.test("test_env_labels", fatal=True):
-            assert ENV_LABELS in os.environ or ENV_CI in os.environ, (
-                "%s environment variable is not defined. Must be called within Gitlab CI"
-                % ENV_LABELS
-            )
+            assert (
+                ENV_LABELS in os.environ or ENV_CI in os.environ
+            ), f"{ENV_LABELS} environment variable is not defined. Must be called within Gitlab CI"
 
     def check_backport_label(self):
         with self.test("test_backport"):
@@ -186,32 +180,27 @@ class TestSuite(object):
             for label in kind:
                 assert (
                     label == "kind::bug"
-                ), "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'" % (
-                    self.BACKPORT,
-                    label,
-                )
+                ), f"'{self.BACKPORT}' cannot be used with '{label}'.\n Use only with 'kind::bug'"
 
     def check_required_scoped_labels(self):
         def test_required(label, choices):
-            prefix = "%s::" % label
+            prefix = f"{label}::"
             seen_labels = [x for x in self.labels if x.startswith(prefix)]
             n_labels = len(seen_labels)
             # Check label is exists
-            with self.test("test_%s_label_set" % label, ref="dev-mr-labels-%s" % label):
-                assert n_labels > 0, "'%s::*' label is not set. Must be one of %s." % (
-                    label,
-                    ", ".join(choices),
-                )
+            with self.test(f"test_{label}_label_set", ref=f"dev-mr-labels-{label}"):
+                assert (
+                    n_labels > 0
+                ), f"'{label}::*' label is not set. Must be one of {', '.join(choices)}."
             # Check label is defined only once
-            with self.test("test_%s_label_single" % label, ref="dev-mr-labels-%s" % label):
-                assert n_labels < 2, "Multiple '%s::*' labels defined. Must be exactly one." % label
+            with self.test(f"test_{label}_label_single", ref="dev-mr-labels-{label}"):
+                assert n_labels < 2, f"Multiple '{label}::*' labels defined. Must be exactly one."
             # Check label is known one
-            with self.test("test_%s_known" % label, ref="dev-mr-labels-%s" % label):
+            with self.test(f"test_{label}_known", ref=f"dev-mr-labels-{label}"):
                 for x in seen_labels:
-                    assert x in choices, "Invalid label '%s'. Must be one of %s." % (
-                        x,
-                        ", ".join(choices),
-                    )
+                    assert (
+                        x in choices
+                    ), f"Invalid label '{x}'. Must be one of {', '.join(choices)}."
 
         test_required("pri", self.PRI_LABELS)
         test_required("comp", self.COMP_LABELS)
@@ -219,12 +208,12 @@ class TestSuite(object):
 
     def check_affected(self):
         def test_affected(label, checker):
-            with self.test("test_%s" % label, ref="dev-mr-labels-affected"):
+            with self.test(f"test_{label}", ref="dev-mr-labels-affected"):
                 has_changed = any(1 for p in file_parts if checker(p))
                 if has_changed:
-                    assert label in self.labels, "'%s' label is not set." % label
+                    assert label in self.labels, f"'{label}' label is not set."
                 else:
-                    assert label not in self.labels, "'%s' label must not be set." % label
+                    assert label not in self.labels, f"'{label}' label must not be set."
 
         file_parts = [f.split(os.sep) for f in self.files]
         test_affected("ansible", lambda x: x[0] == "ansible")

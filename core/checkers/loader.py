@@ -34,7 +34,7 @@ class CheckersLoader(BaseLoader):
                 self.checkers[c] = checker.name
         for iface in sa_interface_loader.iter_interfaces():
             iface = sa_interface_loader.get_interface(iface)
-            if iface.check:
+            if iface and iface.check:
                 self.script_checkers[iface.check] = iface
 
     def get_class(self, name):

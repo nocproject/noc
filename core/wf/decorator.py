@@ -229,6 +229,8 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         # self.diagnostic.reset_diagnostics(
         #    [d.diagnostic for d in state.iter_diagnostic_configs(self)]
         # )
+    if hasattr(self, "ensure_discovery_jobs"):
+        self.ensure_discovery_jobs()
     if not create:
         change_tracker.register(
             "update",

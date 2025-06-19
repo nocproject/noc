@@ -39,7 +39,7 @@ from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectD
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import smart_bytes
 
-TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control | SNMP"
+TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
@@ -91,6 +91,7 @@ class TrapCollectorService(FastAPIService):
             "$op": "raise",
             "managed_object": cfg.id,
             "alarm_class": TRAPCOLLECTOR_STORM_ALARM_CLASS,
+            "vars": {"collector": self.name},
         }
         self._publish_message(cfg, msg)
 

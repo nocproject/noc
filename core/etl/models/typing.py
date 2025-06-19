@@ -38,6 +38,11 @@ class ETLMapping(BaseModel):
     remote_id: Optional[str] = None
 
 
+class CapsItem(BaseModel):
+    name: str
+    value: Union[str, bool, int]
+
+
 class Reference(Generic[T]):
     def __init__(self, name: str, model: T, value: Any, remote_system: Optional[str] = None):
         self.name = name

@@ -1175,7 +1175,7 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_update_mappings(self, request, id, mappings):
         o = self.get_object_or_404(ManagedObject, id=id)
         mappings = {m["remote_system"]: m["remote_id"] for m in mappings}
-        o.update_object_mappings(mappings)
+        o.update_remote_mappings(mappings)
         o.save()
         r = []
         for m in o.mappings:

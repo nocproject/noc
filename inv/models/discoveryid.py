@@ -27,7 +27,6 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.inv.models.macblacklist import MACBlacklist
 from noc.core.perf import metrics
-from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
 from noc.core.mac import MAC
 from noc.core.model.decorator import on_delete
@@ -82,7 +81,7 @@ class DiscoveryID(Document):
         "auto_create_index": False,
         "indexes": ["object", "hostname", "hostname_id", "udld_id", "router_id", "macs"],
     }
-    object = ForeignKeyField(ManagedObject)
+    object = ForeignKeyField(ManagedObject, unique=True)
     chassis_mac = ListField(EmbeddedDocumentField(MACRange))
     hostname = StringField()
     hostname_id = StringField()
@@ -178,7 +177,7 @@ class DiscoveryID(Document):
         ranges = list(cls._macs_to_ranges(macs))
         # Perform one-shot atomic upsert
         # to protect against race conditions
-        r = cls._get_collection().find_one_and_update(
+        result = cls._get_collection().find_one_and_update(
             {"object": object.id},
             {
                 "$set": {
@@ -289,7 +288,7 @@ class DiscoveryID(Document):
                 {"ipv4_addresses": {"$gt": address + "/", "$lt": address + "/99"}},
                 {"_id": 0, "managed_object": 1, "ipv4_addresses": 1},
             )
-            if has_ip(ipv4_address, d["ipv4_addresses"])
+            if has_ip(address, d["ipv4_addresses"])
         )
         if len(o) != 1:
             return None

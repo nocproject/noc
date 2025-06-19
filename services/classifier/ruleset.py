@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 #  RuleSet
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import logging
 from itertools import chain
 from collections import defaultdict
-from typing import Dict, Any, Tuple, Optional, Callable
+from typing import Dict, Any, Tuple, Optional, Callable, List
 
 # NOC modules
 from .rule import Rule
@@ -55,9 +55,9 @@ class RuleSet(object):
         self.add_rules: int = 0
         # processed: int = 0
 
-    def update_rule(self, data):
+    def update_rule(self, data, r_format: Optional[str] = None):
         """Update rule from lookup"""
-        rule = Rule.from_config(data, self.enumerations)
+        rule = Rule.from_config(data, self.enumerations, r_format=r_format)
         changed = False
         for rl in self.rules.values():
             changed |= rl.update_rule(rule)
@@ -96,12 +96,13 @@ class RuleSet(object):
         n = 0
         rules = defaultdict(list)
         self.default_rule = EventClassificationRule.objects.filter(
-            name=config.classifier.default_rule
+            name=config.classifier.default_rule,
         ).first()
         if self.default_rule:
             self.default_rule = Rule.from_config(
                 EventClassificationRule.get_rule_config(self.default_rule),
                 self.enumerations,
+                r_format="classification",
             )
         #
         self.load_enumerations()
@@ -113,6 +114,7 @@ class RuleSet(object):
                 rule = Rule.from_config(
                     EventClassificationRule.get_rule_config(r),
                     self.enumerations,
+                    r_format="classification",
                 )
             except InvalidPatternException as e:
                 logger.error("Failed to load rule '%s': Invalid patterns: %s", r.name, e)
@@ -208,22 +210,37 @@ class RuleSet(object):
 
     def eval_vars(
         self, r_vars: Dict[str, Any], managed_object: Any, e_cfg: EventConfig, by_test: bool = False
-    ):
+    ) -> Tuple[Dict[str, Any], List[Any], Optional[str]]:
         """Evaluate rule variables"""
         r = {}
         # Resolve resource
         # resource -> var
         resources = []
+        error = None
         # Resolve e_vars
         for ecv in e_cfg.vars:
             # Check variable is present
             if ecv.resource_model and not by_test:
-                res = self.resolve_resource(ecv, r_vars, managed_object)
+                try:
+                    res = self.resolve_resource(ecv, r_vars, managed_object)
+                except AttributeError:
+                    error = f"Resource ({ecv.resource_model}) not found: {r_vars}"
+                    logger.info(
+                        "[%s|%s] Resource (%s) not found:%s",
+                        # event.id,
+                        managed_object.name if managed_object else "NOT_FOUND",
+                        managed_object.address if managed_object else "NOT_FOUND",
+                        ecv.resource_model,
+                        r_vars,
+                    )
+                    continue
                 if res:
                     resources.append(res)
             if ecv.name not in r_vars:
                 if ecv.required:
-                    raise Exception("Required variable '%s' is not found" % ecv.name)
+                    # raise Exception("Required variable '%s' is not found" % ecv.name)
+                    logger.error("Required variable '%s' is not found", ecv.name)
+                    return r, resources, f"Required variable '{ecv.name}' is not found"
                 continue
             # Decode variable
             try:
@@ -233,7 +250,7 @@ class RuleSet(object):
                     "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
                 )
             r[ecv.name] = v
-        return r, resources
+        return r, resources, error
 
     @staticmethod
     def decode_str(event, value):
