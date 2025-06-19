@@ -37,7 +37,7 @@ class Migration(BaseMigration):
                         "args": (
                             {"template": str(aa["clear_template"])}
                             if aa.get("clear_template")
-                            else {},
+                            else {}
                         ),
                     }
                 ]
@@ -59,7 +59,7 @@ class Migration(BaseMigration):
                         "args": (
                             {"template": str(aa["clear_template"])}
                             if aa.get("clear_template")
-                            else {},
+                            else {}
                         ),
                     }
                 ]
