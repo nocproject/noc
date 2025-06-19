@@ -34,9 +34,11 @@ class Migration(BaseMigration):
                         "once": True,
                         "immediate": True,
                         "clear_only": True,
-                        "args": {"template": str(aa["clear_template"])}
-                        if aa.get("clear_template")
-                        else {},
+                        "args": (
+                            {"template": str(aa["clear_template"])}
+                            if aa.get("clear_template")
+                            else {},
+                        ),
                     }
                 ]
                 log = {
@@ -54,9 +56,11 @@ class Migration(BaseMigration):
                         "once": True,
                         "immediate": True,
                         "clear_only": True,
-                        "args": {"template": str(aa["clear_template"])}
-                        if aa.get("clear_template")
-                        else {},
+                        "args": (
+                            {"template": str(aa["clear_template"])}
+                            if aa.get("clear_template")
+                            else {},
+                        ),
                     }
                 ]
             if r and log:
