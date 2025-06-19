@@ -80,6 +80,16 @@ class Effect(enum.Enum):
 
 
 class WatchItem(EmbeddedDocument):
+    """
+    Attributes:
+        effect: Watch Effect
+        key: Id for action Instance
+        once: Run only once
+        immediate: Execute in runtime, not call later
+        clear_only: Execute when alarm clear
+        args: Addition options for run
+    """
+
     effect: Effect = EnumField(Effect, required=True)
     key: str = StringField(required=True)
     once: bool = BooleanField(default=True)
@@ -253,6 +263,15 @@ class ActiveAlarm(Document):
         for ll in self.log:
             if ll.tt_id:
                 return ll.timestamp
+
+    @property
+    def escalation_error(self) -> Optional[str]:
+        from noc.fm.models.escalation import Escalation
+
+        esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
+        for ii in esc.items:
+            if ii.escalation_status == "fail" or ii.escalation_status == "temp":
+                return ii.escalation_error
 
     def clean(self):
         super().clean()
