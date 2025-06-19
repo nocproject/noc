@@ -47,7 +47,7 @@ class MACRange(EmbeddedDocument):
         return f"{self.first_mac} - {self.last_mac}"
 
     @classmethod
-    def from_str(self, first: str, last: str) -> "MACRange":
+    def from_str(cls, first: str, last: str) -> "MACRange":
         """
         Create MACRange from two macs.
 
@@ -64,9 +64,9 @@ class MACRange(EmbeddedDocument):
             first, last = last, first
         return MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
 
-    def iter_as_int(self) -> Iterable(int):
+    def iter_as_int(self) -> Iterable[int]:
         """Iterate all MACs in range as integers."""
-        return range(int(self.first_mac), int(self.last_mac) + 1)
+        return range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)
 
 
 @change(audit=False)
