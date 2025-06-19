@@ -88,6 +88,8 @@ class NRIServiceCheck(DiscoveryCheck):
         for iface, profile in profiles.items():
             if iface.profile != profile:
                 self.logger.info("[%s] Set profile from service: %s", iface, profile)
+                iface.profile = profile
+                iface.save()
         if bulk:
             si_col = ServiceInstance._get_collection()
             self.logger.info("Sending %d updates", len(bulk))
@@ -131,7 +133,10 @@ class NRIServiceCheck(DiscoveryCheck):
                 addr = IP.prefix(addr)
                 if addr.address not in addresses:
                     continue
-                if si.name == si.interface.name or si.name == f"{si.interface.name}.0":
+                if (
+                    si.name == si.interface.name
+                    or si.name in self.object.get_profile().get_interface_names(si.name)
+                ):
                     resources[addresses[addr.address]] += [si.interface]
                 else:
                     resources[addresses[addr.address]] += [si]
