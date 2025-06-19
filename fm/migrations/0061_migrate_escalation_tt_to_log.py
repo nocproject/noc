@@ -72,6 +72,7 @@ class Migration(BaseMigration):
         if bulk:
             coll.bulk_write(bulk)
         coll.update_many(
+            {},
             {
                 "$unset": {
                     "escalation_ts": 1,
@@ -80,5 +81,5 @@ class Migration(BaseMigration):
                     "clear_template": 1,
                     "clear_notification_group": 1,
                 }
-            }
+            },
         )
