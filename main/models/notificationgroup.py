@@ -144,7 +144,6 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("dns.DNSZoneProfile", "notification_group"),
         ("fm.AlarmTrigger", "notification_group"),
         ("fm.EventTrigger", "notification_group"),
-        ("fm.ActiveAlarm", "clear_notification_group"),
         ("fm.AlarmRule", "actions.notification_group"),
         ("fm.DispositionRule", "notification_group"),
         ("inv.InterfaceProfile", "default_notification_group"),
@@ -418,6 +417,17 @@ class NotificationGroup(NOCModel):
             attachments=attachments or [],
         )
 
+    @classmethod
+    def notify_user(
+        cls,
+        user: User,
+        message_type: MessageType,
+        subject: Optional[str] = None,
+        body: Optional[str] = None,
+        **kwargs,
+    ):
+        """"""
+
     def update_user_settings(
         self,
         user: User,
@@ -604,7 +614,7 @@ class NotificationGroup(NOCModel):
             attachments: Include attachments
         """
 
-    def notify(self, subject, body, link=None, attachments=None):
+    def notify(self, subject, body, link=None, attachments=None, **kwargs):
         """
         Send message to active members
         Attrs:

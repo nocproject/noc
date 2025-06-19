@@ -35,6 +35,7 @@ from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.defer import call_later
+from noc.config import config
 
 logger = logging.getLogger(__name__)
 ac_lock = Lock()
@@ -184,3 +185,35 @@ class AlarmEscalation(Document):
                     )
                 if e_item.stop_processing:
                     break
+
+    @classmethod
+    def watch_alarm(
+        cls,
+        alarm,
+        tt_id: str,
+        is_clear: bool = False,
+        subject: Optional[str] = None,
+        body: Optional[str] = None,
+        force: bool = False,
+        defer: bool = True,
+        **kwargs,
+    ):
+        delay = alarm.alarm_class.get_control_time(alarm.reopens)
+        call_later(
+            "noc.services.escalator.escalation.notify_close",
+            delay=delay,
+            scheduler="escalator",
+            pool=alarm.managed_object.escalator_shard,
+            max_runs=config.fm.alarm_close_retries,
+            alarm_id=alarm.id,
+            tt_id=tt_id,
+            subject=subject or "Alarm cleared",
+            body=body or "Alarm has been cleared",
+            notification_group_id=None,
+            # notification_group_id=(
+            #     notification_group.id if notification_group else None
+            # ),
+            close_tt=True,
+            login="correlator",
+            queue=alarm.managed_object.tt_queue,
+        )
