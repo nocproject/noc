@@ -1,0 +1,1025 @@
+{
+    "name": "Maipu | NSS5930 | NSS5930-56SQFP",
+    "$collection": "inv.objectmodels",
+    "uuid": "5ffaf4f3-5d03-4931-b070-167f2bf60ac8",
+    "vendor__code": "MAIPU",
+    "description": "NSS5930-56SQFP is a new generation 25G Ethernet switch designed for enterprise data center and campus LAN networks, providing high-throughput, high-density 25GE interfaces, larger buffer and lower latency. The NSS5930-56SQFP adopts advanced hardware architecture with 48*10/25GE access ports and multiple 40/100GE uplinks.",
+    "connection_rule__name": "Maipu | Switch",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
+    "connections": [
+        {
+            "name": "psu1",
+            "description": "Power Supply 1",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "type__name": "Maipu | PSU"
+        },
+        {
+            "name": "psu2",
+            "description": "Power Supply 2",
+            "direction": "i",
+            "gender": "f",
+            "group": "0",
+            "type__name": "Maipu | PSU"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "dc0",
+            "description": "Management ethernet port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "usb0",
+            "description": "USB Port",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "<",
+                    "protocol__code": "USB10"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB11"
+                },
+                {
+                    "direction": "<",
+                    "protocol__code": "USB20"
+                }
+            ],
+            "type__name": "Electrical | USB"
+        },
+        {
+            "name": "1",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "2",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "3",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "4",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "5",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "6",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "7",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "8",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "9",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "10",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "11",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "12",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "13",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "14",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "15",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "16",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "17",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "18",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "19",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "20",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "21",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "22",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "23",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "24",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "25",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "26",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "27",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "28",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "29",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "30",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "31",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "32",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "33",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "34",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "35",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "36",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "37",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "38",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "39",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "40",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "41",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "42",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "43",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "44",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "45",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "46",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "47",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "48",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth25G"
+                }
+            ],
+            "type__name": "Transceiver | SFP28"
+        },
+        {
+            "name": "49",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "50",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "51",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "52",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "53",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "54",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "55",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        },
+        {
+            "name": "56",
+            "description": null,
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth100G"
+            }],
+            "type__name": "Transceiver | QSFP28"
+        }
+    ],
+    "data": [
+        {
+            "attr": "width",
+            "interface": "dimensions",
+            "value": 483
+        },
+        {
+            "attr": "depth",
+            "interface": "dimensions",
+            "value": 420
+        },
+        {
+            "attr": "height",
+            "interface": "dimensions",
+            "value": 44
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["NSS5930-56SQFP(V1)", "NSS5930-56SQFP(V2)"]
+        },
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ],
+    "front_facade__name": "Maipu | NSS5930 | NSS5930-56SQFP"
+}

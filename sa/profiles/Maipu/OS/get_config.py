@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -13,7 +13,11 @@ class Script(BaseScript):
     name = "Maipu.OS.get_config"
     interface = IGetConfig
 
-    def execute_cli(self, **kwargs):
-        self.cli("enable")
-        config = self.cli("show running-config")
+    def execute_cli(self, policy="r"):
+        assert policy in ("r", "s")
+        if policy == "s":
+            config = self.cli("show startup-config")
+        else:
+            config = self.cli("show running-config")
+        config = self.strip_first_lines(config, 2)
         return self.cleaned_config(config)
