@@ -6,9 +6,8 @@
     "preference": 1000,
     "method": "snmp_v2c_get",
     "param": "SNMPv2-MIB::sysObjectID.0",
-    "match_method": "eq",
-    "value": "1.3.6.1.4.1.5651.1.102.5204.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.5651",
     "action": "match",
     "profile__name": "Maipu.OS"
 }
-
