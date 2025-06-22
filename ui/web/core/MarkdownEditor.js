@@ -5,7 +5,8 @@ Ext.define("NOC.core.MarkdownEditor", {
   config: {
     value: "",
     language: "markdown",
-    theme: "vs",
+    theme: "vs-dark",
+    readOnly: false,
   },
 
   afterRender: function(){
@@ -23,6 +24,7 @@ Ext.define("NOC.core.MarkdownEditor", {
       automaticLayout: true,
       minimap: {enabled: false},
       scrollBeyondLastLine: false,
+      readOnly: me.getReadOnly(),
     });
 
     me.editor.onDidChangeModelContent(function(){
@@ -32,15 +34,22 @@ Ext.define("NOC.core.MarkdownEditor", {
     });
   },
 
-  setValue: function(value){
+  setValue: function(value, readOnly){
     this.callParent([value]);
     if(this.editor){
+      this.editor.updateOptions({readOnly});
       this.editor.setValue(value);
     }
   },
 
   getValue: function(){
     return this.editor ? this.editor.getValue() : this.callParent();
+  },
+
+  setReadOnly: function(readOnly){
+    if(this.editor){
+      this.editor.updateOptions({readOnly});
+    }
   },
 
   destroy: function(){
