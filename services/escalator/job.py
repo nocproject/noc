@@ -35,6 +35,9 @@ from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.sa.models.service import Service
+from noc.sa.models.serviceprofile import ServiceProfile
+from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
@@ -95,6 +98,7 @@ class AlarmAutomationJob(object):
         id: Optional[str] = None,
         logger: Optional[Any] = None,
         dry_run: bool = False,
+        static_delay: Optional[int] = None,
     ):
         self.id = id
         self.name = name
@@ -112,6 +116,7 @@ class AlarmAutomationJob(object):
         self.ctx_id = ctx_id
         self.telemetry_sample = telemetry_sample
         self.dry_run = dry_run
+        self.static_delay: Optional[str] = static_delay
         # Stats
         self.tt_docs: Dict[str, str] = tt_docs or {}  # TTSystem -> doc_id
         self.alarm_log = []
@@ -154,14 +159,8 @@ class AlarmAutomationJob(object):
             self.affected_services,
             self.groups,
         )
-        runner = GroupAction(
-            self.items,
-            services=self.affected_services,
-            total_objects=self.total_objects,
-            total_subscribers=self.total_subscribers,
-            total_services=self.total_services,
-            logger=self.logger,
-        )
+        runner = GroupAction(self.items, services=self.affected_services, logger=self.logger)
+        esc_ctx = self.get_ctx()
         with (
             Span(
                 client="escalator",
@@ -188,15 +187,21 @@ class AlarmAutomationJob(object):
                 elif self.dry_run:
                     wait_interval = (now - aa.timestamp).total_seconds()
                     self.logger.info("Dry run mode, waiting interval: %s", wait_interval)
+                    if self.static_delay is not None:
+                        time.sleep(self.static_delay)
                     # time.sleep(abs(wait_interval) + 1)
-                    time.sleep(10)
+                    # time.sleep(10)
                 elif aa.timestamp > now:
                     break
                 # if not aa.to_run(status, delay):
                 #    continue
                 try:
                     r = runner.run_action(
-                        aa.action, **aa.get_ctx(document_id=self.tt_docs.get(aa.key))
+                        aa.action,
+                        **aa.get_ctx(
+                            document_id=self.tt_docs.get(aa.key),
+                            action_ctx=esc_ctx,
+                        ),
                     )  # aa.get_ctx for job
                 except Exception as e:
                     r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
@@ -214,9 +219,70 @@ class AlarmAutomationJob(object):
                 if aa.stop_processing:
                     # Set Stop job status
                     break
+        self.alarm_log += runner.get_bulk()
         if actions:
             # Split one_time actions/sequenced action
             self.actions = actions + self.actions
+
+    @staticmethod
+    def summary_to_list(summary, model):
+        r = []
+        for k in summary:
+            p = model.get_by_id(k.profile)
+            if not p or getattr(p, "show_in_summary", True) is False:
+                continue
+            r += [
+                {
+                    "profile": p.name,
+                    "summary": k.summary,
+                    "order": (getattr(p, "display_order", 100), -k.summary),
+                }
+            ]
+        return sorted(r, key=operator.itemgetter("order"))
+
+    def get_ctx(self):
+        """
+        Get escalation context
+        """
+        # affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
+        affected_objects = sorted(
+            [aa.managed_object for aa in self.items], key=operator.attrgetter("name")
+        )
+        segment = self.alarm.managed_object.segment
+        if segment.is_redundant:
+            uplinks = self.alarm.managed_object.uplinks
+            lost_redundancy = len(uplinks) > 1
+            affected_subscribers = self.summary_to_list(
+                segment.total_subscribers, SubscriberProfile
+            )
+            affected_services = self.summary_to_list(segment.total_services, ServiceProfile)
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        # cons_escalated = [
+        #     self.alarm_ids[x.alarm]
+        #     for x in self.escalation_doc.consequences
+        #     if x.is_already_escalated
+        # ]
+        # @todo Alarm notification Ctx, Escalation Message Ctx
+        return {
+            "alarm": self.alarm,
+            # "leader": self.alarm,
+            "services": self.affected_services,
+            "group": "",
+            "managed_object": self.alarm.managed_object,
+            "affected_objects": affected_objects,
+            "cons_escalated": [],
+            "total_objects": self.summary_to_list(self.total_objects, ManagedObjectProfile),
+            "total_subscribers": self.summary_to_list(self.total_subscribers, SubscriberProfile),
+            "total_services": self.summary_to_list(self.total_services, ServiceProfile),
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services,
+            "has_merged_downlinks": self.alarm.has_merged_downlinks(),
+        }
 
     def set_item_status(self, alarm: ActiveAlarm, status: ItemStatus = ItemStatus.NEW):
         """
