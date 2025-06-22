@@ -7,8 +7,7 @@
 
 # Python modules
 import datetime
-import operator
-from typing import Optional, Any, Dict, List, Tuple
+from typing import Optional, Any, Dict, List
 from logging import Logger
 
 # NOC modules
@@ -22,15 +21,10 @@ from noc.core.tt.types import (
     TTAction,
 )
 from noc.core.tt.base import TTSystemCtx
-from noc.core.fm.enum import RCA_DOWNLINK_MERGE
-from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.sa.models.serviceprofile import ServiceProfile
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.aaa.models.user import User
-from noc.main.models.template import Template
 from noc.services.escalator.actionlog import ActionResult
 from .typing import ActionStatus
 
@@ -50,20 +44,14 @@ class GroupAction(object):
         items: List[Any],
         logger: Logger,
         services: Optional[List[Service]] = None,
-        total_objects=None,
-        total_subscribers=None,
-        total_services=None,
     ):
         self.items = items
-        self.alarm = items[0].alarm
+        self.alarm: "ActiveAlarm" = items[0].alarm
         self.services: List[Service] = (
             list(Service.objects.filter(id__in=services)) if services else None
         )
         self.logger = logger
         self.alarm_log = []
-        self.total_objects = total_objects or []
-        self.total_subscribers = total_subscribers or []
-        self.total_services = total_services or []
 
     def run_action(
         self,
@@ -88,79 +76,6 @@ class GroupAction(object):
             case _:
                 raise NotImplementedError("Action %s not implemented" % action)
         return r
-
-    def render_template(self, template) -> Tuple[str, str]:
-        """"""
-        ctx = self.get_ctx()
-        return template.render_subject(**ctx), template.render_body(**ctx)
-
-    def get_ctx(self):
-        """
-        Get escalation context
-        """
-        # affected_objects = sorted(self.alarm.iter_affected(), key=operator.attrgetter("name"))
-        affected_objects = sorted(
-            [aa.managed_object for aa in self.items], key=operator.attrgetter("name")
-        )
-        segment = self.alarm.managed_object.segment
-        if segment.is_redundant:
-            uplinks = self.alarm.managed_object.uplinks
-            lost_redundancy = len(uplinks) > 1
-            affected_subscribers = self.summary_to_list(
-                segment.total_subscribers, SubscriberProfile
-            )
-            affected_services = self.summary_to_list(segment.total_services, ServiceProfile)
-        else:
-            lost_redundancy = False
-            affected_subscribers = []
-            affected_services = []
-        # cons_escalated = [
-        #     self.alarm_ids[x.alarm]
-        #     for x in self.escalation_doc.consequences
-        #     if x.is_already_escalated
-        # ]
-        # @todo Alarm notification Ctx, Escalation Message Ctx
-        return {
-            "alarm": self.alarm,
-            # "leader": self.alarm,
-            "services": self.services,
-            "group": "",
-            "managed_object": self.alarm.managed_object,
-            "affected_objects": affected_objects,
-            "cons_escalated": [],
-            "total_objects": self.summary_to_list(self.total_objects, ManagedObjectProfile),
-            "total_subscribers": self.summary_to_list(self.total_subscribers, SubscriberProfile),
-            "total_services": self.summary_to_list(self.total_services, ServiceProfile),
-            "tt": None,
-            "lost_redundancy": lost_redundancy,
-            "affected_subscribers": affected_subscribers,
-            "affected_services": affected_services,
-            "has_merged_downlinks": self.has_merged_downlinks(),
-        }
-
-    @staticmethod
-    def summary_to_list(summary, model):
-        r = []
-        for k in summary:
-            p = model.get_by_id(k.profile)
-            if not p or getattr(p, "show_in_summary", True) is False:
-                continue
-            r += [
-                {
-                    "profile": p.name,
-                    "summary": k.summary,
-                    "order": (getattr(p, "display_order", 100), -k.summary),
-                }
-            ]
-        return sorted(r, key=operator.itemgetter("order"))
-
-    def has_merged_downlinks(self):
-        """
-        Check if alarm has merged downlinks
-        """
-        return bool(
-            ActiveAlarm.objects.filter(root=self.alarm.id, rca_type=RCA_DOWNLINK_MERGE).first()
-        )
 
     def get_escalation_items(self, tt_system: TTSystem) -> List[ECtxItem]:
         """
@@ -265,6 +180,9 @@ class GroupAction(object):
             self.alarm.save()
         else:
             self.alarm.log_message(msg, bulk=self.alarm_log)
+
+    def get_bulk(self) -> List[Any]:
+        return self.alarm_log
 
     def comment_tt(
         self,
@@ -381,9 +299,8 @@ class GroupAction(object):
     def create_tt(
         self,
         tt_system: TTSystem,
-        subject: Optional[str] = None,
-        body: Optional[str] = None,
-        template: Optional[Template] = None,
+        subject: str,
+        body: str,
         tt_id: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
@@ -398,8 +315,7 @@ class GroupAction(object):
             tt_system: TT System instance
             subject: Message Subject
             body: Message Body
-            template: Subject/Body template
-            context: Escalation Context
+            login:
             tt_id: If set, do changes
             timestamp: Action timestamp
             requester: TTSystem, request action
@@ -408,8 +324,6 @@ class GroupAction(object):
         Returns:
             EscalationResult:
         """
-        if template:
-            subject, body = self.render_template(template)
         self.logger.debug(
             "Escalation message:\nSubject: %s\n%s",
             subject,
@@ -436,6 +350,7 @@ class GroupAction(object):
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
         if r.document:
+            self.alarm.escalate(f"{tt_system.name}: {r.document_id}")
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id
         # Project result to escalation items
@@ -464,7 +379,8 @@ class GroupAction(object):
         self,
         tt_system: TTSystem,
         tt_id: str,
-        template: Optional[Template] = None,
+        subject: Optional[str] = None,
+        body: Optional[str] = None,
         reason: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
@@ -477,9 +393,12 @@ class GroupAction(object):
 
         Args:
             tt_system: TT System instance
+            subject: Message Subject
+            body: Message Body
             tt_id: Number of document on TT System
             reason: comment message for close reason
             timestamp: Action timestamp
+            login:
             requester: TTSystem, request action
             user: User, request action
 
@@ -489,9 +408,8 @@ class GroupAction(object):
         if not tt_id:
             return ActionResult(status=ActionStatus.SKIP)
         self.logger.info("Closing TT %s:%s", tt_system, tt_id)
-        subject, body = None, None
-        if template:
-            subject, body = self.render_template(template)
+        subject = subject or "Alarm cleared"
+        body = body or "Alarm has been cleared"
         with self.get_tt_system_context(tt_system, tt_id, timestamp, login) as ctx:
             ctx.close(subject, body)
         r = ctx.get_result()

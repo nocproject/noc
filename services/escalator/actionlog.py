@@ -117,7 +117,11 @@ class ActionLog(object):
             return True
         return False
 
-    def get_ctx(self, document_id: Optional[str] = None) -> Dict[str, Any]:
+    def get_ctx(
+        self,
+        document_id: Optional[str] = None,
+        action_ctx: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         """Build action CTX"""
         r = {"timestamp": self.timestamp}
         if self.action == TTAction.CREATE_TT or self.action == TTAction.CLOSE_TT:
@@ -126,7 +130,8 @@ class ActionLog(object):
         elif self.action == TTAction.NOTIFY:
             r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
         if self.template:
-            r["template"] = self.template
+            r["subject"] = self.template.render_subject(**action_ctx)
+            r["body"] = self.template.render_body(**action_ctx)
         if self.user:
             r["user"] = self.user
         if self.tt_system:
