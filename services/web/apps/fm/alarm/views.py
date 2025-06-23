@@ -457,16 +457,29 @@ class AlarmApplication(ExtApplication):
         d["status__label"] = {"A": "Active", "C": "Cleared"}[alarm.status]
         # Managed object properties
         mo = alarm.managed_object
-        d["managed_object_address"] = mo.address
-        d["managed_object_profile"] = mo.profile.name
-        d["managed_object_platform"] = mo.platform.name if mo.platform else ""
-        d["managed_object_version"] = mo.version.version if mo.version else ""
-        d["segment"] = mo.segment.name
-        d["segment_id"] = str(mo.segment.id)
-        d["segment_path"] = " | ".join(
-            NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment)
-        )
-        if mo.container:
+        if mo:
+            d |= {
+                "managed_object_address": mo.address,
+                "managed_object_profile": mo.profile.name,
+                "managed_object_platform": mo.platform.name if mo.platform else "",
+                "managed_object_version": mo.version.version if mo.version else "",
+                "segment": mo.segment.name,
+                "segment_id": str(mo.segment.id),
+                "segment_path": " | ".join(
+                    NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment)
+                ),
+            }
+        else:
+            d |= {
+                "managed_object_address": "",
+                "managed_object_profile": "",
+                "managed_object_platform": "",
+                "managed_object_version": "",
+                "segment": "",
+                "segment_id": "",
+                "segment_path": "",
+            }
+        if mo and mo.container:
             cp = []
             c = mo.container.id
             while c:
