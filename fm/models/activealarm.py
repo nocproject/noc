@@ -269,6 +269,8 @@ class ActiveAlarm(Document):
         from noc.fm.models.escalation import Escalation
 
         esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
+        if not esc:
+            return
         for ii in esc.items:
             if ii.escalation_status == "fail" or ii.escalation_status == "temp":
                 return ii.escalation_error
@@ -277,12 +279,20 @@ class ActiveAlarm(Document):
         super().clean()
         if not self.last_update:
             self.last_update = self.timestamp
-        self.adm_path = self.managed_object.adm_path
-        self.segment_path = self.managed_object.segment_path
-        self.container_path = self.managed_object.container_path
-        self.uplinks = self.managed_object.uplinks
-        self.rca_neighbors = self.managed_object.rca_neighbors
-        self.dlm_windows = self.managed_object.dlm_windows
+        if self.managed_object:
+            self.adm_path = self.managed_object.adm_path
+            self.segment_path = self.managed_object.segment_path
+            self.container_path = self.managed_object.container_path
+            self.uplinks = self.managed_object.uplinks
+            self.rca_neighbors = self.managed_object.rca_neighbors
+            self.dlm_windows = self.managed_object.dlm_windows
+        else:
+            self.adm_path = []
+            self.segment_path = []
+            self.container_path = []
+            self.uplinks = []
+            self.rca_neighbors = []
+            self.dlm_windows = []
         self.reopens = self.reopens or 0
         if not self.id:
             # Update effective labels
@@ -684,8 +694,10 @@ class ActiveAlarm(Document):
         r = {
             "service": SummaryItem.items_to_dict(self.total_services),
             "subscriber": SummaryItem.items_to_dict(self.total_subscribers),
-            "object": {self.managed_object.object_profile.id: 1},
+            "object": {},
         }
+        if self.managed_object:
+            r["object"] = {self.managed_object.object_profile.id: 1}
         if self.is_link_alarm and self.components.interface:
             r["interface"] = {self.components.interface.profile.id: 1}
         return r
@@ -755,7 +767,10 @@ class ActiveAlarm(Document):
 
         services = SummaryItem.items_to_dict(self.direct_services)
         subscribers = SummaryItem.items_to_dict(self.direct_subscribers)
-        objects = {self.managed_object.object_profile.id: 1}
+        if self.managed_object:
+            objects = {self.managed_object.object_profile.id: 1}
+        else:
+            objects = {}
         if self.is_link_alarm and self.components.interface:
             interface = {self.components.interface.profile.id: 1}
         else:
@@ -971,7 +986,9 @@ class ActiveAlarm(Document):
             doc = alarms[root]
             consequences = children[root]
             total_objects = get_summary(
-                consequences, "total_objects", {self.managed_object.object_profile.id: 1}
+                consequences,
+                "total_objects",
+                {self.managed_object.object_profile.id: 1} if self.managed_object else {},
             )
             total_services = get_summary(consequences, "total_services", doc.get("direct_services"))
             total_subscribers = get_summary(
@@ -1132,11 +1149,12 @@ class ActiveAlarm(Document):
     def iter_effective_labels(cls, instance: "ActiveAlarm"):
         yield instance.labels
         yield instance.alarm_class.labels
-        yield [
-            ll
-            for ll in instance.managed_object.effective_labels
-            if Label.get_effective_setting(ll, "expose_alarm")
-        ]
+        if instance.managed_object:
+            yield [
+                ll
+                for ll in instance.managed_object.effective_labels
+                if Label.get_effective_setting(ll, "expose_alarm")
+            ]
 
     @classmethod
     def can_set_label(cls, label):
