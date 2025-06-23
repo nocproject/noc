@@ -22,6 +22,7 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
 
     me.displayField = Ext.create("Ext.container.Container", {
       autoScroll: true,
+      padding: 4,
     });
 
     me.editField = Ext.create("NOC.core.MarkdownEditor");
