@@ -468,6 +468,7 @@ class AlarmApplication(ExtApplication):
                 "segment_path": " | ".join(
                     NetworkSegment.get_by_id(p).name for p in NetworkSegment.get_path(mo.segment)
                 ),
+                "tags": mo.labels,
             }
         else:
             d |= {
@@ -478,6 +479,7 @@ class AlarmApplication(ExtApplication):
                 "segment": "",
                 "segment_id": "",
                 "segment_path": "",
+                "tags": [],
             }
         if mo and mo.container:
             cp = []
@@ -496,7 +498,6 @@ class AlarmApplication(ExtApplication):
                 d["address_path"] = None
             else:
                 d["address_path"] = ", ".join(location)
-        d["tags"] = mo.labels
         # Log
         if alarm.log:
             d["log"] = [
