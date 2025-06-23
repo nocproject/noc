@@ -1158,8 +1158,8 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name,
-            alarm.managed_object.address,
+            alarm.managed_object.name if alarm.managed_object else "REFERENCE",
+            alarm.managed_object.address if alarm.managed_object else alarm.reference,
             alarm.alarm_class.name,
             alarm.id,
             message or "by id",
@@ -1193,8 +1193,8 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name,
-            alarm.managed_object.address,
+            alarm.managed_object.name if alarm.managed_object else "REFERENCE",
+            alarm.managed_object.address if alarm.managed_object else reference,
             alarm.alarm_class.name,
             alarm.id,
             message or f"by reference {reference}",
