@@ -26,7 +26,7 @@ from noc.core.comp import smart_text
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.inv.models.object import Object
 from noc.inv.models.networksegment import NetworkSegment
-from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.activealarm import ActiveAlarm, Effect
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -332,15 +332,15 @@ class AlarmApplication(ExtApplication):
             + ArchivedEvent.objects.filter(alarms=o.id).count()
         )
         location1, location2 = "", ""
-        if o.managed_object.container:
+        if o.managed_object and o.managed_object.container:
             location1, location2 = self.location(o.managed_object.container)
         d = {
             "id": str(o.id),
             "status": o.status,
-            "managed_object": o.managed_object.id,
-            "managed_object__label": o.managed_object.name,
-            "administrative_domain": o.managed_object.administrative_domain_id,
-            "administrative_domain__label": o.managed_object.administrative_domain.name,
+            "managed_object": None,
+            "managed_object__label": "",
+            "administrative_domain": None,
+            "administrative_domain__label": "",
             "severity": o.severity,
             "severity__label": s.name,
             "alarm_class": str(o.alarm_class.id),
@@ -351,14 +351,14 @@ class AlarmApplication(ExtApplication):
             "duration": o.duration,
             "clear_timestamp": self.to_json(o.clear_timestamp) if o.status == "C" else None,
             "row_class": s.style.css_class_name,
-            "segment__label": o.managed_object.segment.name,
-            "segment": str(o.managed_object.segment.id),
+            "segment__label": "",
+            "segment": None,
             "location_1": location1,
             "location_2": location2,
             "escalation_tt": o.escalation_tt,
             "escalation_error": o.escalation_error,
-            "platform": o.managed_object.platform.name if o.managed_object.platform else "",
-            "address": o.managed_object.address,
+            "platform": "",
+            "address": "",
             "ack_ts": self.to_json(o.ack_ts),
             "ack_user": o.ack_user,
             "summary": self.f_glyph_summary(
@@ -384,6 +384,17 @@ class AlarmApplication(ExtApplication):
                 if getattr(ll, "source", None)
             ][: config.web.api_alarm_comments_limit],
         }
+        if o.managed_object:
+            d |= {
+                "managed_object": o.managed_object.id,
+                "managed_object__label": o.managed_object.name,
+                "administrative_domain": o.managed_object.administrative_domain_id,
+                "administrative_domain__label": o.managed_object.administrative_domain.name,
+                "segment__label": o.managed_object.segment.name,
+                "segment": str(o.managed_object.segment.id),
+                "platform": o.managed_object.platform.name if o.managed_object.platform else "",
+                "address": o.managed_object.address,
+            }
         if fields:
             d = {k: d[k] for k in fields}
         return d
@@ -523,7 +534,7 @@ class AlarmApplication(ExtApplication):
         # Subscribers
         if alarm.status == "A":
             d["subscribers"] = self.get_alarm_subscribers(alarm)
-            d["is_subscribed"] = user in alarm.subscribers
+            d["is_subscribed"] = self.has_alarm_ubscriber(alarm, user)
         # Groups
         if alarm.groups:
             d["groups"] = []
@@ -555,16 +566,21 @@ class AlarmApplication(ExtApplication):
             del d["reference"]
         return d
 
-    def get_alarm_subscribers(self, alarm):
-        """
-        JSON-serializable subscribers
-        :param alarm:
-        :return:
-        """
+    def has_alarm_ubscriber(self, alarm: "ActiveAlarm", user: User) -> bool:
+        """Check user subscription in alarm"""
+        for w in alarm.watchers:
+            if w.effect == Effect.SUBSCRIPTION and w.key == str(user.id):
+                return True
+        return False
+
+    def get_alarm_subscribers(self, alarm: "ActiveAlarm"):
+        """JSON-serializable subscribers"""
         subscribers = []
-        for u in alarm.subscribers:
+        for w in alarm.watchers:
+            if w.effect != Effect.SUBSCRIPTION:
+                continue
             try:
-                u = User.objects.get(id=u)
+                u = User.get_by_id(int(w.key))
                 subscribers += [
                     {"id": u.id, "name": " ".join([u.first_name, u.last_name]), "login": u.username}
                 ]
