@@ -15,7 +15,14 @@ from typing import Any, Dict, Union, Optional, List
 import bson
 import cachetools
 from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField, BooleanField, DictField, EnumField
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    ObjectIdField,
+    BooleanField,
+    DictField,
+    EnumField,
+)
 
 # NOC modules
 from noc.main.models.doccategory import category
