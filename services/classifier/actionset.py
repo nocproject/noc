@@ -108,7 +108,7 @@ class ActionSet(object):
                 )
             ]
             self.add_notifications += 1
-        if "object_actions" in data and data["object_actions"]["interaction_audit"]:
+        if "object_actions" in data and "interaction_audit" in data["object_actions"]:
             target_a += [
                 partial(
                     self.interaction_audit,
