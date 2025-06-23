@@ -526,6 +526,12 @@ class Service(Document):
         }
 
     @property
+    def alarms_stream_and_partition(self) -> Tuple[str, int]:
+        fm_pool = Pool.get_default_fm_pool()
+        slots = config.get_slot_limits(f"correlator-{fm_pool}") or 1
+        return f"dispose.{fm_pool.name}", self.bi_id % slots
+
+    @property
     def message_meta(self) -> Dict[MessageMeta, Any]:
         """Message Meta for instance"""
         return {
@@ -541,16 +547,12 @@ class Service(Document):
         Register Group alarm when changed Oper Status
         old_status: Previous status
         """
-        mo = self.get_effective_managed_object()
-        if not mo:
-            logger.warning("[%s] Unknown ManagedObject for Raise alarm. Skipping", self.id)
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {
-                "$op": "raise",
+                "$op": "raiseref",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "timestamp": self.oper_status_change.isoformat(),
-                "managed_object": str(mo.id if mo else 1),
                 "alarm_class": SVC_AC,
                 "labels": list(self.labels),
                 "severity": {4: 5000, 3: 4000, 2: 3000}[self.oper_status.value],
@@ -581,10 +583,8 @@ class Service(Document):
         else:
             return
         svc = get_service()
-        if mo:
-            stream, partition = mo.alarms_stream_and_partition
-        else:
-            stream, partition = "dispose.default", 0
+
+        stream, partition = self.alarms_stream_and_partition
         logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
@@ -757,12 +757,13 @@ class Service(Document):
             q |= m_q(profile__in=rules)
         services = set()
         # Instances
-        for svc in ServiceInstance.get_services_by_alarm(alarm):
-            if svc.profile.id in spr and spr[svc.profile.id]:
-                services.add(svc.id)
+        if alarm.managed_object:
+            for svc in ServiceInstance.get_services_by_alarm(alarm):
+                if svc.profile.id in spr and spr[svc.profile.id]:
+                    services.add(svc.id)
         # Check dependency
         deps = [x for x in spr if spr[x]]
-        if alarm.managed_object.effective_service_groups and deps:
+        if alarm.managed_object and alarm.managed_object.effective_service_groups and deps:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
                 profile__in=deps,
