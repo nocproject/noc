@@ -158,6 +158,7 @@ def test_alarm(config, values, expected, state):
                 assert "timestamp" in msg.value
                 # Check labels
                 assert msg.value["labels"] == cfg["labels"]
+        del node
 
 
 @pytest.mark.parametrize(
@@ -228,6 +229,7 @@ def test_alarm_vars(config, expected):
         else:
             assert "vars" in msg.value
             assert msg.value["vars"] == expected
+        del cdag
 
 
 @pytest.mark.parametrize(
@@ -239,6 +241,131 @@ def test_alarm_vars(config, expected):
             [0.0, 0.5, 0.99, 1.0, 1.5, 1.0, 0.99, 0.5, 0.0],
             [None, None, None, "raise", None, None, "clear", None, None],
             [False, False, False, True, True, True, False, False, False],
+        ),
+        # Test with specific operation
+        (
+            {"thresholds": [{"op": ">=", "value": 1.0}]},
+            [0.0, 0.5, 0.99, 1.0, 1.5, 1.0, 0.99, 0.5, 0.0],
+            [None, None, None, "raise", None, None, "clear", None, None],
+            [False, False, False, True, True, True, False, False, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 1.0}]},
+            [0.0, 0.5, 0.99, 1.0, 1.5, 1.4, 1.0, 0.99, 0.5, 0.0],
+            [None, None, None, None, "raise", None, "clear", None, None, None],
+            [False, False, False, False, True, True, False, False, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 1.0}]},
+            [1.5, 1.4, 1.0, 0.99, 0.5, 0.0, 0.5, 0.99, 1.0, 1.4, 1.5],
+            [None, None, "raise", None, None, None, None, None, None, "clear", None],
+            [False, False, True, True, True, True, True, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 1.0}]},
+            [1.5, 1.4, 1.0, 0.99, 0.5, 0.0, 0.5, 0.99, 1.0, 1.4, 1.5],
+            [None, None, None, "raise", None, None, None, None, "clear", None, None],
+            [False, False, False, True, True, True, True, True, False, False, False],
+        ),
+        # Test without clean_value
+        (
+            {"thresholds": [{"op": ">=", "value": 10.0}]},
+            [9.0, 10.0, 10.0, 10.0, 9.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 10.0}]},
+            [10.0, 11.0, 11.0, 11.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 10.0}]},
+            [10.0, 9.0, 9.0, 9.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 10.0}]},
+            [11.0, 10.0, 10.0, 10.0, 11.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        # Test with negative value (as attenuation in dBm)
+        (
+            {"thresholds": [{"op": ">=", "value": -15.0}]},
+            [-15.5, -15.0, -15.0, -15.5, -15.5],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": -15.0}]},
+            [-15.0, -14.9, -14.8, -15.0, -15.1],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": -15.0}]},
+            [-15.0, -15.1, -15.2, -15.0, -14.9],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": -15.0}]},
+            [-14.9, -15.0, -15.1, -14.9, -14.8],
+            [None, "raise", None, "clear", None],
+            [False, True, True, False, False],
+        ),
+        # Test with clean_value same as value
+        (
+            {"thresholds": [{"op": ">=", "value": 10.0, "clear_value": 10.0}]},
+            [9.0, 10.0, 10.0, 10.0, 9.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 10.0, "clear_value": 10.0}]},
+            [10.0, 11.0, 11.0, 11.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 10.0, "clear_value": 10.0}]},
+            [10.0, 9.0, 9.0, 9.0, 10.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 10.0, "clear_value": 10.0}]},
+            [11.0, 10.0, 10.0, 10.0, 11.0],
+            [None, "raise", None, None, "clear"],
+            [False, True, True, True, False],
+        ),
+        # Test with clean_value
+        (
+            {"thresholds": [{"op": ">=", "value": 1.0, "clear_value": 0.5}]},
+            [0.99, 1.0, 1.1, 1.4, 0.51, 0.5, 0.49],
+            [None, "raise", None, None, None, None, "clear"],
+            [False, True, True, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": ">", "value": 1.0, "clear_value": 0.5}]},
+            [1.0, 1.1, 1.4, 0.51, 0.5, 0.49],
+            [None, "raise", None, None, "clear", None],
+            [False, True, True, True, False, False],
+        ),
+        (
+            {"thresholds": [{"op": "<=", "value": 1.0, "clear_value": 1.5}]},
+            [1.4, 1.0, 0.99, 0.5, 0.99, 1.0, 1.4, 1.5, 1.51],
+            [None, "raise", None, None, None, None, None, None, "clear"],
+            [False, True, True, True, True, True, True, True, False],
+        ),
+        (
+            {"thresholds": [{"op": "<", "value": 1.0, "clear_value": 1.5}]},
+            [1.0, 0.99, 0.5, 0.99, 1.0, 1.4, 1.5, 1.51],
+            [None, "raise", None, None, None, None, "clear", None],
+            [False, True, True, True, True, True, False, False],
         ),
         # Hysteresis
         # (

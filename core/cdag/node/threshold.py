@@ -62,9 +62,20 @@ class ThresholdItem(BaseModel):
         :param value:
         :return:
         """
-        if (self.clear_value and value < self.clear_value) or value < self.value:
-            return True
-        return False
+
+        if self.clear_value is None:
+            return (
+                (self.op == "<" and value >= self.value)
+                or (self.op == "<=" and value > self.value)
+                or (self.op == ">=" and value < self.value)
+                or (self.op == ">" and value <= self.value)
+            )
+        return (
+            (self.op == "<" and value >= self.clear_value)
+            or (self.op == "<=" and value > self.clear_value)
+            or (self.op == ">=" and value < self.clear_value)
+            or (self.op == ">" and value <= self.clear_value)
+        )
 
 
 class ThresholdNodeConfig(AlarmNodeConfig):
