@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportoutages
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ from collections import defaultdict
 
 # Third-party modules
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
 from mongoengine.queryset.visitor import Q
 
 # NOC modules
@@ -32,8 +31,12 @@ class ReportForm(forms.Form):
         ],
         label=_("Duration"),
     )
-    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
-    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    from_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("From Date"), required=False
+    )
+    to_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("To Date"), required=False
+    )
 
 
 class ReportOutagesApplication(SimpleReport):
@@ -55,13 +58,15 @@ class ReportOutagesApplication(SimpleReport):
             b = now - d
             q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
         else:
-            b = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            b = datetime.datetime.strptime(from_date, self.ISO_DATE_MASK)
             q = Q(start__gte=b) | Q(stop__gte=b) | Q(stop__exists=False)
             if to_date:
                 if from_date == to_date:
-                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(1)
+                    t1 = datetime.datetime.strptime(
+                        to_date, self.ISO_DATE_MASK
+                    ) + datetime.timedelta(1)
                 else:
-                    t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y")
+                    t1 = datetime.datetime.strptime(to_date, self.ISO_DATE_MASK)
             else:
                 t1 = now
             q &= Q(start__lte=t1) | Q(stop__lte=t1)
