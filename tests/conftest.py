@@ -43,13 +43,27 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 
     terminalreporter.write_sep("=", "Test execution time summary")
     total = sum(float(x) / NS for x in _durations.values())
+    other_time = 0.0
+    other_count = 0
+    THRESHOLD = 1.0
     for func_name, duration in sorted(_durations.items(), key=lambda x: x[1], reverse=True):
         label = func_name
         count = _counts.get(func_name, 0)
         if count > 1:
             label = f"{label} (x{count})"
         d = float(duration) / NS
+        # Cut fast tests
+        if d < THRESHOLD:
+            other_time += d
+            other_count += count
+            continue
         percent = d * 100.0 / total
         terminalreporter.write_line(f"{label:<40} {d:.3f}s ({percent:.3f}%)")
+    if other_count:
+        percent = other_time * 100.0 / total
+        label = "other tests"
+        if other_count > 1:
+            label = f"{label} (x{other_count})"
+        terminalreporter.write_line(f"{label:<40} {other_time:.3f}s ({percent:.3f}%)")
     terminalreporter.write_line(f"Total: {total:.3f}s")
     _stats = terminalreporter.stats
