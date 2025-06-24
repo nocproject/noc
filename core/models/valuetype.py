@@ -20,6 +20,8 @@ from noc.sa.interfaces.base import (
     OIDParameter,
 )
 
+BOOL_VALUES = frozenset(("t", "true", "yes"))
+
 
 class ValueType(enum.Enum):
     """
@@ -29,6 +31,7 @@ class ValueType(enum.Enum):
     STRING = "str"
     INTEGER = "int"
     FLOAT = "float"
+    BOOL = "bool"
     IPV4_ADDR = "ipv4_address"
     IPV6_ADDR = "ipv6_address"
     IP_ADDR = "ip_address"
@@ -48,6 +51,14 @@ class ValueType(enum.Enum):
         if value is not None and value.isdigit():
             return int(value)
         return 0
+
+    @staticmethod
+    def decode_bool(value):
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.lower() in BOOL_VALUES
+        return bool(value)
 
     @staticmethod
     def decode_float(value):
