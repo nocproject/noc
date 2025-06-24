@@ -146,7 +146,7 @@ class DiscoveryID(Document):
         first: Optional[int] = None
         last: Optional[int] = None
         for mac in macs:
-            if MACBlacklist.is_banned_mac(mac, is_ignored=True):
+            if MACBlacklist.is_banned_mac(str(MAC(mac)), is_ignored=True):
                 continue
             if last is None:
                 # First range
@@ -158,8 +158,8 @@ class DiscoveryID(Document):
             else:
                 # Range stopped
                 yield MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
-                first = None
-                last = None
+                first = mac
+                last = mac
         if last is not None:
             yield MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
 
