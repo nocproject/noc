@@ -27,6 +27,7 @@ class ReportApplication(Application):
     styles = []
     # Inline CSS
     inline_styles = ""
+    ISO_DATE_MASK = "%Y-%m-%d"
 
     def __init__(self, site):
         super().__init__(site)

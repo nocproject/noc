@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportreboots
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,7 +11,6 @@ import datetime
 # Third-party modules
 from django import forms
 from django.db import connection
-from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
 from noc.services.web.base.simplereport import SimpleReport, TableColumn, PredefinedReport
@@ -26,8 +25,12 @@ class ReportForm(forms.Form):
         choices=[(0, _("Range")), (1, _("1 day")), (7, _("1 week")), (30, _("1 month"))],
         label=_("Inteval"),
     )
-    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
-    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    from_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("From Date"), required=False
+    )
+    to_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("To Date"), required=False
+    )
 
 
 class ReportRebootsApplication(SimpleReport):
@@ -47,11 +50,13 @@ class ReportRebootsApplication(SimpleReport):
             ts = datetime.datetime.now() - datetime.timedelta(days=interval)
             match = {"ts": {"$gte": ts}}
         else:
-            t0 = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            t0 = datetime.datetime.strptime(from_date, self.ISO_DATE_MASK)
             if not to_date:
                 t1 = datetime.datetime.now()
             else:
-                t1 = datetime.datetime.strptime(to_date, "%d.%m.%Y") + datetime.timedelta(days=1)
+                t1 = datetime.datetime.strptime(to_date, self.ISO_DATE_MASK) + datetime.timedelta(
+                    days=1
+                )
             match = {"ts": {"$gte": t0, "$lte": t1}}
         pipeline = [
             {"$match": match},
