@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # fm.reportettsystemstat
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,6 @@ import time
 # Third-party modules
 from django import forms
 from django.forms import widgets
-from django.contrib.admin.widgets import AdminDateWidget
 
 # NOC modules
 from noc.services.web.base.simplereport import SimpleReport, PredefinedReport, SectionRow
@@ -35,8 +34,12 @@ class ReportForm(forms.Form):
         choices=[(0, _("Range")), (1, _("1 day")), (7, _("1 week")), (30, _("1 month"))],
         label=_("Interval"),
     )
-    from_date = forms.CharField(widget=AdminDateWidget, label=_("From Date"), required=False)
-    to_date = forms.CharField(widget=AdminDateWidget, label=_("To Date"), required=False)
+    from_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("From Date"), required=False
+    )
+    to_date = forms.CharField(
+        widget=forms.TextInput(attrs={"type": "date"}), label=_("To Date"), required=False
+    )
 
 
 class ReportTTSystemStatApplication(SimpleReport):
@@ -54,14 +57,14 @@ class ReportTTSystemStatApplication(SimpleReport):
     def get_data(self, request, interval=1, repo_format=0, from_date=None, to_date=None, **kwargs):
         # Date Time Block
         if from_date:
-            from_date = datetime.datetime.strptime(from_date, "%d.%m.%Y")
+            from_date = datetime.datetime.strptime(from_date, self.ISO_DATE_MASK)
         elif interval:
             from_date = datetime.datetime.now() - datetime.timedelta(days=int(interval))
         else:
             from_date = datetime.datetime.now() - datetime.timedelta(days=1)
 
         if to_date:
-            to_date = datetime.datetime.strptime(to_date, "%d.%m.%Y")
+            to_date = datetime.datetime.strptime(to_date, self.ISO_DATE_MASK)
             if from_date == to_date:
                 to_date = from_date + datetime.timedelta(days=1)
         elif interval:
