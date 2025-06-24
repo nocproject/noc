@@ -139,6 +139,7 @@ test = [
   "Coverage[toml]==7.4.4",
   "pytest-dependency==0.5.1",
 ]
+testing = ["dbf==0.99.3"]
 vcenter = ["pyvmomi==8.0.3.0.1"]
 
 [tool.setuptools]
