@@ -6,6 +6,10 @@
     state: latest
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  register: apt_update_result
+  retries: 5
+  delay: 10
+  until: apt_update_result is succeeded
   vars:
     packages:
       - ca-certificates
