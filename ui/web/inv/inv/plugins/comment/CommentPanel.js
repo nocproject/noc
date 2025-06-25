@@ -9,6 +9,7 @@ console.debug("Defining NOC.inv.inv.plugins.comment.CommentPanel");
 Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
   extend: "Ext.panel.Panel",
   requires: [
+    "NOC.core.MarkdownEditor",
   ],
   title: __("Comment"),
   closable: false,
@@ -21,18 +22,10 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
 
     me.displayField = Ext.create("Ext.container.Container", {
       autoScroll: true,
+      padding: 4,
     });
 
-    me.editField = Ext.create("Ext.form.field.HtmlEditor", {
-      hidden: true,
-      defaultLinkValue: "https://",
-      createLink: function(){
-        var url = prompt(this.createLinkText, this.defaultLinkValue);
-        if(url && url !== this.defaultLinkValue){
-          this.relayCmd('insertHTML', "<a href='" + url + "' target='_blank'>" + url + "</a>");
-        }
-      },
-    });
+    me.editField = Ext.create("NOC.core.MarkdownEditor");
 
     me.editButton = Ext.create("Ext.button.Button", {
       text: __("Edit"),
@@ -71,8 +64,8 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
   preview: function(data){
     var me = this;
     me.currentId = data.id;
-    me.displayField.update(data.comment);
-    me.editField.setValue(data.comment);
+    me.displayField.update(window.micromark.renderUnsafe(data.comment));
+    me.editField.setValue(data.comment, false);
   },
   //
   onEdit: function(){
@@ -84,24 +77,27 @@ Ext.define("NOC.inv.inv.plugins.comment.CommentPanel", {
   },
   //
   onSave: function(){
-    var me = this,
-      value = me.editField.getValue();
+    var value = this.editField.getValue();
+    this.mask(__("Saving..."));
     Ext.Ajax.request({
-      url: "/inv/inv/" + me.currentId + "/plugin/comment/",
+      url: "/inv/inv/" + this.currentId + "/plugin/comment/",
       method: "POST",
       jsonData: {
         comment: value,
       },
-      scope: me,
+      scope: this,
       success: function(){
-        me.editButton.show();
-        me.saveButton.hide();
-        me.editField.hide();
-        me.displayField.update(value);
-        me.displayField.show();
+        this.editButton.show();
+        this.saveButton.hide();
+        this.editField.hide();
+        this.displayField.update(window.micromark.renderUnsafe(value));
+        this.displayField.show();
       },
       failure: function(){
         NOC.error(__("Failed to save data"));
+      },
+      callback: function(){
+        this.unmask();
       },
     });
   },
