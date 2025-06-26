@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
+from typing import Tuple, Dict, Iterable, Optional, Any, Set, List, FrozenSet
 
 # Third-party modules
 from django.db.models import (
@@ -23,6 +23,7 @@ from django.db.models import (
     CASCADE,
 )
 from django.contrib.postgres.fields import ArrayField
+from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, RootModel, model_validator
 import cachetools
 
@@ -245,7 +246,10 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     def get_groups_by_user(cls, user: User) -> List["NotificationGroup"]:
-        return list(NotificationGroup.objects.filter())
+        q = d_Q(subscription_settings__contains=[{"user": user.id}])
+        for g in user.groups.filter():
+            q |= d_Q(subscription_settings__contains=[{"group": g.id}])
+        return list(NotificationGroup.objects.filter(q))
 
     @classmethod
     def get_user_settings(
@@ -299,7 +303,7 @@ class NotificationGroup(NOCModel):
 
     @property
     def is_active(self) -> bool:
-        """For cfgMX datastream add"""
+        """For cfgMX DataStream add"""
         return self.message_register_policy != "d"
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -371,6 +375,54 @@ class NotificationGroup(NOCModel):
                 if c not in contacts:
                     contacts.append(c)
         return contacts
+
+    def get_active_contacts(
+        self,
+        object: Optional[str] = None,
+        ts: Optional[datetime.datetime] = None,
+    ) -> List[NotificationContact]:
+        now = ts or datetime.datetime.now()
+        contacts = []
+        for ngo in self.static_members:
+            for c in ngo["contact"].split(","):
+                c = NotificationContact(
+                    contact=c,
+                    method=ngo["notification_method"],
+                    time_pattern=ngo.get("time_pattern") or None,
+                )
+                if c not in contacts:
+                    contacts.append(c)
+        watchers = []
+        if not self.subscription_settings:
+            return contacts
+        # UserSubscriptionGroups
+        for us in NotificationGroupUserSettings.objects.filter(
+            notification_group=self,
+            suppress=False,
+        ):
+            if us.policy == "A":
+                contacts += us.contacts
+            elif us.policy == "W":
+                watchers.append(get_subscriber_id(us.user))
+        if not object or not watchers:
+            return contacts
+        model_id, iid = object.split(":")
+        for s in NotificationGroupSubscription.objects.filter(
+            model_id=model_id, watchers__overlap=watchers, instance_id=iid
+        ).exclude(suppresses__overlap=watchers):
+            contacts += s.contacts
+        return contacts
+
+    @classmethod
+    def get_user_subscriptions(cls, user: User, model_id: str) -> FrozenSet[str]:
+        """Getting Subscription ids for model_id"""
+        return frozenset(
+            NotificationGroupSubscription.objects.filter(
+                model_id=model_id, watchers__overlap=[get_subscriber_id(user)]
+            )
+            .exclude(suppresses__overlap=[get_subscriber_id(user)])
+            .values_list("instance_id", flat=True)
+        )
 
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
