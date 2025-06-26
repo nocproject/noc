@@ -18,11 +18,11 @@
   become: true
   shell: |
     while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 || \
-          sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || \
-          sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || \
-          sudo fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
-      echo "APT is locked; waiting..."
-      sleep 5
+    sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1 || \
+    sudo fuser /var/lib/apt/lists/lock >/dev/null 2>&1 || \
+    sudo fuser /var/cache/apt/archives/lock >/dev/null 2>&1; do
+    echo "APT is locked; waiting..."
+    sleep 5
     done
   changed_when: false
   tags:
