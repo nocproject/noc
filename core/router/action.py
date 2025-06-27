@@ -6,6 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
+import logging
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
 
@@ -22,9 +24,12 @@ from noc.core.mx import (
     MX_NOTIFICATION_DELAY,
     MX_NOTIFICATION_GROUP_ID,
     MX_WATCH_FOR_ID,
+    MX_TO,
     MessageMeta,
 )
 from noc.config import config
+
+logger = logging.getLogger(__name__)
 
 
 DROP = ""
@@ -137,12 +142,16 @@ class NotificationAction(Action):
     def register_escalation(self):
         """Register Notification escalation"""
 
-    def render_template(self, message_type: bytes, msg: Message) -> Optional[Dict[str, str]]:
+    def render_template(
+        self, message_type: bytes, msg: Message, language: Optional[str] = None
+    ) -> Optional[Dict[str, str]]:
         """
         Render Body from template
-        :param message_type:
-        :param msg:
-        :return:
+        Args:
+            message_type: Message Type code
+            msg: Message
+            language: Language Code
+            tag: Subject Tag
         """
         from noc.main.models.template import Template
 
@@ -158,6 +167,35 @@ class NotificationAction(Action):
         return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
 
     def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        """"""
+        # if MX_NOTIFICATION_METHOD in msg.headers:
+        #     yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
+        ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
+        if not ng:
+            logger.error("Unknown Notification Group: %s", msg.headers[MX_NOTIFICATION_GROUP_ID])
+            return
+        try:
+            body = self.render_template(message_type, msg)
+        except TypeError as e:
+            logger.error("Can't Render Template: %s", e)
+            return
+        obj = None
+        if MX_WATCH_FOR_ID in msg.headers:
+            obj = msg.headers[MX_WATCH_FOR_ID].decode()[2:]
+        ts = datetime.datetime.now()
+        for c in ng.get_active_contacts(obj, ts=ts):
+            if c.title_tag:
+                body = {
+                    "subject": f'{c.title_tag} {body["subject"]}',
+                    "body": body["body"],
+                }
+            yield NOTIFICATION_METHODS[c.method].decode(), {
+                MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)
+            }, body
+
+    def iter_action_old(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         #

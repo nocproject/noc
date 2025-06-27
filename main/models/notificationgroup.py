@@ -395,22 +395,49 @@ class NotificationGroup(NOCModel):
         watchers = []
         if not self.subscription_settings:
             return contacts
+        tags = {}
         # UserSubscriptionGroups
-        for us in NotificationGroupUserSettings.objects.filter(
+        for ngu in NotificationGroupUserSettings.objects.filter(
             notification_group=self,
             suppress=False,
         ):
-            if us.policy == "A":
-                contacts += us.contacts
-            elif us.policy == "W":
-                watchers.append(get_subscriber_id(us.user))
+            if ngu.title_tag and ngu.user:
+                tags[ngu.user.id] = ngu.title_tag
+            if ngu.policy == "D":
+                continue
+            elif ngu.expired_at and ngu.expired_at > ts:
+                continue
+            elif ngu.policy == "W":
+                watchers.append(get_subscriber_id(ngu.user))
+                continue
+            for c in ngu.contacts:
+                if c.time_pattern and not c.time_pattern.match(now):
+                    continue
+                if c not in contacts:
+                    contacts.append(c)
         if not object or not watchers:
             return contacts
         model_id, iid = object.split(":")
         for s in NotificationGroupSubscription.objects.filter(
             model_id=model_id, watchers__overlap=watchers, instance_id=iid
         ).exclude(suppresses__overlap=watchers):
-            contacts += s.contacts
+            for w in s.get_watchers(exclude_suppressed=True):
+                for c in w.contacts:
+                    if c.time_pattern and not c.time_pattern.match(now):
+                        continue
+                    if c not in contacts:
+                        if w.id in tags:
+                            contacts += [
+                                NotificationContact(
+                                    contact=c.contact,
+                                    method=c.method,
+                                    language=c.language,
+                                    time_pattern=c.time_pattern,
+                                    title_tag=tags[w.id],
+                                )
+                            ]
+                        else:
+                            contacts.append(c)
         return contacts
 
     @classmethod
@@ -731,21 +758,11 @@ class NotificationGroup(NOCModel):
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
         """
-        now = ts or datetime.datetime.now()
-        for c in self.members:
-            # headers!
+        obj = None
+        if MessageMeta.WATCH_FOR in meta:
+            obj = meta[MessageMeta.WATCH_FOR].decode()
+        for c in self.get_active_contacts(obj, ts=ts):
             yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
-        if MessageMeta.WATCH_FOR not in meta:
-            return
-        _, model_id, instance_id = meta[MessageMeta.WATCH_FOR].split(":")
-        for ngs in self.notificationgroupsubscription_set.filter(
-            model_id=model_id,
-            instance_id=instance_id,
-        ):
-            for c in ngs.contacts:
-                if c.time_pattern and not c.time_pattern.match(now):
-                    continue
-                yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(
@@ -831,7 +848,18 @@ class NotificationGroupUserSettings(NOCModel):
         for c in self.user.contacts:
             if self.method and c.method != self.method:
                 continue
-            contacts += [c]
+            if self.title_tag:
+                contacts += [
+                    NotificationContact(
+                        contact=c.contact,
+                        method=c.method,
+                        language=c.language,
+                        time_pattern=c.time_pattern,
+                        title_tag=self.title_tag,
+                    )
+                ]
+            else:
+                contacts += [c]
         return contacts
 
 
