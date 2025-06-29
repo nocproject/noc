@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Optional, Any, Iterable, Tuple, List
+from typing import Dict, Optional, Any, Iterable, Tuple
 from collections import namedtuple
 
 # NOC modules
