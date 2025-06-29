@@ -42,6 +42,16 @@ class ValueType(enum.Enum):
     IFACE_NAME = "interface_name"
     SNMP_OID = "oid"
 
+    def get_default(self, value):
+        match self.value:
+            case "str":
+                return ""
+            case "int":
+                return 0
+            case "float":
+                return 0.0
+        return None
+
     @staticmethod
     def decode_str(value):
         return value
@@ -105,6 +115,11 @@ class ValueType(enum.Enum):
     def decode_interface_name(value):
         return value
 
-    def clean_value(self, value):
+    def clean_value(self, value, errors: str = "strict"):
         decoder = getattr(self, f"decode_{self.value}")
-        return decoder(value)
+        try:
+            return decoder(value)
+        except ValueError as e:
+            if errors != "strict":
+                return self.get_default(value)
+            raise e
