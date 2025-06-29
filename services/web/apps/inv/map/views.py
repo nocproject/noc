@@ -665,7 +665,7 @@ class MapApplication(ExtApplication):
             object = ManagedObject.get_by_id(object_id)
             sr = object.scripts.get_spanning_tree()
             for instance in sr["instances"]:
-                ro = DiscoveryID.find_object(instance["root_id"])
+                ro = DiscoveryID.find_object_by_mac(instance["root_id"])
                 if ro:
                     roots.add(ro)
                 for i in instance["interfaces"]:
