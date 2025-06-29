@@ -22,7 +22,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.mx import MessageType
-from noc.settings import LANGUAGES, LANGUAGE_CODE
+from noc.settings import LANGUAGES
 
 id_lock = Lock()
 
