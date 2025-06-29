@@ -269,7 +269,9 @@ class NotificationGroup(NOCModel):
     ) -> Optional["SubscriptionSettingItem"]:
         """"""
         for s in self.subscription_settings:
-            if s["user"] == user.id:
+            if "user" in s and s["user"] == user.id:
+                return SubscriptionSettingItem(**s)
+            elif "group" in s and s["group"] in user.groups.values_list("id", flat=True):
                 return SubscriptionSettingItem(**s)
         return None
 
