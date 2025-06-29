@@ -147,6 +147,8 @@ class MessageRoute(Document):
             r["stream"] = self.stream
         if self.type == "metrics" and self.action == "stream":
             r["action"] = "metrics"
+        if self.action == "notification":
+            r["action"] = "message"
         if self.headers:
             r["headers"] = [{"header": m.header, "value": m.value} for m in self.headers]
         if self.notification_group:

@@ -46,6 +46,9 @@ class NotificationContact:
     title_tag: Optional[str] = None
     time_pattern: Optional[TimePatternList] = None
 
+    def __hash__(self):
+        return hash(f"{self.method}_{self.contact}")
+
 
 # MX stream name
 MX_STREAM = "message"
