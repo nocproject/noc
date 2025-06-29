@@ -127,6 +127,44 @@ class NotificationAction(Action):
 
     def __init__(self, cfg: ActionCfg):
         super().__init__(cfg)
+
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        if MX_NOTIFICATION_METHOD not in msg.headers:
+            # Processed send notification
+            logger.error("Notification without Method set. Skipping...")
+            return
+        yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
+
+
+class MetricAction(Action):
+    name = "metrics"
+
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.stream: str = cfg.stream
+        self.mx_metrics_scopes = {}
+        self.load_handlers()
+
+    def load_handlers(self):
+        from noc.main.models.metricstream import MetricStream
+
+        for mss in MetricStream.objects.filter():
+            if mss.is_active and mss.scope.table_name in set(config.message.enable_metric_scopes):
+                self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
+
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        yield self.stream, self.headers, msg.value
+
+
+class MessageAction(Action):
+    name = "message"
+
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
         self.ng: Optional[str] = cfg.notification_group
         self.rt: Optional[int] = cfg.render_template
 
@@ -137,7 +175,7 @@ class NotificationAction(Action):
             return NotificationGroup.get_by_id(int(ng.decode()))
         elif not self.ng:
             return
-        return NotificationGroup.get_by_id(self.ng)
+        return NotificationGroup.get_by_id(int(self.ng))
 
     def register_escalation(self):
         """Register Notification escalation"""
@@ -170,8 +208,6 @@ class NotificationAction(Action):
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         """"""
-        # if MX_NOTIFICATION_METHOD in msg.headers:
-        #     yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
         ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
         if not ng:
             logger.error("Unknown Notification Group: %s", msg.headers[MX_NOTIFICATION_GROUP_ID])
@@ -194,56 +230,3 @@ class NotificationAction(Action):
             yield NOTIFICATION_METHODS[c.method].decode(), {
                 MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)
             }, body
-
-    def iter_action_old(
-        self, msg: Message, message_type: bytes
-    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
-        #
-        try:
-            body = self.render_template(message_type, msg)
-        except TypeError as e:
-            print("Cant Render Template: %s" % e)
-            return
-        if not body:
-            # Unknown template
-            # print("Unknown Template")
-            return
-        if MX_NOTIFICATION_DELAY in msg.headers:
-            ...
-        if MX_NOTIFICATION_METHOD in msg.headers:
-            yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
-        ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
-        if not ng:
-            # print(f"Unknown Notification Group: {MX_NOTIFICATION_GROUP_ID}")
-            return
-        for method, headers, render_template in ng.iter_actions(
-            message_type.decode(),
-            (
-                {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()}
-                if MX_WATCH_FOR_ID in msg.headers
-                else {}
-            ),
-        ):
-            yield NOTIFICATION_METHODS[method].decode(), headers, body
-
-
-class MetricAction(Action):
-    name = "metrics"
-
-    def __init__(self, cfg: ActionCfg):
-        super().__init__(cfg)
-        self.stream: str = cfg.stream
-        self.mx_metrics_scopes = {}
-        self.load_handlers()
-
-    def load_handlers(self):
-        from noc.main.models.metricstream import MetricStream
-
-        for mss in MetricStream.objects.filter():
-            if mss.is_active and mss.scope.table_name in set(config.message.enable_metric_scopes):
-                self.mx_metrics_scopes[mss.scope.table_name.encode(DEFAULT_ENCODING)] = mss.to_mx
-
-    def iter_action(
-        self, msg: Message, message_type: bytes
-    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
-        yield self.stream, self.headers, msg.value
