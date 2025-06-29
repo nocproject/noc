@@ -218,7 +218,7 @@ class DiscoveryID(Document):
         """
         metrics["discoveryid_mac_requests"] += 1
         # This method has high miss rate so we cannot use @cachedmethod
-        mi = int(str(MAC))
+        mi = int(MAC(mac))
         r = cache.get(f"discovery-id-{mi}")
         if r is not None:
             metrics["discoveryid_mac_hits"] += 1
