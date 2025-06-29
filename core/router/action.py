@@ -193,14 +193,18 @@ class MessageAction(Action):
 
         if not self.rt:
             mt = MessageType(message_type.decode())
-            template = Template.get_by_message_type(mt)
+            template = Template.get_by_message_type(mt, language=language)
         else:
             template = Template.get_by_id(self.rt)
         if not template:
             # logger.warning("Not template for message type: %s", message_type)
             return None
         ctx = orjson.loads(msg.value)
-        return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
+        try:
+            return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
+        except TypeError as e:
+            logger.error("Can't Render Template: %s", e)
+            return
 
     def iter_action(
         self, msg: Message, message_type: bytes
@@ -210,16 +214,15 @@ class MessageAction(Action):
         if not ng:
             logger.error("Unknown Notification Group: %s", msg.headers[MX_NOTIFICATION_GROUP_ID])
             return
-        try:
-            body = self.render_template(message_type, msg)
-        except TypeError as e:
-            logger.error("Can't Render Template: %s", e)
-            return
         obj = None
         if MX_WATCH_FOR_ID in msg.headers:
             obj = msg.headers[MX_WATCH_FOR_ID].decode()[2:]
         ts = datetime.datetime.now()
+        body = None
         for c in ng.get_active_contacts(obj, ts=ts):
+            body = body or self.render_template(message_type, msg, c.language)
+            if not body:
+                break
             if c.title_tag:
                 body = {
                     "subject": f'{c.title_tag} {body["subject"]}',
