@@ -314,6 +314,19 @@ class Service(Document):
             | m_q(mappings__match={"remote_id": remote_id, "remote_system": remote_system.id})
         ).first()
 
+    @classmethod
+    def get_by_managed_object_id(cls, mo_id: int) -> List["Service"]:
+        """"""
+        return list(
+            ServiceInstance.objects.filter(
+                type__in=[
+                    InstanceType.SERVICE_ENDPOINT,
+                    InstanceType.ASSET,
+                ],
+                managed_object=mo_id,
+            ).scalar("service")
+        )
+
     def __str__(self):
         if self.label:
             return self.label
