@@ -6,6 +6,8 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import datetime
+import logging
 from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
 from dataclasses import dataclass
 
@@ -19,12 +21,13 @@ from noc.core.mx import (
     MessageType,
     NOTIFICATION_METHODS,
     MX_NOTIFICATION_METHOD,
-    MX_NOTIFICATION_DELAY,
     MX_NOTIFICATION_GROUP_ID,
     MX_WATCH_FOR_ID,
-    MessageMeta,
+    MX_TO,
 )
 from noc.config import config
+
+logger = logging.getLogger(__name__)
 
 
 DROP = ""
@@ -122,71 +125,15 @@ class NotificationAction(Action):
 
     def __init__(self, cfg: ActionCfg):
         super().__init__(cfg)
-        self.ng: Optional[str] = cfg.notification_group
-        self.rt: Optional[int] = cfg.render_template
-
-    def get_notification_group(self, ng: Optional[bytes]):
-        from noc.main.models.notificationgroup import NotificationGroup
-
-        if ng:
-            return NotificationGroup.get_by_id(int(ng.decode()))
-        elif not self.ng:
-            return
-        return NotificationGroup.get_by_id(self.ng)
-
-    def register_escalation(self):
-        """Register Notification escalation"""
-
-    def render_template(self, message_type: bytes, msg: Message) -> Optional[Dict[str, str]]:
-        """
-        Render Body from template
-        :param message_type:
-        :param msg:
-        :return:
-        """
-        from noc.main.models.template import Template
-
-        if not self.rt:
-            mt = MessageType(message_type.decode())
-            template = Template.get_by_message_type(mt)
-        else:
-            template = Template.get_by_id(self.rt)
-        if not template:
-            # logger.warning("Not template for message type: %s", message_type)
-            return None
-        ctx = orjson.loads(msg.value)
-        return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
 
     def iter_action(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
-        #
-        try:
-            body = self.render_template(message_type, msg)
-        except TypeError as e:
-            print("Cant Render Template: %s" % e)
+        if MX_NOTIFICATION_METHOD not in msg.headers:
+            # Processed send notification
+            logger.error("Notification without Method set. Skipping...")
             return
-        if not body:
-            # Unknown template
-            # print("Unknown Template")
-            return
-        if MX_NOTIFICATION_DELAY in msg.headers:
-            ...
-        if MX_NOTIFICATION_METHOD in msg.headers:
-            yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
-        ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
-        if not ng:
-            # print(f"Unknown Notification Group: {MX_NOTIFICATION_GROUP_ID}")
-            return
-        for method, headers, render_template in ng.iter_actions(
-            message_type.decode(),
-            (
-                {MessageMeta.WATCH_FOR: msg.headers[MX_WATCH_FOR_ID].decode()}
-                if MX_WATCH_FOR_ID in msg.headers
-                else {}
-            ),
-        ):
-            yield NOTIFICATION_METHODS[method].decode(), headers, body
+        yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
 
 
 class MetricAction(Action):
@@ -209,3 +156,78 @@ class MetricAction(Action):
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         yield self.stream, self.headers, msg.value
+
+
+class MessageAction(Action):
+    name = "message"
+
+    def __init__(self, cfg: ActionCfg):
+        super().__init__(cfg)
+        self.ng: Optional[str] = cfg.notification_group
+        self.rt: Optional[int] = cfg.render_template
+
+    def get_notification_group(self, ng: Optional[bytes]):
+        from noc.main.models.notificationgroup import NotificationGroup
+
+        if ng:
+            return NotificationGroup.get_by_id(int(ng.decode()))
+        elif not self.ng:
+            return
+        return NotificationGroup.get_by_id(int(self.ng))
+
+    def register_escalation(self):
+        """Register Notification escalation"""
+
+    def render_template(
+        self, message_type: bytes, msg: Message, language: Optional[str] = None
+    ) -> Optional[Dict[str, str]]:
+        """
+        Render Body from template
+        Args:
+            message_type: Message Type code
+            msg: Message
+            language: Language Code
+            tag: Subject Tag
+        """
+        from noc.main.models.template import Template
+
+        if not self.rt:
+            mt = MessageType(message_type.decode())
+            template = Template.get_by_message_type(mt, language=language)
+        else:
+            template = Template.get_by_id(self.rt)
+        if not template:
+            # logger.warning("Not template for message type: %s", message_type)
+            return None
+        ctx = orjson.loads(msg.value)
+        try:
+            return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
+        except TypeError as e:
+            logger.error("Can't Render Template: %s", e)
+            return
+
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        """"""
+        ng = self.get_notification_group(msg.headers.get(MX_NOTIFICATION_GROUP_ID))
+        if not ng:
+            logger.error("Unknown Notification Group: %s", msg.headers[MX_NOTIFICATION_GROUP_ID])
+            return
+        obj = None
+        if MX_WATCH_FOR_ID in msg.headers:
+            obj = msg.headers[MX_WATCH_FOR_ID].decode()[2:]
+        ts = datetime.datetime.now()
+        body = None
+        for c in ng.get_active_contacts(obj, ts=ts):
+            body = body or self.render_template(message_type, msg, c.language)
+            if not body:
+                break
+            if c.title_tag:
+                body = {
+                    "subject": f'{c.title_tag} {body["subject"]}',
+                    "body": body["body"],
+                }
+            yield NOTIFICATION_METHODS[c.method].decode(), {
+                MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)
+            }, body
