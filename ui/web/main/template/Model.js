@@ -47,6 +47,10 @@ Ext.define("NOC.main.template.Model", {
             type: "string"
         },
         {
+            name: "language",
+            type: "string"
+        },
+        {
             name: "context_data",
             type: "string"
         }

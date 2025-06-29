@@ -82,6 +82,23 @@ class ServiceApplication(ExtDocApplication):
             x["instance_count"] = instances.get(x["id"]) or 0
         return data
 
+    def bulk_field_allow_subscribe(self, data):
+        svc_ids = [x["id"] for x in data]
+        if not svc_ids:
+            return data
+        # Check allowed subscription
+        us = NotificationGroup.get_groups_by_user(get_user())
+        watchers = NotificationGroup.get_user_subscriptions(get_user(), "sa.Service")
+        # Apply service instance, and message Type
+        for x in data:
+            if us and x["id"] in watchers:
+                x["allow_subscribe"] = "me"
+            elif us:
+                x["allow_subscribe"] = "group"
+            else:
+                x["allow_subscribe"] = "no"
+        return data
+
     def get_Q(self, request, query):
         if is_objectid(query):
             q = Q(id=query)
@@ -116,13 +133,6 @@ class ServiceApplication(ExtDocApplication):
         if isinstance(o, Service):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
-            if NotificationGroup.get_object_subscriptions(o, user=get_user()):
-                ss = "me"
-            elif NotificationGroup.get_object_subscriptions(o):
-                ss = "group"
-            else:
-                ss = "no"
-            data["allow_subscribe"] = ss
         return data
 
     @staticmethod

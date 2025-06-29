@@ -22,6 +22,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.mx import MessageType
+from noc.settings import LANGUAGES
 
 id_lock = Lock()
 
@@ -76,6 +77,9 @@ class Template(NOCModel):
     message_type = models.TextField(
         "MessageType", choices=[(m.value, m.name) for m in MessageType], null=True, blank=True
     )
+    language = models.CharField(
+        max_length=16, null=True, blank=True, default="en", choices=LANGUAGES
+    )
     context_data: str = models.TextField("ContextTestData", blank=True, null=True)
     # ? RU
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -97,6 +101,8 @@ class Template(NOCModel):
         }
         if self.message_type:
             r["message_type"] = self.message_type
+        if self.language:
+            r["language"] = self.language
         return r
 
     def to_json(self) -> str:
@@ -127,8 +133,16 @@ class Template(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_message_type_cache"), lock=lambda _: id_lock)
-    def get_by_message_type(cls, m_type: MessageType) -> Optional["Template"]:
-        return Template.objects.filter(message_type=m_type.value).first()
+    def get_by_message_type(
+        cls, m_type: MessageType, language: Optional[str] = None
+    ) -> Optional["Template"]:
+        default = None
+        for tmpl in Template.objects.filter(message_type=m_type.value):
+            if language and tmpl.language == language:
+                return tmpl
+            elif not tmpl.language or tmpl.language == "en":
+                default = tmpl
+        return default
 
     def render_subject(self, LANG=None, **kwargs):
         return jinja2.Template(self.subject).render(**kwargs)
