@@ -1133,7 +1133,7 @@ class ManagedObject(NOCModel):
 
         if mac:
             mac = MACAddressParameter().clean(mac)
-            return DiscoveryID.find_object(mac)
+            return DiscoveryID.find_object_by_mac(mac)
         if ipv4:
             q = {"ipv4_addresses": ipv4}
             if vrf is not None and vrf != "default":
