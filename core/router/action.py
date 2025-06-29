@@ -21,11 +21,9 @@ from noc.core.mx import (
     MessageType,
     NOTIFICATION_METHODS,
     MX_NOTIFICATION_METHOD,
-    MX_NOTIFICATION_DELAY,
     MX_NOTIFICATION_GROUP_ID,
     MX_WATCH_FOR_ID,
     MX_TO,
-    MessageMeta,
 )
 from noc.config import config
 
