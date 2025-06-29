@@ -76,6 +76,28 @@ class SourceLookup(object):
         if mo:
             return ManagedObject.get_by_id(int(mo))
 
+    def resolve_target(
+        self, target: Target, remote_system: Optional[str] = None
+    ) -> Optional[SourceConfig]:
+        """
+        Resolve Managed Object by target
+
+        Args:
+            target: Event Target
+            remote_system: Remote System name
+        """
+        sid = None
+        if target.id and not target.is_agent and target.id in self.source_configs:
+            return self.source_configs[target.id]
+        if target.remote_id and f"rs:{remote_system}:{target.remote_id}" in self.source_map:
+            sid = self.source_map[f"rs:{remote_system}:{target.remote_id}"]
+        if not sid and f"name:{target.name}" in self.source_map:
+            sid = self.source_map[f"name:{target.name}"]
+        if not sid and f"addr:{target.pool}:{target.address}" in self.source_map:
+            sid = self.source_map[f"name:{target.name}"]
+        if sid in self.source_configs:
+            return self.source_configs[sid]
+
     def delete_source(self, sid: str) -> bool:
         """Remove Source"""
         if sid not in self.source_configs:

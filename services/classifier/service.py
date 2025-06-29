@@ -577,9 +577,8 @@ class ClassifierService(FastAPIService):
             # Append resolved vars to data
         return raw_vars
 
-    @classmethod
     def resolve_object(
-        cls, target: Target, remote_system: Optional[str] = None
+        self, target: Target, remote_system: Optional[str] = None
     ) -> Optional[ManagedObject]:
         """
         Resolve Managed Object by target
@@ -588,14 +587,11 @@ class ClassifierService(FastAPIService):
             target: Event Target
             remote_system: Remote System name
         """
+        if config.datastream.enable_cfgtarget:
+            return self.source_lookup.resolve_object(target, remote_system)
         mo = None
         if target.id and not target.is_agent:
             mo = ManagedObject.get_by_id(int(target.id))
-        if not mo and target.remote_id and remote_system:
-            remote_system = RemoteSystem.get_by_name(remote_system)
-            mo = ManagedObject.get_by_mapping(remote_system, target.remote_id)
-        if not mo and target.pool:
-            mo = ManagedObject.objects.filter(pool=target.pool, address=target.address).first()
         return mo
 
     async def on_event(self, msg: Message):
@@ -836,9 +832,14 @@ class ClassifierService(FastAPIService):
             "managed_object": None,
             "pool": None,
             "ip": None,
+            #
+            "services": [],
         }
         if event.target.address:
             data["ip"] = struct.unpack("!I", socket.inet_aton(event.target.address))[0]
+        source = self.source_lookup.resolve_target(event.target, remote_system=event.remote_system)
+        if source and source.services:
+            data["services"] = source.services
         if mo:
             data.update(
                 {
