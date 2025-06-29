@@ -217,4 +217,31 @@ Ext.define("NOC.core.CodeViewer", {
     me.initEditor();
     me.setValue(text);
   },
+  
+  scrollDown: function(){
+    var model, lineCount, lastLine, lastLineContent, lastColumn, position;
+    
+    if(!this.editor){
+      return;
+    }
+    
+    model = this.editor.getModel();
+    if(!model){
+      return;
+    }
+    
+    lineCount = model.getLineCount();
+    lastLine = lineCount > 0 ? lineCount : 1;
+    lastLineContent = model.getLineContent(lastLine);
+    lastColumn = lastLineContent.length + 1;
+    
+    position = {
+      lineNumber: lastLine,
+      column: lastColumn,
+    };
+    
+    this.editor.setPosition(position);
+    
+    this.editor.revealPosition(position, window.monaco.editor.ScrollType.Immediate);
+  },
 });
