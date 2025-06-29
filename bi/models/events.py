@@ -31,6 +31,7 @@ from noc.core.bi.dictionaries.eventclass import EventClass
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.bi.dictionaries.networksegment import NetworkSegment
 from noc.core.bi.dictionaries.container import Container
+from noc.core.bi.dictionaries.service import Service
 from noc.core.translation import ugettext as _
 from noc.config import config
 from noc.sa.models.useraccess import UserAccess
@@ -78,6 +79,7 @@ class Events(Model):
     ip = IPv4Field(description=_("IP Address"))
     # Resolver target
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
+    services = ArrayField(ReferenceField(Service), description=_("Services List"))
     # Agent
     profile = ReferenceField(Profile, description=_("Profile"))
     vendor = ReferenceField(Vendor, description=_("Vendor Name"))

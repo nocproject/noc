@@ -52,9 +52,11 @@ from noc.services.classifier.patternset import PatternSet
 from noc.services.classifier.evfilter.dedup import DedupFilter
 from noc.services.classifier.evfilter.suppress import SuppressFilter
 from noc.services.classifier.abdetector import AbductDetector
+from noc.services.classifier.sourcelookup import SourceLookup
 from noc.services.classifier.datastream import (
     EventRuleDataStreamClient,
     EventConfigDataStreamClient,
+    EventSourceStreamClient,
 )
 from noc.services.classifier.actionset import ActionSet, EventAction
 from noc.services.classifier.eventconfig import EventConfig
@@ -127,11 +129,14 @@ class ClassifierService(FastAPIService):
         self.dedup_filter: DedupFilter = DedupFilter()
         self.suppress_filter: SuppressFilter = SuppressFilter()
         self.abduct_detector: AbductDetector = AbductDetector()
+        #
+        self.source_lookup: SourceLookup = SourceLookup()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
         # Sync primitives
         self.event_rules_ready_event = asyncio.Event()
         self.event_config_ready = asyncio.Event()
+        self.event_source_ready = asyncio.Event()
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
@@ -139,6 +144,7 @@ class ClassifierService(FastAPIService):
         self.slot_number = 0
         self.total_slots = 0
         self.add_configs = 0
+        self.add_sources = 0
         self.pool_partitions: Dict[str, int] = {}
         #
         self.cable_abduct_ecls: Optional[EventClass] = None
@@ -232,6 +238,25 @@ class ClassifierService(FastAPIService):
                 )
             except NOCError as e:
                 self.logger.info("Failed to get Event Configs: %s", e)
+                await asyncio.sleep(1)
+
+    async def get_object_mappings(self):
+        """
+        Coroutine to request object mappings
+        """
+        self.logger.info("Starting to track object mappings")
+        client = EventSourceStreamClient("cfgtarget", service=self)
+        # Track stream changes
+        while True:
+            try:
+                await client.query(
+                    limit=config.classifier.ds_limit,
+                    filters=[f"pool({config.pool})"] if config.pool != "default" else None,
+                    block=True,
+                    filter_policy="delete",
+                )
+            except NOCError as e:
+                self.logger.info("Failed to get object mappings: %s", e)
                 await asyncio.sleep(1)
 
     def load_link_action(self):
@@ -889,6 +914,26 @@ class ClassifierService(FastAPIService):
         """
         self.event_config_ready.set()
         self.logger.info("%d Event Configs has been loaded", self.add_configs)
+
+    async def update_source(self, data):
+        changed = self.source_lookup.update_source(data)
+        # Update metrics
+        if changed:
+            metrics["sources_changed"] += 1
+            self.add_sources += 1
+
+    async def delete_source(self, id):
+        changed = self.source_lookup.delete_source(id)
+        if changed:
+            metrics["sources_deleted"] += 1
+
+    async def on_event_source_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.event_source_ready.set()
+        self.logger.info("%d Event Sources has been loaded", self.add_sources)
+        # calculate size
 
 
 if __name__ == "__main__":
