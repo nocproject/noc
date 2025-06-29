@@ -10,7 +10,7 @@ import datetime
 import logging
 import operator
 from threading import Lock
-from typing import Tuple, Dict, Iterable, Optional, Any, Set, List
+from typing import Tuple, Dict, Iterable, Optional, Any, Set, List, FrozenSet
 
 # Third-party modules
 from django.db.models import (
@@ -23,6 +23,7 @@ from django.db.models import (
     CASCADE,
 )
 from django.contrib.postgres.fields import ArrayField
+from django.db.models.query_utils import Q as d_Q
 from pydantic import BaseModel, RootModel, model_validator
 import cachetools
 
@@ -245,7 +246,10 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     def get_groups_by_user(cls, user: User) -> List["NotificationGroup"]:
-        return list(NotificationGroup.objects.filter())
+        q = d_Q(subscription_settings__contains=[{"user": user.id}])
+        for g in user.groups.filter():
+            q |= d_Q(subscription_settings__contains=[{"group": g.id}])
+        return list(NotificationGroup.objects.filter(q))
 
     @classmethod
     def get_user_settings(
@@ -265,7 +269,9 @@ class NotificationGroup(NOCModel):
     ) -> Optional["SubscriptionSettingItem"]:
         """"""
         for s in self.subscription_settings:
-            if s["user"] == user.id:
+            if "user" in s and s["user"] == user.id:
+                return SubscriptionSettingItem(**s)
+            elif "group" in s and s["group"] in user.groups.values_list("id", flat=True):
                 return SubscriptionSettingItem(**s)
         return None
 
@@ -299,7 +305,7 @@ class NotificationGroup(NOCModel):
 
     @property
     def is_active(self) -> bool:
-        """For cfgMX datastream add"""
+        """For cfgMX DataStream add"""
         return self.message_register_policy != "d"
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -319,7 +325,7 @@ class NotificationGroup(NOCModel):
             "name": self.name,
             "type": tt,
             "order": 998,
-            "action": "notification",
+            "action": "message",
             "notification_group": str(self.id),
             # r["render_template"] = str(self.render_template.id)
             "telemetry_sample": 0,
@@ -347,13 +353,14 @@ class NotificationGroup(NOCModel):
         # Collect other notifications
         for ngo in self.static_members:
             for c in ngo["contact"].split(","):
-                contacts.append(
-                    NotificationContact(
-                        contact=c,
-                        method=ngo["notification_method"],
-                        time_pattern=ngo.get("time_pattern") or None,
+                if c not in contacts:
+                    contacts.append(
+                        NotificationContact(
+                            contact=c,
+                            method=ngo["notification_method"],
+                            time_pattern=ngo.get("time_pattern") or None,
+                        )
                     )
-                )
         if not self.subscription_settings:
             return contacts
         # Collect user notifications
@@ -364,11 +371,82 @@ class NotificationGroup(NOCModel):
                 continue
             if ngu.time_pattern and not ngu.time_pattern.match(ts):
                 continue
-            for c in ngu.contacts:
-                if c.time_pattern and not c.time_pattern.match(ts):
-                    continue
-                contacts.append(c)
+            contacts += self.get_active_user_contacts(ngu.user, ts)
         return contacts
+
+    def get_active_user_contacts(
+        self, user: User, ts: Optional[datetime.datetime] = None
+    ) -> List["NotificationContact"]:
+        """Getting Active user Contacts for send notification"""
+        r = []
+        us = self.get_user_settings(self, user)
+        if us.time_pattern and not us.time_pattern.match(ts):
+            return r
+        for c in user.contacts:
+            if c.time_pattern and c.time_pattern.match(ts):
+                r.append(
+                    NotificationContact(
+                        contact=c.contact,
+                        method=c.method,
+                        time_pattern=c.time_pattern,
+                        title_tag=us.title_tag,
+                    )
+                )
+                break
+        return r
+
+    def get_active_contacts(
+        self,
+        obj: Optional[str] = None,
+        ts: Optional[datetime.datetime] = None,
+    ) -> List[NotificationContact]:
+        now = ts or datetime.datetime.now()
+        contacts = []
+        for ngo in self.static_members:
+            for c in ngo["contact"].split(","):
+                contacts.append(
+                    NotificationContact(
+                        contact=c,
+                        method=ngo["notification_method"],
+                        time_pattern=ngo.get("time_pattern") or None,
+                    ),
+                )
+        watchers = []
+        if not self.subscription_settings:
+            return contacts
+        # UserSubscriptionGroups
+        for ngu in NotificationGroupUserSettings.objects.filter(
+            notification_group=self,
+            suppress=False,
+        ):
+            if ngu.policy == "D":
+                continue
+            elif ngu.expired_at and ngu.expired_at > ts:
+                continue
+            elif ngu.policy == "W":
+                watchers.append(get_subscriber_id(ngu.user))
+                continue
+            contacts += self.get_active_user_contacts(ngu.user, now)
+        if not obj or not watchers:
+            return contacts
+        model_id, iid = obj.split(":")
+        for s in NotificationGroupSubscription.objects.filter(
+            model_id=model_id, instance_id=iid, watchers__overlap=watchers
+        ).exclude(suppresses__overlap=watchers):
+            for w in s.get_watchers(exclude_suppressed=True):
+                contacts += self.get_active_user_contacts(w, now)
+        return contacts
+
+    @classmethod
+    def get_user_subscriptions(cls, user: User, model_id: str) -> FrozenSet[str]:
+        """Getting Subscription ids for model_id"""
+        return frozenset(
+            NotificationGroupSubscription.objects.filter(
+                model_id=model_id, watchers__overlap=[get_subscriber_id(user)]
+            )
+            .exclude(suppresses__overlap=[get_subscriber_id(user)])
+            .values_list("instance_id", flat=True)
+        )
 
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
@@ -677,21 +755,11 @@ class NotificationGroup(NOCModel):
         """
         mx-compatible actions. Yields tuples of `stream`, `headers`
         """
-        now = ts or datetime.datetime.now()
-        for c in self.members:
-            # headers!
+        obj = None
+        if MessageMeta.WATCH_FOR in meta:
+            obj = meta[MessageMeta.WATCH_FOR].decode()
+        for c in self.get_active_contacts(obj, ts=ts):
             yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
-        if MessageMeta.WATCH_FOR not in meta:
-            return
-        _, model_id, instance_id = meta[MessageMeta.WATCH_FOR].split(":")
-        for ngs in self.notificationgroupsubscription_set.filter(
-            model_id=model_id,
-            instance_id=instance_id,
-        ):
-            for c in ngs.contacts:
-                if c.time_pattern and not c.time_pattern.match(now):
-                    continue
-                yield c.method, {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)}, None
 
     @classmethod
     def render_message(
@@ -762,7 +830,7 @@ class NotificationGroupUserSettings(NOCModel):
         null=False,
         blank=False,
     )
-    title_tag = CharField(max_length=30, blank=True)
+    title_tag: str = CharField(max_length=30, blank=True)
     expired_at: Optional[datetime.datetime] = DateTimeField(
         "Expired Subscription After", auto_now_add=False
     )
@@ -777,7 +845,18 @@ class NotificationGroupUserSettings(NOCModel):
         for c in self.user.contacts:
             if self.method and c.method != self.method:
                 continue
-            contacts += [c]
+            if self.title_tag:
+                contacts += [
+                    NotificationContact(
+                        contact=c.contact,
+                        method=c.method,
+                        language=c.language,
+                        time_pattern=c.time_pattern,
+                        title_tag=self.title_tag,
+                    )
+                ]
+            else:
+                contacts += [c]
         return contacts
 
 

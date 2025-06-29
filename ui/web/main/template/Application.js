@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // main.template application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.template.Application");
@@ -11,6 +11,7 @@ Ext.define("NOC.main.template.Application", {
   requires: [
     "NOC.main.template.Model",
     "NOC.main.ref.messagetype.LookupField",
+    "NOC.main.language.LookupField",
     "NOC.core.JSONPreviewII",
   ],
   model: "NOC.main.template.Model",
@@ -83,6 +84,15 @@ Ext.define("NOC.main.template.Application", {
           fieldLabel: __("Message Type"),
           //labelAlign: "left",
           allowBlank: true,
+        },
+        {
+          name: "language",
+          xtype: "main.language.LookupField",
+          fieldLabel: __("Language"),
+          allowBlank: false,
+          query: {
+            "is_active": true
+          }
         },
         {
           name: "subject",
