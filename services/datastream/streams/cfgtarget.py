@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgtrap datastream
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -20,6 +20,7 @@ from noc.main.models.timepattern import TimePattern
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.profile import Profile
+from noc.sa.models.service import Service
 
 
 class Target(
@@ -371,6 +372,9 @@ class CfgTrapDataStream(DataStream):
         if not addresses:
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
         r["addresses"] = list(addresses.values())
+        svcs = Service.get_by_managed_object_id(mo_id)
+        if svcs:
+            r["services"] = [{"id": str(svc.id), "bi_id": str(svc.bi_id)} for svc in svcs]
         return r
 
     @classmethod
