@@ -318,9 +318,15 @@ class Service(Document):
     @classmethod
     def get_by_managed_object_id(cls, mo_id: int) -> List["Service"]:
         """"""
-        return list(ServiceInstance.objects.filter(type__in=[
-            InstanceType.SERVICE_ENDPOINT, InstanceType.ASSET,
-        ], managed_object=mo_id).scalar("service"))
+        return list(
+            ServiceInstance.objects.filter(
+                type__in=[
+                    InstanceType.SERVICE_ENDPOINT,
+                    InstanceType.ASSET,
+                ],
+                managed_object=mo_id,
+            ).scalar("service")
+        )
 
     def __str__(self):
         if self.label:
