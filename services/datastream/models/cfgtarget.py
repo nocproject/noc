@@ -76,6 +76,11 @@ class RemoteMapping(BaseModel):
     remote_id: str
 
 
+class Service(BaseModel):
+    id: str
+    bi_id: str
+
+
 class CfgTarget(BaseModel):
     id: str  # Record id
     name: str
@@ -90,5 +95,8 @@ class CfgTarget(BaseModel):
     ping: Optional[PingSettings] = None
     syslog: Optional[SyslogSettings] = None
     trap: Optional[TrapSettings] = None
+    # metrics
+    # check
     dependencies: Optional[List[Dependency]] = None
     mappings: Optional[List[RemoteMapping]] = None
+    services: Optional[List[Service]] = None
