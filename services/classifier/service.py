@@ -197,6 +197,9 @@ class ClassifierService(FastAPIService):
             await self.event_rules_ready_event.wait()
         else:
             self.pattern_set.load()
+        if config.datastream.enable_cfgtarget:
+            asyncio.get_running_loop().create_task(self.get_object_mappings())
+            await self.event_source_ready.wait()
         report_callback = PeriodicCallback(self.report, 1000)
         report_callback.start()
         await self.subscribe_stream(

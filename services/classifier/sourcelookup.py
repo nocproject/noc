@@ -20,7 +20,6 @@ class SourceConfig(object):
     name: str
     bi_id: int
     address: str
-    partition: int
     fm_pool: str
     sa_profile: Optional[str] = None
     effective_labels: Tuple[str, ...] = None
@@ -34,14 +33,13 @@ class SourceConfig(object):
             id=str(data["id"]),
             name=data["name"],
             bi_id=int(data["bi_id"]),
-            address=data["address"],
-            partition=data["partition"],
+            address=data["addresses"][0]["address"] if data["addresses"] else None,
             fm_pool=data["fm_pool"],
             sa_profile=data.get("sa_profile"),
             effective_labels=tuple(data.get("effective_labels") or []),
             watchers=tuple(data.get("watchers") or []),
-            services=tuple(int(svc["bi_id"]) for svc in data.get("services") or []),
-            mapping_refs=tuple(data.get("mappings") or []),
+            services=tuple(int(svc["bi_id"]) for svc in data["opaque_data"].get("services") or []),
+            mapping_refs=tuple(data.get("mapping_refs") or []),
         )
 
     def is_diff(self, cfg: "SourceConfig") -> bool:
@@ -73,7 +71,7 @@ class SourceLookup(object):
             mo = self.source_map[f"rs:{remote_system}:{target.remote_id}"]
         if not mo and f"name:{target.name}" in self.source_map:
             mo = self.source_map[f"name:{target.name}"]
-        if not mo and f"rs:{target.pool}:{target.address}" in self.source_map:
+        if not mo and f"addr:{target.pool}:{target.address}" in self.source_map:
             mo = self.source_map[f"name:{target.name}"]
         if mo:
             return ManagedObject.get_by_id(int(mo))
@@ -100,7 +98,11 @@ class SourceLookup(object):
 
     def update_source(self, data) -> bool:
         """"""
-        s = SourceConfig.from_data(data)
+        try:
+            s = SourceConfig.from_data(data)
+        except Exception as e:
+            print(f"{data['id']}Error when processed source: {e}")
+            return False
         if s.id not in self.source_configs:
             self.update_mappings(s.id, s.mapping_refs or [])
         else:

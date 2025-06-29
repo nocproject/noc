@@ -33,6 +33,16 @@ class AdministrativeDomain(BaseModel):
     remote_id: Optional[str] = None
 
 
+class RemoteMapping(BaseModel):
+    remote_system: RemoteSystem
+    remote_id: str
+
+
+class Service(BaseModel):
+    id: str
+    bi_id: str
+
+
 class ManagedObject(BaseModel):
     id: str
     name: str
@@ -40,6 +50,8 @@ class ManagedObject(BaseModel):
     administrative_domain: AdministrativeDomain
     remote_system: Optional[RemoteSystem] = None
     remote_id: Optional[str] = None
+    mappings: Optional[List[RemoteMapping]] = None
+    services: Optional[List[Service]] = None
 
 
 class PingSettings(BaseModel):
@@ -71,16 +83,6 @@ class Dependency(BaseModel):
     settings: PingSettings
 
 
-class RemoteMapping(BaseModel):
-    remote_system: RemoteSystem
-    remote_id: str
-
-
-class Service(BaseModel):
-    id: str
-    bi_id: str
-
-
 class CfgTarget(BaseModel):
     id: str  # Record id
     name: str
@@ -98,5 +100,5 @@ class CfgTarget(BaseModel):
     # metrics
     # check
     dependencies: Optional[List[Dependency]] = None
-    mappings: Optional[List[RemoteMapping]] = None
-    services: Optional[List[Service]] = None
+    mapping_refs: Optional[List[str]] = None
+    watchers: Optional[List[str]] = None
