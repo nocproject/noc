@@ -269,6 +269,8 @@ class ActiveAlarm(Document):
         from noc.fm.models.escalation import Escalation
 
         esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
+        if not esc:
+            return
         for ii in esc.items:
             if ii.escalation_status == "fail" or ii.escalation_status == "temp":
                 return ii.escalation_error
