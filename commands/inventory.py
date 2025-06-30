@@ -95,7 +95,7 @@ class Command(BaseCommand):
     def handle_export(self, objects: list[str], output: Optional[str] = None):
         connect()
         inv_data, result_info = encode(Object.objects.filter(id__in=objects))
-        json_data = inv_data.model_dump_json(by_alias=True, indent=2)
+        json_data = inv_data.model_dump_json(indent=2, by_alias=True, exclude_none=True)
         if output:
             with open(output, "w") as f:
                 f.write(json_data)
