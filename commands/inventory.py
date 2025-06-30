@@ -116,10 +116,7 @@ class Command(BaseCommand):
 
     def handle_import(self, input: str, container_id: Optional[str] = None):
         connect()
-        container = Object.get_by_id(container_id)
-        if not container:
-            self.print(f"Container with ID {container_id} not found")
-            return
+        container = Object.get_by_id(container_id) if container_id else None
         with open(input, "r") as f:
             json_data = f.read()
         inv_data = InvData.model_validate_json(json_data)

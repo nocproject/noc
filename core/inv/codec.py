@@ -230,7 +230,7 @@ def encode(iter: Iterable[Object]) -> (InvData, EncodeResultInfo):
     )
 
 
-def decode(container: Object, data: InvData) -> (Result, DecodeResultInfo):
+def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultInfo):
     """
     Decode Inventory Objects from pydatic-structure InvData and write it to database.
     Uses in import Inventory Objects from file.
