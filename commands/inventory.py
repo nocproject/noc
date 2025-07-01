@@ -1,14 +1,16 @@
 # ----------------------------------------------------------------------
 # ./noc inventory command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import argparse
+from typing import Optional
 
 # NOC modules
+from noc.core.inv.codec import decode, encode, InvData
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.object import Object
@@ -17,11 +19,38 @@ from noc.inv.models.object import Object
 class Command(BaseCommand):
     help = "Query inventory"
 
+    PB_LENGTH = 80
+
+    def printbox(self, line: str):
+        self.print(f"| {line.ljust(self.PB_LENGTH)} |")
+
+    def printbox_border(self):
+        self.print("=" * (self.PB_LENGTH + 4))
+
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
-        rebuild_parser = subparsers.add_parser("find-serial")
-        rebuild_parser.add_argument("serials", nargs=argparse.REMAINDER, help="Serials to search")
+        # find-serial command
+        find_serial_parser = subparsers.add_parser("find-serial")
+        find_serial_parser.add_argument(
+            "serials", nargs=argparse.REMAINDER, help="Serials to search"
+        )
+        # export command
+        export_parser = subparsers.add_parser("export", help="Export Inventory tree to JSON-file")
+        export_parser.add_argument(
+            "--output", "-o", help="Destination JSON-file. If not specified - to stdout"
+        )
+        export_parser.add_argument(
+            "objects", nargs=argparse.REMAINDER, help="List of parent objects to export"
+        )
+        # import command
+        import_parser = subparsers.add_parser("import", help="Import Inventory tree from JSON-file")
+        import_parser.add_argument("--input", "-i", help="Source JSON-file", required=True)
+        import_parser.add_argument(
+            "--container",
+            "-c",
+            dest="container_id",
+            help="Container object for importing objects. If not specified - it is root",
+        )
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
@@ -62,6 +91,51 @@ class Command(BaseCommand):
 
         for n, sr in enumerate(reversed(list(iter_obj(obj)))):
             self.print("%s * %s" % ("  " * n, sr))
+
+    def handle_export(self, objects: list[str], output: Optional[str] = None):
+        connect()
+        inv_data, result_info = encode(Object.objects.filter(id__in=objects))
+        json_data = inv_data.model_dump_json(indent=2, by_alias=True, exclude_none=True)
+        if output:
+            with open(output, "w") as f:
+                f.write(json_data)
+        else:
+            self.print(json_data)
+        self.printbox_border()
+        if output:
+            self.printbox(f"Export to file: '{output}'")
+        else:
+            self.printbox("Export to stdout")
+        self.printbox("-" * self.PB_LENGTH)
+        self.printbox("")
+        self.printbox("Found")
+        self.printbox(f"  - objects: {result_info.found_objects}")
+        self.printbox(f"  - direct connections: {result_info.found_connections_direct}")
+        self.printbox(f"  - cable connections: {result_info.found_connections_cable}")
+        self.printbox_border()
+
+    def handle_import(self, input: str, container_id: Optional[str] = None):
+        connect()
+        container = Object.get_by_id(container_id) if container_id else None
+        with open(input, "r") as f:
+            json_data = f.read()
+        inv_data = InvData.model_validate_json(json_data)
+        result, result_info = decode(container, inv_data)
+        self.printbox_border()
+        self.printbox(f"Import from file: '{input}'")
+        self.printbox("-" * self.PB_LENGTH)
+        self.printbox("")
+        self.printbox("Found")
+        self.printbox(f"  - objects: {result_info.found_objects}")
+        self.printbox(f"  - direct connections: {result_info.found_connections_direct}")
+        self.printbox(f"  - cable connections: {result_info.found_connections_cable}")
+        self.printbox("Created")
+        self.printbox(f"  - objects: {result_info.created_objects}")
+        self.printbox(f"  - direct connections: {result_info.created_connections_direct}")
+        self.printbox(f"  - cable model: {result_info.created_cable_model}")
+        self.printbox(f"  - cables: {result_info.created_cable}")
+        self.printbox(f"  - cable connections: {result_info.created_connections_cable}")
+        self.printbox_border()
 
 
 if __name__ == "__main__":
