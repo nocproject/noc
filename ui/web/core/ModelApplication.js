@@ -903,7 +903,7 @@ Ext.define("NOC.core.ModelApplication", {
   newRecord: function(defaults){
     var fv = {};
     this.form.getFields().each(function(field){
-      if(["core.tagfield", "tagfield"].indexOf(field.xtype) !== -1){
+      if(["core.tagfield", "tagfield", "listform"].includes(field.xtype)){
         field.setValue([]);
       } else{
         field.setValue("");
