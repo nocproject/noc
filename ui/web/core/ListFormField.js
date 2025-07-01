@@ -232,8 +232,11 @@ Ext.define("NOC.core.ListFormField", {
     formPanel.setBodyStyle("border-width", "3 3 0 3");
     formPanel.setBodyStyle("margin-left", "3px");
     if(record != null){
-      formPanel.items.each(function(field){field.setValue(record[field.name])});
-    //   formPanel.form.setValues(record);
+      formPanel.items.each(function(field){
+        if(Ext.isFunction(field.setValue)){
+          field.setValue(record[field.name])
+        }
+      });
     }
     me.panel.insert(index, formPanel);
     formPanel.items.get(0).focus();
