@@ -125,6 +125,11 @@ class KafkaSenderService(FastAPIService):
             sasl_plain_username=config.kafkasender.username,
             sasl_plain_password=config.kafkasender.password,
             retry_backoff_ms=10000,
+            compression_type=(
+                None
+                if config.kafkasender.compression_type == "none"
+                else config.kafkasender.compression_type
+            ),
         )
         while True:
             try:
