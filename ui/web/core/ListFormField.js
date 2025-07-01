@@ -20,9 +20,8 @@ Ext.define("NOC.core.ListFormField", {
 
     me.scroll = {x: 0, y: 0};
     // me.rows = me.rows || 3;
-    me.fields = Ext.clone(me.items).map(function(item){
-      return Ext.Object.merge(item, {isListForm: true})
-    });
+    me._items = Ext.clone(this.items); 
+    me.fields = me.getClonedFieldConfigs();
 
     me.appendButton = Ext.create("Ext.button.Button", {
       text: __("Append"),
@@ -111,7 +110,7 @@ Ext.define("NOC.core.ListFormField", {
       data = field.getModelData();
       if(Ext.isObject(data)){
         name = field.getName();
-        if(data.hasOwnProperty(name)){
+        if(Object.prototype.hasOwnProperty.call(data, name)){
           values[name] = data[name];
         }
       }
@@ -207,7 +206,7 @@ Ext.define("NOC.core.ListFormField", {
     itemId = Ext.id(null, "list-form-");
     formPanel = Ext.create("Ext.form.Panel", {
       itemId: itemId,
-      items: me.fields,
+      items: me.getClonedFieldConfigs(),
       defaults: {
         margin: "4 30 0 10",
       },
@@ -233,7 +232,8 @@ Ext.define("NOC.core.ListFormField", {
     formPanel.setBodyStyle("border-width", "3 3 0 3");
     formPanel.setBodyStyle("margin-left", "3px");
     if(record != null){
-      formPanel.form.setValues(record);
+      formPanel.items.each(function(field){field.setValue(record[field.name])});
+    //   formPanel.form.setValues(record);
     }
     me.panel.insert(index, formPanel);
     formPanel.items.get(0).focus();
@@ -254,5 +254,11 @@ Ext.define("NOC.core.ListFormField", {
     me.panel.remove(me.currentSelection);
     me.currentSelection = undefined;
     me.disableButtons(true);
+  },
+  getClonedFieldConfigs: function(){
+    var me = this;
+    return Ext.clone(me._items).map(function(item){
+      return Ext.Object.merge({}, item, {isListForm: true, isFormField: false});
+    });
   },
 });
