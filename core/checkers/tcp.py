@@ -10,10 +10,10 @@ import asyncio
 from typing import List, AsyncIterable
 
 # NOC modules
-from noc.core.checkers.base import Checker, CheckResult, Check, TCP_CHECK
+from .base import BaseChecker, CheckResult, Check, TCP_CHECK
 
 
-class TCPConnect(Checker):
+class TCPConnectChecker(BaseChecker):
     """
     Check address availability from remote device
     """
