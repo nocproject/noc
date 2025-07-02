@@ -8,7 +8,7 @@ Consider you have got a self-made collection, for example a new model of switch 
 Follow the steps:
 
 1. Register at our [Gitlab](https://code.getnoc.com/)
-2. Create a [Personal Access Token](https://code.getnoc.com/profile/personal_access_tokens>) with `api` scope checked.
+2. Create a [Personal Access Token](https://code.getnoc.com/-/user_settings/personal_access_tokens) with `api` scope checked.
    Remember it!
 3. Open a model, that you want to share in NOC web interface, for example:
    ![JSON](json.png)
