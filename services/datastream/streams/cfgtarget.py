@@ -111,6 +111,9 @@ class Target(
                 "name": rs.name,
             }
             r["administrative_domain"]["remote_id"] = self.adm_domain_remote_id
+        svcs = Service.get_by_managed_object_id(self.mo_id)
+        if svcs:
+            r["services"] = [{"id": str(svc.id), "bi_id": str(svc.bi_id)} for svc in svcs]
         return r
 
     def enable_syslog_source(self, source: str) -> bool:
@@ -371,10 +374,12 @@ class CfgTrapDataStream(DataStream):
 
         if not addresses:
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
-        r["addresses"] = list(addresses.values())
-        svcs = Service.get_by_managed_object_id(mo_id)
-        if svcs:
-            r["services"] = [{"id": str(svc.id), "bi_id": str(svc.bi_id)} for svc in svcs]
+        r |= {
+            "addresses": list(addresses.values()),
+            "mapping_refs": [f"name:{name}"],
+        }
+        for m in r["opaque_data"]["mappings"]:
+            r["mapping_refs"].append(f"rs:{m['remote_system']['name']}:{m['remote_id']}")
         return r
 
     @classmethod
