@@ -20,8 +20,7 @@ Ext.define("NOC.core.ListFormField", {
 
     me.scroll = {x: 0, y: 0};
     // me.rows = me.rows || 3;
-    me._items = Ext.clone(this.items); 
-    me.fields = me.getClonedFieldConfigs();
+    me.fields = me.getClonedFieldConfigs(Ext.clone(this.items));
 
     me.appendButton = Ext.create("Ext.button.Button", {
       text: __("Append"),
@@ -122,10 +121,12 @@ Ext.define("NOC.core.ListFormField", {
     return values;
   },
   getValue: function(){
-    var me = this,
-      records = [];
-    me.panel.items.each(function(panel){
-      records.push(me.getFormData(panel.form))
+    var records = [];
+    this.panel.query("form").forEach(form => {
+      this.fields.forEach(field => {
+        let value = {[field.name]: form.down(`[name=${field.name}]`).getValue()};
+        records.push(value);
+      });
     });
     return records;
   },
@@ -199,19 +200,20 @@ Ext.define("NOC.core.ListFormField", {
     }
   },
   createForm: function(record, index){
-    var me = this, formPanel, itemId;
+    var formPanel, itemId,
+      newItems = this.getClonedFieldConfigs(this.fields);
     if(index === undefined){
-      index = me.panel.items.getCount();
+      index = this.panel.items.getCount();
     }
     itemId = Ext.id(null, "list-form-");
     formPanel = Ext.create("Ext.form.Panel", {
       itemId: itemId,
-      items: me.getClonedFieldConfigs(),
+      items: newItems,
       defaults: {
         margin: "4 30 0 10",
       },
       listeners: {
-        scope: me,
+        scope: this,
         focusenter: function(self){
           var me = this;
           // reset selected label
@@ -238,7 +240,7 @@ Ext.define("NOC.core.ListFormField", {
         }
       });
     }
-    me.panel.insert(index, formPanel);
+    this.panel.insert(index, formPanel);
     formPanel.items.get(0).focus();
   },
   disableButtons: function(arg){
@@ -258,10 +260,12 @@ Ext.define("NOC.core.ListFormField", {
     me.currentSelection = undefined;
     me.disableButtons(true);
   },
-  getClonedFieldConfigs: function(){
-    var me = this;
-    return Ext.clone(me._items).map(function(item){
-      return Ext.Object.merge({}, item, {isListForm: true, isFormField: false});
+  getClonedFieldConfigs: function(items){
+    return Ext.clone(items).map(function(item){
+      return Ext.apply(item, {isListForm: true, isFormField: false});
     });
+  },
+  getModelData: function(){
+    return this.getValue();
   },
 });
