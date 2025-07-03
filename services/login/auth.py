@@ -9,6 +9,7 @@
 import logging
 from typing import Optional, Any
 import datetime
+import re
 
 # Third-party modules
 from jose import jwt, jwk
@@ -160,6 +161,25 @@ def set_jwt_cookie(response: Response, user: str, /, expire: int | None = None) 
         value=get_jwt_token(user, audience="auth", expire=expire),
         expires=expire,
     )
+
+
+rx_cn = re.compile(r"(?:^|,)CN=(.+?)(?:$|,)", re.IGNORECASE)
+
+
+def get_user_from_cert_subject(subj: str) -> str:
+    """
+    Extract username from certificate subject.
+
+    Args:
+        subj: Certificate subject string.
+
+    Returns:
+        Extracted username.
+    """
+    match = rx_cn.search(subj)
+    if match:
+        return match.group(1)
+    return subj
 
 
 def change_credentials(credentials: dict[str, Any]) -> None:
