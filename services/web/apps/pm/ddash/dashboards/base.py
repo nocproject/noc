@@ -13,7 +13,7 @@ import logging
 # Third-Party modules
 import orjson
 
-BAD_CHARS = r"!\"%'()+,:;<>?@\^`{|}~\\\n\r"
+BAD_CHARS = "!\"%'()+,:;<>?@^`{|}~\\\n\r"
 
 
 class BaseDashboard(object):
