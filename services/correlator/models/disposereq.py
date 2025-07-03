@@ -15,7 +15,14 @@ from .eventreq import EventRequest
 from .raisereq import RaiseRequest
 from .ensuregroupreq import EnsureGroupRequest
 from .setstatusreq import SetStatusRequest
+from .raiserefreq import RaiseReferenceRequest
 
 DisposeRequest = Union[
-    ClearRequest, ClearIdRequest, EventRequest, RaiseRequest, EnsureGroupRequest, SetStatusRequest
+    ClearRequest,
+    ClearIdRequest,
+    EventRequest,
+    RaiseRequest,
+    EnsureGroupRequest,
+    SetStatusRequest,
+    RaiseReferenceRequest,
 ]

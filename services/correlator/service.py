@@ -45,6 +45,7 @@ from noc.services.correlator.models.clearidreq import ClearIdRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.services.correlator.models.setstatusreq import SetStatusRequest
+from noc.services.correlator.models.raiserefreq import RaiseReferenceRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
 from noc.fm.models.alarmlog import AlarmLog
@@ -72,6 +73,7 @@ from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 ta_DisposeRequest = TypeAdapter(DisposeRequest)
+DEFAULT_REFERENCE = "REFERENCE"
 
 
 class CorrelatorService(FastAPIService):
@@ -411,7 +413,7 @@ class CorrelatorService(FastAPIService):
 
     async def raise_alarm(
         self,
-        managed_object: ManagedObject,
+        managed_object: Optional[ManagedObject],
         timestamp: datetime.datetime,
         alarm_class: AlarmClass,
         vars: Optional[Dict[str, Any]],
@@ -445,13 +447,18 @@ class CorrelatorService(FastAPIService):
         scope_label = str(event.id) if event else "DIRECT"
         labels = labels or []
         # @todo: Make configurable
-        if Interaction.Alarm not in managed_object.interactions:
+        if managed_object and Interaction.Alarm not in managed_object.interactions:
             self.logger.info("Managed object is allowed processed Alarm. Do not raise alarm")
             return None
-        if not reference:
+        if not reference and managed_object:
             reference = self.get_default_reference(
                 managed_object=managed_object, alarm_class=alarm_class, vars=vars
             )
+        elif not reference and not managed_object:
+            self.logger.info(
+                "Alarm without Managed object and Reference is not allowed. Do not raise alarm"
+            )
+            return None
         ref_hash = self.get_reference_hash(reference)
         if alarm_class.is_unique:
             alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
@@ -465,8 +472,8 @@ class CorrelatorService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Contributing %s to active alarm %s(%s)",
                     scope_label,
-                    managed_object.name,
-                    managed_object.address,
+                    managed_object.name if managed_object else DEFAULT_REFERENCE,
+                    managed_object.address if managed_object else reference,
                     f"event {event.type.event_class}" if event else "DIRECT",
                     alarm.alarm_class.name,
                     alarm.id,
@@ -485,13 +492,15 @@ class CorrelatorService(FastAPIService):
                 return alarm
         if event:
             msg = f"Alarm risen from event {event.id}({event.type.event_class})"
+        elif not managed_object:
+            msg = "Alarm risen directly (by reference)"
         else:
             msg = "Alarm risen directly"
         # Create new alarm
         a = ActiveAlarm(
             timestamp=timestamp,
             last_update=timestamp,
-            managed_object=managed_object.id,
+            managed_object=managed_object.id if managed_object else None,
             alarm_class=alarm_class,
             vars=vars,
             reference=ref_hash,
@@ -513,15 +522,21 @@ class CorrelatorService(FastAPIService):
         a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
         a.raw_reference = reference
         # Calculate alarm coverage
-        if a.alarm_class.affected_service:
+        if a.alarm_class.affected_service and managed_object:
             summary = ServiceSummary.get_object_summary(managed_object)
         else:
             summary = {"service": {}, "subscriber": {}, "interface": {}}
-        summary["object"] = {managed_object.object_profile.id: 1}
         if a.is_link_alarm and a.components.interface:
             summary["interface"] = {a.components.interface.profile.id: 1}
+        if managed_object:
+            summary["object"] = {managed_object.object_profile.id: 1}
+            a.direct_objects = [
+                ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)
+            ]
+        else:
+            summary["object"] = {}
+            a.direct_objects = []
         # Set alarm stat fields
-        a.direct_objects = [ObjectSummaryItem(profile=managed_object.object_profile.id, summary=1)]
         a.direct_services = SummaryItem.dict_to_items(summary["service"])
         a.direct_subscribers = SummaryItem.dict_to_items(summary["subscriber"])
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
@@ -564,8 +579,8 @@ class CorrelatorService(FastAPIService):
         self.logger.info(
             "[%s|%s|%s] Calculated alarm severity is: %s",
             scope_label,
-            managed_object.name,
-            managed_object.address,
+            managed_object.name if managed_object else DEFAULT_REFERENCE,
+            managed_object.address if managed_object else reference,
             a.severity,
         )
         # Save
@@ -578,8 +593,8 @@ class CorrelatorService(FastAPIService):
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
-            managed_object.name,
-            managed_object.address,
+            managed_object.name if managed_object else DEFAULT_REFERENCE,
+            managed_object.address if managed_object else reference,
             a.alarm_class.name,
             a.id,
             a.vars,
@@ -587,22 +602,9 @@ class CorrelatorService(FastAPIService):
         )
         metrics["alarm_raise"] += 1
         await self.correlate(a)
-        # Notify about new alarm
-        # if not a.root:
-        #     a.managed_object.event(
-        #         a.managed_object.EV_ALARM_RISEN,
-        #         {
-        #             "alarm": a,
-        #             "subject": a.subject,
-        #             "body": a.body,
-        #             "symptoms": a.alarm_class.symptoms,
-        #             "recommended_actions": a.alarm_class.recommended_actions,
-        #             "probable_causes": a.alarm_class.probable_causes,
-        #         },
-        #         delay=a.alarm_class.get_notification_delay(),
-        #     )
-        # Gather diagnostics when necessary
-        AlarmDiagnosticConfig.on_raise(a)
+        if managed_object:
+            # Gather diagnostics when necessary
+            AlarmDiagnosticConfig.on_raise(a)
         # Update groups summary
         await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
@@ -664,7 +666,7 @@ class CorrelatorService(FastAPIService):
 
     async def correlate(self, a: ActiveAlarm):
         # Topology RCA
-        if a.alarm_class.topology_rca:
+        if a.alarm_class.topology_rca and a.managed_object:
             await self.topology_rca(a)
         # Rule-based RCA
         if a.alarm_class.id in self.rca_forward:
@@ -913,6 +915,53 @@ class CorrelatorService(FastAPIService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
+    async def on_msg_raiseref(self, req: RaiseReferenceRequest) -> None:
+        """
+        Process `raise` message.
+        """
+        # Fetch timestamp
+        ts = self.parse_timestamp(req.timestamp)
+        # Get alarm class
+        alarm_class = AlarmClass.get_by_name(req.alarm_class)
+        if not alarm_class:
+            self.logger.error("Invalid alarm class: %s", req.alarm_class)
+            return
+        # Groups
+        if req.groups:
+            groups = []
+            for gi in req.groups:
+                ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
+                ac = ac or CAlarmRule.get_default_alarm_class()
+                gi_name = gi.name or "Alarm Group"
+                groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
+        else:
+            groups = None
+        # Remote system
+        if req.remote_system and req.remote_id:
+            remote_system = RemoteSystem.get_by_id(req.remote_system)
+        else:
+            remote_system = None
+        r_vars = req.vars or {}
+        if req.labels:
+            r_vars.update(alarm_class.convert_labels_var(req.labels))
+        severity = AlarmSeverity.get_severity(req.severity) if req.severity else None
+        try:
+            await self.raise_alarm(
+                managed_object=None,
+                timestamp=ts,
+                alarm_class=alarm_class,
+                vars=r_vars,
+                reference=req.reference,
+                groups=groups,
+                labels=req.labels or [],
+                severity=severity,
+                remote_system=remote_system,
+                remote_id=req.remote_id if remote_system else None,
+            )
+        except Exception:
+            metrics["alarm_dispose_error"] += 1
+            error_report()
+
     def parse_timestamp(self, iso_timestamp: str) -> datetime.datetime:
         """
         It takes a string ISO timestamp, converts it to a datetime object, then converts it to local timezone,
@@ -1110,8 +1159,8 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name,
-            alarm.managed_object.address,
+            alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
+            alarm.managed_object.address if alarm.managed_object else alarm.reference,
             alarm.alarm_class.name,
             alarm.id,
             message or "by id",
@@ -1145,8 +1194,8 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name,
-            alarm.managed_object.address,
+            alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
+            alarm.managed_object.address if alarm.managed_object else reference,
             alarm.alarm_class.name,
             alarm.id,
             message or f"by reference {reference}",
