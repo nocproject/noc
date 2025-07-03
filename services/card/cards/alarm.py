@@ -44,7 +44,7 @@ class AlarmCard(BaseCard):
             return None
         # Get container path
         cp = []
-        if self.object.managed_object.container:
+        if self.object.managed_object and self.object.managed_object.container:
             c = self.object.managed_object.container.id
             while c:
                 try:
@@ -76,13 +76,16 @@ class AlarmCard(BaseCard):
             "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
         }
         # Maintenance
-        m_id = [m for m in self.object.managed_object.affected_maintenances]
-        mainteinance = Maintenance.objects.filter(
-            is_completed=False,
-            start__lte=datetime.datetime.now(),
-            stop__gte=datetime.datetime.now(),
-            id__in=m_id,
-        ).order_by("start")
+        if self.object.managed_object:
+            m_id = [m for m in self.object.managed_object.affected_maintenances]
+            mainteinance = Maintenance.objects.filter(
+                is_completed=False,
+                start__lte=datetime.datetime.now(),
+                stop__gte=datetime.datetime.now(),
+                id__in=m_id,
+            ).order_by("start")
+        else:
+            mainteinance = []
         mo = self.object.managed_object
         # Build result
         r = {
@@ -100,23 +103,31 @@ class AlarmCard(BaseCard):
             "alarms": alarms,
             "diagnostic": AlarmDiagnostic.get_diagnostics(self.object),
             "maintenance": mainteinance,
-            "lon": mo.x,
-            "lat": mo.y,
-            "zoom": mo.default_zoom,
-            "tt_system": (
-                self.object.managed_object.tt_system.name
-                if self.object.managed_object.tt_system
-                else None
-            ),
-            "tt_system_failed": (
-                self.object.status == "A"
-                and not self.object.escalation_profile
-                and self.object.managed_object.tt_system
-                and self.object.managed_object.tt_system.is_failed()
-            ),
+            "lon": 0.0,
+            "lat": 0.0,
+            "zoom": None,
+            "tt_system": "",
+            "tt_system_failed": "",
             "escalation_ctx": self.object.escalation_ctx,
             "escalation_close_ctx": getattr(self.object, "escalation_close_ctx", None),
         }
+        if self.object.managed_object:
+            r |= {
+                "lon": mo.x,
+                "lat": mo.y,
+                "zoom": mo.default_zoom,
+                "tt_system": (
+                    self.object.managed_object.tt_system.name
+                    if self.object.managed_object.tt_system
+                    else None
+                ),
+                "tt_system_failed": (
+                    self.object.status == "A"
+                    and not self.object.escalation_profile
+                    and self.object.managed_object.tt_system
+                    and self.object.managed_object.tt_system.is_failed()
+                ),
+            }
         return r
 
     def get_alarms(self):

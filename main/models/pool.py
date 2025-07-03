@@ -74,6 +74,13 @@ class Pool(Document):
     def get_by_name(cls, name) -> Optional["Pool"]:
         return Pool.objects.filter(name=name).first()
 
+    @classmethod
+    def get_default_fm_pool(cls) -> "Pool":
+        p = Pool.get_by_name("default")
+        if p:
+            return p
+        return Pool.objects.filter().order_by("id").first()
+
     def get_delta(self) -> float:
         """
         Get delta for next discovery,
