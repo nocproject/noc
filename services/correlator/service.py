@@ -73,6 +73,7 @@ from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 ta_DisposeRequest = TypeAdapter(DisposeRequest)
+DEFAULT_REFERENCE = "REFERENCE"
 
 
 class CorrelatorService(FastAPIService):
@@ -471,7 +472,7 @@ class CorrelatorService(FastAPIService):
                 self.logger.info(
                     "[%s|%s|%s] Contributing %s to active alarm %s(%s)",
                     scope_label,
-                    managed_object.name if managed_object else "REFERENCE",
+                    managed_object.name if managed_object else DEFAULT_REFERENCE,
                     managed_object.address if managed_object else reference,
                     f"event {event.type.event_class}" if event else "DIRECT",
                     alarm.alarm_class.name,
@@ -578,7 +579,7 @@ class CorrelatorService(FastAPIService):
         self.logger.info(
             "[%s|%s|%s] Calculated alarm severity is: %s",
             scope_label,
-            managed_object.name if managed_object else "REFERENCE",
+            managed_object.name if managed_object else DEFAULT_REFERENCE,
             managed_object.address if managed_object else reference,
             a.severity,
         )
@@ -592,7 +593,7 @@ class CorrelatorService(FastAPIService):
         self.logger.info(
             "[%s|%s|%s] Raise alarm %s(%s): %r [%s]",
             scope_label,
-            managed_object.name if managed_object else "REFERENCE",
+            managed_object.name if managed_object else DEFAULT_REFERENCE,
             managed_object.address if managed_object else reference,
             a.alarm_class.name,
             a.id,
@@ -1158,7 +1159,7 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name if alarm.managed_object else "REFERENCE",
+            alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
             alarm.managed_object.address if alarm.managed_object else alarm.reference,
             alarm.alarm_class.name,
             alarm.id,
@@ -1193,7 +1194,7 @@ class CorrelatorService(FastAPIService):
         # Clear alarm
         self.logger.info(
             "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name if alarm.managed_object else "REFERENCE",
+            alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
             alarm.managed_object.address if alarm.managed_object else reference,
             alarm.alarm_class.name,
             alarm.id,
