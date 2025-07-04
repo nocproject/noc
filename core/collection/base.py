@@ -17,7 +17,7 @@ import sys
 import threading
 import operator
 from base64 import b85decode
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Any
 
 # Third-party modules
 import orjson
@@ -64,6 +64,7 @@ class Collection(object):
         self._name_field = None
         self.stdout = stdout or sys.stdout
         self.partial_errors = {}
+        self._db_items = {}
 
     def get_path(self):
         paths = []
@@ -299,6 +300,12 @@ class Collection(object):
         coll = ref._meta["collection"]
         raise ValueError(f"lookup for {coll}.{field} == '{key}' has been failed")
 
+    def get_db_items(self) -> Dict[uuid.UUID, Any]:
+        """
+        Retrieve existing items.
+        """
+        return {item.uuid: item for item in self.model.objects.all()}
+
     def update_item(self, data):
         def set_attrs(obj, values):
             for vk in values:
@@ -312,7 +319,7 @@ class Collection(object):
         except ValueError as e:
             self.partial_errors[data["uuid"]] = str(e)
             return False  # Partials
-        o = self.model.objects.filter(uuid=data["uuid"]).first()
+        o = self._db_items.get(d["uuid"])
         if o:
             self.stdout.write(
                 "[%s|%s] Updating %s\n" % (self.name, data["uuid"], getattr(o, self.name_field))
@@ -380,6 +387,8 @@ class Collection(object):
         self.stdout.write("[%s] Synchronizing\n" % self.name)
         # Get previous state
         cs = self.get_state()
+        # Existing items
+        self._db_items = self.get_db_items()
         #
         current_uuids = set(cs)
         new_uuids = set(cdata)
