@@ -16,10 +16,13 @@ import orjson
 from noc.services.web.base.extapplication import ExtApplication, view
 from noc.fm.models.eventclass import EventClass
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.useraccess import UserAccess
+from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.networksegment import NetworkSegment
 from noc.bi.models.events import Events
 from noc.main.models.remotesystem import RemoteSystem
-from noc.core.fm.event import Event
+from noc.core.service.loader import get_service
+from noc.core.fm.event import Event, EventSource
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -50,10 +53,23 @@ class EventApplication(ExtApplication):
                 {"success": False, "message": f"Invalid {self.start_param} param"},
                 status=self.BAD_REQUEST,
             )
+        if q.get("administrative_domain") and not request.user.is_superuser:
+            if int(q["administrative_domain"]) not in UserAccess.get_domains(request.user):
+                return self.response(
+                    {"success": False, "message": f"Requested Adm Domain not permissions"},
+                    status=self.BAD_REQUEST,
+                )
+        if q.get("administrative_domain"):
+            ads = [int(q["administrative_domain"])]
+        elif not request.user.is_superuser:
+            ads = UserAccess.get_domains(request.user)
+        else:
+            ads = None
         out, total = self.event_query(
             managed_object=q.get("managed_object"),
             segment=q.get("segment"),
             event_class=q.get("event_class"),
+            administrative_domains=ads,
             from_query=q.get("timestamp__gte"),
             to_query=q.get("timestamp__lte"),
             offset=start,
@@ -69,6 +85,7 @@ class EventApplication(ExtApplication):
         from_query: Optional[str] = None,
         to_query: Optional[str] = None,
         groups: Optional[List[str]] = None,
+        administrative_domains: Optional[List[int]] = None,
         event_class: Optional[str] = None,
     ) -> List[str]:
         """"""
@@ -81,6 +98,10 @@ class EventApplication(ExtApplication):
         if event_class:
             p = EventClass.get_by_id(event_class)
             r.append(f"event_class_bi_id = {p.bi_id}")
+        if administrative_domains:
+            r.append(
+                f"administrative_domain_bi_id IN ({','.join(str(x.bi_id) for x in AdministrativeDomain.objects.filter(id__in=administrative_domains))})"
+            )
         if from_query:
             from_query = datetime.datetime.fromisoformat(from_query)
             r.append(f"ts >= '{from_query.isoformat()}'")
@@ -98,6 +119,7 @@ class EventApplication(ExtApplication):
         to_query: Optional[datetime.date] = None,
         groups: Optional[List[str]] = None,
         event_class: Optional[str] = None,
+        administrative_domains: Optional[List[int]] = None,
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ):
@@ -106,6 +128,7 @@ class EventApplication(ExtApplication):
             f"SELECT  e.event_id as id, e.ts as timestamp, nullIf(e.event_class, 0) as event_class_bi_id,"
             f" nullIf(e.managed_object, 0) as managed_object_bi_id, e.target as target, e.target_name as target_name,"
             f" IPv4NumToString(e.ip) as address, e.snmp_trap_oid as snmp_trap_oid, e.raw_vars as raw_vars,"
+            f" nullIf(e.administrative_domain, 0) as administrative_domain_bi_id,"
             f" dictGet('{config.clickhouse.db_dictionaries}.pool', 'name', e.pool) as pool_name,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,"
@@ -114,7 +137,13 @@ class EventApplication(ExtApplication):
             f" FROM {Events._get_db_table()} AS e",
         ]
         filter_x = cls.get_filter(
-            managed_object, segment, from_query, to_query, groups, event_class
+            managed_object,
+            segment,
+            from_query,
+            to_query,
+            groups,
+            administrative_domains,
+            event_class,
         )
         if filter_x:
             sql += ["WHERE %s" % " AND ".join(filter_x)]
@@ -191,14 +220,35 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="reclassify")
     def api_reclassify(self, request, id):
+        q = self.parse_request_query(request)
         e = Event.get_by_id(id)
         if e.target.id:
             mo = ManagedObject.get_by_id(int(e.target.id))
             s, p = mo.events_stream_and_partition
         else:
             s, p = "events.default", 0
-        self.service.publish(
-            orjson.dumps(e),
+        if e.type.source == EventSource.SNMP_TRAP:
+            data = {
+                "ts": e.ts,
+                "target": {
+                    "address": e.target.address,
+                    "name": e.target.name,
+                    "pool": config.pool,
+                    "id": e.target.id,
+                },
+                "type": {"source": EventSource.SNMP_TRAP.value, "id": e.type.id},
+                "data": [
+                    {"name": v.name, "value": v.value, "snmp_raw": True}
+                    for v in e.data
+                    if v.snmp_raw
+                ],
+                # + [{"name": "message_id", "value": message_id}]
+            }
+        else:
+            data = e.model_dump()
+        svc = get_service()
+        svc.publish(
+            orjson.dumps(data),
             stream=s,
             partition=p,
         )
