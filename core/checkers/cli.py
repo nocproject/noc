@@ -9,13 +9,13 @@
 from typing import List, Iterable, Dict, Tuple, Optional, AsyncIterable
 
 # NOC modules
-from noc.core.checkers.base import Checker, CheckResult, Check, CheckError
+from .base import BaseChecker, CheckResult, Check, CheckError
 from noc.core.script.scheme import Protocol, CLICredential
 from noc.core.script.loader import loader
 from noc.core.perf import metrics
 
 
-class CLIProtocolChecker(Checker):
+class CLIProtocolChecker(BaseChecker):
     """
     Check ManagedObject supported access protocols and credential
     """
@@ -26,9 +26,9 @@ class CLIProtocolChecker(Checker):
     PROTO_CHECK_MAP: Dict[str, Protocol] = {p.config.check: p for p in Protocol if p.config.check}
     PARAMS = ["profile", "rules"]
 
-    def __init__(self, **kwargs):
+    def __init__(self, profile: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
-        self.profile = kwargs.get("profile")
+        self.profile = profile
 
     @staticmethod
     def load_suggests(credentials):
@@ -79,7 +79,7 @@ class CLIProtocolChecker(Checker):
                 self.logger.info("CLI Access for Generic profile is not supported. Ignoring")
                 continue
             for proto, cred in self.iter_credential(c):
-                status, error = self.check_login(
+                status, error = await self.check_login(
                     c.address or self.address,
                     c.port,
                     cred.username,
@@ -111,7 +111,7 @@ class CLIProtocolChecker(Checker):
                     error=CheckError(code="0", is_access=False, is_available=True),
                 )
 
-    def check_login(
+    async def check_login(
         self,
         address: str,
         port: int,
@@ -143,10 +143,10 @@ class CLIProtocolChecker(Checker):
             timeout=60,
         )
         try:
-            r = script.run()
+            r = await self.run_in_executor(script.run)
         except script.ScriptError as e:
             metrics["error", ("type", "script_error")] += 1
-            return False, CheckError(code="0", message="Script error: %s" % e.__doc__)
+            return False, CheckError(code="0", message=f"Script error: {e.__doc__}")
         status = bool(r["result"])
         if status:
             return status, None

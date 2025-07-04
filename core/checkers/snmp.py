@@ -7,17 +7,15 @@
 
 # Python modules
 from collections import defaultdict
-from typing import List, Iterable, Dict, Tuple, Union, Optional, Any, AsyncIterable
+from typing import List, AsyncIterable, Iterable, Dict, Tuple, Union, Optional, Any
 
 # Third-party modules
-from gufo.snmp.sync_client import SnmpSession as SyncSnmpSession
-from gufo.snmp.async_client import SnmpSession as AsyncSnmpSession
-from gufo.snmp import SnmpVersion, SnmpError as GSNMPError
-from gufo.snmp._fast import SnmpAuthError
+from gufo.snmp.async_client import SnmpSession
+from gufo.snmp import SnmpVersion, SnmpError as GSNMPError, SnmpAuthError
 from gufo.snmp.user import User, Aes128Key, DesKey, Md5Key, Sha1Key, KeyType
 
 # NOC modules
-from noc.core.checkers.base import Checker, CheckResult, Check, CheckError, DataItem
+from .base import BaseChecker, CheckResult, Check, CheckError, DataItem
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential
 from noc.core.snmp.error import SNMPErrorCode
 from noc.core.mib import mib
@@ -35,7 +33,7 @@ PRIV_PROTO_MAP = {
 }
 
 
-class SNMPProtocolChecker(Checker):
+class SNMPProtocolChecker(BaseChecker):
     """
     Check ManagedObject supported access protocols and credential
     """
@@ -132,9 +130,7 @@ class SNMPProtocolChecker(Checker):
                         continue
                     if not c.address:
                         continue
-                    data, error = await self.check_oids_async(
-                        c.address, self.get_oids(c, cred), cred
-                    )
+                    data, error = await self.check_oids(c.address, self.get_oids(c, cred), cred)
                     result[c] = CheckResult(
                         check=c.name,
                         address=c.address,
@@ -206,55 +202,7 @@ class SNMPProtocolChecker(Checker):
             # config["engine_id"] = self._get_engine_id()
         return config
 
-    def check_oids_sync(
-        self,
-        address,
-        oids: List[str],
-        cred: Union[SNMPCredential, SNMPv3Credential],
-        port: Optional[int] = None,
-        protocol: Optional[Protocol] = None,
-        timeout: int = 3,
-    ) -> Tuple[Optional[Dict[str, str]], Optional[CheckError]]:
-        cfg = self.get_session_config(address, cred, timeout=timeout)
-        self.logger.debug(
-            "Trying community '%s': %s, version: %s",
-            cred,
-            ";".join(oids),
-            cfg,  # protocol.config.alias,
-        )
-        try:
-            with SyncSnmpSession(**cfg) as session:
-                data = session.get_many(oids)
-        except TimeoutError:
-            self.logger.debug("SNMP Timeout")
-            return None, CheckError(
-                code=str(SNMPErrorCode.TIMED_OUT), message="Timeout", is_available=False
-            )
-        except OSError as e:
-            # Destination unreachable
-            self.logger.debug("Destination unreachable")
-            return None, CheckError(
-                code=str(SNMPErrorCode.UNREACHABLE), message=e.args[0], is_available=False
-            )
-        except SnmpAuthError:
-            self.logger.debug("SNMPv3 Authentication error")
-            return None, CheckError(
-                code=str(SNMPErrorCode.AUTHORIZATION_ERROR),
-                message="Authentication Error",
-                is_available=True,
-                is_access=False,
-            )
-        except GSNMPError as e:
-            self.logger.debug("SNMP error code %s", e)
-            return None, CheckError(code=e.cide, message=str(e), is_available=False)
-        # Render data if it has display hint
-        for k in data:
-            if isinstance(data[k], bytes):
-                data[k] = mib.render(k, data[k])
-        #  "Nothing value in MIB View"
-        return data, None
-
-    async def check_oids_async(
+    async def check_oids(
         self,
         address,
         oids: List[str],
@@ -271,7 +219,7 @@ class SNMPProtocolChecker(Checker):
             cfg,  # protocol.config.alias,
         )
         try:
-            async with AsyncSnmpSession(**cfg) as session:
+            async with SnmpSession(**cfg) as session:
                 data = await session.get_many(oids)
         except TimeoutError:
             self.logger.debug("SNMP Timeout")

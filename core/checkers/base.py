@@ -1,19 +1,22 @@
 # ----------------------------------------------------------------------
 # NOC Checker Base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Union, AsyncIterable
+from typing import List, Optional, Dict, Any, Union, AsyncIterable, TypeVar, Callable
+import threading
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
+from noc.core.threadpool import ThreadPoolExecutor
 
+T = TypeVar("T")
 
 TCP_CHECK = "TCP"
 CHECKS = []
@@ -197,7 +200,7 @@ class CheckResult(object):
         return CheckResult(**v)
 
 
-class Checker(object):
+class BaseChecker(object):
     """
     Base class for Checkers. Check some facts and return result
     """
@@ -205,20 +208,36 @@ class Checker(object):
     name: str
     CHECKS: List[str]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
+    _executor_lock = threading.Lock()
+    _executor: Optional[ThreadPoolExecutor] = None
 
     def __init__(
         self,
         *,
-        logger=None,
-        **kwargs,
+        logger: Optional[logging.Logger] = None,
+        address: Optional[str] = None,
+        **kwargs: Any,
     ):
         self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
-        self.address = kwargs.get("address")
+        self.address = address
 
-    def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
+    async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         """
         Iterate over result checks
         Args:
             checks: List checks param for run
+
+        Returns:
+            Yields CheckResult
         """
         raise NotImplementedError()
+
+    async def run_in_executor(self, fn: Callable[[], T]) -> T:
+        """Run function on executor."""
+        with BaseChecker._executor_lock:
+            executor = BaseChecker._executor
+            if not executor:
+                BaseChecker._executor = ThreadPoolExecutor(5)
+                executor = BaseChecker._executor
+
+        return await executor.submit(fn)
