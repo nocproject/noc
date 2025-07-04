@@ -56,7 +56,7 @@ class EventApplication(ExtApplication):
         if q.get("administrative_domain") and not request.user.is_superuser:
             if int(q["administrative_domain"]) not in UserAccess.get_domains(request.user):
                 return self.response(
-                    {"success": False, "message": f"Requested Adm Domain not permissions"},
+                    {"success": False, "message": "Requested Adm Domain not permissions"},
                     status=self.BAD_REQUEST,
                 )
         if q.get("administrative_domain"):
