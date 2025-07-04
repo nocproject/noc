@@ -319,13 +319,15 @@ class Collection(object):
         except ValueError as e:
             self.partial_errors[data["uuid"]] = str(e)
             return False  # Partials
-        o = self._db_items.get(d["uuid"])
+        o_uuid = d["uuid"]
+        o = self._db_items.get(o_uuid)
         if o:
             self.stdout.write(
                 "[%s|%s] Updating %s\n" % (self.name, data["uuid"], getattr(o, self.name_field))
             )
             set_attrs(o, d)
             o.save()
+            self._db_items[o_uuid] = o
             return True
         else:
             self.stdout.write(
@@ -335,6 +337,7 @@ class Collection(object):
             set_attrs(o, d)
             try:
                 o.save()
+                self._db_items[o_uuid] = o
                 return True
             except (NotUniqueError, IntegrityError):
                 if is_document(self.model):
@@ -361,11 +364,12 @@ class Collection(object):
                             "[%s|%s] Changing local uuid %s (%s)\n"
                             % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
                         )
-                        o.uuid = data["uuid"]
+                        o.uuid = o_uuid
                         if is_document(self.model):
                             o.save(clean=bool(o.uuid))
                         else:
                             o.save()
+                        self._db_items[o_uuid] = o
                         # Try again
                         return self.update_item(data)
                     self.stdout.write("Not find object by query: %s\n" % qs)
