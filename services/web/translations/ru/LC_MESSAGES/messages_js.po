@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2025-07-03 06:22+0300\n"
-"PO-Revision-Date: 2025-07-03 10:45+0500\n"
+"PO-Revision-Date: 2025-07-04 08:51+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language-Team: ru <LL@li.org>\n"
 "Language: ru\n"
@@ -7521,7 +7521,7 @@ msgstr "Запрос данных для {0]..."
 
 #: ui/web/inv/inv/MaskComponent.js:21
 msgid "Processing {0} items..."
-msgstr ""
+msgstr "Обрабатывается {0} записей..."
 
 # | msgid "loading..."
 #: ui/web/inv/inv/MaskComponent.js:22
@@ -7549,13 +7549,13 @@ msgstr ""
 #: ui/web/inv/inv/plugins/DownloadButton.js:66
 #| msgid "Download config"
 msgid "Download button clicked"
-msgstr ""
+msgstr "Нажата кнопка Загрузки"
 
 #: ui/web/inv/inv/plugins/FileSchemePluginAbstract.js:76
 #: ui/web/sa/job/Application.js:76
 #| msgid "Download Image..."
 msgid "Download image as SVG"
-msgstr ""
+msgstr "Загрузить изображение как SVG"
 
 #: ui/web/inv/inv/plugins/SideButton.js:19
 #: ui/web/inv/inv/plugins/rack/RackPanel.js:63
@@ -7570,12 +7570,12 @@ msgstr "Задняя часть"
 #: ui/web/inv/inv/plugins/VizSchemePluginAbstract.js:37
 #| msgid "Hide basket"
 msgid "Hide details"
-msgstr ""
+msgstr "Скрыть детали"
 
 #: ui/web/inv/inv/plugins/VizSchemePluginAbstract.js:37
 #| msgid "Show Labels"
 msgid "Show details"
-msgstr ""
+msgstr "Показать детали"
 
 #: ui/web/inv/inv/plugins/VizSchemePluginAbstract.js:81
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:77
@@ -7598,17 +7598,17 @@ msgstr "Нет данных"
 #: ui/web/inv/inv/plugins/Zoom.js:63
 #| msgid "First Name"
 msgid "Fit Page"
-msgstr ""
+msgstr "По странице"
 
 #: ui/web/inv/inv/plugins/Zoom.js:44 ui/web/inv/inv/plugins/Zoom.js:64
 #| msgid "Height"
 msgid "Fit Height"
-msgstr ""
+msgstr "По высоте"
 
 #: ui/web/inv/inv/plugins/Zoom.js:45 ui/web/inv/inv/plugins/Zoom.js:65
 #| msgid "Width"
 msgid "Fit Width"
-msgstr ""
+msgstr "По ширине"
 
 #: ui/web/inv/inv/plugins/Zoom.js:75
 #| msgid "Min Zoom"
@@ -7623,7 +7623,7 @@ msgstr ""
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:67
 #| msgid "Export"
 msgid "Export to CSV"
-msgstr ""
+msgstr "Экспорт в CSV"
 
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:175
 #| msgid "Set"
@@ -7633,7 +7633,7 @@ msgstr ""
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:11
 #| msgid "Changes"
 msgid "Channels"
-msgstr ""
+msgstr "Каналы"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:22
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:505
@@ -7641,7 +7641,7 @@ msgstr ""
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:142
 #| msgid "Create new maintaince"
 msgid "Create new channel"
-msgstr ""
+msgstr "Создать новый канал"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:58
 #: ui/web/inv/techdomain/Application.js:75
@@ -7686,12 +7686,12 @@ msgstr ""
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:137
 #| msgid "Save changes"
 msgid "Update channel"
-msgstr ""
+msgstr "Обновить канал"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:339
 #| msgid "Select rows"
 msgid "Please select a row"
-msgstr ""
+msgstr "Выберите строку"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:365
 #: ui/web/main/chpolicy/Application.js:31
@@ -7702,7 +7702,7 @@ msgstr "Тестовый запуск"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:374
 #| msgid "Unknown"
 msgid "Unknowns"
-msgstr ""
+msgstr "Неизвестные"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:432
 msgid "Favorite status updating ..."
@@ -7711,26 +7711,26 @@ msgstr ""
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:523
 #| msgid "No records"
 msgid "No records to display"
-msgstr ""
+msgstr "Нет записей для отображения"
 
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:527
 msgid "No records found matching: "
-msgstr ""
+msgstr "Нет записей для условия"
 
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:35
 #| msgid "Create Model"
 msgid "Create or update channel"
-msgstr ""
+msgstr "Создать или обновить канал"
 
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:52
 #| msgid "Create new"
 msgid "Create channel"
-msgstr ""
+msgstr "Создать канал"
 
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:86
 #| msgid "Create new"
 msgid "Create new..."
-msgstr ""
+msgstr "Новый"
 
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:96
 #| msgid "Send"
@@ -7887,12 +7887,12 @@ msgstr "Усиление (дБ)"
 #: ui/web/inv/inv/plugins/data/DataPanel.js:157
 #| msgid "Edit map"
 msgid "Edit MO"
-msgstr ""
+msgstr "Редактировать MO"
 
 #: ui/web/inv/inv/plugins/data/DataPanel.js:160
 #| msgid "Object Model"
 msgid "Edit model"
-msgstr ""
+msgstr "Редактировать модель"
 
 #: ui/web/inv/inv/plugins/facade/FacadePanel.js:12
 #: ui/web/inv/objectmodel/Application.js:343
@@ -7945,17 +7945,17 @@ msgstr "Учёт объектов"
 #: ui/web/inv/inv/plugins/job/JobPanel.js:90
 #| msgid "Jobs"
 msgid "No jobs"
-msgstr ""
+msgstr "Нет задач"
 
 #: ui/web/inv/inv/plugins/job/JobPanel.js:122
 #| msgid "Create"
 msgid "Created At"
-msgstr ""
+msgstr "Создана"
 
 #: ui/web/inv/inv/plugins/job/JobPanel.js:128
 #| msgid "Completed"
 msgid "Completed At"
-msgstr ""
+msgstr "Завершена"
 
 #: ui/web/inv/inv/plugins/log/LogPanel.js:48
 #: ui/web/main/template/Application.js:38
@@ -7997,7 +7997,7 @@ msgstr "Установить позицию"
 #: ui/web/inv/inv/plugins/map/MapPanel.js:121
 #| msgid "Failed to load data"
 msgid "Failed to load map resources"
-msgstr ""
+msgstr "Ошибка при получении ресурсов"
 
 #: ui/web/inv/inv/plugins/map/MapPanel.js:191
 msgid "Failed to get layer"
@@ -8129,12 +8129,12 @@ msgstr ""
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:68
 #| msgid "Failed to set watcher"
 msgid "Failed to set parameter"
-msgstr ""
+msgstr "Ошибка при записи параметра"
 
 #: ui/web/inv/inv/plugins/pconf/PConfPanel.js:151
 #| msgid "Management VLAN"
 msgid "Management console"
-msgstr ""
+msgstr "Консоль"
 
 #: ui/web/inv/inv/plugins/pconf/PConfPanel.js:268
 #| msgid "Table"
@@ -8177,7 +8177,7 @@ msgstr "Регистр ModBus"
 
 #: ui/web/inv/inv/plugins/sensor/SensorPanel.js:63
 msgid "Modbus Format"
-msgstr ""
+msgstr "Формат регистра"
 
 #: ui/web/inv/inv/plugins/sensor/SensorPanel.js:71
 #: ui/web/inv/objectmodel/Application.js:680
@@ -8213,7 +8213,7 @@ msgstr "Дубликат MAC'а"
 #: ui/web/sa/service/Application.js:461
 #| msgid "Ignore"
 msgid "Ignored"
-msgstr ""
+msgstr "Игнорировать"
 
 #: ui/web/inv/macblacklist/Application.js:120
 msgid "Affected"
@@ -8221,11 +8221,11 @@ msgstr "Влияние"
 
 #: ui/web/inv/macdb/Application.js:21
 msgid "insert MAC address to search"
-msgstr ""
+msgstr "Вставьте MAC для поиска"
 
 #: ui/web/inv/macdb/Application.js:22
 msgid "type MAC address to search"
-msgstr ""
+msgstr "Введите MAC для поиска..."
 
 #: ui/web/inv/macdb/Application.js:23
 msgid ""
@@ -8248,12 +8248,12 @@ msgstr "Последние изменения"
 #: ui/web/inv/macdb/Application.js:101
 #| msgid "Matched"
 msgid "MAC DB"
-msgstr ""
+msgstr "Таблица MAC"
 
 #: ui/web/inv/macdb/Application.js:107
 #| msgid "Save History"
 msgid "MAC History"
-msgstr ""
+msgstr "История MAC"
 
 #: ui/web/inv/macdb/Application.js:125
 #| msgid "Required"
@@ -8463,7 +8463,7 @@ msgstr "Вы должны выбрать РНР!"
 #: ui/web/inv/map/inspectors/ManagedObjectInspector.js:73
 #| msgid "Topology methods"
 msgid "Topology Neighbors"
-msgstr ""
+msgstr "Соседи по топологии"
 
 #: ui/web/inv/map/MapPanel.js:141
 msgid "View Card"
@@ -8472,7 +8472,7 @@ msgstr "Просмотр карточки"
 #: ui/web/inv/map/MapPanel.js:148
 #| msgid "Object Status"
 msgid "Object Settings"
-msgstr ""
+msgstr "Настройки Объекта"
 
 #: ui/web/inv/map/MapPanel.js:155 ui/web/inv/map/inspectors/CPEInspector.js:45
 #: ui/web/inv/map/inspectors/CloudInspector.js:40
@@ -8952,7 +8952,7 @@ msgstr "Варианты выбора"
 #: ui/web/inv/objectmodel/Application.js:154
 #| msgid "Show Labels"
 msgid "Short Label"
-msgstr ""
+msgstr "Короткое назв"
 
 #: ui/web/inv/objectmodel/Application.js:100
 #: ui/web/inv/objectmodel/Application.js:237
@@ -8988,12 +8988,12 @@ msgstr "Контекст подключения"
 #: ui/web/inv/objectmodel/Application.js:540
 #| msgid "Mode"
 msgid "Modes"
-msgstr ""
+msgstr "Режимы"
 
 #: ui/web/inv/objectmodel/Application.js:322
 #| msgid "Default"
 msgid "Is Default"
-msgstr ""
+msgstr "По умолчанию"
 
 #: ui/web/inv/objectmodel/Application.js:340
 msgid "Connections"
@@ -9034,7 +9034,7 @@ msgstr "Бесполый"
 
 #: ui/web/inv/objectmodel/Application.js:423
 msgid "Composite"
-msgstr ""
+msgstr "Композитный"
 
 #: ui/web/inv/objectmodel/Application.js:429
 msgid "Composite pins"
@@ -9054,7 +9054,7 @@ msgstr ""
 
 #: ui/web/inv/objectmodel/Application.js:811
 msgid "Dimensions must be set to generate template"
-msgstr ""
+msgstr "Размеры обязательны для создания шаблона"
 
 #: ui/web/inv/platform/Application.js:52 ui/web/inv/platform/Application.js:119
 msgid "Aliases"
@@ -9612,7 +9612,7 @@ msgstr "Интервал сбора (для агента)"
 #: ui/web/inv/techdomain/Application.js:88
 #| msgid "Max. Length"
 msgid "Max. Endpoints"
-msgstr ""
+msgstr "Макс подключений"
 
 #: ui/web/inv/techdomain/Application.js:95
 #| msgid "Segment Hierarchy"
@@ -9633,17 +9633,17 @@ msgstr "Разрешить вложенные"
 #: ui/web/inv/techdomain/Application.js:112
 #: ui/web/sa/managedobjectprofile/Application.js:1232
 msgid "Topology"
-msgstr "Топология"
+msgstr "Топологии"
 
 #: ui/web/inv/techdomain/Application.js:117
 #| msgid "Allow"
 msgid "Allow P2P"
-msgstr ""
+msgstr "Разрешить P2P"
 
 #: ui/web/inv/techdomain/Application.js:122
 #| msgid "Unidirectional"
 msgid "Allow Unidirectional P2P"
-msgstr ""
+msgstr "Разрешить Однонаправленные P2P"
 
 #: ui/web/inv/techdomain/Application.js:127
 #| msgid "Allow Children"
@@ -9653,27 +9653,27 @@ msgstr ""
 #: ui/web/inv/techdomain/Application.js:132
 #| msgid "Allow Params"
 msgid "Allow P2MP"
-msgstr ""
+msgstr "Разрешить P2MP"
 
 #: ui/web/inv/techdomain/Application.js:137
 #| msgid "Unidirectional"
 msgid "Allow Unidirectional P2MP"
-msgstr ""
+msgstr "Разрешить Однонаправленные P2MP"
 
 #: ui/web/inv/techdomain/Application.js:142
 #| msgid "Allow Params"
 msgid "Allow Star"
-msgstr ""
+msgstr "Разрешить Звезду"
 
 #: ui/web/inv/techdomain/Application.js:149
 #| msgid "Discriminator"
 msgid "Channel Discriminators"
-msgstr ""
+msgstr "Дискриминатор канала"
 
 #: ui/web/inv/techdomain/Application.js:176
 #| msgid "Input Discriminator"
 msgid "Endpoint Discriminators"
-msgstr ""
+msgstr "Дискриминатор подключения"
 
 #: ui/web/inv/technology/Application.js:46
 #: ui/web/inv/technology/Application.js:97
@@ -9734,7 +9734,7 @@ msgstr "Полное имя"
 
 #: ui/web/inv/vendor/Application.js:36 ui/web/inv/vendor/Application.js:78
 msgid "Site"
-msgstr ""
+msgstr "Сайт URL"
 
 #: ui/web/ip/addressprofile/Application.js:69
 #: ui/web/sa/service/Application.js:151
@@ -9893,13 +9893,13 @@ msgstr ""
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:54
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:257
 msgid "Add Address"
-msgstr ""
+msgstr "Добавить Адрес"
 
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:63
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:64
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:173
 msgid "Add Prefix"
-msgstr ""
+msgstr "Добавить Префикс"
 
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:72
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:73
@@ -9911,7 +9911,7 @@ msgstr "Удалить префикс"
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:82
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:164
 msgid "Edit Prefix"
-msgstr ""
+msgstr "Редакт. Префикс"
 
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:90
 msgid "Tools"
@@ -9923,11 +9923,11 @@ msgstr "Открыть инструменты"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:76
 msgid "Quick Jump..."
-msgstr ""
+msgstr "Быстрый Переход"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:86
 msgid "Select Bookmark"
-msgstr ""
+msgstr "Выберите Закладку"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:117
 msgid "Allocated Prefixes"
@@ -9937,7 +9937,7 @@ msgstr ""
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:219
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressListsController.js:91
 msgid "Show Free"
-msgstr ""
+msgstr "Не занятые"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:145
 #: ui/web/ip/ipam/view/forms/prefix/PrefixPanel.js:99
@@ -9948,19 +9948,19 @@ msgstr ""
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:148
 msgid "Usage"
-msgstr ""
+msgstr "Использовано"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:149
 msgid "Address Usage"
-msgstr ""
+msgstr "Использовано Адресов"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:168
 msgid "Open Prefix Card"
-msgstr ""
+msgstr "Открыть карточку"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:174
 msgid "Show Prefix"
-msgstr ""
+msgstr "Показать префикс"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:201
 msgid "WARNING!!!&nbsp;This prefix is empty! Please add nested prefixes."
@@ -9968,7 +9968,7 @@ msgstr ""
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:215
 msgid "Assigned Addresses"
-msgstr ""
+msgstr "Назначенные Адреса"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:244
 msgid "GW"
@@ -10031,7 +10031,7 @@ msgstr "Политика поиска адресов"
 #: ui/web/ip/prefixprofile/Application.js:123
 #| msgid "Default Prefix Profile"
 msgid "Default Address Profile"
-msgstr ""
+msgstr "Профиль Адреса по умолчанию"
 
 #: ui/web/ip/ipam/view/forms/prefix/PrefixPanel.js:182
 #: ui/web/ip/prefixprofile/Application.js:157
@@ -10089,7 +10089,7 @@ msgstr ""
 
 #: ui/web/ip/ipam/view/forms/tools/ToolsForm.js:85
 msgid "Start zone transfer"
-msgstr ""
+msgstr "Начать передачу зоны"
 
 #: ui/web/ip/ipam/view/forms/tools/ToolsForm.js:86
 msgid ""
@@ -10129,11 +10129,11 @@ msgstr ""
 
 #: ui/web/ip/prefixaccess/Application.js:118
 msgid "By Can View"
-msgstr ""
+msgstr "Может просматривать"
 
 #: ui/web/ip/prefixaccess/Application.js:123
 msgid "By Can Change"
-msgstr ""
+msgstr "Может Редактировать"
 
 #: ui/web/ip/prefixprofile/Application.js:78
 msgid "Prefix Discovery"
@@ -10150,7 +10150,7 @@ msgstr ""
 #: ui/web/ip/prefixprofile/Application.js:132
 #: ui/web/main/label/Application.js:260
 msgid "Propagate"
-msgstr ""
+msgstr "Распространить"
 
 #: ui/web/ip/prefixprofile/Application.js:141
 msgid ""
@@ -10185,17 +10185,17 @@ msgstr ""
 
 #: ui/web/ip/vrfgroup/Application.js:62
 msgid "Address Constraint"
-msgstr ""
+msgstr "Ограничения по адресу"
 
 # | msgid "Cancelled"
 #: ui/web/js/override.js:335
 #| msgid "Cancel"
 msgid "Cancel Sort"
-msgstr ""
+msgstr "Отменить сортировку"
 
 #: ui/web/js/util.js:872 ui/web/js/util.js:884
 msgid "Copy to clipboard"
-msgstr ""
+msgstr "Копировать в буфер"
 
 #: ui/web/kb/kbentry/Application.js:28
 msgid "History"
@@ -10594,36 +10594,36 @@ msgstr "Не удалось сменить пароль: "
 #: ui/web/main/desktop/ChangePassword.js:52
 #| msgid "Password empty"
 msgid "Old Password cannot be empty"
-msgstr ""
+msgstr "Старый пароль не может быть пуст"
 
 #: ui/web/main/desktop/ChangePassword.js:59
 #| msgid "Password empty"
 msgid "New Password cannot be empty"
-msgstr ""
+msgstr "Новый пароль не может быть пуст"
 
 #: ui/web/main/desktop/ChangePassword.js:65
 #| msgid "New Password"
 msgid "Confirm New Password"
-msgstr ""
+msgstr "Подтвердить"
 
 #: ui/web/main/desktop/ChangePassword.js:66
 msgid "Please confirm your new password"
-msgstr ""
+msgstr "Пожалуйста подтвердите новый пароль"
 
 #: ui/web/main/desktop/ChangePassword.js:69
 #| msgid "Password mismatch"
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Пароли не совпадают"
 
 #: ui/web/main/desktop/ChangePassword.js:100
 #| msgid "Last Changed"
 msgid "Password changed"
-msgstr ""
+msgstr "Пароль изменён"
 
 #: ui/web/main/desktop/ChangePassword.js:108
 #| msgid "Change password"
 msgid "Error changing password"
-msgstr ""
+msgstr "Ошибка изменения пароля"
 
 #: ui/web/main/desktop/HeaderPanel.js:43
 msgid "Show remote sync time"
@@ -10665,26 +10665,26 @@ msgstr ""
 #: ui/web/main/desktop/LoginView.js:51
 #| msgid "Retype New Password"
 msgid "Type username and password:"
-msgstr ""
+msgstr "Введите пользователя и пароль"
 
 #: ui/web/main/desktop/LoginView.js:59
 msgid "User name cannot be empty"
-msgstr ""
+msgstr "Имя пользователя не может быть пустым"
 
 #: ui/web/main/desktop/LoginView.js:66
 #| msgid "Password empty"
 msgid "Password cannot be empty"
-msgstr ""
+msgstr "Пароль не может быть пустым"
 
 #: ui/web/main/desktop/LoginView.js:92
 #| msgid "Escalation Time"
 msgid "Session timeout."
-msgstr ""
+msgstr "Время соединения вышло"
 
 #: ui/web/main/desktop/LoginView.js:123
 #| msgid "Failed to clone"
 msgid "Failed to log in"
-msgstr ""
+msgstr "Ошибка захода"
 
 #: ui/web/main/desktop/NavPanel.js:23
 msgid "Navigation"
@@ -10697,7 +10697,7 @@ msgstr "Компактный режим"
 #: ui/web/main/desktop/NavPanel.js:174
 #| msgid "No MAC history found"
 msgid "No matches found"
-msgstr ""
+msgstr "Совпадений не найдено"
 
 #: ui/web/main/desktop/Report.js:23
 #: ui/web/main/reportsubscription/Application.js:34
@@ -10724,7 +10724,7 @@ msgstr "Свернуть панели"
 #: ui/web/main/desktop/WorkplacePanel.js:48
 #| msgid "Load In (% Bandwith)"
 msgid "Loading tab with"
-msgstr ""
+msgstr "Запуск таба с"
 
 #: ui/web/main/desktop/WorkplacePanel.js:116
 msgid "Expand panels"
@@ -10758,7 +10758,7 @@ msgstr "Хранение конфигурации тестов тушенки"
 
 #: ui/web/main/font/Application.js:37 ui/web/main/font/Application.js:60
 msgid "Font Family"
-msgstr ""
+msgstr "Семейство шрифтов"
 
 #: ui/web/main/font/Application.js:73
 msgid "Stylesheet HREF"
@@ -10766,7 +10766,7 @@ msgstr ""
 
 #: ui/web/main/glyph/Application.js:38 ui/web/main/glyph/Application.js:71
 msgid "Font"
-msgstr ""
+msgstr "Шрифт"
 
 #: ui/web/main/glyph/Application.js:77
 msgid "Code (HEX)"
@@ -10863,7 +10863,7 @@ msgstr ""
 #: ui/web/main/home/Application.js:64
 #| msgid "Failed to get data"
 msgid "Failed to get home data"
-msgstr ""
+msgstr "Ошибка при получении данных дашбордов"
 
 #: ui/web/main/imagestore/Application.js:44
 msgid "Content Type"
@@ -10875,7 +10875,7 @@ msgstr "Объект будет загружен"
 
 #: ui/web/main/label/Application.js:68 ui/web/main/label/Application.js:254
 msgid "Protected"
-msgstr ""
+msgstr "Защищена"
 
 #: ui/web/main/label/Application.js:87 ui/web/main/label/Application.js:567
 #: ui/web/sla/slaprobe/Application.js:88
@@ -11010,7 +11010,7 @@ msgstr ""
 
 #: ui/web/main/label/Application.js:278
 msgid "Autogenerated"
-msgstr ""
+msgstr "Создана системой"
 
 #: ui/web/main/label/Application.js:293
 msgid "Allow Auto Create"
@@ -11148,7 +11148,7 @@ msgstr "Вручную"
 
 #: ui/web/main/label/Application.js:943
 msgid "Is Matching"
-msgstr "Совпадает"
+msgstr "По условию"
 
 #: ui/web/main/language/Application.js:22
 #: ui/web/main/language/Application.js:42
@@ -11235,7 +11235,7 @@ msgstr ""
 #: ui/web/main/modeltemplate/Application.js:130
 #| msgid "Default Value"
 msgid "Default State"
-msgstr ""
+msgstr "Статус по умолчанию"
 
 #: ui/web/main/modeltemplate/Application.js:150
 #: ui/web/sa/managedobject/form/View.js:1408
@@ -11302,7 +11302,7 @@ msgstr ""
 #: ui/web/main/modeltemplate/Application.js:384
 #| msgid "Int."
 msgid "Hint"
-msgstr ""
+msgstr "Подсказка"
 
 #: ui/web/main/modeltemplate/Application.js:393
 #: ui/web/main/reportconfig/Application.js:424
@@ -11318,23 +11318,23 @@ msgstr ""
 #: ui/web/main/modeltemplate/Application.js:421
 #| msgid "Validation"
 msgid "Validataion Expr."
-msgstr ""
+msgstr "Выражение проверки"
 
 #: ui/web/main/notificationgroup/Application.js:80
 #| msgid "MAC Discovery Policy"
 msgid "Message Registry Policy"
-msgstr ""
+msgstr "Политика регистрации сообщений"
 
 #: ui/web/main/notificationgroup/Application.js:85
 #| msgid "By Type"
 msgid "By Types"
-msgstr ""
+msgstr "По типу"
 
 #: ui/web/main/notificationgroup/Application.js:90
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:133
 #| msgid "Message Type"
 msgid "Message Types"
-msgstr ""
+msgstr "Типы сообщений"
 
 #: ui/web/main/notificationgroup/Application.js:94
 #: ui/web/main/template/Application.js:84
@@ -11344,33 +11344,33 @@ msgstr "Тип сообщения"
 #: ui/web/main/notificationgroup/Application.js:111
 #| msgid "members"
 msgid "Static Members"
-msgstr ""
+msgstr "Участники"
 
 #: ui/web/main/notificationgroup/Application.js:147
 #| msgid "Interaction Settings"
 msgid "Subscription Settings"
-msgstr ""
+msgstr "Настройки подписки"
 
 #: ui/web/main/notificationgroup/Application.js:164
 #| msgid "Subscriber"
 msgid "Allow Subscribe"
-msgstr ""
+msgstr "Разрешить подписку"
 
 #: ui/web/main/notificationgroup/Application.js:171
 #| msgid "Failed to run script"
 msgid "Add to Subscription"
-msgstr ""
+msgstr "Добавлять в подипску"
 
 #: ui/web/main/notificationgroup/Application.js:178
 #| msgid "Nothing changed"
 msgid "Notify Changed"
-msgstr ""
+msgstr "Уведомлять при добавлении"
 
 #: ui/web/main/notificationgroup/Application.js:189
 #: ui/web/sa/objectdiscoveryrule/Application.js:340
 #| msgid "Match Condition"
 msgid "Match Conditions"
-msgstr ""
+msgstr "Условия Сообщения"
 
 #: ui/web/main/notificationgroup/Application.js:221
 msgid "Test selected groups"
@@ -11427,17 +11427,17 @@ msgstr "Административно-территориальное делен
 #: ui/web/main/remotesystem/Application.js:111
 #| msgid "Managed Object Level"
 msgid "Managed Object Loader Policy"
-msgstr ""
+msgstr "Способ загрузки Устройств"
 
 #: ui/web/main/remotesystem/Application.js:113
 #| msgid "Managed object"
 msgid "As Managed Object"
-msgstr ""
+msgstr "Как устройства"
 
 #: ui/web/main/remotesystem/Application.js:114
 #| msgid "First Discovered"
 msgid "As Discovered"
-msgstr ""
+msgstr "Как обнаруженные"
 
 #: ui/web/main/remotesystem/Application.js:131
 msgid "Network Segment Profile"
@@ -11450,7 +11450,7 @@ msgstr ""
 # | msgid "Prefix Profile"
 #: ui/web/main/remotesystem/Application.js:166
 msgid "IP Prefix Profile"
-msgstr ""
+msgstr "Профиль префикса"
 
 #: ui/web/main/remotesystem/Application.js:191
 msgid "Subscriber Profile"
@@ -11460,62 +11460,62 @@ msgstr "Профиль Абонента"
 #: ui/web/main/remotesystem/Application.js:221
 #| msgid "Enable Metrics"
 msgid "Enable FM Event"
-msgstr ""
+msgstr "События FM"
 
 #: ui/web/main/remotesystem/Application.js:228
 #| msgid "Asset Sync Settings"
 msgid "Sync Settings"
-msgstr ""
+msgstr "Настройки синхронизации"
 
 #: ui/web/main/remotesystem/Application.js:237
 #: ui/web/sa/objectdiscoveryrule/Application.js:194
 #| msgid "Run Policy"
 msgid "Sync Policy"
-msgstr ""
+msgstr "Политика синхр"
 
 #: ui/web/main/remotesystem/Application.js:257
 #| msgid "Interval, sec"
 msgid "Sync Interval, sec"
-msgstr ""
+msgstr "Интервал синхр, сек"
 
 #: ui/web/main/remotesystem/Application.js:272
 #| msgid "Run Snippet"
 msgid "Run Sync At"
-msgstr ""
+msgstr "Запускать после"
 
 #: ui/web/main/remotesystem/Application.js:280
 #| msgid "Default Interval, sec"
 msgid "Event Sync Interval, sec"
-msgstr ""
+msgstr "Интервал синх Событий, сек"
 
 #: ui/web/main/remotesystem/Application.js:295
 #| msgid "Dynamic Classification Policy"
 msgid "Sync Notification Policy"
-msgstr ""
+msgstr "Уведомления по результатам"
 
 #: ui/web/main/remotesystem/Application.js:316
 #| msgid "Json Data"
 msgid "Synd Data"
-msgstr ""
+msgstr "Последняя синхронизация"
 
 #: ui/web/main/remotesystem/Application.js:325
 #| msgid "Last MAC"
 msgid "Last Extract"
-msgstr ""
+msgstr "Последний запуск"
 
 #: ui/web/main/remotesystem/Application.js:332
 #| msgid "Last Login"
 msgid "Last Load"
-msgstr ""
+msgstr "Последнее загрзка"
 
 #: ui/web/main/remotesystem/Application.js:339
 msgid "Last Extract Event"
-msgstr ""
+msgstr "Последняя загрузка событий"
 
 #: ui/web/main/remotesystem/Application.js:348
 #| msgid "Subject Template"
 msgid "Object URL Template"
-msgstr ""
+msgstr "Шаблон URL устройства"
 
 #: ui/web/main/remotesystem/Application.js:355 ui/web/sa/job/Application.js:159
 msgid "Environment"
@@ -11590,12 +11590,12 @@ msgstr "Данные (JSON)"
 #: ui/web/main/reportconfig/Application.js:230
 #| msgid "Action Params"
 msgid "Condition Param"
-msgstr ""
+msgstr "Условие (параметр)"
 
 #: ui/web/main/reportconfig/Application.js:236
 #| msgid "Condition"
 msgid "Condition Value"
-msgstr ""
+msgstr "Условие (значение)"
 
 #: ui/web/main/reportconfig/Application.js:271
 msgid "Templates"
@@ -11604,11 +11604,11 @@ msgstr "Шаблоны"
 #: ui/web/main/reportconfig/Application.js:288
 #| msgid "Report Source"
 msgid "Report Formatter"
-msgstr ""
+msgstr "Построитель отчёта"
 
 #: ui/web/main/reportconfig/Application.js:294
 msgid "Output Type"
-msgstr ""
+msgstr "Формат файла"
 
 #: ui/web/main/reportconfig/Application.js:300
 msgid "SSV"
@@ -11628,7 +11628,7 @@ msgstr "Маска имени файла"
 
 #: ui/web/main/reportconfig/Application.js:314
 msgid "Alterable output"
-msgstr ""
+msgstr "Дополнительные форматы"
 
 #: ui/web/main/reportconfig/Application.js:320
 msgid "Has Preview"
@@ -11648,13 +11648,13 @@ msgstr "Число"
 #: ui/web/main/reportconfig/Application.js:397
 #| msgid "Choice"
 msgid "Choice (radio)"
-msgstr ""
+msgstr "Выбор (одно)"
 
 #: ui/web/main/reportconfig/Application.js:398
 #: ui/web/main/reportconfig/Application.js:410
 #| msgid "Choice"
 msgid "Choice (combo)"
-msgstr ""
+msgstr "Выбор (неск.)"
 
 #: ui/web/main/reportconfig/Application.js:399
 #: ui/web/main/reportconfig/Application.js:411
@@ -11669,7 +11669,7 @@ msgstr "Выбор инстанса"
 #: ui/web/main/reportconfig/Application.js:401
 #: ui/web/main/reportconfig/Application.js:413
 msgid "Model Multi Choice"
-msgstr ""
+msgstr "Выбор инстанса (неск.)"
 
 #: ui/web/main/reportconfig/Application.js:409
 msgid "Choice"
@@ -11796,7 +11796,7 @@ msgstr "Подчеркнутый"
 #: ui/web/main/sync/Application.js:34 ui/web/main/sync/Application.js:72
 #: ui/web/sa/service/Application.js:99 ui/web/sa/service/Application.js:740
 msgid "Instances"
-msgstr ""
+msgstr "Экземпляры"
 
 #: ui/web/main/sync/Application.js:40 ui/web/main/sync/Application.js:67
 msgid "Credentials"
@@ -11826,7 +11826,7 @@ msgstr "Контакты"
 #: ui/web/main/userprofile/Application.js:67
 #| msgid "Notification Group"
 msgid "Notification Group Settings"
-msgstr ""
+msgstr "Настройки уведомлений по группам"
 
 #: ui/web/main/userprofile/Application.js:133
 msgid "Profile saved"
@@ -11839,40 +11839,40 @@ msgstr "Смена языка"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:39
 #| msgid "Change address"
 msgid "Changes saved successfully"
-msgstr ""
+msgstr "Изменения успешно записаны"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:41
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:46
 #| msgid "Failed to save config"
 msgid "Failed to save changes"
-msgstr ""
+msgstr "Ошибка при записи изменений"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:79
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:92
 #| msgid "Watch"
 msgid "Only Watch"
-msgstr ""
+msgstr "При подписке"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:80
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:93
 #| msgid "Favorites"
 msgid "Only Favorites"
-msgstr ""
+msgstr "Только Избранные"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:100
 #| msgid "Preferred Language"
 msgid "Preferred Method"
-msgstr ""
+msgstr "Предпочтительный"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:112
 #| msgid "Title"
 msgid "title-tag"
-msgstr ""
+msgstr "Добавить заголовок"
 
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:117
 #| msgid "Expire"
 msgid "Expired At"
-msgstr ""
+msgstr "Заканчивается После"
 
 #: ui/web/maintenance/maintenance/Application.js:71
 #: ui/web/maintenance/maintenance/Application.js:170
@@ -12350,7 +12350,7 @@ msgstr ""
 
 #: ui/web/pm/measurementunits/Application.js:70
 msgid "Base Measurement Units"
-msgstr ""
+msgstr "Основная единица измерения"
 
 #: ui/web/pm/measurementunits/Application.js:97
 msgid "Dashboard Label"
@@ -12362,15 +12362,15 @@ msgstr ""
 
 #: ui/web/pm/measurementunits/Application.js:110
 msgid "Convert form for BaseUnit"
-msgstr ""
+msgstr "Конвертировать из основной"
 
 #: ui/web/pm/measurementunits/Application.js:114
 msgid "Measurment Unit"
-msgstr ""
+msgstr "Единица измерения"
 
 #: ui/web/pm/measurementunits/Application.js:123
 msgid "Expresseion"
-msgstr ""
+msgstr "Выражение"
 
 #: ui/web/pm/measurementunits/Application.js:133
 msgid "Enumeration"
