@@ -1,18 +1,19 @@
 # ---------------------------------------------------------------------
 # AlarmRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Literal
 
 # Third-party modules
 from bson import ObjectId
 import cachetools
+from noc.core.tt.types import Action as CtxAction, TTAction
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -26,11 +27,15 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.bi.decorator import bi_sync
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
-from noc.core.bi.decorator import bi_sync
+from noc.main.models.timepattern import TimePattern
+from noc.main.models.template import Template
+from noc.aaa.models.user import User
 from .alarmseverity import AlarmSeverity
+from .ttsystem import TTSystem
 from .alarmclass import AlarmClass
 from .escalationprofile import EscalationProfile
 
@@ -78,27 +83,70 @@ class Action(EmbeddedDocument):
     when = StringField(
         default="raise",
         choices=[
+            ("any", "Update any"),  # Update
             ("raise", "When raise alarm"),
             ("clear", "When clear alarm"),
         ],
     )
-    policy = StringField(
-        default="continue",
+    delay: int = IntField(min_value=0, default=0, max_value=3600)
+    match_ack: Literal["any", "ack", "unack"] = StringField(default="any")
+    time_pattern: Optional["TimePattern"] = ForeignKeyField(TimePattern)
+    min_severity: Optional["AlarmSeverity"] = ReferenceField(AlarmSeverity)
+    action = StringField(
         choices=[
-            ("continue", "Continue processed"),
-            ("drop", "Drop Alarm"),
-            ("rewrite", "Rewrite Alarm Class"),
+            ("create_tt", "Create TT"),
+            ("notify", "Notification"),
+            ("log", "Add Log"),
+            ("ack", "Acknowledge"),  # Unack if not clear ?
+            ("handler", "Handler"),
+            ("subscribe", "Subscribe"),
+            ("clear", "Clear Alarm"),
         ],
+        required=True,
     )
+    severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
-    severity: AlarmSeverity = ReferenceField(AlarmSeverity)
+    tt_system = ReferenceField(TTSystem, required=False)
+    user = ReferenceField(User, required=False)
+    severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
+    message: str = StringField(required=False)
+    template: Optional["Template"] = ForeignKeyField(Template, required=False)
+    allow_fail: bool = BooleanField(default=True)
+    stop_processing: bool = BooleanField(default=False)
+    # manually: bool = BooleanField(default=True)
     # Sync collection Default ?
-    alarm_class = PlainReferenceField(AlarmClass)
 
     def __str__(self):
-        return f"{self.when}: {self.policy}"
+        return f"{self.when}: {self.action}"
+
+    def get_action(self) -> "CtxAction":
+        """"""
+        action = TTAction(self.action)
+        a = CtxAction(
+            delay=self.delay,
+            action=action,
+            ack=self.match_ack,
+            when={"any": "any", "raise": "on_start", "clear": "on_end"}[self.when],
+            min_severity=self.min_severity.id if self.min_severity else None,
+            max_retries=1,
+            allow_fail=self.allow_fail,
+            stop_processing=self.stop_processing,
+        )
+        match action:
+            case TTAction.CREATE_TT, TTAction.CLOSE_TT:
+                a.key = str(self.tt_system.id)
+            case TTAction.ACK, TTAction.SUBSCRIBE:
+                a.key = str(self.user.id)
+            case TTAction.NOTIFY:
+                a.key = str(self.notification_group.id)
+            case TTAction.LOG:
+                a.key = self.message
+        if self.time_pattern:
+            a.time_pattern = self.time_pattern.time_pattern
+        if self.template:
+            a.template = str(self.template.id)
+        return a
 
 
 @bi_sync
@@ -131,6 +179,15 @@ class AlarmRule(Document):
         ],
         default="AL",
     )
+    rule_action = StringField(
+        choices=[
+            ("continue", "Continue processed"),
+            ("drop", "Drop Alarm"),
+            ("rewrite", "Rewrite Alarm Class"),
+        ],
+        default="continue",
+    )
+    alarm_class = PlainReferenceField(AlarmClass, required=False)
     stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)

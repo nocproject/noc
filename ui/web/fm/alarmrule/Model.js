@@ -55,6 +55,20 @@ Ext.define("NOC.fm.alarmrule.Model", {
             persist: false
         },
         {
+            name: "alarm_class",
+            type: "string"
+        },
+        {
+            name: "alarm_class__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "rule_action",
+            type: "string",
+            defaultValue: "continue"
+        },
+        {
             name: "stop_processing",
             type: "boolean",
             defaultValue: false
@@ -63,6 +77,6 @@ Ext.define("NOC.fm.alarmrule.Model", {
             name: "bi_id",
             type: "string",
             persist: false
-        },
+        }
     ]
 });

@@ -16,6 +16,9 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.fm.alarmseverity.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
+        "NOC.main.template.LookupField",
+        "NOC.main.timepattern.LookupField",
+        "NOC.aaa.user.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmrule.Model",
@@ -59,10 +62,10 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     boxLabel: __("Active")
                 },
                 {
-                    name: 'description',
-                    xtype: 'textarea',
-                    fieldLabel: __('Description'),
-                    uiStyle: 'large'
+                    name: "description",
+                    xtype: "textarea",
+                    fieldLabel: __("Description"),
+                    uiStyle: "large"
                 },
                 {
                     name: "severity_policy",
@@ -77,6 +80,19 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     ],
                     uiStyle: "medium",
                     value: "AL",
+                },
+                {
+                    name: "rule_action",
+                    xtype: "combobox",
+                    fieldLabel: __("Action"),
+                    allowBlank: true,
+                    store: [
+                        ["continue", __("Continue processed")],
+                        ["drop", __("Drop Alarm")],
+                        ["rewrite", __("Rewrite Alarm Class")]
+                    ],
+                    uiStyle: "medium",
+                    value: "continue",
                 },
                 {
                     name: "groups",
@@ -153,6 +169,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     fieldLabel: __("Actions"),
                     columns: [
                         {
+                            text: __("Delay"),
+                            dataIndex: "delay",
+                            editor: "numberfield",
+                            width: 75
+                        },
+                        {
                             text: __("When Do"),
                             dataIndex: "when",
                             width: 100,
@@ -170,59 +192,105 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
-                            text: __("Action Policy"),
-                            dataIndex: "policy",
+                            text: __("Match Ack"),
+                            dataIndex: "alarm_ack",
                             width: 100,
-                            allowBlank: false,
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["continue", __("Continue Processed")],
-                                    ["drop", __("Drop Alarm")],
-                                    ["rewrite", __("Rewrite AlarmClass")]
+                                    ["ack", __("Acknowledge")],
+                                    ["nack", __("Not Acknowledge")],
+                                    ["any", __("Any")]
                                 ]
                             },
-                            value: "continue",
                             renderer: NOC.render.Choices({
-                                "continue": __("Continue Processed"),
-                                "drop": __("Drop Alarm"),
-                                "rewrite": __("Rewrite AlarmClass")
+                                "ack": __("Acknowledge"),
+                                "nack": __("Not Acknowledge"),
+                                "any": __("Any")
                             })
                         },
                         {
+                            text: __("Time Pattern"),
+                            dataIndex: "time_pattern",
+                            editor: "main.timepattern.LookupField",
+                            renderer: NOC.render.Lookup("time_pattern")
+                        },
+                        {
                             text: __("Severity"),
-                            dataIndex: "severity",
+                            dataIndex: "min_severity",
                             editor: "fm.alarmseverity.LookupField",
+                            width: 120,
+                            renderer: NOC.render.Lookup("min_severity")
+                        },
+                        {
+                            text: __("Action"),
+                            dataIndex: "action",
                             width: 100,
-                            renderer: NOC.render.Lookup("severity")
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["create_tt", __("Create TT")],
+                                    ["notify", __("Notification")],
+                                    ["log", __("Add Log")],
+                                    ["ack", __("Acknowledge")],
+                                    ["handler", __("Handler")],
+                                    ["subscribe", __("Subscribe")],
+                                    // ["clear", __("Clear Alarm")],
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "ack": __("Acknowledge"),
+                                "nack": __("Not Acknowledge"),
+                                "any": __("Any")
+                            })
+                        },
+                        {
+                            text: __("TT System"),
+                            dataIndex: "tt_system",
+                            editor: "fm.ttsystem.LookupField",
+                            width: 120,
+                            renderer: NOC.render.Lookup("tt_system")
                         },
                         {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",
                             width: 150,
-                            allowBlank: true,
                             renderer: NOC.render.Lookup("notification_group")
                         },
                         {
-                            text: __("Handler"),
-                            dataIndex: "handler",
-                            editor: {
-                                xtype: "main.handler.LookupField",
-                                query: {
-                                    "allow_fm_alarmgroup": true
-                                }
-                            },
-                            renderer: NOC.render.Lookup("handler"),
-                            width: 200
+                            text: __("Template"),
+                            dataIndex: "template",
+                            editor: "main.template.LookupField",
+                            width: 150,
+                            renderer: NOC.render.Lookup("template")
                         },
                         {
-                            text: __("Alarm Class"),
-                            dataIndex: "alarm_class",
-                            editor: "fm.alarmclass.LookupField",
-                            allowBlank: true,
-                            renderer: NOC.render.Lookup("alarm_class"),
-                            width: 250
+                            text: __("User"),
+                            dataIndex: "user",
+                            editor: "aaa.user.LookupField",
+                            width: 100,
+                            renderer: NOC.render.Lookup("user")
+                        },
+                        // {
+                        //     text: __("Max. Repeats"),
+                        //     dataIndex: "max_repeats",
+                        //     editor: "numberfield",
+                        //     width: 75
+                        // },
+                        {
+                            text: __("Allow Fail"),
+                            dataIndex: "allow_fail",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Stop"),
+                            dataIndex: "stop_processing",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
                         }
                     ]
                 },
