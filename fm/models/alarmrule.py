@@ -22,7 +22,7 @@ from mongoengine.fields import (
     LongField,
     IntField,
     ReferenceField,
-    EmbeddedDocumentField,
+    EmbeddedDocumentListField,
 )
 
 # NOC modules
@@ -108,7 +108,7 @@ class Action(EmbeddedDocument):
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     tt_system = ReferenceField(TTSystem, required=False)
-    user = ReferenceField(User, required=False)
+    user = ForeignKeyField(User, required=False)
     severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
     message: str = StringField(required=False)
     template: Optional["Template"] = ForeignKeyField(Template, required=False)
@@ -162,11 +162,11 @@ class AlarmRule(Document):
     description = StringField()
     is_active = BooleanField(default=True)
     #
-    match: List[Match] = ListField(EmbeddedDocumentField(Match))
+    match: List[Match] = EmbeddedDocumentListField(Match)
     #
-    groups: List[Group] = ListField(EmbeddedDocumentField(Group))
+    groups: List[Group] = EmbeddedDocumentListField(Group)
     #
-    actions: List[Action] = ListField(EmbeddedDocumentField(Action))
+    actions: List[Action] = EmbeddedDocumentListField(Action)
     #
     escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
     #
