@@ -140,6 +140,29 @@ Ext.define("NOC.fm.alarmrule.Application", {
                   ]
                 },
                 {
+                    name: "min_severity",
+                    xtype: "fm.alarmseverity.LookupField",
+                    fieldLabel: __("Min./Set Severity"),
+                    name: "escalation_profile",
+                    xtype: "fm.escalationprofile.LookupField",
+                    fieldLabel: __("Escalation Profile"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
+                    name: "rule_action",
+                    xtype: "combobox",
+                    fieldLabel: __("Action"),
+                    allowBlank: true,
+                    store: [
+                        ["continue", __("Continue processed")],
+                        ["drop", __("Drop Alarm")],
+                        ["rewrite", __("Rewrite Alarm Class")]
+                    ],
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
                     name: "escalation_profile",
                     xtype: "fm.escalationprofile.LookupField",
                     fieldLabel: __("Escalation Profile"),
