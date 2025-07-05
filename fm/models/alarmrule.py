@@ -120,6 +120,8 @@ class Action(EmbeddedDocument):
     handler: Optional["Handler"] = PlainReferenceField(Handler, required=False)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     user: Optional["User"] = ForeignKeyField(User, required=False)
+    tt_system = ReferenceField(TTSystem, required=False)
+    severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
     template: Optional["Template"] = ForeignKeyField(Template, required=False)
     message: str = StringField(required=False)
     object_action: Optional["ObjectAction"] = ReferenceField(ObjectAction)
