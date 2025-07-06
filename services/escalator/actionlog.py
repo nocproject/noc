@@ -17,7 +17,7 @@ from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.fm.models.ttsystem import TTSystem
-from noc.services.escalator.typing import JobStatus, ActionStatus
+from noc.services.escalator.types import JobStatus, ActionStatus
 
 
 @dataclass(frozen=True)
