@@ -94,7 +94,7 @@ class Command(BaseCommand):
             actions=profile.get_actions(),
             start_at=alarm.timestamp,
         )
-        job = AlarmAutomationJob.from_request(req)
+        job = AlarmAutomationJob.from_request(req, dry_run=True)
         job.run()
 
     def handle_close(self, close_alarms=None, *args, **kwargs):

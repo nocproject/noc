@@ -122,7 +122,7 @@ class AlarmAutomationJob(Job):
         # self.end_at: Optional[datetime.datetime] = None
         self.affected_services = []
         # Alarm Severity
-        self.severity = 0
+        self.severity = self.alarm.severity
         self.total_objects = []
         self.total_services = []
         self.total_subscribers = []
@@ -177,11 +177,19 @@ class AlarmAutomationJob(Job):
                 self.logger.debug("[%s] Processed action", aa)
                 if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
                     # Skip already running job
+                    if self.dry_run:
+                        self.logger.debug("[%s] Action already executed. Next...", aa)
                     continue
                 elif not aa.is_match(self.severity, now):
                     # Set Skip (Condition)
+                    self.logger.debug(
+                        "[%s] Action severity condition [%s] not Match. Next...",
+                        aa.action,
+                        self.severity,
+                    )
                     continue
                 elif is_end and aa.when != "on_end":
+                    self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                     continue
                 elif self.dry_run:
                     wait_interval = (now - aa.timestamp).total_seconds()
@@ -386,7 +394,7 @@ class AlarmAutomationJob(Job):
             "total_objects": self.total_objects,
             "total_services": self.total_services,
             "total_subscribers": self.total_subscribers,
-            "expired": None,
+            "expires": None,
         }
         return r
 
@@ -605,20 +613,20 @@ class AlarmAutomationJob(Job):
     # Status API
     @property
     def is_waiting(self) -> bool:
-        return self.status == JobStatus.WAITING
+        return self.status == JobStatus.WAIT
 
     @property
     def is_running(self) -> bool:
-        return self.status == JobStatus.RUNNING
+        return self.status == JobStatus.PENDING
 
     @property
     def is_cancelled(self) -> bool:
-        return self.status == JobStatus.CANCELLED
+        return self.status == JobStatus.CANCEL
 
     @property
     def is_complete_success(self) -> bool:
         return self.status in (
-            JobStatus.SUCCESS,
+            JobStatus.END,
             JobStatus.WARNING,
         )
 
@@ -626,14 +634,14 @@ class AlarmAutomationJob(Job):
     def is_complete_failed(self) -> bool:
         return self.status in (
             JobStatus.FAILED,
-            JobStatus.CANCELLED,
+            JobStatus.CANCEL,
         )
 
     @property
     def is_complete(self) -> bool:
         return self.status in (
-            JobStatus.SUCCESS,
+            JobStatus.END,
             JobStatus.WARNING,
             JobStatus.FAILED,
-            JobStatus.CANCELLED,
+            JobStatus.CANCEL,
         )

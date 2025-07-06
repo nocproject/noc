@@ -29,7 +29,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.fm.enum import AlarmAction
 from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
-from noc.core.tt.types import TTSystemConfig, TTAction, Action, EscalationRequest
+from noc.core.tt.types import TTSystemConfig, TTAction, Action
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -103,24 +103,26 @@ class EscalationItem(EmbeddedDocument):
         """"""
         r = []
         if self.notification_group:
-            r.append(
+            r += [
                 Action(
                     delay=self.delay,
                     action=TTAction.NOTIFY,
                     key=str(self.notification_group.id),
+                    template=str(self.template.id) if self.template else None,
                     ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
                     min_severity=self.min_severity.severity if self.min_severity else None,
                     time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
                     max_retries=self.max_repeats,
                     allow_fail=True,
                 )
-            )
+            ]
         if self.create_tt and self.tt_system:
             r.append(
                 Action(
                     delay=self.delay,
                     action=TTAction.CREATE_TT,
                     key=str(self.tt_system.id),
+                    template=str(self.template.id) if self.template else None,
                     ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
                     min_severity=self.min_severity.severity if self.min_severity else None,
                     time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
