@@ -298,6 +298,7 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             renderer: NOC.render.Bool
                         },
                         {
+<<<<<<< HEAD
                             text: __("Register Msg."),
                             dataIndex: "register_message",
                             editor: "checkboxfield",

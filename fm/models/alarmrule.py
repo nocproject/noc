@@ -117,6 +117,7 @@ class Action(EmbeddedDocument):
             ("clear", "When clear alarm"),
         ],
     )
+    delay: int = IntField(min_value=0, default=0, max_value=3600)
     handler: Optional["Handler"] = PlainReferenceField(Handler, required=False)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
     user: Optional["User"] = ForeignKeyField(User, required=False)

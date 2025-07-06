@@ -273,7 +273,7 @@ class EscalationProfile(Document):
     )
     # Close alarm after End
     close_alarm = BooleanField(default=False)
-    escalations: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)  # Chain
+    # escalations: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)  # Chain
     repeat_escalations = StringField(
         choices=[
             ("N", "Newer"),
