@@ -65,7 +65,7 @@ from noc.core.debug import error_report
 from noc.core.mx import MessageType
 from noc.config import config
 from noc.core.span import get_current_span
-from noc.core.fm.enum import RCA_NONE, RCA_OTHER
+from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
 from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
@@ -673,6 +673,15 @@ class ActiveAlarm(Document):
         if days:
             r = "%dd %s" % (days, r)
         return r
+
+    def has_merged_downlinks(self):
+        """
+        Check if alarm has merged downlinks
+        """
+        return bool(
+            ActiveAlarm.objects.filter(root=self.id, rca_type=RCA_DOWNLINK_MERGE).first()
+        )
+
 
     @property
     def effective_style(self) -> "Style":
