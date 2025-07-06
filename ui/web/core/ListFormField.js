@@ -122,7 +122,7 @@ Ext.define("NOC.core.ListFormField", {
   },
   getValue: function(){
     return this.panel.query("form").map(form => {
-      let properties = this.fields.map(field =>
+      let properties = form.query("[name]").map(field =>
         [field.name, form.down(`[name=${field.name}]`).getValue()]);
       return Object.fromEntries(properties);
     });
@@ -231,7 +231,7 @@ Ext.define("NOC.core.ListFormField", {
     formPanel.setBodyStyle("border-width", "3 3 0 3");
     formPanel.setBodyStyle("margin-left", "3px");
     if(record != null){
-      formPanel.items.each(function(field){
+      formPanel.query("[name]").forEach(function(field){
         if(Ext.isFunction(field.setValue)){
           field.setValue(record[field.name])
         }

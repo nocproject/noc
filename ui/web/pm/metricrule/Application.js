@@ -66,47 +66,44 @@ Ext.define("NOC.pm.metricrule.Application", {
           // minHeight: 600,
           labelAlign: "top",
           items: [
-            // {
-            //   xtype: "container",
-            //   layout: "hbox",
-            //   defaults: {
-            //     labelAlign: "top",
-            //     padding: "0 8 0 0",
-            //   },
-            //   items: [
             {
-              name: "is_active",
-              xtype: "checkbox",
-              boxLabel: __("Active"),
-              // isFormField: false,
-              width: 100,
-            },
-            {
-              name: "metric_action",
-              xtype: "pm.metricaction.LookupField",
-              fieldLabel: __("Metric Action"),
-              // isFormField: false,
-              listeners: {
-                scope: me,
-                select: me.onSelectQuery,
+              xtype: "container",
+              layout: "hbox",
+              defaults: {
+                labelAlign: "top",
+                padding: "0 8 0 0",
               },
-              width: 400,
-              allowBlank: true,
+              items: [
+                {
+                  name: "is_active",
+                  xtype: "checkbox",
+                  boxLabel: __("Active"),
+                  width: 100,
+                },
+                {
+                  name: "metric_action",
+                  xtype: "pm.metricaction.LookupField",
+                  fieldLabel: __("Metric Action"),
+                  listeners: {
+                    scope: me,
+                    select: me.onSelectQuery,
+                  },
+                  width: 400,
+                  allowBlank: true,
+                },
+                {
+                  xtype: "pm.metrictype.LookupField",
+                  fieldLabel: __("Metric Type"),
+                  tooltip: __("Metric Type inputs"),
+                  name: "metric_type",
+                  labelWidth: 150,
+                  width: 500,
+                  listeners: {
+                    render: me.addTooltip,
+                  },
+                },
+              ],
             },
-            {
-              xtype: "pm.metrictype.LookupField",
-              fieldLabel: __("Metric Type"),
-              // isFormField: false,
-              tooltip: __("Metric Type inputs"),
-              name: "metric_type",
-              labelWidth: 150,
-              width: 500,
-              listeners: {
-                render: me.addTooltip,
-              },
-            },
-            // ],
-            // },
             {
               name: "thresholds",
               xtype: "gridfield",

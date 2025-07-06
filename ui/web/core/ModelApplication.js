@@ -1100,12 +1100,6 @@ Ext.define("NOC.core.ModelApplication", {
       if(Ext.isEmpty(field) || !Ext.isFunction(field.getModelData)){
         return;
       }
-      // hack to get instance of .TreeCombo class
-      // if(Ext.String.endsWith(fields[f].xtype, ".TreeCombo")){
-      //   field = me.fields[f];
-      // } else{
-      //   field = fields[f];
-      // }
       if(field.inEditor){
         // Skip grid inline editors
         // WARNING: Will skip other inline editors
