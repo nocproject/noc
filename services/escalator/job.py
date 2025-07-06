@@ -12,7 +12,7 @@ import operator
 import time
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import List, Set, Iterable, Optional, Dict, Any, DefaultDict, Union, Iterator
+from typing import List, Set, Iterable, Optional, Dict, Any, DefaultDict, Union
 
 # Third-party modules
 from bson import ObjectId
@@ -44,7 +44,7 @@ from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
 from noc.services.escalator.alarmaction import GroupAction
-from noc.services.escalator.typing import JobStatus, ActionStatus, ItemStatus
+from noc.services.escalator.types import JobStatus, ActionStatus, ItemStatus
 from noc.services.escalator.actionlog import ActionLog, ActionResult
 from noc.maintenance.models.maintenance import Maintenance
 
