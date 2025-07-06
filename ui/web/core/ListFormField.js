@@ -121,14 +121,11 @@ Ext.define("NOC.core.ListFormField", {
     return values;
   },
   getValue: function(){
-    var records = [];
-    this.panel.query("form").forEach(form => {
-      this.fields.forEach(field => {
-        let value = {[field.name]: form.down(`[name=${field.name}]`).getValue()};
-        records.push(value);
-      });
+    return this.panel.query("form").map(form => {
+      let properties = this.fields.map(field =>
+        [field.name, form.down(`[name=${field.name}]`).getValue()]);
+      return Object.fromEntries(properties);
     });
-    return records;
   },
   setValue: function(v){
     var me = this;
