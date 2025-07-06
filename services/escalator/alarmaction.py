@@ -26,7 +26,7 @@ from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.aaa.models.user import User
 from noc.services.escalator.actionlog import ActionResult
-from .typing import ActionStatus
+from .types import ActionStatus
 
 
 class GroupAction(object):

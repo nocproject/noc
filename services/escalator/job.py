@@ -599,11 +599,6 @@ class AlarmAutomationJob(Job):
         return not self.is_waiting
 
     @property
-    def parent(self):
-        """Disable Parent Job"""
-        return None
-
-    @property
     def has_children(self) -> bool:
         return False
 
@@ -642,7 +637,3 @@ class AlarmAutomationJob(Job):
             JobStatus.FAILED,
             JobStatus.CANCELLED,
         )
-
-    @property
-    def allow_fail(self) -> bool:
-        return True

@@ -27,9 +27,9 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember
 from noc.core.fm.enum import AlarmAction
 from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
+from noc.core.tt.types import TTSystemConfig, TTAction, Action, EscalationRequest
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -99,21 +99,36 @@ class EscalationItem(EmbeddedDocument):
     def __str__(self):
         return f"{self.delay}: {self.create_tt}/{self.template}"
 
-    @property
-    def member(self) -> Optional[EscalationMember]:
-        if self.create_tt:
-            return EscalationMember.TT_SYSTEM
-        elif self.notification_group:
-            return EscalationMember.NOTIFICATION_GROUP
-        return None
-
-    def get_key(self, tt_system: Optional[str] = None) -> str:
-        if self.member == EscalationMember.TT_SYSTEM:
-            tt_system = tt_system or self.tt_system.id
-            return str(tt_system)
-        if self.member == EscalationMember.NOTIFICATION_GROUP:
-            return str(self.notification_group.id)
-        return ""
+    def get_actions(self) -> List["Action"]:
+        """"""
+        r = []
+        if self.notification_group:
+            r.append(
+                Action(
+                    delay=self.delay,
+                    action=TTAction.NOTIFY,
+                    key=str(self.notification_group.id),
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    max_retries=self.max_repeats,
+                    allow_fail=True,
+                )
+            )
+        if self.create_tt and self.tt_system:
+            r.append(
+                Action(
+                    delay=self.delay,
+                    action=TTAction.CREATE_TT,
+                    key=str(self.tt_system.id),
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    max_retries=self.max_repeats,
+                    allow_fail=True,
+                )
+            )
+        return r
 
     def get_config(
         self,
@@ -297,7 +312,25 @@ class EscalationProfile(Document):
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
         return EscalationProfile.objects.filter(id=oid).first()
 
-    def get_actions(
+    @property
+    def is_wait_ack(self) -> bool:
+        """
+        Check Escalation Wait alarm acknowledge
+        :return:
+        """
+        for item in self.escalations:
+            if item.wait_ack:
+                return True
+        return False
+
+    @property
+    def max_repeats(self) -> int:
+        if not self.escalations:
+            return 0
+        r = (e.max_repeats or 0 for e in self.escalations)
+        return max(r)
+
+    def get_tt_actions(
         self,
         user: Optional[User] = None,
         group: Optional[Group] = None,
@@ -366,3 +399,11 @@ class EscalationProfile(Document):
             allowed_actions=ma,
         )
         return req
+    def get_actions(self) -> List["Action"]:
+        """"""
+        r = []
+        for a in self.escalations:
+            r += a.get_actions()
+        return r
+
+    # get_default() - > Create Default

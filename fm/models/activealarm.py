@@ -702,6 +702,15 @@ class ActiveAlarm(Document):
             r = "%dd %s" % (days, r)
         return r
 
+    def has_merged_downlinks(self):
+        """
+        Check if alarm has merged downlinks
+        """
+        return bool(
+            ActiveAlarm.objects.filter(root=self.id, rca_type=RCA_DOWNLINK_MERGE).first()
+        )
+
+
     @property
     def effective_style(self) -> "Style":
         if self.custom_style:
