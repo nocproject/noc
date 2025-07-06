@@ -17,11 +17,12 @@ from noc.core.tt.types import EscalationRequest, Action, ActionItem, TTAction
 from noc.services.escalator.job import AlarmAutomationJob
 from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.utils import get_alarm
+from noc.fm.models.escalationprofile import EscalationProfile
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.crm.models.subscriberprofile import SubscriberProfile
-from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.core.defer import call_later
 
 
@@ -41,12 +42,13 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "run_alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
         )
-        test_parser = subparsers.add_parser("test")
+        test_profile_parser = subparsers.add_parser("test-profile")
         # test_parser.add_argument("--profile", help="Escalation Profile", required=True)
-        test_parser.add_argument(
+        test_profile_parser.add_argument("--profile", help="Escalation Profile", required=True)
+        test_profile_parser.add_argument(
             "--trace", action="store_true", default=False, help="Trace process"
         )
-        test_parser.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
+        test_profile_parser.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
         #
         close_parser = subparsers.add_parser("close")
         close_parser.add_argument(
@@ -55,7 +57,7 @@ class Command(BaseCommand):
 
     def handle(self, cmd, *args, **options):
         connect()
-        return getattr(self, "handle_%s" % cmd)(*args, **options)
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     def handle_check(self, check_alarms=None, *args, **kwargs):
         check_alarms = check_alarms or []
@@ -82,20 +84,18 @@ class Command(BaseCommand):
             else:
                 self.print("ERROR: Alarm %s is not found. Skipping" % alarm)
 
-    def handle_test(self, alarms, trace=False, *args, **options):
+    def handle_test_profile(self, alarms, profile, trace=False, *args, **options):
         self.trace = trace
         alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
-        # profile = EscalationProfile.get_by_id(profile)
-        # escalation_doc = Escalation.from_alarm(alarm, profile)
+        profile = EscalationProfile.get_by_id(profile)
         req = EscalationRequest(
             item=ActionItem(alarm=str(alarm.id)),
             ctx=0,
-            actions=[Action(action=TTAction.NOTIFY, key="2", template="30",delay=50)],
-            timestamp=alarm.timestamp,
+            actions=profile.get_actions(),
+            start_at=alarm.timestamp,
         )
         job = AlarmAutomationJob.from_request(req)
         job.run()
-        # self.run_job(ESCALATION_JOB, escalation_doc)
 
     def handle_close(self, close_alarms=None, *args, **kwargs):
         close_alarms = close_alarms or []
