@@ -201,30 +201,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
-                            text: __("Match Ack"),
-                            dataIndex: "alarm_ack",
-                            width: 100,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["ack", __("Acknowledge")],
-                                    ["nack", __("Not Acknowledge")],
-                                    ["any", __("Any")]
-                                ]
-                            },
-                            renderer: NOC.render.Choices({
-                                "ack": __("Acknowledge"),
-                                "nack": __("Not Acknowledge"),
-                                "any": __("Any")
-                            })
-                        },
-                        {
-                            text: __("Time Pattern"),
-                            dataIndex: "time_pattern",
-                            editor: "main.timepattern.LookupField",
-                            renderer: NOC.render.Lookup("time_pattern")
-                        },
-                        {
                             text: __("Severity"),
                             dataIndex: "min_severity",
                             editor: "fm.alarmseverity.LookupField",
@@ -238,27 +214,21 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: {
                                 xtype: "combobox",
                                 store: [
-                                    ["create_tt", __("Create TT")],
                                     ["notify", __("Notification")],
                                     ["log", __("Add Log")],
                                     ["ack", __("Acknowledge")],
                                     ["handler", __("Handler")],
-                                    ["subscribe", __("Subscribe")],
+                                    ["subscribe", __("Subscribe")]
                                     // ["clear", __("Clear Alarm")],
                                 ]
                             },
                             renderer: NOC.render.Choices({
+                                "notify": __("Notification"),
+                                "log": __("Add Log"),
                                 "ack": __("Acknowledge"),
-                                "nack": __("Not Acknowledge"),
-                                "any": __("Any")
+                                "handler": __("Handler"),
+                                "subscribe": __("Subscribe")
                             })
-                        },
-                        {
-                            text: __("TT System"),
-                            dataIndex: "tt_system",
-                            editor: "fm.ttsystem.LookupField",
-                            width: 120,
-                            renderer: NOC.render.Lookup("tt_system")
                         },
                         {
                             text: __("Notification Group"),

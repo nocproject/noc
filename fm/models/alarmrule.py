@@ -89,12 +89,10 @@ class Action(EmbeddedDocument):
         ],
     )
     delay: int = IntField(min_value=0, default=0, max_value=3600)
-    match_ack: Literal["any", "ack", "unack"] = StringField(default="any")
     time_pattern: Optional["TimePattern"] = ForeignKeyField(TimePattern)
     min_severity: Optional["AlarmSeverity"] = ReferenceField(AlarmSeverity)
     action = StringField(
         choices=[
-            ("create_tt", "Create TT"),
             ("notify", "Notification"),
             ("log", "Add Log"),
             ("ack", "Acknowledge"),  # Unack if not clear ?
@@ -107,7 +105,6 @@ class Action(EmbeddedDocument):
     severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    tt_system = ReferenceField(TTSystem, required=False)
     user = ForeignKeyField(User, required=False)
     severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
     message: str = StringField(required=False)

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EscalationProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -173,7 +173,7 @@ class EscalationProfile(Document):
     )
     # Close alarm after End
     close_alarm = BooleanField(default=False)
-    escalations: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)  # Chain
+    # escalations: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)  # Chain
     repeat_escalations = StringField(
         choices=[
             ("N", "Newer"),
@@ -237,7 +237,7 @@ class EscalationProfile(Document):
             if a.ack:
                 r += [TTAction.ACK, TTAction.UN_ACK]
             if a.close:
-                r.append(TTAction.CLOSE)
+                r.append(TTAction.CLEAR)
         return frozenset(r)
 
     def get_tt_system_config(self, tt_system: TTSystem) -> TTSystemConfig:
@@ -258,3 +258,5 @@ class EscalationProfile(Document):
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
         return self.end_condition == "CT" or self.end_condition == "M"
+
+    # get_default() - > Create Default
