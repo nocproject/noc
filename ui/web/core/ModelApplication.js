@@ -903,7 +903,7 @@ Ext.define("NOC.core.ModelApplication", {
   newRecord: function(defaults){
     var fv = {};
     this.form.getFields().each(function(field){
-      if(["core.tagfield", "tagfield"].indexOf(field.xtype) !== -1){
+      if(["core.tagfield", "tagfield", "listform"].includes(field.xtype)){
         field.setValue([]);
       } else{
         field.setValue("");
@@ -956,7 +956,7 @@ Ext.define("NOC.core.ModelApplication", {
       if(field.length === 1){
         field[0].restoreById(data[v]);
       } else{
-        field = me.form.findField(v);
+        field = me.down(`[name=${v}]`);
         if(!field){
           return;
         }
@@ -1091,32 +1091,23 @@ Ext.define("NOC.core.ModelApplication", {
   },
   // Returns form data
   getFormData: function(){
-    var me = this,
-      fields = me.form.getFields().items.filter(function(item){
-        return !(Object.prototype.hasOwnProperty.call(item, "isListForm") && item.isListForm)
-      }),
-      f, field, data, name,
-      fLen = fields.length,
-      values = {};
-    for(f = 0; f < fLen; f++){
-      // hack to get instance of .TreeCombo class
-      if(Ext.String.endsWith(fields[f].xtype, ".TreeCombo")){
-        field = me.fields[f];
-      } else{
-        field = fields[f];
+    var data, name, values = {};
+    this.fields.forEach(fieldCfg =>{
+      if(Ext.isEmpty(fieldCfg.name)){
+        return;
+      }
+      var field = this.down(`[name=${fieldCfg.name}]`);
+      if(Ext.isEmpty(field) || !Ext.isFunction(field.getModelData)){
+        return;
       }
       if(field.inEditor){
         // Skip grid inline editors
         // WARNING: Will skip other inline editors
-        continue;
-      }
-      if(!Ext.isFunction(field.getModelData)){
-        // Skip fields without data, e.g. FieldSet
-        continue;
+        return;
       }
       if(field.xtype === "radiofield" && !field.getValue()){
         // Skip unchecked field
-        continue;
+        return;
       }
       data = field.getModelData();
       name = field.getName();
@@ -1128,7 +1119,7 @@ Ext.define("NOC.core.ModelApplication", {
       if(Ext.isArray(data)){
         values[name] = data;
       }
-    }
+    });
     return values;
   },
   //
