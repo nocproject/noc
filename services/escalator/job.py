@@ -12,7 +12,7 @@ import operator
 import time
 from dataclasses import dataclass
 from collections import defaultdict
-from typing import List, Set, Iterable, Optional, Dict, Any, DefaultDict, Union
+from typing import List, Set, Iterable, Optional, Dict, Any, DefaultDict, Union, Iterator
 
 # Third-party modules
 from bson import ObjectId
@@ -25,6 +25,7 @@ from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.perf import metrics
+from noc.core.runner.job import Job
 from noc.core.debug import error_report
 from noc.core.tt.types import (
     EscalationGroupPolicy,
@@ -70,7 +71,7 @@ class Item(object):
         return {"alarm": self.alarm.id, "status": self.status.value}
 
 
-class AlarmAutomationJob(object):
+class AlarmAutomationJob(Job):
     """
     Runtime Alarm Automation
     """
@@ -100,9 +101,7 @@ class AlarmAutomationJob(object):
         dry_run: bool = False,
         static_delay: Optional[int] = None,
     ):
-        self.id = id
-        self.name = name
-        self.status = status
+        super().__init__(id=id, name=name, status=status)
         self.items: List[Item] = items
         self.policy = policy or EscalationGroupPolicy.ROOT
         self.groups: List[GroupItem] = groups or []
@@ -128,18 +127,18 @@ class AlarmAutomationJob(object):
         self.total_services = []
         self.total_subscribers = []
         self.logger = logger or PrefixLoggerAdapter(
-            logging.getLogger(__name__), f"[{self.id}|{self.leader.alarm}"
+            logging.getLogger(__name__), f"[{self.id}|{self.leader_item.alarm}"
         )
 
     @property
-    def leader(self) -> "Item":
+    def leader_item(self) -> "Item":
         """Return first item"""
         return self.items[0]
 
     @property
     def alarm(self) -> ActiveAlarm:
         """Getting document alarm"""
-        return self.leader.alarm
+        return self.leader_item.alarm
 
     def run(self, actions: Optional[List[ActionLog]] = None):
         """
@@ -459,7 +458,7 @@ class AlarmAutomationJob(object):
         #    return True
         # Check if alarm leader was closed
         if self.end_condition == "CR":
-            return self.leader.status == ItemStatus.REMOVED or self.alarm.status != "A"
+            return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status != "A"
         elif self.end_condition == "CA":
             return all(i.status == ItemStatus.REMOVED for i in self.items)
         # elif self.end_condition == "CT":
@@ -594,3 +593,56 @@ class AlarmAutomationJob(object):
             tt = TTSystem.get_by_id(key)
             r.append(f"{tt.name}:{document_id}")
         return ";".join(r)
+
+    # Job API
+    def is_blocked(self) -> bool:
+        return not self.is_waiting
+
+    @property
+    def parent(self):
+        """Disable Parent Job"""
+        return None
+
+    @property
+    def has_children(self) -> bool:
+        return False
+
+    # Status API
+    @property
+    def is_waiting(self) -> bool:
+        return self.status == JobStatus.WAITING
+
+    @property
+    def is_running(self) -> bool:
+        return self.status == JobStatus.RUNNING
+
+    @property
+    def is_cancelled(self) -> bool:
+        return self.status == JobStatus.CANCELLED
+
+    @property
+    def is_complete_success(self) -> bool:
+        return self.status in (
+            JobStatus.SUCCESS,
+            JobStatus.WARNING,
+        )
+
+    @property
+    def is_complete_failed(self) -> bool:
+        return self.status in (
+            JobStatus.FAILED,
+            JobStatus.CANCELLED,
+        )
+
+    @property
+    def is_complete(self) -> bool:
+        return self.status in (
+            JobStatus.SUCCESS,
+            JobStatus.WARNING,
+            JobStatus.FAILED,
+            JobStatus.CANCELLED,
+        )
+
+    @property
+    def allow_fail(self) -> bool:
+        return True
