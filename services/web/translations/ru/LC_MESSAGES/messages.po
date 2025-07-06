@@ -24,11 +24,9 @@ msgstr ""
 msgid "less than a minute"
 msgstr ""
 
-# | msgid "1 month"
 #: core/dateutils.py:26
-#, fuzzy
 msgid "1 minute"
-msgstr "1 месяц"
+msgstr "1 минута"
 
 #: core/dateutils.py:28
 #, python-format
@@ -44,21 +42,17 @@ msgstr ""
 msgid "about %d hours"
 msgstr ""
 
-# | msgid "In Days"
 #: core/dateutils.py:39
 #, python-format
 msgid "%d days"
 msgstr "%d дней"
 
-# | msgid "1 month"
 #: core/dateutils.py:41
-#, fuzzy
 msgid "about 1 month"
-msgstr "1 месяц"
+msgstr "примерно 1 месяц"
 
-# | msgid "1 month"
 #: core/dateutils.py:43
-#, fuzzy, python-format
+#, python-format
 msgid "%d months"
 msgstr "%d месяцев"
 
@@ -79,9 +73,8 @@ msgstr ""
 msgid "about %d years"
 msgstr ""
 
-# | msgid "Moved MACs"
 #: core/dateutils.py:56
-#, fuzzy, python-format
+#, python-format
 msgid "over %d years"
 msgstr "более %d лет"
 
@@ -90,15 +83,11 @@ msgstr "более %d лет"
 msgid "almost %d years"
 msgstr ""
 
-# | msgid "never"
 #: core/dateutils.py:65
-#, fuzzy
 msgid "Never"
 msgstr "никогда"
 
-# | msgid "Remote Object"
 #: core/inv/info.py:131
-#, fuzzy
 msgid "Go to object"
 msgstr "Соседнее устройство"
 
@@ -131,9 +120,7 @@ msgstr "Пароль должен содержать хотя бы %d спец. 
 msgid "Password is already used"
 msgstr "Пароль уже используется"
 
-# | msgid "ManagedObject Container: "
 #: core/topology/map/objectcontainer.py:32
-#, fuzzy
 msgid "Object Containers Map"
 msgstr "Локация (место)"
 
@@ -530,11 +517,9 @@ msgstr "Авария"
 msgid "Alarms"
 msgstr "Аварии"
 
-# | msgid "Failed to change credentials"
 #: services/web/apps/fm/alarm/views.py:793
-#, fuzzy
 msgid "Failed to clear alarms"
-msgstr "Не удалось сменить пароль"
+msgstr "Не закрыть аварию"
 
 #: services/web/apps/fm/alarm/views.py:1054
 #: services/web/apps/fm/reportttsystemstat/views.py:76
@@ -590,17 +575,13 @@ msgstr "Правило классификации"
 msgid "Classification Rules"
 msgstr "Правила классификации"
 
-# | msgid "Classification Rule"
 #: services/web/apps/fm/dispositionrule/views.py:19
-#, fuzzy
 msgid "Disposition Rule"
-msgstr "Правило классификации"
+msgstr "Правило размещения"
 
-# | msgid "Classification Rules"
 #: services/web/apps/fm/dispositionrule/views.py:20
-#, fuzzy
 msgid "Disposition Rules"
-msgstr "Правила классификации"
+msgstr "Правило размещения"
 
 #: services/web/apps/fm/event/views.py:34
 #: services/web/apps/fm/event/views.py:35
@@ -1018,11 +999,9 @@ msgstr "Иерархия событий и аварий"
 msgid "Local Classification Rules (JSON)"
 msgstr "Локальные правила классификации"
 
-# | msgid "Alarm Rules"
 #: services/web/apps/fm/reportlocalrules/views.py:31
-#, fuzzy
 msgid "No local rules"
-msgstr "Правила для авария"
+msgstr "Нет правил"
 
 #: services/web/apps/fm/reportmibs/views.py:16
 msgid "Installed MIBs"
@@ -1306,7 +1285,6 @@ msgid "CPE Profiles"
 msgstr "Профили CPE"
 
 #: services/web/apps/inv/endpoint/views.py:21
-#, fuzzy
 msgid "Endpoints"
 msgstr "Точки подключения"
 
@@ -1745,17 +1723,13 @@ msgstr "Сенсор"
 msgid "Sensor Profiles"
 msgstr "Профили сенсора"
 
-# | msgid "Domain"
 #: services/web/apps/inv/techdomain/views.py:19
-#, fuzzy
 msgid "Tech Domain"
 msgstr "Домен"
 
-# | msgid "LDAP Domains"
 #: services/web/apps/inv/techdomain/views.py:20
-#, fuzzy
 msgid "Tech Domains"
-msgstr "LDAP Домены"
+msgstr "Домены"
 
 #: services/web/apps/inv/technology/views.py:19
 msgid "Technology"
@@ -2106,35 +2080,25 @@ msgstr "Иконки"
 msgid "Handlers"
 msgstr "Обработчики"
 
-# | msgid "Phone"
 #: services/web/apps/main/home/views.py:36
-#, fuzzy
 msgid "Home"
-msgstr "Телефон"
+msgstr "Домашний"
 
-# | msgid "Welcome"
 #: services/web/apps/main/home/views.py:83
-#, fuzzy
 msgid "Welcome to "
 msgstr "Добро пожаловать"
 
-# | msgid "Comment"
 #: services/web/apps/main/home/views.py:95
-#, fuzzy
 msgid "Community"
 msgstr "Комментарий"
 
-# | msgid "Inventory Object Summary"
 #: services/web/apps/main/home/views.py:123
-#, fuzzy
 msgid "Inventory summary"
 msgstr "Сводка по инвентаризации объектов"
 
-# | msgid "Objects"
 #: services/web/apps/main/home/views.py:126
-#, fuzzy
 msgid "Total objects"
-msgstr "Объекты"
+msgstr "Всего объектов"
 
 #: services/web/apps/main/home/views.py:129
 msgid "Points of presence"
@@ -2144,23 +2108,17 @@ msgstr ""
 msgid "Racks"
 msgstr ""
 
-# | msgid "Remote Chassis"
 #: services/web/apps/main/home/views.py:131
-#, fuzzy
 msgid "Chassis"
-msgstr "Соседний MAC адрес (по данным LLDP)"
+msgstr "Шасси"
 
-# | msgid "Managed Objects Summary"
 #: services/web/apps/main/home/views.py:151
-#, fuzzy
 msgid "Managed Object Summary"
 msgstr "Сводка по объектам"
 
-# | msgid "Alarms"
 #: services/web/apps/main/home/views.py:175
-#, fuzzy
 msgid "Total Alarms"
-msgstr "Аварии"
+msgstr "Всего Аварий"
 
 #: services/web/apps/main/imagestore/views.py:19
 #: services/web/apps/main/imagestore/views.py:21
@@ -2194,11 +2152,9 @@ msgstr "Настройки Отправки метрик"
 msgid "MIME Types"
 msgstr "Типы MIME"
 
-# | msgid "VLAN Templates"
 #: services/web/apps/main/modeltemplate/views.py:21
-#, fuzzy
 msgid "Model Templates"
-msgstr "Шаблоны VLAN"
+msgstr "Шаблоны Справочников"
 
 #: services/web/apps/main/notificationgroup/views.py:35
 msgid "Notification Group"
@@ -2375,17 +2331,13 @@ msgstr "Группы пиров"
 msgid "Peering Points"
 msgstr ""
 
-# | msgid "CPE Profile"
 #: services/web/apps/peer/peerprofile/views.py:19
-#, fuzzy
 msgid "Peer Profile"
-msgstr "Профиль CPE"
+msgstr "Профиль Пиров"
 
-# | msgid "CPE Profiles"
 #: services/web/apps/peer/peerprofile/views.py:20
-#, fuzzy
 msgid "Peer Profiles"
-msgstr "Профили CPE"
+msgstr "Профили Пиров"
 
 #: services/web/apps/peer/person/views.py:20
 msgid "Persons/Roles"
@@ -2583,11 +2535,9 @@ msgstr "Правила проверки доступа"
 msgid "Discovered Object"
 msgstr "Обнаруженные устройства"
 
-# | msgid "Alarm Rules"
 #: services/web/apps/sa/discoveredobject/views.py:144
-#, fuzzy
 msgid "From Rule"
-msgstr "Правила для авария"
+msgstr "Из Правила"
 
 #: services/web/apps/sa/getnow/views.py:20
 #: services/web/apps/sa/getnow/views.py:21
@@ -2599,11 +2549,9 @@ msgstr "Текущая информация"
 msgid "Group Access"
 msgstr "Права групп"
 
-# | msgid "Job"
 #: services/web/apps/sa/job/views.py:47 services/web/apps/sa/job/views.py:48
-#, fuzzy
 msgid "Jobs"
-msgstr "Задача (Job)"
+msgstr "Задачи (Job)"
 
 #: services/web/apps/sa/managedobject/views.py:246
 msgid "Warning"
@@ -2927,9 +2875,7 @@ msgstr "Переходы"
 msgid "Migrations"
 msgstr "Миграции"
 
-# | msgid "Workflow"
 #: services/web/apps/wf/workflow/views.py:34
-#, fuzzy
 msgid "Workflows"
 msgstr "Редактор процессов"
 
