@@ -40,11 +40,17 @@ class Migration(BaseMigration):
         for ec in self.mongo_db["noc.eventclasses"].find():
             if not ec.get("disposition") and not ec.get("handlers"):
                 continue
+            disposition_names = []
             for d in ec["disposition"] or []:
                 ac = d.get("alarm_class")
-                if ac:
-                    name = f"{ec['name']} ({ac_map.get(ac)},{d['name']})"
+                if not ac:
+                    continue
+                elif disposition_names and d["name"] in disposition_names:
+                    name = f"{ec['name']} ({ac_map.get(ac)},{d['name']}) ({disposition_names.index(d['name'])})"
                 else:
+                    name = f"{ec['name']} ({ac_map.get(ac)},{d['name']})"
+                disposition_names.append(d["name"])
+                if name in names:
                     continue
                 r = {
                     "name": name,
