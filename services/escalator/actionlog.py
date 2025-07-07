@@ -79,7 +79,7 @@ class ActionLog(object):
         self.allow_fail = allow_fail
         self.repeat_num = 0
         #
-        self.user = (User.get_by_id(user) if user else None,)
+        self.user = User.get_by_id(user) if user else None
         self.tt_system = TTSystem.get_by_id(tt_system) if tt_system else None
         #
         self.ctx = kwargs
@@ -193,13 +193,13 @@ class ActionLog(object):
         return ActionLog(
             action=TTAction(data["action"]),
             key=data["key"],
-            time_pattern=data["time_pattern"],
+            time_pattern=data.get("time_pattern"),
             min_severity=data["min_severity"],
             alarm_ack=data["alarm_ack"],
             when=data["when"],
             timestamp=data["timestamp"],
             status=ActionStatus(data["status"]),
-            error=data["error"],
+            error=data.get("error"),
             stop_processing=data["stop_processing"],
             allow_fail=data["allow_fail"],
             user=data.get("user"),
