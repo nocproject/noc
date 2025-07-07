@@ -398,6 +398,52 @@ class AlarmAutomationJob(Job):
         }
         return r
 
+    def save_state(self):
+        from noc.fm.models.escalationjob import EscalationJob, EscalationItem, ActionLog
+
+        job = EscalationJob(
+            name=self.name,
+            status=self.status,
+            created_at=self.actions[0].timestamp,
+            started_at=self.actions[0].timestamp,
+            ctx_id=self.ctx_id,
+            telemetry_sample=self.telemetry_sample,
+            end_condition=self.end_condition,
+            maintenance_policy=self.maintenance_policy,
+            policy=self.policy,
+            max_repeat=self.max_repeat,
+            repeat_delay=self.repeat_delay,
+            items=[EscalationItem(alarm=i.alarm.id, status=i.status) for i in self.items],
+            actions=[ActionLog(
+                timestamp=a.timestamp,
+                action=a.action,
+                status=a.status,
+                key=a.key,
+                document_id=a.document_id,
+                min_severity=a.min_severity,
+                time_pattern=a.time_pattern,
+                alarm_ack=a.alarm_ack,
+                when=a.when,
+                stop_processing=a.stop_processing,
+                allow_fail=a.allow_fail,
+                tt_system=str(a.tt_system.id) if a.tt_system else None,
+                template=str(a.template.id) if a.template else None,
+                user=a.user.id if a.user else None,
+                error=a.error,
+            ) for a in self.actions],
+            tt_docs=self.tt_docs,
+            groups=[],
+            affected_services=self.affected_services,
+            severity=self.severity,
+            total_objects=self.total_objects,
+            total_services=self.total_services,
+            total_subscribers=self.total_subscribers,
+        )
+        try:
+            job.save()
+        except Exception:
+            error_report()
+
     @classmethod
     def from_request(cls, req: EscalationRequest, dry_run: bool = False) -> "AlarmAutomationJob":
         """Build Job from Request"""
@@ -435,11 +481,12 @@ class AlarmAutomationJob(Job):
     @classmethod
     def from_state(cls, state: Dict[str, Any]) -> "AlarmAutomationJob":
         """Restore Job from state"""
+        aa = ActiveAlarm.objects.filter(id=state["items"][0]["alarm"]).first()
         job = AlarmAutomationJob(
             id=state["_id"],
             name=state["name"],
             status=JobStatus(state["status"]),
-            items=[],
+            items=[Item(alarm=aa)],
             actions=[ActionLog.from_dict(aa) for aa in state["actions"]],
             groups=[GroupItem(reference=gg["reference"], id=gg["id"]) for gg in state["groups"]],
             end_condition=state["end_condition"],
