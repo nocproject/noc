@@ -1,14 +1,14 @@
 # ---------------------------------------------------------------------
 # AlarmRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import operator
 from threading import Lock
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Callable, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -21,15 +21,21 @@ from mongoengine.fields import (
     LongField,
     IntField,
     ReferenceField,
-    EmbeddedDocumentField,
+    ObjectIdField,
+    EmbeddedDocumentListField,
 )
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.bi.decorator import bi_sync
+from noc.core.fm.enum import AlarmAction
+from noc.core.matcher import build_matcher
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
-from noc.core.bi.decorator import bi_sync
+from noc.main.models.template import Template
+from noc.aaa.models.user import User
+from noc.sa.models.action import Action as ObjectAction
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .escalationprofile import EscalationProfile
@@ -41,6 +47,7 @@ id_lock = Lock()
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
+    resource_groups = ListField(ObjectIdField())
     alarm_class: AlarmClass = ReferenceField(AlarmClass)
     severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     reference_rx = StringField()
@@ -50,6 +57,14 @@ class Match(EmbeddedDocument):
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
+        return r
 
 
 class Group(EmbeddedDocument):
@@ -78,27 +93,49 @@ class Action(EmbeddedDocument):
     when = StringField(
         default="raise",
         choices=[
+            ("both", "Update any"),  # Update
             ("raise", "When raise alarm"),
             ("clear", "When clear alarm"),
         ],
     )
-    policy = StringField(
-        default="continue",
-        choices=[
-            ("continue", "Continue processed"),
-            ("drop", "Drop Alarm"),
-            ("rewrite", "Rewrite Alarm Class"),
-        ],
-    )
     handler = PlainReferenceField(Handler)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
-    severity: AlarmSeverity = ReferenceField(AlarmSeverity)
+    user = ForeignKeyField(User, required=False)
+    template: Optional["Template"] = ForeignKeyField(Template, required=False)
+    message: str = StringField(required=False)
+    object_action = ReferenceField(ObjectAction)
+    # script
+    # allow_fail: bool = BooleanField(default=True) To check
+    # manually: bool = BooleanField(default=True)
     # Sync collection Default ?
-    alarm_class = PlainReferenceField(AlarmClass)
 
     def __str__(self):
-        return f"{self.when}: {self.policy}"
+        return f"{self.when}: {self.action}"
+
+    def get_action(self) -> "CtxAction":
+        """"""
+        a = CtxAction(
+            delay=self.delay,
+            action=action,
+            ack=self.match_ack,
+            when={"any": "any", "raise": "on_start", "clear": "on_end"}[self.when],
+            min_severity=self.min_severity.id if self.min_severity else None,
+            max_retries=1,
+            allow_fail=self.allow_fail,
+            stop_processing=self.stop_processing,
+        )
+        match self.action:
+            case AlarmAction.ACK, AlarmAction.SUBSCRIBE:
+                a.key = str(self.user.id)
+            case AlarmAction.NOTIFY:
+                a.key = str(self.notification_group.id)
+            case AlarmAction.LOG:
+                a.key = self.message
+        if self.time_pattern:
+            a.time_pattern = self.time_pattern.time_pattern
+        if self.template:
+            a.template = str(self.template.id)
+        return a
 
 
 @bi_sync
@@ -114,11 +151,11 @@ class AlarmRule(Document):
     description = StringField()
     is_active = BooleanField(default=True)
     #
-    match: List[Match] = ListField(EmbeddedDocumentField(Match))
+    match: List[Match] = EmbeddedDocumentListField(Match)
     #
-    groups: List[Group] = ListField(EmbeddedDocumentField(Group))
+    groups: List[Group] = EmbeddedDocumentListField(Group)
     #
-    actions: List[Action] = ListField(EmbeddedDocumentField(Action))
+    actions: List[Action] = EmbeddedDocumentListField(Action)
     #
     escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
     #
@@ -131,6 +168,19 @@ class AlarmRule(Document):
         ],
         default="AL",
     )
+    # Set, Match, Increase, Severity
+    # severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
+    # severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
+    rule_action = StringField(
+        choices=[
+            ("continue", "Continue processed"),
+            ("drop", "Drop Alarm"),
+            ("rewrite", "Rewrite Alarm Class"),
+        ],
+        default="continue",
+    )
+    # checks
+    alarm_class = PlainReferenceField(AlarmClass, required=False)
     stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)
@@ -159,28 +209,50 @@ class AlarmRule(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["AlarmRule"]:
         return AlarmRule.objects.filter(bi_id=bi_id).first()
 
-    def is_match(self, alarm):
-        if not self.match:
-            return True
-        lset = set(alarm.effective_labels)
-        for match in self.match:
-            # Match against labels
-            if match.exclude_labels and set(match.exclude_labels).issubset(lset):
-                continue
-            if not set(match.labels).issubset(lset):
-                continue
-            # Match against alarm class
-            if match.alarm_class and match.alarm_class != alarm.alarm_class:
-                continue
-            # Match severity
-            if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
-                continue
-            return True
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for r in self.match:
+            expr.append(r.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    # def is_match(self, alarm):
+    #     if not self.match:
+    #         return True
+    #     lset = set(alarm.effective_labels)
+    #     for match in self.match:
+    #         # Match against labels
+    #         if match.exclude_labels and set(match.exclude_labels).issubset(lset):
+    #             continue
+    #         if not set(match.labels).issubset(lset):
+    #             continue
+    #         # Match against alarm class
+    #         if match.alarm_class and match.alarm_class != alarm.alarm_class:
+    #             continue
+    #         # Match severity
+    #         if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
+    #             continue
+    #         return True
 
     @classmethod
     def get_by_alarm(cls, alarm) -> List["AlarmRule"]:
         r = []
+        ctx = alarm.get_ctx()
         for ar in AlarmRule.objects.filter(is_active=True):
             if ar.is_match(alarm):
                 r.append(ar)
+        return r
+
+    @classmethod
+    def get_config(cls, rule: "AlarmRule"):
+        """Generate Rule config"""
+        r = {}
         return r

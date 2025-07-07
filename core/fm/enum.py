@@ -83,3 +83,51 @@ class EventAction(enum.Enum):
         if self.__class__ is other.__class__:
             return self.value < other.value
         return NotImplemented
+
+
+class AlarmAction(enum.Enum):
+    """
+    Attributes:
+        ACK: Acknowledge alarm
+        UN_ACK: UnAcknowledge alarm
+        CLEAR: Clear Alarm
+        LOG: Add Alarm Log
+        SUBSCRIBE: Subscribe alarm changes
+        NOTIFY: Send Notification
+    """
+
+    CREATE_TT = "create_tt"
+    CLOSE_TT = "close_tt"
+    ACK = "ack"
+    UN_ACK = "un_ack"
+    CLEAR = "clear"  # Reopen
+    LOG = "log"
+    SUBSCRIBE = "subscribe"
+    NOTIFY = "notify"
+    HANDLER = "handler"
+    SEVERITY = "severity"
+
+
+class ActionStatus(enum.Enum):
+    """
+    Action Result Status
+
+    Attributes:
+        NEW: new action
+        SUCCESS: run success
+        FAILED: Failed with error
+        WARNING: Warning. Failed, but allowed to fail.
+        SKIP: Not running about condition
+        PENDING: Pending, waiting for manual approve.
+        CANCELLED: Cancelled, not repeat for run / OR Condition
+    """
+
+    NEW = "n"
+    SUCCESS = "s"
+    FAILED = "f"
+    WARNING = "w"
+    # CANCELLED = "c"
+    SKIP = "k"
+    PENDING = "p"
+    # WAIT_END = "we"
+    # STOP = "stop/break"
