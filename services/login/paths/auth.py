@@ -19,7 +19,13 @@ import cachetools
 from noc.config import config
 from noc.aaa.models.apikey import APIKey
 from noc.core.comp import smart_text, smart_bytes
-from ..auth import authenticate, register_last_login, set_jwt_cookie, get_user_from_jwt
+from ..auth import (
+    authenticate,
+    register_last_login,
+    set_jwt_cookie,
+    get_user_from_jwt,
+    get_user_from_cert_subject,
+)
 from noc.core.service.deps.service import get_service
 from noc.services.login.service import LoginService
 
@@ -50,6 +56,7 @@ async def auth(
     private_token: Optional[str] = Header(None, alias="Private-Token"),
     authorization: Optional[str] = Header(None, alias="Authorization"),
     original_uri: Optional[str] = Header(None, alias="X-Original-URI"),
+    remote_cert_subj: Optional[str] = Header(None, alias="X-Remote-Cert-Subject"),
     svc: LoginService = Depends(get_service),
 ):
     """
@@ -58,36 +65,52 @@ async def auth(
     if original_uri and is_pinhole(original_uri):
         # Pinholes to endpoints without authorization
         return ORJSONResponse({"status": True}, status_code=200)
+    if remote_cert_subj:
+        cert_user = get_user_from_cert_subject(remote_cert_subj)
+        logger.info("Remote party certificate subject: %s", remote_cert_subj)
+        logger.info("Pinning to user %s", cert_user)
+    else:
+        cert_user = None
     if jwt_cookie:
-        return await auth_cookie(request=request, jwt_cookie=jwt_cookie)
+        return await auth_cookie(request=request, jwt_cookie=jwt_cookie, pinned_user=cert_user)
     if private_token:
-        return await auth_private_token(request=request, private_token=private_token)
+        return await auth_private_token(
+            request=request, private_token=private_token, pinned_user=cert_user
+        )
     if authorization:
-        return await auth_authorization(request=request, authorization=authorization, svc=svc)
+        return await auth_authorization(
+            request=request, authorization=authorization, svc=svc, pinned_user=cert_user
+        )
     logger.error("[%s] Denied: Unsupported authentication method", request.client.host)
     return ORJSONResponse({"status": False}, status_code=401)
 
 
-async def auth_cookie(request: Request, jwt_cookie: str) -> ORJSONResponse:
+async def auth_cookie(
+    request: Request, jwt_cookie: str, *, pinned_user: Optional[str] = None
+) -> ORJSONResponse:
     """
     Authorize against JWT token contained in cookie
     """
     try:
         user = get_user_from_jwt(jwt_cookie, audience="auth")
+        if pinned_user and user != pinned_user:
+            raise ValueError("User doesn't match certificate")
         return ORJSONResponse({"status": True}, status_code=200, headers={"Remote-User": user})
     except ValueError as e:
         logger.error("[Cookie][%s] Denied: %s", request.client.host, str(e) or "Unspecified reason")
         return ORJSONResponse({"status": False}, status_code=401)
 
 
-async def auth_private_token(request: Request, private_token: str) -> ORJSONResponse:
+async def auth_private_token(
+    request: Request, private_token: str, *, pinned_user: Optional[str] = None
+) -> ORJSONResponse:
     """
     Authenticate against Private-Token header
     """
     reason = None
     remote_ip = request.client.host
     user, access = get_api_access(private_token, remote_ip)
-    if user and access:
+    if user and access and (not pinned_user or user == pinned_user):
         return ORJSONResponse(
             {"status": True},
             status_code=200,
@@ -97,6 +120,8 @@ async def auth_private_token(request: Request, private_token: str) -> ORJSONResp
         reason = "API Key not found"
     elif not access:
         reason = "API Key has no access"
+    elif pinned_user and user != pinned_user:
+        reason = "User doesn't match certificate"
     logger.error(
         "[Private-Token][%s|%s] Denied: %s",
         user or "NOT SET",
@@ -122,7 +147,7 @@ def get_api_access(key: str, ip: str) -> Tuple[str, str]:
 
 
 async def auth_authorization(
-    request: Request, authorization: str, svc: LoginService
+    request: Request, authorization: str, svc: LoginService, *, pinned_user: Optional[str] = None
 ) -> ORJSONResponse:
     """
     Authenticate against Authorization header
@@ -130,11 +155,17 @@ async def auth_authorization(
     if " " in authorization:
         schema, data = authorization.split(" ", 1)
         if schema == "Basic":
-            return await auth_authorization_basic(request=request, data=data)
+            return await auth_authorization_basic(
+                request=request, data=data, pinned_user=pinned_user
+            )
         elif schema == "Bearer":
-            return await auth_authorization_bearer(request=request, data=data, svc=svc)
+            return await auth_authorization_bearer(
+                request=request, data=data, svc=svc, pinned_user=pinned_user
+            )
         elif schema == "Apikey":
-            return await auth_private_token(request=request, private_token=data)
+            return await auth_private_token(
+                request=request, private_token=data, pinned_user=pinned_user
+            )
         logger.error(
             "[Authorization][%s] Denied: Unsupported authorization schema '%s'",
             request.client.host,
@@ -148,7 +179,9 @@ async def auth_authorization(
     return ORJSONResponse({"status": False}, status_code=401)
 
 
-async def auth_authorization_basic(request: Request, data: str) -> ORJSONResponse:
+async def auth_authorization_basic(
+    request: Request, data: str, *, pinned_user: Optional[str] = None
+) -> ORJSONResponse:
     """
     HTTP Basic authorization handler
     """
@@ -161,6 +194,9 @@ async def auth_authorization_basic(request: Request, data: str) -> ORJSONRespons
     credentials = {"user": user, "password": password, "ip": remote_ip}
     user = authenticate(credentials)
     if user:
+        if pinned_user and user != pinned_user:
+            logger.error("[Authorization|Basic][%s] user doesn't match certificate", user)
+            return ORJSONResponse({"status": False}, status_code=401)
         register_last_login(user)
         response = ORJSONResponse({"status": True}, status_code=200, headers={"Remote-User": user})
         set_jwt_cookie(response, user)
@@ -170,7 +206,7 @@ async def auth_authorization_basic(request: Request, data: str) -> ORJSONRespons
 
 
 async def auth_authorization_bearer(
-    request: Request, data: str, svc: LoginService
+    request: Request, data: str, svc: LoginService, pinned_user: Optional[str] = None
 ) -> ORJSONResponse:
     """
     HTTP Bearer autorization handler
@@ -180,6 +216,8 @@ async def auth_authorization_bearer(
         return ORJSONResponse({"status": False}, status_code=401)
     try:
         user = get_user_from_jwt(data, audience="auth")
+        if pinned_user and user != pinned_user:
+            raise ValueError("User doesn't match certificate")
     except ValueError:
         logger.error(
             "[Authorization|Bearer][%s] Denied: Authentication failed", request.client.host
