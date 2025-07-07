@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-07-03 06:22+0300\n"
+"POT-Creation-Date: 2025-07-07 06:03+0300\n"
 "PO-Revision-Date: 2024-05-07 19:02+0500\n"
 "Last-Translator: Dmitry Volodin <dv@nocproject.org>\n"
 "Language: ru\n"
@@ -399,7 +399,7 @@ msgid "Subscriber"
 msgstr "Абонент"
 
 #: services/web/apps/crm/subscriber/views.py:22
-#: services/web/apps/fm/alarm/views.py:1055
+#: services/web/apps/fm/alarm/views.py:1069
 #: services/web/apps/fm/reportescalations/views.py:96
 msgid "Subscribers"
 msgstr "Абоненты"
@@ -517,11 +517,11 @@ msgstr "Авария"
 msgid "Alarms"
 msgstr "Аварии"
 
-#: services/web/apps/fm/alarm/views.py:793
+#: services/web/apps/fm/alarm/views.py:807
 msgid "Failed to clear alarms"
-msgstr "Не закрыть аварию"
+msgstr "Ошибка при закрытии аварий"
 
-#: services/web/apps/fm/alarm/views.py:1054
+#: services/web/apps/fm/alarm/views.py:1068
 #: services/web/apps/fm/reportttsystemstat/views.py:76
 #: services/web/apps/fm/reportttsystemstat/views.py:91
 msgid "Service"
@@ -583,8 +583,8 @@ msgstr "Правило размещения"
 msgid "Disposition Rules"
 msgstr "Правило размещения"
 
-#: services/web/apps/fm/event/views.py:34
-#: services/web/apps/fm/event/views.py:35
+#: services/web/apps/fm/event/views.py:36
+#: services/web/apps/fm/event/views.py:37
 msgid "Events"
 msgstr "События"
 

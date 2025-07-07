@@ -8,7 +8,7 @@
         "Last-Translator": "Dmitry Volodin <dv@nocproject.org>",
         "MIME-Version": "1.0",
         "PO-Revision-Date": "2025-07-06 14:29+0500",
-        "POT-Creation-Date": "2025-07-03 06:22+0300",
+        "POT-Creation-Date": "2025-07-07 06:03+0300",
         "Plural-Forms": "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
@@ -199,7 +199,7 @@
     ],
     "Add": [
         null,
-        "Вставить"
+        "Добавить"
     ],
     "Add ": [
         null,
