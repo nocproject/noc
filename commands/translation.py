@@ -28,11 +28,10 @@ BABEL_CFG = b"""# Translation extraction config
 extract_messages = _, __
 
 [jinja2: **.j2]
-extensions=jinja2.ext.autoescape,jinja2.ext.with_
 """
 
-BABEL = "pybabel"
-POJSON = "pojson"
+BABEL = "bin/pybabel"
+POJSON = "bin/pojson"
 
 
 class Command(BaseCommand):
@@ -45,7 +44,7 @@ class Command(BaseCommand):
             "messages": ["services/card/**.py", "services/card/**.html.j2"],
             "messages_js": ["ui/card/**.js"],
         },
-        "login": {"messages": ["services/login/**.py"], "messages_js": ["ui/login/**.js"]},
+        "login": {"messages": ["services/login/**.py"]},
         "web": {
             "messages": ["services/web/apps/**.py", "core/**.py"],
             "messages_js": ["ui/web/**.js"],
@@ -135,6 +134,7 @@ class Command(BaseCommand):
                             t_dir,
                             "-l",
                             lang,
+                            "--no-fuzzy-matching",
                         )
                     else:
                         self.babel(
@@ -147,6 +147,7 @@ class Command(BaseCommand):
                             "-l",
                             lang,
                             "--previous",
+                            "--no-fuzzy-matching",
                         )
 
     def handle_compile(self, services=None):
