@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-09 14:49+0300\n"
+"POT-Creation-Date: 2025-07-03 06:22+0300\n"
 "PO-Revision-Date: 2016-07-15 16:35-0300\n"
 "Last-Translator: Gabriela Todeschini <gabrielat@cpd.ufrgs.br>\n"
 "Language: pt_BR\n"
@@ -23,9 +23,9 @@ msgstr ""
 msgid "less than a minute"
 msgstr ""
 
+# | msgid "1 month"
 #: core/dateutils.py:26
 #, fuzzy
-#| msgid "1 month"
 msgid "1 minute"
 msgstr "1 mês"
 
@@ -43,21 +43,21 @@ msgstr ""
 msgid "about %d hours"
 msgstr ""
 
+# | msgid "1 day"
 #: core/dateutils.py:39
 #, fuzzy, python-format
-#| msgid "1 day"
 msgid "%d days"
 msgstr "%d dias"
 
+# | msgid "1 month"
 #: core/dateutils.py:41
 #, fuzzy
-#| msgid "1 month"
 msgid "about 1 month"
 msgstr "1 mês"
 
+# | msgid "1 month"
 #: core/dateutils.py:43
 #, fuzzy, python-format
-#| msgid "1 month"
 msgid "%d months"
 msgstr "%d mês"
 
@@ -88,15 +88,15 @@ msgstr ""
 msgid "almost %d years"
 msgstr ""
 
+# | msgid "DNS Server"
 #: core/dateutils.py:65
 #, fuzzy
-#| msgid "DNS Server"
 msgid "Never"
 msgstr "Servidor de DNS"
 
+# | msgid "Managed Object"
 #: core/inv/info.py:131
 #, fuzzy
-#| msgid "Managed Object"
 msgid "Go to object"
 msgstr "Objeto Gerenciado"
 
@@ -130,9 +130,9 @@ msgid "Password is already used"
 msgstr ""
 
 # | msgid "Managed Object"
+# | msgid "ManagedObject Container: "
 #: core/topology/map/objectcontainer.py:32
 #, fuzzy
-#| msgid "ManagedObject Container: "
 msgid "Object Containers Map"
 msgstr "Objeto Gerenciado"
 
@@ -144,9 +144,9 @@ msgstr ""
 msgid "Object Level Neighbor Schemas"
 msgstr ""
 
+# | msgid "Network Segments"
 #: core/topology/map/segment.py:36
 #, fuzzy
-#| msgid "Network Segments"
 msgid "Network Segment Schemas"
 msgstr "Segmentos de Rede"
 
@@ -184,7 +184,6 @@ msgstr ""
 #: services/web/apps/fm/alarmtrigger/views.py:20
 #: services/web/apps/fm/classificationrule/views.py:34
 #: services/web/apps/fm/dispositionrule/views.py:20
-#: services/web/apps/fm/escalationprofile/views.py:20
 #: services/web/apps/fm/eventclass/views.py:20
 #: services/web/apps/fm/eventtrigger/views.py:20
 #: services/web/apps/fm/ignoreeventrule/views.py:21
@@ -420,8 +419,8 @@ msgid "Subscriber"
 msgstr "Assinante"
 
 #: services/web/apps/crm/subscriber/views.py:22
-#: services/web/apps/fm/alarm/views.py:1086
-#: services/web/apps/fm/reportescalations/views.py:91
+#: services/web/apps/fm/alarm/views.py:1055
+#: services/web/apps/fm/reportescalations/views.py:96
 msgid "Subscribers"
 msgstr "Assinantes"
 
@@ -529,24 +528,24 @@ msgstr "Resumo de Zona de NS"
 msgid "Fault Management"
 msgstr "Gerência de Falhas"
 
-#: services/web/apps/fm/alarm/views.py:92
+#: services/web/apps/fm/alarm/views.py:88
 msgid "Alarm"
 msgstr "Alerta"
 
-#: services/web/apps/fm/alarm/views.py:93
+#: services/web/apps/fm/alarm/views.py:89
 #: services/web/apps/main/home/views.py:179
 msgid "Alarms"
 msgstr "Alertas"
 
-#: services/web/apps/fm/alarm/views.py:786
+# | msgid "Failed to change credentials"
+#: services/web/apps/fm/alarm/views.py:793
 #, fuzzy
-#| msgid "Failed to change credentials"
 msgid "Failed to clear alarms"
 msgstr "Falha ao modificar credenciais"
 
-#: services/web/apps/fm/alarm/views.py:1085
-#: services/web/apps/fm/reportttsystemstat/views.py:73
-#: services/web/apps/fm/reportttsystemstat/views.py:88
+#: services/web/apps/fm/alarm/views.py:1054
+#: services/web/apps/fm/reportttsystemstat/views.py:76
+#: services/web/apps/fm/reportttsystemstat/views.py:91
 msgid "Service"
 msgstr ""
 
@@ -600,27 +599,20 @@ msgstr "Regra de Classificação"
 msgid "Classification Rules"
 msgstr "Regras de Classificação"
 
+# | msgid "Classification Rule"
 #: services/web/apps/fm/dispositionrule/views.py:19
 #, fuzzy
-#| msgid "Classification Rule"
 msgid "Disposition Rule"
 msgstr "Regra de Classificação"
 
+# | msgid "Classification Rules"
 #: services/web/apps/fm/dispositionrule/views.py:20
 #, fuzzy
-#| msgid "Classification Rules"
 msgid "Disposition Rules"
 msgstr "Regras de Classificação"
 
-#: services/web/apps/fm/escalationprofile/views.py:19
-#: services/web/apps/fm/escalationprofile/views.py:20
-#, fuzzy
-#| msgid "Escalations"
-msgid "Escalation Profile"
-msgstr "Escalações"
-
-#: services/web/apps/fm/event/views.py:33
 #: services/web/apps/fm/event/views.py:34
+#: services/web/apps/fm/event/views.py:35
 msgid "Events"
 msgstr "Eventos"
 
@@ -673,7 +665,7 @@ msgstr "Rótulo de OID"
 
 #: services/web/apps/fm/outage/views.py:16
 #: services/web/apps/fm/outage/views.py:17
-#: services/web/apps/fm/reportoutages/views.py:40
+#: services/web/apps/fm/reportoutages/views.py:43
 msgid "Outages"
 msgstr "Interrupções"
 
@@ -688,7 +680,7 @@ msgstr ""
 #: services/web/apps/inv/reportmaxmetrics/views.py:62
 #: services/web/apps/inv/reportmetrics/views.py:59
 #: services/web/apps/inv/reportmovedmac/views.py:122
-#: services/web/apps/sa/reportobjectdetail/views.py:104
+#: services/web/apps/sa/reportobjectdetail/views.py:105
 msgid "Reports"
 msgstr ""
 
@@ -803,7 +795,7 @@ msgid "SUBSCRIBERS"
 msgstr ""
 
 #: services/web/apps/fm/reportalarmdetail/views.py:89
-#: services/web/apps/fm/reportescalations/views.py:89
+#: services/web/apps/fm/reportescalations/views.py:94
 msgid "TT"
 msgstr ""
 
@@ -833,59 +825,59 @@ msgstr ""
 msgid "From Date"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:43
-#: services/web/apps/fm/reportescalations/views.py:31
-#: services/web/apps/fm/reportoutages/views.py:36
-#: services/web/apps/fm/reportreboots/views.py:30
-#: services/web/apps/fm/reportttsystemstat/views.py:39
+#: services/web/apps/fm/reportavailability/views.py:45
+#: services/web/apps/fm/reportescalations/views.py:33
+#: services/web/apps/fm/reportoutages/views.py:38
+#: services/web/apps/fm/reportreboots/views.py:32
+#: services/web/apps/fm/reportttsystemstat/views.py:41
 msgid "To Date"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:45
+#: services/web/apps/fm/reportavailability/views.py:48
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:226
 #: services/web/apps/sa/reportobjectsummary/views.py:96
 #: services/web/apps/sa/reportobjectsummary/views.py:107
 msgid "Administrative Domain"
 msgstr "Domínio Administrativo"
 
-#: services/web/apps/fm/reportavailability/views.py:49
+#: services/web/apps/fm/reportavailability/views.py:52
 msgid "Skip full available"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:50
+#: services/web/apps/fm/reportavailability/views.py:53
 msgid "Skip zero available"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:51
+#: services/web/apps/fm/reportavailability/views.py:54
 msgid "Skip zero access port"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:55
-#: services/web/apps/fm/reportoutages/views.py:128
+#: services/web/apps/fm/reportavailability/views.py:58
+#: services/web/apps/fm/reportoutages/views.py:133
 msgid "Availability"
 msgstr "Disponibilidade"
 
-#: services/web/apps/fm/reportavailability/views.py:58
+#: services/web/apps/fm/reportavailability/views.py:61
 msgid "Availability (last day)"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:59
+#: services/web/apps/fm/reportavailability/views.py:62
 msgid "Availability (last week)"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:60
+#: services/web/apps/fm/reportavailability/views.py:63
 msgid "Availability (last month)"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:211
+#: services/web/apps/fm/reportavailability/views.py:216
 msgid "Adm. Domain"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:212
-#: services/web/apps/fm/reportescalations/views.py:85
-#: services/web/apps/fm/reportoutages/views.py:121
-#: services/web/apps/fm/reportreboots/views.py:102
-#: services/web/apps/fm/reportttsystemstat/views.py:89
+#: services/web/apps/fm/reportavailability/views.py:217
+#: services/web/apps/fm/reportescalations/views.py:90
+#: services/web/apps/fm/reportoutages/views.py:126
+#: services/web/apps/fm/reportreboots/views.py:107
+#: services/web/apps/fm/reportttsystemstat/views.py:92
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:80
 #: services/web/apps/inv/reportpendinglinks/views.py:258
@@ -895,14 +887,14 @@ msgstr ""
 msgid "Managed Object"
 msgstr "Objeto Gerenciado"
 
-#: services/web/apps/fm/reportavailability/views.py:213
+#: services/web/apps/fm/reportavailability/views.py:218
 msgid "Hostname"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:214
-#: services/web/apps/fm/reportescalations/views.py:86
-#: services/web/apps/fm/reportoutages/views.py:122
-#: services/web/apps/fm/reportreboots/views.py:103
+#: services/web/apps/fm/reportavailability/views.py:219
+#: services/web/apps/fm/reportescalations/views.py:91
+#: services/web/apps/fm/reportoutages/views.py:127
+#: services/web/apps/fm/reportreboots/views.py:108
 #: services/web/apps/inv/reportdiscoverycaps/views.py:56
 #: services/web/apps/inv/reportdiscoverypoison/views.py:80
 #: services/web/apps/inv/reportobjectsserial/views.py:52
@@ -912,9 +904,9 @@ msgstr ""
 msgid "Address"
 msgstr "IP"
 
-#: services/web/apps/fm/reportavailability/views.py:215
+#: services/web/apps/fm/reportavailability/views.py:220
 #: services/web/apps/fm/reportclassificationrule/views.py:22
-#: services/web/apps/fm/reportoutages/views.py:123
+#: services/web/apps/fm/reportoutages/views.py:128
 #: services/web/apps/inv/reportdiscoverypoison/views.py:80
 #: services/web/apps/inv/reportpendinglinks/views.py:260
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:225
@@ -926,22 +918,22 @@ msgstr "IP"
 msgid "Profile"
 msgstr "Perfil"
 
-#: services/web/apps/fm/reportavailability/views.py:218
+#: services/web/apps/fm/reportavailability/views.py:223
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:227
 msgid "Avail"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:219
+#: services/web/apps/fm/reportavailability/views.py:224
 msgid "Total unavail (sec)"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:220
+#: services/web/apps/fm/reportavailability/views.py:225
 msgid "Count outages"
 msgstr ""
 
-#: services/web/apps/fm/reportavailability/views.py:221
-#: services/web/apps/fm/reportreboots/views.py:34
-#: services/web/apps/fm/reportreboots/views.py:104
+#: services/web/apps/fm/reportavailability/views.py:226
+#: services/web/apps/fm/reportreboots/views.py:37
+#: services/web/apps/fm/reportreboots/views.py:109
 msgid "Reboots"
 msgstr ""
 
@@ -949,79 +941,79 @@ msgstr ""
 msgid "Classification Quality"
 msgstr "Qualidade de Classificação"
 
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportoutages/views.py:28
-#: services/web/apps/fm/reportreboots/views.py:26
-#: services/web/apps/fm/reportttsystemstat/views.py:35
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:27
+#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportttsystemstat/views.py:34
 msgid "Range"
 msgstr "Intervalo"
 
 #: core/dateutils.py:34 core/dateutils.py:37
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportoutages/views.py:29
-#: services/web/apps/fm/reportreboots/views.py:26
-#: services/web/apps/fm/reportttsystemstat/views.py:35
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:28
+#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportttsystemstat/views.py:34
 msgid "1 day"
 msgstr "1 dia"
 
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportoutages/views.py:30
-#: services/web/apps/fm/reportreboots/views.py:26
-#: services/web/apps/fm/reportttsystemstat/views.py:35
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:29
+#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportttsystemstat/views.py:34
 msgid "1 week"
 msgstr "1 semana"
 
-#: services/web/apps/fm/reportescalations/views.py:27
-#: services/web/apps/fm/reportoutages/views.py:31
-#: services/web/apps/fm/reportreboots/views.py:26
-#: services/web/apps/fm/reportttsystemstat/views.py:35
+#: services/web/apps/fm/reportescalations/views.py:26
+#: services/web/apps/fm/reportoutages/views.py:30
+#: services/web/apps/fm/reportreboots/views.py:25
+#: services/web/apps/fm/reportttsystemstat/views.py:34
 msgid "1 month"
 msgstr "1 mês"
 
-#: services/web/apps/fm/reportescalations/views.py:28
-#: services/web/apps/fm/reportttsystemstat/views.py:36
+#: services/web/apps/fm/reportescalations/views.py:27
+#: services/web/apps/fm/reportttsystemstat/views.py:35
 msgid "Interval"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:35
+#: services/web/apps/fm/reportescalations/views.py:38
 msgid "Escalations"
 msgstr "Escalações"
 
-#: services/web/apps/fm/reportescalations/views.py:38
+#: services/web/apps/fm/reportescalations/views.py:41
 msgid "Escalations (1 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:39
+#: services/web/apps/fm/reportescalations/views.py:42
 msgid "Escalations (7 days)"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:40
+#: services/web/apps/fm/reportescalations/views.py:43
 msgid "Escalations (30 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:83
-#: services/web/apps/fm/reportttsystemstat/views.py:86
+#: services/web/apps/fm/reportescalations/views.py:88
+#: services/web/apps/fm/reportttsystemstat/views.py:89
 msgid "Timestamp"
 msgstr ""
 
-#: services/web/apps/fm/reportescalations/views.py:84
+#: services/web/apps/fm/reportescalations/views.py:89
 msgid "Escalation Timestamp"
 msgstr "Escalação de Timestamp"
 
-#: services/web/apps/fm/reportescalations/views.py:87
-#: services/web/apps/fm/reportoutages/views.py:124
+#: services/web/apps/fm/reportescalations/views.py:92
+#: services/web/apps/fm/reportoutages/views.py:129
 #: services/web/apps/inv/reportobjectsserial/views.py:54
 #: services/web/apps/sa/reportobjectsummary/views.py:136
 #: services/web/apps/sa/reportstalediscovery/views.py:64
 msgid "Platform"
 msgstr "Plataforma"
 
-#: services/web/apps/fm/reportescalations/views.py:88
+#: services/web/apps/fm/reportescalations/views.py:93
 #: services/web/apps/sa/reportstalediscovery/views.py:67
 msgid "Segment"
 msgstr "Segmento"
 
-#: services/web/apps/fm/reportescalations/views.py:90
+#: services/web/apps/fm/reportescalations/views.py:95
 msgid "Objects"
 msgstr ""
 
@@ -1033,6 +1025,13 @@ msgstr "Hierarquias de Eventos e de Alertas"
 msgid "Local Classification Rules (JSON)"
 msgstr "Regras de Classificação Local (JSON)"
 
+# | msgid "Alarm Classes"
+# | msgid "Alarm Rules"
+#: services/web/apps/fm/reportlocalrules/views.py:31
+#, fuzzy
+msgid "No local rules"
+msgstr "Classes de Alerta"
+
 #: services/web/apps/fm/reportmibs/views.py:16
 msgid "Installed MIBs"
 msgstr "MIBs Instaladas"
@@ -1041,51 +1040,51 @@ msgstr "MIBs Instaladas"
 msgid "Missed MIBs"
 msgstr "MIBs Não Instaladas"
 
-#: services/web/apps/fm/reportoutages/views.py:33
+#: services/web/apps/fm/reportoutages/views.py:32
 msgid "Duration"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:43
+#: services/web/apps/fm/reportoutages/views.py:46
 msgid "Outages (1 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:44
+#: services/web/apps/fm/reportoutages/views.py:47
 msgid "Outages (7 days)"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:45
+#: services/web/apps/fm/reportoutages/views.py:48
 msgid "Outages (30 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:110
-#: services/web/apps/fm/reportoutages/views.py:111
+#: services/web/apps/fm/reportoutages/views.py:115
+#: services/web/apps/fm/reportoutages/views.py:116
 #: services/web/apps/inv/reportmovedmac/views.py:297
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:214
-#: services/web/apps/sa/reportobjectdetail/views.py:432
+#: services/web/apps/sa/reportobjectdetail/views.py:433
 msgid "Yes"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:110
-#: services/web/apps/fm/reportoutages/views.py:111
+#: services/web/apps/fm/reportoutages/views.py:115
+#: services/web/apps/fm/reportoutages/views.py:116
 #: services/web/apps/inv/reportmovedmac/views.py:297
 #: services/web/apps/sa/reportdiscoveryproblem/views.py:214
-#: services/web/apps/sa/reportobjectdetail/views.py:432
+#: services/web/apps/sa/reportobjectdetail/views.py:433
 msgid "No"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:125
+#: services/web/apps/fm/reportoutages/views.py:130
 msgid "Managed"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:126
+#: services/web/apps/fm/reportoutages/views.py:131
 msgid "Status"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:127
+#: services/web/apps/fm/reportoutages/views.py:132
 msgid "Downtime"
 msgstr ""
 
-#: services/web/apps/fm/reportoutages/views.py:129
+#: services/web/apps/fm/reportoutages/views.py:134
 msgid "Downs"
 msgstr ""
 
@@ -1093,19 +1092,19 @@ msgstr ""
 msgid "Overlapped MIB OIDs"
 msgstr "OIDs de MIBs Sobrepostos"
 
-#: services/web/apps/fm/reportreboots/views.py:27
+#: services/web/apps/fm/reportreboots/views.py:26
 msgid "Inteval"
 msgstr ""
 
-#: services/web/apps/fm/reportreboots/views.py:37
+#: services/web/apps/fm/reportreboots/views.py:40
 msgid "Reboots (1 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportreboots/views.py:38
+#: services/web/apps/fm/reportreboots/views.py:41
 msgid "Reboots (7 days)"
 msgstr ""
 
-#: services/web/apps/fm/reportreboots/views.py:39
+#: services/web/apps/fm/reportreboots/views.py:42
 msgid "Reboot (30 day)"
 msgstr ""
 
@@ -1117,76 +1116,76 @@ msgstr "Regras por Perfil"
 msgid "Ruleset Summary"
 msgstr "Resumo de Conjunto de Regras "
 
-#: services/web/apps/fm/reportttsystemstat/views.py:43
+#: services/web/apps/fm/reportttsystemstat/views.py:46
 msgid "TT system statistics"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:46
+#: services/web/apps/fm/reportttsystemstat/views.py:49
 msgid "TTSystem Stat (1 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:47
+#: services/web/apps/fm/reportttsystemstat/views.py:50
 msgid "TTSystem Stat (7 days)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:48
+#: services/web/apps/fm/reportttsystemstat/views.py:51
 msgid "TTSystem Stat (30 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:50
+#: services/web/apps/fm/reportttsystemstat/views.py:53
 msgid "TTSystem Errors (1 day)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:72
-#: services/web/apps/fm/reportttsystemstat/views.py:87
+#: services/web/apps/fm/reportttsystemstat/views.py:75
+#: services/web/apps/fm/reportttsystemstat/views.py:90
 msgid "Server"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:74
+#: services/web/apps/fm/reportttsystemstat/views.py:77
 msgid "Request count"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:75
+#: services/web/apps/fm/reportttsystemstat/views.py:78
 msgid "Success request count"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:76
+#: services/web/apps/fm/reportttsystemstat/views.py:79
 msgid "Failed request count"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:77
+#: services/web/apps/fm/reportttsystemstat/views.py:80
 msgid "Success request (%)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:78
+#: services/web/apps/fm/reportttsystemstat/views.py:81
 msgid "Q1 (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:79
+#: services/web/apps/fm/reportttsystemstat/views.py:82
 msgid "Q2 (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:80
+#: services/web/apps/fm/reportttsystemstat/views.py:83
 msgid "Q3 (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:81
+#: services/web/apps/fm/reportttsystemstat/views.py:84
 msgid "p95 (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:82
+#: services/web/apps/fm/reportttsystemstat/views.py:85
 msgid "max (ms)"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:90
+#: services/web/apps/fm/reportttsystemstat/views.py:93
 msgid "TT ID"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:91
+#: services/web/apps/fm/reportttsystemstat/views.py:94
 msgid "Error code"
 msgstr ""
 
-#: services/web/apps/fm/reportttsystemstat/views.py:92
+#: services/web/apps/fm/reportttsystemstat/views.py:95
 msgid "Error text"
 msgstr ""
 
@@ -1318,9 +1317,9 @@ msgstr "Perfil de Usuário"
 msgid "CPE Profiles"
 msgstr "Perfis de Zona"
 
+# | msgid "Vendors"
 #: services/web/apps/inv/endpoint/views.py:21
 #, fuzzy
-#| msgid "Vendors"
 msgid "Endpoints"
 msgstr "Fabricantes"
 
@@ -1771,16 +1770,16 @@ msgstr "Fabricante"
 msgid "Sensor Profiles"
 msgstr ""
 
+# | msgid "Domain"
 #: services/web/apps/inv/techdomain/views.py:19
 #, fuzzy
-#| msgid "Domain"
 msgid "Tech Domain"
 msgstr "Domínio"
 
 # | msgid "Domain"
+# | msgid "L2 Domain"
 #: services/web/apps/inv/techdomain/views.py:20
 #, fuzzy
-#| msgid "L2 Domain"
 msgid "Tech Domains"
 msgstr "Domínio"
 
@@ -2145,27 +2144,27 @@ msgstr ""
 msgid "Home"
 msgstr ""
 
+# | msgid "Welcome"
 #: services/web/apps/main/home/views.py:83
 #, fuzzy
-#| msgid "Welcome"
 msgid "Welcome to "
 msgstr "Bem vindo!"
 
+# | msgid "Communities"
 #: services/web/apps/main/home/views.py:95
 #, fuzzy
-#| msgid "Communities"
 msgid "Community"
 msgstr "Comunidades"
 
+# | msgid "Inventory Object Summary"
 #: services/web/apps/main/home/views.py:123
 #, fuzzy
-#| msgid "Inventory Object Summary"
 msgid "Inventory summary"
 msgstr "Resumo de Inventário Objeto"
 
+# | msgid "Total Outages"
 #: services/web/apps/main/home/views.py:126
 #, fuzzy
-#| msgid "Total Outages"
 msgid "Total objects"
 msgstr "Total de Interrupções"
 
@@ -2181,15 +2180,15 @@ msgstr ""
 msgid "Chassis"
 msgstr ""
 
+# | msgid "Managed Objects Summary"
 #: services/web/apps/main/home/views.py:151
 #, fuzzy
-#| msgid "Managed Objects Summary"
 msgid "Managed Object Summary"
 msgstr "Resumo de Objetos Gerenciados"
 
+# | msgid "Alarms"
 #: services/web/apps/main/home/views.py:175
 #, fuzzy
-#| msgid "Alarms"
 msgid "Total Alarms"
 msgstr "Alertas"
 
@@ -2228,9 +2227,9 @@ msgid "MIME Types"
 msgstr "Tipos de MIME"
 
 # | msgid "System Templates"
+# | msgid "VLAN Templates"
 #: services/web/apps/main/modeltemplate/views.py:21
 #, fuzzy
-#| msgid "VLAN Templates"
 msgid "Model Templates"
 msgstr "Templates de Sistema"
 
@@ -2410,16 +2409,16 @@ msgid "Peering Points"
 msgstr ""
 
 # | msgid "User Profile"
+# | msgid "CPE Profile"
 #: services/web/apps/peer/peerprofile/views.py:19
 #, fuzzy
-#| msgid "CPE Profile"
 msgid "Peer Profile"
 msgstr "Perfil de Usuário"
 
 # | msgid "Zone Profiles"
+# | msgid "CPE Profiles"
 #: services/web/apps/peer/peerprofile/views.py:20
 #, fuzzy
-#| msgid "CPE Profiles"
 msgid "Peer Profiles"
 msgstr "Perfis de Zona"
 
@@ -2636,9 +2635,9 @@ msgid "Discovered Object"
 msgstr ""
 
 # | msgid "Alarm Classes"
-#: services/web/apps/sa/discoveredobject/views.py:135
+# | msgid "Alarm Rules"
+#: services/web/apps/sa/discoveredobject/views.py:144
 #, fuzzy
-#| msgid "Alarm Rules"
 msgid "From Rule"
 msgstr "Classes de Alerta"
 
@@ -2777,22 +2776,22 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: services/web/apps/sa/reportobjectdetail/views.py:104
 #: services/web/apps/sa/reportobjectdetail/views.py:105
+#: services/web/apps/sa/reportobjectdetail/views.py:106
 msgid "Object Detail"
 msgstr ""
 
-#: services/web/apps/sa/reportobjectdetail/views.py:329
+#: services/web/apps/sa/reportobjectdetail/views.py:330
 msgid "ADM_PATH1"
 msgstr ""
 
 # | msgid "Object Models"
-#: services/web/apps/sa/reportobjectdetail/views.py:339
+#: services/web/apps/sa/reportobjectdetail/views.py:340
 #, fuzzy
 msgid "OBJECT_LABELS"
 msgstr "Modelos de Objeto"
 
-#: services/web/apps/sa/reportobjectdetail/views.py:432
+#: services/web/apps/sa/reportobjectdetail/views.py:433
 msgid "Unknown"
 msgstr ""
 
@@ -3426,4 +3425,8 @@ msgstr ""
 # | msgid "Managed Object"
 #~ msgid "Default Managed Object"
 #~ msgstr "Objeto Gerenciado"
+
+# | msgid "Escalations"
+#~ msgid "Escalation Profile"
+#~ msgstr "Escalações"
 
