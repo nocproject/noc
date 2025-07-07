@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: The NOC Project VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-05-09 14:49+0300\n"
+"POT-Creation-Date: 2025-07-03 06:22+0300\n"
 "PO-Revision-Date: 2016-07-15 16:29-0300\n"
 "Last-Translator: Gabriela Todeschini <gabrielat@cpd.ufrgs.br>\n"
 "Language: pt_BR\n"
@@ -61,7 +61,7 @@ msgstr ""
 #: ui/web/dev/spec/Application.js:57 ui/web/dev/spec/Application.js:129
 #: ui/web/dns/dnsserver/Application.js:19
 #: ui/web/dns/dnsserver/Application.js:38 ui/web/dns/dnszone/Application.js:30
-#: ui/web/dns/dnszone/Application.js:158
+#: ui/web/dns/dnszone/Application.js:159
 #: ui/web/dns/dnszoneprofile/Application.js:21
 #: ui/web/dns/dnszoneprofile/Application.js:51
 #: ui/web/fm/alarm/view/grids/MultiPanel.js:155
@@ -79,7 +79,7 @@ msgstr ""
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:46
 #: ui/web/fm/alarmescalation/Application.js:28
 #: ui/web/fm/alarmescalation/Application.js:38
-#: ui/web/fm/alarmrule/Application.js:29 ui/web/fm/alarmrule/Application.js:53
+#: ui/web/fm/alarmrule/Application.js:28 ui/web/fm/alarmrule/Application.js:52
 #: ui/web/fm/alarmseverity/Application.js:21
 #: ui/web/fm/alarmseverity/Application.js:53
 #: ui/web/fm/alarmtrigger/Application.js:22
@@ -89,8 +89,6 @@ msgstr ""
 #: ui/web/fm/classificationrule/Application.js:232
 #: ui/web/fm/dispositionrule/Application.js:34
 #: ui/web/fm/dispositionrule/Application.js:91
-#: ui/web/fm/escalationprofile/Application.js:28
-#: ui/web/fm/escalationprofile/Application.js:43
 #: ui/web/fm/eventclass/Application.js:38
 #: ui/web/fm/eventclass/Application.js:62
 #: ui/web/fm/eventclass/Application.js:157
@@ -229,8 +227,8 @@ msgstr ""
 #: ui/web/main/systemnotification/Application.js:34
 #: ui/web/main/systemtemplate/Application.js:19
 #: ui/web/main/systemtemplate/Application.js:35
-#: ui/web/main/template/Application.js:32
-#: ui/web/main/template/Application.js:62
+#: ui/web/main/template/Application.js:33
+#: ui/web/main/template/Application.js:63
 #: ui/web/main/timepattern/Application.js:19
 #: ui/web/main/timepattern/Application.js:33
 #: ui/web/main/userprofile/Application.js:37
@@ -303,7 +301,7 @@ msgstr ""
 #: ui/web/sa/service/InstancesPanel.js:129 ui/web/sa/service/RegisterForm.js:47
 #: ui/web/sa/serviceprofile/Application.js:45
 #: ui/web/sa/serviceprofile/Application.js:76
-#: ui/web/sa/serviceprofile/Application.js:558
+#: ui/web/sa/serviceprofile/Application.js:571
 #: ui/web/sla/slaprobe/Application.js:33 ui/web/sla/slaprobe/Application.js:94
 #: ui/web/sla/slaprofile/Application.js:28
 #: ui/web/sla/slaprofile/Application.js:44
@@ -334,7 +332,7 @@ msgstr "Nome"
 #: ui/web/cm/objectvalidationpolicy/Application.js:124
 #: ui/web/core/ReportControl.js:61 ui/web/fm/alarm/view/grids/Sidebar.js:80
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:66
-#: ui/web/fm/alarmrule/Application.js:35 ui/web/fm/alarmrule/Application.js:60
+#: ui/web/fm/alarmrule/Application.js:34 ui/web/fm/alarmrule/Application.js:59
 #: ui/web/fm/dispositionrule/Application.js:108
 #: ui/web/fm/ignoreeventrule/Application.js:19
 #: ui/web/fm/ignorepattern/Application.js:27
@@ -369,7 +367,7 @@ msgstr "Nome"
 #: ui/web/main/resourcestate/Application.js:74
 #: ui/web/main/style/Application.js:23 ui/web/main/sync/Application.js:28
 #: ui/web/main/sync/Application.js:62 ui/web/main/sync/Application.js:84
-#: ui/web/maintenance/maintenance/Application.js:234
+#: ui/web/maintenance/maintenance/Application.js:232
 #: ui/web/phone/numbercategory/Application.js:28
 #: ui/web/pm/metricrule/Application.js:34
 #: ui/web/pm/metricrule/Application.js:53
@@ -414,21 +412,19 @@ msgstr "Expiração"
 #: ui/web/dev/quiz/Application.js:56 ui/web/dev/spec/Application.js:70
 #: ui/web/dns/dnsserver/Application.js:29
 #: ui/web/dns/dnsserver/Application.js:50 ui/web/dns/dnszone/Application.js:82
-#: ui/web/dns/dnszone/Application.js:102
+#: ui/web/dns/dnszone/Application.js:103
 #: ui/web/dns/dnszoneprofile/Application.js:129
 #: ui/web/fm/alarmclass/Application.js:56
 #: ui/web/fm/alarmclass/Application.js:97
 #: ui/web/fm/alarmclass/Application.js:186
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:93
 #: ui/web/fm/alarmescalation/Application.js:44
-#: ui/web/fm/alarmrule/Application.js:65
+#: ui/web/fm/alarmrule/Application.js:64
 #: ui/web/fm/alarmseverity/Application.js:44
 #: ui/web/fm/alarmseverity/Application.js:64
 #: ui/web/fm/alarmtrigger/Application.js:81
 #: ui/web/fm/classificationrule/Application.js:100
 #: ui/web/fm/dispositionrule/Application.js:102
-#: ui/web/fm/escalationprofile/Application.js:33
-#: ui/web/fm/escalationprofile/Application.js:49
 #: ui/web/fm/eventclass/Application.js:49
 #: ui/web/fm/eventclass/Application.js:89
 #: ui/web/fm/eventclass/Application.js:192
@@ -538,7 +534,7 @@ msgstr "Expiração"
 #: ui/web/main/systemtemplate/Application.js:42
 #: ui/web/main/timepattern/Application.js:24
 #: ui/web/main/timepattern/Application.js:39
-#: ui/web/maintenance/maintenance/Application.js:183
+#: ui/web/maintenance/maintenance/Application.js:181
 #: ui/web/maintenance/maintenance/ObjectsPanel.js:52
 #: ui/web/maintenance/maintenancetype/Application.js:31
 #: ui/web/maintenance/maintenancetype/Application.js:48
@@ -672,7 +668,7 @@ msgstr ""
 #: ui/web/ip/prefixprofile/Application.js:42
 #: ui/web/main/label/Application.js:371
 #: ui/web/main/prefixtable/Application.js:72
-#: ui/web/sa/managedobjectprofile/Application.js:2642
+#: ui/web/sa/managedobjectprofile/Application.js:2649
 msgid "Prefix"
 msgstr "Prefixo"
 
@@ -702,7 +698,7 @@ msgstr "Permissão"
 #: ui/web/inv/map/MapPanel.js:349 ui/web/inv/objectmodel/Application.js:734
 #: ui/web/inv/objectmodel/Application.js:815
 #: ui/web/ip/ipam/ApplicationController.js:163
-#: ui/web/main/desktop/Application.js:115
+#: ui/web/main/desktop/Application.js:118
 #: ui/web/sa/managedobject/Controller.js:550
 #: ui/web/sa/managedobject/LinksPanel.js:108
 #: ui/web/sa/monitor/JobLogPanel.js:42 ui/web/sa/runcommands/Controller.js:605
@@ -712,7 +708,7 @@ msgstr "Falha ao carregar dados"
 
 #: ui/web/aaa/group/Application.js:73
 #: ui/web/aaa/modelprotectionprofile/Application.js:158
-#: ui/web/aaa/user/Application.js:300 ui/web/core/ModelApplication.js:542
+#: ui/web/aaa/user/Application.js:300 ui/web/core/ModelApplication.js:551
 #: ui/web/core/MonacoPanel.js:36 ui/web/core/MonacoPanel.js:37
 #: ui/web/core/RemoteMappingForm.js:49
 #: ui/web/core/plugins/DynamicModalEditing.js:271
@@ -812,14 +808,14 @@ msgstr "Escondido"
 #: ui/web/sa/managedobject/form/View.js:847
 #: ui/web/sa/managedobjectprofile/Application.js:385
 #: ui/web/sa/managedobjectprofile/Application.js:436
-#: ui/web/sa/managedobjectprofile/Application.js:2324
-#: ui/web/sa/managedobjectprofile/Application.js:2387
-#: ui/web/sa/managedobjectprofile/Application.js:2415
-#: ui/web/sa/managedobjectprofile/Application.js:2460
-#: ui/web/sa/managedobjectprofile/Application.js:2654
-#: ui/web/sa/managedobjectprofile/Application.js:2683
-#: ui/web/sa/managedobjectprofile/Application.js:2704
-#: ui/web/sa/monitor/Filter.js:49
+#: ui/web/sa/managedobjectprofile/Application.js:2331
+#: ui/web/sa/managedobjectprofile/Application.js:2394
+#: ui/web/sa/managedobjectprofile/Application.js:2422
+#: ui/web/sa/managedobjectprofile/Application.js:2467
+#: ui/web/sa/managedobjectprofile/Application.js:2661
+#: ui/web/sa/managedobjectprofile/Application.js:2690
+#: ui/web/sa/managedobjectprofile/Application.js:2711
+#: ui/web/sa/monitor/Filter.js:49 ui/web/sa/serviceprofile/Application.js:149
 #, fuzzy
 msgid "Disabled"
 msgstr "Desabilitar"
@@ -949,7 +945,7 @@ msgstr ""
 #: ui/web/main/modeltemplate/Application.js:79
 #: ui/web/main/notificationgroup/Application.js:69
 #: ui/web/main/reportconfig/Application.js:81
-#: ui/web/main/template/Application.js:70
+#: ui/web/main/template/Application.js:71
 #: ui/web/pm/measurementunits/Application.js:64
 #: ui/web/pm/metricaction/Application.js:315
 #: ui/web/pm/metricscope/Application.js:49
@@ -1032,7 +1028,7 @@ msgstr "Alvo"
 #: ui/web/main/modeltemplate/Application.js:434
 #: ui/web/main/notificationgroup/Application.js:243
 #: ui/web/main/reportconfig/Application.js:592
-#: ui/web/main/template/Application.js:112
+#: ui/web/main/template/Application.js:122
 #: ui/web/pm/measurementunits/Application.js:153
 #: ui/web/pm/metricaction/Application.js:566
 #: ui/web/pm/metricscope/Application.js:163
@@ -1075,7 +1071,7 @@ msgstr ""
 #: ui/web/main/handler/Application.js:211 ui/web/main/label/Application.js:919
 #: ui/web/main/modeltemplate/Application.js:436
 #: ui/web/main/notificationgroup/Application.js:245
-#: ui/web/main/template/Application.js:114
+#: ui/web/main/template/Application.js:124
 #: ui/web/pm/measurementunits/Application.js:155
 #: ui/web/pm/metricaction/Application.js:568
 #: ui/web/pm/metricscope/Application.js:165
@@ -1106,7 +1102,7 @@ msgstr "Parâmetro"
 #: ui/web/cm/objectnotify/Application.js:59
 #: ui/web/cm/objectvalidationpolicy/Application.js:90
 #: ui/web/dev/quiz/Application.js:109 ui/web/dev/spec/Application.js:136
-#: ui/web/dns/dnszone/Application.js:41 ui/web/dns/dnszone/Application.js:171
+#: ui/web/dns/dnszone/Application.js:41 ui/web/dns/dnszone/Application.js:172
 #: ui/web/fm/alarm/view/grids/MultiPanel.js:165
 #: ui/web/fm/alarm/view/grids/MultiSelector.js:178
 #: ui/web/fm/alarm/view/grids/MultiSelector.js:204
@@ -1148,9 +1144,9 @@ msgstr "Parâmetro"
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:18
 #: ui/web/sa/managedobject/scripts/ShowMPLSVPN.js:24
 #: ui/web/sa/managedobject/scripts/ShowPortChannel.js:23
-#: ui/web/sa/managedobjectprofile/Application.js:1521
-#: ui/web/sa/managedobjectprofile/Application.js:1597
-#: ui/web/sa/managedobjectprofile/Application.js:1674
+#: ui/web/sa/managedobjectprofile/Application.js:1528
+#: ui/web/sa/managedobjectprofile/Application.js:1604
+#: ui/web/sa/managedobjectprofile/Application.js:1681
 #: ui/web/sa/service/Application.js:375 ui/web/sa/service/InstancesPanel.js:159
 #: ui/web/sa/service/RegisterForm.js:36
 #: ui/web/sa/service/ResourceLinkForm.js:45
@@ -1216,7 +1212,7 @@ msgstr "Mostrar carga de interface"
 #: ui/web/ip/ipam/view/forms/prefix/PrefixAddressLists.js:246
 #: ui/web/main/pyrule/Application.js:52 ui/web/sa/managedobject/CapsPanel.js:48
 #: ui/web/sa/managedobject/form/View.js:1551
-#: ui/web/sa/managedobjectprofile/Application.js:1452
+#: ui/web/sa/managedobjectprofile/Application.js:1459
 #: ui/web/sa/objectdiscoveryrule/Application.js:157
 #: ui/web/sa/service/Application.js:726
 msgid "Source"
@@ -1316,7 +1312,7 @@ msgstr "Máximo de Scripts"
 #: ui/web/main/metricstream/Application.js:54
 #: ui/web/pm/metricaction/Application.js:428
 #: ui/web/pm/metricrule/Application.js:96
-#: ui/web/sa/managedobjectprofile/Application.js:2540
+#: ui/web/sa/managedobjectprofile/Application.js:2547
 #: ui/web/sla/slaprofile/Application.js:134
 msgid "Metric Type"
 msgstr "Tipo de Métrica"
@@ -1485,9 +1481,9 @@ msgstr "Nome do template"
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:35
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:71
 #: ui/web/fm/alarmescalation/Application.js:68
-#: ui/web/fm/alarmrule/Application.js:131
-#: ui/web/fm/alarmrule/Application.js:228
-#: ui/web/fm/alarmrule/Application.js:272
+#: ui/web/fm/alarmrule/Application.js:123
+#: ui/web/fm/alarmrule/Application.js:220
+#: ui/web/fm/alarmrule/Application.js:264
 #: ui/web/fm/reportalarmcomments/Application.js:79
 #: ui/web/fm/reportalarmdetail/Application.js:182
 #: ui/web/pm/metricaction/Application.js:526
@@ -1520,14 +1516,13 @@ msgstr "Domínio Adm."
 
 #: ui/web/cm/objectnotify/Application.js:38
 #: ui/web/cm/objectnotify/Application.js:90 ui/web/core/SubscriptionPanel.js:89
-#: ui/web/dns/dnszone/Application.js:132
+#: ui/web/dns/dnszone/Application.js:133
 #: ui/web/dns/dnszoneprofile/Application.js:31
 #: ui/web/dns/dnszoneprofile/Application.js:123
 #: ui/web/fm/alarmescalation/Application.js:134
-#: ui/web/fm/alarmrule/Application.js:208
+#: ui/web/fm/alarmrule/Application.js:200
 #: ui/web/fm/alarmtrigger/Application.js:50
 #: ui/web/fm/alarmtrigger/Application.js:115
-#: ui/web/fm/escalationprofile/Application.js:267
 #: ui/web/fm/eventtrigger/Application.js:47
 #: ui/web/fm/eventtrigger/Application.js:113
 #: ui/web/main/messageroute/Application.js:178
@@ -1575,7 +1570,7 @@ msgstr "Por Dom. Administrativo"
 
 # | msgid "type"
 #: ui/web/cm/objectnotify/Application.js:117
-#: ui/web/dns/dnszone/Application.js:228
+#: ui/web/dns/dnszone/Application.js:229
 #: ui/web/inv/interface/Application.js:227
 #, fuzzy
 msgid "By Type"
@@ -1596,16 +1591,15 @@ msgid "RPSL"
 msgstr ""
 
 #: ui/web/core/ApplicationPanel.js:38 ui/web/core/FormPanel.js:162
-#: ui/web/core/JSONPreviewII.js:20 ui/web/core/ModelApplication.js:533
-#: ui/web/core/ModelApplication.js:1758 ui/web/core/MonacoPanel.js:30
+#: ui/web/core/JSONPreviewII.js:20 ui/web/core/ModelApplication.js:542
+#: ui/web/core/ModelApplication.js:1780 ui/web/core/MonacoPanel.js:30
 #: ui/web/core/RemoteMappingForm.js:55 ui/web/core/ShareWizard.js:211
 #: ui/web/core/SubscriptionPanel.js:51 ui/web/core/TemplatePreview.js:27
 #: ui/web/core/label/TreePicker.js:51 ui/web/core/tagfield/TreePicker.js:55
 #: ui/web/fm/alarm/view/form/Alarm.js:247
-#: ui/web/fm/classificationrule/TestForm.js:31
-#: ui/web/fm/escalationprofile/Application.js:202
-#: ui/web/fm/mib/Application.js:35 ui/web/fm/mib/Application.js:53
-#: ui/web/inv/channel/Application.js:51 ui/web/inv/inv/AddObjectForm.js:29
+#: ui/web/fm/classificationrule/TestForm.js:31 ui/web/fm/mib/Application.js:35
+#: ui/web/fm/mib/Application.js:53 ui/web/inv/channel/Application.js:51
+#: ui/web/inv/inv/AddObjectForm.js:29
 #: ui/web/inv/inv/CreateConnectionForm.js:149
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:129
 #: ui/web/inv/inv/plugins/channel/ParamsForm.js:43
@@ -1640,12 +1634,12 @@ msgid "Failed add custom fields to form "
 msgstr ""
 
 #: ui/web/core/FormPanel.js:146 ui/web/core/JSONPreviewII.js:27
-#: ui/web/core/ModelApplication.js:521 ui/web/core/ModelApplication.js:1723
+#: ui/web/core/ModelApplication.js:521 ui/web/core/ModelApplication.js:1745
 #: ui/web/core/plugins/DynamicModalEditing.js:275
 #: ui/web/core/plugins/SubscriptionModalEditing.js:76
 #: ui/web/inv/inv/AddObjectForm.js:24
 #: ui/web/inv/inv/CreateConnectionForm.js:140
-#: ui/web/inv/inv/plugins/comment/CommentPanel.js:45
+#: ui/web/inv/inv/plugins/comment/CommentPanel.js:38
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:30
 #: ui/web/inv/inv/plugins/contacts/ContactsPanel.js:74
 #: ui/web/inv/inv/plugins/metric/MetricPanel.js:120
@@ -1670,7 +1664,7 @@ msgstr "Salvar"
 msgid "Save changes"
 msgstr "última mudança"
 
-#: ui/web/core/FormPanel.js:163 ui/web/core/ModelApplication.js:534
+#: ui/web/core/FormPanel.js:163 ui/web/core/ModelApplication.js:543
 #: ui/web/core/SubscriptionPanel.js:52 ui/web/fm/alarm/view/form/Alarm.js:248
 #: ui/web/ip/ipam/view/forms/prefix/Prefix.js:47
 #: ui/web/ip/ipam/view/forms/vrf/VRF.js:174
@@ -1679,32 +1673,53 @@ msgstr "última mudança"
 msgid "Close without saving"
 msgstr ""
 
-#: ui/web/core/FormPanel.js:177 ui/web/core/InlineGrid.js:39
+#: ui/web/core/FormPanel.js:177 ui/web/core/InlineGrid.js:42
 #: ui/web/core/ListFormField.js:42 ui/web/core/M2MField.js:34
-#: ui/web/core/ModelApplication.js:552 ui/web/inv/inv/Application.js:105
+#: ui/web/core/ModelApplication.js:561 ui/web/inv/inv/Application.js:105
 #: ui/web/inv/inv/CreateConnectionForm.js:1781
 #: ui/web/inv/inv/plugins/file/FilePanel.js:35
 #: ui/web/ip/ipam/view/forms/prefix/PrefixDeletePanel.js:85
 #: ui/web/main/audittrail/Application.js:119
 #: ui/web/sa/managedobject/form/View.js:1727 ui/web/ux/form/DictField.js:32
-#: ui/web/ux/form/GridField.js:54 ui/web/ux/form/ModelDataField.js:69
+#: ui/web/ux/form/GridField.js:61 ui/web/ux/form/ModelDataField.js:69
 #: ui/web/ux/form/StringsField.js:39 ui/web/wf/workflow/WFEditor.js:79
 msgid "Delete"
 msgstr "Excluir"
 
 # | msgid "Select managed object ..."
-#: ui/web/core/FormPanel.js:178 ui/web/core/ModelApplication.js:553
+#: ui/web/core/FormPanel.js:178 ui/web/core/ModelApplication.js:562
 #: ui/web/sa/managedobject/form/View.js:1728
 #, fuzzy
 msgid "Delete object"
 msgstr "Selecionar objeto gerenciado ..."
 
-#: ui/web/core/FormPanel.js:207 ui/web/core/ModelApplication.js:1120
+#: ui/web/core/FormPanel.js:207 ui/web/core/ModelApplication.js:1142
 #: ui/web/sa/managedobject/form/FormController.js:57
 msgid "Error in data"
 msgstr ""
 
-#: ui/web/core/InlineGrid.js:29 ui/web/core/M2MField.js:27
+# | msgid "Expire"
+# | msgid "Expired"
+#: ui/web/core/InactivityLogout.js:59
+#, fuzzy
+msgid "Session Expired"
+msgstr "Expiração"
+
+#: ui/web/core/InactivityLogout.js:60
+msgid "Logged out for inactivity"
+msgstr ""
+
+#: ui/web/core/InactivityLogout.js:68
+msgid "Ok"
+msgstr ""
+
+#: ui/web/core/InlineGrid.js:12
+msgid ""
+"This grid is currently disabled. Fill all required fields and press "
+"'Apply' button to enable it."
+msgstr ""
+
+#: ui/web/core/InlineGrid.js:32 ui/web/core/M2MField.js:27
 #: ui/web/core/ModelApplication.js:201 ui/web/core/SubscriptionPanel.js:58
 #: ui/web/inv/inv/plugins/conduits/ConduitsForm.js:38
 #: ui/web/inv/inv/plugins/map/AddObjectForm.js:51
@@ -1718,10 +1733,50 @@ msgstr ""
 msgid "Add"
 msgstr "Adicionar"
 
-#: ui/web/core/InlineGrid.js:34 ui/web/core/ListFormField.js:28
-#: ui/web/ux/form/GridField.js:47 ui/web/ux/form/StringsField.js:32
+#: ui/web/core/InlineGrid.js:37 ui/web/core/ListFormField.js:28
+#: ui/web/ux/form/GridField.js:54 ui/web/ux/form/StringsField.js:32
 msgid "Append"
 msgstr ""
+
+# | msgid "Deleted"
+#: ui/web/core/InlineGrid.js:93
+#, fuzzy
+msgid "deleted"
+msgstr "Excluído"
+
+# | msgid "Select Config ..."
+# | msgid "Deleting ..."
+#: ui/web/core/InlineGrid.js:93
+#, fuzzy
+msgid "deleting"
+msgstr "Selecionar a configuração..."
+
+# | msgid "Saved"
+#: ui/web/core/InlineGrid.js:108
+#, fuzzy
+msgid "saved"
+msgstr "Salvos"
+
+# | msgid "Building"
+# | msgid "Loading"
+# | msgid "Reloading..."
+# | msgid "Saving..."
+#: ui/web/core/InlineGrid.js:108
+#, fuzzy
+msgid "saving"
+msgstr "Construção"
+
+#: ui/web/core/InlineGrid.js:114 ui/web/dev/quiz/Application.js:70
+#: ui/web/dev/quiz/Application.js:82 ui/web/dev/spec/Application.js:102
+#: ui/web/dev/spec/Application.js:114 ui/web/main/audittrail/Application.js:83
+msgid "Changes"
+msgstr "Mudanças"
+
+# | msgid "Error Type"
+#: ui/web/core/InlineGrid.js:117
+#, fuzzy
+msgid "Error  "
+msgstr "Tipo de Erro"
 
 # | msgid "Failed to get data"
 #: ui/web/core/InlineModelStore.js:97
@@ -1743,7 +1798,7 @@ msgstr "Falha ao carregar dados"
 #: ui/web/sa/authprofile/Application.js:250
 #: ui/web/sa/managedobjectprofile/Application.js:324
 #: ui/web/sa/service/Application.js:632
-#: ui/web/sa/serviceprofile/Application.js:513
+#: ui/web/sa/serviceprofile/Application.js:526
 #: ui/web/vc/l2domain/Application.js:144
 #: ui/web/vc/l2domainprofile/Application.js:128
 #: ui/web/vc/vlan/Application.js:142 ui/web/vc/vlanprofile/Application.js:87
@@ -1773,7 +1828,7 @@ msgstr "Operação"
 #: ui/web/sa/managedobjectprofile/Application.js:344
 #: ui/web/sa/objectdiscoveryrule/Application.js:171
 #: ui/web/sa/service/Application.js:641
-#: ui/web/sa/serviceprofile/Application.js:522
+#: ui/web/sa/serviceprofile/Application.js:535
 #: ui/web/vc/l2domain/Application.js:153
 #: ui/web/vc/l2domainprofile/Application.js:137
 #: ui/web/vc/vlan/Application.js:151 ui/web/vc/vlanprofile/Application.js:96
@@ -1799,7 +1854,7 @@ msgstr "Sobre o sistema ..."
 #: ui/web/sa/authprofile/Application.js:265
 #: ui/web/sa/managedobjectprofile/Application.js:351
 #: ui/web/sa/service/Application.js:647
-#: ui/web/sa/serviceprofile/Application.js:528
+#: ui/web/sa/serviceprofile/Application.js:541
 #: ui/web/vc/l2domain/Application.js:159
 #: ui/web/vc/l2domainprofile/Application.js:143
 #: ui/web/vc/vlan/Application.js:157 ui/web/vc/vlanprofile/Application.js:102
@@ -1829,7 +1884,7 @@ msgstr "IP Remoto"
 #: ui/web/sa/managedobject/form/View.js:144
 #: ui/web/sa/managedobjectprofile/Application.js:359
 #: ui/web/sa/service/Application.js:654
-#: ui/web/sa/serviceprofile/Application.js:535
+#: ui/web/sa/serviceprofile/Application.js:548
 #: ui/web/sla/slaprobe/Application.js:175 ui/web/vc/l2domain/Application.js:166
 #: ui/web/vc/l2domainprofile/Application.js:150
 #: ui/web/vc/vlan/Application.js:164 ui/web/vc/vlanprofile/Application.js:109
@@ -1855,30 +1910,30 @@ msgid "Would you like to share item and contribute to Open-Source project?"
 msgstr ""
 
 # | msgid "Saved"
+# | msgid "Not saved"
 #: ui/web/core/JSONPreviewII.js:64
 #, fuzzy
-#| msgid "Not saved"
 msgid "JSON saved"
 msgstr "Salvos"
 
 # | msgid "Failed to get data"
+# | msgid "Failed to get JSON"
 #: ui/web/core/JSONPreviewII.js:67
 #, fuzzy
-#| msgid "Failed to get JSON"
 msgid "Failed to save JSON"
 msgstr "Falha ao carregar dados"
 
 # | msgid "User"
-#: ui/web/core/ListFormField.js:35 ui/web/ux/form/GridField.js:40
+#: ui/web/core/ListFormField.js:35 ui/web/ux/form/GridField.js:47
 #, fuzzy
 msgid "Insert"
 msgstr "Usuário"
 
 #: ui/web/core/ListFormField.js:50 ui/web/core/ModelApplication.js:45
-#: ui/web/core/ModelApplication.js:563 ui/web/inv/inv/AddObjectForm.js:77
-#: ui/web/inv/inv/Application.js:69 ui/web/inv/inv/Application.js:869
+#: ui/web/core/ModelApplication.js:572 ui/web/inv/inv/AddObjectForm.js:77
+#: ui/web/inv/inv/Application.js:69 ui/web/inv/inv/Application.js:900
 #: ui/web/sa/managedobject/form/FormController.js:136
-#: ui/web/sa/managedobject/form/View.js:1742 ui/web/ux/form/GridField.js:62
+#: ui/web/sa/managedobject/form/View.js:1742 ui/web/ux/form/GridField.js:69
 msgid "Clone"
 msgstr "Copiar"
 
@@ -1908,14 +1963,14 @@ msgstr "Busca ..."
 #: ui/web/inv/inv/plugins/conduits/CreateBlockForm.js:58
 #: ui/web/main/audittrail/Application.js:116
 #: ui/web/sa/managedobject/form/FormController.js:225
-#: ui/web/sa/managedobjectprofile/Application.js:1400
+#: ui/web/sa/managedobjectprofile/Application.js:1406
 msgid "Create"
 msgstr "Criar"
 
 #: ui/web/core/ModelApplication.js:46 ui/web/core/ModelApplication.js:47
 #: ui/web/core/ModelApplication.js:329
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:41
-#: ui/web/inv/inv/plugins/comment/CommentPanel.js:38
+#: ui/web/inv/inv/plugins/comment/CommentPanel.js:31
 #: ui/web/inv/inv/plugins/contacts/ContactsPanel.js:67
 #: ui/web/inv/inv/plugins/rack/RackPanel.js:25
 #: ui/web/inv/map/inspectors/CPEInspector.js:29 ui/web/ip/ipam/view/Grid.js:44
@@ -2011,7 +2066,7 @@ msgid "Mark/Unmark"
 msgstr ""
 
 #: ui/web/core/ModelApplication.js:392 ui/web/core/ModelApplication.js:415
-#: ui/web/core/ModelApplication.js:586 ui/web/dns/dnszone/Application.js:209
+#: ui/web/core/ModelApplication.js:596 ui/web/dns/dnszone/Application.js:210
 #: ui/web/main/glyph/Application.js:102
 msgid "Preview"
 msgstr "Visualizar"
@@ -2036,43 +2091,54 @@ msgstr ""
 #: ui/web/sa/discoveredobject/view/Grid.js:32
 #: ui/web/sa/getnow/SelectionGrid.js:25 ui/web/sa/getnow/SelectionGrid.js:26
 #: ui/web/sa/managedobject/AlarmPanel.js:62
-#: ui/web/sa/managedobjectprofile/Application.js:1171
-#: ui/web/sa/managedobjectprofile/Application.js:2643
+#: ui/web/sa/managedobjectprofile/Application.js:1173
+#: ui/web/sa/managedobjectprofile/Application.js:2650
 #: ui/web/sa/monitor/SelectionGrid.js:25 ui/web/sa/monitor/SelectionGrid.js:26
 #: ui/web/sa/reportobjectdetail/Application.js:59
 msgid "ID"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:543
+#: ui/web/core/ModelApplication.js:531 ui/web/core/filter/Filter.js:394
+#: ui/web/wf/workflow/WFInspector.js:35
+msgid "Apply"
+msgstr "Aplicar"
+
+# | msgid "Status Change Notification"
+#: ui/web/core/ModelApplication.js:532
+#, fuzzy
+msgid "Save changes and continue editing"
+msgstr "Notificação de Modificação de Status"
+
+#: ui/web/core/ModelApplication.js:552
 #: ui/web/sa/managedobject/form/View.js:1721
 msgid "Reset to default values"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:564
+#: ui/web/core/ModelApplication.js:573
 #: ui/web/sa/managedobject/form/View.js:1743
 msgid "Copy existing values to a new object"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:585 ui/web/fm/mib/Application.js:60
+#: ui/web/core/ModelApplication.js:595 ui/web/fm/mib/Application.js:60
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:104
 #: ui/web/inv/inv/plugins/job/JobPanel.js:106
 #: ui/web/ip/prefixaccess/Application.js:39
 msgid "View"
 msgstr "Panorama"
 
-#: ui/web/core/ModelApplication.js:605
+#: ui/web/core/ModelApplication.js:615
 #: ui/web/sa/managedobject/form/View.js:1866
 msgid "Form Help"
 msgstr ""
 
 # | msgid "Revalidate"
-#: ui/web/core/ModelApplication.js:775
+#: ui/web/core/ModelApplication.js:784
 #: ui/web/sa/managedobject/form/FormController.js:248
 #, fuzzy
 msgid "Invalid data!"
 msgstr "Revalidar"
 
-#: ui/web/core/ModelApplication.js:821 ui/web/inv/interface/Application.js:259
+#: ui/web/core/ModelApplication.js:838 ui/web/inv/interface/Application.js:259
 #: ui/web/inv/inv/AddObjectForm.js:172
 #: ui/web/inv/inv/plugins/sensor/SensorPanel.js:93
 #: ui/web/ip/ipam/view/forms/prefix/AddressPanel.js:210
@@ -2085,28 +2151,28 @@ msgstr "Revalidar"
 msgid "Saved"
 msgstr "Salvos"
 
-#: ui/web/core/ModelApplication.js:876
+#: ui/web/core/ModelApplication.js:895
 msgid "Record reload error."
 msgstr ""
 
 # | msgid "Internal name"
-#: ui/web/core/ModelApplication.js:1006
+# | msgid "Internal Error"
+#: ui/web/core/ModelApplication.js:1027
 #, fuzzy
-#| msgid "Internal Error"
 msgid "Internal error"
 msgstr "Nome interno"
 
-#: ui/web/core/ModelApplication.js:1157
+#: ui/web/core/ModelApplication.js:1179
 #: ui/web/sa/managedobject/form/FormController.js:145
 msgid "Delete record?"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1158
+#: ui/web/core/ModelApplication.js:1180
 #: ui/web/sa/managedobject/form/FormController.js:146
 msgid "Do you wish to delete record? This operation cannot be undone!"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1402 ui/web/core/ModelApplication.js:1926
+#: ui/web/core/ModelApplication.js:1424 ui/web/core/ModelApplication.js:1948
 #: ui/web/core/ShareWizard.js:378 ui/web/kb/kbentry/Application.js:196
 #: ui/web/kb/kbentry/Application.js:216
 #: ui/web/main/imagestore/Application.js:102
@@ -2121,7 +2187,7 @@ msgstr ""
 msgid "Failed"
 msgstr "Falhou"
 
-#: ui/web/core/ModelApplication.js:1421
+#: ui/web/core/ModelApplication.js:1443
 #: ui/web/sa/managedobject/Application.js:620
 #: ui/web/sa/managedobject/ConfDBPanel.js:90
 #: ui/web/sa/managedobject/DiscoveryPanel.js:34
@@ -2130,7 +2196,7 @@ msgstr "Falhou"
 msgid "Run"
 msgstr "Executar"
 
-#: ui/web/core/ModelApplication.js:1426 ui/web/core/RemoteMappingForm.js:188
+#: ui/web/core/ModelApplication.js:1448 ui/web/core/RemoteMappingForm.js:188
 #: ui/web/core/ShareWizard.js:185 ui/web/core/ShareWizard.js:377
 #: ui/web/core/plugins/SubscriptionModalEditing.js:238
 #: ui/web/core/plugins/SubscriptionModalEditing.js:244
@@ -2142,42 +2208,42 @@ msgstr "Executar"
 msgid "Error"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1496
+#: ui/web/core/ModelApplication.js:1518
 #: ui/web/fm/alarm/view/grids/ContainerModel.js:27
 #: ui/web/fm/event/ApplicationModel.js:18 ui/web/main/search/Application.js:109
 msgid "Total: "
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1604 ui/web/core/ModelApplication.js:1939
+#: ui/web/core/ModelApplication.js:1626 ui/web/core/ModelApplication.js:1961
 msgid "to default value"
 msgstr ""
 
-#: ui/web/core/ModelApplication.js:1777
+#: ui/web/core/ModelApplication.js:1799
 #: ui/web/sa/managedobject/Application.js:465
 msgid "Group Edit"
 msgstr "Editar Grupo"
 
-#: ui/web/core/ModelApplication.js:1798 ui/web/core/ModelApplication.js:1799
+#: ui/web/core/ModelApplication.js:1820 ui/web/core/ModelApplication.js:1821
 #: ui/web/fm/alarm/view/grids/Container.js:41
 #: ui/web/fm/alarm/view/grids/Container.js:42
 msgid "Group actions"
 msgstr ""
 
 # | msgid "Change password"
-#: ui/web/core/ModelApplication.js:1908
+#: ui/web/core/ModelApplication.js:1930
 #: ui/web/sa/managedobject/form/FormController.js:99
 #, fuzzy
 msgid "Change records?"
 msgstr "Alterar senha"
 
 # | msgid "Credentials has been changed"
-#: ui/web/core/ModelApplication.js:1921
+#: ui/web/core/ModelApplication.js:1943
 #: ui/web/sa/managedobject/form/FormController.js:113
 #, fuzzy
 msgid "Records has been updated"
 msgstr "Credenciais alteradas  com sucesso"
 
-#: ui/web/core/ModelApplication.js:2015
+#: ui/web/core/ModelApplication.js:2037
 #: ui/web/inv/inv/plugins/bom/BoMController.js:37
 #: ui/web/inv/inv/plugins/job/JobController.js:34
 #: ui/web/inv/inv/plugins/opm/OPMController.js:50
@@ -2206,7 +2272,7 @@ msgstr "Credenciais alteradas  com sucesso"
 msgid "Failed to load data"
 msgstr "Falha ao carregar dados"
 
-#: ui/web/core/ModelApplication.js:2023
+#: ui/web/core/ModelApplication.js:2045
 msgid "HTTP status : "
 msgstr ""
 
@@ -2216,8 +2282,8 @@ msgstr ""
 #: ui/web/sa/managedobject/Application.js:69
 #: ui/web/sa/managedobject/CPEPanel.js:136
 #: ui/web/sa/managedobject/form/View.js:325
-#: ui/web/sa/managedobjectprofile/Application.js:1098
-#: ui/web/sa/managedobjectprofile/Application.js:2639
+#: ui/web/sa/managedobjectprofile/Application.js:1100
+#: ui/web/sa/managedobjectprofile/Application.js:2646
 #: ui/web/sa/runcommands/Controller.js:37
 msgid "Version"
 msgstr "Versão"
@@ -2238,9 +2304,9 @@ msgstr "última mudança"
 msgid "Previous change"
 msgstr "Versão alterada"
 
+# | msgid "Content"
 #: ui/web/core/MonacoPanel.js:122
 #, fuzzy
-#| msgid "Content"
 msgid "Swap contents"
 msgstr "Conteúdo"
 
@@ -2248,13 +2314,13 @@ msgstr "Conteúdo"
 #: ui/web/inv/inv/plugins/DownloadButton.js:62
 #: ui/web/ip/ipam/view/forms/tools/ToolsForm.js:79
 #: ui/web/sa/managedobject/form/View.js:895
-#: ui/web/sa/managedobjectprofile/Application.js:2230
+#: ui/web/sa/managedobjectprofile/Application.js:2237
 msgid "Download"
 msgstr ""
 
+# | msgid "Content"
 #: ui/web/core/MonacoPanel.js:130
 #, fuzzy
-#| msgid "Content"
 msgid "Download content"
 msgstr "Conteúdo"
 
@@ -2288,9 +2354,9 @@ msgstr "Falha ao obter alerta"
 msgid "Rack: "
 msgstr ""
 
+# | msgid "Remote IP"
 #: ui/web/core/RemoteMappingForm.js:20
 #, fuzzy
-#| msgid "Remote IP"
 msgid "Remote Mapping"
 msgstr "IP Remoto"
 
@@ -2301,18 +2367,18 @@ msgid "Map"
 msgstr ""
 
 # | msgid "Remove"
+# | msgid "Remove All"
 #: ui/web/core/RemoteMappingForm.js:104
 #: ui/web/core/plugins/DynamicModalEditing.js:35
 #: ui/web/core/plugins/DynamicModalEditing.js:61
 #, fuzzy
-#| msgid "Remove All"
 msgid "Remove Mapping"
 msgstr "Excluir"
 
+# | msgid "Adm. domain"
 #: ui/web/core/RemoteMappingForm.js:104
 #: ui/web/core/plugins/DynamicModalEditing.js:61
 #, fuzzy
-#| msgid "Adm. domain"
 msgid "Add Mapping"
 msgstr "Domínio Administrativo"
 
@@ -2320,12 +2386,12 @@ msgstr "Domínio Administrativo"
 msgid "Mapping was performed successfully"
 msgstr ""
 
+# | msgid "Operation"
 #: ui/web/core/RemoteMappingForm.js:188
 #: ui/web/sa/service/AddressesLinkForm.js:195
 #: ui/web/sa/service/ManagedObjectLinkForm.js:98
 #: ui/web/sa/service/ResourceLinkForm.js:150
 #, fuzzy
-#| msgid "Operation"
 msgid "Operation failed"
 msgstr "Operação"
 
@@ -2351,7 +2417,7 @@ msgstr ""
 msgid "Field"
 msgstr "Campo"
 
-#: ui/web/core/ReportControl.js:83 ui/web/ux/form/GridField.js:110
+#: ui/web/core/ReportControl.js:83 ui/web/ux/form/GridField.js:117
 msgid "Drag and drop to reorganize"
 msgstr "Arraste e solte para reorganizar"
 
@@ -2384,16 +2450,16 @@ msgid "Cannot read file"
 msgstr ""
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:11
 #, fuzzy
-#| msgid "Contributing"
 msgid "Share Contribution"
 msgstr "Iniciando"
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:58
 #, fuzzy
-#| msgid "Contributing"
 msgid "Preparing Contribution"
 msgstr "Iniciando"
 
@@ -2402,9 +2468,9 @@ msgid "Getting API key, please wait..."
 msgstr ""
 
 # | msgid "Required"
+# | msgid "Is Required"
 #: ui/web/core/ShareWizard.js:83
 #, fuzzy
-#| msgid "Is Required"
 msgid "API Key Required"
 msgstr "Obrigatório"
 
@@ -2424,8 +2490,8 @@ msgstr ""
 #: ui/web/core/ShareWizard.js:97 ui/web/core/plugins/DynamicModalEditing.js:266
 #: ui/web/core/plugins/SubscriptionModalEditing.js:67
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:48
-#: ui/web/inv/inv/Application.js:655 ui/web/inv/inv/Application.js:775
-#: ui/web/inv/inv/Application.js:919 ui/web/inv/inv/CreateConnectionForm.js:331
+#: ui/web/inv/inv/Application.js:686 ui/web/inv/inv/Application.js:806
+#: ui/web/inv/inv/Application.js:950 ui/web/inv/inv/CreateConnectionForm.js:331
 #: ui/web/inv/inv/CreateConnectionForm.js:1804
 #: ui/web/inv/inv/plugins/metric/MetricPanel.js:144
 #: ui/web/sa/discoveredobject/controller/Container.js:190
@@ -2433,16 +2499,16 @@ msgstr ""
 msgid "Cancel"
 msgstr "Modificar"
 
+# | msgid "Text"
 #: ui/web/core/ShareWizard.js:101
 #, fuzzy
-#| msgid "Text"
 msgid "Next"
 msgstr "Texto"
 
 # | msgid "Failed to connect interfaces"
+# | msgid "Failed to get connection information"
 #: ui/web/core/ShareWizard.js:118
 #, fuzzy
-#| msgid "Failed to get connection information"
 msgid "Getting Information"
 msgstr "Falha ao conectar interfaces"
 
@@ -2451,9 +2517,9 @@ msgid "Retrieving additional information, please wait..."
 msgstr ""
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:143
 #, fuzzy
-#| msgid "Contributing"
 msgid "Contribution Details"
 msgstr "Iniciando"
 
@@ -2466,9 +2532,9 @@ msgid "Enter an optional description for your contribution"
 msgstr ""
 
 # | msgid "Body"
+# | msgid "Modify"
 #: ui/web/core/ShareWizard.js:157
 #, fuzzy
-#| msgid "Modify"
 msgid "Modify API Key"
 msgstr "Corpo"
 
@@ -2485,9 +2551,9 @@ msgid "There was an error sharing your contribution."
 msgstr ""
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:195
 #, fuzzy
-#| msgid "Contributing"
 msgid "Contribution URL"
 msgstr "Iniciando"
 
@@ -2504,9 +2570,9 @@ msgid "API key found"
 msgstr ""
 
 # | msgid "Required"
+# | msgid "Is Required"
 #: ui/web/core/ShareWizard.js:334
 #, fuzzy
-#| msgid "Is Required"
 msgid "API key required"
 msgstr "Obrigatório"
 
@@ -2523,16 +2589,16 @@ msgid "Information received"
 msgstr ""
 
 # | msgid "Failed to get data"
+# | msgid "Failed to get diff"
 #: ui/web/core/ShareWizard.js:357
 #, fuzzy
-#| msgid "Failed to get diff"
 msgid "Failed to get shared info: "
 msgstr "Falha ao carregar dados"
 
 # | msgid "Failed to connect interfaces"
+# | msgid "Failed to get connection information"
 #: ui/web/core/ShareWizard.js:358
 #, fuzzy
-#| msgid "Failed to get connection information"
 msgid "Error getting information"
 msgstr "Falha ao conectar interfaces"
 
@@ -2542,56 +2608,56 @@ msgstr ""
 
 #: ui/web/core/ShareWizard.js:384
 #: ui/web/maintenance/maintenance/Application.js:65
-#: ui/web/maintenance/maintenance/Application.js:167
-#: ui/web/maintenance/maintenance/Application.js:235
+#: ui/web/maintenance/maintenance/Application.js:165
+#: ui/web/maintenance/maintenance/Application.js:233
 msgid "Completed"
 msgstr "Completo"
 
 # | msgid "Validation Rule"
+# | msgid "Validation Policy"
 #: ui/web/core/ShareWizard.js:413
 #, fuzzy
-#| msgid "Validation Policy"
 msgid "Validating API key..."
 msgstr "Regra de Validação"
 
+# | msgid "Profile saved"
 #: ui/web/core/ShareWizard.js:419
 #, fuzzy
-#| msgid "Profile saved"
 msgid "API key saved"
 msgstr "Perfil salvo"
 
 # | msgid "Failed to get data"
+# | msgid "Failed to save data"
 #: ui/web/core/ShareWizard.js:423
 #, fuzzy
-#| msgid "Failed to save data"
 msgid "Failed to save API key: "
 msgstr "Falha ao carregar dados"
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:437
 #, fuzzy
-#| msgid "Contributing"
 msgid "Sending contribution..."
 msgstr "Iniciando"
 
 # | msgid "Starting"
+# | msgid "Contributing"
 #: ui/web/core/ShareWizard.js:443
 #, fuzzy
-#| msgid "Contributing"
 msgid "Contribution sent"
 msgstr "Iniciando"
 
 # | msgid "Failed to set root cause"
+# | msgid "Failed to set position"
 #: ui/web/core/ShareWizard.js:447
 #, fuzzy
-#| msgid "Failed to set position"
 msgid "Failed to send contribution: "
 msgstr "Falha ao definir a causa raiz"
 
 # | msgid "Test Sound"
+# | msgid "Not Found"
 #: ui/web/core/ShareWizard.js:480
 #, fuzzy
-#| msgid "Not Found"
 msgid "No API token found"
 msgstr "Testar Som"
 
@@ -2603,9 +2669,9 @@ msgstr ""
 msgid "Invalid response format"
 msgstr ""
 
+# | msgid "Failed to get STP status"
 #: ui/web/core/ShareWizard.js:574
 #, fuzzy
-#| msgid "Failed to get STP status"
 msgid "Request failed with status"
 msgstr "Falha ao obter o status STP"
 
@@ -2651,9 +2717,9 @@ msgstr ""
 msgid "Remove"
 msgstr "Excluir"
 
+# | msgid "Remote Description"
 #: ui/web/core/SubscriptionPanel.js:67
 #, fuzzy
-#| msgid "Remote Description"
 msgid "Remove me to this subscription"
 msgstr "Descrição Remota"
 
@@ -2679,24 +2745,23 @@ msgid "CRM Users (Contacts)"
 msgstr ""
 
 # | msgid "User profile ..."
+# | msgid "Subscriber Profile"
 #: ui/web/core/SubscriptionPanel.js:114
-#: ui/web/fm/escalationprofile/Application.js:209
 #, fuzzy
-#| msgid "Subscriber Profile"
 msgid "Subscribe"
 msgstr "Perfil de Usuário"
 
 # | msgid "Select Config ..."
+# | msgid "Deleting ..."
 #: ui/web/core/SubscriptionPanel.js:146
 #, fuzzy
-#| msgid "Deleting ..."
 msgid "Updating ..."
 msgstr "Selecionar a configuração..."
 
 # | msgid "Search complete"
+# | msgid "Periodic Completed Time"
 #: ui/web/core/SubscriptionPanel.js:206
 #, fuzzy
-#| msgid "Periodic Completed Time"
 msgid "Operation completed"
 msgstr "Busca realizada"
 
@@ -2860,10 +2925,6 @@ msgstr "Método"
 msgid "Clear"
 msgstr "Limpar"
 
-#: ui/web/core/filter/Filter.js:394 ui/web/wf/workflow/WFInspector.js:35
-msgid "Apply"
-msgstr "Aplicar"
-
 #: ui/web/core/filter/Filter.js:403
 #: ui/web/sa/discoveredobject/view/Sidebar.js:150
 msgid "Clean All"
@@ -2899,22 +2960,22 @@ msgstr ""
 msgid "IPv6"
 msgstr ""
 
+# | msgid "Value RE"
 #: ui/web/core/plugins/DynamicModalEditing.js:200
 #, fuzzy
-#| msgid "Value RE"
 msgid "Value saved."
 msgstr "Valor RE"
 
+# | msgid "Deleted"
 #: ui/web/core/plugins/DynamicModalEditing.js:200
 #, fuzzy
-#| msgid "Deleted"
 msgid "Value deleted."
 msgstr "Excluído"
 
 # | msgid "Reset filter"
+# | msgid "Reset Filter"
 #: ui/web/core/plugins/DynamicModalEditing.js:208
 #, fuzzy
-#| msgid "Reset Filter"
 msgid "Request failure"
 msgstr "Limpar filtro"
 
@@ -2923,10 +2984,10 @@ msgid "Invalid server response"
 msgstr ""
 
 # | msgid "Config"
+# | msgid "Confirm"
 #: ui/web/core/plugins/DynamicModalEditing.js:220
 #: ui/web/core/plugins/SubscriptionModalEditing.js:205
 #, fuzzy
-#| msgid "Confirm"
 msgid "Confirm Reset"
 msgstr "Configurar"
 
@@ -2936,21 +2997,20 @@ msgid "Are you sure you want to reset all values?"
 msgstr ""
 
 # | msgid "Disable"
+# | msgid "Editable"
 #: ui/web/core/plugins/DynamicModalEditing.js:258
 #, fuzzy
-#| msgid "Editable"
 msgid "Edit value"
 msgstr "Desabilitar"
 
 # | msgid "User"
+# | msgid "Users"
 #: ui/web/core/plugins/SubscriptionModalEditing.js:30
 #, fuzzy
-#| msgid "Users"
 msgid "CRM Users"
 msgstr "Usuário"
 
 #: ui/web/core/plugins/SubscriptionModalEditing.js:45
-#: ui/web/fm/escalationprofile/Application.js:181
 #: ui/web/inv/objectmodel/Application.js:439 ui/web/ip/ipam/view/Grid.js:65
 #: ui/web/ip/vrf/Application.js:45
 #: ui/web/main/notificationgroup/Application.js:157
@@ -2961,25 +3021,26 @@ msgstr "Usuário"
 msgid "Group"
 msgstr "Grupo"
 
+# | msgid "Remove"
 #: ui/web/core/plugins/SubscriptionModalEditing.js:143
 #: ui/web/core/plugins/SubscriptionModalEditing.js:185
 #, fuzzy
-#| msgid "Remove"
 msgid "Remove User"
 msgstr "Excluir"
 
 # | msgid "Bind filter"
+# | msgid "Bind User"
 #: ui/web/core/plugins/SubscriptionModalEditing.js:185
 #, fuzzy
-#| msgid "Bind User"
 msgid "Add User"
 msgstr "Filtro de Bind"
 
 # | msgid "Building"
 # | msgid "Loading"
+# | msgid "Reloading..."
 #: ui/web/core/plugins/SubscriptionModalEditing.js:224
+#: ui/web/inv/inv/plugins/comment/CommentPanel.js:81
 #, fuzzy
-#| msgid "Reloading..."
 msgid "Saving..."
 msgstr "Construção"
 
@@ -2988,9 +3049,9 @@ msgid "Subscription updated successfully"
 msgstr ""
 
 # | msgid "Failed to run tasks"
+# | msgid "Failed to run script"
 #: ui/web/core/plugins/SubscriptionModalEditing.js:238
 #, fuzzy
-#| msgid "Failed to run script"
 msgid "Failed to update subscription"
 msgstr "Falha ao executar tarefas"
 
@@ -3003,7 +3064,7 @@ msgstr ""
 #: ui/web/crm/subscriber/Application.js:64
 #: ui/web/crm/supplier/Application.js:34 ui/web/crm/supplier/Application.js:64
 #: ui/web/dev/spec/Application.js:46 ui/web/dev/spec/Application.js:90
-#: ui/web/dns/dnszone/Application.js:56 ui/web/dns/dnszone/Application.js:120
+#: ui/web/dns/dnszone/Application.js:56 ui/web/dns/dnszone/Application.js:121
 #: ui/web/fm/reportalarmdetail/Application.js:176
 #: ui/web/inv/cpe/Application.js:42 ui/web/inv/cpe/Application.js:77
 #: ui/web/inv/firmware/Application.js:40 ui/web/inv/firmware/Application.js:69
@@ -3050,7 +3111,8 @@ msgstr ""
 #: ui/web/sa/managedobject/form/View.js:1407
 #: ui/web/sa/managedobject/form/View.js:1435
 #: ui/web/sa/managedobject/form/View.js:1457
-#: ui/web/sa/managedobjectprofile/Application.js:1092
+#: ui/web/sa/managedobjectprofile/Application.js:1094
+#: ui/web/sa/managedobjectprofile/Application.js:2645
 #: ui/web/sa/profilecheckrule/Application.js:77
 #: ui/web/sa/profilecheckrule/Application.js:185
 #: ui/web/sa/reportobjectdetail/Application.js:64
@@ -3133,7 +3195,7 @@ msgstr "Telefone"
 
 #: ui/web/crm/subscriber/Application.js:104
 #: ui/web/crm/supplier/Application.js:83 ui/web/dns/dnszone/Application.js:62
-#: ui/web/dns/dnszone/Application.js:126
+#: ui/web/dns/dnszone/Application.js:127
 #: ui/web/fm/reportalarmdetail/Application.js:181
 #: ui/web/inv/channel/Application.js:101 ui/web/inv/channel/Application.js:170
 #: ui/web/inv/interface/Application.js:106
@@ -3163,10 +3225,10 @@ msgstr "Projeto"
 #: ui/web/crm/supplier/Application.js:46 ui/web/crm/supplier/Application.js:92
 #: ui/web/crm/supplierprofile/Application.js:39
 #: ui/web/crm/supplierprofile/Application.js:79
-#: ui/web/dns/dnszone/Application.js:87 ui/web/dns/dnszone/Application.js:145
-#: ui/web/dns/dnszone/Application.js:199 ui/web/fm/alarmclass/Application.js:50
+#: ui/web/dns/dnszone/Application.js:87 ui/web/dns/dnszone/Application.js:146
+#: ui/web/dns/dnszone/Application.js:200 ui/web/fm/alarmclass/Application.js:50
 #: ui/web/fm/alarmclass/Application.js:143
-#: ui/web/fm/alarmrule/Application.js:145
+#: ui/web/fm/alarmrule/Application.js:137
 #: ui/web/fm/classificationrule/Application.js:192
 #: ui/web/fm/event/EventInspector.js:54
 #: ui/web/inv/allocationgroup/Application.js:79
@@ -3211,7 +3273,7 @@ msgstr "Projeto"
 #: ui/web/sa/managedobject/form/View.js:132
 #: ui/web/sa/managedobjectprofile/Application.js:231
 #: ui/web/sa/service/Application.js:164
-#: ui/web/sa/serviceprofile/Application.js:544
+#: ui/web/sa/serviceprofile/Application.js:557
 #: ui/web/sla/slaprobe/Application.js:71 ui/web/sla/slaprobe/Application.js:165
 #: ui/web/sla/slaprofile/Application.js:33
 #: ui/web/sla/slaprofile/Application.js:69
@@ -3318,12 +3380,6 @@ msgstr "Peso do alarme"
 msgid "Revision"
 msgstr "Revisão"
 
-#: ui/web/dev/quiz/Application.js:70 ui/web/dev/quiz/Application.js:82
-#: ui/web/dev/spec/Application.js:102 ui/web/dev/spec/Application.js:114
-#: ui/web/main/audittrail/Application.js:83
-msgid "Changes"
-msgstr "Mudanças"
-
 #: ui/web/dev/quiz/Application.js:75 ui/web/dev/spec/Application.js:107
 #: ui/web/fm/alarm/view/grids/GridViewTable.js:156
 #: ui/web/inv/inv/plugins/file/FilePanel.js:53
@@ -3402,7 +3458,7 @@ msgstr ""
 msgid "Rev IPv6"
 msgstr ""
 
-#: ui/web/dns/dnszone/Application.js:51 ui/web/dns/dnszone/Application.js:114
+#: ui/web/dns/dnszone/Application.js:51 ui/web/dns/dnszone/Application.js:115
 #: ui/web/inv/inv/AddObjectForm.js:118
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:170
 #: ui/web/inv/inv/plugins/inventory/InventoryPanel.js:59
@@ -3412,7 +3468,7 @@ msgstr ""
 msgid "Serial"
 msgstr ""
 
-#: ui/web/dns/dnszone/Application.js:68 ui/web/dns/dnszone/Application.js:139
+#: ui/web/dns/dnszone/Application.js:68 ui/web/dns/dnszone/Application.js:140
 msgid "Paid Till"
 msgstr "Licenciado Até"
 
@@ -3426,17 +3482,17 @@ msgstr "Notificação"
 msgid "Domain"
 msgstr "Domínio"
 
-#: ui/web/dns/dnszone/Application.js:108
+#: ui/web/dns/dnszone/Application.js:109
 msgid "Auto generated?"
 msgstr "Gerado automaticamente?"
 
 # | msgid "Selectors"
-#: ui/web/dns/dnszone/Application.js:154
+#: ui/web/dns/dnszone/Application.js:155
 #, fuzzy
 msgid "Records"
 msgstr "Seletores"
 
-#: ui/web/dns/dnszone/Application.js:164
+#: ui/web/dns/dnszone/Application.js:165
 #: ui/web/dns/dnszoneprofile/Application.js:26
 #: ui/web/dns/dnszoneprofile/Application.js:113
 #: ui/web/main/chpolicy/Application.js:37 ui/web/wf/state/Application.js:81
@@ -3444,22 +3500,22 @@ msgstr "Seletores"
 msgid "TTL"
 msgstr ""
 
-#: ui/web/dns/dnszone/Application.js:183
+#: ui/web/dns/dnszone/Application.js:184
 msgid "Prio."
 msgstr "Prioridade"
 
-#: ui/web/dns/dnszone/Application.js:190
+#: ui/web/dns/dnszone/Application.js:191
 msgid "Content"
 msgstr "Conteúdo"
 
 # | msgid "Preview"
-#: ui/web/dns/dnszone/Application.js:211
+#: ui/web/dns/dnszone/Application.js:212
 #, fuzzy
 msgid "Preview zone"
 msgstr "Visualizar"
 
 # | msgid "Obj. Profile"
-#: ui/web/dns/dnszone/Application.js:222 ui/web/inv/cpe/Application.js:292
+#: ui/web/dns/dnszone/Application.js:223 ui/web/inv/cpe/Application.js:292
 #: ui/web/inv/firmware/Application.js:117 ui/web/inv/macdb/Application.js:81
 #: ui/web/inv/networksegment/Application.js:323
 #: ui/web/inv/reportmaxmetrics/Application.js:74
@@ -3472,33 +3528,33 @@ msgstr "Visualizar"
 msgid "By Profile"
 msgstr "Perfil de Objeto"
 
-#: ui/web/dns/dnszone/Application.js:232
+#: ui/web/dns/dnszone/Application.js:233
 msgid "Forward"
 msgstr ""
 
-#: ui/web/dns/dnszone/Application.js:233
+#: ui/web/dns/dnszone/Application.js:234
 msgid "IPv4 Reverse"
 msgstr ""
 
-#: ui/web/dns/dnszone/Application.js:234
+#: ui/web/dns/dnszone/Application.js:235
 msgid "IPv6 Reverse"
 msgstr ""
 
 # | msgid "project"
-#: ui/web/dns/dnszone/Application.js:238 ui/web/inv/channel/Application.js:370
+#: ui/web/dns/dnszone/Application.js:239 ui/web/inv/channel/Application.js:370
 #: ui/web/ip/vrf/Application.js:202 ui/web/phone/phonerange/Application.js:289
 #, fuzzy
 msgid "By Project"
 msgstr "projeto"
 
 # | msgid "Notification"
-#: ui/web/dns/dnszone/Application.js:244
+#: ui/web/dns/dnszone/Application.js:245
 #, fuzzy
 msgid "By Notification"
 msgstr "Notificação"
 
 # | msgid "Show Labels"
-#: ui/web/dns/dnszone/Application.js:250
+#: ui/web/dns/dnszone/Application.js:251
 #: ui/web/inv/interface/Application.js:221
 #, fuzzy
 msgid "By Labels"
@@ -3551,8 +3607,6 @@ msgid "Failed to get alarm"
 msgstr "Falha ao obter alerta"
 
 #: ui/web/fm/alarm/ApplicationController.js:501
-#: ui/web/fm/escalationprofile/Application.js:235
-#: ui/web/fm/escalationprofile/Application.js:241
 msgid "Acknowledge"
 msgstr ""
 
@@ -3613,12 +3667,12 @@ msgstr "Métrica"
 #: ui/web/sa/managedobject/scripts/ShowInterfaceStatusEx.js:13
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:33
 #: ui/web/sa/managedobject/scripts/ShowPortChannel.js:13
-#: ui/web/sa/managedobjectprofile/Application.js:1141
-#: ui/web/sa/managedobjectprofile/Application.js:1464
-#: ui/web/sa/managedobjectprofile/Application.js:1533
-#: ui/web/sa/managedobjectprofile/Application.js:1609
-#: ui/web/sa/managedobjectprofile/Application.js:1686
-#: ui/web/sa/managedobjectprofile/Application.js:2641
+#: ui/web/sa/managedobjectprofile/Application.js:1143
+#: ui/web/sa/managedobjectprofile/Application.js:1471
+#: ui/web/sa/managedobjectprofile/Application.js:1540
+#: ui/web/sa/managedobjectprofile/Application.js:1616
+#: ui/web/sa/managedobjectprofile/Application.js:1693
+#: ui/web/sa/managedobjectprofile/Application.js:2648
 #: ui/web/sa/service/ResourceLinkForm.js:49 ui/web/ux/form/ModelDataField.js:32
 msgid "Interface"
 msgstr ""
@@ -3646,8 +3700,8 @@ msgstr "Validação"
 #: ui/web/kb/kbentry/Application.js:99 ui/web/kb/kbentry/Application.js:117
 #: ui/web/main/notificationgroup/Application.js:227
 #: ui/web/main/reportsubscription/Application.js:75
-#: ui/web/main/template/Application.js:49
-#: ui/web/main/template/Application.js:90
+#: ui/web/main/template/Application.js:50
+#: ui/web/main/template/Application.js:100
 #: ui/web/maintenance/maintenance/Application.js:102
 #: ui/web/maintenance/maintenance/Application.js:111
 #: ui/web/sa/managedobject/AlarmPanel.js:85
@@ -3760,7 +3814,7 @@ msgstr "Classe"
 #: ui/web/fm/alarm/view/form/Alarm.js:162
 #: ui/web/fm/reportalarmdetail/Application.js:25
 #: ui/web/sa/managedobject/form/View.js:1824
-#: ui/web/sa/managedobjectprofile/Application.js:2089
+#: ui/web/sa/managedobjectprofile/Application.js:2096
 msgid "Alarms"
 msgstr "Alertas"
 
@@ -3809,8 +3863,8 @@ msgstr "Ficha"
 
 #: ui/web/fm/alarm/view/form/Alarm.js:274 ui/web/inv/channel/Application.js:353
 #: ui/web/inv/configuredmap/Application.js:383
-#: ui/web/inv/inv/Application.js:230 ui/web/inv/inv/Application.js:255
-#: ui/web/inv/inv/Application.js:262
+#: ui/web/inv/inv/Application.js:234 ui/web/inv/inv/Application.js:259
+#: ui/web/inv/inv/Application.js:266
 #: ui/web/inv/networksegment/Application.js:45
 #: ui/web/sa/managedobject/form/View.js:1751
 msgid "Show Map"
@@ -3824,9 +3878,9 @@ msgstr "Mostrar Objeto"
 msgid "Watch"
 msgstr "Seguir"
 
+# | msgid "Set root cause"
 #: ui/web/fm/alarm/view/form/Alarm.js:315
 #, fuzzy
-#| msgid "Set root cause"
 msgid "Set Root"
 msgstr "Definir causa raiz"
 
@@ -3872,9 +3926,9 @@ msgstr "Falha ao apagar alerta"
 msgid "Failed to set watcher"
 msgstr "Falha ao definir seguidor"
 
+# | msgid "Set root cause"
 #: ui/web/fm/alarm/view/form/AlarmController.js:139
 #, fuzzy
-#| msgid "Set root cause"
 msgid "Set root"
 msgstr "Definir causa raiz"
 
@@ -3895,15 +3949,14 @@ msgid "Remove from Favorites"
 msgstr ""
 
 # | msgid "Hide maintenance"
+# | msgid "Add to Maintaince"
 #: ui/web/fm/alarm/view/form/AlarmModel.js:125
 #, fuzzy
-#| msgid "Add to Maintaince"
 msgid "Add to Favorites"
 msgstr "Esconder manutenção"
 
 #: ui/web/fm/alarm/view/form/AlarmModel.js:135
 #: ui/web/fm/alarm/view/grids/Grid.js:146
-#: ui/web/fm/escalationprofile/Application.js:188
 msgid "Ack"
 msgstr ""
 
@@ -3915,30 +3968,30 @@ msgid "."
 msgstr ""
 
 # | msgid "Clear alarm?"
+# | msgid "Clear Alarm"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:19
 #: ui/web/fm/alarm/view/grids/Container.js:88
 #, fuzzy
-#| msgid "Clear Alarm"
 msgid "Clear alarms"
 msgstr "Apagar alerta?"
 
 # | msgid "Hide maintenance"
+# | msgid "to maintenance"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:41
 #, fuzzy
-#| msgid "to maintenance"
 msgid "Create maintenance"
 msgstr "Esconder manutenção"
 
 # | msgid "Clear alarm?"
+# | msgid "Clear Alarm"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:64
 #, fuzzy
-#| msgid "Clear Alarm"
 msgid "Clearing alarms..."
 msgstr "Apagar alerta?"
 
+# | msgid "Alarm Cleared"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:77
 #, fuzzy
-#| msgid "Alarm Cleared"
 msgid "Alarms cleared successfully"
 msgstr "Alerta Excluído"
 
@@ -3946,15 +3999,15 @@ msgstr "Alerta Excluído"
 msgid "created from alarm list at "
 msgstr ""
 
+# | msgid "Failed to clear alarm"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:111
 #, fuzzy
-#| msgid "Failed to clear alarm"
 msgid "Failed to clear alarms"
 msgstr "Falha ao apagar alerta"
 
+# | msgid "Failed to clear alarm"
 #: ui/web/fm/alarm/view/form/ClearAlarms.js:115
 #, fuzzy
-#| msgid "Failed to clear alarm"
 msgid "Backend: failed to clear alarms"
 msgstr "Falha ao apagar alerta"
 
@@ -4016,28 +4069,28 @@ msgid "Toggle sound"
 msgstr "Som de alternância"
 
 # | msgid "Building"
+# | msgid "Loading"
 #: ui/web/fm/alarm/view/grids/ContainerController.js:57
 #: ui/web/inv/inv/plugins/opm/OPMController.js:32
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:26
 #, fuzzy
-#| msgid "Loading"
 msgid "loading"
 msgstr "Construção"
 
 # | msgid "Running"
+# | msgid "Unlink"
 #: ui/web/fm/alarm/view/grids/ContainerController.js:66
 #: ui/web/inv/inv/plugins/opm/OPMController.js:46
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:40
 #, fuzzy
-#| msgid "Unlink"
 msgid "online"
 msgstr "Rodando"
 
 # | msgid "Sound"
+# | msgid "Send"
 #: ui/web/fm/alarm/view/grids/ContainerController.js:105
 #: ui/web/inv/inv/plugins/Mixins.js:152
 #, fuzzy
-#| msgid "Send"
 msgid "suspend"
 msgstr "Som"
 
@@ -4075,24 +4128,24 @@ msgstr "Falha ao definir a causa raiz"
 msgid "created from alarms list at "
 msgstr ""
 
+# | msgid "Failed to save"
 #: ui/web/fm/alarm/view/grids/ContainerController.js:458
 #: ui/web/fm/alarm/view/grids/ContainerController.js:462
 #, fuzzy
-#| msgid "Failed to save"
 msgid "Failed to  favorites"
 msgstr "Falha ao salvar"
 
 # | msgid "Toggle autoreload"
+# | msgid "Toggle auto reload"
 #: ui/web/fm/alarm/view/grids/ContainerModel.js:72
 #, fuzzy
-#| msgid "Toggle auto reload"
 msgid "Auto reload : "
 msgstr "Carregamento automático de alternância"
 
 # | msgid "Phone"
+# | msgid "Zone"
 #: ui/web/fm/alarm/view/grids/ContainerModel.js:72
 #, fuzzy
-#| msgid "Zone"
 msgid "ON"
 msgstr "Telefone"
 
@@ -4139,9 +4192,9 @@ msgstr "Mês"
 msgid "Show map"
 msgstr "Mostrar mapa"
 
+# | msgid "Show map"
 #: ui/web/fm/alarm/view/grids/Grid.js:45
 #, fuzzy
-#| msgid "Show map"
 msgid "Show neighbor map"
 msgstr "Mostrar mapa"
 
@@ -4154,7 +4207,7 @@ msgstr "Mostrar objeto"
 #: ui/web/inv/firmwarepolicy/Application.js:94
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:108
 #: ui/web/inv/inv/plugins/job/JobPanel.js:134
-#: ui/web/maintenance/maintenance/Application.js:232
+#: ui/web/maintenance/maintenance/Application.js:230
 #: ui/web/sa/getnow/SelectionGrid.js:63 ui/web/sa/getnow/SelectionGrid.js:64
 #: ui/web/sa/job/Application.js:41 ui/web/sa/job/Application.js:124
 #: ui/web/sa/managedobject/Application.js:660
@@ -4165,7 +4218,7 @@ msgstr "Mostrar objeto"
 #: ui/web/sa/managedobject/scripts/ShowMPLSVPN.js:18
 #: ui/web/sa/managedobject/scripts/ShowObjectStatus.js:18
 #: ui/web/sa/runcommands/Controller.js:81
-#: ui/web/sa/serviceprofile/Application.js:392
+#: ui/web/sa/serviceprofile/Application.js:405
 #: ui/web/support/crashinfo/Application.js:57
 #: ui/web/support/crashinfo/Application.js:121
 msgid "Status"
@@ -4191,10 +4244,9 @@ msgstr "Início"
 
 #: ui/web/fm/alarm/view/grids/Grid.js:89
 #: ui/web/fm/alarmescalation/Application.js:190
-#: ui/web/fm/escalationprofile/Application.js:308
 #: ui/web/fm/eventclass/Application.js:243 ui/web/inv/map/Maintenance.js:119
 #: ui/web/maintenance/maintenance/Application.js:60
-#: ui/web/maintenance/maintenance/Application.js:150
+#: ui/web/maintenance/maintenance/Application.js:149
 msgid "Stop"
 msgstr "Fim"
 
@@ -4225,10 +4277,9 @@ msgstr "IP/Plataforma"
 #: ui/web/fm/alarm/view/grids/Grid.js:135
 #: ui/web/fm/alarmclass/Application.js:138
 #: ui/web/fm/alarmescalation/Application.js:128
-#: ui/web/fm/alarmrule/Application.js:201
+#: ui/web/fm/alarmrule/Application.js:193
 #: ui/web/fm/alarmseverity/Application.js:32
 #: ui/web/fm/alarmseverity/Application.js:70
-#: ui/web/fm/escalationprofile/Application.js:253
 #: ui/web/sa/managedobject/AlarmPanel.js:73
 msgid "Severity"
 msgstr "Criticidade"
@@ -4248,7 +4299,7 @@ msgid "Summary/TT"
 msgstr "Resumo/Chamado"
 
 #: ui/web/fm/alarm/view/grids/Grid.js:276
-#: ui/web/maintenance/maintenance/Application.js:286
+#: ui/web/maintenance/maintenance/Application.js:284
 #: ui/web/sa/administrativedomain/Application.js:42
 #: ui/web/sa/managedobjectprofile/Application.js:167
 msgid "Objects"
@@ -4272,7 +4323,7 @@ msgstr "Grupo"
 #: ui/web/main/audittrail/Application.js:73
 #: ui/web/main/label/Application.js:117 ui/web/main/label/Application.js:726
 #: ui/web/main/remotesystem/Application.js:136
-#: ui/web/maintenance/maintenance/Application.js:291
+#: ui/web/maintenance/maintenance/Application.js:289
 #: ui/web/sa/managedobject/LinkForm.js:60
 #: ui/web/sa/managedobject/RepoPreview.js:26
 #: ui/web/sa/managedobject/RepoPreview.js:80 ui/web/vc/vpn/Application.js:147
@@ -4290,7 +4341,7 @@ msgstr "Objeto"
 #: ui/web/inv/reportmaxmetrics/Application.js:45
 #: ui/web/inv/reportmetrics/Application.js:123
 #: ui/web/inv/reportmovedmac/Application.js:43
-#: ui/web/maintenance/maintenance/Application.js:305
+#: ui/web/maintenance/maintenance/Application.js:303
 #: ui/web/sa/managedobject/form/View.js:744
 #: ui/web/sa/reportobjectdetail/Application.js:25
 #: ui/web/sa/reportobjectdetail/Application.js:77
@@ -4302,9 +4353,9 @@ msgid "Remove from favorites"
 msgstr ""
 
 # | msgid "Hide maintenance"
+# | msgid "Add to Maintaince"
 #: ui/web/fm/alarm/view/grids/GridViewTable.js:119
 #, fuzzy
-#| msgid "Add to Maintaince"
 msgid "Add to favorites"
 msgstr "Esconder manutenção"
 
@@ -4315,7 +4366,6 @@ msgid "no comments"
 msgstr "Comentário"
 
 #: ui/web/fm/alarm/view/grids/GridViewTable.js:156
-#: ui/web/fm/escalationprofile/Application.js:174
 #: ui/web/inv/inv/plugins/log/LogPanel.js:43
 #: ui/web/ip/prefixaccess/Application.js:20
 #: ui/web/ip/prefixaccess/Application.js:55
@@ -4424,13 +4474,13 @@ msgstr "Apenas"
 #: ui/web/fm/alarm/view/grids/Sidebar.js:156
 #: ui/web/fm/alarm/view/grids/Sidebar.js:183
 #: ui/web/fm/dispositionrule/Application.js:137 ui/web/inv/map/Basket.js:31
-#: ui/web/main/desktop/Application.js:49
+#: ui/web/main/desktop/Application.js:47
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:78
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:91
-#: ui/web/sa/managedobjectprofile/Application.js:2057
-#: ui/web/sa/managedobjectprofile/Application.js:2655
-#: ui/web/sa/managedobjectprofile/Application.js:2684
-#: ui/web/sa/managedobjectprofile/Application.js:2705
+#: ui/web/sa/managedobjectprofile/Application.js:2064
+#: ui/web/sa/managedobjectprofile/Application.js:2662
+#: ui/web/sa/managedobjectprofile/Application.js:2691
+#: ui/web/sa/managedobjectprofile/Application.js:2712
 #: ui/web/sa/objectdiscoveryrule/Application.js:200
 msgid "All"
 msgstr "Todos"
@@ -4442,7 +4492,7 @@ msgstr ""
 # | msgid "Hide maintenance"
 #: ui/web/fm/alarm/view/grids/Sidebar.js:139
 #: ui/web/fm/reportalarmdetail/Application.js:184
-#: ui/web/maintenance/maintenance/Application.js:212
+#: ui/web/maintenance/maintenance/Application.js:210
 #, fuzzy
 msgid "Maintenance"
 msgstr "Esconder manutenção"
@@ -4484,7 +4534,6 @@ msgstr ""
 
 #: ui/web/fm/alarm/view/grids/Sidebar.js:277
 #: ui/web/fm/alarmescalation/Application.js:155
-#: ui/web/fm/escalationprofile/Application.js:288
 #: ui/web/fm/reportalarmdetail/Application.js:187
 #: ui/web/ip/addressrange/Application.js:166
 #: ui/web/ip/ipam/view/forms/prefix/AddressPanel.js:112
@@ -4555,7 +4604,7 @@ msgstr ""
 #: ui/web/inv/platform/Application.js:57 ui/web/inv/protocol/Application.js:60
 #: ui/web/inv/vendor/Application.js:42 ui/web/main/label/Application.js:74
 #: ui/web/main/reportconfig/Application.js:49
-#: ui/web/main/template/Application.js:43
+#: ui/web/main/template/Application.js:44
 #: ui/web/pm/metricaction/Application.js:279
 #: ui/web/pm/metrictype/Application.js:42 ui/web/sa/action/Application.js:42
 #: ui/web/sa/actioncommands/Application.js:38
@@ -4642,7 +4691,7 @@ msgstr "Fonte de Dados"
 
 #: ui/web/fm/alarmclass/Application.js:234 ui/web/inv/map/Application.js:71
 #: ui/web/inv/map/Application.js:658 ui/web/inv/map/Application.js:674
-#: ui/web/main/search/Application.js:19
+#: ui/web/main/desktop/NavPanel.js:54 ui/web/main/search/Application.js:19
 msgid "Search"
 msgstr "Busca"
 
@@ -4699,7 +4748,7 @@ msgstr "Tarefa"
 #: ui/web/fm/alarmclass/Application.js:345
 #: ui/web/inv/cpeprofile/Application.js:216
 #: ui/web/inv/interfaceprofile/Application.js:519
-#: ui/web/sa/managedobjectprofile/Application.js:2556
+#: ui/web/sa/managedobjectprofile/Application.js:2563
 #: ui/web/sla/slaprofile/Application.js:153
 msgid "Interval"
 msgstr "Intervalo"
@@ -4739,9 +4788,9 @@ msgstr ""
 #: ui/web/pm/agent/Application.js:150 ui/web/pm/agentprofile/Application.js:44
 #: ui/web/sa/managedobject/form/View.js:882
 #: ui/web/sa/managedobject/form/View.js:1758
-#: ui/web/sa/managedobjectprofile/Application.js:1177
-#: ui/web/sa/managedobjectprofile/Application.js:2203
-#: ui/web/sa/managedobjectprofile/Application.js:2644
+#: ui/web/sa/managedobjectprofile/Application.js:1179
+#: ui/web/sa/managedobjectprofile/Application.js:2210
+#: ui/web/sa/managedobjectprofile/Application.js:2651
 msgid "Config"
 msgstr "Configurar"
 
@@ -4958,7 +5007,7 @@ msgstr ""
 #: ui/web/ip/prefixprofile/Application.js:133
 #: ui/web/main/label/Application.js:533
 #: ui/web/main/regexplabel/Application.js:72
-#: ui/web/maintenance/maintenance/Application.js:209
+#: ui/web/maintenance/maintenance/Application.js:207
 #: ui/web/peer/peerprofile/Application.js:74
 #: ui/web/sa/capsprofile/Application.js:27
 #: ui/web/sa/managedobject/form/View.js:434
@@ -4977,13 +5026,13 @@ msgstr ""
 #: ui/web/sa/managedobjectprofile/Application.js:821
 #: ui/web/sa/managedobjectprofile/Application.js:841
 #: ui/web/sa/managedobjectprofile/Application.js:937
-#: ui/web/sa/managedobjectprofile/Application.js:1456
-#: ui/web/sa/managedobjectprofile/Application.js:1525
-#: ui/web/sa/managedobjectprofile/Application.js:1601
-#: ui/web/sa/managedobjectprofile/Application.js:1678
-#: ui/web/sa/managedobjectprofile/Application.js:1880
-#: ui/web/sa/managedobjectprofile/Application.js:1946
-#: ui/web/sa/managedobjectprofile/Application.js:2146
+#: ui/web/sa/managedobjectprofile/Application.js:1463
+#: ui/web/sa/managedobjectprofile/Application.js:1532
+#: ui/web/sa/managedobjectprofile/Application.js:1608
+#: ui/web/sa/managedobjectprofile/Application.js:1685
+#: ui/web/sa/managedobjectprofile/Application.js:1887
+#: ui/web/sa/managedobjectprofile/Application.js:1953
+#: ui/web/sa/managedobjectprofile/Application.js:2153
 #: ui/web/wf/state/Application.js:203
 msgid "Enable"
 msgstr "Habilitar"
@@ -4992,7 +5041,6 @@ msgstr "Habilitar"
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:153
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:196
 #: ui/web/fm/alarmescalation/Application.js:102
-#: ui/web/fm/escalationprofile/Application.js:223
 msgid "Delay"
 msgstr "Atrasar"
 
@@ -5014,10 +5062,10 @@ msgstr "Gênero"
 #: ui/web/sa/managedobject/form/View.js:924
 #: ui/web/sa/managedobject/form/View.js:939
 #: ui/web/sa/managedobject/form/View.js:954
-#: ui/web/sa/managedobjectprofile/Application.js:1113
-#: ui/web/sa/managedobjectprofile/Application.js:1149
-#: ui/web/sa/managedobjectprofile/Application.js:1498
-#: ui/web/sa/managedobjectprofile/Application.js:2227
+#: ui/web/sa/managedobjectprofile/Application.js:1115
+#: ui/web/sa/managedobjectprofile/Application.js:1151
+#: ui/web/sa/managedobjectprofile/Application.js:1505
+#: ui/web/sa/managedobjectprofile/Application.js:2234
 msgid "Script"
 msgstr ""
 
@@ -5046,7 +5094,7 @@ msgstr "Ação"
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:137
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:180
 #: ui/web/fm/alarmdiagnosticconfig/Application.js:223
-#: ui/web/fm/alarmrule/Application.js:216
+#: ui/web/fm/alarmrule/Application.js:208
 #: ui/web/fm/alarmtrigger/Application.js:60
 #: ui/web/fm/alarmtrigger/Application.js:127
 #: ui/web/fm/dispositionrule/Application.js:200
@@ -5059,8 +5107,8 @@ msgstr "Ação"
 #: ui/web/main/handler/Application.js:36 ui/web/main/handler/Application.js:53
 #: ui/web/main/remotesystem/Application.js:60
 #: ui/web/sa/action/Application.js:97
-#: ui/web/sa/managedobjectprofile/Application.js:1377
-#: ui/web/sa/managedobjectprofile/Application.js:1850
+#: ui/web/sa/managedobjectprofile/Application.js:1382
+#: ui/web/sa/managedobjectprofile/Application.js:1857
 #: ui/web/wf/workflow/WFInspector.js:77
 msgid "Handler"
 msgstr ""
@@ -5090,20 +5138,16 @@ msgid "Pre Reasons"
 msgstr "Razões Iniciais"
 
 #: ui/web/fm/alarmescalation/Application.js:82
-#: ui/web/fm/escalationprofile/Application.js:148
-#: ui/web/fm/escalationprofile/Application.js:260
 #: ui/web/main/remotesystem/Application.js:206
 #: ui/web/sa/managedobject/form/View.js:1332
 msgid "TT System"
 msgstr "Sistema de TT"
 
 #: ui/web/fm/alarmescalation/Application.js:89
-#: ui/web/fm/escalationprofile/Application.js:155
 msgid "Pre Reason"
 msgstr "Razão Inicial"
 
 #: ui/web/fm/alarmescalation/Application.js:99
-#: ui/web/fm/escalationprofile/Application.js:220
 msgid "Escalations"
 msgstr "Escalações"
 
@@ -5114,20 +5158,18 @@ msgstr "Domínio Administrativo"
 #: ui/web/fm/alarmescalation/Application.js:122
 #: ui/web/fm/alarmtrigger/Application.js:40
 #: ui/web/fm/alarmtrigger/Application.js:99
-#: ui/web/fm/escalationprofile/Application.js:247
 #: ui/web/fm/eventtrigger/Application.js:42
 #: ui/web/fm/eventtrigger/Application.js:97
 #: ui/web/main/notificationgroup/Application.js:115
 #: ui/web/main/userprofile/UserProfileContacts.js:17
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:106
 #: ui/web/maintenance/maintenance/Application.js:77
-#: ui/web/maintenance/maintenance/Application.js:195
+#: ui/web/maintenance/maintenance/Application.js:193
 #: ui/web/sa/managedobject/form/View.js:535
 msgid "Time Pattern"
 msgstr "Padrão de Tempo"
 
 #: ui/web/fm/alarmescalation/Application.js:141
-#: ui/web/fm/escalationprofile/Application.js:274
 msgid "Open Template"
 msgstr "Abrir Template"
 
@@ -5156,80 +5198,79 @@ msgid "Close TT"
 msgstr "Fechar"
 
 # | msgid "Escalations"
-#: ui/web/fm/alarmrule/Application.js:42 ui/web/fm/alarmrule/Application.js:85
+# | msgid "Escalation Policy"
+#: ui/web/fm/alarmrule/Application.js:41
 #, fuzzy
-#| msgid "Escalation Policy"
 msgid "Escalation Profile"
 msgstr "Escalações"
 
 # | msgid "Discovery Policy"
-#: ui/web/fm/alarmrule/Application.js:71
+# | msgid "MAC Discovery Policy"
+#: ui/web/fm/alarmrule/Application.js:70
 #, fuzzy
-#| msgid "MAC Discovery Policy"
 msgid "Calc Severity Policy"
 msgstr "Política de Descoberta"
 
 # | msgid "Discovery Policy"
 # | msgid "IfDesc Policy"
-#: ui/web/fm/alarmrule/Application.js:74
+# | msgid "Check Policy"
+#: ui/web/fm/alarmrule/Application.js:73
 #, fuzzy
-#| msgid "Check Policy"
 msgid "Class Based Policy"
 msgstr "Política de Descoberta"
 
-#: ui/web/fm/alarmrule/Application.js:75
+#: ui/web/fm/alarmrule/Application.js:74
 msgid "Affected Based Severity Preferred"
 msgstr ""
 
 # | msgid "Matched Objects"
-#: ui/web/fm/alarmrule/Application.js:76
+# | msgid "Affected Objects"
+#: ui/web/fm/alarmrule/Application.js:75
 #, fuzzy
-#| msgid "Affected Objects"
 msgid "Affected Limit"
 msgstr "Objetos Combinados"
 
 # | msgid "Action"
-#: ui/web/fm/alarmrule/Application.js:77
+# | msgid "By Action"
+#: ui/web/fm/alarmrule/Application.js:76
 #, fuzzy
-#| msgid "By Action"
 msgid "By Tokens"
 msgstr "Ação"
 
 # | msgid "Suppress alarms"
-#: ui/web/fm/alarmrule/Application.js:92
+#: ui/web/fm/alarmrule/Application.js:84
 #, fuzzy
 msgid "Group Alarm"
 msgstr "Suprimir alertas"
 
-#: ui/web/fm/alarmrule/Application.js:95
+#: ui/web/fm/alarmrule/Application.js:87
 msgid "Minimum alarms"
 msgstr ""
 
-#: ui/web/fm/alarmrule/Application.js:105
+#: ui/web/fm/alarmrule/Application.js:97
 msgid "Maximum alarms"
 msgstr ""
 
 # | msgid "Time (sec)"
-#: ui/web/fm/alarmrule/Application.js:115
+#: ui/web/fm/alarmrule/Application.js:107
 #, fuzzy
 msgid "Window (sec.)"
 msgstr "Tempo (s)"
 
 # | msgid "Open Template"
-#: ui/web/fm/alarmrule/Application.js:125
+#: ui/web/fm/alarmrule/Application.js:117
 #, fuzzy
 msgid "Reference Template"
 msgstr "Abrir Template"
 
-#: ui/web/fm/alarmrule/Application.js:138
+#: ui/web/fm/alarmrule/Application.js:130
 #: ui/web/main/reportconfig/Application.js:477
 #: ui/web/sa/serviceprofile/Application.js:97
 msgid "Title Template"
 msgstr "Template de Título"
 
 # | msgid "Action"
-#: ui/web/fm/alarmrule/Application.js:161
-#: ui/web/fm/escalationprofile/Application.js:171
+#: ui/web/fm/alarmrule/Application.js:153
 #: ui/web/pm/metricrule/Application.js:64
 #: ui/web/sa/managedobject/Controller.js:186
 #: ui/web/sa/runcommands/Controller.js:247
@@ -5238,47 +5279,47 @@ msgid "Actions"
 msgstr "Ação"
 
 # | msgid "Vendor"
-#: ui/web/fm/alarmrule/Application.js:164
+#: ui/web/fm/alarmrule/Application.js:156
 #, fuzzy
 msgid "When Do"
 msgstr "Fabricante"
 
 # | msgid "Alarm risen"
-#: ui/web/fm/alarmrule/Application.js:171
-#: ui/web/fm/alarmrule/Application.js:176
+#: ui/web/fm/alarmrule/Application.js:163
+#: ui/web/fm/alarmrule/Application.js:168
 #, fuzzy
 msgid "On Alarm Raise"
 msgstr "Alerta elevado"
 
 # | msgid "Alarm cleared"
-#: ui/web/fm/alarmrule/Application.js:172
-#: ui/web/fm/alarmrule/Application.js:177
+#: ui/web/fm/alarmrule/Application.js:164
+#: ui/web/fm/alarmrule/Application.js:169
 #, fuzzy
 msgid "On Alarm Clear"
 msgstr "Alerta excluído"
 
-#: ui/web/fm/alarmrule/Application.js:181
+#: ui/web/fm/alarmrule/Application.js:173
 msgid "Action Policy"
 msgstr ""
 
-#: ui/web/fm/alarmrule/Application.js:188
-#: ui/web/fm/alarmrule/Application.js:195
+#: ui/web/fm/alarmrule/Application.js:180
+#: ui/web/fm/alarmrule/Application.js:187
 msgid "Continue Processed"
 msgstr ""
 
 # | msgid "Clear alarm?"
-#: ui/web/fm/alarmrule/Application.js:189
-#: ui/web/fm/alarmrule/Application.js:196
+#: ui/web/fm/alarmrule/Application.js:181
+#: ui/web/fm/alarmrule/Application.js:188
 #, fuzzy
 msgid "Drop Alarm"
 msgstr "Apagar alerta?"
 
-#: ui/web/fm/alarmrule/Application.js:190
-#: ui/web/fm/alarmrule/Application.js:197
+#: ui/web/fm/alarmrule/Application.js:182
+#: ui/web/fm/alarmrule/Application.js:189
 msgid "Rewrite AlarmClass"
 msgstr ""
 
-#: ui/web/fm/alarmrule/Application.js:240
+#: ui/web/fm/alarmrule/Application.js:232
 #: ui/web/fm/dispositionrule/Application.js:385
 #: ui/web/inv/cpeprofile/Application.js:246
 #: ui/web/inv/interfaceprofile/Application.js:532
@@ -5294,7 +5335,7 @@ msgid "Match Rules"
 msgstr "Regras de Correspondência"
 
 # | msgid "Match Rules"
-#: ui/web/fm/alarmrule/Application.js:246
+#: ui/web/fm/alarmrule/Application.js:238
 #: ui/web/fm/dispositionrule/Application.js:398
 #: ui/web/inv/cpeprofile/Application.js:259
 #: ui/web/inv/interfaceprofile/Application.js:548
@@ -5311,14 +5352,14 @@ msgstr "Regras de Correspondência"
 #: ui/web/sa/managedobjectprofile/Application.js:463
 #: ui/web/sa/objectdiagnosticconfig/Application.js:262
 #: ui/web/sa/objectdiscoveryrule/Application.js:345
-#: ui/web/sa/serviceprofile/Application.js:357
+#: ui/web/sa/serviceprofile/Application.js:370
 #: ui/web/vc/vlanfilter/Application.js:66
 #: ui/web/wf/transition/Application.js:176
 #, fuzzy
 msgid "Match Labels"
 msgstr "Regras de Correspondência"
 
-#: ui/web/fm/alarmrule/Application.js:259
+#: ui/web/fm/alarmrule/Application.js:251
 #: ui/web/main/messageroute/Application.js:230
 #: ui/web/pm/metricrule/Application.js:243
 #: ui/web/sa/credentialcheckrule/Application.js:219
@@ -5327,13 +5368,13 @@ msgstr "Regras de Correspondência"
 msgid "Exclude Match Labels"
 msgstr ""
 
-#: ui/web/fm/alarmrule/Application.js:279
+# | msgid "Severity"
+#: ui/web/fm/alarmrule/Application.js:271
 #, fuzzy
-#| msgid "Severity"
 msgid "Alarm Severity"
 msgstr "Criticidade"
 
-#: ui/web/fm/alarmrule/Application.js:286
+#: ui/web/fm/alarmrule/Application.js:278
 msgid "Group Reference Regex"
 msgstr ""
 
@@ -5363,10 +5404,10 @@ msgstr "Testar Som"
 #: ui/web/sa/commandsnippet/Application.js:25
 #: ui/web/sa/managedobject/form/View.js:849
 #: ui/web/sa/managedobjectprofile/Application.js:387
-#: ui/web/sa/managedobjectprofile/Application.js:2388
-#: ui/web/sa/managedobjectprofile/Application.js:2653
-#: ui/web/sa/managedobjectprofile/Application.js:2682
-#: ui/web/sa/managedobjectprofile/Application.js:2703
+#: ui/web/sa/managedobjectprofile/Application.js:2395
+#: ui/web/sa/managedobjectprofile/Application.js:2660
+#: ui/web/sa/managedobjectprofile/Application.js:2689
+#: ui/web/sa/managedobjectprofile/Application.js:2710
 msgid "Enabled"
 msgstr "Habilitado"
 
@@ -5398,7 +5439,7 @@ msgid "Is Enabled"
 msgstr "Ativo"
 
 #: ui/web/fm/alarmtrigger/Application.js:87
-#: ui/web/sa/serviceprofile/Application.js:351
+#: ui/web/sa/serviceprofile/Application.js:364
 msgid "Alarm class RE"
 msgstr "Classe de alerta RE"
 
@@ -5457,9 +5498,9 @@ msgstr "Preferência"
 msgid "Sources"
 msgstr "Fonte"
 
+# | msgid "Syslog Source"
 #: ui/web/fm/classificationrule/Application.js:129
 #, fuzzy
-#| msgid "Syslog Source"
 msgid "SYSLOG"
 msgstr "Origem do Syslog"
 
@@ -5468,15 +5509,15 @@ msgid "SNMP_TRAP"
 msgstr ""
 
 # | msgid "Month"
+# | msgid "Other"
 #: ui/web/fm/classificationrule/Application.js:131
 #, fuzzy
-#| msgid "Other"
 msgid "OTHER"
 msgstr "Mês"
 
+# | msgid "Profile"
 #: ui/web/fm/classificationrule/Application.js:153
 #, fuzzy
-#| msgid "Profile"
 msgid "Profiles"
 msgstr "Perfil"
 
@@ -5484,16 +5525,16 @@ msgstr "Perfil"
 msgid "SA Profiles, for match rules"
 msgstr ""
 
+# | msgid "Time Pattern"
 #: ui/web/fm/classificationrule/Application.js:164
 #, fuzzy
-#| msgid "Time Pattern"
 msgid "Message Pattern"
 msgstr "Padrão de Tempo"
 
 #: ui/web/fm/classificationrule/Application.js:170
 #: ui/web/inv/ifdescpatterns/Application.js:61
 #: ui/web/inv/interfaceprofile/Application.js:427
-#: ui/web/sa/managedobjectprofile/Application.js:1368
+#: ui/web/sa/managedobjectprofile/Application.js:1373
 msgid "Patterns"
 msgstr "Padrões"
 
@@ -5511,36 +5552,36 @@ msgid "Wildcard"
 msgstr ""
 
 # | msgid "Object Name"
+# | msgid "Object Labels"
 #: ui/web/fm/classificationrule/Application.js:209
 #, fuzzy
-#| msgid "Object Labels"
 msgid "Set Label"
 msgstr "Nome do Objeto"
 
+# | msgid "Start"
 #: ui/web/fm/classificationrule/Application.js:218
 #: ui/web/fm/dispositionrule/Application.js:281
 #, fuzzy
-#| msgid "Start"
 msgid "Set Var"
 msgstr "Início"
 
 # | msgid "last changed"
+# | msgid "Reset changes"
 #: ui/web/fm/classificationrule/Application.js:251
 #, fuzzy
-#| msgid "Reset changes"
 msgid "Test cases"
 msgstr "última mudança"
 
 # | msgid "Label"
+# | msgid "Labels"
 #: ui/web/fm/classificationrule/Application.js:264
 #, fuzzy
-#| msgid "Labels"
 msgid "In Labels"
 msgstr "Rótulo"
 
+# | msgid "Vars"
 #: ui/web/fm/classificationrule/Application.js:269
 #, fuzzy
-#| msgid "Vars"
 msgid "Raw Vars"
 msgstr "Variáveis"
 
@@ -5571,22 +5612,22 @@ msgstr "ID do evendo ou código JSON"
 msgid "Failed to test rule"
 msgstr "Falha ao definir a causa raiz"
 
+# | msgid "Disposition"
 #: ui/web/fm/dispositionrule/Application.js:45
 #, fuzzy
-#| msgid "Disposition"
 msgid "Alarm Disposition"
 msgstr "Disposição"
 
+# | msgid "Alarm Class"
 #: ui/web/fm/dispositionrule/Application.js:69
 #, fuzzy
-#| msgid "Alarm Class"
 msgid "By Alarm Class"
 msgstr "Classe de Alerta"
 
+# | msgid "Condition"
 #: ui/web/fm/dispositionrule/Application.js:127
 #: ui/web/fm/dispositionrule/Application.js:132
 #, fuzzy
-#| msgid "Condition"
 msgid "Combo Condition"
 msgstr "Condição"
 
@@ -5595,16 +5636,14 @@ msgid "Frequency"
 msgstr ""
 
 # | msgid "Deleted"
+# | msgid "Selected"
 #: ui/web/fm/dispositionrule/Application.js:136
 #, fuzzy
-#| msgid "Selected"
 msgid "Sequence"
 msgstr "Excluído"
 
 # | msgid "Day"
 #: ui/web/fm/dispositionrule/Application.js:138
-#: ui/web/fm/escalationprofile/Application.js:237
-#: ui/web/fm/escalationprofile/Application.js:243
 #: ui/web/inv/networksegmentprofile/Application.js:242
 #: ui/web/inv/networksegmentprofile/Application.js:248
 #: ui/web/inv/networksegmentprofile/Application.js:264
@@ -5617,37 +5656,37 @@ msgid "Any"
 msgstr "Dia"
 
 # | msgid "Time (sec)"
+# | msgid "Window (sec.)"
 #: ui/web/fm/dispositionrule/Application.js:146
 #, fuzzy
-#| msgid "Window (sec.)"
 msgid "Combo Window (sec)"
 msgstr "Tempo (s)"
 
 # | msgid "Count"
+# | msgid "Account"
 #: ui/web/fm/dispositionrule/Application.js:155
 #, fuzzy
-#| msgid "Account"
 msgid "Combo count"
 msgstr "Contagem"
 
+# | msgid "Create Rule"
 #: ui/web/fm/dispositionrule/Application.js:165
 #, fuzzy
-#| msgid "Create Rule"
 msgid "Replace Rule"
 msgstr "Criar Regra"
 
 # | msgid "Create Rule"
 # | msgid "Test rule"
+# | msgid "Skip Rule"
 #: ui/web/fm/dispositionrule/Application.js:175
 #, fuzzy
-#| msgid "Skip Rule"
 msgid "Dispose Rule"
 msgstr "Criar Regra"
 
 # | msgid "Policy"
+# | msgid "Raw Policy"
 #: ui/web/fm/dispositionrule/Application.js:182
 #, fuzzy
-#| msgid "Raw Policy"
 msgid "Replace Policy"
 msgstr "Política"
 
@@ -5662,7 +5701,7 @@ msgstr "Política"
 #: ui/web/ip/prefixprofile/Application.js:134
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:81
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:94
-#: ui/web/maintenance/maintenance/Application.js:210
+#: ui/web/maintenance/maintenance/Application.js:208
 #: ui/web/sa/capsprofile/Application.js:29
 #: ui/web/sa/managedobject/DiscoveryPanel.js:42
 #: ui/web/sa/managedobject/form/View.js:435
@@ -5681,62 +5720,61 @@ msgstr "Política"
 #: ui/web/sa/managedobjectprofile/Application.js:802
 #: ui/web/sa/managedobjectprofile/Application.js:822
 #: ui/web/sa/managedobjectprofile/Application.js:906
-#: ui/web/sa/managedobjectprofile/Application.js:1470
-#: ui/web/sa/managedobjectprofile/Application.js:1487
-#: ui/web/sa/managedobjectprofile/Application.js:1881
-#: ui/web/sa/managedobjectprofile/Application.js:2147
+#: ui/web/sa/managedobjectprofile/Application.js:1477
+#: ui/web/sa/managedobjectprofile/Application.js:1494
+#: ui/web/sa/managedobjectprofile/Application.js:1888
+#: ui/web/sa/managedobjectprofile/Application.js:2154
 #: ui/web/sa/objectdiscoveryrule/Application.js:212
 #: ui/web/sa/service/Application.js:348 ui/web/sa/service/Application.js:495
-#: ui/web/sa/serviceprofile/Application.js:154
-#: ui/web/sa/serviceprofile/Application.js:186
-#: ui/web/sa/serviceprofile/Application.js:331
-#: ui/web/sa/serviceprofile/Application.js:431
+#: ui/web/sa/serviceprofile/Application.js:167
+#: ui/web/sa/serviceprofile/Application.js:199
+#: ui/web/sa/serviceprofile/Application.js:344
+#: ui/web/sa/serviceprofile/Application.js:444
 msgid "Disable"
 msgstr "Desabilitar"
 
 # | msgid "Profile"
+# | msgid "Role"
 #: ui/web/fm/dispositionrule/Application.js:185
 #, fuzzy
-#| msgid "Role"
 msgid "Whole"
 msgstr "Perfil"
 
 # | msgid "Condition"
+# | msgid "Expose Condition"
 #: ui/web/fm/dispositionrule/Application.js:186
 #, fuzzy
-#| msgid "Expose Condition"
 msgid "Extend Condition"
 msgstr "Condição"
 
 # | msgid "Connections"
+# | msgid "Object connections"
 #: ui/web/fm/dispositionrule/Application.js:216
 #, fuzzy
-#| msgid "Object connections"
 msgid "Object Actions"
 msgstr "Conexões"
 
 # | msgid "Box discovery"
+# | msgid "Run discovery now"
 #: ui/web/fm/dispositionrule/Application.js:221
 #, fuzzy
-#| msgid "Run discovery now"
 msgid "Run Discovery"
 msgstr "Box de descoberta"
 
+# | msgid "Edit"
 #: ui/web/fm/dispositionrule/Application.js:226
 #, fuzzy
-#| msgid "Edit"
 msgid "Audit"
 msgstr "Editar"
 
 # | msgid "Commands"
+# | msgid "Run Commands"
 #: ui/web/fm/dispositionrule/Application.js:229
 #, fuzzy
-#| msgid "Run Commands"
 msgid "Run Command"
 msgstr "Comandos"
 
 #: ui/web/fm/dispositionrule/Application.js:230
-#: ui/web/fm/escalationprofile/Application.js:161
 #: ui/web/main/desktop/LoginView.js:75
 #: ui/web/main/userprofile/Application.js:29
 #: ui/web/support/account/AccountPanel.js:81
@@ -5744,27 +5782,27 @@ msgstr "Comandos"
 msgid "Login"
 msgstr ""
 
+# | msgid "Logout"
 #: ui/web/fm/dispositionrule/Application.js:231
 #, fuzzy
-#| msgid "Logout"
 msgid "LogOut"
 msgstr "Sair"
 
+# | msgid "Root"
 #: ui/web/fm/dispositionrule/Application.js:232
 #, fuzzy
-#| msgid "Root"
 msgid "Reboot"
 msgstr "Raiz"
 
+# | msgid "State"
 #: ui/web/fm/dispositionrule/Application.js:233
 #, fuzzy
-#| msgid "State"
 msgid "Started"
 msgstr "Estado"
 
+# | msgid "Habitated"
 #: ui/web/fm/dispositionrule/Application.js:234
 #, fuzzy
-#| msgid "Habitated"
 msgid "Halted"
 msgstr "Habitado"
 
@@ -5773,62 +5811,62 @@ msgstr "Habitado"
 msgid "Config Changed"
 msgstr "Modificação de Configuração"
 
+# | msgid "Alrm Status"
 #: ui/web/fm/dispositionrule/Application.js:243
 #, fuzzy
-#| msgid "Alrm Status"
 msgid "Avail Status"
 msgstr "Status do Alerta"
 
 # | msgid "Last Updated"
+# | msgid "Next Updated"
 #: ui/web/fm/dispositionrule/Application.js:246
 #, fuzzy
-#| msgid "Next Updated"
 msgid "Not Update"
 msgstr "Última Atualização"
 
 # | msgid "Searchable"
+# | msgid "Variables"
 #: ui/web/fm/dispositionrule/Application.js:247
 #, fuzzy
-#| msgid "Variables"
 msgid "Available"
 msgstr "Buscável"
 
 # | msgid "Searchable"
+# | msgid "Variables"
 #: ui/web/fm/dispositionrule/Application.js:248
 #, fuzzy
-#| msgid "Variables"
 msgid "Unavailable"
 msgstr "Buscável"
 
+# | msgid "Notification"
 #: ui/web/fm/dispositionrule/Application.js:267
 #, fuzzy
-#| msgid "Notification"
 msgid "New Event Notification"
 msgstr "Notificação"
 
 # | msgid "Interface status"
+# | msgid "Superuser status"
 #: ui/web/fm/dispositionrule/Application.js:276
 #, fuzzy
-#| msgid "Superuser status"
 msgid "Update Resource Oper Status"
 msgstr "Status da interface"
 
 # | msgid "Disable"
+# | msgid "Disabled"
 #: ui/web/fm/dispositionrule/Application.js:278
 #, fuzzy
-#| msgid "Disabled"
 msgid "Disable Update"
 msgstr "Desabilitar"
 
+# | msgid "Section"
 #: ui/web/fm/dispositionrule/Application.js:279
 #, fuzzy
-#| msgid "Section"
 msgid "Set Down"
 msgstr "Seção"
 
+# | msgid "Set"
 #: ui/web/fm/dispositionrule/Application.js:280
 #, fuzzy
-#| msgid "Set"
 msgid "Set Up"
 msgstr "Definir"
 
@@ -5839,19 +5877,19 @@ msgid "Disposition"
 msgstr "Disposição"
 
 # | msgid "Discovery"
+# | msgid "Discovery Alarm"
 #: ui/web/fm/dispositionrule/Application.js:297
 #, fuzzy
-#| msgid "Discovery Alarm"
 msgid "Dispose Alarm"
 msgstr "Descoberta"
 
 # | msgid "Section"
+# | msgid "Select Action"
 #: ui/web/fm/dispositionrule/Application.js:304
 #: ui/web/sa/objectdiscoveryrule/Application.js:68
 #: ui/web/sa/objectdiscoveryrule/Application.js:241
 #: ui/web/sa/objectdiscoveryrule/Application.js:447
 #, fuzzy
-#| msgid "Select Action"
 msgid "Default Action"
 msgstr "Seção"
 
@@ -5859,14 +5897,14 @@ msgstr "Seção"
 #: ui/web/fm/dispositionrule/Application.js:306
 #: ui/web/sa/managedobject/form/View.js:1410
 #: ui/web/sa/managedobjectprofile/Application.js:904
-#: ui/web/sa/managedobjectprofile/Application.js:1425
+#: ui/web/sa/managedobjectprofile/Application.js:1431
 #, fuzzy
 msgid "Raise Alarm"
 msgstr "Mostrar alertas ativos"
 
+# | msgid "Disposition"
 #: ui/web/fm/dispositionrule/Application.js:307
 #, fuzzy
-#| msgid "Disposition"
 msgid "Ignore Disposition"
 msgstr "Disposição"
 
@@ -5880,35 +5918,35 @@ msgstr "Apagar alerta?"
 
 # | msgid "Expression"
 # | msgid "Suppression"
+# | msgid "Stop Processing"
 #: ui/web/fm/dispositionrule/Application.js:317
 #, fuzzy
-#| msgid "Stop Processing"
 msgid "Stop Processing Rules"
 msgstr "Expressão"
 
+# | msgid "Condition"
 #: ui/web/fm/dispositionrule/Application.js:322
 #, fuzzy
-#| msgid "Condition"
 msgid "Condition Op Vars"
 msgstr "Condição"
 
 # | msgid "Commands"
+# | msgid "Bands"
 #: ui/web/fm/dispositionrule/Application.js:324
 #, fuzzy
-#| msgid "Bands"
 msgid "AND"
 msgstr "Comandos"
 
+# | msgid "Port"
 #: ui/web/fm/dispositionrule/Application.js:325
 #, fuzzy
-#| msgid "Port"
 msgid "OR"
 msgstr "Porta"
 
 # | msgid "Condition"
+# | msgid "Flap Condition"
 #: ui/web/fm/dispositionrule/Application.js:332
 #, fuzzy
-#| msgid "Flap Condition"
 msgid "Vars Conditions"
 msgstr "Condição"
 
@@ -5917,7 +5955,7 @@ msgstr "Condição"
 #: ui/web/pm/metricrule/Application.js:113
 #: ui/web/sa/objectdiscoveryrule/Application.js:417
 #: ui/web/sa/service/Application.js:535
-#: ui/web/sa/serviceprofile/Application.js:225
+#: ui/web/sa/serviceprofile/Application.js:238
 #, fuzzy
 msgid "Op"
 msgstr "Fim"
@@ -5951,10 +5989,10 @@ msgid "Equal"
 msgstr "E-mail"
 
 # | msgid "Email"
+# | msgid "Equal"
 #: ui/web/fm/dispositionrule/Application.js:350
 #: ui/web/fm/dispositionrule/Application.js:361
 #, fuzzy
-#| msgid "Equal"
 msgid "Not Equal"
 msgstr "E-mail"
 
@@ -5967,25 +6005,25 @@ msgstr "E-mail"
 msgid "Greater Equal"
 msgstr "Criar Regra"
 
+# | msgid "Create"
 #: ui/web/fm/dispositionrule/Application.js:352
 #: ui/web/fm/dispositionrule/Application.js:363
 #, fuzzy
-#| msgid "Create"
 msgid "Greater"
 msgstr "Criar"
 
 # | msgid "Email"
+# | msgid "Equal"
 #: ui/web/fm/dispositionrule/Application.js:353
 #: ui/web/fm/dispositionrule/Application.js:364
 #, fuzzy
-#| msgid "Equal"
 msgid "Less Equal"
 msgstr "E-mail"
 
+# | msgid "Rules"
 #: ui/web/fm/dispositionrule/Application.js:354
 #: ui/web/fm/dispositionrule/Application.js:365
 #, fuzzy
-#| msgid "Rules"
 msgid "Less"
 msgstr "Regras"
 
@@ -6009,92 +6047,6 @@ msgstr "Classe do Evento RE"
 msgid "Object Groups"
 msgstr "Objetos"
 
-# | msgid "Escalations"
-#: ui/web/fm/escalationprofile/Application.js:55
-#, fuzzy
-#| msgid "Escalation Policy"
-msgid "Group Escalation Policy"
-msgstr "Escalações"
-
-# | msgid "Escalations"
-#: ui/web/fm/escalationprofile/Application.js:75
-#, fuzzy
-#| msgid "Escalation Policy"
-msgid "Escalate Maintenance Policy"
-msgstr "Escalações"
-
-#: ui/web/fm/escalationprofile/Application.js:92
-#: ui/web/fm/ttsystem/Application.js:95
-msgid "Escalate Alarm Consequence Policy"
-msgstr ""
-
-#: ui/web/fm/escalationprofile/Application.js:109
-#, fuzzy
-#| msgid "Condition"
-msgid "End Condition"
-msgstr "Condição"
-
-#: ui/web/fm/escalationprofile/Application.js:128
-#, fuzzy
-#| msgid "Escalations"
-msgid "Repeat Escalations"
-msgstr "Escalações"
-
-# | msgid "About system ..."
-#: ui/web/fm/escalationprofile/Application.js:145
-#, fuzzy
-#| msgid "TT System ID"
-msgid "TT System Config"
-msgstr "Sobre o sistema ..."
-
-#: ui/web/fm/escalationprofile/Application.js:195
-#, fuzzy
-#| msgid "Command Log"
-msgid "Add log"
-msgstr "Log de Comandos"
-
-#: ui/web/fm/escalationprofile/Application.js:229
-#, fuzzy
-#| msgid "Match"
-msgid "Match Ack"
-msgstr "Combinar"
-
-#: ui/web/fm/escalationprofile/Application.js:236
-#: ui/web/fm/escalationprofile/Application.js:242
-msgid "Not Acknowledge"
-msgstr ""
-
-# | msgid "Name template"
-#: ui/web/fm/escalationprofile/Application.js:281
-#: ui/web/maintenance/maintenance/Application.js:177
-#, fuzzy
-msgid "Close Template"
-msgstr "Nome do template"
-
-# | msgid "Parent"
-#: ui/web/fm/escalationprofile/Application.js:295
-#, fuzzy
-#| msgid "Repaint"
-msgid "Repeat"
-msgstr "Nível Superior"
-
-#: ui/web/fm/escalationprofile/Application.js:302
-#, fuzzy
-#| msgid "Max. Scripts"
-msgid "Max. Repeats"
-msgstr "Máximo de Scripts"
-
-#: ui/web/fm/escalationprofile/Application.js:319
-#, fuzzy
-#| msgid "Reset Layout"
-msgid "Repeat Delay"
-msgstr "Redefinir Layout"
-
-#: ui/web/fm/escalationprofile/Application.js:327
-#: ui/web/fm/ttsystem/Application.js:112
-msgid "Tememetry Sample"
-msgstr ""
-
 #: ui/web/fm/event/Application.js:77
 #: ui/web/fm/reportalarmcomments/Application.js:86
 #: ui/web/fm/reportalarmdetail/Application.js:178
@@ -6113,28 +6065,28 @@ msgstr "Domínio Administrativo"
 msgid "Target"
 msgstr "Alvo"
 
+# | msgid "Disposition"
 #: ui/web/fm/event/Application.js:97
 #, fuzzy
-#| msgid "Disposition"
 msgid "Dispose"
 msgstr "Disposição"
 
+# | msgid "Segment Inspector"
 #: ui/web/fm/event/EventInspector.js:11
 #, fuzzy
-#| msgid "Segment Inspector"
 msgid "Event Inspector"
 msgstr "Inspetor de Segmento"
 
 # | msgid "Graphic"
+# | msgid "API"
 #: ui/web/fm/event/EventInspector.js:49
 #, fuzzy
-#| msgid "API"
 msgid "TrapID"
 msgstr "Formato"
 
+# | msgid "Remove"
 #: ui/web/fm/event/EventInspector.js:64 ui/web/inv/inv/sprites/External.js:133
 #, fuzzy
-#| msgid "Remove"
 msgid "Remote"
 msgstr "Excluir"
 
@@ -6147,15 +6099,15 @@ msgid "Create Rule"
 msgstr "Criar Regra"
 
 # | msgid "Create Rule"
+# | msgid "Create new"
 #: ui/web/fm/event/EventInspector.js:130
 #, fuzzy
-#| msgid "Create new"
 msgid "Create Ignore"
 msgstr "Criar Regra"
 
+# | msgid "Event Class"
 #: ui/web/fm/event/EventInspector.js:150
 #, fuzzy
-#| msgid "Event Class"
 msgid "Event reclassified"
 msgstr "Classe do Evento"
 
@@ -6165,9 +6117,9 @@ msgstr "Classe do Evento"
 msgid "Failed to reclassify"
 msgstr "Falha ao executar tarefas"
 
+# | msgid "Vars"
 #: ui/web/fm/event/EventInspector.js:190
 #, fuzzy
-#| msgid "Vars"
 msgid "Raw vars"
 msgstr "Variáveis"
 
@@ -6187,7 +6139,7 @@ msgstr "Expressão"
 #: ui/web/main/label/Application.js:225 ui/web/main/label/Application.js:620
 #: ui/web/main/label/Application.js:885
 #: ui/web/pm/metricaction/Application.js:517
-#: ui/web/sa/managedobjectprofile/Application.js:1401
+#: ui/web/sa/managedobjectprofile/Application.js:1407
 #: ui/web/sa/objectdiagnosticconfig/Application.js:215
 #: ui/web/wf/state/Application.js:195
 msgid "Alarm"
@@ -6566,6 +6518,14 @@ msgstr ""
 msgid "Failure Cooldown"
 msgstr ""
 
+#: ui/web/fm/ttsystem/Application.js:95
+msgid "Escalate Alarm Consequence Policy"
+msgstr ""
+
+#: ui/web/fm/ttsystem/Application.js:112
+msgid "Tememetry Sample"
+msgstr ""
+
 #: ui/web/gis/area/Application.js:30 ui/web/gis/area/Application.js:69
 msgid "SW"
 msgstr ""
@@ -6666,57 +6626,57 @@ msgstr "Principal"
 msgid "Street"
 msgstr "Rua"
 
-#: ui/web/gis/building/Application.js:205
+#: ui/web/gis/building/Application.js:209
 msgid "Num"
 msgstr "Número"
 
-#: ui/web/gis/building/Application.js:211
+#: ui/web/gis/building/Application.js:215
 msgid "Num2"
 msgstr "Complemento"
 
-#: ui/web/gis/building/Application.js:217
+#: ui/web/gis/building/Application.js:221
 msgid "Num Letter"
 msgstr "Complemento 2"
 
-#: ui/web/gis/building/Application.js:223
+#: ui/web/gis/building/Application.js:227
 #: ui/web/peer/prefixlistbuilder/Application.js:78
 msgid "Build"
 msgstr "Prédio"
 
-#: ui/web/gis/building/Application.js:229
+#: ui/web/gis/building/Application.js:233
 msgid "Build Letter"
 msgstr "Identificação Prédio"
 
-#: ui/web/gis/building/Application.js:235
+#: ui/web/gis/building/Application.js:239
 msgid "Struct"
 msgstr ""
 
-#: ui/web/gis/building/Application.js:241
+#: ui/web/gis/building/Application.js:245
 msgid "Struct2"
 msgstr ""
 
-#: ui/web/gis/building/Application.js:247
+#: ui/web/gis/building/Application.js:251
 msgid "Struct Letter"
 msgstr "Identificação do Bloco"
 
-#: ui/web/gis/building/Application.js:253
+#: ui/web/gis/building/Application.js:257
 msgid "Estate"
 msgstr "Estado"
 
-#: ui/web/gis/building/Application.js:259
+#: ui/web/gis/building/Application.js:263
 msgid "Estate2"
 msgstr "Estado 2"
 
-#: ui/web/gis/building/Application.js:265
+#: ui/web/gis/building/Application.js:269
 msgid "Est. Letter"
 msgstr "Sigla do Estado"
 
-#: ui/web/gis/building/Application.js:271
+#: ui/web/gis/building/Application.js:275
 msgid "Full Number"
 msgstr "Número Completo"
 
 # | msgid "Parent"
-#: ui/web/gis/building/Application.js:283
+#: ui/web/gis/building/Application.js:287
 #: ui/web/gis/division/Application.js:116 ui/web/gis/street/Application.js:99
 #, fuzzy
 msgid "By Parent"
@@ -6865,10 +6825,10 @@ msgstr ""
 msgid "Allow multiple values (List)"
 msgstr ""
 
+# | msgid "Value"
 #: ui/web/inv/capability/Application.js:93
 #: ui/web/inv/endpoint/Application.js:98
 #, fuzzy
-#| msgid "Value"
 msgid "Values"
 msgstr "Valor"
 
@@ -6887,10 +6847,10 @@ msgstr "Conexão do Alvo"
 msgid "Agent Param"
 msgstr ""
 
+# | msgid "Domain"
 #: ui/web/inv/channel/Application.js:95 ui/web/inv/channel/Application.js:143
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:52
 #, fuzzy
-#| msgid "Domain"
 msgid "Tech Domain"
 msgstr "Domínio"
 
@@ -6925,26 +6885,26 @@ msgstr "Cor da Fonte"
 msgid "Discriminator"
 msgstr ""
 
+# | msgid "Constraint"
 #: ui/web/inv/channel/Application.js:197 ui/web/inv/channel/Application.js:337
 #: ui/web/inv/endpoint/Application.js:90
 #, fuzzy
-#| msgid "Constraint"
 msgid "Constraints"
 msgstr "Limitação"
 
+# | msgid "Start"
 #: ui/web/inv/channel/Application.js:223
 #, fuzzy
-#| msgid "Start"
 msgid "Strict"
 msgstr "Início"
 
+# | msgid "Source"
 #: ui/web/inv/channel/Application.js:230 ui/web/inv/channel/Application.js:300
 #: ui/web/inv/endpoint/Application.js:31 ui/web/inv/endpoint/Application.js:51
 #: ui/web/main/modeltemplate/Application.js:50
 #: ui/web/sa/service/ResourceLinkForm.js:92
 #: ui/web/sa/service/ResourceLinkForm.js:147
 #, fuzzy
-#| msgid "Source"
 msgid "Resource"
 msgstr "Fonte"
 
@@ -6955,22 +6915,22 @@ msgid "Params"
 msgstr "Parâmetro"
 
 # | msgid "Parent"
+# | msgid "Repaint"
 #: ui/web/inv/channel/Application.js:296
 #, fuzzy
-#| msgid "Repaint"
 msgid "Endpoints"
 msgstr "Nível Superior"
 
+# | msgid "Root"
 #: ui/web/inv/channel/Application.js:307 ui/web/inv/endpoint/Application.js:56
 #, fuzzy
-#| msgid "Root"
 msgid "Is Root"
 msgstr "Raiz"
 
 # | msgid "Params"
+# | msgid "Param"
 #: ui/web/inv/channel/Application.js:314 ui/web/inv/endpoint/Application.js:61
 #, fuzzy
-#| msgid "Param"
 msgid "Pair"
 msgstr "Parâmetro"
 
@@ -6979,9 +6939,9 @@ msgid "Used by"
 msgstr ""
 
 # | msgid "By Adm. domain"
+# | msgid "By L2 Domain"
 #: ui/web/inv/channel/Application.js:364
 #, fuzzy
-#| msgid "By L2 Domain"
 msgid "By Tech Domai"
 msgstr "Por Dom. Administrativo"
 
@@ -7308,7 +7268,7 @@ msgstr "IP Local"
 
 #: ui/web/inv/cpe/Application.js:255 ui/web/sa/managedobject/form/View.js:1506
 #: ui/web/sa/service/Application.js:684
-#: ui/web/sa/serviceprofile/Application.js:554
+#: ui/web/sa/serviceprofile/Application.js:567
 msgid "Capabilities"
 msgstr "Capacidades"
 
@@ -7403,7 +7363,7 @@ msgstr "Status da Descoberta"
 # | msgid "Interval, sec"
 #: ui/web/inv/cpeprofile/Application.js:165
 #: ui/web/inv/interfaceprofile/Application.js:476
-#: ui/web/sa/managedobjectprofile/Application.js:2514
+#: ui/web/sa/managedobjectprofile/Application.js:2521
 #: ui/web/sla/slaprofile/Application.js:86
 #, fuzzy
 msgid "Default Interval, sec"
@@ -7417,10 +7377,10 @@ msgstr ""
 #: ui/web/inv/cpeprofile/Application.js:195
 #: ui/web/inv/interfaceprofile/Application.js:498
 #: ui/web/main/label/Application.js:875 ui/web/sa/managedobject/L1Panel.js:69
-#: ui/web/sa/managedobjectprofile/Application.js:2495
-#: ui/web/sa/managedobjectprofile/Application.js:2536
-#: ui/web/sa/managedobjectprofile/Application.js:2647
-#: ui/web/sa/managedobjectprofile/Application.js:2697
+#: ui/web/sa/managedobjectprofile/Application.js:2502
+#: ui/web/sa/managedobjectprofile/Application.js:2543
+#: ui/web/sa/managedobjectprofile/Application.js:2654
+#: ui/web/sa/managedobjectprofile/Application.js:2704
 #: ui/web/sla/slaprofile/Application.js:131
 msgid "Metrics"
 msgstr "Métricas"
@@ -7455,19 +7415,19 @@ msgstr ""
 msgid "Match Handler"
 msgstr ""
 
+# | msgid "Change"
 #: ui/web/inv/endpoint/Application.js:25 ui/web/inv/endpoint/Application.js:46
 #: ui/web/inv/endpoint/Application.js:70
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:79
 #, fuzzy
-#| msgid "Change"
 msgid "Channel"
 msgstr "Modificar"
 
 # | msgid "Datasource"
 # | msgid "Data Sources"
+# | msgid "Discriminator Source"
 #: ui/web/inv/endpoint/Application.js:76
 #, fuzzy
-#| msgid "Discriminator Source"
 msgid "Discrimiator"
 msgstr "Fonte de Dados"
 
@@ -7524,7 +7484,7 @@ msgstr ""
 
 #: ui/web/inv/firmwarepolicy/Application.js:52
 #: ui/web/inv/firmwarepolicy/Application.js:167
-#: ui/web/sa/managedobjectprofile/Application.js:1703
+#: ui/web/sa/managedobjectprofile/Application.js:1710
 msgid "Management"
 msgstr "Gerência"
 
@@ -7620,8 +7580,8 @@ msgstr ""
 #: ui/web/sa/managedobject/scripts/ShowARP.js:18
 #: ui/web/sa/managedobject/scripts/ShowDHCPBinding.js:18
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:13
-#: ui/web/sa/managedobjectprofile/Application.js:2041
-#: ui/web/sa/managedobjectprofile/Application.js:2696
+#: ui/web/sa/managedobjectprofile/Application.js:2048
+#: ui/web/sa/managedobjectprofile/Application.js:2703
 #: ui/web/sa/service/Application.js:249
 msgid "MAC"
 msgstr ""
@@ -7744,8 +7704,8 @@ msgstr ""
 #: ui/web/sa/managedobject/form/View.js:950
 #: ui/web/sa/managedobject/scripts/ShowMAC.js:28
 #: ui/web/sa/managedobject/scripts/ShowVLANs.js:13
-#: ui/web/sa/managedobjectprofile/Application.js:1441
-#: ui/web/sa/managedobjectprofile/Application.js:2646
+#: ui/web/sa/managedobjectprofile/Application.js:1448
+#: ui/web/sa/managedobjectprofile/Application.js:2653
 #: ui/web/vc/vlan/Application.js:66 ui/web/vc/vlan/Application.js:109
 msgid "VLAN"
 msgstr ""
@@ -7790,13 +7750,13 @@ msgstr "Ligar Eventos"
 #: ui/web/inv/interfaceprofile/Application.js:97
 #: ui/web/inv/networksegmentprofile/Application.js:300
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:71
-#: ui/web/sa/managedobjectprofile/Application.js:1111
-#: ui/web/sa/managedobjectprofile/Application.js:1147
-#: ui/web/sa/managedobjectprofile/Application.js:1202
-#: ui/web/sa/managedobjectprofile/Application.js:1460
-#: ui/web/sa/managedobjectprofile/Application.js:2055
-#: ui/web/sa/managedobjectprofile/Application.js:2432
-#: ui/web/sa/managedobjectprofile/Application.js:2581
+#: ui/web/sa/managedobjectprofile/Application.js:1113
+#: ui/web/sa/managedobjectprofile/Application.js:1149
+#: ui/web/sa/managedobjectprofile/Application.js:1204
+#: ui/web/sa/managedobjectprofile/Application.js:1467
+#: ui/web/sa/managedobjectprofile/Application.js:2062
+#: ui/web/sa/managedobjectprofile/Application.js:2439
+#: ui/web/sa/managedobjectprofile/Application.js:2588
 msgid "Policy"
 msgstr "Política"
 
@@ -7844,9 +7804,9 @@ msgid "User Interface"
 msgstr "Interfaces de VC"
 
 # | msgid "Interface Profile"
+# | msgid "Interface Policy"
 #: ui/web/inv/interfaceprofile/Application.js:204
 #, fuzzy
-#| msgid "Interface Policy"
 msgid "SubInterface Apply Policy"
 msgstr "Perfil de Interface"
 
@@ -7856,26 +7816,28 @@ msgstr ""
 
 # | msgid "Validation Rule"
 #: ui/web/inv/interfaceprofile/Application.js:257
-#: ui/web/sa/managedobjectprofile/Application.js:2412
+#: ui/web/sa/managedobjectprofile/Application.js:2419
 #, fuzzy
 msgid "Validation Policy"
 msgstr "Regra de Validação"
 
 #: ui/web/inv/interfaceprofile/Application.js:266
 #: ui/web/sa/managedobjectprofile/Application.js:787
-#: ui/web/sa/managedobjectprofile/Application.js:1898
-#: ui/web/sa/managedobjectprofile/Application.js:2164
+#: ui/web/sa/managedobjectprofile/Application.js:1905
+#: ui/web/sa/managedobjectprofile/Application.js:2171
 msgid "Alarm Weight"
 msgstr "Peso do Alerta"
 
 #: ui/web/inv/interfaceprofile/Application.js:273
 #: ui/web/inv/interfaceprofile/Application.js:286
 #: ui/web/peer/peerprofile/Application.js:84
+#: ui/web/sa/serviceprofile/Application.js:144
 msgid "Status Change Notification"
 msgstr "Notificação de Modificação de Status"
 
 # | msgid "New message"
 #: ui/web/inv/interfaceprofile/Application.js:279
+#: ui/web/sa/serviceprofile/Application.js:150
 #, fuzzy
 msgid "Enable Message"
 msgstr "Nova mensagem"
@@ -7959,23 +7921,23 @@ msgid "Create new top-level object"
 msgstr ""
 
 # | msgid "Clear alarm?"
+# | msgid "Clear Alarm"
 #: ui/web/inv/inv/AddObjectForm.js:36
 #, fuzzy
-#| msgid "Clear Alarm"
 msgid "Clear all rows"
 msgstr "Apagar alerta?"
 
 # | msgid "Add"
+# | msgid "Add "
 #: ui/web/inv/inv/AddObjectForm.js:41
 #, fuzzy
-#| msgid "Add "
 msgid "Add row"
 msgstr "Adicionar"
 
 # | msgid "Comment"
+# | msgid "Comment Time"
 #: ui/web/inv/inv/AddObjectForm.js:85
 #, fuzzy
-#| msgid "Comment Time"
 msgid "Clone N times"
 msgstr "Comentário"
 
@@ -7996,9 +7958,9 @@ msgstr "Falha ao salvar"
 msgid "Add object to "
 msgstr "Objeto gerenciado"
 
+# | msgid "Condition"
 #: ui/web/inv/inv/AddObjectForm.js:205
 #, fuzzy
-#| msgid "Condition"
 msgid "Confirmation"
 msgstr "Condição"
 
@@ -8006,9 +7968,9 @@ msgstr "Condição"
 msgid "Are you sure you want to delete all rows?"
 msgstr ""
 
+# | msgid "Clone"
 #: ui/web/inv/inv/AddObjectForm.js:228
 #, fuzzy
-#| msgid "Clone"
 msgid "Clone Rows"
 msgstr "Copiar"
 
@@ -8017,166 +7979,166 @@ msgid "Enter the number of rows to clone:"
 msgstr ""
 
 # | msgid "Revalidate"
+# | msgid "Invalid data!"
 #: ui/web/inv/inv/AddObjectForm.js:234
 #, fuzzy
-#| msgid "Invalid data!"
 msgid "Invalid Input"
 msgstr "Revalidar"
 
 # | msgid "Alarm commented"
+# | msgid "Please enter comment"
 #: ui/web/inv/inv/AddObjectForm.js:234
 #, fuzzy
-#| msgid "Please enter comment"
 msgid "Please enter a valid number."
 msgstr "Alerta comentado"
 
 # | msgid "Managed object"
-#: ui/web/inv/inv/Application.js:63 ui/web/inv/inv/Application.js:183
+#: ui/web/inv/inv/Application.js:63 ui/web/inv/inv/Application.js:187
 #, fuzzy
 msgid "Add objects"
 msgstr "Objeto gerenciado"
 
+# | msgid "Show dashboard"
 #: ui/web/inv/inv/Application.js:86
 #, fuzzy
-#| msgid "Show dashboard"
 msgid "Show Dashboard"
 msgstr "Ver dashboard"
 
 # | msgid "Connections"
-#: ui/web/inv/inv/Application.js:97 ui/web/inv/inv/Application.js:788
+# | msgid "Invalid connections"
+#: ui/web/inv/inv/Application.js:97 ui/web/inv/inv/Application.js:819
 #, fuzzy
-#| msgid "Invalid connections"
 msgid "Remove all connections"
 msgstr "Conexões"
 
 # | msgid "Failed to get data"
 # | msgid "Failed get MO detail"
-#: ui/web/inv/inv/Application.js:273
+#: ui/web/inv/inv/Application.js:277
 #, fuzzy
 msgid "Failed get map menu"
 msgstr "Falha ao carregar dados"
 
-#: ui/web/inv/inv/Application.js:425
+#: ui/web/inv/inv/Application.js:456
 msgid "Failed to launch application"
 msgstr ""
 
 # | msgid "Failed to get data"
-#: ui/web/inv/inv/Application.js:450
+#: ui/web/inv/inv/Application.js:481
 #: ui/web/inv/inv/plugins/metric/MetricPanel.js:200
 #, fuzzy
 msgid "Failed to get data for plugin"
 msgstr "Falha ao carregar dados"
 
 # | msgid "Failed to fix"
-#: ui/web/inv/inv/Application.js:527
+#: ui/web/inv/inv/Application.js:558
 #, fuzzy
 msgid "Failed to find node"
 msgstr "Falha ao corrigir"
 
 # | msgid "Failed to get data"
-#: ui/web/inv/inv/Application.js:533
+#: ui/web/inv/inv/Application.js:564
 #, fuzzy
 msgid "Failed to get path"
 msgstr "Falha ao carregar dados"
 
 # | msgid "Patterns"
-#: ui/web/inv/inv/Application.js:578
+# | msgid "Attachments"
+#: ui/web/inv/inv/Application.js:609
 #, fuzzy
-#| msgid "Attachments"
 msgid "Attach to"
 msgstr "Padrões"
 
-#: ui/web/inv/inv/Application.js:618
+# | msgid "Watch"
+#: ui/web/inv/inv/Application.js:649
 #, fuzzy
-#| msgid "Watch"
 msgid "Attach"
 msgstr "Seguir"
 
-#: ui/web/inv/inv/Application.js:648 ui/web/inv/inv/Application.js:678
+#: ui/web/inv/inv/Application.js:679 ui/web/inv/inv/Application.js:709
 msgid "HTTP request failed."
 msgstr ""
 
-#: ui/web/inv/inv/Application.js:702
+#: ui/web/inv/inv/Application.js:733
 msgid "Remove group '"
 msgstr ""
 
-#: ui/web/inv/inv/Application.js:707
+#: ui/web/inv/inv/Application.js:738
 msgid "Would you like to remove group?"
 msgstr ""
 
 # | msgid "Matched Objects"
-#: ui/web/inv/inv/Application.js:733
+# | msgid "Covered Objects"
+#: ui/web/inv/inv/Application.js:764
 #, fuzzy
-#| msgid "Covered Objects"
 msgid "Move nested objects to"
 msgstr "Objetos Combinados"
 
-#: ui/web/inv/inv/Application.js:738
+#: ui/web/inv/inv/Application.js:769
 msgid "Move nested objects to Lost&Found"
 msgstr ""
 
 # | msgid "Matched Objects"
-#: ui/web/inv/inv/Application.js:739
+# | msgid "Covered Objects"
+#: ui/web/inv/inv/Application.js:770
 #, fuzzy
-#| msgid "Covered Objects"
 msgid "Remove nested objects"
 msgstr "Objetos Combinados"
 
-#: ui/web/inv/inv/Application.js:753
+# | msgid "Connections"
+#: ui/web/inv/inv/Application.js:784
 #, fuzzy
-#| msgid "Connections"
 msgid "Keep connections"
 msgstr "Conexões"
 
 # | msgid "Peer Group"
-#: ui/web/inv/inv/Application.js:758
+# | msgid "Remove group"
+#: ui/web/inv/inv/Application.js:789
 #, fuzzy
-#| msgid "Remove group"
 msgid "Remove Group"
 msgstr "Grupo Peer"
 
-#: ui/web/inv/inv/Application.js:789
+#: ui/web/inv/inv/Application.js:820
 msgid ""
 "Do you want to remove all connections within object? This operation "
 "cannot be undone!"
 msgstr ""
 
-#: ui/web/inv/inv/Application.js:804
+# | msgid "Connection Rule"
+#: ui/web/inv/inv/Application.js:835
 #, fuzzy
-#| msgid "Connection Rule"
 msgid "Connections removed"
 msgstr "Regra de Conexão"
 
 # | msgid "Failed to connect interfaces"
-#: ui/web/inv/inv/Application.js:810
+# | msgid "Failed to connect objects : "
+#: ui/web/inv/inv/Application.js:841
 #, fuzzy
-#| msgid "Failed to connect objects : "
 msgid "Failed to remove connections : "
 msgstr "Falha ao conectar interfaces"
 
 # | msgid "project"
-#: ui/web/inv/inv/Application.js:853
+# | msgid "Clear objects"
+#: ui/web/inv/inv/Application.js:884
 #, fuzzy
-#| msgid "Clear objects"
 msgid "Clone object?"
 msgstr "projeto"
 
 # | msgid "Connections"
-#: ui/web/inv/inv/Application.js:862
+# | msgid "Object connections"
+#: ui/web/inv/inv/Application.js:893
 #, fuzzy
-#| msgid "Object connections"
 msgid "Clone connections"
 msgstr "Conexões"
 
 # | msgid "Failed to connect interfaces"
-#: ui/web/inv/inv/Application.js:911
+# | msgid "Failed to connect objects : "
+#: ui/web/inv/inv/Application.js:942
 #, fuzzy
-#| msgid "Failed to connect objects : "
 msgid "Failed to clone object."
 msgstr "Falha ao conectar interfaces"
 
 # | msgid "Failed to set root cause"
-#: ui/web/inv/inv/Application.js:962
+#: ui/web/inv/inv/Application.js:993
 #, fuzzy
 msgid "Failed to delete group"
 msgstr "Falha ao definir a causa raiz"
@@ -8206,9 +8168,9 @@ msgstr "projeto"
 msgid "Repaint"
 msgstr "Nível Superior"
 
+# | msgid "Connect to"
 #: ui/web/inv/inv/CreateConnectionForm.js:178
 #, fuzzy
-#| msgid "Connect to"
 msgid "Connect ports"
 msgstr "Conectar a"
 
@@ -8237,9 +8199,9 @@ msgstr "Falha ao conectar interfaces"
 msgid "Drag other object from left tree"
 msgstr ""
 
+# | msgid "Result"
 #: ui/web/inv/inv/CreateConnectionForm.js:478
 #, fuzzy
-#| msgid "Result"
 msgid "Free slot"
 msgstr "Resultado"
 
@@ -8375,16 +8337,16 @@ msgstr ""
 
 # | msgid "Building"
 # | msgid "Loading"
+# | msgid "Reloading..."
 #: ui/web/inv/inv/MaskComponent.js:22
 #, fuzzy
-#| msgid "Reloading..."
 msgid "Reloading {0} ..."
 msgstr "Construção"
 
 # | msgid "Starting {0}"
+# | msgid "Starting \"{0}\""
 #: ui/web/inv/inv/MaskComponent.js:23
 #, fuzzy
-#| msgid "Starting \"{0}\""
 msgid "Saving {0} ..."
 msgstr "Iniciando {0}"
 
@@ -8396,9 +8358,9 @@ msgid "Search..."
 msgstr "Busca..."
 
 # | msgid "Test Sound"
+# | msgid "Not Found"
 #: ui/web/inv/inv/NavSearch.js:43
 #, fuzzy
-#| msgid "Not Found"
 msgid "Nothing was found"
 msgstr "Testar Som"
 
@@ -8422,15 +8384,15 @@ msgid "Rear"
 msgstr "Fundos"
 
 # | msgid "Settings"
+# | msgid "Getting details"
 #: ui/web/inv/inv/plugins/VizSchemePluginAbstract.js:37
 #, fuzzy
-#| msgid "Getting details"
 msgid "Hide details"
 msgstr "Configurações"
 
+# | msgid "Show Labels"
 #: ui/web/inv/inv/plugins/VizSchemePluginAbstract.js:37
 #, fuzzy
-#| msgid "Show Labels"
 msgid "Show details"
 msgstr "Mostrar Rótulos"
 
@@ -8452,28 +8414,28 @@ msgid "No data"
 msgstr ""
 
 # | msgid "First Entrance"
+# | msgid "First Name"
 #: ui/web/inv/inv/plugins/Zoom.js:26 ui/web/inv/inv/plugins/Zoom.js:43
 #: ui/web/inv/inv/plugins/Zoom.js:63
 #, fuzzy
-#| msgid "First Name"
 msgid "Fit Page"
 msgstr "Primeira Entrada"
 
+# | msgid "Min. Weight"
 #: ui/web/inv/inv/plugins/Zoom.js:44 ui/web/inv/inv/plugins/Zoom.js:64
 #, fuzzy
-#| msgid "Min. Weight"
 msgid "Fit Height"
 msgstr "Peso mínimo"
 
+# | msgid "Stroke Width"
 #: ui/web/inv/inv/plugins/Zoom.js:45 ui/web/inv/inv/plugins/Zoom.js:65
 #, fuzzy
-#| msgid "Stroke Width"
 msgid "Fit Width"
 msgstr "Espessura da Linha"
 
+# | msgid "Min Zoom"
 #: ui/web/inv/inv/plugins/Zoom.js:75
 #, fuzzy
-#| msgid "Min Zoom"
 msgid "Custom Zoom"
 msgstr "Zoom Mínimo"
 
@@ -8482,59 +8444,59 @@ msgid "BoM"
 msgstr ""
 
 # | msgid "Report"
+# | msgid "Export"
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:67
 #, fuzzy
-#| msgid "Export"
 msgid "Export to CSV"
 msgstr "Relatório"
 
+# | msgid "Asset"
 #: ui/web/inv/inv/plugins/bom/BoMPanel.js:175
 #, fuzzy
-#| msgid "Asset"
 msgid "Asset#"
 msgstr "Patrimônio"
 
+# | msgid "Changes"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:11
 #, fuzzy
-#| msgid "Changes"
 msgid "Channels"
 msgstr "Mudanças"
 
 # | msgid "Remote Address"
+# | msgid "Create new address"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:22
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:505
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:137
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:142
 #, fuzzy
-#| msgid "Create new address"
 msgid "Create new channel"
 msgstr "Endereço Remoto"
 
+# | msgid "zIndex"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:58
 #: ui/web/inv/techdomain/Application.js:75
 #, fuzzy
-#| msgid "zIndex"
 msgid "Kind"
 msgstr "zÍndice "
 
+# | msgid "Stop"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:63
 #, fuzzy
-#| msgid "Stop"
 msgid "Topo"
 msgstr "Fim"
 
 # | msgid "Domain"
+# | msgid "Main"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:136
 #, fuzzy
-#| msgid "Main"
 msgid "Magic"
 msgstr "Domínio"
 
 # | msgid "Building"
 # | msgid "Loading"
+# | msgid "Reloading..."
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:223
 #, fuzzy
-#| msgid "Reloading..."
 msgid "Loading job panel ..."
 msgstr "Construção"
 
@@ -8551,25 +8513,25 @@ msgid "Fetching data for draw scheme ..."
 msgstr ""
 
 # | msgid "Remote Address"
+# | msgid "Create new address"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:306
 #, fuzzy
-#| msgid "Create new address"
 msgid "Create new channel ..."
 msgstr "Endereço Remoto"
 
 # | msgid "last changed"
+# | msgid "Validate on Change"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:306
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:52
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:137
 #, fuzzy
-#| msgid "Validate on Change"
 msgid "Update channel"
 msgstr "última mudança"
 
 # | msgid "Selectors"
+# | msgid "Select rows"
 #: ui/web/inv/inv/plugins/channel/ChannelPanel.js:339
 #, fuzzy
-#| msgid "Select rows"
 msgid "Please select a row"
 msgstr "Seletores"
 
@@ -8596,47 +8558,47 @@ msgid "No records found matching: "
 msgstr ""
 
 # | msgid "Create Rule"
+# | msgid "Create Model"
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:35
 #, fuzzy
-#| msgid "Create Model"
 msgid "Create or update channel"
 msgstr "Criar Regra"
 
 # | msgid "Create Rule"
+# | msgid "Create new"
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:52
 #, fuzzy
-#| msgid "Create new"
 msgid "Create channel"
 msgstr "Criar Regra"
 
 # | msgid "Create Rule"
+# | msgid "Create new"
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:86
 #, fuzzy
-#| msgid "Create new"
 msgid "Create new..."
 msgstr "Criar Regra"
 
 # | msgid "Sound"
+# | msgid "Send"
 #: ui/web/inv/inv/plugins/channel/MagicPanel.js:96
 #, fuzzy
-#| msgid "Send"
 msgid "End"
 msgstr "Som"
 
 # | msgid "Create Rule"
+# | msgid "Create new"
 #: ui/web/inv/inv/plugins/channel/ParamsForm.js:13
 #, fuzzy
-#| msgid "Create new"
 msgid "Create Item"
 msgstr "Criar Regra"
 
-#: ui/web/inv/inv/plugins/comment/CommentPanel.js:13
+#: ui/web/inv/inv/plugins/comment/CommentPanel.js:14
 #: ui/web/support/crashinfo/Application.js:167
 msgid "Comment"
 msgstr "Comentário"
 
 # | msgid "Failed to get data"
-#: ui/web/inv/inv/plugins/comment/CommentPanel.js:104
+#: ui/web/inv/inv/plugins/comment/CommentPanel.js:97
 #: ui/web/inv/inv/plugins/contacts/ContactsPanel.js:169
 #: ui/web/inv/map/MapPanel.js:837
 #, fuzzy
@@ -8644,35 +8606,35 @@ msgid "Failed to save data"
 msgstr "Falha ao carregar dados"
 
 # | msgid "Comment"
+# | msgid "Common"
 #: ui/web/inv/inv/plugins/commutation/CommutationPanel.js:11
 #, fuzzy
-#| msgid "Common"
 msgid "Commutation"
 msgstr "Comentário"
 
 # | msgid "Show object"
+# | msgid "no object"
 #: ui/web/inv/inv/plugins/commutation/CommutationPanel.js:20
 #, fuzzy
-#| msgid "no object"
 msgid "Local Object"
 msgstr "Mostrar objeto"
 
+# | msgid "Local AS"
 #: ui/web/inv/inv/plugins/commutation/CommutationPanel.js:26
 #, fuzzy
-#| msgid "Local AS"
 msgid "Local Name"
 msgstr "AS Local"
 
 # | msgid "Select managed object ..."
+# | msgid "Delete object"
 #: ui/web/inv/inv/plugins/commutation/CommutationPanel.js:31
 #, fuzzy
-#| msgid "Delete object"
 msgid "Remote Object"
 msgstr "Selecionar objeto gerenciado ..."
 
+# | msgid "Remote AS"
 #: ui/web/inv/inv/plugins/commutation/CommutationPanel.js:37
 #, fuzzy
-#| msgid "Remote AS"
 msgid "Remote Name"
 msgstr "AS Remoto"
 
@@ -8746,7 +8708,7 @@ msgid "First Number"
 msgstr "Primeiro Número"
 
 #: ui/web/inv/inv/plugins/contacts/ContactsPanel.js:13
-#: ui/web/maintenance/maintenance/Application.js:189
+#: ui/web/maintenance/maintenance/Application.js:187
 msgid "Contacts"
 msgstr "Contatos"
 
@@ -8790,16 +8752,16 @@ msgstr ""
 msgid "Gain (dB)"
 msgstr ""
 
+# | msgid "Edit map"
 #: ui/web/inv/inv/plugins/data/DataPanel.js:157
 #, fuzzy
-#| msgid "Edit map"
 msgid "Edit MO"
 msgstr "Editar mapa"
 
 # | msgid "Object Name"
+# | msgid "Object Model"
 #: ui/web/inv/inv/plugins/data/DataPanel.js:160
 #, fuzzy
-#| msgid "Object Model"
 msgid "Edit model"
 msgstr "Nome do Objeto"
 
@@ -8860,27 +8822,27 @@ msgid "Inventory"
 msgstr "Inventário"
 
 # | msgid "Show object"
+# | msgid "no object"
 #: ui/web/inv/inv/plugins/job/JobPanel.js:90
 #, fuzzy
-#| msgid "no object"
 msgid "No jobs"
 msgstr "Mostrar objeto"
 
+# | msgid "Create"
 #: ui/web/inv/inv/plugins/job/JobPanel.js:122
 #, fuzzy
-#| msgid "Create"
 msgid "Created At"
 msgstr "Criar"
 
+# | msgid "Completed"
 #: ui/web/inv/inv/plugins/job/JobPanel.js:128
 #, fuzzy
-#| msgid "Completed"
 msgid "Completed At"
 msgstr "Completo"
 
 #: ui/web/inv/inv/plugins/log/LogPanel.js:48
-#: ui/web/main/template/Application.js:37
-#: ui/web/main/template/Application.js:75
+#: ui/web/main/template/Application.js:38
+#: ui/web/main/template/Application.js:76
 #: ui/web/support/account/SystemPanel.js:12
 msgid "System"
 msgstr "Sistema"
@@ -8921,9 +8883,9 @@ msgstr ""
 msgid "Set position"
 msgstr "Disposição"
 
+# | msgid "Failed to load data"
 #: ui/web/inv/inv/plugins/map/MapPanel.js:121
 #, fuzzy
-#| msgid "Failed to load data"
 msgid "Failed to load map resources"
 msgstr "Falha ao carregar dados"
 
@@ -9027,24 +8989,24 @@ msgid "Absolute"
 msgstr "Valor"
 
 # | msgid "Profile"
+# | msgid "Pofile"
 #: ui/web/inv/inv/plugins/opm/OPMController.js:49
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:43
 #, fuzzy
-#| msgid "Pofile"
 msgid "offline"
 msgstr "Perfil"
 
 # | msgid "Stop"
+# | msgid "Op"
 #: ui/web/inv/inv/plugins/opm/OPMPanel.js:16
 #, fuzzy
-#| msgid "Op"
 msgid "OPM"
 msgstr "Fim"
 
 # | msgid "Selectors"
+# | msgid "Select rows"
 #: ui/web/inv/inv/plugins/opm/OPMPanel.js:43
 #, fuzzy
-#| msgid "Select rows"
 msgid "Select group"
 msgstr "Seletores"
 
@@ -9057,9 +9019,9 @@ msgid "Bands"
 msgstr "Comandos"
 
 # | msgid "Section"
+# | msgid "Select Action"
 #: ui/web/inv/inv/plugins/opm/OPMPanel.js:60
 #, fuzzy
-#| msgid "Select Action"
 msgid "Select band"
 msgstr "Seção"
 
@@ -9095,35 +9057,35 @@ msgid "Param name"
 msgstr "Abreviação"
 
 # | msgid "Credentials has been changed"
+# | msgid "Records has been saved"
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:60
 #, fuzzy
-#| msgid "Records has been saved"
 msgid "Parameter has been set"
 msgstr "Credenciais alteradas  com sucesso"
 
+# | msgid "Failed to set watcher"
 #: ui/web/inv/inv/plugins/pconf/PConfController.js:68
 #, fuzzy
-#| msgid "Failed to set watcher"
 msgid "Failed to set parameter"
 msgstr "Falha ao definir seguidor"
 
 # | msgid "Management"
+# | msgid "Management VLAN"
 #: ui/web/inv/inv/plugins/pconf/PConfPanel.js:151
 #, fuzzy
-#| msgid "Management VLAN"
 msgid "Management console"
 msgstr "Gerência"
 
+# | msgid "Table"
 #: ui/web/inv/inv/plugins/pconf/PConfPanel.js:268
 #, fuzzy
-#| msgid "Table"
 msgid "no tables"
 msgstr "Tabela"
 
 # | msgid "Group"
+# | msgid "Groups"
 #: ui/web/inv/inv/plugins/pconf/PConfPanel.js:269
 #, fuzzy
-#| msgid "Groups"
 msgid "no groups"
 msgstr "Grupo"
 
@@ -9205,10 +9167,10 @@ msgid "Duplicated"
 msgstr "Janelas de Desduplicação"
 
 # | msgid "Is Filtered"
+# | msgid "Is Stored"
 #: ui/web/inv/macblacklist/Application.js:113
 #: ui/web/sa/service/Application.js:461
 #, fuzzy
-#| msgid "Is Stored"
 msgid "Ignored"
 msgstr "É Filtrável"
 
@@ -9244,22 +9206,22 @@ msgid "Last Changed"
 msgstr "Última Mudança"
 
 # | msgid "Watch"
+# | msgid "Matched"
 #: ui/web/inv/macdb/Application.js:101
 #, fuzzy
-#| msgid "Matched"
 msgid "MAC DB"
 msgstr "Seguir"
 
 # | msgid "Discovery"
+# | msgid "history"
 #: ui/web/inv/macdb/Application.js:107
 #, fuzzy
-#| msgid "history"
 msgid "MAC History"
 msgstr "Descoberta"
 
+# | msgid "Required"
 #: ui/web/inv/macdb/Application.js:125
 #, fuzzy
-#| msgid "Required"
 msgid "Required field"
 msgstr "Obrigatório"
 
@@ -9288,17 +9250,17 @@ msgstr "Falha ao buscar a lista de interfaces"
 msgid "Select segment..."
 msgstr "Selecionar Segmento..."
 
+# | msgid "Local AS"
 #: ui/web/inv/map/Application.js:86
 #, fuzzy
-#| msgid "Local AS"
 msgid "All Maps"
 msgstr "AS Local"
 
 # | msgid "service"
 #: ui/web/inv/map/Application.js:112 ui/web/inv/map/MapPanel.js:873
-#: ui/web/sa/managedobjectprofile/Application.js:1045
-#: ui/web/sa/managedobjectprofile/Application.js:1072
-#: ui/web/sa/managedobjectprofile/Application.js:1342
+#: ui/web/sa/managedobjectprofile/Application.js:1046
+#: ui/web/sa/managedobjectprofile/Application.js:1074
+#: ui/web/sa/managedobjectprofile/Application.js:1347
 #, fuzzy
 msgid "sec"
 msgstr "serviço"
@@ -9484,10 +9446,10 @@ msgid "Your must select maintenance!"
 msgstr ""
 
 # | msgid "Failed to get alarm"
+# | msgid "Failed to get neighbors"
 #: ui/web/inv/map/MapPanel.js:134
 #: ui/web/inv/map/inspectors/ManagedObjectInspector.js:73
 #, fuzzy
-#| msgid "Failed to get neighbors"
 msgid "Topology Neighbors"
 msgstr "Falha ao obter alerta"
 
@@ -9496,9 +9458,9 @@ msgid "View Card"
 msgstr "Ver Ficha"
 
 # | msgid "Objects"
+# | msgid "Object Status"
 #: ui/web/inv/map/MapPanel.js:148
 #, fuzzy
-#| msgid "Object Status"
 msgid "Object Settings"
 msgstr "Objetos"
 
@@ -9601,9 +9563,9 @@ msgid "Object Inspector"
 msgstr "Inspeto de Objeto"
 
 # | msgid "Objects"
+# | msgid "Object Status"
 #: ui/web/inv/map/inspectors/ManagedObjectInspector.js:33
 #, fuzzy
-#| msgid "Object Status"
 msgid "Object settings"
 msgstr "Objetos"
 
@@ -10045,10 +10007,10 @@ msgstr ""
 msgid "Choices"
 msgstr "Tecnologias"
 
+# | msgid "Show Labels"
 #: ui/web/inv/objectmodel/Application.js:95
 #: ui/web/inv/objectmodel/Application.js:154
 #, fuzzy
-#| msgid "Show Labels"
 msgid "Short Label"
 msgstr "Mostrar Rótulos"
 
@@ -10061,9 +10023,9 @@ msgstr "Regra de Conexão"
 msgid "CR. Context"
 msgstr "Contexto CR."
 
+# | msgid "Disable"
 #: ui/web/inv/objectmodel/Application.js:149
 #, fuzzy
-#| msgid "Disable"
 msgid "Visual"
 msgstr "Desabilitar"
 
@@ -10089,16 +10051,16 @@ msgid "Connection Context"
 msgstr "Contexto de Conexão"
 
 # | msgid "Code"
+# | msgid "Mode"
 #: ui/web/inv/objectmodel/Application.js:313
 #: ui/web/inv/objectmodel/Application.js:540
 #, fuzzy
-#| msgid "Mode"
 msgid "Modes"
 msgstr "Código"
 
+# | msgid "Default"
 #: ui/web/inv/objectmodel/Application.js:322
 #, fuzzy
-#| msgid "Default"
 msgid "Is Default"
 msgstr "Padrão"
 
@@ -10859,22 +10821,22 @@ msgstr ""
 msgid "Collect interval"
 msgstr "Falha no intervalo"
 
+# | msgid "Max. Length"
 #: ui/web/inv/techdomain/Application.js:88
 #, fuzzy
-#| msgid "Max. Length"
 msgid "Max. Endpoints"
 msgstr "Comprimento Máximo"
 
+# | msgid "Search"
 #: ui/web/inv/techdomain/Application.js:95
 #, fuzzy
-#| msgid "Search"
 msgid "Hierarchy"
 msgstr "Busca"
 
 # | msgid "Params"
+# | msgid "Allow Params"
 #: ui/web/inv/techdomain/Application.js:100
 #, fuzzy
-#| msgid "Allow Params"
 msgid "Allow Parent"
 msgstr "Parâmetro"
 
@@ -10885,65 +10847,65 @@ msgid "Allow Children"
 msgstr ""
 
 #: ui/web/inv/techdomain/Application.js:112
-#: ui/web/sa/managedobjectprofile/Application.js:1230
+#: ui/web/sa/managedobjectprofile/Application.js:1232
 msgid "Topology"
 msgstr "Topologia"
 
 # | msgid "Follow"
+# | msgid "Allow"
 #: ui/web/inv/techdomain/Application.js:117
 #, fuzzy
-#| msgid "Allow"
 msgid "Allow P2P"
 msgstr "Seguir"
 
 # | msgid "Direction"
+# | msgid "Unidirectional"
 #: ui/web/inv/techdomain/Application.js:122
 #, fuzzy
-#| msgid "Unidirectional"
 msgid "Allow Unidirectional P2P"
 msgstr "Direção"
 
 # | msgid "Follow"
+# | msgid "Allow"
 #: ui/web/inv/techdomain/Application.js:127
 #, fuzzy
-#| msgid "Allow"
 msgid "Allow Bunch"
 msgstr "Seguir"
 
 # | msgid "Params"
+# | msgid "Allow Params"
 #: ui/web/inv/techdomain/Application.js:132
 #, fuzzy
-#| msgid "Allow Params"
 msgid "Allow P2MP"
 msgstr "Parâmetro"
 
 # | msgid "Direction"
+# | msgid "Unidirectional"
 #: ui/web/inv/techdomain/Application.js:137
 #, fuzzy
-#| msgid "Unidirectional"
 msgid "Allow Unidirectional P2MP"
 msgstr "Direção"
 
 # | msgid "Params"
+# | msgid "Allow Params"
 #: ui/web/inv/techdomain/Application.js:142
 #, fuzzy
-#| msgid "Allow Params"
 msgid "Allow Star"
 msgstr "Parâmetro"
 
 # | msgid "Datasource"
 # | msgid "Data Sources"
+# | msgid "Discriminator Source"
 #: ui/web/inv/techdomain/Application.js:149
 #, fuzzy
-#| msgid "Discriminator Source"
 msgid "Channel Discriminators"
 msgstr "Fonte de Dados"
 
 # | msgid "Datasource"
 # | msgid "Data Sources"
+# | msgid "Discriminator Source"
 #: ui/web/inv/techdomain/Application.js:176
 #, fuzzy
-#| msgid "Discriminator Source"
 msgid "Endpoint Discriminators"
 msgstr "Fonte de Dados"
 
@@ -11362,18 +11324,18 @@ msgid "Address Discovery Policy"
 msgstr "Política de Descoberta"
 
 # | msgid "Address Family"
+# | msgid "Address Profile"
 #: ui/web/ip/ipam/view/forms/prefix/PrefixPanel.js:176
 #: ui/web/ip/prefixprofile/Application.js:123
 #, fuzzy
-#| msgid "Address Profile"
 msgid "Default Address Profile"
 msgstr "Família do IP"
 
 # | msgid "Address Family"
+# | msgid "Address Profile"
 #: ui/web/ip/ipam/view/forms/prefix/PrefixPanel.js:182
 #: ui/web/ip/prefixprofile/Application.js:157
 #, fuzzy
-#| msgid "Address Profile"
 msgid "Address Pools"
 msgstr "Família do IP"
 
@@ -11545,13 +11507,13 @@ msgid "Address Constraint"
 msgstr "Limitação de IP"
 
 # | msgid "Change"
-#: ui/web/js/override.js:334
+# | msgid "Cancel"
+#: ui/web/js/override.js:335
 #, fuzzy
-#| msgid "Cancel"
 msgid "Cancel Sort"
 msgstr "Modificar"
 
-#: ui/web/js/util.js:855 ui/web/js/util.js:867
+#: ui/web/js/util.js:872 ui/web/js/util.js:884
 msgid "Copy to clipboard"
 msgstr ""
 
@@ -11592,13 +11554,14 @@ msgstr ""
 #: ui/web/main/refbookadmin/Application.js:30
 #: ui/web/main/refbookadmin/Application.js:59
 #: ui/web/main/reportconfig/Application.js:571
+#: ui/web/main/template/Application.js:91
 #: ui/web/main/userprofile/Application.js:47
 msgid "Language"
 msgstr "Idioma"
 
 #: ui/web/kb/kbentry/Application.js:123
 #: ui/web/main/notificationgroup/Application.js:234
-#: ui/web/main/template/Application.js:101
+#: ui/web/main/template/Application.js:111
 msgid "Body"
 msgstr "Corpo"
 
@@ -11959,37 +11922,37 @@ msgid "About System"
 msgstr "Sobre o sistema ..."
 
 # | msgid "Starting {0}"
-#: ui/web/main/desktop/Application.js:142
+#: ui/web/main/desktop/Application.js:145
 #, fuzzy
 msgid "Starting \"{0}\""
 msgstr "Iniciando {0}"
 
-#: ui/web/main/desktop/Application.js:191
+#: ui/web/main/desktop/Application.js:194
 msgid "Failed to launch application "
 msgstr ""
 
-#: ui/web/main/desktop/Application.js:236
+#: ui/web/main/desktop/Application.js:239
 #: ui/web/main/desktop/ChangePassword.js:51
 #: ui/web/support/account/ChangeCredentials.js:41
 msgid "Old Password"
 msgstr "Senha Atual"
 
-#: ui/web/main/desktop/Application.js:244
+#: ui/web/main/desktop/Application.js:247
 #: ui/web/main/desktop/ChangePassword.js:58
 #: ui/web/support/account/ChangeCredentials.js:48
 msgid "New Password"
 msgstr "Nova Senha"
 
-#: ui/web/main/desktop/Application.js:252
+#: ui/web/main/desktop/Application.js:255
 msgid "Retype New Password"
 msgstr "Confirme a Nova Senha"
 
-#: ui/web/main/desktop/Application.js:303
+#: ui/web/main/desktop/Application.js:306
 msgid "Logged in as "
 msgstr ""
 
 # | msgid "Failed to get STP status"
-#: ui/web/main/desktop/Application.js:306
+#: ui/web/main/desktop/Application.js:309
 #, fuzzy
 msgid "Failed to get user settings"
 msgstr "Falha ao obter o status STP"
@@ -12017,22 +11980,22 @@ msgid "Failed to change credentials: "
 msgstr "Falha ao alterar as credenciais"
 
 # | msgid "Password"
+# | msgid "Password empty"
 #: ui/web/main/desktop/ChangePassword.js:52
 #, fuzzy
-#| msgid "Password empty"
 msgid "Old Password cannot be empty"
 msgstr "Senha"
 
 # | msgid "Password"
+# | msgid "Password empty"
 #: ui/web/main/desktop/ChangePassword.js:59
 #, fuzzy
-#| msgid "Password empty"
 msgid "New Password cannot be empty"
 msgstr "Senha"
 
+# | msgid "New Password"
 #: ui/web/main/desktop/ChangePassword.js:65
 #, fuzzy
-#| msgid "New Password"
 msgid "Confirm New Password"
 msgstr "Nova Senha"
 
@@ -12041,21 +12004,21 @@ msgid "Please confirm your new password"
 msgstr ""
 
 # | msgid "Password"
+# | msgid "Password empty"
 #: ui/web/main/desktop/ChangePassword.js:69
 #, fuzzy
-#| msgid "Password empty"
 msgid "Passwords do not match"
 msgstr "Senha"
 
+# | msgid "Last Changed"
 #: ui/web/main/desktop/ChangePassword.js:100
 #, fuzzy
-#| msgid "Last Changed"
 msgid "Password changed"
 msgstr "Última Mudança"
 
+# | msgid "Change password"
 #: ui/web/main/desktop/ChangePassword.js:108
 #, fuzzy
-#| msgid "Change password"
 msgid "Error changing password"
 msgstr "Alterar senha"
 
@@ -12094,15 +12057,15 @@ msgid "Failed to get remote sync time"
 msgstr "Falha ao definir a causa raiz"
 
 # | msgid "Last Floor"
+# | msgid "Last Login"
 #: ui/web/main/desktop/LoginView.js:15
 #, fuzzy
-#| msgid "Last Login"
 msgid "NOC Login"
 msgstr "Último Piso"
 
+# | msgid "Retype New Password"
 #: ui/web/main/desktop/LoginView.js:51
 #, fuzzy
-#| msgid "Retype New Password"
 msgid "Type username and password:"
 msgstr "Confirme a Nova Senha"
 
@@ -12111,26 +12074,40 @@ msgid "User name cannot be empty"
 msgstr ""
 
 # | msgid "Password"
+# | msgid "Password empty"
 #: ui/web/main/desktop/LoginView.js:66
 #, fuzzy
-#| msgid "Password empty"
 msgid "Password cannot be empty"
 msgstr "Senha"
 
-# | msgid "Failed to save"
-#: ui/web/main/desktop/LoginView.js:122
+# | msgid "Escalations"
+# | msgid "Escalation Time"
+#: ui/web/main/desktop/LoginView.js:92
 #, fuzzy
-#| msgid "Failed to clone"
+msgid "Session timeout."
+msgstr "Escalações"
+
+# | msgid "Failed to save"
+# | msgid "Failed to clone"
+#: ui/web/main/desktop/LoginView.js:123
+#, fuzzy
 msgid "Failed to log in"
 msgstr "Falha ao salvar"
 
-#: ui/web/main/desktop/NavPanel.js:24
+#: ui/web/main/desktop/NavPanel.js:23
 msgid "Navigation"
 msgstr "Navegação"
 
-#: ui/web/main/desktop/NavPanel.js:37
+#: ui/web/main/desktop/NavPanel.js:70
 msgid "Switch to breadcrumb view"
 msgstr "Alterar para visualização aninhada"
+
+# | msgid "Show interface load"
+# | msgid "No interfaces found"
+#: ui/web/main/desktop/NavPanel.js:174
+#, fuzzy
+msgid "No matches found"
+msgstr "Mostrar carga de interface"
 
 #: ui/web/main/desktop/Report.js:23
 #: ui/web/main/reportsubscription/Application.js:34
@@ -12159,22 +12136,15 @@ msgid "Collapse panels"
 msgstr "Recolher painéis"
 
 # | msgid "Building"
+# | msgid "Loading"
 #: ui/web/main/desktop/WorkplacePanel.js:48
 #, fuzzy
-#| msgid "Loading"
 msgid "Loading tab with"
 msgstr "Construção"
 
 #: ui/web/main/desktop/WorkplacePanel.js:116
 msgid "Expand panels"
 msgstr "Expandir painéis"
-
-# | msgid "Failed to load data"
-#: ui/web/main/desktop/app.js:160
-#, fuzzy
-#| msgid "Failed to upload files"
-msgid "Failed to load override.js"
-msgstr "Falha ao carregar dados"
 
 # | msgid "project"
 #: ui/web/main/extstorage/Application.js:27
@@ -12184,7 +12154,7 @@ msgstr "projeto"
 
 # | msgid "High Error"
 #: ui/web/main/extstorage/Application.js:73
-#: ui/web/sa/managedobjectprofile/Application.js:2303
+#: ui/web/sa/managedobjectprofile/Application.js:2310
 #, fuzzy
 msgid "Config Mirror"
 msgstr "Alerta Alto de Erro"
@@ -12196,7 +12166,7 @@ msgid "Config Upload"
 msgstr "Modo de Configuração"
 
 #: ui/web/main/extstorage/Application.js:75
-#: ui/web/sa/managedobjectprofile/Application.js:2442
+#: ui/web/sa/managedobjectprofile/Application.js:2449
 msgid "Beef"
 msgstr ""
 
@@ -12324,9 +12294,9 @@ msgstr "Regras de Correspondência"
 msgid "Allow Match Rule"
 msgstr ""
 
+# | msgid "Failed to get data"
 #: ui/web/main/home/Application.js:64
 #, fuzzy
-#| msgid "Failed to get data"
 msgid "Failed to get home data"
 msgstr "Falha ao carregar dados"
 
@@ -12453,7 +12423,7 @@ msgstr "Prefixo"
 
 # | msgid "User profile ..."
 #: ui/web/main/label/Application.js:168 ui/web/main/label/Application.js:659
-#: ui/web/sa/managedobjectprofile/Application.js:1605
+#: ui/web/sa/managedobjectprofile/Application.js:1612
 #, fuzzy
 msgid "Prefix Profile"
 msgstr "Perfil de Usuário"
@@ -12483,7 +12453,7 @@ msgstr ""
 
 # | msgid "SA Profile"
 #: ui/web/main/label/Application.js:195 ui/web/main/label/Application.js:808
-#: ui/web/sa/managedobjectprofile/Application.js:1529
+#: ui/web/sa/managedobjectprofile/Application.js:1536
 #, fuzzy
 msgid "VPN Profile"
 msgstr "Perfil de AS"
@@ -12626,7 +12596,7 @@ msgstr ""
 
 # | msgid "Bind filter"
 #: ui/web/main/label/Application.js:426
-#: ui/web/sa/managedobjectprofile/Application.js:2077
+#: ui/web/sa/managedobjectprofile/Application.js:2084
 #: ui/web/vc/l2domain/Application.js:131
 #: ui/web/vc/l2domainprofile/Application.js:115
 #, fuzzy
@@ -12777,31 +12747,31 @@ msgid "Blt"
 msgstr "Nativo"
 
 # | msgid "Params"
+# | msgid "Allow Params"
 #: ui/web/main/modeltemplate/Application.js:60
-#: ui/web/sa/serviceprofile/Application.js:486
-#: ui/web/sa/serviceprofile/Application.js:571
+#: ui/web/sa/serviceprofile/Application.js:499
+#: ui/web/sa/serviceprofile/Application.js:584
 #, fuzzy
-#| msgid "Allow Params"
 msgid "Allow Manual"
 msgstr "Parâmetro"
 
 # | msgid "Interval, sec"
 # | msgid "Default Interval, sec"
+# | msgid "Default Value"
 #: ui/web/main/modeltemplate/Application.js:130
 #, fuzzy
-#| msgid "Default Value"
 msgid "Default State"
 msgstr "Intervalo (s)"
 
 #: ui/web/main/modeltemplate/Application.js:150
 #: ui/web/sa/managedobject/form/View.js:1408
-#: ui/web/sa/managedobjectprofile/Application.js:1423
+#: ui/web/sa/managedobjectprofile/Application.js:1429
 msgid "Ignore"
 msgstr ""
 
+# | msgid "Preference"
 #: ui/web/main/modeltemplate/Application.js:164
 #, fuzzy
-#| msgid "Preference"
 msgid "Preferred"
 msgstr "Preferência"
 
@@ -12809,32 +12779,32 @@ msgstr "Preferência"
 msgid "Overr. Existing"
 msgstr ""
 
+# | msgid "Direction"
 #: ui/web/main/modeltemplate/Application.js:187
 #, fuzzy
-#| msgid "Direction"
 msgid "Dictionary"
 msgstr "Direção"
 
 # | msgid "Section"
+# | msgid "Select Action"
 #: ui/web/main/modeltemplate/Application.js:191
 #: ui/web/main/modeltemplate/Application.js:311
 #: ui/web/main/modeltemplate/Application.js:312
 #, fuzzy
-#| msgid "Select Action"
 msgid "Select dictionary"
 msgstr "Seção"
 
 # | msgid "Expression"
+# | msgid "Match Expression"
 #: ui/web/main/modeltemplate/Application.js:211
 #, fuzzy
-#| msgid "Match Expression"
 msgid "Default expression"
 msgstr "Expressão"
 
 # | msgid "Test Sound"
+# | msgid "Not Found"
 #: ui/web/main/modeltemplate/Application.js:242
 #, fuzzy
-#| msgid "Not Found"
 msgid "Dictionary not found"
 msgstr "Testar Som"
 
@@ -12843,34 +12813,34 @@ msgid "Server-side failed to get default dictionary"
 msgstr ""
 
 # | msgid "Failed to get data"
+# | msgid "Failed to get config"
 #: ui/web/main/modeltemplate/Application.js:302
 #, fuzzy
-#| msgid "Failed to get config"
 msgid "Server-side failed to get fields"
 msgstr "Falha ao carregar dados"
 
+# | msgid "Delay"
 #: ui/web/main/modeltemplate/Application.js:347
 #, fuzzy
-#| msgid "Delay"
 msgid "Deny"
 msgstr "Atrasar"
 
 # | msgid "Gender"
+# | msgid "Center"
 #: ui/web/main/modeltemplate/Application.js:354
 #, fuzzy
-#| msgid "Center"
 msgid "Client"
 msgstr "Gênero"
 
+# | msgid "Params"
 #: ui/web/main/modeltemplate/Application.js:372
 #, fuzzy
-#| msgid "Params"
 msgid "Params Form"
 msgstr "Parâmetro"
 
+# | msgid "Int."
 #: ui/web/main/modeltemplate/Application.js:384
 #, fuzzy
-#| msgid "Int."
 msgid "Hint"
 msgstr "Interfaces"
 
@@ -12888,80 +12858,80 @@ msgstr "Está Escondido"
 msgid "ModelID"
 msgstr "Modelo"
 
+# | msgid "Validation"
 #: ui/web/main/modeltemplate/Application.js:421
 #, fuzzy
-#| msgid "Validation"
 msgid "Validataion Expr."
 msgstr "Validação"
 
 # | msgid "Discovery Policy"
+# | msgid "MAC Discovery Policy"
 #: ui/web/main/notificationgroup/Application.js:80
 #, fuzzy
-#| msgid "MAC Discovery Policy"
 msgid "Message Registry Policy"
 msgstr "Política de Descoberta"
 
 # | msgid "type"
+# | msgid "By Type"
 #: ui/web/main/notificationgroup/Application.js:85
 #, fuzzy
-#| msgid "By Type"
 msgid "By Types"
 msgstr "tipo"
 
 # | msgid "Message"
+# | msgid "Message Type"
 #: ui/web/main/notificationgroup/Application.js:90
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:133
 #, fuzzy
-#| msgid "Message Type"
 msgid "Message Types"
 msgstr "Mensagem"
 
 # | msgid "Message"
 #: ui/web/main/notificationgroup/Application.js:94
-#: ui/web/main/template/Application.js:83
+#: ui/web/main/template/Application.js:84
 #, fuzzy
 msgid "Message Type"
 msgstr "Mensagem"
 
+# | msgid "members"
 #: ui/web/main/notificationgroup/Application.js:111
 #, fuzzy
-#| msgid "members"
 msgid "Static Members"
 msgstr "membros"
 
 # | msgid "Effective Settings"
+# | msgid "Interaction Settings"
 #: ui/web/main/notificationgroup/Application.js:147
 #, fuzzy
-#| msgid "Interaction Settings"
 msgid "Subscription Settings"
 msgstr "Configurações Efetivas"
 
 # | msgid "Allocated till"
 # | msgid "Allocated"
+# | msgid "Allow Auto Create"
 #: ui/web/main/notificationgroup/Application.js:164
 #, fuzzy
-#| msgid "Allow Auto Create"
 msgid "Allow Subscribe"
 msgstr "Ocupado até"
 
 # | msgid "Failed to run tasks"
+# | msgid "Failed to run script"
 #: ui/web/main/notificationgroup/Application.js:171
 #, fuzzy
-#| msgid "Failed to run script"
 msgid "Add to Subscription"
 msgstr "Falha ao executar tarefas"
 
 # | msgid "Config changed"
+# | msgid "Nothing changed"
 #: ui/web/main/notificationgroup/Application.js:178
 #, fuzzy
-#| msgid "Nothing changed"
 msgid "Notify Changed"
 msgstr "Configuração alterada"
 
+# | msgid "Match Condition"
 #: ui/web/main/notificationgroup/Application.js:189
 #: ui/web/sa/objectdiscoveryrule/Application.js:340
 #, fuzzy
-#| msgid "Match Condition"
 msgid "Match Conditions"
 msgstr "Condição de Correspondência"
 
@@ -13028,22 +12998,22 @@ msgid "Administrative-Territorial Division"
 msgstr "Divisão Administrativa"
 
 # | msgid "Managed object"
+# | msgid "Managed Object Level"
 #: ui/web/main/remotesystem/Application.js:111
 #, fuzzy
-#| msgid "Managed Object Level"
 msgid "Managed Object Loader Policy"
 msgstr "Objeto gerenciado"
 
+# | msgid "Managed object"
 #: ui/web/main/remotesystem/Application.js:113
 #, fuzzy
-#| msgid "Managed object"
 msgid "As Managed Object"
 msgstr "Objeto gerenciado"
 
 # | msgid "Discovery"
+# | msgid "Discovered"
 #: ui/web/main/remotesystem/Application.js:114
 #, fuzzy
-#| msgid "Discovered"
 msgid "As Discovered"
 msgstr "Descoberta"
 
@@ -13072,30 +13042,30 @@ msgid "Subscriber Profile"
 msgstr "Perfil de Usuário"
 
 # | msgid "New message"
+# | msgid "Enable Message"
 #: ui/web/main/remotesystem/Application.js:221
 #, fuzzy
-#| msgid "Enable Message"
 msgid "Enable FM Event"
 msgstr "Nova mensagem"
 
 # | msgid "Effective Settings"
+# | msgid "IfDesc Settings"
 #: ui/web/main/remotesystem/Application.js:228
 #, fuzzy
-#| msgid "IfDesc Settings"
 msgid "Sync Settings"
 msgstr "Configurações Efetivas"
 
 # | msgid "Policy"
+# | msgid "Run Policy"
 #: ui/web/main/remotesystem/Application.js:237
 #: ui/web/sa/objectdiscoveryrule/Application.js:194
 #, fuzzy
-#| msgid "Run Policy"
 msgid "Sync Policy"
 msgstr "Política"
 
+# | msgid "Interval, sec"
 #: ui/web/main/remotesystem/Application.js:257
 #, fuzzy
-#| msgid "Interval, sec"
 msgid "Sync Interval, sec"
 msgstr "Intervalo (s)"
 
@@ -13104,36 +13074,36 @@ msgid "Run Sync At"
 msgstr ""
 
 # | msgid "Interval, sec"
+# | msgid "Default Interval, sec"
 #: ui/web/main/remotesystem/Application.js:280
 #, fuzzy
-#| msgid "Default Interval, sec"
 msgid "Event Sync Interval, sec"
 msgstr "Intervalo (s)"
 
 # | msgid "Notification"
+# | msgid "By Notification"
 #: ui/web/main/remotesystem/Application.js:295
 #, fuzzy
-#| msgid "By Notification"
 msgid "Sync Notification Policy"
 msgstr "Notificação"
 
+# | msgid "Syntax"
 #: ui/web/main/remotesystem/Application.js:316
 #, fuzzy
-#| msgid "Syntax"
 msgid "Synd Data"
 msgstr "Sintaxe"
 
 # | msgid "last changed"
+# | msgid "Last MAC"
 #: ui/web/main/remotesystem/Application.js:325
 #, fuzzy
-#| msgid "Last MAC"
 msgid "Last Extract"
 msgstr "última mudança"
 
 # | msgid "Last Floor"
+# | msgid "Last Login"
 #: ui/web/main/remotesystem/Application.js:332
 #, fuzzy
-#| msgid "Last Login"
 msgid "Last Load"
 msgstr "Último Piso"
 
@@ -13141,9 +13111,9 @@ msgstr "Último Piso"
 msgid "Last Extract Event"
 msgstr ""
 
+# | msgid "Subject Template"
 #: ui/web/main/remotesystem/Application.js:348
 #, fuzzy
-#| msgid "Subject Template"
 msgid "Object URL Template"
 msgstr "Assunto do Template"
 
@@ -13176,8 +13146,8 @@ msgid "Service Activation"
 msgstr "Terminador de Serviço"
 
 #: ui/web/main/reportconfig/Application.js:128
-#: ui/web/sa/managedobjectprofile/Application.js:1794
-#: ui/web/sa/managedobjectprofile/Application.js:1803
+#: ui/web/sa/managedobjectprofile/Application.js:1801
+#: ui/web/sa/managedobjectprofile/Application.js:1810
 msgid "SLA"
 msgstr ""
 
@@ -13229,15 +13199,15 @@ msgstr ""
 msgid "Json Data"
 msgstr ""
 
+# | msgid "Condition"
 #: ui/web/main/reportconfig/Application.js:230
 #, fuzzy
-#| msgid "Condition"
 msgid "Condition Param"
 msgstr "Condição"
 
+# | msgid "Condition"
 #: ui/web/main/reportconfig/Application.js:236
 #, fuzzy
-#| msgid "Condition"
 msgid "Condition Value"
 msgstr "Condição"
 
@@ -13248,9 +13218,9 @@ msgid "Templates"
 msgstr "Nome do template"
 
 # | msgid "Trap Source"
+# | msgid "Report Source"
 #: ui/web/main/reportconfig/Application.js:288
 #, fuzzy
-#| msgid "Report Source"
 msgid "Report Formatter"
 msgstr "Origem de Trap"
 
@@ -13302,17 +13272,17 @@ msgid "Integer"
 msgstr "Filtrar"
 
 # | msgid "Archive"
+# | msgid "Choice"
 #: ui/web/main/reportconfig/Application.js:397
 #, fuzzy
-#| msgid "Choice"
 msgid "Choice (radio)"
 msgstr "Arquivar"
 
 # | msgid "Archive"
+# | msgid "Choice"
 #: ui/web/main/reportconfig/Application.js:398
 #: ui/web/main/reportconfig/Application.js:410
 #, fuzzy
-#| msgid "Choice"
 msgid "Choice (combo)"
 msgstr "Arquivar"
 
@@ -13507,9 +13477,9 @@ msgstr "E-mail"
 msgid "Notification Contacts"
 msgstr "Contatos de Notificação"
 
+# | msgid "Notification Group"
 #: ui/web/main/userprofile/Application.js:67
 #, fuzzy
-#| msgid "Notification Group"
 msgid "Notification Group Settings"
 msgstr "Grupo de Notificação"
 
@@ -13522,84 +13492,90 @@ msgid "Changing language"
 msgstr "Alterando idioma"
 
 # | msgid "To address"
+# | msgid "Change address"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:39
 #, fuzzy
-#| msgid "Change address"
 msgid "Changes saved successfully"
 msgstr "Até o IP"
 
 # | msgid "Failed to save"
+# | msgid "Failed to save config"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:41
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:46
 #, fuzzy
-#| msgid "Failed to save config"
 msgid "Failed to save changes"
 msgstr "Falha ao salvar"
 
+# | msgid "Watch"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:79
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:92
 #, fuzzy
-#| msgid "Watch"
 msgid "Only Watch"
 msgstr "Seguir"
 
 # | msgid "Show only root causes"
+# | msgid "Only Root"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:80
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:93
 #, fuzzy
-#| msgid "Only Root"
 msgid "Only Favorites"
 msgstr "Mostrar apenas causas raiz"
 
+# | msgid "Preferred Language"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:100
 #, fuzzy
-#| msgid "Preferred Language"
 msgid "Preferred Method"
 msgstr "Idioma Preferido"
 
 # | msgid "Style"
+# | msgid "Title"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:112
 #, fuzzy
-#| msgid "Title"
 msgid "title-tag"
 msgstr "Estilo"
 
 # | msgid "Expire"
+# | msgid "Expired"
 #: ui/web/main/userprofile/UserProfileNotificationGroups.js:117
 #, fuzzy
-#| msgid "Expired"
 msgid "Expired At"
 msgstr "Expiração"
 
 #: ui/web/maintenance/maintenance/Application.js:71
-#: ui/web/maintenance/maintenance/Application.js:172
+#: ui/web/maintenance/maintenance/Application.js:170
 msgid "Auto-confirm"
 msgstr ""
 
-#: ui/web/maintenance/maintenance/Application.js:201
+# | msgid "Name template"
+#: ui/web/maintenance/maintenance/Application.js:175
+#, fuzzy
+msgid "Close Template"
+msgstr "Nome do template"
+
+#: ui/web/maintenance/maintenance/Application.js:199
 msgid "Suppress alarms"
 msgstr "Suprimir alertas"
 
 # | msgid "Escalations"
-#: ui/web/maintenance/maintenance/Application.js:206
+#: ui/web/maintenance/maintenance/Application.js:204
 #: ui/web/sa/managedobject/form/View.js:1316
 #: ui/web/sa/managedobjectprofile/Application.js:817
 #, fuzzy
 msgid "Escalation Policy"
 msgstr "Escalações"
 
-#: ui/web/maintenance/maintenance/Application.js:211
+#: ui/web/maintenance/maintenance/Application.js:209
 #: ui/web/sa/monitor/Filter.js:25
 msgid "Suspend"
 msgstr ""
 
 # | msgid "Escalations"
-#: ui/web/maintenance/maintenance/Application.js:224
+#: ui/web/maintenance/maintenance/Application.js:222
 #, fuzzy
 msgid "Escalate to"
 msgstr "Escalações"
 
-#: ui/web/maintenance/maintenance/Application.js:300
+#: ui/web/maintenance/maintenance/Application.js:298
 msgid "Segments"
 msgstr "Segmentos"
 
@@ -13651,23 +13627,23 @@ msgstr ""
 msgid "Footer Remarks"
 msgstr ""
 
+# | msgid "Validation"
 #: ui/web/peer/asprofile/Application.js:61
 #, fuzzy
-#| msgid "Validation"
 msgid "Validation AS Field"
 msgstr "Validação"
 
 # | msgid "Auto generated?"
+# | msgid "Generate"
 #: ui/web/peer/asprofile/Application.js:80
 #, fuzzy
-#| msgid "Generate"
 msgid "Generate RPSL"
 msgstr "Gerado automaticamente?"
 
 # | msgid "Periodic discovery"
+# | msgid "Periodic Discovery"
 #: ui/web/peer/asprofile/Application.js:86
 #, fuzzy
-#| msgid "Periodic Discovery"
 msgid "Peer Discovery"
 msgstr "Descoberta periódica"
 
@@ -13680,9 +13656,9 @@ msgid "Whois"
 msgstr ""
 
 # | msgid "Expression"
+# | msgid "Include Expression"
 #: ui/web/peer/asprofile/Application.js:138
 #, fuzzy
-#| msgid "Include Expression"
 msgid "Include ASN Expression"
 msgstr "Expressão"
 
@@ -13744,41 +13720,41 @@ msgid "S"
 msgstr ""
 
 # | msgid "Hidden"
+# | msgid "Hide"
 #: ui/web/peer/peer/Application.js:33
 #, fuzzy
-#| msgid "Hide"
 msgid "IDLE"
 msgstr "Escondido"
 
+# | msgid "Enabled"
 #: ui/web/peer/peer/Application.js:34
 #, fuzzy
-#| msgid "Enabled"
 msgid "ESTABLISHED"
 msgstr "Habilitado"
 
 # | msgid "Config"
+# | msgid "Confirm"
 #: ui/web/peer/peer/Application.js:35
 #, fuzzy
-#| msgid "Confirm"
 msgid "OPENCONFIRM"
 msgstr "Configurar"
 
 # | msgid "Parent"
+# | msgid "Percent"
 #: ui/web/peer/peer/Application.js:36
 #, fuzzy
-#| msgid "Percent"
 msgid "OPENSENT"
 msgstr "Nível Superior"
 
+# | msgid "Connect"
 #: ui/web/peer/peer/Application.js:37
 #, fuzzy
-#| msgid "Connect"
 msgid "CONNECT"
 msgstr "Conectar"
 
+# | msgid "Active"
 #: ui/web/peer/peer/Application.js:38
 #, fuzzy
-#| msgid "Active"
 msgid "ACTIVE"
 msgstr "Ativo"
 
@@ -13795,9 +13771,9 @@ msgid "Peering Point"
 msgstr ""
 
 # | msgid "SA Profile"
+# | msgid "VPN Profile"
 #: ui/web/peer/peer/Application.js:90 ui/web/peer/peer/Application.js:182
 #, fuzzy
-#| msgid "VPN Profile"
 msgid "Peer Profile"
 msgstr "Perfil de AS"
 
@@ -13893,23 +13869,23 @@ msgstr "Habilitar Provisionamento da Prefix-List"
 msgid "Prefix-List Notification Group"
 msgstr "Grupo de Notificação da Prefix-List"
 
+# | msgid "Config changed"
 #: ui/web/peer/peerprofile/Application.js:90
 #, fuzzy
-#| msgid "Config changed"
 msgid "Only Changed"
 msgstr "Configuração alterada"
 
 # | msgid "New message"
+# | msgid "Enable Message"
 #: ui/web/peer/peerprofile/Application.js:91
 #, fuzzy
-#| msgid "Enable Message"
 msgid "All Message"
 msgstr "Nova mensagem"
 
 # | msgid "Revert"
+# | msgid "Peer"
 #: ui/web/peer/peerprofile/Application.js:98
 #, fuzzy
-#| msgid "Peer"
 msgid "Peer Data"
 msgstr "Reverter"
 
@@ -14566,8 +14542,8 @@ msgstr ""
 #: ui/web/sa/authprofile/Application.js:284
 #: ui/web/sa/managedobjectprofile/Application.js:437
 #: ui/web/sa/service/Application.js:351 ui/web/sa/service/Application.js:499
-#: ui/web/sa/serviceprofile/Application.js:189
-#: ui/web/sa/serviceprofile/Application.js:433
+#: ui/web/sa/serviceprofile/Application.js:202
+#: ui/web/sa/serviceprofile/Application.js:446
 msgid "By Rule"
 msgstr ""
 
@@ -14607,56 +14583,56 @@ msgid "Enable L2"
 msgstr "Habilitar"
 
 #: ui/web/sa/capsprofile/Application.js:94
-#: ui/web/sa/managedobjectprofile/Application.js:1251
-#: ui/web/sa/managedobjectprofile/Application.js:2666
+#: ui/web/sa/managedobjectprofile/Application.js:1256
+#: ui/web/sa/managedobjectprofile/Application.js:2673
 msgid "BFD"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:104
-#: ui/web/sa/managedobjectprofile/Application.js:1271
-#: ui/web/sa/managedobjectprofile/Application.js:2670
+#: ui/web/sa/managedobjectprofile/Application.js:1276
+#: ui/web/sa/managedobjectprofile/Application.js:2677
 msgid "FDP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:114
-#: ui/web/sa/managedobjectprofile/Application.js:1261
-#: ui/web/sa/managedobjectprofile/Application.js:2668
+#: ui/web/sa/managedobjectprofile/Application.js:1266
+#: ui/web/sa/managedobjectprofile/Application.js:2675
 msgid "Huawei NDP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:124
-#: ui/web/sa/managedobjectprofile/Application.js:1301
-#: ui/web/sa/managedobjectprofile/Application.js:2676
+#: ui/web/sa/managedobjectprofile/Application.js:1306
+#: ui/web/sa/managedobjectprofile/Application.js:2683
 msgid "LACP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:134
-#: ui/web/sa/managedobjectprofile/Application.js:1276
-#: ui/web/sa/managedobjectprofile/Application.js:2671
+#: ui/web/sa/managedobjectprofile/Application.js:1281
+#: ui/web/sa/managedobjectprofile/Application.js:2678
 msgid "LLDP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:144
-#: ui/web/sa/managedobjectprofile/Application.js:1281
-#: ui/web/sa/managedobjectprofile/Application.js:2672
+#: ui/web/sa/managedobjectprofile/Application.js:1286
+#: ui/web/sa/managedobjectprofile/Application.js:2679
 msgid "OAM"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:154
-#: ui/web/sa/managedobjectprofile/Application.js:1286
-#: ui/web/sa/managedobjectprofile/Application.js:2673
+#: ui/web/sa/managedobjectprofile/Application.js:1291
+#: ui/web/sa/managedobjectprofile/Application.js:2680
 msgid "REP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:164
-#: ui/web/sa/managedobjectprofile/Application.js:1291
-#: ui/web/sa/managedobjectprofile/Application.js:2674
+#: ui/web/sa/managedobjectprofile/Application.js:1296
+#: ui/web/sa/managedobjectprofile/Application.js:2681
 msgid "STP"
 msgstr ""
 
 #: ui/web/sa/capsprofile/Application.js:174
-#: ui/web/sa/managedobjectprofile/Application.js:1296
-#: ui/web/sa/managedobjectprofile/Application.js:2675
+#: ui/web/sa/managedobjectprofile/Application.js:1301
+#: ui/web/sa/managedobjectprofile/Application.js:2682
 msgid "UDLD"
 msgstr ""
 
@@ -14895,9 +14871,9 @@ msgid "Is Dirty"
 msgstr ""
 
 # | msgid "Is Filtered"
+# | msgid "Is Stored"
 #: ui/web/sa/discoveredobject/view/Grid.js:54
 #, fuzzy
-#| msgid "Is Stored"
 msgid "Is Synced"
 msgstr "É Filtrável"
 
@@ -14967,9 +14943,9 @@ msgid "Total : {total.all}"
 msgstr ""
 
 # | msgid "Rules"
+# | msgid "Rule"
 #: ui/web/sa/discoveredobject/view/Sidebar.js:74
 #, fuzzy
-#| msgid "Rule"
 msgid "By Rule:"
 msgstr "Regras"
 
@@ -15072,35 +15048,35 @@ msgstr "Grupo"
 msgid "By Administrative Domain"
 msgstr "Domínio Administrativo"
 
+# | msgid "Create"
 #: ui/web/sa/job/Application.js:31
 #, fuzzy
-#| msgid "Create"
 msgid "Created"
 msgstr "Criar"
 
 # | msgid "Settings"
+# | msgid "Getting details"
 #: ui/web/sa/job/Application.js:49
 #, fuzzy
-#| msgid "Getting details"
 msgid "Job Details"
 msgstr "Configurações"
 
+# | msgid "Parent"
 #: ui/web/sa/job/Application.js:60
 #, fuzzy
-#| msgid "Parent"
 msgid "Go to Parent"
 msgstr "Nível Superior"
 
+# | msgid "Int."
 #: ui/web/sa/job/Application.js:144
 #, fuzzy
-#| msgid "Int."
 msgid "Inputs"
 msgstr "Interfaces"
 
 # | msgid "Failed to get data"
+# | msgid "Failed to get data for plugin"
 #: ui/web/sa/job/Application.js:343
 #, fuzzy
-#| msgid "Failed to get data for plugin"
 msgid "Failed to get data for job"
 msgstr "Falha ao carregar dados"
 
@@ -15241,16 +15217,16 @@ msgid "Set unmanaged"
 msgstr "É Gerenciado?"
 
 # | msgid "Hide maintenance"
+# | msgid "New Maintaince"
 #: ui/web/sa/managedobject/Application.js:488
 #, fuzzy
-#| msgid "New Maintaince"
 msgid "New Maintenance"
 msgstr "Esconder manutenção"
 
 # | msgid "Hide maintenance"
+# | msgid "Add To Maintenance"
 #: ui/web/sa/managedobject/Application.js:493
 #, fuzzy
-#| msgid "Add To Maintenance"
 msgid "Add to Maintenance"
 msgstr "Esconder manutenção"
 
@@ -15382,10 +15358,10 @@ msgstr "Falhou"
 msgid "Failed refresh basket"
 msgstr ""
 
+# | msgid "Card"
 #: ui/web/sa/managedobject/DiscoveryPanel.js:50
 #: ui/web/sa/managedobject/InteractionsPanel.js:34
 #, fuzzy
-#| msgid "Card"
 msgid "Clipboard"
 msgstr "Ficha"
 
@@ -15416,9 +15392,9 @@ msgid "Failed to disable tasks"
 msgstr "Falha ao executar tarefas"
 
 # | msgid "Config changed"
+# | msgid "Nothing changed"
 #: ui/web/sa/managedobject/InteractionsPanel.js:183
 #, fuzzy
-#| msgid "Nothing changed"
 msgid "Nothing to copy"
 msgstr "Configuração alterada"
 
@@ -15487,8 +15463,8 @@ msgid "Local Description"
 msgstr "Descrição Local"
 
 #: ui/web/sa/managedobject/LinksPanel.js:45
-#: ui/web/sa/managedobjectprofile/Application.js:1626
-#: ui/web/sa/managedobjectprofile/Application.js:1737
+#: ui/web/sa/managedobjectprofile/Application.js:1633
+#: ui/web/sa/managedobjectprofile/Application.js:1744
 msgid "Neighbor"
 msgstr "Vizinho"
 
@@ -15548,9 +15524,9 @@ msgstr "Nome interno"
 msgid "Deleting ..."
 msgstr "Selecionar a configuração..."
 
+# | msgid "Is Managed?"
 #: ui/web/sa/managedobject/form/View.js:116
 #, fuzzy
-#| msgid "Is Managed?"
 msgid "Is Managed"
 msgstr "É Gerenciado?"
 
@@ -15559,9 +15535,9 @@ msgid "Diag"
 msgstr ""
 
 # | msgid "Settings"
+# | msgid "Map settings"
 #: ui/web/sa/managedobject/form/View.js:151
 #, fuzzy
-#| msgid "Map settings"
 msgid "Mappings"
 msgstr "Configurações"
 
@@ -15685,9 +15661,9 @@ msgid "Context Name"
 msgstr "Contexto"
 
 # | msgid "Global limit"
+# | msgid "Not Limited"
 #: ui/web/sa/managedobject/form/View.js:621
 #, fuzzy
-#| msgid "Not Limited"
 msgid "Rate limit"
 msgstr "Limite global"
 
@@ -15742,12 +15718,12 @@ msgid "Autosegmentation Policy"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:827
-#: ui/web/sa/managedobjectprofile/Application.js:2584
+#: ui/web/sa/managedobjectprofile/Application.js:2591
 msgid "Do not segmentate"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:828
-#: ui/web/sa/managedobjectprofile/Application.js:2585
+#: ui/web/sa/managedobjectprofile/Application.js:2592
 msgid "Allow autosegmentation"
 msgstr ""
 
@@ -15781,31 +15757,31 @@ msgid "Once"
 msgstr "Telefone"
 
 # | msgid "Discovery Policy"
+# | msgid "MAC Discovery Policy"
 #: ui/web/sa/managedobject/form/View.js:873
 #, fuzzy
-#| msgid "MAC Discovery Policy"
 msgid "Discovery Policy"
 msgstr "Política de Descoberta"
 
 #: ui/web/sa/managedobject/form/View.js:885
-#: ui/web/sa/managedobjectprofile/Application.js:2221
+#: ui/web/sa/managedobjectprofile/Application.js:2228
 msgid "Select method of config gathering"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:893
-#: ui/web/sa/managedobjectprofile/Application.js:2228
+#: ui/web/sa/managedobjectprofile/Application.js:2235
 msgid "Script, Download"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:894
-#: ui/web/sa/managedobjectprofile/Application.js:2229
+#: ui/web/sa/managedobjectprofile/Application.js:2236
 msgid "Download, Script"
 msgstr ""
 
 # | msgid "Config changed"
+# | msgid "Config Fetching"
 #: ui/web/sa/managedobject/form/View.js:902
 #, fuzzy
-#| msgid "Config Fetching"
 msgid "Config fetch"
 msgstr "Configuração alterada"
 
@@ -15814,18 +15790,18 @@ msgid "Select method of config fetching"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:912
-#: ui/web/sa/managedobjectprofile/Application.js:2294
+#: ui/web/sa/managedobjectprofile/Application.js:2301
 msgid "Prefer Startup"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:913
-#: ui/web/sa/managedobjectprofile/Application.js:2295
+#: ui/web/sa/managedobjectprofile/Application.js:2302
 msgid "Prefer Running"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:920
-#: ui/web/sa/managedobjectprofile/Application.js:1105
-#: ui/web/sa/managedobjectprofile/Application.js:2640
+#: ui/web/sa/managedobjectprofile/Application.js:1107
+#: ui/web/sa/managedobjectprofile/Application.js:2647
 msgid "Caps"
 msgstr ""
 
@@ -15833,9 +15809,9 @@ msgstr ""
 #: ui/web/sa/managedobject/form/View.js:925
 #: ui/web/sa/managedobject/form/View.js:940
 #: ui/web/sa/managedobject/form/View.js:955
-#: ui/web/sa/managedobjectprofile/Application.js:1114
-#: ui/web/sa/managedobjectprofile/Application.js:1150
-#: ui/web/sa/managedobjectprofile/Application.js:1499
+#: ui/web/sa/managedobjectprofile/Application.js:1116
+#: ui/web/sa/managedobjectprofile/Application.js:1152
+#: ui/web/sa/managedobjectprofile/Application.js:1506
 #, fuzzy
 msgid "Script, ConfDB"
 msgstr "Descrição"
@@ -15843,9 +15819,9 @@ msgstr "Descrição"
 #: ui/web/sa/managedobject/form/View.js:926
 #: ui/web/sa/managedobject/form/View.js:941
 #: ui/web/sa/managedobject/form/View.js:956
-#: ui/web/sa/managedobjectprofile/Application.js:1115
-#: ui/web/sa/managedobjectprofile/Application.js:1151
-#: ui/web/sa/managedobjectprofile/Application.js:1500
+#: ui/web/sa/managedobjectprofile/Application.js:1117
+#: ui/web/sa/managedobjectprofile/Application.js:1153
+#: ui/web/sa/managedobjectprofile/Application.js:1507
 msgid "ConfDB, Script"
 msgstr ""
 
@@ -15855,21 +15831,21 @@ msgstr ""
 #: ui/web/sa/managedobject/form/View.js:957
 #: ui/web/sa/managedobject/form/View.js:966
 #: ui/web/sa/managedobject/form/View.js:1764
-#: ui/web/sa/managedobjectprofile/Application.js:1116
-#: ui/web/sa/managedobjectprofile/Application.js:1152
-#: ui/web/sa/managedobjectprofile/Application.js:1204
-#: ui/web/sa/managedobjectprofile/Application.js:1501
-#: ui/web/sa/managedobjectprofile/Application.js:1567
-#: ui/web/sa/managedobjectprofile/Application.js:1644
-#: ui/web/sa/managedobjectprofile/Application.js:1754
-#: ui/web/sa/managedobjectprofile/Application.js:2374
+#: ui/web/sa/managedobjectprofile/Application.js:1118
+#: ui/web/sa/managedobjectprofile/Application.js:1154
+#: ui/web/sa/managedobjectprofile/Application.js:1206
+#: ui/web/sa/managedobjectprofile/Application.js:1508
+#: ui/web/sa/managedobjectprofile/Application.js:1574
+#: ui/web/sa/managedobjectprofile/Application.js:1651
+#: ui/web/sa/managedobjectprofile/Application.js:1761
+#: ui/web/sa/managedobjectprofile/Application.js:2381
 #, fuzzy
 msgid "ConfDB"
 msgstr "Ícone"
 
 # | msgid "Policy"
 #: ui/web/sa/managedobject/form/View.js:974
-#: ui/web/sa/managedobjectprofile/Application.js:2384
+#: ui/web/sa/managedobjectprofile/Application.js:2391
 #, fuzzy
 msgid "Raw Policy"
 msgstr "Política"
@@ -15950,7 +15926,7 @@ msgstr "Comunidade de Trap"
 
 # | msgid "Scope"
 #: ui/web/sa/managedobject/form/View.js:1204
-#: ui/web/sa/managedobjectprofile/Application.js:1190
+#: ui/web/sa/managedobjectprofile/Application.js:1192
 #: ui/web/sa/service/Application.js:233
 #, fuzzy
 msgid "CPE"
@@ -16007,36 +15983,36 @@ msgstr "Sobre o sistema ..."
 
 # | msgid "Discovery"
 #: ui/web/sa/managedobject/form/View.js:1360
-#: ui/web/sa/managedobjectprofile/Application.js:1865
-#: ui/web/sa/managedobjectprofile/Application.js:2131
+#: ui/web/sa/managedobjectprofile/Application.js:1872
+#: ui/web/sa/managedobjectprofile/Application.js:2138
 #, fuzzy
 msgid "Discovery Alarm"
 msgstr "Descoberta"
 
 #: ui/web/sa/managedobject/form/View.js:1371
-#: ui/web/sa/managedobjectprofile/Application.js:1874
+#: ui/web/sa/managedobjectprofile/Application.js:1881
 msgid "Box Alarm"
 msgstr ""
 
 # | msgid "Clear alarm?"
 #: ui/web/sa/managedobject/form/View.js:1387
-#: ui/web/sa/managedobjectprofile/Application.js:2140
+#: ui/web/sa/managedobjectprofile/Application.js:2147
 #, fuzzy
 msgid "Periodic Alarm"
 msgstr "Apagar alerta?"
 
 #: ui/web/sa/managedobject/form/View.js:1403
-#: ui/web/sa/managedobjectprofile/Application.js:1421
+#: ui/web/sa/managedobjectprofile/Application.js:1427
 msgid "On Denied Firmware"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:1409
-#: ui/web/sa/managedobjectprofile/Application.js:1424
+#: ui/web/sa/managedobjectprofile/Application.js:1430
 msgid "Ignore&Stop"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:1411
-#: ui/web/sa/managedobjectprofile/Application.js:1426
+#: ui/web/sa/managedobjectprofile/Application.js:1432
 msgid "Raise Alarm&Stop"
 msgstr ""
 
@@ -16049,7 +16025,7 @@ msgid "Box Telemetry"
 msgstr ""
 
 #: ui/web/sa/managedobject/form/View.js:1444
-#: ui/web/sa/managedobjectprofile/Application.js:1925
+#: ui/web/sa/managedobjectprofile/Application.js:1932
 msgid "Box Sample"
 msgstr ""
 
@@ -16061,7 +16037,7 @@ msgstr "Descoberta periódica"
 
 # | msgid "Periodic discovery"
 #: ui/web/sa/managedobject/form/View.js:1466
-#: ui/web/sa/managedobjectprofile/Application.js:2191
+#: ui/web/sa/managedobjectprofile/Application.js:2198
 #, fuzzy
 msgid "Periodic Sample"
 msgstr "Descoberta periódica"
@@ -16083,9 +16059,9 @@ msgid "Command Log"
 msgstr "Log de Comandos"
 
 # | msgid "Domain"
+# | msgid "Main"
 #: ui/web/sa/managedobject/form/View.js:1847
 #, fuzzy
-#| msgid "Main"
 msgid "Mapping"
 msgstr "Domínio"
 
@@ -16186,7 +16162,7 @@ msgid "Failed interval"
 msgstr "Falha no intervalo"
 
 #: ui/web/sa/managedobjectprofile/Application.js:154
-#: ui/web/sa/managedobjectprofile/Application.js:1937
+#: ui/web/sa/managedobjectprofile/Application.js:1944
 msgid "Periodic discovery"
 msgstr "Descoberta periódica"
 
@@ -16196,7 +16172,7 @@ msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:325
 msgid ""
-"Field on this use in ETL proccess (sync on external system). <br/>Do not "
+"Field on this use in ETL process (sync on external system). <br/>Do not "
 "Edit field directly!"
 msgstr ""
 
@@ -16236,7 +16212,7 @@ msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:533
 msgid ""
-"Do enable if login unprivilege mode on device. <br/>Raise Privileges - "
+"Do enable if login unprivileged mode on device. <br/>Raise Privileges - "
 "send enable, Do not raise - work on current mode <br/>(immediately after "
 "login)"
 msgstr ""
@@ -16259,11 +16235,11 @@ msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:620
 #: ui/web/sa/managedobjectprofile/Application.js:974
-#: ui/web/sa/managedobjectprofile/Application.js:1982
-#: ui/web/sa/managedobjectprofile/Application.js:2021
-#: ui/web/sa/managedobjectprofile/Application.js:2034
-#: ui/web/sa/managedobjectprofile/Application.js:2048
-#: ui/web/sa/managedobjectprofile/Application.js:2122
+#: ui/web/sa/managedobjectprofile/Application.js:1989
+#: ui/web/sa/managedobjectprofile/Application.js:2028
+#: ui/web/sa/managedobjectprofile/Application.js:2041
+#: ui/web/sa/managedobjectprofile/Application.js:2055
+#: ui/web/sa/managedobjectprofile/Application.js:2129
 #: ui/web/sa/objectdiscoveryrule/Application.js:282
 msgid "Interval, sec"
 msgstr "Intervalo (s)"
@@ -16285,7 +16261,7 @@ msgid "Disable ping"
 msgstr "Mesmo Nível"
 
 #: ui/web/sa/managedobjectprofile/Application.js:646
-msgid "Enable ping but dont follow status"
+msgid "Enable ping but don't follow status"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:659
@@ -16330,8 +16306,8 @@ msgstr "Reportar RTT de ping"
 
 #: ui/web/sa/managedobjectprofile/Application.js:767
 msgid ""
-"Proccessed syslog/snmp trap message to Classifier service <br/>E - Send "
-"message to Classifier<br/>D - Do not send message to Clissifier"
+"Processed syslog/snmp trap message to Classifier service <br/>E - Send "
+"message to Classifier<br/>D - Do not send message to Classifier"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:794
@@ -16403,24 +16379,24 @@ msgid "Message Storm Threshold"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:942
-#: ui/web/sa/managedobjectprofile/Application.js:1951
+#: ui/web/sa/managedobjectprofile/Application.js:1958
 msgid "Running Policy"
 msgstr ""
 
 # | msgid "Required"
 #: ui/web/sa/managedobjectprofile/Application.js:944
-#: ui/web/sa/managedobjectprofile/Application.js:1953
+#: ui/web/sa/managedobjectprofile/Application.js:1960
 #, fuzzy
 msgid "Require Up"
 msgstr "Obrigatório"
 
 #: ui/web/sa/managedobjectprofile/Application.js:945
-#: ui/web/sa/managedobjectprofile/Application.js:1954
+#: ui/web/sa/managedobjectprofile/Application.js:1961
 msgid "Require Up if ping enabled"
 msgstr ""
 
 #: ui/web/sa/managedobjectprofile/Application.js:946
-#: ui/web/sa/managedobjectprofile/Application.js:1955
+#: ui/web/sa/managedobjectprofile/Application.js:1962
 msgid "Always Run"
 msgstr ""
 
@@ -16438,44 +16414,44 @@ msgstr "Falha no Intervalo (s)"
 msgid "Check on system start after "
 msgstr "Verificar o início do sistema após "
 
-#: ui/web/sa/managedobjectprofile/Application.js:1060
+#: ui/web/sa/managedobjectprofile/Application.js:1061
 msgid "Check on config change after "
 msgstr "Verficiar mudança na configuração após "
 
-#: ui/web/sa/managedobjectprofile/Application.js:1080
+#: ui/web/sa/managedobjectprofile/Application.js:1082
 msgid "Box"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1127
+#: ui/web/sa/managedobjectprofile/Application.js:1129
 msgid ""
 "Set which CAPS will be check in Caps discovery. <br/>Service Activation "
 "-> Setup -> Caps Profiles"
 msgstr ""
 
 # | msgid "User profile ..."
-#: ui/web/sa/managedobjectprofile/Application.js:1129
+#: ui/web/sa/managedobjectprofile/Application.js:1131
 #, fuzzy
 msgid "Caps Profile"
 msgstr "Perfil de Usuário"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1163
+#: ui/web/sa/managedobjectprofile/Application.js:1165
 msgid "Enable Autocreation"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1184
-#: ui/web/sa/managedobjectprofile/Application.js:2645
+#: ui/web/sa/managedobjectprofile/Application.js:1186
+#: ui/web/sa/managedobjectprofile/Application.js:2652
 #: ui/web/sa/service/InstancesPanel.js:39
 msgid "Asset"
 msgstr "Patrimônio"
 
 # | msgid "Revert"
-#: ui/web/sa/managedobjectprofile/Application.js:1196
+# | msgid "Peer"
+#: ui/web/sa/managedobjectprofile/Application.js:1198
 #, fuzzy
-#| msgid "Peer"
 msgid "BGP Peer"
 msgstr "Reverter"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1215
+#: ui/web/sa/managedobjectprofile/Application.js:1217
 msgid ""
 "Set which Peer Profile will be set when Created. <br/>Peer -> Setup -> "
 "Peer Profiles"
@@ -16483,61 +16459,61 @@ msgstr ""
 
 # | msgid "User profile ..."
 # | msgid "Prefix Profile"
-#: ui/web/sa/managedobjectprofile/Application.js:1217
+# | msgid "IP Prefix Profile"
+#: ui/web/sa/managedobjectprofile/Application.js:1219
 #, fuzzy
-#| msgid "IP Prefix Profile"
 msgid "BGP Peer Profile"
 msgstr "Perfil de Usuário"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1243
-#: ui/web/sa/managedobjectprofile/Application.js:1809
-#: ui/web/sa/managedobjectprofile/Application.js:2665
+#: ui/web/sa/managedobjectprofile/Application.js:1248
+#: ui/web/sa/managedobjectprofile/Application.js:1816
+#: ui/web/sa/managedobjectprofile/Application.js:2672
 msgid "NRI"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1256
-#: ui/web/sa/managedobjectprofile/Application.js:2667
+#: ui/web/sa/managedobjectprofile/Application.js:1261
+#: ui/web/sa/managedobjectprofile/Application.js:2674
 msgid "CDP"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1266
-#: ui/web/sa/managedobjectprofile/Application.js:2669
+#: ui/web/sa/managedobjectprofile/Application.js:1271
+#: ui/web/sa/managedobjectprofile/Application.js:2676
 msgid "MikroTik NDP"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1306
+#: ui/web/sa/managedobjectprofile/Application.js:1311
 msgid "xMAC"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1311
+#: ui/web/sa/managedobjectprofile/Application.js:1316
 msgid "IfDesc"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1326
+#: ui/web/sa/managedobjectprofile/Application.js:1331
 msgid ""
 "Cache neighbors (get_X_neighbors script result). <br/>When information "
 "cached script not execute on device <br/>0 - do not cache"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1329
+#: ui/web/sa/managedobjectprofile/Application.js:1334
 msgid "Cache neighbors for"
 msgstr ""
 
 # | msgid "Discovery Policy"
-#: ui/web/sa/managedobjectprofile/Application.js:1350
+#: ui/web/sa/managedobjectprofile/Application.js:1355
 #, fuzzy
 msgid "IfDesc Policy"
 msgstr "Política de Descoberta"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1360
+#: ui/web/sa/managedobjectprofile/Application.js:1365
 msgid "Symmetric Check"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1390
+#: ui/web/sa/managedobjectprofile/Application.js:1395
 msgid "Platform & Version"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1395
+#: ui/web/sa/managedobjectprofile/Application.js:1400
 msgid ""
 "Action when discovery new platform on version discovery. <br/>Create - "
 "Create platform and set it on device<br/>Alarm - Do not create platform "
@@ -16545,12 +16521,12 @@ msgid ""
 msgstr ""
 
 # | msgid "Platform"
-#: ui/web/sa/managedobjectprofile/Application.js:1398
+#: ui/web/sa/managedobjectprofile/Application.js:1403
 #, fuzzy
 msgid "On New Platform"
 msgstr "Plataforma"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1415
+#: ui/web/sa/managedobjectprofile/Application.js:1421
 msgid ""
 "Action when discovery firmware denied on FirmwarePolice.Inventory -> "
 "Setup -> FirmwarePolicy <br/>Ignore - Ignore and do next "
@@ -16560,85 +16536,88 @@ msgid ""
 msgstr ""
 
 # | msgid "Root only"
-#: ui/web/sa/managedobjectprofile/Application.js:1471
-#: ui/web/sa/managedobjectprofile/Application.js:1488
+#: ui/web/sa/managedobjectprofile/Application.js:1478
+#: ui/web/sa/managedobjectprofile/Application.js:1495
 #, fuzzy
 msgid "State only"
 msgstr "Apenas raiz"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1472
-#: ui/web/sa/managedobjectprofile/Application.js:1489
+#: ui/web/sa/managedobjectprofile/Application.js:1479
+#: ui/web/sa/managedobjectprofile/Application.js:1496
 msgid "VLAN Sync"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1481
+#: ui/web/sa/managedobjectprofile/Application.js:1488
 msgid "Vlan DB"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1510
+#: ui/web/sa/managedobjectprofile/Application.js:1517
 msgid "IPAM (VPN)"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1550
+#: ui/web/sa/managedobjectprofile/Application.js:1557
 msgid "MPLS"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1586
+#: ui/web/sa/managedobjectprofile/Application.js:1593
 msgid "IPAM (Prefix)"
 msgstr ""
 
 # | msgid "To address"
-#: ui/web/sa/managedobjectprofile/Application.js:1663
+#: ui/web/sa/managedobjectprofile/Application.js:1670
 #, fuzzy
 msgid "IPAM (Address)"
 msgstr "Até o IP"
 
 # | msgid "Address Family"
-#: ui/web/sa/managedobjectprofile/Application.js:1682
+#: ui/web/sa/managedobjectprofile/Application.js:1689
 #, fuzzy
 msgid "Address Profile"
 msgstr "Família do IP"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1720
+#: ui/web/sa/managedobjectprofile/Application.js:1727
 msgid "DHCP"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:1773
+#: ui/web/sa/managedobjectprofile/Application.js:1780
 msgid "Clear links"
 msgstr "Limpar links"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1782
+#: ui/web/sa/managedobjectprofile/Application.js:1789
 msgid "On platform change"
 msgstr "Na mudança de plataforma"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1819
+#: ui/web/sa/managedobjectprofile/Application.js:1826
 msgid "Portmapper"
 msgstr ""
 
 # | msgid "service"
-#: ui/web/sa/managedobjectprofile/Application.js:1825
+#: ui/web/sa/managedobjectprofile/Application.js:1832
 #, fuzzy
 msgid "Service Binding"
 msgstr "serviço"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1834
-#: ui/web/sa/managedobjectprofile/Application.js:1844
+#: ui/web/sa/managedobjectprofile/Application.js:1841
+#: ui/web/sa/managedobjectprofile/Application.js:1851
 msgid "Housekeeping"
 msgstr ""
 
 # | msgid "Alarm weight"
-#: ui/web/sa/managedobjectprofile/Application.js:1888
-#: ui/web/sa/managedobjectprofile/Application.js:2154
+#: ui/web/sa/managedobjectprofile/Application.js:1895
+#: ui/web/sa/managedobjectprofile/Application.js:2161
 #, fuzzy
 msgid "Fatal Alarm Weight"
 msgstr "Peso do alarme"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1910
-#: ui/web/sa/managedobjectprofile/Application.js:2176
-msgid "Proccess Telemetry"
-msgstr ""
+# | msgid "Periodic discovery"
+# | msgid "Periodic Telemetry"
+#: ui/web/sa/managedobjectprofile/Application.js:1917
+#: ui/web/sa/managedobjectprofile/Application.js:2183
+#, fuzzy
+msgid "Process Telemetry"
+msgstr "Descoberta periódica"
 
-#: ui/web/sa/managedobjectprofile/Application.js:1919
+#: ui/web/sa/managedobjectprofile/Application.js:1926
 msgid ""
 "Sampling value for Box discovery. Interval from 0 to 1. <br/>1 - all jobs"
 " will saved, 0 - Not collect telemetry, <br/> 0,99 ... 0,1 - chance to "
@@ -16646,100 +16625,100 @@ msgid ""
 msgstr ""
 
 # | msgid "Periodic discovery"
-#: ui/web/sa/managedobjectprofile/Application.js:1965
+#: ui/web/sa/managedobjectprofile/Application.js:1972
 #, fuzzy
 msgid "Periodic discovery intervals"
 msgstr "Descoberta periódica"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2015
-#: ui/web/sa/managedobjectprofile/Application.js:2694
+#: ui/web/sa/managedobjectprofile/Application.js:2022
+#: ui/web/sa/managedobjectprofile/Application.js:2701
 msgid "Uptime"
 msgstr "Tempo de atividade"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2028
-#: ui/web/sa/managedobjectprofile/Application.js:2695
+#: ui/web/sa/managedobjectprofile/Application.js:2035
+#: ui/web/sa/managedobjectprofile/Application.js:2702
 msgid "Interface status"
 msgstr "Status da interface"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2058
+#: ui/web/sa/managedobjectprofile/Application.js:2065
 #: ui/web/sa/serviceprofile/Application.js:131
 msgid "Interface Profile"
 msgstr "Perfil de Interface"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2060
+#: ui/web/sa/managedobjectprofile/Application.js:2067
 msgid ""
 "I - Collect MACs only for allowed interfaces. <br/>(MAC Discovery Policy "
 "on Inventory -> Setup -> Interface Profile) <br/>"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2075
+#: ui/web/sa/managedobjectprofile/Application.js:2082
 msgid ""
 "Set which CAPS will be check in Caps discovery. <br/>VC -> Setup -> VLAN "
 "Filter"
 msgstr ""
 
 # | msgid "Interval, sec"
-#: ui/web/sa/managedobjectprofile/Application.js:2095
-#: ui/web/sa/managedobjectprofile/Application.js:2109
+#: ui/web/sa/managedobjectprofile/Application.js:2102
+#: ui/web/sa/managedobjectprofile/Application.js:2116
 #, fuzzy
 msgid "Interval,sec"
 msgstr "Intervalo (s)"
 
 # | msgid "Interface status"
-#: ui/web/sa/managedobjectprofile/Application.js:2102
+#: ui/web/sa/managedobjectprofile/Application.js:2109
 #, fuzzy
 msgid "CPE status"
 msgstr "Status da interface"
 
 # | msgid "Interface status"
-#: ui/web/sa/managedobjectprofile/Application.js:2116
+# | msgid "Oper Status."
+#: ui/web/sa/managedobjectprofile/Application.js:2123
 #, fuzzy
-#| msgid "Oper Status."
 msgid "Peer Status"
 msgstr "Status da interface"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2185
+#: ui/web/sa/managedobjectprofile/Application.js:2192
 msgid ""
 "Sampling value for Periodic discovery. Interval from 0 to 1. <br/>1 - all"
 " jobs will saved, 0 - Not collect telemetry,  0,99 ... 0,1 - chance to "
 "save"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2204
+#: ui/web/sa/managedobjectprofile/Application.js:2211
 msgid "Settings policy for config discovery: Validation and mirroring config"
 msgstr ""
 
 # | msgid "Config policy violation"
-#: ui/web/sa/managedobjectprofile/Application.js:2208
-#: ui/web/sa/managedobjectprofile/Application.js:2219
+#: ui/web/sa/managedobjectprofile/Application.js:2215
+#: ui/web/sa/managedobjectprofile/Application.js:2226
 #, fuzzy
 msgid "Config Policy"
 msgstr "Violação na política de configuração"
 
 # | msgid "Estate"
-#: ui/web/sa/managedobjectprofile/Application.js:2243
-#: ui/web/sa/managedobjectprofile/Application.js:2340
-#: ui/web/sa/managedobjectprofile/Application.js:2469
+#: ui/web/sa/managedobjectprofile/Application.js:2250
+#: ui/web/sa/managedobjectprofile/Application.js:2347
+#: ui/web/sa/managedobjectprofile/Application.js:2476
 #, fuzzy
 msgid "Storage"
 msgstr "Estado"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2248
+#: ui/web/sa/managedobjectprofile/Application.js:2255
 msgid ""
 "External storage for config downloading. Setup in Main -> Setup -> Ext. "
 "storage"
 msgstr ""
 
 # | msgid "Name template"
-#: ui/web/sa/managedobjectprofile/Application.js:2260
-#: ui/web/sa/managedobjectprofile/Application.js:2357
-#: ui/web/sa/managedobjectprofile/Application.js:2481
+#: ui/web/sa/managedobjectprofile/Application.js:2267
+#: ui/web/sa/managedobjectprofile/Application.js:2364
+#: ui/web/sa/managedobjectprofile/Application.js:2488
 #, fuzzy
 msgid "Path Template"
 msgstr "Nome do template"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2262
-#: ui/web/sa/managedobjectprofile/Application.js:2359
+#: ui/web/sa/managedobjectprofile/Application.js:2269
+#: ui/web/sa/managedobjectprofile/Application.js:2366
 #, python-format
 msgid ""
 "Save config path template. Setup on Main -> Setup -> Templates, subject "
@@ -16748,164 +16727,158 @@ msgid ""
 msgstr ""
 
 # | msgid "Config changed"
-#: ui/web/sa/managedobjectprofile/Application.js:2277
+#: ui/web/sa/managedobjectprofile/Application.js:2284
 #, fuzzy
 msgid "Config Fetching"
 msgstr "Configuração alterada"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2287
+#: ui/web/sa/managedobjectprofile/Application.js:2294
 msgid "Config Fetch Policy"
 msgstr ""
 
 # | msgid "Discovery Policy"
-#: ui/web/sa/managedobjectprofile/Application.js:2314
+#: ui/web/sa/managedobjectprofile/Application.js:2321
 #, fuzzy
 msgid "Mirror Policy"
 msgstr "Política de Descoberta"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2316
+#: ui/web/sa/managedobjectprofile/Application.js:2323
 msgid ""
 "Mirror collected config after Config discovery. <br/>Always Mirror - "
 "mirror every discovery run <br/>Mirror on Change - save only if detect "
 "config changed"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2325
+#: ui/web/sa/managedobjectprofile/Application.js:2332
 msgid "Always Mirror"
 msgstr ""
 
 # | msgid "Version changed"
-#: ui/web/sa/managedobjectprofile/Application.js:2326
+#: ui/web/sa/managedobjectprofile/Application.js:2333
 #, fuzzy
 msgid "Mirror on Change"
 msgstr "Versão alterada"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2345
+#: ui/web/sa/managedobjectprofile/Application.js:2352
 msgid "External storage for config save. Setup in Main -> Setup -> Ext. storage"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2390
+#: ui/web/sa/managedobjectprofile/Application.js:2397
 msgid "Append raw section to confdb"
 msgstr ""
 
 # | msgid "Config Validation pyRule"
-#: ui/web/sa/managedobjectprofile/Application.js:2402
+#: ui/web/sa/managedobjectprofile/Application.js:2409
 #, fuzzy
 msgid "Config Validation"
 msgstr "Validação de Configuração pyRule"
 
 # | msgid "Revalidate"
-#: ui/web/sa/managedobjectprofile/Application.js:2416
+#: ui/web/sa/managedobjectprofile/Application.js:2423
 #, fuzzy
 msgid "Always Validate"
 msgstr "Revalidar"
 
 # | msgid "last changed"
-#: ui/web/sa/managedobjectprofile/Application.js:2417
+#: ui/web/sa/managedobjectprofile/Application.js:2424
 #, fuzzy
 msgid "Validate on Change"
 msgstr "última mudança"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2419
+#: ui/web/sa/managedobjectprofile/Application.js:2426
 msgid ""
-"Run config validate proccess: <br/>Always Validate - every discovery "
+"Run config validate process: <br/>Always Validate - every discovery "
 "run<br/>Validate on Change - only if detect config changed"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2453
+#: ui/web/sa/managedobjectprofile/Application.js:2460
 msgid "Beef Policy"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2461
+#: ui/web/sa/managedobjectprofile/Application.js:2468
 msgid "Always Collect"
 msgstr ""
 
 # | msgid "Version changed"
-#: ui/web/sa/managedobjectprofile/Application.js:2462
+#: ui/web/sa/managedobjectprofile/Application.js:2469
 #, fuzzy
 msgid "Collect on Change"
 msgstr "Versão alterada"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2496
+#: ui/web/sa/managedobjectprofile/Application.js:2503
 msgid ""
-"Setup colleced metric on divices (not Interface!). <br/>(Interface "
+"Setup colleted metric on devices (not Interface!). <br/>(Interface "
 "Metrics settings Inventory -> Setup -> Interface Profile)"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2502
+#: ui/web/sa/managedobjectprofile/Application.js:2509
 msgid "Enable Metrics"
 msgstr ""
 
 # | msgid "Is Filtered"
-#: ui/web/sa/managedobjectprofile/Application.js:2549
+#: ui/web/sa/managedobjectprofile/Application.js:2556
 #, fuzzy
 msgid "Is Stored"
 msgstr "É Filtrável"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2572
+#: ui/web/sa/managedobjectprofile/Application.js:2579
 msgid "Autosegmentation"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2573
+#: ui/web/sa/managedobjectprofile/Application.js:2580
 msgid ""
-"Settings for autosegmentatin proccess: <br/>Automaticaly detect segment "
+"Settings for autosegmentation process: <br/>Automatically detect segment "
 "for ManagedObject with this ObjectProfile.<br/>Uses MAC and needed MAC "
 "enable in Box"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2586
+#: ui/web/sa/managedobjectprofile/Application.js:2593
 msgid "Segmentate for object's segment"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2587
+#: ui/web/sa/managedobjectprofile/Application.js:2594
 msgid "Segmentate for child segment"
 msgstr ""
 
-#: ui/web/sa/managedobjectprofile/Application.js:2594
+#: ui/web/sa/managedobjectprofile/Application.js:2601
 msgid ""
 "Max level (Common -> Level) there will be changed segment. "
 "<br/>(Autosegmentation not worked with ManagedObject less this level"
 msgstr ""
 
 # | msgid "Global limit"
-#: ui/web/sa/managedobjectprofile/Application.js:2597
+#: ui/web/sa/managedobjectprofile/Application.js:2604
 #, fuzzy
 msgid "Level Limit"
 msgstr "Limite global"
 
-#: ui/web/sa/managedobjectprofile/Application.js:2607
+#: ui/web/sa/managedobjectprofile/Application.js:2614
 msgid ""
 "Jinja template for creating segment name. <br/>Worked with \"Segmentate "
 "for object's segment\" and \"Segmentate for child segment\" options"
 msgstr ""
 
 # | msgid "User name"
-#: ui/web/sa/managedobjectprofile/Application.js:2611
+#: ui/web/sa/managedobjectprofile/Application.js:2618
 #, fuzzy
 msgid "Segment Name"
 msgstr "Nome de usuário"
 
 # | msgid "Box discovery"
-#: ui/web/sa/managedobjectprofile/Application.js:2633
+#: ui/web/sa/managedobjectprofile/Application.js:2640
 #: ui/web/wf/state/Application.js:198
 #, fuzzy
 msgid "Box Discovery"
 msgstr "Box de descoberta"
 
-# | msgid "Profile"
-#: ui/web/sa/managedobjectprofile/Application.js:2638
-#, fuzzy
-msgid "Pofile"
-msgstr "Perfil"
-
 # | msgid "Box discovery"
-#: ui/web/sa/managedobjectprofile/Application.js:2660
+#: ui/web/sa/managedobjectprofile/Application.js:2667
 #, fuzzy
 msgid "Topology Discovery"
 msgstr "Box de descoberta"
 
 # | msgid "Periodic discovery"
-#: ui/web/sa/managedobjectprofile/Application.js:2689
+#: ui/web/sa/managedobjectprofile/Application.js:2696
 #: ui/web/wf/state/Application.js:199
 #, fuzzy
 msgid "Periodic Discovery"
@@ -17097,10 +17070,10 @@ msgid "Save History"
 msgstr ""
 
 # | msgid "Box discovery"
+# | msgid "VLAN Discovery"
 #: ui/web/sa/objectdiscoveryrule/Application.js:74
 #: ui/web/sa/objectdiscoveryrule/Application.js:265
 #, fuzzy
-#| msgid "VLAN Discovery"
 msgid "IP Scan Discovery"
 msgstr "Box de descoberta"
 
@@ -17128,9 +17101,9 @@ msgstr "Selecionar Segmento..."
 
 # | msgid "service"
 # | msgid "Service Binding"
+# | msgid "Service weight"
 #: ui/web/sa/objectdiscoveryrule/Application.js:165
 #, fuzzy
-#| msgid "Service weight"
 msgid "Device Neighbors"
 msgstr "serviço"
 
@@ -17147,15 +17120,15 @@ msgid "Mappings Only"
 msgstr ""
 
 # | msgid "Event Role"
+# | msgid "Event Policy"
 #: ui/web/sa/objectdiscoveryrule/Application.js:206
 #, fuzzy
-#| msgid "Event Policy"
 msgid "Remove Policy"
 msgstr "Papel do Evento"
 
+# | msgid "Managed"
 #: ui/web/sa/objectdiscoveryrule/Application.js:213
 #, fuzzy
-#| msgid "Managed"
 msgid "Unmanaged"
 msgstr "Gerenciado"
 
@@ -17199,30 +17172,30 @@ msgstr "Perfil de Usuário"
 
 # | msgid "Selectors"
 # | msgid "Records"
+# | msgid "Sync Record"
 #: ui/web/sa/objectdiscoveryrule/Application.js:254
 #, fuzzy
-#| msgid "Sync Record"
 msgid "Sync Approved Records"
 msgstr "Seletores"
 
 # | msgid "Name template"
+# | msgid "Path Template"
 #: ui/web/sa/objectdiscoveryrule/Application.js:260
 #, fuzzy
-#| msgid "Path Template"
 msgid "Default Template"
 msgstr "Nome do template"
 
 # | msgid "Discovery"
 # | msgid "Discovered"
+# | msgid "Enable Discovered"
 #: ui/web/sa/objectdiscoveryrule/Application.js:270
 #, fuzzy
-#| msgid "Enable Discovered"
 msgid "Enable IP Scan Discovery"
 msgstr "Descoberta"
 
+# | msgid "Match"
 #: ui/web/sa/objectdiscoveryrule/Application.js:367
 #, fuzzy
-#| msgid "Match"
 msgid "Check Match"
 msgstr "Combinar"
 
@@ -17245,9 +17218,9 @@ msgstr ""
 msgid "Fail"
 msgstr "Falhou"
 
+# | msgid "Match"
 #: ui/web/sa/objectdiscoveryrule/Application.js:408
 #, fuzzy
-#| msgid "Match"
 msgid "Data Match"
 msgstr "Combinar"
 
@@ -17416,43 +17389,43 @@ msgstr ""
 msgid "Go to next step"
 msgstr ""
 
+# | msgid "Build"
 #: ui/web/sa/service/AddressesLinkForm.js:47
 #: ui/web/sa/service/ManagedObjectLinkForm.js:54
 #: ui/web/sa/service/ResourceLinkForm.js:100
 #, fuzzy
-#| msgid "Build"
 msgid "Bind"
 msgstr "Prédio"
 
 # | msgid "Running"
+# | msgid "Unlink"
 #: ui/web/sa/service/AddressesLinkForm.js:52
 #: ui/web/sa/service/ManagedObjectLinkForm.js:59
 #: ui/web/sa/service/ResourceLinkForm.js:105
 #, fuzzy
-#| msgid "Unlink"
 msgid "Unbind"
 msgstr "Rodando"
 
 # | msgid "To address"
+# | msgid "IP Address Range"
 #: ui/web/sa/service/AddressesLinkForm.js:112
 #, fuzzy
-#| msgid "IP Address Range"
 msgid "Invalid IP address format"
 msgstr "Até o IP"
 
 # | msgid "Deleted"
+# | msgid "Select period"
 #: ui/web/sa/service/AddressesLinkForm.js:125
 #, fuzzy
-#| msgid "Select period"
 msgid "Select Pool"
 msgstr "Excluído"
 
 # | msgid "Access"
+# | msgid "Success"
 #: ui/web/sa/service/AddressesLinkForm.js:192
 #: ui/web/sa/service/ManagedObjectLinkForm.js:95
 #: ui/web/sa/service/ResourceLinkForm.js:147
 #, fuzzy
-#| msgid "Success"
 msgid "successfully"
 msgstr "Permissão"
 
@@ -17481,23 +17454,23 @@ msgstr "Atrasar"
 msgid "DOWN"
 msgstr "Janela"
 
+# | msgid "Description"
 #: ui/web/sa/service/Application.js:94
 #, fuzzy
-#| msgid "Description"
 msgid "Subscription"
 msgstr "Descrição"
 
 # | msgid "Preference"
+# | msgid "Reference"
 #: ui/web/sa/service/Application.js:172
 #, fuzzy
-#| msgid "Reference"
 msgid "Referenced"
 msgstr "Preferência"
 
 # | msgid "Management"
+# | msgid "Agreement ID"
 #: ui/web/sa/service/Application.js:201
 #, fuzzy
-#| msgid "Agreement ID"
 msgid "Agreement"
 msgstr "Gerência"
 
@@ -17508,21 +17481,21 @@ msgid "Agreement ID"
 msgstr "Gerência"
 
 # | msgid "Count"
+# | msgid "Account"
 #: ui/web/sa/service/Application.js:217
 #, fuzzy
-#| msgid "Account"
 msgid "Account ID"
 msgstr "Contagem"
 
 # | msgid "Interface status"
+# | msgid "Oper Status."
 #: ui/web/sa/service/Application.js:332
 #, fuzzy
-#| msgid "Oper Status."
 msgid "Oper Status Transfer"
 msgstr "Status da interface"
 
 #: ui/web/sa/service/Application.js:341
-#: ui/web/sa/serviceprofile/Application.js:148
+#: ui/web/sa/serviceprofile/Application.js:161
 msgid "Status Transfer Policy"
 msgstr ""
 
@@ -17535,7 +17508,7 @@ msgstr ""
 
 # | msgid "Parent"
 #: ui/web/sa/service/Application.js:350
-#: ui/web/sa/serviceprofile/Application.js:155
+#: ui/web/sa/serviceprofile/Application.js:168
 #, fuzzy
 msgid "Transparent"
 msgstr "Nível Superior"
@@ -17547,44 +17520,44 @@ msgstr ""
 # | msgid "Alrm Status"
 # | msgid "Link status"
 #: ui/web/sa/service/Application.js:395 ui/web/sa/service/Application.js:560
-#: ui/web/sa/serviceprofile/Application.js:250
+#: ui/web/sa/serviceprofile/Application.js:263
 #, fuzzy
 msgid "Min. Status"
 msgstr "Status do Alerta"
 
 # | msgid "Alrm Status"
 # | msgid "Link status"
+# | msgid "Min. Status"
 #: ui/web/sa/service/Application.js:417 ui/web/sa/service/Application.js:582
-#: ui/web/sa/serviceprofile/Application.js:272
+#: ui/web/sa/serviceprofile/Application.js:285
 #, fuzzy
-#| msgid "Min. Status"
 msgid "Max. Status"
 msgstr "Status do Alerta"
 
+# | msgid "Last Status"
 #: ui/web/sa/service/Application.js:439
 #, fuzzy
-#| msgid "Last Status"
 msgid "Set Status"
 msgstr "Último Status"
 
 # | msgid "Right Re"
 # | msgid "Right"
 #: ui/web/sa/service/Application.js:468 ui/web/sa/service/Application.js:553
-#: ui/web/sa/serviceprofile/Application.js:243
+#: ui/web/sa/serviceprofile/Application.js:256
 #, fuzzy
 msgid "Weight"
 msgstr "RE Direita"
 
 # | msgid "Interface status"
+# | msgid "Oper Status."
 #: ui/web/sa/service/Application.js:480
-#: ui/web/sa/serviceprofile/Application.js:170
+#: ui/web/sa/serviceprofile/Application.js:183
 #, fuzzy
-#| msgid "Oper Status."
 msgid "Calculate Oper Status"
 msgstr "Status da interface"
 
 #: ui/web/sa/service/Application.js:489
-#: ui/web/sa/serviceprofile/Application.js:179
+#: ui/web/sa/serviceprofile/Application.js:192
 msgid "Calculate Oper Status Policy"
 msgstr ""
 
@@ -17596,48 +17569,48 @@ msgstr ""
 
 # | msgid "Alrm Status"
 # | msgid "Link status"
+# | msgid "Min. Status"
 #: ui/web/sa/service/Application.js:497
-#: ui/web/sa/serviceprofile/Application.js:187
+#: ui/web/sa/serviceprofile/Application.js:200
 #, fuzzy
-#| msgid "Min. Status"
 msgid "By Max Status"
 msgstr "Status do Alerta"
 
 # | msgid "Alrm Status"
 # | msgid "Link status"
+# | msgid "Min. Status"
 #: ui/web/sa/service/Application.js:498
-#: ui/web/sa/serviceprofile/Application.js:188
+#: ui/web/sa/serviceprofile/Application.js:201
 #, fuzzy
-#| msgid "Min. Status"
 msgid "By Min Status"
 msgstr "Status do Alerta"
 
+# | msgid "Last Status"
 #: ui/web/sa/service/Application.js:510
-#: ui/web/sa/serviceprofile/Application.js:200
+#: ui/web/sa/serviceprofile/Application.js:213
 #, fuzzy
-#| msgid "Last Status"
 msgid "Calculate Status Rules"
 msgstr "Último Status"
 
 # | msgid "Duration"
+# | msgid "Run Action"
 #: ui/web/sa/service/Application.js:515
-#: ui/web/sa/serviceprofile/Application.js:205
+#: ui/web/sa/serviceprofile/Application.js:218
 #, fuzzy
-#| msgid "Run Action"
 msgid "Function"
 msgstr "Duração"
 
 # | msgid "Estate"
 # | msgid "To State"
 #: ui/web/sa/service/Application.js:604
-#: ui/web/sa/serviceprofile/Application.js:294
+#: ui/web/sa/serviceprofile/Application.js:307
 #, fuzzy
 msgid "To Status"
 msgstr "Estado"
 
+# | msgid "Instances"
 #: ui/web/sa/service/Application.js:663
 #, fuzzy
-#| msgid "Instances"
 msgid "Static Instances"
 msgstr "Instâncias"
 
@@ -17654,15 +17627,15 @@ msgid "Parent Filter"
 msgstr "Limpar filtro"
 
 # | msgid "Parent"
+# | msgid "Repaint"
 #: ui/web/sa/service/InstancesPanel.js:38
 #, fuzzy
-#| msgid "Repaint"
 msgid "Endpoint"
 msgstr "Nível Superior"
 
+# | msgid "Retry"
 #: ui/web/sa/service/InstancesPanel.js:102 ui/web/sa/service/RegisterForm.js:58
 #, fuzzy
-#| msgid "Retry"
 msgid "Register"
 msgstr "Tentativas"
 
@@ -17671,57 +17644,57 @@ msgid "Unregister"
 msgstr ""
 
 # | msgid "Source"
+# | msgid "Sources"
 #: ui/web/sa/service/InstancesPanel.js:189
 #, fuzzy
-#| msgid "Sources"
 msgid "Resources"
 msgstr "Fonte"
 
+# | msgid "Instances"
 #: ui/web/sa/service/InstancesPanel.js:283
 #, fuzzy
-#| msgid "Instances"
 msgid "Instances loaded"
 msgstr "Instâncias"
 
+# | msgid "Failed to load data"
 #: ui/web/sa/service/InstancesPanel.js:287
 #: ui/web/sa/service/InstancesPanel.js:454
 #, fuzzy
-#| msgid "Failed to load data"
 msgid "Failed to load instances"
 msgstr "Falha ao carregar dados"
 
 # | msgid "Late"
+# | msgid "Update"
 #: ui/web/sa/service/InstancesPanel.js:297
 #, fuzzy
-#| msgid "Update"
 msgid "Update/Unlink"
 msgstr "Atraso"
 
+# | msgid "Managed object"
 #: ui/web/sa/service/InstancesPanel.js:300
 #, fuzzy
-#| msgid "Managed object"
 msgid "Link Managed Object"
 msgstr "Objeto gerenciado"
 
 # | msgid "Address"
+# | msgid "Addresses"
 #: ui/web/sa/service/InstancesPanel.js:313
 #, fuzzy
-#| msgid "Addresses"
 msgid "Bind Addresses"
 msgstr "IP"
 
 # | msgid "Internal name"
+# | msgid "Interface Name"
 #: ui/web/sa/service/InstancesPanel.js:329
 #, fuzzy
-#| msgid "Interface Name"
 msgid "Interface <Bind>"
 msgstr "Nome interno"
 
 # | msgid "Pre Reason"
 # | msgid "Reason"
+# | msgid "Read Only"
 #: ui/web/sa/service/InstancesPanel.js:362
 #, fuzzy
-#| msgid "Read Only"
 msgid "Row read only"
 msgstr "Razão Inicial"
 
@@ -17730,22 +17703,22 @@ msgid "Instance updated successfully"
 msgstr ""
 
 # | msgid "Failed to get interfaces list"
+# | msgid "Failed to get interfaces"
 #: ui/web/sa/service/InstancesPanel.js:409
 #, fuzzy
-#| msgid "Failed to get interfaces"
 msgid "Failed to update instance"
 msgstr "Falha ao buscar a lista de interfaces"
 
+# | msgid "Remote Interface"
 #: ui/web/sa/service/RegisterForm.js:20
 #, fuzzy
-#| msgid "Remote Interface"
 msgid "Register Instance"
 msgstr "Interface Remota"
 
 # | msgid "VC Interfaces"
+# | msgid "No SubInterfaces"
 #: ui/web/sa/service/ResourceLinkForm.js:56
 #, fuzzy
-#| msgid "No SubInterfaces"
 msgid "Subinterface"
 msgstr "Interfaces de VC"
 
@@ -17757,146 +17730,146 @@ msgid "Service weight"
 msgstr "serviço"
 
 # | msgid "Status Change Notification"
-#: ui/web/sa/serviceprofile/Application.js:143
+# | msgid "Status Transfer Function"
+#: ui/web/sa/serviceprofile/Application.js:156
 #, fuzzy
-#| msgid "Status Transfer Function"
 msgid "Oper. Status Transfer"
 msgstr "Notificação de Modificação de Status"
 
-#: ui/web/sa/serviceprofile/Application.js:149
+#: ui/web/sa/serviceprofile/Application.js:162
 msgid ""
 "Transfer children Status to OperStatus <br/>D - Disable Status "
 "Transfer<br/>T - All Status transferS - Self Status"
 msgstr ""
 
 # | msgid "Interface status"
-#: ui/web/sa/serviceprofile/Application.js:156
+# | msgid "CPE status"
+#: ui/web/sa/serviceprofile/Application.js:169
 #, fuzzy
-#| msgid "CPE status"
 msgid "Self Status"
 msgstr "Status da interface"
 
-#: ui/web/sa/serviceprofile/Application.js:180
+#: ui/web/sa/serviceprofile/Application.js:193
 msgid ""
 "Calculate Oper Status <br/>D - Disable Calculate Status<br/>R - Calculate"
 " By Rule<br/>MN - From Min Status<br/>MX - From Max Status"
 msgstr ""
 
 # | msgid "Alarm risen"
-#: ui/web/sa/serviceprofile/Application.js:321
+#: ui/web/sa/serviceprofile/Application.js:334
 #, fuzzy
 msgid "Alarm Transfer"
 msgstr "Alerta elevado"
 
-#: ui/web/sa/serviceprofile/Application.js:326
+#: ui/web/sa/serviceprofile/Application.js:339
 msgid "Alarm Affected Policy"
 msgstr ""
 
-#: ui/web/sa/serviceprofile/Application.js:327
+#: ui/web/sa/serviceprofile/Application.js:340
 msgid ""
 "Transfer alarm to OperStatus <br/>D - Disable Alarm Transfer<br/>A - Any "
 "alarm by Resource"
 msgstr ""
 
-#: ui/web/sa/serviceprofile/Application.js:332
+# | msgid "Instances"
+#: ui/web/sa/serviceprofile/Application.js:345
 #, fuzzy
-#| msgid "Instances"
 msgid "By Instance"
 msgstr "Instâncias"
 
 # | msgid "Filtered"
 # | msgid "By Filtered"
-#: ui/web/sa/serviceprofile/Application.js:333
+#: ui/web/sa/serviceprofile/Application.js:346
 #, fuzzy
 msgid "By Filter"
 msgstr "Filtrável"
 
 # | msgid "Alrm Status"
-#: ui/web/sa/serviceprofile/Application.js:344
+# | msgid "Alarm Status Map"
+#: ui/web/sa/serviceprofile/Application.js:357
 #, fuzzy
-#| msgid "Alarm Status Map"
 msgid "Alarm Status Rules"
 msgstr "Status do Alerta"
 
 # | msgid "Remote Interface"
-#: ui/web/sa/serviceprofile/Application.js:369
+# | msgid "Created interface: "
+#: ui/web/sa/serviceprofile/Application.js:382
 #, fuzzy
-#| msgid "Created interface: "
 msgid "Affected Instance"
 msgstr "Interface Remota"
 
-#: ui/web/sa/serviceprofile/Application.js:376
+# | msgid "Severity"
+#: ui/web/sa/serviceprofile/Application.js:389
 #, fuzzy
-#| msgid "Severity"
 msgid "Min. Severity"
 msgstr "Criticidade"
 
-#: ui/web/sa/serviceprofile/Application.js:384
+# | msgid "Severity"
+#: ui/web/sa/serviceprofile/Application.js:397
 #, fuzzy
-#| msgid "Severity"
 msgid "Max. Severity"
 msgstr "Criticidade"
 
 # | msgid "service"
-#: ui/web/sa/serviceprofile/Application.js:420
-#: ui/web/sa/serviceprofile/Application.js:432
+# | msgid "Service Binding"
+#: ui/web/sa/serviceprofile/Application.js:433
+#: ui/web/sa/serviceprofile/Application.js:445
 #, fuzzy
-#| msgid "Service Binding"
 msgid "Resource Binding"
 msgstr "serviço"
 
 # | msgid "Resources"
-#: ui/web/sa/serviceprofile/Application.js:425
+# | msgid "Resource Pool"
+#: ui/web/sa/serviceprofile/Application.js:438
 #, fuzzy
-#| msgid "Resource Pool"
 msgid "Resource Map Policy"
 msgstr "Recursos"
 
-#: ui/web/sa/serviceprofile/Application.js:426
+#: ui/web/sa/serviceprofile/Application.js:439
 msgid ""
 "How bind resources to Service Instance <br/>D - Disable Bind<br/>N - By "
 "Remote System DataO - By Defined Rules"
 msgstr ""
 
 # | msgid "Resources"
-#: ui/web/sa/serviceprofile/Application.js:444
+# | msgid "Resource Groups"
+#: ui/web/sa/serviceprofile/Application.js:457
 #, fuzzy
-#| msgid "Resource Groups"
 msgid "Resource Bind Rules"
 msgstr "Recursos"
 
-#: ui/web/sa/serviceprofile/Application.js:450
+# | msgid "Instances"
+#: ui/web/sa/serviceprofile/Application.js:463
 #, fuzzy
-#| msgid "Instances"
 msgid "Instance Type"
 msgstr "Instâncias"
 
 # | msgid "Access"
 # | msgid "Success"
-#: ui/web/sa/serviceprofile/Application.js:470
+# | msgid "All success"
+#: ui/web/sa/serviceprofile/Application.js:483
 #, fuzzy
-#| msgid "All success"
 msgid "Allow Resources"
 msgstr "Permissão"
 
 # | msgid "User profile ..."
 # | msgid "Sensor Profile"
-#: ui/web/sa/serviceprofile/Application.js:493
+# | msgid "Send Approve"
+#: ui/web/sa/serviceprofile/Application.js:506
 #, fuzzy
-#| msgid "Send Approve"
 msgid "Send Approve (To Res)"
 msgstr "Perfil de Usuário"
 
 # | msgid "Show object"
-#: ui/web/sa/serviceprofile/Application.js:500
+# | msgid "no object"
+#: ui/web/sa/serviceprofile/Application.js:513
 #, fuzzy
-#| msgid "no object"
 msgid "Only One Object"
 msgstr "Mostrar objeto"
 
 # | msgid "Interval, sec"
 # | msgid "Default Interval, sec"
-#: ui/web/sa/serviceprofile/Application.js:565
+#: ui/web/sa/serviceprofile/Application.js:578
 #, fuzzy
 msgid "Default Value"
 msgstr "Intervalo (s)"
@@ -18914,4 +18887,108 @@ msgstr "última mudança"
 
 #~ msgid "Allowed Manual"
 #~ msgstr ""
+
+# | msgid "Escalations"
+# | msgid "Escalation Policy"
+#~ msgid "Group Escalation Policy"
+#~ msgstr "Escalações"
+
+# | msgid "Escalations"
+# | msgid "Escalation Policy"
+#~ msgid "Escalate Maintenance Policy"
+#~ msgstr "Escalações"
+
+# | msgid "Condition"
+#~ msgid "End Condition"
+#~ msgstr "Condição"
+
+# | msgid "Escalations"
+#~ msgid "Repeat Escalations"
+#~ msgstr "Escalações"
+
+# | msgid "About system ..."
+# | msgid "TT System ID"
+#~ msgid "TT System Config"
+#~ msgstr "Sobre o sistema ..."
+
+# | msgid "Command Log"
+#~ msgid "Add log"
+#~ msgstr "Log de Comandos"
+
+# | msgid "Match"
+#~ msgid "Match Ack"
+#~ msgstr "Combinar"
+
+#~ msgid "Not Acknowledge"
+#~ msgstr ""
+
+# | msgid "Parent"
+# | msgid "Repaint"
+#~ msgid "Repeat"
+#~ msgstr "Nível Superior"
+
+# | msgid "Max. Scripts"
+#~ msgid "Max. Repeats"
+#~ msgstr "Máximo de Scripts"
+
+# | msgid "Reset Layout"
+#~ msgid "Repeat Delay"
+#~ msgstr "Redefinir Layout"
+
+# | msgid "Failed to load data"
+# | msgid "Failed to upload files"
+#~ msgid "Failed to load override.js"
+#~ msgstr "Falha ao carregar dados"
+
+#~ msgid ""
+#~ "Field on this use in ETL proccess"
+#~ " (sync on external system). <br/>Do "
+#~ "not Edit field directly!"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Do enable if login unprivilege mode "
+#~ "on device. <br/>Raise Privileges - send"
+#~ " enable, Do not raise - work on"
+#~ " current mode <br/>(immediately after "
+#~ "login)"
+#~ msgstr ""
+
+#~ msgid "Enable ping but dont follow status"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Proccessed syslog/snmp trap message to "
+#~ "Classifier service <br/>E - Send message"
+#~ " to Classifier<br/>D - Do not send"
+#~ " message to Clissifier"
+#~ msgstr ""
+
+#~ msgid "Proccess Telemetry"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Run config validate proccess: <br/>Always "
+#~ "Validate - every discovery run<br/>Validate"
+#~ " on Change - only if detect "
+#~ "config changed"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Setup colleced metric on divices (not"
+#~ " Interface!). <br/>(Interface Metrics settings"
+#~ " Inventory -> Setup -> Interface "
+#~ "Profile)"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Settings for autosegmentatin proccess: "
+#~ "<br/>Automaticaly detect segment for "
+#~ "ManagedObject with this ObjectProfile.<br/>Uses "
+#~ "MAC and needed MAC enable in Box"
+#~ msgstr ""
+
+# | msgid "Profile"
+#~ msgid "Pofile"
+#~ msgstr "Perfil"
 
