@@ -8,7 +8,7 @@
         "Last-Translator": "Gabriela Todeschini <gabrielat@cpd.ufrgs.br>",
         "MIME-Version": "1.0",
         "PO-Revision-Date": "2016-07-15 16:29-0300",
-        "POT-Creation-Date": "2025-05-09 14:49+0300",
+        "POT-Creation-Date": "2025-07-03 06:22+0300",
         "Plural-Forms": "nplurals=2; plural=(n > 1);",
         "Project-Id-Version": "The NOC Project VERSION",
         "Report-Msgid-Bugs-To": "EMAIL@ADDRESS"
@@ -188,10 +188,6 @@
     "Add User": [
         null,
         "Filtro de Bind"
-    ],
-    "Add log": [
-        null,
-        "Log de Comandos"
     ],
     "Add object to ": [
         null,
@@ -2237,10 +2233,6 @@
         null,
         "Som"
     ],
-    "End Condition": [
-        null,
-        "Condição"
-    ],
     "End of Sale": [
         null,
         "Falha ao salvar"
@@ -2281,6 +2273,10 @@
         null,
         "E-mail"
     ],
+    "Error  ": [
+        null,
+        "Tipo de Erro"
+    ],
     "Error Type": [
         null,
         "Tipo de Erro"
@@ -2312,10 +2308,6 @@
     "Escalate": [
         null,
         "Revalidar"
-    ],
-    "Escalate Maintenance Policy": [
-        null,
-        "Escalações"
     ],
     "Escalate failed": [
         null,
@@ -2714,10 +2706,6 @@
         "Falha ao carregar dados"
     ],
     "Failed to load map resources": [
-        null,
-        "Falha ao carregar dados"
-    ],
-    "Failed to load override.js": [
         null,
         "Falha ao carregar dados"
     ],
@@ -3180,10 +3168,6 @@
     "Group Edit": [
         null,
         "Editar Grupo"
-    ],
-    "Group Escalation Policy": [
-        null,
-        "Escalações"
     ],
     "Group Operation": [
         null,
@@ -4077,10 +4061,6 @@
         null,
         "Combinar"
     ],
-    "Match Ack": [
-        null,
-        "Combinar"
-    ],
     "Match Condition": [
         null,
         "Condição de Correspondência"
@@ -4172,10 +4152,6 @@
     "Max. Prefixes": [
         null,
         "Prefixos Máximos"
-    ],
-    "Max. Repeats": [
-        null,
-        "Máximo de Scripts"
     ],
     "Max. Scripts": [
         null,
@@ -4472,6 +4448,10 @@
     "No jobs": [
         null,
         "Mostrar objeto"
+    ],
+    "No matches found": [
+        null,
+        "Mostrar carga de interface"
     ],
     "No possible transitions": [
         null,
@@ -5105,10 +5085,6 @@
         null,
         "Seletores"
     ],
-    "Pofile": [
-        null,
-        "Perfil"
-    ],
     "Point Radius": [
         null,
         "Raio do Ponto"
@@ -5288,6 +5264,10 @@
     "Process": [
         null,
         "Processo"
+    ],
+    "Process Telemetry": [
+        null,
+        "Descoberta periódica"
     ],
     "Productive": [
         null,
@@ -5637,18 +5617,6 @@
         null,
         "Nível Superior"
     ],
-    "Repeat": [
-        null,
-        "Nível Superior"
-    ],
-    "Repeat Delay": [
-        null,
-        "Redefinir Layout"
-    ],
-    "Repeat Escalations": [
-        null,
-        "Escalações"
-    ],
     "Replace Policy": [
         null,
         "Política"
@@ -5953,6 +5921,10 @@
         null,
         "última mudança"
     ],
+    "Save changes and continue editing": [
+        null,
+        "Notificação de Modificação de Status"
+    ],
     "Save screen": [
         null,
         "Visto pela Última Vez"
@@ -6196,6 +6168,14 @@
     "Service weight": [
         null,
         "serviço"
+    ],
+    "Session Expired": [
+        null,
+        "Expiração"
+    ],
+    "Session timeout.": [
+        null,
+        "Escalações"
     ],
     "Set": [
         null,
@@ -6712,10 +6692,6 @@
     "TT System": [
         null,
         "Sistema de TT"
-    ],
-    "TT System Config": [
-        null,
-        "Sobre o sistema ..."
     ],
     "TT System ID": [
         null,
@@ -7325,6 +7301,14 @@
         null,
         "Método"
     ],
+    "deleted": [
+        null,
+        "Excluído"
+    ],
+    "deleting": [
+        null,
+        "Selecionar a configuração..."
+    ],
     "e-mail Address": [
         null,
         "Até o IP"
@@ -7388,6 +7372,14 @@
     "permission_name": [
         null,
         "nome_da_permissão"
+    ],
+    "saved": [
+        null,
+        "Salvos"
+    ],
+    "saving": [
+        null,
+        "Construção"
     ],
     "search...": [
         null,
