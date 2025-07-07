@@ -34,7 +34,7 @@ from noc.core.mongo.connection import connect
 from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service, SVC_REF_PREFIX
-from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule
+from noc.services.correlator.alarmrule import AlarmRuleSet, AlarmRule as CAlarmRule, GroupItem
 from noc.services.correlator.rule import EventAlarmRule
 from noc.services.correlator.rcacondition import RCACondition
 from noc.services.correlator.trigger import Trigger
@@ -69,7 +69,6 @@ from noc.core.wf.interaction import Interaction
 from noc.core.fm.event import Event
 from noc.core.fm.enum import EventSeverity
 from noc.services.correlator.rcalock import RCALock
-from noc.services.correlator.alarmrule import GroupItem
 
 ref_lock = threading.Lock()
 ta_DisposeRequest = TypeAdapter(DisposeRequest)
