@@ -67,9 +67,14 @@ class MACRange(EmbeddedDocument):
         """Iterate all MACs in range as integers."""
         if ignore_max:
             return range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)
-        mac_range = range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)[:config.discovery.max_device_mac_cache_size]
+        mac_range = range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)[
+            : config.discovery.max_device_mac_cache_size
+        ]
         if len(mac_range) == config.discovery.max_device_mac_cache_size:
-            raise ValueError("Range overflow configured limit '%s'. Check input MAC range" % config.discovery.max_device_mac_cache_size)
+            raise ValueError(
+                "Range overflow configured limit '%s'. Check input MAC range"
+                % config.discovery.max_device_mac_cache_size
+            )
         return mac_range
 
 
