@@ -41,6 +41,8 @@ class Router(object):
         }
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
+        # Add default
+        self.rebuild_chains([b"*"])
         # self.out_queue: Optional[QBuffer] = None
 
     def load(self):
