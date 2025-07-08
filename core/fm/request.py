@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from .enum import AlarmAction
 
 
-class ActionReq(BaseModel):
+class ActionConfig(BaseModel):
     """
     Attributes:
         action: Run Action
