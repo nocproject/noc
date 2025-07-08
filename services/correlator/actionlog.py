@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any
 
 # NOC modules
-from noc.core.fm.request import ActionReq
+from noc.core.fm.request import ActionConfig
 from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
@@ -145,7 +145,7 @@ class ActionLog(object):
     @classmethod
     def from_request(
         cls,
-        action: ActionReq,
+        action: ActionConfig,
         started_at: datetime.datetime,
         one_time: bool = False,
         user: Optional[int] = None,
@@ -174,7 +174,7 @@ class ActionLog(object):
         )
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ActionLog":
+    def from_state(cls, data: Dict[str, Any]) -> "ActionLog":
         """Create action from State Document"""
         return ActionLog(
             action=AlarmAction(data["action"]),

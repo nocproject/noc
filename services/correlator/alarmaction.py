@@ -160,7 +160,7 @@ class AlarmActionRunner(object):
             reason=None,
             login=login or cfg.login,
             timestamp=timestamp,
-            actions=self.get_action_context(tt_system.get_actions()),
+            # actions=self.get_action_context(tt_system.get_actions()),
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
             services=self.get_affected_services_items() or None,
         )
