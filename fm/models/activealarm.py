@@ -1160,6 +1160,15 @@ class ActiveAlarm(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_alarm")
 
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        return {
+            "alarm_class": str(self.alarm_class.id),
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.managed_object.effective_service_groups),
+            "severity": self.severity,
+            "reference": getattr(self, "raw_reference", None),
+        }
+
 
 @runtime_checkable
 class AlarmComponent(Protocol):

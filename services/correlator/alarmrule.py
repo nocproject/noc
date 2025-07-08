@@ -1,20 +1,20 @@
 # ---------------------------------------------------------------------
 # Alarm Rule
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import re
-from collections import defaultdict
-from typing import Optional, DefaultDict, Set, List, Iterable, Pattern, Tuple
 from dataclasses import dataclass
+from typing import Optional, Set, List, Iterable, Pattern, Dict, Any, Callable
 
 # Third-party modules
 from jinja2 import Template
 
 # NOC modules
+from noc.core.matcher import build_matcher
+from noc.core.fm.request import ActionConfig
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -43,6 +43,18 @@ class Group(object):
     min_threshold: int = 0
     max_threshold: int = 0
     window: int = 0
+
+    @classmethod
+    def from_config(cls, cfg) -> "Group":
+        return Group(
+            reference_template=Template(cfg["reference_template"]),
+            alarm_class=AlarmClass.get_by_id(cfg["alarm_class"]) if cfg["alarm_class"] else None,
+            title_template=Template(cfg["title_template"]),
+            min_threshold=int(cfg["min_threshold"]),
+            max_threshold=int(cfg["max_threshold"]),
+            window=int(cfg["window"]),
+            labels=cfg["labels"],
+        )
 
 
 @dataclass
@@ -78,87 +90,42 @@ class AlarmRule(object):
     severity_policy: str = "AL"
     escalation_profile: Optional[EscalationProfile] = None
 
-    def __init__(self):
-        self.match: List[Match] = []
+    def __init__(self, name):
+        self.name = name
+        self.matcher: Optional[Callable] = None
         self.groups: List[Group] = []
         self.actions: List[Action] = []
 
     @classmethod
-    def try_from(cls, rule_cfg: CfgAlarmRule) -> Optional["AlarmRule"]:
-        """
-        Generate rule from config
-        """
-        rule = AlarmRule()
-        rule.severity_policy = rule_cfg.severity_policy
-        rule.escalation_profile = rule_cfg.escalation_profile
-        # Add matches
-        for match in rule_cfg.match:
-            rule.match.append(
-                Match(
-                    labels=set(match.labels),
-                    alarm_class=match.alarm_class,
-                    severity=match.severity,
-                    exclude_labels=set(match.exclude_labels) if match.exclude_labels else None,
-                    reference_rx=re.compile(match.reference_rx) if match.reference_rx else None,
-                )
-            )
-        # Add groups
-        for group in rule_cfg.groups:
-            rule.groups.append(
-                Group(
-                    reference_template=Template(group.reference_template),
-                    alarm_class=(
-                        group.alarm_class if group.alarm_class else cls.get_default_alarm_class()
-                    ),
-                    title_template=Template(group.title_template),
-                    min_threshold=group.min_threshold or 0,
-                    max_threshold=group.max_threshold or 0,
-                    window=group.window or 0,
-                    labels=group.labels or [],
-                )
-            )
-        # Add actions
-        for action in rule_cfg.actions:
-            if action.when != "raise":
-                continue
-            rule.actions.append(
-                Action(
-                    policy=action.policy,
-                    notification_group=action.notification_group,
-                    severity_action=action.severity_action,
-                    severity=action.severity,
-                )
-            )
+    def from_config(cls, config: Dict[str, Any]) -> "AlarmRule":
+        """Generate rule from config"""
+        rule = AlarmRule(name=config["name"])
+        if config["match_expr"]:
+            rule.matcher = cls.get_matcher(config["match_expr"])
+        for g in config["groups"]:
+            g = Group.from_config(g)
+            g.alarm_class = g.alarm_class or cls.get_default_alarm_class()
+            rule.groups.append(g)
+        for a in config["actions"]:
+            rule.actions += [ActionConfig.model_validate(a)]
+        rule.severity_policy = config["calculate_severity"]
         return rule
+
+    @classmethod
+    def get_matcher(cls, expr: List[Dict[str, Any]]) -> Callable:
+        """"""
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
 
     def is_match(self, alarm: ActiveAlarm) -> bool:
         """
         Check if alarm matches the rule
         """
-        if not self.match:
+        if not self.matcher:
             return True
-        lset = set(alarm.effective_labels)
-        for match in self.match:
-            # Match against labels
-            if match.exclude_labels and match.exclude_labels.issubset(lset):
-                continue
-            if not match.labels.issubset(lset):
-                continue
-            # Match against alarm class
-            if match.alarm_class and match.alarm_class != alarm.alarm_class:
-                continue
-            # Match severity
-            if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
-                continue
-            # Match against reference re
-            if (
-                getattr(alarm, "raw_reference", None)
-                and match.reference_rx
-                and not match.reference_rx.search(alarm.raw_reference)
-            ):
-                continue
-            return True
-        return False
+        ctx = alarm.get_matcher_ctx()
+        return self.matcher(ctx)
 
     @classmethod
     def get_default_alarm_class(cls) -> AlarmClass:
@@ -184,11 +151,7 @@ class AlarmRule(object):
             )
 
     def iter_actions(self, alarm: ActiveAlarm) -> Iterable[Action]:
-        """
-        Render Group Item
-        :param alarm:
-        :return:
-        """
+        """Render Group Item"""
         for action in self.actions:
             yield action
 
@@ -199,8 +162,8 @@ class AlarmRuleSet(object):
     """
 
     def __init__(self):
-        self._label_rules: DefaultDict[Tuple[str, ...], List[AlarmRule]] = defaultdict(list)
-        self.label_rules: List[Tuple[Set[str], List[AlarmRule]]] = []
+        self.common_rules = []
+        self.alarm_class_rules: Dict[str, List[AlarmRule]] = {}
 
     def add(self, rule: CfgAlarmRule):
         """
@@ -208,37 +171,17 @@ class AlarmRuleSet(object):
         """
         if not rule.is_active:
             return
-        new_rule = AlarmRule.try_from(rule)
+        new_rule = AlarmRule.from_config(CfgAlarmRule.get_config(rule))
         if not new_rule:
             return
-        if rule.match:
-            for match in rule.match:
-                lset = tuple(sorted(match.labels))
-                self._label_rules[lset].append(new_rule)
-        else:
-            self._label_rules[tuple()].append(new_rule)
-
-    def compile(self):
-        """
-        Finalize rules
-        """
-        self.label_rules = [(set(k), v) for k, v in self._label_rules.items()]
-        self._label_rules = defaultdict(list)
+        self.common_rules.append(rule)
 
     def iter_candidates(self, alarm: ActiveAlarm) -> Iterable[AlarmRule]:
         """
         Iterable candidate rules with matching labels
         """
-        lset = set(alarm.effective_labels)
-        seen: Set[AlarmRule] = set()
-        for mset, rules in self.label_rules:
-            if not mset.issubset(lset):
-                continue
-            for rule in rules:
-                if rule in seen:
-                    continue
-                yield rule
-                seen.add(rule)
+        for rule in self.common_rules:
+            yield rule
 
     def iter_rules(self, alarm: ActiveAlarm) -> Iterable[AlarmRule]:
         """

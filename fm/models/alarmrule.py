@@ -29,6 +29,7 @@ from mongoengine.fields import (
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.fm.enum import AlarmAction
+from noc.core.fm.request import ActionConfig
 from noc.core.matcher import build_matcher
 from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
@@ -64,6 +65,12 @@ class Match(EmbeddedDocument):
             r["labels"] = {"$all": list(self.labels)}
         if self.resource_groups:
             r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
+        if self.alarm_class:
+            r["alarm_class"] = {"$all": [str(self.alarm_class.id)]}
+        if self.severity:
+            r["severity"] = {"$gte": self.severity.severity}
+        if self.reference_rx:
+            r["reference_rx"] = {"$regex": self.reference_rx}
         return r
 
 
@@ -71,7 +78,7 @@ class Group(EmbeddedDocument):
     # Group Alarm reference Template
     reference_template = StringField(default="")
     # Group Alarm Class (Group by default)
-    alarm_class = PlainReferenceField(AlarmClass)
+    alarm_class = PlainReferenceField(AlarmClass, required=False)
     # Group Title template
     title_template = StringField(default="")
     # Minimum amount of alarms to create the group
@@ -86,6 +93,18 @@ class Group(EmbeddedDocument):
     def __str__(self):
         return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'
 
+    def get_config(self) -> Dict[str, Any]:
+        """"""
+        return {
+            "reference_template": self.reference_template,
+            "alarm_class": str(self.alarm_class.id) if self.alarm_class else None,
+            "title_template": self.title_template,
+            "min_threshold": self.min_threshold,
+            "max_threshold": self.max_threshold,
+            "window": self.window,
+            "labels": list(self.labels),
+        }
+
 
 class Action(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
@@ -93,49 +112,63 @@ class Action(EmbeddedDocument):
     when = StringField(
         default="raise",
         choices=[
-            ("both", "Update any"),  # Update
+            ("update", "When Alarm Update"),  # Update
             ("raise", "When raise alarm"),
             ("clear", "When clear alarm"),
         ],
     )
-    handler = PlainReferenceField(Handler)
+    handler: Optional["Handler"] = PlainReferenceField(Handler, required=False)
     notification_group = ForeignKeyField(NotificationGroup, required=False)
-    user = ForeignKeyField(User, required=False)
+    user: Optional["User"] = ForeignKeyField(User, required=False)
     template: Optional["Template"] = ForeignKeyField(Template, required=False)
     message: str = StringField(required=False)
-    object_action = ReferenceField(ObjectAction)
+    object_action: Optional["ObjectAction"] = ReferenceField(ObjectAction)
+    # Run Diagnostic
     # script
     # allow_fail: bool = BooleanField(default=True) To check
     # manually: bool = BooleanField(default=True)
     # Sync collection Default ?
 
     def __str__(self):
-        return f"{self.when}: {self.action}"
+        r = []
+        if self.handler:
+            r.append(f"H::{self.handler}")
+        if self.notification_group:
+            r.append(f"NG::{self.notification_group}")
+        if self.user:
+            r.append(f"U::{self.user.username}")
+        if self.object_action:
+            r.append(f"OA::{self.user.username}")
+        return f"{self.when}: {';'.join(r)}"
 
-    def get_action(self) -> "CtxAction":
-        """"""
-        a = CtxAction(
-            delay=self.delay,
-            action=action,
-            ack=self.match_ack,
-            when={"any": "any", "raise": "on_start", "clear": "on_end"}[self.when],
-            min_severity=self.min_severity.id if self.min_severity else None,
-            max_retries=1,
-            allow_fail=self.allow_fail,
-            stop_processing=self.stop_processing,
-        )
-        match self.action:
-            case AlarmAction.ACK, AlarmAction.SUBSCRIBE:
-                a.key = str(self.user.id)
-            case AlarmAction.NOTIFY:
-                a.key = str(self.notification_group.id)
-            case AlarmAction.LOG:
-                a.key = self.message
-        if self.time_pattern:
-            a.time_pattern = self.time_pattern.time_pattern
-        if self.template:
-            a.template = str(self.template.id)
-        return a
+    def get_config(self) -> List["ActionConfig"]:
+        """Get AlarmAction Config"""
+        r = []
+        if self.handler:
+            r.append(
+                ActionConfig(
+                    action=AlarmAction.HANDLER,
+                    key=str(self.handler.handler),
+                    template=str(self.template.id) if self.template else None,
+                )
+            )
+        if self.notification_group:
+            r.append(
+                ActionConfig(
+                    action=AlarmAction.NOTIFY,
+                    key=str(self.notification_group.id),
+                    template=str(self.template.id) if self.template else None,
+                )
+            )
+        if self.user:
+            r.append(
+                ActionConfig(
+                    action=AlarmAction.ACK,
+                    key=str(self.user.id),
+                    template=str(self.template.id) if self.template else None,
+                )
+            )
+        return r
 
 
 @bi_sync
@@ -159,8 +192,9 @@ class AlarmRule(Document):
     #
     escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
     #
-    severity_policy = StringField(
+    calculate_severity = StringField(
         choices=[
+            ("D", "Disable"),
             ("CB", "Class Based Policy"),
             ("AB", "Affected Based Severity Preferred"),
             ("AL", "Affected Limit"),
@@ -168,9 +202,11 @@ class AlarmRule(Document):
         ],
         default="AL",
     )
+    severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
     # Set, Match, Increase, Severity
-    # severity_action = StringField(choices=["set", "min", "max", "inc", "dec"])
-    # severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
+    severity_policy = StringField(
+        choices=["match", "set", "min", "max", "inc", "dec"], default="set"
+    )
     rule_action = StringField(
         choices=[
             ("continue", "Continue processed"),
@@ -218,10 +254,10 @@ class AlarmRule(Document):
             return build_matcher(expr[0])
         return build_matcher({"$or": expr})
 
-    def is_match(self, o) -> bool:
+    def is_match(self, alarm) -> bool:
         """Local Match rules"""
         matcher = self.get_matcher()
-        ctx = o.get_matcher_ctx()
+        ctx = alarm.get_matcher_ctx()
         return matcher(ctx)
 
     # def is_match(self, alarm):
@@ -245,7 +281,6 @@ class AlarmRule(Document):
     @classmethod
     def get_by_alarm(cls, alarm) -> List["AlarmRule"]:
         r = []
-        ctx = alarm.get_ctx()
         for ar in AlarmRule.objects.filter(is_active=True):
             if ar.is_match(alarm):
                 r.append(ar)
@@ -254,5 +289,24 @@ class AlarmRule(Document):
     @classmethod
     def get_config(cls, rule: "AlarmRule"):
         """Generate Rule config"""
-        r = {}
+        r = {
+            "id": rule.id,
+            "name": rule.name,
+            "is_active": rule.is_active,
+            "actions": [],
+            "groups": [g.get_config() for g in rule.groups],
+            "match_expr": [r.get_match_expr() for r in rule.match],
+            "rule_action": rule.rule_action,
+            "calculate_severity": rule.calculate_severity,
+            "severity_policy": rule.severity_policy,
+            "stop_processing": rule.stop_processing,
+        }
+        for a in rule.actions:
+            r["actions"] += [cfg.model_dump() for cfg in a.get_config()]
+        if rule.rule_action == "rewrite" and rule.alarm_class:
+            r["rewrite_alarm_class"] = str(rule.alarm_class.id)
+        elif rule.rule_action == "rewrite" and not rule.alarm_class:
+            r["rule_action"] = "continue"
+        if rule.severity:
+            r["severity"] = rule.severity.severity
         return r
