@@ -41,13 +41,22 @@
     </tr>
     <tr>
         <th scope="row">{{ _("Segment") }}</th>
+        {% if managed_object %}
         <td>
             <a href="/api/card/view/segment/{{ managed_object.segment.id }}/">{{ managed_object.segment.name }}</a>
         </td>
+        {% else %}
+        <td>
+        </td>
+        {% endif %}
     </tr>
     <tr>
         <th scope="row">{{ _("Administrative Domain") }}</th>
+        {% if managed_object %}
         <td>{{ managed_object.administrative_domain.name }}</td>
+        {% else %}
+        <td> ---- </td>
+        {% endif %}
     </tr>
     {% if alarm.escalation_tt %}
     <tr>

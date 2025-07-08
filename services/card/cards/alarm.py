@@ -170,3 +170,24 @@ class AlarmCard(BaseCard):
         result = []
         flatten(a, result, 0)
         return result
+
+    @classmethod
+    def f_managed_object_title(cls, obj):
+        """
+        Convert managed object instance to title
+        using profile card_title_template
+        """
+        if not obj:
+            return "REFERENCE"
+        return super().f_managed_object_title(obj)
+
+    @classmethod
+    def f_object_console(cls, object):
+        if not object:
+            return "--"
+        s = {1: "telnet", 2: "ssh", 3: "http", 4: "https"}[object.scheme]
+        return "<a href='%s://%s/'><i class='fa fa-terminal'></i> %s</a>" % (
+            s,
+            object.address,
+            s.upper(),
+        )
