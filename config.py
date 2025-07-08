@@ -266,6 +266,11 @@ class Config(BaseConfig):
             default=True,
             help="Add service field to metric request",
         )
+        max_device_mac_cache_size = IntParameter(
+            default=10000,
+            min=0,
+            help="Limit MAC count, that supported on DiscoveryID Cache per MAC Range",
+        )
 
     class dns(ConfigSection):
         warn_before_expired = SecondsParameter(default="30d")

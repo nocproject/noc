@@ -63,9 +63,14 @@ class MACRange(EmbeddedDocument):
             first, last = last, first
         return MACRange(first_mac=str(MAC(first)), last_mac=str(MAC(last)))
 
-    def iter_as_int(self) -> Iterable[int]:
+    def iter_as_int(self, ignore_max: bool = False) -> Iterable[int]:
         """Iterate all MACs in range as integers."""
-        return range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)
+        if ignore_max:
+            return range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)
+        mac_range = range(int(MAC(self.first_mac)), int(MAC(self.last_mac)) + 1)[:config.discovery.max_device_mac_cache_size]
+        if len(mac_range) == config.discovery.max_device_mac_cache_size:
+            raise ValueError("Range overflow configured limit '%s'. Check input MAC range" % config.discovery.max_device_mac_cache_size)
+        return mac_range
 
 
 @change(audit=False)

@@ -37,10 +37,13 @@ class IDCheck(DiscoveryCheck):
             result.get("router_id"),
             ", ".join(interface_macs or []),
         )
-        DiscoveryID.submit(
-            object=self.object,
-            chassis_mac=chassis_mac,
-            hostname=result.get("hostname"),
-            router_id=result.get("router_id"),
-            additional_macs=interface_macs,
-        )
+        try:
+            DiscoveryID.submit(
+                object=self.object,
+                chassis_mac=chassis_mac,
+                hostname=result.get("hostname"),
+                router_id=result.get("router_id"),
+                additional_macs=interface_macs,
+            )
+        except ValueError as e:
+            self.logger.error("Error when saved Identity: '%s'", e)
