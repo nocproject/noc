@@ -39,7 +39,8 @@ class ActionResult(object):
 
 
 class ActionLog(object):
-    """Action Part of log with Run"""
+    """
+    Action Part of log with Run"""
 
     def __init__(
         self,
@@ -89,7 +90,7 @@ class ActionLog(object):
         return f"{self.action} ({self.key}): {self.status} ({self.timestamp})"
 
     def set_status(self, result: ActionResult):
-        """Update Action Log"""
+        """Update Action result"""
         self.status = result.status
         self.error = result.error
         if result.ctx:
@@ -106,9 +107,14 @@ class ActionLog(object):
     def get_ctx(
         self,
         document_id: Optional[str] = None,
-        action_ctx: Optional[Dict[str, Any]] = None,
+        alarm_ctx: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Build action CTX"""
+        """
+        Build action Context
+        Args:
+            document_id: External document on tt_system
+            alarm_ctx: Alarm context
+        """
         r = {"timestamp": self.timestamp}
         if self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT:
             r["tt_system"] = TTSystem.get_by_id(self.key)
@@ -116,8 +122,8 @@ class ActionLog(object):
         elif self.action == AlarmAction.NOTIFY:
             r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
         if self.template:
-            r["subject"] = self.template.render_subject(**action_ctx)
-            r["body"] = self.template.render_body(**action_ctx)
+            r["subject"] = self.template.render_subject(**alarm_ctx)
+            r["body"] = self.template.render_body(**alarm_ctx)
         if self.user:
             r["user"] = self.user
         if self.tt_system:
@@ -127,7 +133,11 @@ class ActionLog(object):
         return r
 
     def get_repeat(self, delay: int) -> "ActionLog":
-        """Return repeated Action"""
+        """
+        Return repeated Action
+        Args:
+            delay: Repeat delay
+        """
         return ActionLog(
             action=self.action,
             key=self.key,
@@ -151,7 +161,16 @@ class ActionLog(object):
         user: Optional[int] = None,
         tt_system: Optional[str] = None,
     ) -> "ActionLog":
-        """Create Action from Request"""
+        """
+        Create Action from Request
+
+        Args:
+            action: Action Config
+            started_at: Timestamp when start
+            one_time: Only one run, do not Repeat
+            user: User Who requested Action
+            tt_system: TT System who requested Action
+        """
         return ActionLog(
             action=action.action,
             key=action.key,
@@ -175,7 +194,7 @@ class ActionLog(object):
 
     @classmethod
     def from_state(cls, data: Dict[str, Any]) -> "ActionLog":
-        """Create action from State Document"""
+        """Restore Action Context from State Document"""
         return ActionLog(
             action=AlarmAction(data["action"]),
             key=data["key"],
@@ -195,7 +214,7 @@ class ActionLog(object):
         )
 
     def get_state(self) -> Dict[str, Any]:
-        """Getting Dict for action state"""
+        """Getting Dict for action current state"""
         r = {
             "action": self.action.value,
             "key": self.key,

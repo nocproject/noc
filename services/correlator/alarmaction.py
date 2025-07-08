@@ -30,12 +30,10 @@ from .actionlog import ActionResult
 
 class AlarmActionRunner(object):
     """
-    Base class for actions.
-
-    Subclasses must override `execute` method.
-
+    Base class for run actions from config.
     Args:
-        items: Environment instance.
+        items: Alarms
+        alarm_log: Bulk Alarm Log
     """
 
     def __init__(
@@ -57,7 +55,12 @@ class AlarmActionRunner(object):
         action: AlarmAction,
         **ctx: Dict[str, str],
     ) -> ActionResult:
-        """Execute action"""
+        """
+        Execute action
+        Args:
+            action: Execute action
+            ctx: Action context
+        """
         match action:
             case AlarmAction.CREATE_TT:
                 r = self.create_tt(**ctx)
@@ -119,7 +122,7 @@ class AlarmActionRunner(object):
             )
         return r
 
-    def get_action_context(self, actions) -> List[TTActionContext]:
+    def get_avail_actions(self, actions) -> List[TTActionContext]:
         """Return Available Action Context for escalation"""
         r = []
         for action in actions:
@@ -147,7 +150,7 @@ class AlarmActionRunner(object):
         Args:
             tt_system: TTSystem instance
             tt_id: Document ID
-            timestamp:
+            timestamp: Time when run Escalation
             login:
 
         """
