@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Any, Union
 
 # NOC modules
-from noc.core.runner.job import Job, JobStatus
+from noc.core.runner.job import JobStatus
 from noc.core.fm.enum import ActionStatus
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
@@ -63,7 +63,7 @@ class Item(object):
         return {"alarm": self.alarm.id, "status": self.status.value}
 
 
-class AlarmJob(Job):
+class AlarmJob(object):
     """
     Runtime Alarm Automation
     """

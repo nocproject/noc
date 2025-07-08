@@ -260,24 +260,6 @@ class AlarmRule(Document):
         ctx = alarm.get_matcher_ctx()
         return matcher(ctx)
 
-    # def is_match(self, alarm):
-    #     if not self.match:
-    #         return True
-    #     lset = set(alarm.effective_labels)
-    #     for match in self.match:
-    #         # Match against labels
-    #         if match.exclude_labels and set(match.exclude_labels).issubset(lset):
-    #             continue
-    #         if not set(match.labels).issubset(lset):
-    #             continue
-    #         # Match against alarm class
-    #         if match.alarm_class and match.alarm_class != alarm.alarm_class:
-    #             continue
-    #         # Match severity
-    #         if match.severity and match.severity != AlarmSeverity.get_severity(alarm.severity):
-    #             continue
-    #         return True
-
     @classmethod
     def get_by_alarm(cls, alarm) -> List["AlarmRule"]:
         r = []

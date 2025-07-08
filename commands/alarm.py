@@ -9,6 +9,7 @@
 import time
 import datetime
 import argparse
+import yaml
 from typing import Optional, Dict, Any, List
 
 # Third-party modules
@@ -107,6 +108,7 @@ class Command(BaseCommand):
         send_close.add_argument("--reference", help="Alarm Reference")
         send_close.add_argument("--message", help="Close message")
         run_test = subparsers.add_parser("run-test", help="Send Correlator messages from file")
+        run_test.add_argument("--name", help="Scenario Name (form multi-set)")
         run_test.add_argument("args", nargs=argparse.REMAINDER)
 
     def handle(self, *args, **options):
@@ -182,29 +184,40 @@ class Command(BaseCommand):
             msg["vars"] = a_vars
         self.publish(mo, msg)
 
-    def handle_run_test(self, *args, **options):
+    def run_scr_action(self, config: AlarmConfig):
+        time.sleep(config.delay)
+        for rr in range(0, config.repeat or 1):
+            for r in config.alarms:
+                mo = self.resolve_object(r.managed_object)
+                if not mo:
+                    self.die(f"Unknown ManagedObject {r.managed_object}")
+                r.managed_object = str(mo.id)
+                r.reference = r.reference or self.get_default_reference(
+                    managed_object=mo,
+                    alarm_class=AlarmClass.get_by_name(r.alarm_class),
+                    vars=r.vars,
+                )
+                if not mo:
+                    continue
+                self.publish(managed_object=mo, msg=r.get_message())
+                time.sleep(r.delay)
+
+    def handle_run_test(self, *args, name: Optional[str] = None, **options):
+        name = name or "default"
         for path in args:
             with open(path) as f:
+                if path.endswith("yml"):
+                    data = yaml.safe_load(f.read())
+                    ac = AlarmConfig(**data[name])
+                    self.run_scr_action(ac)
+                    continue
                 for line in f:
                     try:
                         data = orjson.loads(line)
                         ac = AlarmConfig(**data)
+                        self.run_scr_action(ac)
                     except ValueError as e:
                         self.die(f'Failed to decode JSON file "{path}": {str(e)}')
-                    time.sleep(ac.delay)
-                    for rr in range(0, ac.repeat or 1):
-                        for r in ac.alarms:
-                            mo = self.resolve_object(r.managed_object)
-                            r.managed_object = str(mo.id)
-                            r.reference = r.reference or self.get_default_reference(
-                                managed_object=mo,
-                                alarm_class=AlarmClass.get_by_name(r.alarm_class),
-                                vars=r.vars,
-                            )
-                            if not mo:
-                                continue
-                            self.publish(managed_object=mo, msg=r.get_message())
-                            time.sleep(r.delay)
 
     def handle_test_rule(self, alarms, rule: Optional[str] = None, *args, **options):
         alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
