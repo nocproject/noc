@@ -268,9 +268,9 @@ class RemoteSystem(Document):
             self.last_successful_load = self.last_load
         self.load_error = error
         RemoteSystem.objects.filter(id=self.id).update(
-            last_extract=self.last_load,
-            extract_error=error,
-            last_successful_extract=self.last_successful_load,
+            last_load=self.last_load,
+            load_error=error,
+            last_successful_load=self.last_successful_load,
         )
         # self.save()
         return r
