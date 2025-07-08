@@ -223,7 +223,7 @@ class Command(BaseCommand):
         req = AlarmActionRequest(
             item=ActionItem(alarm=str(alarm.id)),
             ctx=0,
-            actions=rule.get_config(),
+            actions=actions,
             start_at=alarm.timestamp,
         )
         job = AlarmJob.from_request(req, dry_run=True)
