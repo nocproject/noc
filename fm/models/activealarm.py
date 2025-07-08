@@ -1161,13 +1161,15 @@ class ActiveAlarm(Document):
         return Label.get_effective_setting(label, "enable_alarm")
 
     def get_matcher_ctx(self) -> Dict[str, Any]:
-        return {
+        r = {
             "alarm_class": str(self.alarm_class.id),
             "labels": list(self.effective_labels),
-            "service_groups": list(self.managed_object.effective_service_groups),
             "severity": self.severity,
             "reference": getattr(self, "raw_reference", None),
         }
+        if self.managed_object:
+            r["service_groups"] = list(self.managed_object.effective_service_groups)
+        return r
 
 
 @runtime_checkable

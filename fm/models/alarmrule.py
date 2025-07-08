@@ -66,7 +66,7 @@ class Match(EmbeddedDocument):
         if self.resource_groups:
             r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
         if self.alarm_class:
-            r["alarm_class"] = {"$all": [str(self.alarm_class.id)]}
+            r["alarm_class"] = {"$in": [str(self.alarm_class.id)]}
         if self.severity:
             r["severity"] = {"$gte": self.severity.severity}
         if self.reference_rx:

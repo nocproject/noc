@@ -12,10 +12,14 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.fm.alarmrule.Model",
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.fm.alarmclass.LookupField",
         "NOC.fm.alarmseverity.LookupField",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
+        "NOC.sa.action.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmrule.Model",
@@ -80,9 +84,9 @@ Ext.define("NOC.fm.alarmrule.Application", {
                 },
                 {
                     name: "severity",
-                    xtype: "fm.severity.LookupField",
+                    xtype: "fm.alarmseverity.LookupField",
                     fieldLabel: __("Severity"),
-                    uiStyle: "large",
+                    uiStyle: "medium",
                     allowBlank: true
                 },
                 {
