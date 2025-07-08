@@ -6,10 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Literal
+import datetime
+from typing import Optional, Literal, List
 
 # Third-party modules
-from pydantic import BaseModel
+from bson import ObjectId
+from pydantic import BaseModel, Field
 
 # NOC modules
 from .enum import AlarmAction
@@ -46,3 +48,46 @@ class ActionConfig(BaseModel):
     manually: bool = False
     # Manual, Group Access
     # root_only: bool = True
+
+
+class ActionItem(BaseModel):
+    """
+    Item for actions
+    Attributes:
+        alarm: Alarm instance Id
+        group: Alarm Group Reference
+        # service: Service Id (for service-alarm escalation)
+    """
+
+    alarm: str
+    group: Optional[bytes] = None
+    # service: Optional[str] = None
+
+
+class AlarmActionRequest(BaseModel):
+    """
+    Attributes:
+        id: Escalation Id
+        item: Escalation Item: Alarm | Group | Service
+        actions: Action executed list
+        start_at: start timestamp
+        max_repeats: Repeat actions after last
+        repeat_delay: Repeat interval
+        ctx: Span Context id
+        tt_system: Initial Action TT System Id
+        user: Initial Action User
+    """
+
+    id: str = Field(default_factory=lambda: str(ObjectId()))
+    #
+    item: ActionItem
+    actions: List[ActionConfig]
+    start_at: Optional[datetime.datetime] = None
+    # Repeat action
+    max_repeats: int = 0
+    repeat_delay: int = 60
+    # Span
+    ctx: Optional[int] = None
+    # From
+    tt_system: Optional[str] = None
+    user: Optional[int] = None
