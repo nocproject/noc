@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Manage alarms
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,9 +19,12 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.fm.request import AlarmActionRequest, ActionItem, ActionConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmrule import AlarmRule
 from noc.sa.models.managedobject import ManagedObject
+from noc.services.correlator.alarmjob import AlarmJob
 from noc.core.service.loader import get_service
 from noc.core.validators import is_ipv4
 
@@ -82,6 +85,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
+        test_rule = subparsers.add_parser("test-rule", help="Test Alarm Rule")
+        test_rule.add_argument("--rule", help="Alarm Rule", required=False)
+        test_rule.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
         clean = subparsers.add_parser("clean", help="Clean alarm")
         clean.add_argument("--before", help="Clear alarm before date")
         clean.add_argument("--before-days", type=int, help="Clear alarm older than N, days")
@@ -199,6 +205,29 @@ class Command(BaseCommand):
                                 continue
                             self.publish(managed_object=mo, msg=r.get_message())
                             time.sleep(r.delay)
+
+    def handle_test_rule(self, alarms, rule: Optional[str] = None, *args, **options):
+        alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
+        if rule:
+            rule = AlarmRule.get_by_id(rule)
+        else:
+            rule = AlarmRule.get_by_alarm(alarm)
+            if rule:
+                rule = rule[0]
+            else:
+                self.die("Not found Rule for Alarm, Set static")
+        cfg = AlarmRule.get_config(rule)
+        actions = [ActionConfig.model_validate(a) for a in cfg["actions"]]
+        if not actions:
+            self.die("Nothing Actions on Alarm")
+        req = AlarmActionRequest(
+            item=ActionItem(alarm=str(alarm.id)),
+            ctx=0,
+            actions=rule.get_config(),
+            start_at=alarm.timestamp,
+        )
+        job = AlarmJob.from_request(req, dry_run=True)
+        job.run()
 
     @staticmethod
     def get_default_reference(
