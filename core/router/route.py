@@ -301,4 +301,7 @@ class DefaultNotificationRoute(Route):
     def iter_action(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        if MX_NOTIFICATION_CHANNEL in msg.headers:
+            # Check available channel for sender
+            yield msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING), {}, msg.value
         yield from self.na.iter_action(msg, message_type)
