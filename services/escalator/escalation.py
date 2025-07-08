@@ -481,7 +481,7 @@ class EscalationSequence(BaseSequence):
         self.alarm.escalate(
             tt,
             close_tt=esc_item.close_tt,
-            wait_tt=tt if esc_item.wait_tt else False,
+            wait_tt=tt if esc_item.wait_tt else None,
             template=esc_item.clear_template,
         )
         # Save to escalation context
