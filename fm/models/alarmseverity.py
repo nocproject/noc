@@ -18,6 +18,7 @@ import cachetools
 
 # NOC modules
 from noc.main.models.style import Style
+from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.text import quote_safe_path
 from noc.core.prettyjson import to_json
@@ -25,6 +26,12 @@ from noc.core.prettyjson import to_json
 id_lock = Lock()
 
 
+@on_delete_check(
+    check=[
+        ("fm.AlarmRule", "min_severity"),
+        ("fm.AlarmRule", "max_severity"),
+    ]
+)
 class AlarmSeverity(Document):
     """
     Alarm severities

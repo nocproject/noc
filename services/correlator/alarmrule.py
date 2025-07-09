@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Set, List, Iterable, Pattern, Dict, Any, Callable
+from typing import Optional, List, Iterable, Dict, Any, Callable
 
 # Third-party modules
 from jinja2 import Template
@@ -17,21 +17,11 @@ from noc.core.matcher import build_matcher
 from noc.core.fm.request import ActionConfig
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
-from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.escalationprofile import EscalationProfile
-from noc.main.models.notificationgroup import NotificationGroup
+
 
 DEFAULT_GROUP_CLASS = "Group"
-
-
-@dataclass
-class Match(object):
-    labels: Set[str]
-    exclude_labels: Optional[Set[str]]
-    alarm_class: Optional[AlarmClass]
-    severity: Optional[AlarmSeverity]
-    reference_rx: Optional[Pattern]
 
 
 @dataclass
@@ -58,16 +48,6 @@ class Group(object):
 
 
 @dataclass
-class Action(object):
-    policy: str
-    notification_group: Optional[NotificationGroup] = None
-    severity_action: str = "set"
-    severity: Optional[AlarmSeverity] = None
-    # Sync collection Default ?
-    alarm_class: Optional[AlarmClass] = None
-
-
-@dataclass
 class GroupItem(object):
     reference: str
     alarm_class: AlarmClass
@@ -78,23 +58,28 @@ class GroupItem(object):
     window: int = 0
 
 
-@dataclass
-class ActionItem(object):
-    severity: Optional[int] = None
-    severity_action: Optional[str] = None
-    notification_group: Optional[int] = None
-
-
 class AlarmRule(object):
     _default_alarm_class: Optional[AlarmClass] = None
     severity_policy: str = "AL"
+    min_severity: Optional[int] = None
+    max_severity: Optional[int] = None
     escalation_profile: Optional[EscalationProfile] = None
 
     def __init__(self, name):
         self.name = name
         self.matcher: Optional[Callable] = None
         self.groups: List[Group] = []
-        self.actions: List[Action] = []
+        self.actions: List[ActionConfig] = []
+        self.severity_match: bool = True
+
+    def get_severity(self, alarm: ActiveAlarm) -> int:
+        # Calculate only one per policy
+        severity = alarm.get_effective_severity(policy=self.severity_policy)
+        if self.min_severity:
+            severity = max(severity, self.min_severity)
+        if self.max_severity:
+            severity = min(severity, self.max_severity)
+        return severity
 
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "AlarmRule":
@@ -118,13 +103,15 @@ class AlarmRule(object):
             return build_matcher(expr[0])
         return build_matcher({"$or": expr})
 
-    def is_match(self, alarm: ActiveAlarm) -> bool:
+    def is_match(self, alarm: ActiveAlarm, severity: Optional[int] = None) -> bool:
         """
         Check if alarm matches the rule
         """
         if not self.matcher:
             return True
         ctx = alarm.get_matcher_ctx()
+        if self.severity_match and severity:
+            ctx["severity"] = severity
         return self.matcher(ctx)
 
     @classmethod
@@ -150,7 +137,7 @@ class AlarmRule(object):
                 window=group.window,
             )
 
-    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[Action]:
+    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[ActionConfig]:
         """Render Group Item"""
         for action in self.actions:
             yield action
@@ -183,10 +170,11 @@ class AlarmRuleSet(object):
         for rule in self.common_rules:
             yield rule
 
-    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[AlarmRule]:
+    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[AlarmRule, int]:
         """
         Iterate all matched rules
         """
         for rule in self.iter_candidates(alarm):
-            if rule.is_match(alarm):
-                yield rule
+            severity = rule.get_severity(alarm)
+            if rule.is_match(alarm, severity=severity):
+                yield rule, severity
