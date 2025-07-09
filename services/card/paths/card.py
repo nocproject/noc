@@ -31,6 +31,8 @@ user_lock = Lock()
 
 router = APIRouter()
 
+MIN_SEARCH = 2
+
 
 class HandlerStub(object):
     def __init__(self, user, arguments):
@@ -215,6 +217,9 @@ class CardAPI(BaseAPI):
     def handler_card_search(
         self, scope: str, query: str, remote_user: Optional[str] = Header(None, alias="Remote-User")
     ):
+        query = query.strip()
+        if not query or len(query) < MIN_SEARCH:
+            raise HTTPException(400, "Query too short")
         card = self.CARDS.get(scope)
         if not card or not hasattr(card, "search"):
             raise HTTPException(404, "Not found")
