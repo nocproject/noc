@@ -192,21 +192,21 @@ class AlarmRule(Document):
     #
     escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
     #
-    calculate_severity = StringField(
+    severity_policy = StringField(
         choices=[
-            ("D", "Disable"),
-            ("CB", "Class Based Policy"),
+            ("B", "Base"),
             ("AB", "Affected Based Severity Preferred"),
             ("AL", "Affected Limit"),
             ("ST", "By Tokens"),
         ],
         default="AL",
     )
-    severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
+    min_severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
+    max_severity: Optional[AlarmSeverity] = ReferenceField(AlarmSeverity, required=False)
     # Set, Match, Increase, Severity
-    severity_policy = StringField(
-        choices=["match", "set", "min", "max", "inc", "dec"], default="set"
-    )
+    # severity_policy = StringField(
+    #     choices=["match", "set", "inc", "dec"], default="set"
+    # )
     rule_action = StringField(
         choices=[
             ("continue", "Continue processed"),
@@ -279,7 +279,6 @@ class AlarmRule(Document):
             "groups": [g.get_config() for g in rule.groups],
             "match_expr": [r.get_match_expr() for r in rule.match],
             "rule_action": rule.rule_action,
-            "calculate_severity": rule.calculate_severity,
             "severity_policy": rule.severity_policy,
             "stop_processing": rule.stop_processing,
         }
@@ -289,6 +288,8 @@ class AlarmRule(Document):
             r["rewrite_alarm_class"] = str(rule.alarm_class.id)
         elif rule.rule_action == "rewrite" and not rule.alarm_class:
             r["rule_action"] = "continue"
-        if rule.severity:
-            r["severity"] = rule.severity.severity
+        if rule.min_severity:
+            r["min_severity"] = rule.min_severity.severity
+        if rule.max_severity:
+            r["max_severity"] = rule.max_severity.severity
         return r
