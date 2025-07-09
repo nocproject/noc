@@ -41,20 +41,25 @@ Ext.define("NOC.fm.alarmrule.Model", {
             type: "auto"
         },
         {
-            name: "calculate_severity",
+            name: "severity_policy",
             type: "string",
             defaultValue: "AL"
         },
         {
-            name: "severity_policy",
-            type: "string",
-        },
-        {
-            name: "severity",
+            name: "min_severity",
             type: "string"
         },
         {
-            name: "severity__label",
+            name: "min_severity__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "max_severity",
+            type: "string"
+        },
+        {
+            name: "max_severity__label",
             type: "string",
             persist: false
         },

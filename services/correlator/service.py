@@ -252,7 +252,6 @@ class CorrelatorService(FastAPIService):
         for rule in AlarmRule.objects.filter(is_active=True):
             self.alarm_rule_set.add(rule)
             n += 1
-        self.alarm_rule_set.compile()
         self.logger.info("%d Alam Rules have been loaded", n)
 
     def mark_as_failed(self, event: "Event"):
@@ -427,7 +426,6 @@ class CorrelatorService(FastAPIService):
             severities.append(severity)
         if actions:
             req = AlarmActionRequest(
-                item=ActionItem(alarm=str(alarm.id)),
                 ctx=0,
                 actions=actions,
                 start_at=alarm.timestamp,
@@ -436,12 +434,12 @@ class CorrelatorService(FastAPIService):
             req = None
         if not severities:
             return groups, None, req
-        return groups, severities[0], req
+        return groups, max(severities), req
 
-    async def run_actions(self, action_req: AlarmActionRequest):
+    async def run_actions(self, alarm: ActiveAlarm, action_req: AlarmActionRequest):
         if not action_req:
             return
-        job = AlarmJob.from_request(action_req)
+        job = AlarmJob.from_request(action_req, alarm=alarm)
         job.run()
 
     async def raise_alarm(
@@ -548,7 +546,7 @@ class CorrelatorService(FastAPIService):
             opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
-            base_severity=severity.severity if severity else None,
+            base_severity=severity.severity if severity else 1000,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -590,6 +588,8 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         if a_severity:
             a.severity = a_severity
+        else:
+            a.severity = a.base_severity
         # Required Severity for match
         a.affected_services = Service.get_services_by_alarm(a)
         # @todo: Fix
@@ -627,7 +627,7 @@ class CorrelatorService(FastAPIService):
         # Watch for escalations, when necessary
         # Apply actions
         if action_req:
-            self.run_actions(action_req)
+            await self.run_actions(a, action_req)
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
         if a.affected_services:

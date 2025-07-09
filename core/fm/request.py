@@ -80,9 +80,9 @@ class AlarmActionRequest(BaseModel):
 
     id: str = Field(default_factory=lambda: str(ObjectId()))
     #
-    item: ActionItem
     actions: List[ActionConfig]
     start_at: Optional[datetime.datetime] = None
+    item: Optional[ActionItem] = None
     # Repeat action
     max_repeats: int = 0
     repeat_delay: int = 60
