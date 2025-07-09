@@ -897,11 +897,11 @@ class BaseService(object):
         """
         msg = Router.get_message(data, message_type.value, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        if not config.message.embedded_router:
+        if not config.message.embedded_router or not self.use_router:
             self.publish(
                 value=msg.value,
                 stream=MX_STREAM,
-                partition=sharding_key % self.mx_partitions,
+                partition=sharding_key % (self.mx_partitions or 1),
                 headers=msg.headers,
             )
             return
