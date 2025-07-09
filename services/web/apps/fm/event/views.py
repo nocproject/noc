@@ -220,7 +220,7 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="reclassify")
     def api_reclassify(self, request, id):
-        q = self.parse_request_query(request)
+        # q = self.parse_request_query(request)
         e = Event.get_by_id(id)
         if e.target.id:
             mo = ManagedObject.get_by_id(int(e.target.id))
