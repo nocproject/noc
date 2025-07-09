@@ -1,69 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>CARD</title>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="{{ hashed("/ui/pkg/bootstrap/css/bootstrap.min.css") }}">
+    <link rel="stylesheet" href="{{ hashed(" /ui/pkg/bootstrap/css/bootstrap.min.css") }}">
     <!-- Optional theme -->
-    <link rel="stylesheet" href="{{ hashed("/ui/pkg/bootstrap/css/bootstrap-theme.min.css") }}">
+    <link rel="stylesheet" href="{{ hashed(" /ui/pkg/bootstrap/css/bootstrap-theme.min.css") }}">
     <!-- Latest compiled and minified JavaScript -->
     <!--<script src="/ui/pkg/bootstrap/bootstrap/3.3.6/js/bootstrap.min.js"></script>-->
-    <link rel="stylesheet" href="{{ hashed("/ui/pkg/fontawesome/css/font-awesome.min.css") }}">
+    <link rel="stylesheet" href="{{ hashed(" /ui/pkg/fontawesome/css/font-awesome.min.css") }}">
     <!-- card css -->
-    <link rel="stylesheet" href="{{ hashed("/ui/card/css/card.css") }}">
-    <script src="{{ hashed("/ui/pkg/jquery/jquery.min.js") }}"></script>
-    <script src="{{ hashed("/ui/pkg/bootstrap/js/bootstrap.min.js") }}"></script>
+    <link rel="stylesheet" href="{{ hashed(" /ui/card/css/card.css") }}">
+    <script src="{{ hashed(" /ui/pkg/jquery/jquery.min.js") }}"></script>
+    <script src="{{ hashed(" /ui/pkg/bootstrap/js/bootstrap.min.js") }}"></script>
 </head>
+
 <body>
-<div id="card-banner"><b>{{ brand }} |</b> {{ installation_name }}</div>
-<div class="container-fluid">
-    <div class="input-group">
-        <input id="query" type="text" class="form-control" placeholder="{{ _("Enter text to search") }}">
-        <span class="input-group-btn">
-            <button class="btn btn-default" type="button" onclick="search()">{{ _("Search") }}</button>
-        </span>
+    <div id="card-banner"><b>{{ brand }} |</b> {{ installation_name }}</div>
+    <div class="container-fluid">
+        <div class="input-group">
+            <input id="query" type="text" class="form-control" placeholder="{{ _(" Enter text to search") }}">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="button" onclick="search()" disable>{{ _("Search") }}</button>
+            </span>
+        </div>
+        <div class="form-inline">
+            <label class="radio">
+                <input type="radio" name="scope" value="managedobject" checked> {{ _("Managed Object") }}
+                <input type="radio" name="scope" value="phonerange"> {{ _("Phone Range") }}
+                <input type="radio" name="scope" value="phonenumber"> {{ _("Phone Number") }}
+            </label>
+        </div>
     </div>
-    <div class="form-inline">
-        <label class="radio">
-            <input type="radio" name="scope" value="managedobject" checked> {{ _("Managed Object") }}
-            <input type="radio" name="scope" value="phonerange"> {{ _("Phone Range") }}
-            <input type="radio" name="scope" value="phonenumber"> {{ _("Phone Number") }}
-        </label>
-    </div>
-</div>
-<ul id="result">
-</ul>
-<script type="text/javascript">
-    $("#query").bind("keyup", function(e) {
-        if(e.keyCode == 13) {
-            search();
+    <ul id="result">
+    </ul>
+    <script type="text/javascript">
+        function updateButtonState() {
+            var query = $("#query").val();
+            $("#search-button").prop("disabled", query.length < 2);
         }
-    });
-    function search() {
-        var query = $("#query").val(),
-            scope = $("input[type=radio][name=scope]:checked").val();
-        $.ajax({
-            "url": "/api/card/search/",
-            "method": "GET",
-            "data": {
-                query: query,
-                scope: scope
+        $("#query").bind("keyup", function (e) {
+            updateButtonState();
+            if (e.keyCode == 13 && $(this).val().length >= 2) {
+                search();
             }
-        }).done(function(data) {
-            var $el = $("#result");
-            $el.empty();
-            $.each(data, function(index, value) {
-                $el.append(
-                    "<li>" +
-                            "<a target='_blank' href='/api/card/view/" + value.scope + "/" + value.id + "/'>" + value.label + "</a>" +
-                    "</li>"
-                )
-            });
-        }).error(function() {
-            console.log("Error");
         });
-    }
-</script>
+        function search() {
+            var query = $("#query").val(),
+                scope = $("input[type=radio][name=scope]:checked").val();
+            if (query.length < 2) {
+                return; // Safety check
+            }
+            $.ajax({
+                "url": "/api/card/search/",
+                "method": "GET",
+                "data": {
+                    query: query,
+                    scope: scope
+                }
+            }).done(function (data) {
+                var $el = $("#result");
+                $el.empty();
+                $.each(data, function (index, value) {
+                    $el.append(
+                        "<li>" +
+                        "<a target='_blank' href='/api/card/view/" + value.scope + "/" + value.id + "/'>" + value.label + "</a>" +
+                        "</li>"
+                    )
+                });
+            }).error(function () {
+                console.log("Error");
+            });
+        }
+    </script>
 </body>
+
 </html>
