@@ -68,7 +68,7 @@ from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
 from noc.core.fm.event import Event
 from noc.core.fm.enum import EventSeverity
-from noc.core.fm.request import AlarmActionRequest, ActionItem
+from noc.core.fm.request import AlarmActionRequest
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmjob import AlarmJob
 
