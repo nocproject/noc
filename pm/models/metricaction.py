@@ -198,7 +198,9 @@ class MetricAction(Document):
         scope = self.compose_inputs[0].metric_type.scope.table_name
         for ci in self.compose_inputs:
             if ci.metric_type.scope.table_name != scope:
-                raise ValidationError({"compose_inputs": f"Metric {ci.metric_type.name} not in the scope {scope}"})
+                raise ValidationError(
+                    {"compose_inputs": f"Metric {ci.metric_type.name} not in the scope {scope}"}
+                )
 
         # Executable check
         try:
