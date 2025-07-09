@@ -123,7 +123,7 @@ class AlarmCard(BaseCard):
                 ),
                 "tt_system_failed": (
                     self.object.status == "A"
-                    and not self.object.escalation_profile
+                    and not self.object.escalation_tt
                     and self.object.managed_object.tt_system
                     and self.object.managed_object.tt_system.is_failed()
                 ),
