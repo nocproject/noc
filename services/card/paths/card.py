@@ -219,7 +219,7 @@ class CardAPI(BaseAPI):
     ):
         query = query.strip()
         if not query or len(query) < MIN_SEARCH:
-            return []
+            raise HTTPException(400, "Query too short")
         card = self.CARDS.get(scope)
         if not card or not hasattr(card, "search"):
             raise HTTPException(404, "Not found")
