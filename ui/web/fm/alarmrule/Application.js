@@ -69,9 +69,9 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     uiStyle: 'large'
                 },
                 {
-                    name: "calculate_severity",
+                    name: "severity_policy",
                     xtype: "combobox",
-                    fieldLabel: __("Calc Severity"),
+                    fieldLabel: __("Severity Policy"),
                     allowBlank: true,
                     store: [
                         ["CB", __("Class Based Policy")],
@@ -83,9 +83,16 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     value: "AL",
                 },
                 {
-                    name: "severity",
+                    name: "min_severity",
                     xtype: "fm.alarmseverity.LookupField",
-                    fieldLabel: __("Severity"),
+                    fieldLabel: __("Min./Set Severity"),
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
+                    name: "min_severity",
+                    xtype: "fm.alarmseverity.LookupField",
+                    fieldLabel: __("Min./Set Severity"),
                     uiStyle: "medium",
                     allowBlank: true
                 },

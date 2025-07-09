@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, List, Iterable, Dict, Any, Callable
+from typing import Optional, List, Iterable, Dict, Any, Callable, Tuple
 
 # Third-party modules
 from jinja2 import Template
@@ -93,7 +93,7 @@ class AlarmRule(object):
             rule.groups.append(g)
         for a in config["actions"]:
             rule.actions += [ActionConfig.model_validate(a)]
-        rule.severity_policy = config["calculate_severity"]
+        rule.severity_policy = config["severity_policy"]
         return rule
 
     @classmethod
@@ -161,7 +161,7 @@ class AlarmRuleSet(object):
         new_rule = AlarmRule.from_config(CfgAlarmRule.get_config(rule))
         if not new_rule:
             return
-        self.common_rules.append(rule)
+        self.common_rules.append(new_rule)
 
     def iter_candidates(self, alarm: ActiveAlarm) -> Iterable[AlarmRule]:
         """
@@ -170,7 +170,7 @@ class AlarmRuleSet(object):
         for rule in self.common_rules:
             yield rule
 
-    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[AlarmRule, int]:
+    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[Tuple[AlarmRule, int]]:
         """
         Iterate all matched rules
         """

@@ -15,7 +15,6 @@ from dataclasses import dataclass
 from typing import List, Optional, Any, Union
 
 # NOC modules
-from noc.core.runner.job import JobStatus
 from noc.core.fm.enum import ActionStatus
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
@@ -70,7 +69,6 @@ class AlarmJob(object):
 
     def __init__(
         self,
-        status: JobStatus,
         items: List[Item],
         actions: List[ActionLog],
         maintenance_policy: str = None,
@@ -88,8 +86,8 @@ class AlarmJob(object):
         dry_run: bool = False,
         static_delay: Optional[int] = None,
     ):
-        name = name or "alarm_automation"
-        super().__init__(name=name, status=status, id=id)
+        self.id = id
+        self.name = name
         self.items: List[Item] = items
         self.actions = actions
         self.maintenance_policy = maintenance_policy or "e"
@@ -155,7 +153,7 @@ class AlarmJob(object):
                     aa.action,
                     **aa.get_ctx(
                         document_id=aa.document_id,
-                        action_ctx=alarm_ctx,
+                        alarm_ctx=alarm_ctx,
                     ),
                 )  # aa.get_ctx for job
             except Exception as e:
@@ -184,18 +182,19 @@ class AlarmJob(object):
     def from_request(
         cls,
         req: AlarmActionRequest,
+        alarm: Optional[ActiveAlarm] = None,
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
     ) -> "AlarmJob":
         """Create Job from Request"""
-        alarm = get_alarm(req.item.alarm)
+        if not alarm and req.item:
+            alarm = get_alarm(req.item.alarm)
         if not alarm:
             raise ValueError("Not Found alarm by id: %s", req.item.alarm)
         start = req.start_at or datetime.datetime.now()
         job = AlarmJob(
             # Job Context
-            status=JobStatus.WAITING,
             items=[Item(alarm=alarm)],
             name=str(req),
             id=req.id,
