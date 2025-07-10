@@ -41,12 +41,13 @@ class ServiceLoader(BaseLoader):
         self.apply_instances(o, fields.get("instances") or [])
         if not fields or "capabilities" not in fields:
             return
+        caps = {}
         for cc in fields["capabilities"] or []:
             c_name = cc["name"]
             if c_name not in self.available_caps:
                 continue
-            o.set_caps(c_name, cc["value"], source="etl", scope=self.system.name)
-        o.save()
+            caps[c_name] = cc["value"]
+        o.update_caps(caps, source="etl", scope=self.system.name)
 
     @classmethod
     def apply_instances(cls, o: ServiceModel, fields: List[Dict[str, Any]]):

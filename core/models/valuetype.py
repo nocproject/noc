@@ -20,6 +20,8 @@ from noc.sa.interfaces.base import (
     OIDParameter,
 )
 
+BOOL_VALUES = frozenset(("t", "true", "yes"))
+
 
 class ValueType(enum.Enum):
     """
@@ -29,6 +31,7 @@ class ValueType(enum.Enum):
     STRING = "str"
     INTEGER = "int"
     FLOAT = "float"
+    BOOL = "bool"
     IPV4_ADDR = "ipv4_address"
     IPV6_ADDR = "ipv6_address"
     IP_ADDR = "ip_address"
@@ -39,15 +42,36 @@ class ValueType(enum.Enum):
     IFACE_NAME = "interface_name"
     SNMP_OID = "oid"
 
+    def get_default(self, value):
+        match self.value:
+            case "str":
+                return ""
+            case "int":
+                return 0
+            case "float":
+                return 0.0
+        return None
+
     @staticmethod
     def decode_str(value):
         return value
 
     @staticmethod
     def decode_int(value):
-        if value is not None and value.isdigit():
-            return int(value)
+        if value is not None:
+            try:
+                return int(value)
+            except ValueError:
+                pass
         return 0
+
+    @staticmethod
+    def decode_bool(value):
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.lower() in BOOL_VALUES
+        return bool(value)
 
     @staticmethod
     def decode_float(value):
@@ -94,6 +118,11 @@ class ValueType(enum.Enum):
     def decode_interface_name(value):
         return value
 
-    def clean_value(self, value):
+    def clean_value(self, value, errors: str = "strict"):
         decoder = getattr(self, f"decode_{self.value}")
-        return decoder(value)
+        try:
+            return decoder(value)
+        except ValueError as e:
+            if errors != "strict":
+                return self.get_default(value)
+            raise e
