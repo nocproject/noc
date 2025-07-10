@@ -232,6 +232,9 @@ class AlarmApplication(ExtApplication):
                 q["wait_ts__exists"] = False
             del q["wait_tt"]
         #
+        if status == "A" and "escalation_tt__contains" in q:
+            q["log__tt_id__contains"] = q.pop("escalation_tt__contains")
+        #
         if "collapse" in q:
             c = q["collapse"]
             del q["collapse"]
