@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CPE
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Iterable, List, Any, Dict, Union
+from typing import Optional, Iterable, List, Any, Union
 
 # Third-party modules
 import bson
