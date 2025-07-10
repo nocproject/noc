@@ -88,6 +88,7 @@ class Profile(BaseProfile):
         "is_dgs_1210": {"platform": {"$regex": r"^DGS-1210.+"}},
         "is_des_1210_20": {"platform": {"$regex": r"^DES-1210-20.+"}},
         "is_des_1210_28": {"platform": {"$regex": r"^DES-1210-28.+"}},
+        "is_des_a1": {"platform": {"$regex": r"^DES-1210-\d\d/A1"}},
         "is_des_3010": {"platform": {"$regex": r"^DES-3010.+"}},
         "is_des_3018": {"platform": {"$regex": r"^DES-3018.+"}},
         "is_des_3026": {"platform": {"$regex": r"^DES-3026.+"}},
@@ -256,6 +257,22 @@ class Profile(BaseProfile):
         r"(\n\s*Desc(ription)?:\s*?(?P<desc>.*?))?$",
         re.MULTILINE,
     )
+    rx_port_old = re.compile(
+        r"^(?P<port>\d+)\s+"
+        r"(?P<admin_state>Enabled|Disabled|MDIX)\s+"
+        r"(?P<admin_speed>Auto|10M|100M|1000M)/"
+        r"((?P<admin_duplex>Half|Full)/)?"
+        r"(?P<admin_flowctrl>Enabled|Disabled)\s+"
+        r"(?P<status>LinkDown|Link\sDown|(?:Err|Loop)\-Disabled|Empty)?"
+        r"((?P<speed>10M|100M|1000M)/"
+        r"(?P<duplex>Half|Full)/(?P<flowctrl>None|Enabled|Disabled|802.3x))?\s+"
+        r"(?P<mdix>Auto|MDI|MDIX|Cross|Normal|N/A|\-)\s*\n",
+        re.MULTILINE,
+    )
+    rx_port_old_desc = re.compile(
+        r"^\s*(?P<port>\d+)(?:\S+)?\s+(?P<descr>.*?)\s*\n",
+        re.MULTILINE,
+    )
 
     def parse_interface(self, s):
         match = self.rx_port.search(s)
@@ -289,6 +306,7 @@ class Profile(BaseProfile):
             return None
 
     def get_ports(self, script, interface=None):
+        ports = []
         if (
             (
                 script.match_version(DES3200, version__gte="1.70.B007")
@@ -326,6 +344,34 @@ class Profile(BaseProfile):
                     }
                 ]
         else:
+            if script.match_version(DES1210, version__lt="6.00"):
+                c = self.cli("show ports")
+                for match in self.rx_port_old.finditer(c):
+                    ports += [
+                        {
+                            "port": match.group("port"),
+                            "admin_state": match.group("admin_state") in ["Enabled", "MDIX"],
+                            "admin_speed": match.group("admin_speed"),
+                            "admin_duplex": match.group("admin_duplex"),
+                            "admin_flowctrl": match.group("admin_flowctrl"),
+                            "status": match.group("status") is None,
+                            "speed": match.group("speed"),
+                            "duplex": match.group("duplex"),
+                            "flowctrl": match.group("flowctrl"),
+                            "mdix": match.group("mdix"),
+                            "desc": "",
+                        }
+                    ]
+                c = self.cli("show ports description")
+                for match in self.rx_port_old_desc.finditer(c):
+                    port = match.group("port")
+                    desc = match.group("descr")
+                    if desc:
+                        for i in ports:
+                            if int(port) == int(i["port"]):
+                                i["descr"] = desc
+                                break
+                return ports
             try:
                 if interface is not None:
                     objects = script.cli(
@@ -349,7 +395,6 @@ class Profile(BaseProfile):
                     "show ports", obj_parser=self.parse_interface, cmd_next="n", cmd_stop="q"
                 )
         prev_port = None
-        ports = []
         for i in objects:
             if prev_port and (prev_port == i["port"]):
                 if i["status"] is True:

@@ -19,9 +19,28 @@ from noc.core.snmp.render import render_utf8
 from noc.core.snmp.render import render_bin
 from noc.core.snmp.render import render_mac
 from noc.core.lldp import (
+    LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+    LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+    LLDP_CHASSIS_SUBTYPE_MAC,
+    LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+    LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+    LLDP_CHASSIS_SUBTYPE_LOCAL,
+    LLDP_PORT_SUBTYPE_ALIAS,
+    LLDP_PORT_SUBTYPE_COMPONENT,
     LLDP_PORT_SUBTYPE_MAC,
+    LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
     LLDP_PORT_SUBTYPE_NAME,
+    LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
     LLDP_PORT_SUBTYPE_LOCAL,
+    LLDP_CAP_OTHER,
+    LLDP_CAP_REPEATER,
+    LLDP_CAP_BRIDGE,
+    LLDP_CAP_WLAN_ACCESS_POINT,
+    LLDP_CAP_ROUTER,
+    LLDP_CAP_TELEPHONE,
+    LLDP_CAP_DOCSIS_CABLE_DEVICE,
+    LLDP_CAP_STATION_ONLY,
 )
 
 
@@ -137,9 +156,9 @@ class Script(BaseScript):
             },
         ):
             neigh = dict(zip(neighb, v[1:]))
-            if neigh["remote_chassis_id_subtype"] == 4:
+            if neigh["remote_chassis_id_subtype"] == LLDP_CHASSIS_SUBTYPE_MAC:
                 neigh["remote_chassis_id"] = MAC(neigh["remote_chassis_id"])
-            if neigh["remote_port_subtype"] == 3:
+            if neigh["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                 neigh["remote_port"] = MAC(neigh["remote_port"])
             else:
                 neigh["remote_port"] = smart_text(neigh["remote_port"]).rstrip("\x00")
@@ -178,38 +197,38 @@ class Script(BaseScript):
                 n = {}
                 remote_chassis_id_subtype = m.group("chassis_id_subtype").replace("_", " ")
                 n["remote_chassis_id_subtype"] = {
-                    "chassis component": 1,
-                    "interface alias": 2,
-                    "port component": 3,
-                    "mac address": 4,
-                    "macaddress": 4,
-                    "network address": 5,
-                    "interface name": 6,
-                    "local": 7,
+                    "chassis component": LLDP_CHASSIS_SUBTYPE_CHASSIS_COMPONENT,
+                    "interface alias": LLDP_CHASSIS_SUBTYPE_INTERFACE_ALIAS,
+                    "port component": LLDP_CHASSIS_SUBTYPE_PORT_COMPONENT,
+                    "mac address": LLDP_CHASSIS_SUBTYPE_MAC,
+                    "macaddress": LLDP_CHASSIS_SUBTYPE_MAC,
+                    "network address": LLDP_CHASSIS_SUBTYPE_NETWORK_ADDRESS,
+                    "interface name": LLDP_CHASSIS_SUBTYPE_INTERFACE_NAME,
+                    "local": LLDP_CHASSIS_SUBTYPE_LOCAL,
                 }[remote_chassis_id_subtype.strip().lower()]
                 n["remote_chassis_id"] = m.group("chassis_id").strip()
                 remote_port_subtype = m.group("port_id_subtype").replace("_", " ")
                 n["remote_port_subtype"] = {
-                    "interface alias": 1,
+                    "interface alias": LLDP_PORT_SUBTYPE_ALIAS,
                     # DES-3526 6.00 B48, DES-3526 6.00 B49,
                     # DES-3200-28 1.85.B008
-                    "nterface alias": 1,
-                    "port component": 2,
-                    "mac address": 3,
-                    "macaddress": 3,
-                    "network address": 4,
-                    "interface name": 5,
-                    "agent circuit id": 6,
-                    "locally assigned": 7,
-                    "local": 7,
+                    "nterface alias": LLDP_PORT_SUBTYPE_ALIAS,
+                    "port component": LLDP_PORT_SUBTYPE_COMPONENT,
+                    "mac address": LLDP_PORT_SUBTYPE_MAC,
+                    "macaddress": LLDP_PORT_SUBTYPE_MAC,
+                    "network address": LLDP_PORT_SUBTYPE_NETWORK_ADDRESS,
+                    "interface name": LLDP_PORT_SUBTYPE_NAME,
+                    "agent circuit id": LLDP_PORT_SUBTYPE_AGENT_CIRCUIT_ID,
+                    "locally assigned": LLDP_PORT_SUBTYPE_LOCAL,
+                    "local": LLDP_PORT_SUBTYPE_LOCAL,
                 }[remote_port_subtype.strip().lower()]
                 n["remote_port"] = m.group("port_id").strip()
-                if n["remote_port_subtype"] == 3:
+                if n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_MAC:
                     try:
                         n["remote_port"] = MACAddressParameter().clean(n["remote_port"])
                     except ValueError:
                         continue
-                if n["remote_port_subtype"] == 4:
+                if n["remote_port_subtype"] == LLDP_PORT_SUBTYPE_NETWORK_ADDRESS:
                     n["remote_port"] = IPv4Parameter().clean(n["remote_port"])
 
                 if m.group("port_description").strip():
@@ -228,15 +247,15 @@ class Script(BaseScript):
                     if not c:
                         break
                     caps |= {
-                        "Other": 1,
-                        "Repeater": 2,
-                        "Bridge": 4,
-                        "Access Point": 8,
-                        "WLAN Access Point": 8,
-                        "Router": 16,
-                        "Telephone": 32,
-                        "DOCSIS Cable Device": 64,
-                        "Station Only": 128,
+                        "Other": LLDP_CAP_OTHER,
+                        "Repeater": LLDP_CAP_REPEATER,
+                        "Bridge": LLDP_CAP_BRIDGE,
+                        "Access Point": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "WLAN Access Point": LLDP_CAP_WLAN_ACCESS_POINT,
+                        "Router": LLDP_CAP_ROUTER ,
+                        "Telephone": LLDP_CAP_TELEPHONE,
+                        "DOCSIS Cable Device": LLDP_CAP_DOCSIS_CABLE_DEVICE,
+                        "Station Only": LLDP_CAP_STATION_ONLY,
                     }[c]
                 n["remote_capabilities"] = caps
                 i["neighbors"] += [n]

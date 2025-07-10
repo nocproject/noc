@@ -125,14 +125,16 @@ class Script(BaseScript):
         r = []
         stacks = []
         s = self.scripts.get_switch()
-        match = self.rx_dev.search(s)
-        revision = match.group("revision")
-        part_no = get_platform(match.group("part_no"), revision)
-        p = {"type": "CHASSIS", "vendor": "DLINK", "part_no": [part_no], "revision": revision}
-        ser = self.rx_ser.search(s)
-        if ser and ser.group("serial") != "System" and ser.group("serial") != "Power":
-            p["serial"] = ser.group("serial")
-        p["description"] = self.rx_des.search(s).group("descr")
+        v = self.scripts.get_version()
+        part_no = v["platform"]
+        p = {"type": "CHASSIS", "vendor": "DLINK", "part_no": [part_no]}
+        if "Chassis | HW Version" in v["caps"]:
+            p["revision"] = v["caps"]["Chassis | HW Version"]
+        if "Chassis | Serial Number" in v["caps"]:
+            p["serial"] = v["caps"]["Chassis | Serial Number"]
+        match = self.rx_des.search(s)
+        if match:
+            p["description"] = match.group("descr")
         if self.is_stack:
             s = self.cli("show stack_device")
             for match in self.rx_stack.finditer(s):
