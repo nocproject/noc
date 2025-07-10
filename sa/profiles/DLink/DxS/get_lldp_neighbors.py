@@ -252,7 +252,7 @@ class Script(BaseScript):
                         "Bridge": LLDP_CAP_BRIDGE,
                         "Access Point": LLDP_CAP_WLAN_ACCESS_POINT,
                         "WLAN Access Point": LLDP_CAP_WLAN_ACCESS_POINT,
-                        "Router": LLDP_CAP_ROUTER ,
+                        "Router": LLDP_CAP_ROUTER,
                         "Telephone": LLDP_CAP_TELEPHONE,
                         "DOCSIS Cable Device": LLDP_CAP_DOCSIS_CABLE_DEVICE,
                         "Station Only": LLDP_CAP_STATION_ONLY,

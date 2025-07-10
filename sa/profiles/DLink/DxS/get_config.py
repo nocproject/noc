@@ -29,7 +29,7 @@ class Script(BaseScript):
     def execute_cli(self, policy="r"):
         assert policy in ("r", "s")
 
-        platform  = self.scripts.get_version()["platform"]
+        platform = self.scripts.get_version()["platform"]
 
         # DGS-3612, DGS-3612G, DGS-3627, DGS-3627G, DGS-3650
         if self.rx_dgs36xx.search(platform):
