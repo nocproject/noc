@@ -21,7 +21,7 @@ def iter_model_caps(
     self, scope: Optional[str] = None, effective_only: bool = False
 ) -> Iterable[CapsValue]:
     """"""
-    from inv.models.capability import Capability
+    from noc.inv.models.capability import Capability
 
     for ci in self.caps or []:
         c = Capability.get_by_id(ci["capability"])
@@ -221,16 +221,12 @@ def capabilities(cls):
 
     if is_document(cls):
         # MongoEngine model
-        from mongoengine import signals as mongo_signals
-
         cls.iter_caps = iter_document_caps
         if not hasattr(cls, "save_caps"):
             cls.save_caps = save_document_caps
 
     else:
         # Django model
-        from django.db.models import signals as django_signals
-
         cls.iter_caps = iter_model_caps
         if not hasattr(cls, "save_caps"):
             cls.save_caps = save_model_caps

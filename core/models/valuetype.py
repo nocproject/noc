@@ -58,8 +58,11 @@ class ValueType(enum.Enum):
 
     @staticmethod
     def decode_int(value):
-        if value is not None and value.isdigit():
-            return int(value)
+        if value is not None:
+            try:
+                return int(value)
+            except ValueError:
+                pass
         return 0
 
     @staticmethod
