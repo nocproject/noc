@@ -75,7 +75,7 @@ class ServiceApplication(ExtDocApplication):
         svc_ids = [x["id"] for x in data]
         if not svc_ids:
             return data
-        instances = ServiceInstance.objects.item_frequencies("service")
+        instances = ServiceInstance.objects.filter(service__in=svc_ids).item_frequencies("service")
         instances = {str(k): v for k, v in instances.items()}
         # Apply service instance
         for x in data:
