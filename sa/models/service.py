@@ -22,7 +22,6 @@ from mongoengine.fields import (
     DateTimeField,
     ReferenceField,
     ListField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
     LongField,
     ObjectIdField,
