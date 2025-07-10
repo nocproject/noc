@@ -20,8 +20,8 @@ class CapsValue(object):
 
     def __str__(self):
         if self.scope:
-            return f"{self.capability.name}@{self.scope}: {self.value}"
-        return f"{self.capability.name}: {self.value}"
+            return f"{self.capability.name}@{self.scope} = {self.value}"
+        return f"{self.capability.name} = {self.value}"
 
     @property
     def name(self) -> str:

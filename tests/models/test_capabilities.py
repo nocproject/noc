@@ -38,6 +38,12 @@ class MockManagedObject(object):
         (
             [
                 {"key": "Cisco | IP | SLA | Responder", "value": False, "source": "discovery"},
+                {
+                    "key": "Cisco | IP | SLA | Responder",
+                    "value": True,
+                    "source": "etl",
+                    "scope": "RM",
+                },
             ],
             {"Cisco | IP | SLA | Probes": 1},
             {"Cisco | IP | SLA | Probes": 1, "Cisco | IP | SLA | Responder": False},
@@ -49,4 +55,41 @@ def test_update_caps(caps, update_caps, expected):
     for c in caps:
         mock.set_caps(**c)
     mock.update_caps(update_caps, source="manual")
+    print(mock.caps)
+    assert mock.get_caps() == expected
+
+
+@pytest.mark.parametrize(
+    "caps,update_caps,scope,expected_scope,expected",
+    [
+        (
+            [],
+            {"Cisco | IP | SLA | Probes": 1},
+            None,
+            {"Cisco | IP | SLA | Probes": 1},
+            {"Cisco | IP | SLA | Probes": 1},
+        ),
+        (
+            [
+                {"key": "Cisco | IP | SLA | Responder", "value": False, "source": "discovery"},
+                {
+                    "key": "Cisco | IP | SLA | Responder",
+                    "value": True,
+                    "source": "etl",
+                    "scope": "RM",
+                },
+            ],
+            {"Cisco | IP | SLA | Probes": 1},
+            "RM",
+            {"Cisco | IP | SLA | Probes": 1},
+            {"Cisco | IP | SLA | Probes": 1, "Cisco | IP | SLA | Responder": False},
+        ),
+    ],
+)
+def test_get_scope_caps(caps, update_caps, scope, expected_scope, expected):
+    mock = MockManagedObject([])
+    for c in caps:
+        mock.set_caps(**c)
+    mock.update_caps(update_caps, source="manual", scope=scope)
+    assert mock.get_caps(scope=scope) == expected_scope
     assert mock.get_caps() == expected

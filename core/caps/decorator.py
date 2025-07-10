@@ -17,9 +17,7 @@ from .types import CapsValue
 logger = logging.getLogger(__name__)
 
 
-def iter_model_caps(
-    self, scope: Optional[str] = None, effective_only: bool = False
-) -> Iterable[CapsValue]:
+def iter_model_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
     """"""
     from noc.inv.models.capability import Capability
 
@@ -38,7 +36,7 @@ def iter_model_caps(
             capability=c,
             value=value,
             source=InputSource(source),
-            scope=scope or "",
+            scope=cs,
         )
 
 
@@ -93,7 +91,9 @@ def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
     """
 
     caps = {}
-    for c in self.iter_caps(scope=scope, effective_only=not scope):
+    for c in self.iter_caps(scope=scope):
+        if c.name in caps and c.scope:
+            continue
         caps[c.name] = c.value
     return caps
 
@@ -101,28 +101,33 @@ def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
 def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional[str] = "") -> None:
     from noc.inv.models.capability import Capability
 
-    changed_caps: List[CapsValue] = []
+    new_caps: List[CapsValue] = []
     caps = Capability.get_by_name(key)
     if not caps:
         return
     value = caps.clean_value(value)
     source = InputSource(source)
+    changed = False
     for item in self.iter_caps():
         if item.capability == caps:
             if not scope or item.scope == scope:
-                changed_caps.append(item.set_value(value))
-                break
-    else:
-        changed_caps.append(
+                new_caps.append(item.set_value(value))
+                changed |= True
+                logger.info("Change capability value: %s -> %s", item, value)
+                continue
+        new_caps += [item]
+    if not changed:
+        new_caps += [
             CapsValue(
                 capability=caps,
                 value=value,
                 source=source,
                 scope=scope or "",
             )
-        )
-    if changed_caps:
-        self.save_caps(changed_caps)
+        ]
+        logger.info("Adding capability: %s", new_caps[-1])
+    if new_caps:
+        self.save_caps(new_caps)
 
 
 def update_caps(
@@ -130,6 +135,9 @@ def update_caps(
 ) -> Dict[str, Any]:
     """
     Update existing capabilities with a new ones.
+    * if set scope - processed items over that scope
+    * if not set scope - priority over if not set scope
+    * For source in same scope - priority by default, Manual, Discovery
     Args:
         self:
         caps: dict of caps name -> caps value
@@ -145,38 +153,45 @@ def update_caps(
     seen = set()
     changed = False
     for ci in self.iter_caps():
-        ci: CapsValue
+        # ci: CapsValue
         seen.add(ci.name)
         if scope and scope != ci.scope:
+            # For Separate scope - skipping update (ETL)
             logger.debug(
                 "[%s] Not changing capability %s: from other scope '%s'",
                 o_label,
                 ci.name,
                 ci.scope,
             )
-        elif ci.source == source:
-            if ci.name in caps:
-                if caps[ci.name] != ci.value:
-                    logger.info(
-                        "[%s] Changing capability %s: %s -> %s",
-                        o_label,
-                        ci.name,
-                        ci.value,
-                        caps[ci.name],
-                    )
-                    new_caps.append(ci.set_value(caps[ci.name]))
-                    changed = True
-            else:
-                logger.info("[%s] Removing capability %s", o_label, ci.name)
-                changed = True
-                continue
-        elif ci.name in caps:
+        elif ci.source == InputSource.MANUAL:
+            # Manual Source set only for set_caps method
             logger.info(
                 "[%s] Not changing capability %s: Already set with source '%s'",
                 o_label,
                 ci.name,
                 ci.scope,
             )
+        elif ci.name in caps and caps[ci.name] != ci.value:
+            logger.info(
+                "[%s] Changing capability %s: %s -> %s",
+                o_label,
+                ci.name,
+                ci.value,
+                caps[ci.name],
+            )
+            ci = ci.set_value(caps[ci.name])
+            changed |= True
+        elif ci.name in caps and caps[ci.name] == ci.value:
+            logger.info(
+                "[%s] Not changing capability %s: Already set with source '%s'",
+                o_label,
+                ci.name,
+                ci.scope,
+            )
+        elif ci.name not in caps and scope == ci.scope:
+            logger.info("[%s] Removing capability %s", o_label, ci)
+            changed |= True
+            continue
         new_caps += [ci]
     # Add new capabilities
     for cn in set(caps) - seen:
@@ -184,16 +199,17 @@ def update_caps(
         if not c:
             logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
             continue
-        logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
+        value = c.clean_value(caps[cn])
+        logger.info("[%s] Adding capability %s = %s", o_label, cn, value)
         new_caps.append(
             CapsValue(
                 capability=c,
-                value=caps[cn],
+                value=value,
                 source=source,
                 scope=scope or "",
             )
         )
-        changed = True
+        changed |= True
 
     if changed:
         logger.info("[%s] Saving changes", o_label)
