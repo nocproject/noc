@@ -12,7 +12,6 @@ import datetime
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.profiles.DLink.DxS.profile import get_platform
 
 
 class Script(BaseScript):
