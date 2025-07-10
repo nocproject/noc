@@ -52,7 +52,7 @@ def iter_capabilities() -> Iterable[Tuple[str, str]]:
     for key, c_type, value in (
         Capability.objects.filter().order_by("name").scalar("id", "type", "name")
     ):
-        yield key, caps_dtype_map[c_type], value
+        yield key, caps_dtype_map[c_type.value], value
 
 
 def get_adm_path_level() -> int:

@@ -1133,7 +1133,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     "id": str(capability.id),
                     "object": str(o.id),
                     "description": capability.description,
-                    "type": capability.type,
+                    "type": capability.type.value,
                     "value": c["value"],
                     "source": c["source"],
                     "scope": c.get("scope", ""),
