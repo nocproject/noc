@@ -120,7 +120,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     store.load({
       params: filter,
       callback: function(){
-        if(!Ext.isEmpty(panel) && !panel.destroyed){
+        if(!Ext.isEmpty(panel) && panel.isMasked()){
           panel.unmask();
         }
       },
