@@ -40,9 +40,7 @@ def iter_model_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
         )
 
 
-def iter_document_caps(
-    self, scope: Optional[str] = None, effective_only: bool = False
-) -> Iterable[CapsValue]:
+def iter_document_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
     """"""
     for ci in self.caps or []:
         if scope and scope != ci.scope:
@@ -58,28 +56,32 @@ def iter_document_caps(
         )
 
 
-def save_document_caps(self, caps: List[CapsValue]):
+def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False):
     """"""
     from noc.inv.models.capsitem import CapsItem
 
-    self.caps += [
-        CapsItem(capability=c.capability, value=c.value, source=c.source, scope=c.scope or "")
+    self.caps = [
+        CapsItem(capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or "")
         for c in caps
     ]
-    self.objects.filter(id=self.id).update(caps=self.caps)
+    if dry_run:
+        return
+    self.update(caps=self.caps)
 
 
-def save_model_caps(self, caps: List[CapsValue]):
+def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False):
     """"""
     self.caps = [
         {
             "capability": str(c.capability.id),
             "value": c.value,
-            "source": c.source,
+            "source": c.source.value,
             "scope": c.scope or "",
         }
         for c in caps
     ]
+    if dry_run:
+        return
     self.objects.filter(id=self.id).update(caps=self.caps)
     self.update_init()
     self._reset_caches(self.id, credential=True)
@@ -130,8 +132,32 @@ def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional
         self.save_caps(new_caps)
 
 
+def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
+    """
+    Remove caps from object
+    Args:
+        self: Object
+        caps: Caps Name
+        scope: Scope name
+    """
+    new_caps = []
+    changed = False
+    for item in self.iter_caps():
+        if scope and scope == item.scope:
+            changed |= True
+            logger.info("Removing capability by scope: %s", scope)
+            continue
+        if caps and caps == item.name:
+            changed |= True
+            logger.info("Removing capability by name: %s", caps)
+            continue
+        new_caps.append(item)
+    if changed:
+        self.save_caps(new_caps)
+
+
 def update_caps(
-    self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
+    self, caps: Dict[str, Any], source: str, scope: Optional[str] = None, dry_run: bool = False
 ) -> Dict[str, Any]:
     """
     Update existing capabilities with a new ones.
@@ -143,17 +169,17 @@ def update_caps(
         caps: dict of caps name -> caps value
         source: Source name
         scope: Scope name
+        dry_run: Not save changes
     """
     from noc.inv.models.capability import Capability
 
-    o_label = f"{scope or ''}|{self.name}|{source}"
+    o_label = f"{scope or ''}|{self}|{source}"
     source = InputSource(source)
     # Update existing capabilities
     new_caps: List[CapsValue] = []
     seen = set()
     changed = False
     for ci in self.iter_caps():
-        # ci: CapsValue
         seen.add(ci.name)
         if scope and scope != ci.scope:
             # For Separate scope - skipping update (ETL)
@@ -171,23 +197,25 @@ def update_caps(
                 ci.name,
                 ci.scope,
             )
-        elif ci.name in caps and caps[ci.name] != ci.value:
-            logger.info(
-                "[%s] Changing capability %s: %s -> %s",
-                o_label,
-                ci.name,
-                ci.value,
-                caps[ci.name],
-            )
-            ci = ci.set_value(caps[ci.name])
-            changed |= True
-        elif ci.name in caps and caps[ci.name] == ci.value:
-            logger.info(
-                "[%s] Not changing capability %s: Already set with source '%s'",
-                o_label,
-                ci.name,
-                ci.scope,
-            )
+        elif ci.name in caps:
+            value = ci.capability.clean_value(caps[ci.name])
+            if value != ci.value:
+                logger.info(
+                    "[%s] Changing capability %s: %s -> %s",
+                    o_label,
+                    ci.name,
+                    ci.value,
+                    caps[ci.name],
+                )
+                ci = ci.set_value(caps[ci.name])
+                changed |= True
+            else:
+                logger.debug(
+                    "[%s] Not changing capability %s: Already set with source '%s'",
+                    o_label,
+                    ci.name,
+                    ci.scope,
+                )
         elif ci.name not in caps and scope == ci.scope:
             logger.info("[%s] Removing capability %s", o_label, ci)
             changed |= True
@@ -213,7 +241,8 @@ def update_caps(
 
     if changed:
         logger.info("[%s] Saving changes", o_label)
-        self.save_caps(new_caps)
+        self.save_caps(new_caps, dry_run=dry_run)
+    # get_caps
     caps = {}
     for ci in new_caps:
         caps[ci.name] = ci.value
@@ -234,6 +263,7 @@ def capabilities(cls):
     cls.update_caps = update_caps
     cls.get_caps = get_caps
     cls.set_caps = set_caps
+    cls.reset_caps = reset_caps
 
     if is_document(cls):
         # MongoEngine model

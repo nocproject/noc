@@ -46,6 +46,7 @@ from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
+from noc.core.caps.decorator import capabilities
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -156,6 +157,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @on_init
 @change
 @workflow
+@capabilities
 @on_delete_check(
     clean=[
         ("phone.PhoneNumber", "service"),
@@ -251,7 +253,7 @@ class Service(Document):
     cpe_model = StringField()
     cpe_group = StringField()
     # Capabilities
-    caps: List[CapsItem] = ListField(EmbeddedDocumentField(CapsItem))
+    caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     #
     static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
@@ -791,27 +793,6 @@ class Service(Document):
         # from noc.inv.models.interface import Interface
         # Interface._get_collection().update_many({"service": self.id}, {"$unset": {"service": ""}})
         self._refresh_managed_object()
-
-    def get_caps(self) -> Dict[str, Any]:
-        # Update caps
-        return CapsItem.get_caps(self.caps)
-
-    def set_caps(
-        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = ""
-    ) -> None:
-        from noc.inv.models.capability import Capability
-
-        caps = Capability.get_by_name(key)
-        value = caps.clean_value(value)
-        for item in self.caps:
-            if str(item.capability.id) == str(caps.id):
-                if not scope or item.scope == scope:
-                    item.value = value
-                    break
-        else:
-            # Insert new item
-            self.caps += [CapsItem(capability=caps, value=value, source=source, scope=scope or "")]
-        Service.objects.filter(id=self.id).update(caps=self.caps)
 
     @cachetools.cached(_path_cache, key=lambda x: str(x.id), lock=id_lock)
     def get_path(self):

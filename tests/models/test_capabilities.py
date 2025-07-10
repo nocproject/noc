@@ -19,12 +19,12 @@ class MockManagedObject(object):
     def __init__(self, caps):
         self.caps = caps
 
-    def save_caps(self, caps):
+    def save_caps(self, caps, **kwargs):
         self.caps = [
             {
                 "capability": str(c.capability.id),
                 "value": c.value,
-                "source": c.source,
+                "source": c.source.value,
                 "scope": c.scope or "",
             }
             for c in caps
@@ -55,7 +55,6 @@ def test_update_caps(caps, update_caps, expected):
     for c in caps:
         mock.set_caps(**c)
     mock.update_caps(update_caps, source="manual")
-    print(mock.caps)
     assert mock.get_caps() == expected
 
 

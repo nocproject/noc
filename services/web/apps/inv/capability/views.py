@@ -62,7 +62,7 @@ class CapabilityApplication(ExtDocApplication):
             children = [
                 {
                     "text": f.name.split()[-1].strip(),
-                    "type": f.type,
+                    "type": f.type.value,
                     "id": str(f.id),
                     "leaf": True,
                     "checked": False,

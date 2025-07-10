@@ -25,7 +25,9 @@ class CapsItem(EmbeddedDocument):
     scope = StringField()
 
     def __str__(self):
-        return self.capability.name
+        if self.scope:
+            return f"{self.capability.name}@{self.scope} = {self.value}"
+        return f"{self.capability.name} = {self.value}"
 
     @classmethod
     def get_caps(cls, *args: List["CapsItem"], scope: Optional[str] = None) -> Dict[str, Any]:
