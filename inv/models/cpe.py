@@ -37,6 +37,7 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.validators import is_ipv4
 from noc.core.model.decorator import on_delete_check
 from noc.core.topology.types import ShapeOverlay, TopologyNode
+from noc.core.caps.decorator import capabilities
 from noc.core.stencil import Stencil
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
@@ -45,7 +46,6 @@ from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.wf.models.state import State
 from noc.inv.models.cpeprofile import CPEProfile
 from noc.inv.models.capsitem import CapsItem
-from noc.inv.models.capability import Capability
 from noc.pm.models.metricrule import MetricRule
 from noc.config import config
 
@@ -78,6 +78,7 @@ class ControllerItem(EmbeddedDocument):
 @Label.model
 @change
 @bi_sync
+@capabilities
 @workflow
 @on_delete_check(clean=[("sa.ManagedObject", "cpe_id")])
 class CPE(Document):
@@ -378,84 +379,6 @@ class CPE(Document):
 
     def get_cpe_interface(self):
         return self.controller.get_interface()
-
-    def update_caps(
-        self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        Update existing capabilities with a new ones.
-        :param caps: dict of caps name -> caps value
-        :param source: Source name
-        :param scope: Scope name
-        """
-
-        o_label = f"{scope or ''}|{self}|{source}"
-        # Update existing capabilities
-        new_caps = []
-        seen = set()
-        changed = False
-        for ci in self.caps:
-            c = ci.capability
-            cs = ci.source
-            css = ci.scope or ""
-            cv = ci.value
-            if not c:
-                logger.info("[%s] Removing unknown capability id %s", o_label, ci["capability"])
-                continue
-            cv = c.clean_value(cv)
-            cn = c.name
-            seen.add(cn)
-            if scope and scope != css:
-                logger.info(
-                    "[%s] Not changing capability %s: from other scope '%s'",
-                    o_label,
-                    cn,
-                    css,
-                )
-            elif cs == source:
-                if cn in caps:
-                    if caps[cn] != cv:
-                        logger.info(
-                            "[%s] Changing capability %s: %s -> %s", o_label, cn, cv, caps[cn]
-                        )
-                        ci["value"] = caps[cn]
-                        changed = True
-                else:
-                    logger.info("[%s] Removing capability %s", o_label, cn)
-                    changed = True
-                    continue
-            elif cn in caps:
-                logger.info(
-                    "[%s] Not changing capability %s: Already set with source '%s'",
-                    o_label,
-                    cn,
-                    cs,
-                )
-            new_caps += [ci]
-        # Add new capabilities
-        for cn in set(caps) - seen:
-            c = Capability.get_by_name(cn)
-            if not c:
-                logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
-                continue
-            logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
-            new_caps += [CapsItem(capability=c, value=caps[cn], source=source, scope=scope or "")]
-            changed = True
-
-        if changed:
-            logger.info("[%s] Saving changes", o_label)
-            self.caps = new_caps
-            self.update(caps=self.caps)
-            self._reset_caches(self.id)
-        caps = {}
-        for ci in new_caps:
-            cn = ci.capability
-            if cn:
-                caps[cn.name] = ci.value
-        return caps
-
-    def get_caps(self) -> Dict[str, Any]:
-        return CapsItem.get_caps(self.caps)
 
     def set_oper_status(
         self,

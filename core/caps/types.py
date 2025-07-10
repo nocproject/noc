@@ -43,7 +43,7 @@ class CapsValue(object):
             "id": str(self.capability.id),
             # "object": str(o.id),
             "description": self.capability.description,
-            "type": self.capability.type,
+            "type": self.capability.type.value,
             "value": self.value,
             "source": self.source,
             "scope": self.scope or "",
