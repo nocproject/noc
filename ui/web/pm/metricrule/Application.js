@@ -77,12 +77,14 @@ Ext.define("NOC.pm.metricrule.Application", {
                 {
                   name: "is_active",
                   xtype: "checkbox",
+                  isFormField: false,
                   boxLabel: __("Active"),
                   width: 100,
                 },
                 {
                   name: "metric_action",
                   xtype: "pm.metricaction.LookupField",
+                  isFormField: false,
                   fieldLabel: __("Metric Action"),
                   listeners: {
                     scope: me,
@@ -93,6 +95,7 @@ Ext.define("NOC.pm.metricrule.Application", {
                 },
                 {
                   xtype: "pm.metrictype.LookupField",
+                  isFormField: false,
                   fieldLabel: __("Metric Type"),
                   tooltip: __("Metric Type inputs"),
                   name: "metric_type",
@@ -107,6 +110,7 @@ Ext.define("NOC.pm.metricrule.Application", {
             {
               name: "thresholds",
               xtype: "gridfield",
+              isFormField: false,
               fieldLabel: __("Thresholds"),
               columns: [
                 {
@@ -175,6 +179,7 @@ Ext.define("NOC.pm.metricrule.Application", {
             {
               name: "metric_action_params",
               xtype: "gridfield",
+              isFormField: false,
               fieldLabel: __("Action Params"),
               columns: [
                 {
@@ -227,6 +232,7 @@ Ext.define("NOC.pm.metricrule.Application", {
             {
               name: "labels",
               xtype: "labelfield",
+              isFormField: false,
               fieldLabel: __("Match Labels"),
               allowBlank: true,
               isTree: true,
@@ -240,6 +246,7 @@ Ext.define("NOC.pm.metricrule.Application", {
             {
               name: "exclude_labels",
               xtype: "labelfield",
+              isFormField: false,
               fieldLabel: __("Exclude Match Labels"),
               allowBlank: true,
               isTree: true,
