@@ -152,7 +152,7 @@ class ActiveAlarm(Document):
             ("alarm_class", "managed_object"),
             "#reference",
             ("timestamp", "managed_object"),
-            # "escalation_tt",
+            "log.tt_id",
             # "escalation_ts",
             "adm_path",
             "segment_path",
