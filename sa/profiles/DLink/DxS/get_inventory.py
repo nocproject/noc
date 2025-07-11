@@ -39,16 +39,16 @@ class Script(BaseScript):
     )
     rx_media_type = re.compile(
         r"^\s((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
-        r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
-        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+(?P<mfg_date>\d+)\s+\n"
+        r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s*\n"
+        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+(?P<mfg_date>\d+)\s*\n"
         r"\s+Compatibility: Single Mode \(SM\),"
         r"(?P<mbd>\d+)Mbd, (?P<nm>\d+)nm\n",
         re.MULTILINE,
     )
     rx_media_type1210 = re.compile(
         r"^(?P<port>\d+)\s+\(F\)\s+SFP \- (?:LC|SC|Copper pigtail)\s*"
-        r"(?P<vendor>\S+)\s+(?P<part_no>\S+)\s+(?P<serial>\S+)\s+\n"
-        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S*)?\s+(?P<mfg_date>\d+)\s+\n"
+        r"(?P<vendor>\S+)\s+(?P<part_no>\S+)\s+(?P<serial>\S+)\s*\n"
+        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S*)?\s+(?P<mfg_date>\d+)\s*\n"
         r"\s+Compatibility:\s+(?:Single Mode|Unallocated|),\s+"
         r"(?P<mbd>\d+)\s*Mbd,\s+(?P<nm>\d+)\s*nm\n",
         re.MULTILINE,
