@@ -213,40 +213,16 @@ class ServiceApplication(ExtDocApplication):
         o = self.get_object_or_404(Service, id=sid)
         # if not o.has_access(request.user):
         #    return self.response_forbidden("Access denied")
-        caps = {}
-        for c in o.caps:
-            caps[str(c.capability.id)] = {
-                "capability": c.capability.name,
-                "id": str(c.capability.id),
-                "object": str(o.id),
-                "description": c.capability.description,
-                "type": c.capability.type.value,
-                "value": c.value,
-                "source": c.source,
-                "scope": c.scope or "",
-                "editor": c.capability.get_editor() if c.capability.allow_manual else None,
-            }
-        r = []
+        cfgs = {}
         for cp in o.profile.caps:
-            cid = str(cp.capability.id)
-            if cid in caps:
-                c = caps.pop(cid)
-                if not cp.allow_manual:
-                    c["editor"] = None
-                c["value"] = c["value"] or cp.default_value
-            else:
-                c = {
-                    "capability": cp.capability.name,
-                    "id": str(cp.capability.id),
-                    "object": str(o.id),
-                    "description": cp.capability.description,
-                    "type": cp.capability.type.value,
-                    "value": cp.default_value,
-                    "source": "P",
-                    "scope": "",
-                    "editor": cp.capability.get_editor() if cp.allow_manual else None,
-                }
-            r.append(c)
+            cfgs[str(cp.capability.id)] = cp
+        r = []
+        for c in o.iter_caps():
+            c_id = str(c.capability.id)
+            cfg = cfgs.pop(c_id, None)
+            caps = c.get_form(allow_manual=cfg and cfg.allow_manual)
+            caps["object"] = str(o.id)
+            r.append(caps)
         return sorted(r, key=lambda x: x["capability"])
 
     @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)

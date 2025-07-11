@@ -7,8 +7,9 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional, Any, List
 from noc.core.models.inputsources import InputSource
+from noc.core.models.valuetype import ValueType
 
 
 @dataclass(frozen=True)
@@ -36,7 +37,7 @@ class CapsValue(object):
             scope=self.scope,
         )
 
-    def get_form(self):
+    def get_form(self, allow_manual: bool = False):
         """Render Caps Form"""
         return {
             "capability": self.capability.name,
@@ -47,5 +48,12 @@ class CapsValue(object):
             "value": self.value,
             "source": self.source,
             "scope": self.scope or "",
-            "editor": self.capability.get_editor() if self.capability.allow_manual else None,
+            "editor": self.capability.get_editor() if self.capability.allow_manual and allow_manual else None,
         }
+
+    def get_references(self) -> List[str]:
+        """Generate References string for instance"""
+        match self.capability.type:
+            case ValueType.MAC_ADDRESS:
+                return [f"mac:{self.value}"]
+        return []

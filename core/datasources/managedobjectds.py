@@ -48,13 +48,6 @@ caps_dtype_map = {
 }
 
 
-def iter_capabilities() -> Iterable[Tuple[str, str]]:
-    for key, c_type, value in (
-        Capability.objects.filter().order_by("name").scalar("id", "type", "name")
-    ):
-        yield key, caps_dtype_map[c_type.value], value
-
-
 def get_adm_path_level() -> int:
     return 3
 
@@ -265,26 +258,6 @@ class ManagedObjectDS(BaseDataSource):
                 internal_name=SNMPTRAP_DIAG,
             ),
         ]
-        # Remote System
-        + [
-            FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id), is_vector=True)
-            for rs in RemoteSystem.objects.filter()
-        ]
-        # Capabilities
-        + [
-            FieldInfo(
-                name=c_name, type=c_type, internal_name=str(c_id), is_caps=True, is_vector=True
-            )
-            for c_id, c_type, c_name in iter_capabilities()
-        ]
-        + [
-            FieldInfo(
-                name=f"adm_path_{level}",
-                internal_name="administrative_domain__name",
-                is_vector=True,
-            )
-            for level in range(1, get_adm_path_level() + 1)
-        ]
     )
 
     @classmethod
@@ -305,6 +278,26 @@ class ManagedObjectDS(BaseDataSource):
         return await super().query(fields=fields, *args, **kwargs)
 
     @classmethod
+    def iter_ds_fields(cls):
+        yield from super().iter_ds_fields()
+        # Remote System
+        for rs in RemoteSystem.objects.filter():
+            yield FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id), is_vector=True)
+        # Capabilities
+        for c_id, c_type, c_name in (
+            Capability.objects.filter().order_by("name").scalar("id", "type", "name")
+        ):
+            c_type = caps_dtype_map.get(c_type.value, FieldType.STRING)
+            yield FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+        # Adm Domain
+        for level in range(1, get_adm_path_level() + 1):
+            yield FieldInfo(
+                name=f"adm_path_{level}",
+                internal_name="administrative_domain__name",
+                is_vector=True,
+            )
+
+    @classmethod
     async def iter_caps(
         cls, caps: List[Dict[str, Any]], requested_caps: Dict[str, Any] = None
     ) -> AsyncIterable[Tuple[str, Any]]:
@@ -313,9 +306,9 @@ class ManagedObjectDS(BaseDataSource):
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
-        :param caps:
-        :param requested_caps:
-        :return:
+        Args:
+        caps:
+        requested_caps:
         """
         caps = {c["capability"]: c["value"] for c in caps}
         for cid, fields in requested_caps.items():

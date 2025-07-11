@@ -25,10 +25,13 @@ caps_dtype_map = {
 
 
 def get_capabilities() -> Iterable[Tuple[str, str]]:
-    for key, c_type, value in (
-        Capability.objects.filter().order_by("name").scalar("id", "type", "name")
+    for key, c_type, value, multi in (
+        Capability.objects.filter().order_by("name").scalar("id", "type", "name", "multi")
     ):
-        yield key, caps_dtype_map[c_type.value], value
+        if multi:
+            yield key, FieldType.LIST_STRING, value
+        else:
+            yield key, caps_dtype_map.get(c_type.value, FieldType.STRING), value
 
 
 class ManagedObjectCapsDS(BaseDataSource):

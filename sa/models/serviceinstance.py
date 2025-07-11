@@ -102,7 +102,7 @@ class ServiceInstance(Document):
     addresses: List[AddressItem] = EmbeddedDocumentListField(AddressItem)
     # NRI port id, converted by portmapper to native name
     name: str = StringField(required=False)
-    macs: List[str] = ListField(StringField(required=True))
+    asset_refs: List[str] = ListField(StringField(required=True))
     nri_port = StringField()
     # Object id in remote system
     remote_id = StringField()
