@@ -34,7 +34,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
 from noc.core.cdag.node.alarm import VarItem
 from noc.core.change.decorator import change
-from noc.core.expr import get_vars
+from noc.core.expr import get_fn, get_vars
 from noc.fm.models.alarmclass import AlarmClass
 from noc.pm.models.metrictype import MetricType
 from noc.sa.interfaces.base import (
@@ -193,13 +193,30 @@ class MetricAction(Document):
             raise ValidationError({"compose_inputs": "Empty MetricType"})
         if not self.compose_expression:
             return
+
+        # Same scope check
+        scope = self.compose_inputs[0].metric_type.scope.table_name
+        for ci in self.compose_inputs:
+            if ci.metric_type.scope.table_name != scope:
+                raise ValidationError(
+                    {"compose_inputs": f"Metric {ci.metric_type.name} not in the scope {scope}"}
+                )
+
+        # Executable check
+        try:
+            get_fn(self.compose_expression)
+        except SyntaxError as e:
+            raise ValidationError({"compose_expression": f"Syntax error {e}"})
+        except Exception as e:
+            raise ValidationError({"compose_expression": f"{e}"})
+
         try:
             metric_fields = get_vars(self.compose_expression)
         except Exception as e:
             raise ValidationError({"compose_expression": str(e)})
         inputs = [mi.metric_type for mi in self.compose_inputs]
         for m_f in metric_fields:
-            mt = MetricType.get_by_field_name(m_f)
+            mt = MetricType.get_by_field_name(m_f, scope)
             if not mt or mt not in inputs:
                 raise ValidationError(
                     {"compose_expression": f"Unknown variable {m_f} on expression"}
