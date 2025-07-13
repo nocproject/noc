@@ -834,7 +834,7 @@ class Service(Document):
         for settings in self.profile.instance_settings:
             if not settings.refs_caps or settings.refs_caps.name not in caps:
                 continue
-            refs = settings.refs_caps.type.get_references(caps[settings.refs_caps.name])
+            refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
             if not refs:
                 continue
             cfg = ServiceInstanceConfig.get_config(
@@ -861,8 +861,10 @@ class Service(Document):
         for cfg in instances:
             instance = ServiceInstance.ensure_instance(self, cfg)
             # Update Data, Run sync
+            changed = instance.update_config(cfg)
             # Add Source
-            instance.seen(source, last_update)
+            instance.seen(source, last_update, dry_run=True)
+            instance.save()
             processed.add(instance.id)
         # Clean Source from Instances
         for instance in ServiceInstance.objects.filter(sources__in=[source], id__nin=processed):

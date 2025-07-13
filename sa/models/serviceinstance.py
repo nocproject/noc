@@ -177,22 +177,35 @@ class ServiceInstance(Document):
     def ensure_instance(cls, service, cfg: ServiceInstanceConfig) -> Optional["ServiceInstance"]:
         """ """
         qs = cfg.get_queryset(service)
-        instance = ServiceInstance.objects.filter(qs)
+        instance = ServiceInstance.objects.filter(qs).first()
         logger.debug("[%s] Find Instance by query: %s, Result: %s", service.id, qs, instance)
         if not instance:
             logger.info("[%s] Create new Instance: %s", service.id, cfg.type)
             instance = ServiceInstance.from_config(service, cfg)
         return instance
 
-    def seen(self, source: InputSource, last_seen: Optional[datetime.datetime] = None):
+    def update_config(self, cfg: ServiceInstanceConfig):
+        """Update instance Data from config"""
+        if self.asset_refs != cfg.asset_refs:
+            self.asset_refs = cfg.asset_refs
+        if self.fqdn != cfg.fqdn:
+            self.fqdn = cfg.fqdn
+
+    def seen(
+        self,
+        source: InputSource,
+        last_seen: Optional[datetime.datetime] = None,
+        dry_run: bool = False,
+    ):
         """Update source"""
         if source not in [InputSource.MANUAL, InputSource.CONFIG]:
             self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
         if source not in self.sources:
-            self.sources += [InputSource]
-        ServiceInstance.objects.filter(id=self.id).update(
-            sources=self.sources, last_seen=self.last_seen
-        )
+            self.sources += [source]
+        if not dry_run:
+            ServiceInstance.objects.filter(id=self.id).update(
+                sources=self.sources, last_seen=self.last_seen
+            )
 
     def unseen(self, source: InputSource):
         """Remove from source"""

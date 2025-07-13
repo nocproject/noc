@@ -354,7 +354,7 @@ class ServiceProfile(Document):
             # ("N", "Resource Binding"),
             # ("O", "Allow Register"),
         ],
-        default="N",
+        default="A",
     )
     instance_settings: List["InstanceSettings"] = EmbeddedDocumentListField(
         InstanceSettings, required=False
