@@ -48,12 +48,9 @@ class CapsValue(object):
             "value": self.value,
             "source": self.source,
             "scope": self.scope or "",
-            "editor": self.capability.get_editor() if self.capability.allow_manual and allow_manual else None,
+            "editor": (
+                self.capability.get_editor()
+                if self.capability.allow_manual and allow_manual
+                else None
+            ),
         }
-
-    def get_references(self) -> List[str]:
-        """Generate References string for instance"""
-        match self.capability.type:
-            case ValueType.MAC_ADDRESS:
-                return [f"mac:{self.value}"]
-        return []

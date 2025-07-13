@@ -7,6 +7,7 @@
 
 # Python modules
 import enum
+from typing import List, Any
 
 # NOC modules
 from noc.sa.interfaces.base import (
@@ -126,3 +127,10 @@ class ValueType(enum.Enum):
             if errors != "strict":
                 return self.get_default(value)
             raise e
+
+    def get_references(self, value: Any) -> List[str]:
+        """Generate References string for instance"""
+        match self:
+            case ValueType.MAC_ADDRESS:
+                return [f"mac:{value}"]
+        return []

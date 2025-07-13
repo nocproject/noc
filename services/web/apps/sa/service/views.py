@@ -326,9 +326,9 @@ class ServiceApplication(ExtDocApplication):
         sid: str,
         iid: str,
     ):
-        o = self.get_object_or_404(Service, id=sid)
+        # o = self.get_object_or_404(Service, id=sid)
         si = self.get_object_or_404(ServiceInstance, id=iid)
-        o.deregister_instance(si.type, name=si.name)
+        si.unseen(InputSource.MANUAL)
         return {"success": True}
 
     # Resource Working
