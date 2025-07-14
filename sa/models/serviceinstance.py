@@ -88,7 +88,7 @@ class ServiceInstance(Document):
             "type",
             "remote_id",
             ("addresses.address_bin", "port"),
-            {"fields": ["service", "managed_object", "remote_id", "name"], "unique": True},
+            {"fields": ["service", "type", "managed_object", "remote_id", "name"], "unique": True},
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }

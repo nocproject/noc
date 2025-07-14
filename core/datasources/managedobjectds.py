@@ -409,7 +409,7 @@ class ManagedObjectDS(BaseDataSource):
         adm_paths = {}
         annotations = {}
         # Getting requested fields
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             f_query_name = f.internal_name or f.name
             if f_query_name in q_fields:
                 continue
