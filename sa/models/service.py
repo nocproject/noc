@@ -861,7 +861,7 @@ class Service(Document):
         for cfg in instances:
             instance = ServiceInstance.ensure_instance(self, cfg)
             # Update Data, Run sync
-            changed = instance.update_config(cfg)
+            instance.update_config(cfg)
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()

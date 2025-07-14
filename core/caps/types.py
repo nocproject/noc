@@ -7,9 +7,8 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Any, List
+from typing import Optional, Any
 from noc.core.models.inputsources import InputSource
-from noc.core.models.valuetype import ValueType
 
 
 @dataclass(frozen=True)
