@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_interfaces
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -232,6 +232,9 @@ class Script(BaseScript):
             return None
 
     def execute_cli(self):
+        if self.is_dgs_1100:
+            print ("This platform has ugly CLI support, passing")
+            return []
         ipif_found = False
         if self.match_version(DxS_L2):
             L2_Switch = True

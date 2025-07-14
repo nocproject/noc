@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_license
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2013 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetLicense
     rx_lic = re.compile(r"Device Default License : (?P<license>\S+)", re.MULTILINE)
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("show dlms license")
         except self.CLISyntaxError:

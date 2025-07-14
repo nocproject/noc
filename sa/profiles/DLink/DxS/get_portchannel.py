@@ -1,14 +1,16 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_portchannel
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+import re
 
+# NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetportchannel import IGetPortchannel
-import re
 
 
 class Script(BaseScript):
@@ -19,7 +21,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
 
-    def execute(self):
+    def execute_cli(self):
         try:
             t = self.cli("show link_aggregation")
         except self.CLISyntaxError:

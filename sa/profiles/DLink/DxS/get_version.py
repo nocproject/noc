@@ -48,6 +48,7 @@ class Script(BaseScript):
     rx_motd = re.compile(r"(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
 
     def execute_snmp(self):
+
         """
         AGENT-MIB and AGENT-GENERAL-MIB - D-Link private MIBs
         """
@@ -66,18 +67,29 @@ class Script(BaseScript):
         fwt = self.snmp.get("1.3.6.1.4.1.171.12.1.1.13.0", cached=True)
 
         if not platform or not version:
+            """
+            dlinkPrimeDeviceInfoMIB
+            """
+            hardware = self.snmp.get("1.3.6.1.4.1.171.15.3.1.5.0", cached=True)
+            version = self.snmp.get("1.3.6.1.4.1.171.15.3.1.4.0", cached=True)
+            bootprom = self.snmp.get("1.3.6.1.4.1.171.15.3.1.3.0", cached=True)
+            serial = self.snmp.get("1.3.6.1.4.1.171.15.3.1.6.0", cached=True)
             v = self.snmp.get(mib["SNMPv2-MIB::sysDescr.0"], cached=True)
             match = self.rx_platform.search(v)
             platform = match.group("platform")
-            version = match.group("version")
-            if version is None:
+            if not version:
+                version = match.group("version")
+            if not version:
                 # RMON2-MIB::probeSoftwareRev
                 version = self.snmp.get("1.3.6.1.2.1.16.19.2", cached=True)
-                if not version:
-                    version = self.snmp.get("1.3.6.1.2.1.16.19.2.0", cached=True)
-            # RMON2-MIB::probeHardwareRev
-            hardware = self.snmp.get("1.3.6.1.2.1.16.19.3", cached=True)
+            if not version:
+                # Last resort
+                version = self.snmp.get("1.3.6.1.2.1.16.19.2.0", cached=True)
             if not hardware:
+                # RMON2-MIB::probeHardwareRev
+                hardware = self.snmp.get("1.3.6.1.2.1.16.19.3", cached=True)
+            if not hardware:
+                # Last resort
                 hardware = self.snmp.get("1.3.6.1.2.1.16.19.3.0", cached=True)
         if not version:
             # AGENT-MIB::swMultiImageInfoEntry

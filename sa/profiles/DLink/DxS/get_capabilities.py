@@ -33,8 +33,12 @@ class Script(BaseScript):
         """
         Check box has lldp enabled
         """
+        # Switches with DLINKPRIME-LLDP-EXT-MIB do not support
+        # any methods to get local port
+        #
         # swL2DevCtrlLLDPState can only get from l2mgmt-mib
         # LLDP-MIB::lldpStatsRemTablesInserts.0
+        #
         try:
             r = self.snmp.get("1.0.8802.1.1.2.1.2.2.0")
             if r:
