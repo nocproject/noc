@@ -48,13 +48,6 @@ caps_dtype_map = {
 }
 
 
-def iter_capabilities() -> Iterable[Tuple[str, str]]:
-    for key, c_type, value in (
-        Capability.objects.filter().order_by("name").scalar("id", "type", "name")
-    ):
-        yield key, caps_dtype_map[c_type.value], value
-
-
 def get_adm_path_level() -> int:
     return 3
 
@@ -69,223 +62,201 @@ class ManagedObjectDS(BaseDataSource):
         ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
     ]
 
-    fields = (
-        [
-            FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
-            FieldInfo(
-                name="managed_object_id",
-                description="Object Id",
-                internal_name="id",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(name="name", description="Object Name"),
-            FieldInfo(name="profile", description="Profile Name"),
-            FieldInfo(name="pool", description="Pool Name"),
-            FieldInfo(
-                name="object_profile",
-                description="Object Profile Name",
-                internal_name="object_profile__name",
-            ),
-            FieldInfo(name="hostname", description="Object Hostname", internal_name="id"),
-            FieldInfo(
-                name="status",
-                description="Object Admin Status",
-                type=FieldType.BOOL,
-                internal_name="is_managed",
-            ),
-            FieldInfo(name="address", description="Object IP Address"),
-            # Inventory fields
-            FieldInfo(name="vendor", description="Object Vendor"),
-            FieldInfo(name="model", description="Object Model", internal_name="platform"),
-            FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
-            # Attributes fields
-            FieldInfo(
-                name="attr_hwversion",
-                description="Object HW Version Attribute",
-                internal_name="Chassis | HW Version",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_bootprom",
-                description="Object Boot Prom Attribute",
-                internal_name="Chassis | Boot PROM",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_patch",
-                description="Object Patch Attribute",
-                internal_name="Software | Patch Version",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_serialnumber",
-                description="Object Serial Number Attribute",
-                internal_name="Chassis | Serial Number",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="adm_path",
-                description="Object Adm path",
-                internal_name="administrative_domain__name",
-                is_virtual=True,
-            ),
-            FieldInfo(
-                name="caps",
-                description="Object Capabilities",
-                is_virtual=True,
-            ),
-            FieldInfo(
-                name="chassis_macs",
-                description="Macs",
-                internal_name="id",
-            ),
-            FieldInfo(
-                name="mappings",
-                description="Object Mappings",
-                is_virtual=True,
-            ),
-            # Location Fields
-            FieldInfo(
-                name="administrativedomain",
-                description="Object Administrative Domain",
-                internal_name="administrative_domain__name",
-            ),
-            FieldInfo(
-                name="container",
-                description="Object Container Name",
-            ),
-            FieldInfo(
-                name="segment",
-                description="Object Segment Name",
-            ),
-            FieldInfo(
-                name="project",
-                description="Object Segment Name",
-            ),
-            FieldInfo(
-                name="auth_profile",
-                description="Object Authentication Profile",
-            ),
-            # Stat fields
-            FieldInfo(
-                name="link_count",
-                description="Object links count",
-                internal_name="links",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(
-                name="object_labels",
-                description="Object Labels",
-                internal_name="labels",
-                type=FieldType.LIST_STRING,
-            ),
-            FieldInfo(
-                name="physical_iface_count",
-                description="Object physical interfaces",
-                internal_name="DB | Interfaces",
-                type=FieldType.UINT,
-                is_caps=True,
-            ),
-            # Oper fields
-            FieldInfo(
-                name="avail",
-                description="Object Availability Status",
-                internal_name="avail_status",
-            ),
-            # Discovery enabled fields
-            FieldInfo(
-                name="enable_box",
-                type=FieldType.BOOL,
-                description="Enable Box Discovery",
-                internal_name="object_profile__enable_box_discovery",
-            ),
-            FieldInfo(
-                name="enable_periodic",
-                type=FieldType.BOOL,
-                description="Enable Periodic Discovery",
-                internal_name="object_profile__enable_periodic_discovery",
-            ),
-            FieldInfo(
-                name="enable_metrics",
-                type=FieldType.BOOL,
-                description="Enable Metric Discovery",
-                internal_name="object_profile__enable_metrics",
-            ),
-            FieldInfo(
-                name="enable_ping",
-                type=FieldType.BOOL,
-                description="Enable Availability check by Ping",
-                internal_name="object_profile__enable_ping",
-            ),
-            FieldInfo(
-                name="enable_topology",
-                type=FieldType.BOOL,
-                description="Enable Device Topology check",
-                internal_name="object_profile__enable_box_discovery_lldp",
-            ),
-            # Troubles
-            FieldInfo(
-                name="trouble_snmp",
-                type=FieldType.BOOL,
-                description="SNMP is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=SNMP_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_profile",
-                type=FieldType.BOOL,
-                description="Profile is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=PROFILE_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_cli",
-                type=FieldType.BOOL,
-                description="CLI is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=CLI_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_detail",
-                description="Trouble detail message",
-                internal_name="diagnostics",
-            ),
-            FieldInfo(
-                name="recv_syslog",
-                type=FieldType.BOOL,
-                description="SNMP Trap is received",
-                is_diagnostic_state=DiagnosticState.enabled,
-                internal_name=SYSLOG_DIAG,
-            ),
-            FieldInfo(
-                name="recv_snmptrap",
-                type=FieldType.BOOL,
-                description="SNMP Trap is received",
-                is_diagnostic_state=DiagnosticState.enabled,
-                internal_name=SNMPTRAP_DIAG,
-            ),
-        ]
-        # Remote System
-        + [
-            FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id), is_vector=True)
-            for rs in RemoteSystem.objects.filter()
-        ]
-        # Capabilities
-        + [
-            FieldInfo(
-                name=c_name, type=c_type, internal_name=str(c_id), is_caps=True, is_vector=True
-            )
-            for c_id, c_type, c_name in iter_capabilities()
-        ]
-        + [
-            FieldInfo(
-                name=f"adm_path_{level}",
-                internal_name="administrative_domain__name",
-                is_vector=True,
-            )
-            for level in range(1, get_adm_path_level() + 1)
-        ]
-    )
+    fields = [
+        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(
+            name="managed_object_id",
+            description="Object Id",
+            internal_name="id",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(name="name", description="Object Name"),
+        FieldInfo(name="profile", description="Profile Name"),
+        FieldInfo(name="pool", description="Pool Name"),
+        FieldInfo(
+            name="object_profile",
+            description="Object Profile Name",
+            internal_name="object_profile__name",
+        ),
+        FieldInfo(name="hostname", description="Object Hostname", internal_name="id"),
+        FieldInfo(
+            name="status",
+            description="Object Admin Status",
+            type=FieldType.BOOL,
+            internal_name="is_managed",
+        ),
+        FieldInfo(name="address", description="Object IP Address"),
+        # Inventory fields
+        FieldInfo(name="vendor", description="Object Vendor"),
+        FieldInfo(name="model", description="Object Model", internal_name="platform"),
+        FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
+        # Attributes fields
+        FieldInfo(
+            name="attr_hwversion",
+            description="Object HW Version Attribute",
+            internal_name="Chassis | HW Version",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_bootprom",
+            description="Object Boot Prom Attribute",
+            internal_name="Chassis | Boot PROM",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_patch",
+            description="Object Patch Attribute",
+            internal_name="Software | Patch Version",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_serialnumber",
+            description="Object Serial Number Attribute",
+            internal_name="Chassis | Serial Number",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="adm_path",
+            description="Object Adm path",
+            internal_name="administrative_domain__name",
+            is_virtual=True,
+        ),
+        FieldInfo(
+            name="caps",
+            description="Object Capabilities",
+            is_virtual=True,
+        ),
+        FieldInfo(
+            name="chassis_macs",
+            description="Macs",
+            internal_name="id",
+        ),
+        FieldInfo(
+            name="mappings",
+            description="Object Mappings",
+            is_virtual=True,
+        ),
+        # Location Fields
+        FieldInfo(
+            name="administrativedomain",
+            description="Object Administrative Domain",
+            internal_name="administrative_domain__name",
+        ),
+        FieldInfo(
+            name="container",
+            description="Object Container Name",
+        ),
+        FieldInfo(
+            name="segment",
+            description="Object Segment Name",
+        ),
+        FieldInfo(
+            name="project",
+            description="Object Segment Name",
+        ),
+        FieldInfo(
+            name="auth_profile",
+            description="Object Authentication Profile",
+        ),
+        # Stat fields
+        FieldInfo(
+            name="link_count",
+            description="Object links count",
+            internal_name="links",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(
+            name="object_labels",
+            description="Object Labels",
+            internal_name="labels",
+            type=FieldType.LIST_STRING,
+        ),
+        FieldInfo(
+            name="physical_iface_count",
+            description="Object physical interfaces",
+            internal_name="DB | Interfaces",
+            type=FieldType.UINT,
+            is_caps=True,
+        ),
+        # Oper fields
+        FieldInfo(
+            name="avail",
+            description="Object Availability Status",
+            internal_name="avail_status",
+        ),
+        # Discovery enabled fields
+        FieldInfo(
+            name="enable_box",
+            type=FieldType.BOOL,
+            description="Enable Box Discovery",
+            internal_name="object_profile__enable_box_discovery",
+        ),
+        FieldInfo(
+            name="enable_periodic",
+            type=FieldType.BOOL,
+            description="Enable Periodic Discovery",
+            internal_name="object_profile__enable_periodic_discovery",
+        ),
+        FieldInfo(
+            name="enable_metrics",
+            type=FieldType.BOOL,
+            description="Enable Metric Discovery",
+            internal_name="object_profile__enable_metrics",
+        ),
+        FieldInfo(
+            name="enable_ping",
+            type=FieldType.BOOL,
+            description="Enable Availability check by Ping",
+            internal_name="object_profile__enable_ping",
+        ),
+        FieldInfo(
+            name="enable_topology",
+            type=FieldType.BOOL,
+            description="Enable Device Topology check",
+            internal_name="object_profile__enable_box_discovery_lldp",
+        ),
+        # Troubles
+        FieldInfo(
+            name="trouble_snmp",
+            type=FieldType.BOOL,
+            description="SNMP is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=SNMP_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_profile",
+            type=FieldType.BOOL,
+            description="Profile is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=PROFILE_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_cli",
+            type=FieldType.BOOL,
+            description="CLI is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=CLI_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_detail",
+            description="Trouble detail message",
+            internal_name="diagnostics",
+        ),
+        FieldInfo(
+            name="recv_syslog",
+            type=FieldType.BOOL,
+            description="SNMP Trap is received",
+            is_diagnostic_state=DiagnosticState.enabled,
+            internal_name=SYSLOG_DIAG,
+        ),
+        FieldInfo(
+            name="recv_snmptrap",
+            type=FieldType.BOOL,
+            description="SNMP Trap is received",
+            is_diagnostic_state=DiagnosticState.enabled,
+            internal_name=SNMPTRAP_DIAG,
+        ),
+    ]
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
@@ -305,6 +276,26 @@ class ManagedObjectDS(BaseDataSource):
         return await super().query(fields=fields, *args, **kwargs)
 
     @classmethod
+    def iter_ds_fields(cls):
+        yield from super().iter_ds_fields()
+        # Remote System
+        for rs in RemoteSystem.objects.filter():
+            yield FieldInfo(name=f"RS_{rs.name}", internal_name=str(rs.id), is_vector=True)
+        # Capabilities
+        for c_id, c_type, c_name in (
+            Capability.objects.filter().order_by("name").scalar("id", "type", "name")
+        ):
+            c_type = caps_dtype_map.get(c_type.value, FieldType.STRING)
+            yield FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+        # Adm Domain
+        for level in range(1, get_adm_path_level() + 1):
+            yield FieldInfo(
+                name=f"adm_path_{level}",
+                internal_name="administrative_domain__name",
+                is_vector=True,
+            )
+
+    @classmethod
     async def iter_caps(
         cls, caps: List[Dict[str, Any]], requested_caps: Dict[str, Any] = None
     ) -> AsyncIterable[Tuple[str, Any]]:
@@ -313,9 +304,9 @@ class ManagedObjectDS(BaseDataSource):
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
-        :param caps:
-        :param requested_caps:
-        :return:
+        Args:
+        caps:
+        requested_caps:
         """
         caps = {c["capability"]: c["value"] for c in caps}
         for cid, fields in requested_caps.items():
@@ -418,7 +409,7 @@ class ManagedObjectDS(BaseDataSource):
         adm_paths = {}
         annotations = {}
         # Getting requested fields
-        for f in cls.fields:
+        for f in cls.iter_ds_fields():
             f_query_name = f.internal_name or f.name
             if f_query_name in q_fields:
                 continue

@@ -17,19 +17,27 @@ from .base import BaseModel, _BaseModel
 from .typing import Reference, MappingItem, CapsItem
 from .serviceprofile import ServiceProfile
 from .subscriber import Subscriber
-from noc.core.models.serviceinstanceconfig import InstanceType
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 
 
 class Instance(_BaseModel):
     type: InstanceType = InstanceType.NETWORK_CHANNEL
     name: Optional[str] = None
-    addresses: Optional[List[str]] = None
+    # addresses: Optional[List[str]] = None
     fqdn: Optional[str] = None
-    port: Optional[int] = None
+    # port: Optional[int] = None
     remote_id: Optional[str] = None
     nri_port: Optional[str] = None
-    mac_addresses: Optional[List[str]] = None
     last_update: Optional[datetime] = None
+
+    @property
+    def config(self) -> ServiceInstanceConfig:
+        return ServiceInstanceConfig(
+            name=self.name,
+            remote_id=self.remote_id,
+            nri_port=self.nri_port,
+            fqdn=self.fqdn,
+        )
 
 
 class Service(BaseModel):
