@@ -394,7 +394,7 @@ class ReportDsAlarms(BaseDataSource):
             ]
         if fields:
             segment_path_fields = [
-                field for field in cls.iter_ds_fields() if field.startswith("segment_")
+                field for field in fields if field.startswith("segment_")
             ]
         else:
             segment_path_fields = [
