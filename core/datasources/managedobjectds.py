@@ -62,203 +62,201 @@ class ManagedObjectDS(BaseDataSource):
         ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
     ]
 
-    fields = (
-        [
-            FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
-            FieldInfo(
-                name="managed_object_id",
-                description="Object Id",
-                internal_name="id",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(name="name", description="Object Name"),
-            FieldInfo(name="profile", description="Profile Name"),
-            FieldInfo(name="pool", description="Pool Name"),
-            FieldInfo(
-                name="object_profile",
-                description="Object Profile Name",
-                internal_name="object_profile__name",
-            ),
-            FieldInfo(name="hostname", description="Object Hostname", internal_name="id"),
-            FieldInfo(
-                name="status",
-                description="Object Admin Status",
-                type=FieldType.BOOL,
-                internal_name="is_managed",
-            ),
-            FieldInfo(name="address", description="Object IP Address"),
-            # Inventory fields
-            FieldInfo(name="vendor", description="Object Vendor"),
-            FieldInfo(name="model", description="Object Model", internal_name="platform"),
-            FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
-            # Attributes fields
-            FieldInfo(
-                name="attr_hwversion",
-                description="Object HW Version Attribute",
-                internal_name="Chassis | HW Version",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_bootprom",
-                description="Object Boot Prom Attribute",
-                internal_name="Chassis | Boot PROM",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_patch",
-                description="Object Patch Attribute",
-                internal_name="Software | Patch Version",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="attr_serialnumber",
-                description="Object Serial Number Attribute",
-                internal_name="Chassis | Serial Number",
-                is_caps=True,
-            ),
-            FieldInfo(
-                name="adm_path",
-                description="Object Adm path",
-                internal_name="administrative_domain__name",
-                is_virtual=True,
-            ),
-            FieldInfo(
-                name="caps",
-                description="Object Capabilities",
-                is_virtual=True,
-            ),
-            FieldInfo(
-                name="chassis_macs",
-                description="Macs",
-                internal_name="id",
-            ),
-            FieldInfo(
-                name="mappings",
-                description="Object Mappings",
-                is_virtual=True,
-            ),
-            # Location Fields
-            FieldInfo(
-                name="administrativedomain",
-                description="Object Administrative Domain",
-                internal_name="administrative_domain__name",
-            ),
-            FieldInfo(
-                name="container",
-                description="Object Container Name",
-            ),
-            FieldInfo(
-                name="segment",
-                description="Object Segment Name",
-            ),
-            FieldInfo(
-                name="project",
-                description="Object Segment Name",
-            ),
-            FieldInfo(
-                name="auth_profile",
-                description="Object Authentication Profile",
-            ),
-            # Stat fields
-            FieldInfo(
-                name="link_count",
-                description="Object links count",
-                internal_name="links",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(
-                name="object_labels",
-                description="Object Labels",
-                internal_name="labels",
-                type=FieldType.LIST_STRING,
-            ),
-            FieldInfo(
-                name="physical_iface_count",
-                description="Object physical interfaces",
-                internal_name="DB | Interfaces",
-                type=FieldType.UINT,
-                is_caps=True,
-            ),
-            # Oper fields
-            FieldInfo(
-                name="avail",
-                description="Object Availability Status",
-                internal_name="avail_status",
-            ),
-            # Discovery enabled fields
-            FieldInfo(
-                name="enable_box",
-                type=FieldType.BOOL,
-                description="Enable Box Discovery",
-                internal_name="object_profile__enable_box_discovery",
-            ),
-            FieldInfo(
-                name="enable_periodic",
-                type=FieldType.BOOL,
-                description="Enable Periodic Discovery",
-                internal_name="object_profile__enable_periodic_discovery",
-            ),
-            FieldInfo(
-                name="enable_metrics",
-                type=FieldType.BOOL,
-                description="Enable Metric Discovery",
-                internal_name="object_profile__enable_metrics",
-            ),
-            FieldInfo(
-                name="enable_ping",
-                type=FieldType.BOOL,
-                description="Enable Availability check by Ping",
-                internal_name="object_profile__enable_ping",
-            ),
-            FieldInfo(
-                name="enable_topology",
-                type=FieldType.BOOL,
-                description="Enable Device Topology check",
-                internal_name="object_profile__enable_box_discovery_lldp",
-            ),
-            # Troubles
-            FieldInfo(
-                name="trouble_snmp",
-                type=FieldType.BOOL,
-                description="SNMP is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=SNMP_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_profile",
-                type=FieldType.BOOL,
-                description="Profile is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=PROFILE_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_cli",
-                type=FieldType.BOOL,
-                description="CLI is OK (SNMP Diagnostic not in failed state",
-                is_diagnostic_state=DiagnosticState.failed,
-                internal_name=CLI_DIAG,
-            ),
-            FieldInfo(
-                name="trouble_detail",
-                description="Trouble detail message",
-                internal_name="diagnostics",
-            ),
-            FieldInfo(
-                name="recv_syslog",
-                type=FieldType.BOOL,
-                description="SNMP Trap is received",
-                is_diagnostic_state=DiagnosticState.enabled,
-                internal_name=SYSLOG_DIAG,
-            ),
-            FieldInfo(
-                name="recv_snmptrap",
-                type=FieldType.BOOL,
-                description="SNMP Trap is received",
-                is_diagnostic_state=DiagnosticState.enabled,
-                internal_name=SNMPTRAP_DIAG,
-            ),
-        ]
-    )
+    fields = [
+        FieldInfo(name="id", description="Object Id", type=FieldType.UINT),
+        FieldInfo(
+            name="managed_object_id",
+            description="Object Id",
+            internal_name="id",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(name="name", description="Object Name"),
+        FieldInfo(name="profile", description="Profile Name"),
+        FieldInfo(name="pool", description="Pool Name"),
+        FieldInfo(
+            name="object_profile",
+            description="Object Profile Name",
+            internal_name="object_profile__name",
+        ),
+        FieldInfo(name="hostname", description="Object Hostname", internal_name="id"),
+        FieldInfo(
+            name="status",
+            description="Object Admin Status",
+            type=FieldType.BOOL,
+            internal_name="is_managed",
+        ),
+        FieldInfo(name="address", description="Object IP Address"),
+        # Inventory fields
+        FieldInfo(name="vendor", description="Object Vendor"),
+        FieldInfo(name="model", description="Object Model", internal_name="platform"),
+        FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
+        # Attributes fields
+        FieldInfo(
+            name="attr_hwversion",
+            description="Object HW Version Attribute",
+            internal_name="Chassis | HW Version",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_bootprom",
+            description="Object Boot Prom Attribute",
+            internal_name="Chassis | Boot PROM",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_patch",
+            description="Object Patch Attribute",
+            internal_name="Software | Patch Version",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="attr_serialnumber",
+            description="Object Serial Number Attribute",
+            internal_name="Chassis | Serial Number",
+            is_caps=True,
+        ),
+        FieldInfo(
+            name="adm_path",
+            description="Object Adm path",
+            internal_name="administrative_domain__name",
+            is_virtual=True,
+        ),
+        FieldInfo(
+            name="caps",
+            description="Object Capabilities",
+            is_virtual=True,
+        ),
+        FieldInfo(
+            name="chassis_macs",
+            description="Macs",
+            internal_name="id",
+        ),
+        FieldInfo(
+            name="mappings",
+            description="Object Mappings",
+            is_virtual=True,
+        ),
+        # Location Fields
+        FieldInfo(
+            name="administrativedomain",
+            description="Object Administrative Domain",
+            internal_name="administrative_domain__name",
+        ),
+        FieldInfo(
+            name="container",
+            description="Object Container Name",
+        ),
+        FieldInfo(
+            name="segment",
+            description="Object Segment Name",
+        ),
+        FieldInfo(
+            name="project",
+            description="Object Segment Name",
+        ),
+        FieldInfo(
+            name="auth_profile",
+            description="Object Authentication Profile",
+        ),
+        # Stat fields
+        FieldInfo(
+            name="link_count",
+            description="Object links count",
+            internal_name="links",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(
+            name="object_labels",
+            description="Object Labels",
+            internal_name="labels",
+            type=FieldType.LIST_STRING,
+        ),
+        FieldInfo(
+            name="physical_iface_count",
+            description="Object physical interfaces",
+            internal_name="DB | Interfaces",
+            type=FieldType.UINT,
+            is_caps=True,
+        ),
+        # Oper fields
+        FieldInfo(
+            name="avail",
+            description="Object Availability Status",
+            internal_name="avail_status",
+        ),
+        # Discovery enabled fields
+        FieldInfo(
+            name="enable_box",
+            type=FieldType.BOOL,
+            description="Enable Box Discovery",
+            internal_name="object_profile__enable_box_discovery",
+        ),
+        FieldInfo(
+            name="enable_periodic",
+            type=FieldType.BOOL,
+            description="Enable Periodic Discovery",
+            internal_name="object_profile__enable_periodic_discovery",
+        ),
+        FieldInfo(
+            name="enable_metrics",
+            type=FieldType.BOOL,
+            description="Enable Metric Discovery",
+            internal_name="object_profile__enable_metrics",
+        ),
+        FieldInfo(
+            name="enable_ping",
+            type=FieldType.BOOL,
+            description="Enable Availability check by Ping",
+            internal_name="object_profile__enable_ping",
+        ),
+        FieldInfo(
+            name="enable_topology",
+            type=FieldType.BOOL,
+            description="Enable Device Topology check",
+            internal_name="object_profile__enable_box_discovery_lldp",
+        ),
+        # Troubles
+        FieldInfo(
+            name="trouble_snmp",
+            type=FieldType.BOOL,
+            description="SNMP is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=SNMP_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_profile",
+            type=FieldType.BOOL,
+            description="Profile is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=PROFILE_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_cli",
+            type=FieldType.BOOL,
+            description="CLI is OK (SNMP Diagnostic not in failed state",
+            is_diagnostic_state=DiagnosticState.failed,
+            internal_name=CLI_DIAG,
+        ),
+        FieldInfo(
+            name="trouble_detail",
+            description="Trouble detail message",
+            internal_name="diagnostics",
+        ),
+        FieldInfo(
+            name="recv_syslog",
+            type=FieldType.BOOL,
+            description="SNMP Trap is received",
+            is_diagnostic_state=DiagnosticState.enabled,
+            internal_name=SYSLOG_DIAG,
+        ),
+        FieldInfo(
+            name="recv_snmptrap",
+            type=FieldType.BOOL,
+            description="SNMP Trap is received",
+            is_diagnostic_state=DiagnosticState.enabled,
+            internal_name=SNMPTRAP_DIAG,
+        ),
+    ]
 
     @classmethod
     async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
