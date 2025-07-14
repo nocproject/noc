@@ -365,7 +365,8 @@ class ServiceApplication(ExtDocApplication):
             si.register_endpoint(InputSource.MANUAL, addresses=[a["address"] for a in addresses])
             si.save()
         if managed_object:
-            si.refresh_managed_object(managed_object, source=InputSource.MANUAL)
+            si.refresh_managed_object(managed_object)
+            si.seen(source=InputSource.MANUAL)
         if resources:
             r = []
             for x in resources:

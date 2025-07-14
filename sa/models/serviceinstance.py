@@ -198,10 +198,12 @@ class ServiceInstance(Document):
         dry_run: bool = False,
     ):
         """Update source"""
-        if source not in [InputSource.MANUAL, InputSource.CONFIG]:
-            self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
         if source not in self.sources:
             self.sources += [source]
+        if source not in [InputSource.MANUAL, InputSource.CONFIG]:
+            self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
+            self.service.fire_event("seen")
+        # resource Seen
         if not dry_run:
             ServiceInstance.objects.filter(id=self.id).update(
                 sources=self.sources, last_seen=self.last_seen
@@ -313,21 +315,6 @@ class ServiceInstance(Document):
         # Name, port
         return ServiceInstance.objects.filter(q).scalar("service")
 
-    def bind_object(
-        self,
-        o: ManagedObject,
-        iface: Optional[Any] = None,
-        ts: Optional[str] = None,
-    ):
-        self.refresh_managed_object(o)
-        now = datetime.datetime.now()
-        # ? Register Address
-        self.last_seen = ts or now
-
-    def unbind_object(self):
-        """Remove ManagedObject from ServiceInstance"""
-        # Unregister Address
-
     def register_endpoint(
         self,
         source: InputSource,
@@ -372,11 +359,7 @@ class ServiceInstance(Document):
             changed |= True
             self.port = port
         # Update instance
-        self.service.fire_event("seen")
-        now = datetime.datetime.now()
-        if source == InputSource.DISCOVERY:
-            self.last_seen = ts or now
-            changed |= True
+        self.seen(source, last_seen=ts)
         return changed
 
     def deregister_endpoint(
