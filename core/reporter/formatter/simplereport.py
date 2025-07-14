@@ -43,7 +43,7 @@ class SimpleReportFormatter(DataFormatter):
         report = Report()
         for s in self.render_sections():
             report.append_section(s)
-        if self.output_type == OutputType.CSV:
+        if self.output_type in [OutputType.CSV, OutputType.CSV_ZIP]:
             r = report.to_csv(delimiter=self.csv_delimiter)
         elif self.output_type == OutputType.SSV:
             r = report.to_csv(delimiter=";")
