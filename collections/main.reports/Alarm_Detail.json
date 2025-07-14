@@ -21,7 +21,7 @@
     ],
     "bands_format": [
         {
-            "name": "alarms",
+            "name": "header",
             "column_format": [
                 {
                     "name": "alarm_id",
