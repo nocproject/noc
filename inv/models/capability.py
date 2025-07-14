@@ -120,10 +120,20 @@ class Capability(Document):
 
     def clean_value(self, v: TCapsValue) -> TCapsValue:
         if self.multi and isinstance(v, list):
-            return [self.clean_value(x) for x in v]
+            return [self.type.clean_value(x) for x in v]
         if not self.type:
             raise ValueError(f"Invalid type: {self.type}")
         return self.type.clean_value(v)
+
+    def get_references(self, v: TCapsValue) -> List[str]:
+        if self.multi and isinstance(v, list):
+            return [self.type.clean_reference(x) for x in v if self.type.clean_reference(x)]
+        if not self.type:
+            raise ValueError(f"Invalid type: {self.type}")
+        r = self.type.clean_reference(v)
+        if r:
+            return [r]
+        return []
 
     def get_editor(self) -> Optional[Dict[str, Any]]:
         if not self.allow_manual:
