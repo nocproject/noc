@@ -13,7 +13,7 @@ from noc.core.clickhouse.fields import (
     StringField,
     ReferenceField,
     UInt64Field,
-    UInt8Field,
+    Int8Field,
     IPv4Field,
     MapField,
     ArrayField,
@@ -65,7 +65,7 @@ class Events(Model):
     vars = MapField(StringField(), description=_("Vars"))
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
     #
-    severity = UInt8Field(description="EventSeverity")
+    severity = Int8Field(description="EventSeverity")
     result_action = StringField(description="Result action for event")
     error_message = StringField(description="Error message")
     #
