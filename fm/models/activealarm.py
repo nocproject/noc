@@ -106,7 +106,7 @@ class WatchItem(EmbeddedDocument):
             r |= self.args
         if self.effect == Effect.TT_SYSTEM:
             r["tt_id"] = self.key
-        if "template" in self.args:
+        if "template" in self.args and self.args["template"]:
             template = Template.get_by_id(int(self.args["template"]))
             r |= {
                 "subject": template.render_subject(
