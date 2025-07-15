@@ -346,7 +346,7 @@ class Profile(BaseProfile):
                 ]
         else:
             if script.match_version(DES1210, version__lt="6.00"):
-                c = self.cli("show ports")
+                c = script.cli("show ports")
                 for match in self.rx_port_old.finditer(c):
                     ports += [
                         {
@@ -363,7 +363,7 @@ class Profile(BaseProfile):
                             "desc": "",
                         }
                     ]
-                c = self.cli("show ports description")
+                c = script.cli("show ports description")
                 for match in self.rx_port_old_desc.finditer(c):
                     port = match.group("port")
                     desc = match.group("descr")

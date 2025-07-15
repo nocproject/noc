@@ -98,6 +98,16 @@ class Script(BaseScript):
         r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
+    rx_ipif_des_a1 = re.compile(
+        r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\n"
+        r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
+        re.MULTILINE,
+    )
+    rx_mgmt_vlan = re.compile(
+        r"^management vlan id\s+:\s+(?P<vlan_id>\d+)",
+        re.MULTILINE,
+    )
+    rx_mac = re.compile(r"^MAC Address\s+:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_link_up = re.compile(r"Link\s*UP", re.IGNORECASE)
     rx_rip_gs = re.compile(r"RIP Global State : Enabled")
     rx_ospf_gs = re.compile(r"OSPF Router ID : \S+( \(.+\))?\s*\nState\s+: Enabled")
@@ -652,24 +662,39 @@ class Script(BaseScript):
                 i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
                 interfaces += [i]
 
+        # Last resort
         if not ipif_found:
             c = self.scripts.get_switch()
+            i = {
+                "name": "System",
+                "type": "SVI",
+                "admin_status": True,
+                "oper_status": True,
+                "subinterfaces": [
+                    {
+                        "name": "System",
+                        "admin_status": True,
+                        "oper_status": True,
+                        "enabled_afi": ["IPv4"],
+                    }
+                ],
+            }
+            if self.is_des_a1:
+                match = self.rx_ipif_des_a1.search(ipif)
+                ip_address = match.group("ip_address")
+                ip_subnet = match.group("ip_subnet")
+                ip_address = "%s/%s" % (ip_address, IPv4.netmask_to_len(ip_subnet))
+                i["subinterfaces"][0]["ipv4_addresses"] = [ip_address]
+                v = self.cli("show management vlan")
+                match = self.rx_mgmt_vlan.search(v)
+                i["subinterfaces"][0]["vlan_ids"] = [match.group("vlan_id")]
+                mac_address = self.rx_mac.search(c).group("mac")
+                i["mac"] = mac_address
+                i["subinterfaces"][0]["mac"] = mac_address
+                interfaces += [i]
+
             match = self.rx_ipswitch.search(c)
             if match:
-                i = {
-                    "name": "System",
-                    "type": "SVI",
-                    "admin_status": True,
-                    "oper_status": True,
-                    "subinterfaces": [
-                        {
-                            "name": "System",
-                            "admin_status": True,
-                            "oper_status": True,
-                            "enabled_afi": ["IPv4"],
-                        }
-                    ],
-                }
                 mac_address = match.group("mac_address")
                 ip_address = match.group("ip_address")
                 ip_subnet = match.group("ip_subnet")
