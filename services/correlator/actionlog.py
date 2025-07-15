@@ -60,16 +60,16 @@ class ActionLog(object):
         stop_processing: bool = False,
         allow_fail: bool = True,
         # Source Task
-        user: Optional[int] = None,
-        tt_system: Optional[str] = None,
+        user: Optional[User] = None,
+        tt_system: Optional[TTSystem] = None,
         document_id: Optional[str] = None,
-        template: Optional[str] = None,
+        template: Optional[Template] = None,
         **kwargs,
     ):
         self.action = action
         self.key = key
         # To ctx ?
-        self.template: Optional[Template] = Template.get_by_id(int(template)) if template else None
+        self.template: Optional[Template] = template
         self.subject = subject
         self.timestamp = timestamp  # run_at
         self.status = status
@@ -83,8 +83,8 @@ class ActionLog(object):
         self.allow_fail = allow_fail
         self.repeat_num = 0
         #
-        self.user = User.get_by_id(user) if user else None
-        self.tt_system = TTSystem.get_by_id(tt_system) if tt_system else None
+        self.user = user
+        self.tt_system = tt_system
         #
         self.ctx = kwargs
 
@@ -178,7 +178,7 @@ class ActionLog(object):
         return ActionLog(
             action=action.action,
             key=action.key,
-            template=action.template,
+            template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
             login=action.login,
@@ -193,13 +193,20 @@ class ActionLog(object):
             stop_processing=action.stop_processing,
             #
             # Source
-            user=user,
-            tt_system=tt_system,
+            user=User.get_by_id(int(user)) if user else None,
+            tt_system=TTSystem.get_by_id(tt_system) if tt_system else None,
         )
 
     @classmethod
     def from_state(cls, data: Dict[str, Any]) -> "ActionLog":
         """Restore Action Context from State Document"""
+        user, tt_system, template = None, None, None
+        if data.get("user"):
+            user = User.get_by_id(int(data["user"]))
+        if data.get("tt_system"):
+            tt_system = TTSystem.get_by_id(data["tt_system"])
+        if data.get("template"):
+            template = Template.get_by_id(int(data["template"]))
         return ActionLog(
             action=AlarmAction(data["action"]),
             key=data["key"],
@@ -212,10 +219,10 @@ class ActionLog(object):
             error=data.get("error"),
             stop_processing=data["stop_processing"],
             allow_fail=data["allow_fail"],
-            user=data.get("user"),
-            tt_system=data.get("tt_system"),
+            user=user,
+            tt_system=tt_system,
             document_id=data.get("document_id"),
-            template=data.get("template"),
+            template=template,
             subject=data.get("subject"),
         )
 

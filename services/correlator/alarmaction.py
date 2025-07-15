@@ -75,6 +75,8 @@ class AlarmActionRunner(object):
             case AlarmAction.NOTIFY:
                 # alarm.log_message(change.message, source=str(user))
                 r = self.notify(**ctx)
+            case AlarmAction.SUBSCRIBE:
+                r = self.alarm_subscribe(**ctx)
             case AlarmAction.LOG:
                 self.log_alarm(message=ctx["subject"])
                 r = ActionResult(status=ActionStatus.SUCCESS)
@@ -262,7 +264,10 @@ class AlarmActionRunner(object):
         Acknowledge alarm by tt_system or settings
 
         """
-        message = message or f"Acknowledge by TTSystem: {requester.name}"
+        if requester:
+            message = message or f"Acknowledge by {user} (from TTSystem: {requester.name})"
+        else:
+            message = message or f"Acknowledge by {user}"
         self.alarm.acknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
@@ -278,7 +283,10 @@ class AlarmActionRunner(object):
         Acknowledge alarm by tt_system or settings
 
         """
-        message = message or f"UnAcknowledge by TTSystem: {requester.name}"
+        if requester:
+            message = message or f"UnAcknowledge by {user} (from TTSystem: {requester.name})"
+        else:
+            message = message or f"UnAcknowledge by {user}"
         self.alarm.unacknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
@@ -296,11 +304,25 @@ class AlarmActionRunner(object):
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
         self.alarm.register_clear(
-            f"Clear by TTSystem: {requester.name}",
+            message or f"Clear by: {user}",
             user=user,
             timestamp=timestamp,
         )
         # Delayed, checked action - status return other service
+        return ActionResult(status=ActionStatus.SUCCESS)
+
+    def alarm_subscribe(
+        self,
+        user: User,
+        requester: Optional[TTSystem] = None,
+        message: Optional[str] = None,
+        **kwargs,
+    ):
+        """
+        Acknowledge alarm by tt_system or settings
+
+        """
+        self.alarm.subscribe(user)
         return ActionResult(status=ActionStatus.SUCCESS)
 
     def create_tt(

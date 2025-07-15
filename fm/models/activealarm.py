@@ -535,7 +535,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.save()
+        self.safe_save()
 
     def unsubscribe(self, user: "User"):
         self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
@@ -545,7 +545,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.save()
+        self.safe_save()
 
     def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
