@@ -1100,7 +1100,7 @@ Ext.define("NOC.core.ModelApplication", {
       if(Ext.isEmpty(fieldCfg.name)){
         return;
       }
-      var field = this.down(`[name=${fieldCfg.name}]`);
+      var field = this.formPanel.down(`[name=${fieldCfg.name}]`);
       if(Ext.isEmpty(field) || !Ext.isFunction(field.getModelData)){
         return;
       }
