@@ -99,8 +99,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
     rx_ipif_des_a1 = re.compile(
-        r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\n"
-        r"Subnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
+        r"IP Address\s+:\s*(?P<ip_address>\S+)\s*\nSubnet Mask\s+:\s*(?P<ip_subnet>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_mgmt_vlan = re.compile(
@@ -243,7 +242,7 @@ class Script(BaseScript):
 
     def execute_cli(self):
         if self.is_dgs_1100:
-            print ("This platform has ugly CLI support, passing")
+            print("This platform has ugly CLI support, passing")
             return []
         ipif_found = False
         if self.match_version(DxS_L2):

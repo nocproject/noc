@@ -48,7 +48,6 @@ class Script(BaseScript):
     rx_motd = re.compile(r"(?P<platform>DES-\d+\S+) Fast Ethernet Switch")
 
     def execute_snmp(self):
-
         """
         AGENT-MIB and AGENT-GENERAL-MIB - D-Link private MIBs
         """
