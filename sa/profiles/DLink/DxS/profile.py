@@ -93,7 +93,9 @@ class Profile(BaseProfile):
         "is_des_3018": {"platform": {"$regex": r"^DES-3018.+"}},
         "is_des_3026": {"platform": {"$regex": r"^DES-3026.+"}},
         "is_des_35xx": {"platform": {"$regex": r"^DES-35(?:26|52).*"}},
-        "is_dgs_1100": {"platform": {"$regex": r"^DGS-1100-(16|16/ME|18|18/ME|24|24/ME|24P|24P/ME|26|26/ME)$"}},
+        "is_dgs_1100": {
+            "platform": {"$regex": r"^DGS-1100-(16|16/ME|18|18/ME|24|24/ME|24P|24P/ME|26|26/ME)$"}
+        },
     }
     #
     # Version comparison
