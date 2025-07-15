@@ -52,6 +52,7 @@ class ActionLog(object):
         alarm_ack: str = "any",
         when: str = "any",
         # Time ?
+        subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         status: ActionStatus = ActionStatus.NEW,
         error: Optional[str] = None,
@@ -69,6 +70,7 @@ class ActionLog(object):
         self.key = key
         # To ctx ?
         self.template: Optional[Template] = Template.get_by_id(int(template)) if template else None
+        self.subject = subject
         self.timestamp = timestamp  # run_at
         self.status = status
         self.error = error
@@ -124,6 +126,8 @@ class ActionLog(object):
         if self.template:
             r["subject"] = self.template.render_subject(**alarm_ctx)
             r["body"] = self.template.render_body(**alarm_ctx)
+        elif self.subject:
+            r["subject"] = self.subject
         if self.user:
             r["user"] = self.user
         if self.tt_system:
@@ -175,6 +179,7 @@ class ActionLog(object):
             action=action.action,
             key=action.key,
             template=action.template,
+            subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
             login=action.login,
             timestamp=started_at + datetime.timedelta(seconds=action.delay),
@@ -211,6 +216,7 @@ class ActionLog(object):
             tt_system=data.get("tt_system"),
             document_id=data.get("document_id"),
             template=data.get("template"),
+            subject=data.get("subject"),
         )
 
     def get_state(self) -> Dict[str, Any]:
@@ -231,6 +237,7 @@ class ActionLog(object):
             "tt_system": None,
             "document_id": self.document_id,
             "template": None,
+            "subject": self.subject or None,
         }
         if self.user:
             r["user"] = self.user.id

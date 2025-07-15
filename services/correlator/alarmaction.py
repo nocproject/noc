@@ -75,6 +75,9 @@ class AlarmActionRunner(object):
             case AlarmAction.NOTIFY:
                 # alarm.log_message(change.message, source=str(user))
                 r = self.notify(**ctx)
+            case AlarmAction.LOG:
+                self.log_alarm(message=ctx["subject"])
+                r = ActionResult(status=ActionStatus.SUCCESS)
             case _:
                 raise NotImplementedError("Action %s not implemented" % action)
         return r

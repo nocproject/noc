@@ -41,6 +41,7 @@ class ActionConfig(BaseModel):
     min_severity: Optional[int] = None
     max_retries: int = 1
     template: Optional[str] = None
+    subject: Optional[str] = None
     # pre_reason: Optional[str] = None
     login: Optional[str] = None
     stop_processing: bool = False
