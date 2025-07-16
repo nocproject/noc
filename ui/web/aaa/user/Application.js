@@ -277,7 +277,7 @@ Ext.define("NOC.aaa.user.Application", {
       groups.push("" + record.id);
     });
     Ext.merge(data, {groups: groups});
-    this.callParent([data]);
+    this.callParent([data, true]);
   },
   onNewRecord: function(){
     var me = this;
