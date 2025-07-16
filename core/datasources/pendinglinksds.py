@@ -16,7 +16,6 @@ from pymongo import ReadPreference
 
 # NOC modules
 from .base import BaseDataSource, FieldInfo, ParamInfo
-from noc.core.cache.base import cache
 from noc.core.mongo.connection import get_db
 from noc.inv.models.interface import Interface
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -26,137 +25,118 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
-# from noc.sa.models.useraccess import UserAccess
 
-
-class ReportPendingLinks(object):
-    def __init__(self, ids, cache_key=None, ignore_profiles=None, filter_exists_link=False):
-        self.ids = ids
-        self.ignore_profiles = ignore_profiles
-        self.filter_exists_link = filter_exists_link
-        if cache_key:
-            self.out = cache.get(key=cache_key)
-            if not self.out:
-                self.out = self.load(self.ids, self.ignore_profiles, self.filter_exists_link)
-                cache.set(cache_key, self.out, ttl=28800)
-        else:
-            self.out = self.load(self.ids, self.ignore_profiles, self.filter_exists_link)
-
-    @staticmethod
-    def load(ids, ignore_profiles=None, filter_exists_link=False):
-        problems = defaultdict(dict)  # id -> problem
-        rx_nf = re.compile(r"Remote object '(.*?)' is not found")
-        rg = re.compile(
-            r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
-            re.IGNORECASE,
-        )
-        mos_job = [
-            "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id
-            for mo_id in ids
-        ]
-        n = 0
-        ignored_ifaces = []
-        find = DiscoveryID._get_collection().aggregate(
-            [
-                {"$unwind": "$macs"},
-                {"$group": {"_id": "$macs", "count": {"$sum": 1}, "mo": {"$push": "$object"}}},
-                {"$match": {"count": {"$gt": 1}}},
-                {"$unwind": "$mo"},
-                {"$group": {"_id": "", "mos": {"$addToSet": "$mo"}}},
-            ],
-            allowDiskUse=True,
-        )
-        duplicate_macs = set()
-        find = next(find, None)
-        if find:
-            duplicate_macs = set(find["mos"])
-        while mos_job[(0 + n) : (10000 + n)]:
-            job_logs = (
-                get_db()["noc.joblog"]
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .aggregate(
-                    [
-                        {
-                            "$match": {
-                                "$and": [
-                                    {"_id": {"$in": mos_job[(0 + n) : (10000 + n)]}},
-                                    {"problems.lldp": {"$exists": True}},
-                                ]
-                            }
-                        },
-                        {"$project": {"_id": 1, "problems.lldp": 1}},
-                    ]
-                )
+def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
+    result = defaultdict(dict)  # id -> problem
+    rx_nf = re.compile(r"Remote object '(.*?)' is not found")
+    rg = re.compile(
+        r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
+        re.IGNORECASE,
+    )
+    mos_job = [
+        "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id
+        for mo_id in ids
+    ]
+    n = 0
+    ignored_ifaces = []
+    find = DiscoveryID._get_collection().aggregate(
+        [
+            {"$unwind": "$macs"},
+            {"$group": {"_id": "$macs", "count": {"$sum": 1}, "mo": {"$push": "$object"}}},
+            {"$match": {"count": {"$gt": 1}}},
+            {"$unwind": "$mo"},
+            {"$group": {"_id": "", "mos": {"$addToSet": "$mo"}}},
+        ],
+        allowDiskUse=True,
+    )
+    duplicate_macs = set()
+    find = next(find, None)
+    if find:
+        duplicate_macs = set(find["mos"])
+    while mos_job[(0 + n) : (10000 + n)]:
+        job_logs = (
+            get_db()["noc.joblog"]
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .aggregate(
+                [
+                    {
+                        "$match": {
+                            "$and": [
+                                {"_id": {"$in": mos_job[(0 + n) : (10000 + n)]}},
+                                {"problems.lldp": {"$exists": True}},
+                            ]
+                        }
+                    },
+                    {"$project": {"_id": 1, "problems.lldp": 1}},
+                ]
             )
+        )
 
-            for discovery in job_logs:
-                if (
-                    "RPC Error:" in discovery["problems"]["lldp"]
-                    or "Unhandled exception" in discovery["problems"]["lldp"]
-                ):
+        for discovery in job_logs:
+            if (
+                "RPC Error:" in discovery["problems"]["lldp"]
+                or "Unhandled exception" in discovery["problems"]["lldp"]
+            ):
+                continue
+            mo_id = discovery["_id"].split("-")[2]
+            mo = ManagedObject.get_by_id(mo_id)
+            if ignore_profiles:
+                ignored_ifaces += [
+                    (mo_id, iface.name)
+                    for iface in Interface.objects.filter(
+                        managed_object=mo,
+                        # name__in=discovery["problems"]["lldp"].keys(),
+                        profile__in=ignore_profiles,
+                    )
+                ]
+            for iface in discovery["problems"]["lldp"]:
+                if (mo.id, iface) in ignored_ifaces:
                     continue
-                mo_id = discovery["_id"].split("-")[2]
-                mo = ManagedObject.get_by_id(mo_id)
-                # log.debug("%s", discovery["problems"]["lldp"])
-                # print(discovery["problems"]["lldp"])
-                if ignore_profiles:
-                    ignored_ifaces += [
-                        (mo_id, iface.name)
-                        for iface in Interface.objects.filter(
-                            managed_object=mo,
-                            # name__in=discovery["problems"]["lldp"].keys(),
-                            profile__in=ignore_profiles,
-                        )
-                    ]
-                for iface in discovery["problems"]["lldp"]:
-                    if (mo.id, iface) in ignored_ifaces:
+                # print iface
+                match = rx_nf.search(discovery["problems"]["lldp"][iface])
+                if match:
+                    parsed_x = ast.literal_eval(match.group(1))
+                    result[mo.id] = {
+                        iface: {
+                            "problem": "Remote object is not found",
+                            "detail": "Remote object not in system or ID discovery not success",
+                            "remote_id": "",
+                            "remote_iface": parsed_x.get("remote_port"),
+                            "remote_hostname": parsed_x.get("remote_system_name"),
+                            "remote_description": parsed_x.get("remote_system_description"),
+                            "remote_chassis": parsed_x.get("remote_chassis_id"),
+                        }
+                    }
+                if "Pending link:" in discovery["problems"]["lldp"][iface]:
+                    pend_str = rg.search(discovery["problems"]["lldp"][iface])
+                    try:
+                        rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
+                    except ManagedObject.DoesNotExist:
                         continue
-                    # print iface
-                    match = rx_nf.search(discovery["problems"]["lldp"][iface])
-                    if match:
-                        parsed_x = ast.literal_eval(match.group(1))
-                        problems[mo.id] = {
-                            iface: {
-                                "problem": "Remote object is not found",
-                                "detail": "Remote object not in system or ID discovery not success",
-                                "remote_id": "",
-                                "remote_iface": parsed_x.get("remote_port"),
-                                "remote_hostname": parsed_x.get("remote_system_name"),
-                                "remote_description": parsed_x.get("remote_system_description"),
-                                "remote_chassis": parsed_x.get("remote_chassis_id"),
-                            }
-                        }
-                    if "Pending link:" in discovery["problems"]["lldp"][iface]:
-                        pend_str = rg.search(discovery["problems"]["lldp"][iface])
-                        try:
-                            rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
-                        except ManagedObject.DoesNotExist:
-                            continue
-                        if (
-                            filter_exists_link
-                            and Link.objects.filter(linked_objects=[mo.id, rmo.id]).first()
-                        ):
-                            # If already linked on other proto
-                            continue
-                        detail = ""
-                        if mo.id in duplicate_macs or rmo.id in duplicate_macs:
-                            detail = "Duplicate ID"
-                        # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
-                        problems[mo.id][iface] = {
-                            "problem": "Not found iface on remote",
-                            "detail": detail,
-                            "remote_id": "%s::: %s" % (rmo.name, rmo.profile.name),
-                            "remote_iface": pend_str.group("remote_iface"),
-                        }
-                        problems[rmo.id][pend_str.group("remote_iface")] = {
-                            "problem": "Not found local iface on remote",
-                            "detail": detail,
-                            "remote_id": "%s::: %s" % (mo.name, mo.profile.name),
-                            "remote_iface": iface,
-                        }
-                        # print(discovery["problems"]["lldp"])
-            n += 10000
-        return problems
+                    if (
+                        filter_exists_link
+                        and Link.objects.filter(linked_objects=[mo.id, rmo.id]).first()
+                    ):
+                        # If already linked on other proto
+                        continue
+                    detail = ""
+                    if mo.id in duplicate_macs or rmo.id in duplicate_macs:
+                        detail = "Duplicate ID"
+                    # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
+                    result[mo.id][iface] = {
+                        "problem": "Not found iface on remote",
+                        "detail": detail,
+                        "remote_id": "%s::: %s" % (rmo.name, rmo.profile.name),
+                        "remote_iface": pend_str.group("remote_iface"),
+                    }
+                    result[rmo.id][pend_str.group("remote_iface")] = {
+                        "problem": "Not found local iface on remote",
+                        "detail": detail,
+                        "remote_id": "%s::: %s" % (mo.name, mo.profile.name),
+                        "remote_iface": iface,
+                    }
+        n += 10000
+    return result
 
 
 class PendingLinksDS(BaseDataSource):
@@ -216,11 +196,11 @@ class PendingLinksDS(BaseDataSource):
         if mo_profile:
             mos = mos.filter(object_profile=mo_profile)
         mos_id = {mo["id"]: mo for mo in mos}
-        problems = ReportPendingLinks(
+        problems = pending_links(
             list(mos_id),
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
             filter_exists_link=not show_already_linked,
-        ).out
+        )
         for mo_id in problems:
             mo = ManagedObject.get_by_id(mo_id)
             for iface in problems[mo_id]:
