@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+import logging
 from typing import Optional, Any, Dict, List
 from logging import Logger
 
@@ -19,7 +20,7 @@ from noc.core.tt.types import (
     EscalationResult,
     TTActionContext,
 )
-from noc.core.tt.base import TTSystemCtx
+from noc.core.tt.base import TTSystemCtx, TTAction
 from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
@@ -39,7 +40,8 @@ class AlarmActionRunner(object):
     def __init__(
         self,
         items: List[Any],
-        logger: Logger,
+        allowed_actions: List[AlarmAction] = None,
+        logger: Optional[Logger] = None,
         services: Optional[List[Service]] = None,
     ):
         self.items = items
@@ -47,7 +49,8 @@ class AlarmActionRunner(object):
         self.services: List[Service] = (
             list(Service.objects.filter(id__in=services)) if services else None
         )
-        self.logger = logger
+        self.allowed_actions: List[AlarmAction] = allowed_actions
+        self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
 
     def run_action(
@@ -127,20 +130,21 @@ class AlarmActionRunner(object):
             )
         return r
 
-    def get_avail_actions(self, actions) -> List[TTActionContext]:
+    def get_action_context(self) -> List[TTActionContext]:
         """Return Available Action Context for escalation"""
         r = []
-        for action in actions:
+        for action in self.allowed_actions:
             if action == AlarmAction.ACK and self.alarm.ack_user:
                 r.append(
-                    TTActionContext(
-                        action=AlarmAction.UN_ACK, label=f"Ack by {self.alarm.ack_user}"
-                    )
+                    TTActionContext(action=TTAction.UN_ACK, label=f"Ack by {self.alarm.ack_user}")
                 )
                 continue
             elif action == AlarmAction.UN_ACK and not self.alarm.ack_ts:
                 continue
-            r.append(TTActionContext(action=action))
+            elif action == AlarmAction.ACK:
+                r.append(TTActionContext(action=TTAction.ACK))
+            elif action == AlarmAction.CLEAR:
+                r.append(TTActionContext(action=TTAction.CLOSE))
         return r
 
     def get_tt_system_context(
@@ -168,7 +172,7 @@ class AlarmActionRunner(object):
             reason=None,
             login=login or cfg.login,
             timestamp=timestamp,
-            # actions=self.get_action_context(tt_system.get_actions()),
+            actions=self.get_action_context(),
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
             services=self.get_affected_services_items() or None,
         )

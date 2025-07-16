@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Any, Union
 
 # NOC modules
-from noc.core.fm.enum import ActionStatus
+from noc.core.fm.enum import ActionStatus, AlarmAction
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.core.debug import error_report
@@ -62,6 +62,18 @@ class Item(object):
         return {"alarm": self.alarm.id, "status": self.status.value}
 
 
+@dataclass
+class AllowedAction(object):
+    action: AlarmAction
+    login: Optional[str] = None
+    stop_processing: bool = False
+    # permission
+
+    @classmethod
+    def from_request(cls, req):
+        return AllowedAction(action=req.action)
+
+
 class AlarmJob(object):
     """
     Runtime Alarm Automation
@@ -71,6 +83,7 @@ class AlarmJob(object):
         self,
         items: List[Item],
         actions: List[ActionLog],
+        allowed_actions: Optional[List[AllowedAction]] = None,
         maintenance_policy: str = None,
         # Repeat
         max_repeat: int = 0,
@@ -91,6 +104,8 @@ class AlarmJob(object):
         self.items: List[Item] = items
         self.actions = actions
         self.maintenance_policy = maintenance_policy or "e"
+        # OneTime actions
+        self.allowed_actions = allowed_actions
         # Repeat
         self.max_repeat = max_repeat
         self.repeat_delay = repeat_delay
@@ -127,7 +142,9 @@ class AlarmJob(object):
         now = datetime.datetime.now()
         alarm_ctx = self.alarm.get_message_ctx()
         self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
-        runner = AlarmActionRunner(self.items, logger=self.logger)
+        runner = AlarmActionRunner(
+            self.items, logger=self.logger, allowed_actions=self.allowed_actions
+        )
         for aa in sorted(actions[:] + self.actions, key=operator.attrgetter("timestamp")):
             self.logger.debug("[%s] Processed action", aa)
             if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
@@ -202,6 +219,7 @@ class AlarmJob(object):
                 ActionLog.from_request(a, started_at=start, user=req.user, tt_system=req.tt_system)
                 for a in req.actions
             ],
+            allowed_actions=[AllowedAction.from_request(aa) for aa in req.manual_actions],
             # Settings
             # maintenance_policy=req.maintenance_policy,
             # Repeat settings
@@ -222,3 +240,4 @@ class AlarmJob(object):
         tt_system: Optional[TTSystem] = None,
     ):
         """Run action on Job"""
+        # check Allowed_action

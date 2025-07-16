@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EscalationProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,9 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember, TTAction
+from noc.core.tt.types import TTSystemConfig, EscalationMember
+from noc.core.fm.enum import AlarmAction
+from noc.core.fm.request import AlarmActionRequest, ActionConfig, SuspendAction
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -35,6 +37,7 @@ from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.activealarm import ActiveAlarm
 
 id_lock = Lock()
 
@@ -103,6 +106,39 @@ class EscalationItem(EmbeddedDocument):
             return str(self.notification_group.id)
         return ""
 
+    def get_config(self) -> List["ActionConfig"]:
+        """"""
+        r = []
+        if self.notification_group:
+            r += [
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.NOTIFY,
+                    key=str(self.notification_group.id),
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    max_retries=self.max_repeats,
+                    allow_fail=True,
+                )
+            ]
+        if self.create_tt and self.tt_system:
+            r.append(
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.CREATE_TT,
+                    key=str(self.tt_system.id),
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    max_retries=self.max_repeats,
+                    allow_fail=True,
+                )
+            )
+        return r
+
 
 class TTSystemItem(EmbeddedDocument):
     meta = {"strict": False}
@@ -121,6 +157,17 @@ class EscalationAction(EmbeddedDocument):
     close = BooleanField(default=False)
     log = BooleanField(default=False)
     subscribe = BooleanField(default=False)
+
+    def get_config(self) -> List[SuspendAction]:
+        """"""
+        r = []
+        if self.ack:
+            r.append(SuspendAction(action=AlarmAction.ACK, key=""))
+        if self.close:
+            r.append(SuspendAction(action=AlarmAction.CLEAR, key=""))
+        if self.subscribe:
+            r.append(SuspendAction(action=AlarmAction.CLEAR, key=""))
+        return r
 
 
 @on_delete_check(
@@ -219,7 +266,7 @@ class EscalationProfile(Document):
         self,
         user: Optional[User] = None,
         group: Optional[Group] = None,
-    ) -> FrozenSet[TTAction]:
+    ) -> FrozenSet[AlarmAction]:
         """
         Getting TT System Action support
 
@@ -235,9 +282,9 @@ class EscalationProfile(Document):
             if group and group != a.group:
                 continue
             if a.ack:
-                r += [TTAction.ACK, TTAction.UN_ACK]
+                r += [AlarmAction.ACK, AlarmAction.UN_ACK]
             if a.close:
-                r.append(TTAction.CLOSE)
+                r.append(AlarmAction.CLEAR)
         return frozenset(r)
 
     def get_tt_system_config(self, tt_system: TTSystem) -> TTSystemConfig:
@@ -258,3 +305,12 @@ class EscalationProfile(Document):
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
         return self.end_condition == "CT" or self.end_condition == "M"
+
+    def from_alarm(self, alarm: ActiveAlarm):
+        """"""
+        AlarmActionRequest(
+            item=alarm,
+            start_at=alarm.timestamp,
+            actions=[e.get_config() for e in self.escalations],
+            manual_actions=[a.get_config() for a in self.actions],
+        )
