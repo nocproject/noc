@@ -48,25 +48,36 @@ class TTCard(BaseCard):
             r["duration"] = datetime.datetime.now() - r["open_ts"]
         r["alarms"] = []
         now = datetime.datetime.now()
-        for ac in (ActiveAlarm, ArchivedAlarm):
-            for a in ac.objects.filter(escalation_tt=r["full_id"]):
-                if a.status == "C":
-                    duration = a.clear_timestamp - a.timestamp
-                else:
-                    duration = now - a.timestamp
-                r["alarms"] += [
-                    {
-                        "alarm": a,
-                        "id": a.id,
-                        "timestamp": a.timestamp,
-                        "duration": duration,
-                        "subject": a.subject,
-                        "summary": {
-                            "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
-                            "service": SummaryItem.items_to_dict(a.total_services),
-                        },
-                    }
-                ]
+        for a in ActiveAlarm.objects.filter(log__tt_id=r["full_id"]):
+            duration = now - a.timestamp
+            r["alarms"] += [
+                {
+                    "alarm": a,
+                    "id": a.id,
+                    "timestamp": a.timestamp,
+                    "duration": duration,
+                    "subject": a.subject,
+                    "summary": {
+                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                        "service": SummaryItem.items_to_dict(a.total_services),
+                    },
+                }
+            ]
+        for a in ArchivedAlarm.objects.filter(escalation_tt=r["full_id"]):
+            duration = a.clear_timestamp - a.timestamp
+            r["alarms"] += [
+                {
+                    "alarm": a,
+                    "id": a.id,
+                    "timestamp": a.timestamp,
+                    "duration": duration,
+                    "subject": a.subject,
+                    "summary": {
+                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                        "service": SummaryItem.items_to_dict(a.total_services),
+                    },
+                }
+            ]
         return r
 
     def redirect_to_alarm(self, tt_id):
@@ -75,7 +86,7 @@ class TTCard(BaseCard):
         :param tt_id:
         :return:
         """
-        a = ActiveAlarm.objects.filter(escalation_tt=tt_id).order_by("timestamp").only("id").first()
+        a = ActiveAlarm.objects.filter(log__tt_id=tt_id).order_by("timestamp").only("id").first()
         if not a:
             a = (
                 ArchivedAlarm.objects.filter(escalation_tt=tt_id)
