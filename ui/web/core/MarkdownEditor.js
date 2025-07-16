@@ -1,3 +1,11 @@
+//---------------------------------------------------------------------
+// core MarkdownEditor
+//---------------------------------------------------------------------
+// Copyright (C) 2007-2025 The NOC Project
+// See LICENSE for details
+//---------------------------------------------------------------------
+console.debug("Defining NOC.core.MarkdownEditor");
+
 Ext.define("NOC.core.MarkdownEditor", {
   extend: "Ext.Component",
   alias: "widget.markdowneditor",

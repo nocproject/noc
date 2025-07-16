@@ -138,7 +138,6 @@ Ext.define("NOC.sa.managedobject.ConfDBPanel", {
       value: "",
       language: "python",
       readOnly: false,
-      theme: "vs-dark",
       automaticLayout: true,
       contentChanged: function(viewer, value){
         me.runButton.setDisabled(!value);

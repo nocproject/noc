@@ -146,7 +146,6 @@ Ext.define("NOC.cm.confdbquery.Application", {
           language: "python",
           readOnly: false,
           automaticLayout: true,
-          theme: "vs-dark",
         },
       ],
 

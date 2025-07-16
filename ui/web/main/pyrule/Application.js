@@ -53,7 +53,6 @@ Ext.define("NOC.main.pyrule.Application", {
           allowBlank: true,
           flex: 1,
           language: "python",
-          theme: "vs-dark",
         },
       ],
     });

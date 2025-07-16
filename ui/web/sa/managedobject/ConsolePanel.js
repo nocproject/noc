@@ -34,7 +34,6 @@ Ext.define("NOC.sa.managedobject.ConsolePanel", {
 
     me.consoleBody = Ext.create("NOC.core.CodeViewer", {
       readOnly: true,
-      theme: "vs-dark",
     });
 
     me.closeButton = Ext.create("Ext.button.Button", {
