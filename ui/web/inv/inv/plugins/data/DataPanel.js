@@ -14,17 +14,69 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
   title: __("Data"),
   closable: false,
   layout: "fit",
+  viewModel: {
+    data: {
+      searchText: "",
+      totalCount: 0,
+    },
+  },
 
   initComponent: function(){
-    var me = this;
-
+    var me = this, filters;
     // Data Store
     me.store = Ext.create("Ext.data.Store", {
       // model: "NOC.inv.inv.plugins.data.DataModel",
       groupField: "interface",
     });
+    me.store.on("datachanged", me.onDataChanged, this);
+    filters = me.store.getFilters();
+
     // Grids
     Ext.apply(me, {
+      tbar: [
+        {
+          xtype: "textfield",
+          itemId: "searchText",
+          emptyText: __("Search..."),
+          width: 400,
+          bind: {
+            value: "{searchText}",
+          },
+          listeners: {
+            change: function(field, newValue){
+              var trigger = field.getTrigger("clear");
+              if(newValue){
+                trigger.show();
+              } else{
+                trigger.hide();
+              }
+            },
+          },
+          triggers: {
+            clear: {
+              cls: "x-form-clear-trigger",
+              hidden: true,
+              handler: function(field){
+                field.setValue("");
+                var grid = field.up("panel").down("gridpanel"),
+                  store = grid.getStore();
+                store.clearFilter();
+                field.getTrigger("clear").hide();
+              },
+            },
+          },
+        },
+        "->",
+        {
+          xtype: "tbtext",
+          style: {
+            paddingRight: "20px",
+          },
+          bind: {
+            html: __("Total") + ": {totalCount}",
+          },
+        },
+      ],
       items: [
         {
           xtype: "gridpanel",
@@ -34,6 +86,7 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
           stateId: "inv.inv-data-grid",
           bufferedRenderer: false,
           store: me.store,
+          emptyText: __("No data found"),
           columns: [
             {
               text: __("Name"),
@@ -78,6 +131,46 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
           },
         },
       ],
+    });
+    this.getViewModel().bind({
+      bindTo: {
+        searchText: "{searchText}",
+      },
+      single: false,
+    }, function(data){
+      var dataFilter = filters.find("_id", "invDataFilter");
+      if(dataFilter){
+        filters.remove(dataFilter);
+      }
+      filters.add({
+        id: "invDataFilter",
+        filterFn: function(record){
+          if(Ext.isEmpty(data.searchText)){
+            return true;
+          }
+          var isValue = function(){
+              var value = record.get("value");
+              if(Ext.isArray(value)){
+                return value.filter(e => e.toLowerCase().includes(text)).length > 0;
+              }
+              if(Ext.isString(value)){
+                return value.toLowerCase().includes(text);
+              }
+              if(Ext.isNumber(value)){
+                return value.toString().toLowerCase().includes(text);
+              }
+              return false;
+            },
+            text = data.searchText.toLowerCase(),
+            description = record.get("description").toLowerCase(),
+            _interface = record.get("interface").toLowerCase(),
+            name = record.get("name").toLowerCase();
+          return description.includes(text) ||
+            _interface.includes(text) ||
+            name.includes(text) ||
+            isValue();
+        },
+      });
     });
     me.callParent();
   },
@@ -208,5 +301,11 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
         {"showGrid": showGrid},
       ],
     });
+  },
+  //
+  onDataChanged: function(store){
+    var me = this,
+      totalCount = store.getCount();
+    me.getViewModel().set("totalCount", totalCount);
   },
 });

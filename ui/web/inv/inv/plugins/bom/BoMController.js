@@ -59,7 +59,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMController", {
         maxLocationLength = location.length;
       }
       for(var i = 0; i < location.length; i++){
-        dataCopy['location' + (i + 1)] = location[i];
+        dataCopy["location" + (i + 1)] = location[i];
       }
       exportRecords.push(Ext.create("Ext.data.Model", dataCopy));
     });
@@ -71,7 +71,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMController", {
     });
     for(var i = 0; i < maxLocationLength; i++){
       columns.push({
-        dataIndex: 'location' + (i + 1),
+        dataIndex: "location" + (i + 1),
       });
     }
 
