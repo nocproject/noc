@@ -29,7 +29,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.tt.types import TTSystemConfig, EscalationMember
 from noc.core.fm.enum import AlarmAction
-from noc.core.fm.request import AlarmActionRequest, ActionConfig, SuspendAction
+from noc.core.fm.request import AlarmActionRequest, ActionConfig, SuspendAction, ActionItem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -308,9 +308,16 @@ class EscalationProfile(Document):
 
     def from_alarm(self, alarm: ActiveAlarm):
         """"""
-        AlarmActionRequest(
-            item=alarm,
+        actions = []
+        for e in self.escalations:
+            actions += e.get_config()
+        ma = []
+        for a in self.actions:
+            ma += a.get_config()
+        req = AlarmActionRequest(
+            item=ActionItem(alarm=str(alarm.id)),
             start_at=alarm.timestamp,
-            actions=[e.get_config() for e in self.escalations],
-            manual_actions=[a.get_config() for a in self.actions],
+            actions=actions,
+            manual_actions=ma,
         )
+        return req
