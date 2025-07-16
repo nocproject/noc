@@ -121,6 +121,8 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
+        if not self.services:
+            return r
         for svc in self.services:
             r.append(
                 EscalationServiceItem(
@@ -383,7 +385,7 @@ class AlarmActionRunner(object):
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
         if r.document:
-            self.alarm.escalate(f"{tt_system.name}: {r.document_id}")
+            self.alarm.escalate(f"{tt_system.name}: {r.document}")
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id
         # Project result to escalation items
