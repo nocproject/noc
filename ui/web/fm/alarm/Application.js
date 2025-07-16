@@ -44,4 +44,7 @@ Ext.define("NOC.fm.alarm.Application", {
       },
     },
   ],
+  onCloseApp: function(){
+    this.destroy();
+  },
 });
