@@ -98,11 +98,15 @@ class ActionLog(object):
         if result.ctx:
             self.ctx |= result.ctx
 
-    def is_match(self, severity: int, timestamp: datetime.datetime):
+    def is_match(self, severity: int, timestamp: datetime.datetime, ack_user: Any):
         """Check job condition"""
         if severity < self.min_severity:
             return False
         elif self.time_pattern and not self.time_pattern.match(timestamp):
+            return False
+        elif self.alarm_ack == "ack" and not ack_user:
+            return False
+        elif self.alarm_ack == "unack" and ack_user:
             return False
         return True
 
@@ -192,7 +196,7 @@ class ActionLog(object):
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
             # Ctx
-            tt_queue=action.queue,
+            queue=action.queue,
             pre_reason=action.pre_reason,
             login=action.login,
             promote_item_policy=action.promote_item_policy,

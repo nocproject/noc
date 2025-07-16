@@ -152,7 +152,7 @@ class AlarmJob(object):
                 if self.dry_run:
                     self.logger.debug("[%s] Action already executed. Next...", aa)
                 continue
-            elif not aa.is_match(severity, now):
+            elif not aa.is_match(severity, now, self.alarm.ack_user):
                 # Set Skip (Condition)
                 self.logger.debug(
                     "[%s] Action severity condition [%s] not Match. Next...",
@@ -219,7 +219,7 @@ class AlarmJob(object):
                 ActionLog.from_request(a, started_at=start, user=req.user, tt_system=req.tt_system)
                 for a in req.actions
             ],
-            allowed_actions=[AllowedAction.from_request(aa) for aa in req.manual_actions],
+            allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
             # Settings
             # maintenance_policy=req.maintenance_policy,
             # Repeat settings

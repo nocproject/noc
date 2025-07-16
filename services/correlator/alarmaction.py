@@ -22,6 +22,7 @@ from noc.core.tt.types import (
 )
 from noc.core.tt.base import TTSystemCtx, TTAction
 from noc.core.fm.enum import AlarmAction, ActionStatus
+from noc.core.fm.request import AllowedAction
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
@@ -49,7 +50,7 @@ class AlarmActionRunner(object):
         self.services: List[Service] = (
             list(Service.objects.filter(id__in=services)) if services else None
         )
-        self.allowed_actions: List[AlarmAction] = allowed_actions
+        self.allowed_actions: List[AllowedAction] = allowed_actions
         self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
 
@@ -135,17 +136,17 @@ class AlarmActionRunner(object):
     def get_action_context(self) -> List[TTActionContext]:
         """Return Available Action Context for escalation"""
         r = []
-        for action in self.allowed_actions:
-            if action == AlarmAction.ACK and self.alarm.ack_user:
+        for aa in self.allowed_actions:
+            if aa.action == AlarmAction.ACK and self.alarm.ack_user:
                 r.append(
                     TTActionContext(action=TTAction.UN_ACK, label=f"Ack by {self.alarm.ack_user}")
                 )
                 continue
-            elif action == AlarmAction.UN_ACK and not self.alarm.ack_ts:
+            elif aa.action == AlarmAction.UN_ACK and not self.alarm.ack_ts:
                 continue
-            elif action == AlarmAction.ACK:
+            elif aa.action == AlarmAction.ACK:
                 r.append(TTActionContext(action=TTAction.ACK))
-            elif action == AlarmAction.CLEAR:
+            elif aa.action == AlarmAction.CLEAR:
                 r.append(TTActionContext(action=TTAction.CLOSE))
         return r
 
@@ -227,7 +228,9 @@ class AlarmActionRunner(object):
             Escalation Resul instance
         """
         self.logger.info("Appending comment to TT %s:%s", tt_system, tt_id)
-        with self.get_tt_system_context(tt_system, tt_id, timestamp, login, queue, pre_reason) as ctx:
+        with self.get_tt_system_context(
+            tt_system, tt_id, timestamp, login, queue, pre_reason
+        ) as ctx:
             ctx.comment(message)
         r = ctx.get_result()
         if r.is_ok:

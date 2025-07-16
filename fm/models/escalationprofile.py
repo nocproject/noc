@@ -29,7 +29,7 @@ from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.tt.types import TTSystemConfig, EscalationMember
 from noc.core.fm.enum import AlarmAction
-from noc.core.fm.request import AlarmActionRequest, ActionConfig, SuspendAction, ActionItem
+from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -211,15 +211,15 @@ class EscalationAction(EmbeddedDocument):
     log = BooleanField(default=False)
     subscribe = BooleanField(default=False)
 
-    def get_config(self) -> List[SuspendAction]:
+    def get_config(self) -> List[AllowedAction]:
         """"""
         r = []
         if self.ack:
-            r.append(SuspendAction(action=AlarmAction.ACK, key=""))
+            r.append(AllowedAction(action=AlarmAction.ACK))
         if self.close:
-            r.append(SuspendAction(action=AlarmAction.CLEAR, key=""))
+            r.append(AllowedAction(action=AlarmAction.CLEAR))
         if self.subscribe:
-            r.append(SuspendAction(action=AlarmAction.CLEAR, key=""))
+            r.append(AllowedAction(action=AlarmAction.SUBSCRIBE))
         return r
 
 
@@ -349,9 +349,7 @@ class EscalationProfile(Document):
         for e in self.escalations:
             if e.tt_system:
                 cfg = self.get_tt_system_config(e.tt_system)
-                actions += e.get_config(
-                    tt_loging=cfg.login, pre_reason=cfg.pre_reason, promote_item=cfg.promote_item
-                )
+                actions += e.get_config(tt_loging=cfg.login, pre_reason=cfg.pre_reason)
             else:
                 actions += e.get_config()
         ma = []
@@ -361,6 +359,6 @@ class EscalationProfile(Document):
             item=ActionItem(alarm=str(alarm.id)),
             start_at=alarm.timestamp,
             actions=actions,
-            manual_actions=ma,
+            allowed_actions=ma,
         )
         return req

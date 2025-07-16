@@ -69,7 +69,7 @@ class ActionPermission(BaseModel):
     tt_system: str
 
 
-class SuspendAction(BaseModel):
+class AllowedAction(BaseModel):
     action: AlarmAction
     login: Optional[str] = None
     access: Optional[List[ActionPermission]] = None
@@ -107,7 +107,7 @@ class AlarmActionRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(ObjectId()))
     #
     actions: List[ActionConfig]
-    manual_actions: Optional[List[SuspendAction]] = None
+    allowed_actions: Optional[List[AllowedAction]] = None
     start_at: Optional[datetime.datetime] = None
     item: Optional[ActionItem] = None
     # Group
