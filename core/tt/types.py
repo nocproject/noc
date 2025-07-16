@@ -71,6 +71,7 @@ class TTSystemConfig(BaseModel):
     """
 
     login: str
+    pre_reason: Optional[str] = None
     telemetry_sample: int = 0
     max_escalation_retries: int = 30
     global_limit: Optional[int] = None

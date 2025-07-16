@@ -101,8 +101,8 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     name: "escalation_profile",
                     xtype: "fm.escalationprofile.LookupField",
                     fieldLabel: __("Escalation Profile"),
-                    uiStyle: "medium"
-                    allowBlank: true,
+                    uiStyle: "medium",
+                    allowBlank: true
                 },
                 {
                   name: "rule_action",

@@ -154,6 +154,7 @@ class ActionLog(object):
             allow_fail=self.allow_fail,
             stop_processing=self.stop_processing,
             repeat_num=self.repeat_num + 1,
+            **self.ctx,
         )
 
     @classmethod
@@ -181,7 +182,6 @@ class ActionLog(object):
             template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
-            login=action.login,
             timestamp=started_at + datetime.timedelta(seconds=action.delay),
             #
             time_pattern=action.time_pattern,
@@ -191,6 +191,11 @@ class ActionLog(object):
             #
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
+            # Ctx
+            tt_queue=action.queue,
+            pre_reason=action.pre_reason,
+            login=action.login,
+            promote_item_policy=action.promote_item_policy,
             #
             # Source
             user=User.get_by_id(int(user)) if user else None,
@@ -224,6 +229,7 @@ class ActionLog(object):
             document_id=data.get("document_id"),
             template=template,
             subject=data.get("subject"),
+            **data["ctx"] if "ctx" in data else {},
         )
 
     def get_state(self) -> Dict[str, Any]:
@@ -245,6 +251,7 @@ class ActionLog(object):
             "document_id": self.document_id,
             "template": None,
             "subject": self.subject or None,
+            "ctx": self.ctx,
         }
         if self.user:
             r["user"] = self.user.id

@@ -155,6 +155,8 @@ class AlarmActionRunner(object):
         tt_id: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
+        queue: Optional[str] = None,
+        pre_reason: Optional[str] = None,
     ) -> TTSystemCtx:
         """
         Build TTSystem Context
@@ -163,6 +165,8 @@ class AlarmActionRunner(object):
             tt_id: Document ID
             timestamp: Time when run Escalation
             login:
+            queue: TT Queue
+            pre_reason: Alarm Pre-Diagnostic code
 
         """
         # cfg = self.get_tt_system_config(tt_system)
@@ -170,8 +174,8 @@ class AlarmActionRunner(object):
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
-            queue=self.alarm.managed_object.tt_queue,
-            reason=None,
+            queue=queue or self.alarm.managed_object.tt_queue,
+            reason=pre_reason,
             login=login or cfg.login,
             timestamp=timestamp,
             actions=self.get_action_context(),
@@ -205,6 +209,9 @@ class AlarmActionRunner(object):
         tt_id: str,
         message: str,
         timestamp: Optional[datetime.datetime] = None,
+        login: Optional[str] = None,
+        queue: Optional[str] = None,
+        pre_reason: Optional[str] = None,
         **kwargs,
     ) -> EscalationResult:
         """
@@ -220,7 +227,7 @@ class AlarmActionRunner(object):
             Escalation Resul instance
         """
         self.logger.info("Appending comment to TT %s:%s", tt_system, tt_id)
-        with self.get_tt_system_context(tt_system, tt_id, timestamp) as ctx:
+        with self.get_tt_system_context(tt_system, tt_id, timestamp, login, queue, pre_reason) as ctx:
             ctx.comment(message)
         r = ctx.get_result()
         if r.is_ok:
@@ -339,6 +346,8 @@ class AlarmActionRunner(object):
         tt_id: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
+        queue: Optional[str] = None,
+        pre_reason: Optional[str] = None,
         requester: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
@@ -354,6 +363,8 @@ class AlarmActionRunner(object):
             tt_id: If set, do changes
             timestamp: Action timestamp
             requester: TTSystem, request action
+            queue: TT Queue
+            pre_reason: Diagnostic Pre Reason
             user: User, request action
 
         Returns:
@@ -370,9 +381,17 @@ class AlarmActionRunner(object):
             self.logger.info("Changed TT in system %s:%s", tt_system.name, tt_id)
             self.log_alarm(f"Changed TT in system {tt_system.name}")
         else:
-            self.logger.info("Creating TT in system %s (%s)", tt_system.name, login)
+            self.logger.info(
+                "Creating TT in system %s (L:%s,Q:%s,R:%s)",
+                tt_system.name,
+                login,
+                queue,
+                pre_reason,
+            )
             self.log_alarm(f"Creating TT in system {tt_system.name}")
-        with self.get_tt_system_context(tt_system, tt_id, timestamp, login) as ctx:
+        with self.get_tt_system_context(
+            tt_system, tt_id, timestamp, login, queue, pre_reason
+        ) as ctx:
             ctx.create(subject=subject, body=body)
         r = ctx.get_result()
         if r.status == EscalationStatus.TEMP:
@@ -416,9 +435,10 @@ class AlarmActionRunner(object):
         tt_id: str,
         subject: Optional[str] = None,
         body: Optional[str] = None,
-        reason: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
+        queue: Optional[str] = None,
+        pre_reason: Optional[str] = None,
         requester: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
@@ -431,9 +451,10 @@ class AlarmActionRunner(object):
             subject: Message Subject
             body: Message Body
             tt_id: Number of document on TT System
-            reason: comment message for close reason
+            pre_reason: comment message for close reason
             timestamp: Action timestamp
             login:
+            queue:
             requester: TTSystem, request action
             user: User, request action
 
@@ -445,7 +466,9 @@ class AlarmActionRunner(object):
         self.logger.info("Closing TT %s:%s", tt_system, tt_id)
         subject = subject or "Alarm cleared"
         body = body or "Alarm has been cleared"
-        with self.get_tt_system_context(tt_system, tt_id, timestamp, login) as ctx:
+        with self.get_tt_system_context(
+            tt_system, tt_id, timestamp, login, queue, pre_reason
+        ) as ctx:
             ctx.close(subject, body)
         r = ctx.get_result()
         if r.is_ok:

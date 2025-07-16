@@ -264,6 +264,12 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             renderer: NOC.render.Lookup("tt_system")
                         },
                         {
+                            text: __("TT Queue"),
+                            dataIndex: "tt_queue",
+                            editor: "textfield",
+                            width: 70
+                        },
+                        {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",
@@ -290,6 +296,40 @@ Ext.define("NOC.fm.escalationprofile.Application", {
                             editor: "checkboxfield",
                             width: 50,
                             renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Register Msg."),
+                            dataIndex: "register_message",
+                            editor: "checkboxfield",
+                            width: 50,
+                            renderer: NOC.render.Bool
+                        },
+                        {
+                            text: __("Acl Policy"),
+                            dataIndex: "ack_policy",
+                            width: 100,
+                            editor: {
+                                xtype: "combobox",
+                                store: [
+                                    ["D", __("Disabled")],
+                                    ["U", __("UnAck")],
+                                    ["A", __("Ack User")],
+                                    ["S", __("Ack Subscriber")]
+                                ]
+                            },
+                            renderer: NOC.render.Choices({
+                                "D": __("Disabled"),
+                                "U": __("UnAck"),
+                                "A": __("Ack User"),
+                                "S": __("Ack Subscriber")
+                            })
+                        },
+                        {
+                            text: __("Assigned User"),
+                            dataIndex: "assigned_user",
+                            editor: "aaa.user.LookupField",
+                            renderer: NOC.render.Lookup("assigned_user"),
+                            width: 150
                         },
                         {
                             text: __("Repeat"),
