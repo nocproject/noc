@@ -91,7 +91,11 @@ class AlarmActionRunner(object):
     def check_escalated(self, tt_system: TTSystem) -> Optional[str]:
         """Check alarm have tt_id for tt_system"""
         log = self.alarm.get_escalation_log(tt_system)
-        return log.tt_id if log else None
+        if not log:
+            return
+        # Compare with tt_system
+        tt, tt_id = log.tt_id.split(":")
+        return tt_id.strip()
 
     def get_escalation_items(
         self, tt_system: TTSystem, promote_items: Optional[str] = None
@@ -107,6 +111,8 @@ class AlarmActionRunner(object):
         for item in self.items:
             # if item.is_already_escalated:
             #     continue
+            if not item.managed_object:
+                continue
             if not item.managed_object.can_escalate(True, tt_system):
                 err = f"Cannot append object {item.managed_object.name} to group tt: Escalations are disabled"
                 self.log_alarm(err)
@@ -172,10 +178,12 @@ class AlarmActionRunner(object):
         """
         # cfg = self.get_tt_system_config(tt_system)
         cfg = tt_system.get_config()
+        if self.alarm.managed_object and not queue:
+            queue = self.alarm.managed_object.tt_queue
         ctx = TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
-            queue=queue or self.alarm.managed_object.tt_queue,
+            queue=queue,
             reason=pre_reason,
             login=login or cfg.login,
             timestamp=timestamp,

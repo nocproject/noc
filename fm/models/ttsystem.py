@@ -158,7 +158,7 @@ class TTSystem(Document):
             actions=None,
             global_limit=self.global_limit,
             max_escalation_retries=self.max_escalation_retries,
-            promote_item=self.promote_items if tts.processed_items else None,
+            promote_item=self.promote_items if tts.processed_items else "T",
             promote_group_tt=tts.promote_group_tt,
         )
 
@@ -218,3 +218,8 @@ class TTSystem(Document):
         elif self.promote_items == "R" and self.remote_system == obj.remote_id:
             return obj.remote_id
         return None
+
+    def ensure_job(self):
+        """Ensure update job"""
+        if not self.update_handler:
+            return

@@ -48,6 +48,15 @@ class ItemStatus(enum.Enum):
     EXISTS = "exists"  # Exists on another escalation
     REMOVED = "removed"  # item removed
 
+    @classmethod
+    def from_alarm(self, alarm: ActiveAlarm):
+        """"""
+        if alarm.status == "C":
+            return ItemStatus.REMOVED
+        elif alarm.timestamp != alarm.last_update:
+            return ItemStatus.CHANGED
+        return ItemStatus.NEW
+
 
 @dataclass
 class Item(object):
@@ -63,6 +72,11 @@ class Item(object):
 
     def get_state(self):
         return {"alarm": self.alarm.id, "status": self.status.value}
+
+    @classmethod
+    def from_alarm(cls, alarm) -> "Item":
+        """Create Item from Alarm"""
+        return Item(alarm=alarm, status=ItemStatus.from_alarm(alarm))
 
 
 @dataclass
@@ -219,7 +233,7 @@ class AlarmJob(object):
         start = req.start_at or datetime.datetime.now()
         job = AlarmJob(
             # Job Context
-            items=[Item(alarm=alarm)],
+            items=[Item.from_alarm(alarm)],
             name=str(req),
             id=req.id,
             actions=[
@@ -252,9 +266,10 @@ class AlarmJob(object):
         # TTSystem
         job = AlarmJob(
             # Job Context
-            items=[Item(alarm=alarm)],
+            # Item.from_alarm
+            items=[Item.from_alarm(alarm)],
             id=ObjectId(),
-            actions=[],
+            actions=ActionLog.from_alarm(alarm),
             allowed_actions=[
                 AllowedAction(action=AlarmAction.ACK),
                 AllowedAction(action=AlarmAction.UN_ACK),

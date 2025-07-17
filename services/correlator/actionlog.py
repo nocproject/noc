@@ -9,7 +9,7 @@
 # Python modules
 import datetime
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 # NOC modules
 from noc.core.fm.request import ActionConfig
@@ -264,3 +264,8 @@ class ActionLog(object):
         if self.template:
             r["template"] = self.template.id
         return r
+
+    @classmethod
+    def from_alarm(cls, alarm) -> List["ActionLog"]:
+        """"""
+        # Restore documentID, From WATCH, From LOG ?

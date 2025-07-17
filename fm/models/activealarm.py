@@ -78,6 +78,7 @@ class Effect(enum.Enum):
     NOTIFICATION_GROUP = "notification_group"
     SUBSCRIPTION = "subscription"
     HANDLER = "handler"
+    ALARM_JOB = "alarm_job"
 
 
 class WatchItem(EmbeddedDocument):
@@ -138,6 +139,9 @@ class WatchItem(EmbeddedDocument):
             case Effect.HANDLER:
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
+            case Effect.ALARM_JOB:
+                job = alarm.ensure_job()
+                job.run()
 
 
 @change(audit=False)
@@ -1175,6 +1179,12 @@ class ActiveAlarm(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_alarm")
+
+    def ensure_job(self):
+        """Ensure action Job"""
+        from noc.services.correlator.alarmjob import AlarmJob
+
+        return AlarmJob.from_alarm(self)
 
     def get_matcher_ctx(self) -> Dict[str, Any]:
         r = {
