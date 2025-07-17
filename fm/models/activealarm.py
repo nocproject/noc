@@ -70,6 +70,7 @@ from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
+from .ttsystem import TTSystem
 
 
 class Effect(enum.Enum):
@@ -248,9 +249,18 @@ class ActiveAlarm(Document):
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(id=oid).first()
 
+    @classmethod
+    def get_by_tt_id(cls, tt_id: str) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(log__tt_id=tt_id).first()
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
             yield "alarm", str(self.id)
+
+    def get_escalation_log(self, tt_system: TTSystem) -> Optional[AlarmLog]:
+        for ll in self.log:
+            if ll.tt_id and ll.tt_id.startswith(f"{tt_system.name}:"):
+                return ll
 
     @property
     def escalation_tt(self) -> Optional[str]:
