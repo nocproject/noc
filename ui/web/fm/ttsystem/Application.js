@@ -140,9 +140,12 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     uiStyle: "small"
                 },
                 {
-                    name: "update_handler",
-                    xtype: "textfield",
-                    fieldLabel: __("Update Handler")
+                    name: "check_updates_interval",
+                    xtype: "numberfield",
+                    fieldLabel: __("Check Updates Interval"),
+                    allowBlank: true,
+                    min: 0,
+                    uiStyle: "small"
                 }
             ]
         });

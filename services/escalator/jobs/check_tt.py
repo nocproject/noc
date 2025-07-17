@@ -92,10 +92,10 @@ class CheckTTJob(Job):
         # Exists Alarm Job / Create from Alarm
         # a_jobs: Dict[str, AlarmJob] = {}
         for doc_id, changes in changes.items():
-            a_job = AlarmJob.ensure_job(doc_id)
+            a_job = AlarmJob.ensure_job(self.object.get_tt_id(doc_id))
             if not a_job:
                 self.logger.info(
-                    "[%s] Updates on Unknown document with id: %s",
+                    "[%s] Updates on Unknown document with id: '%s'",
                     "",
                     doc_id,
                 )
@@ -136,11 +136,12 @@ class CheckTTJob(Job):
             job: Escalation Doc
             changes:
         """
+        now = datetime.datetime.now()
         for user, change in changes:
             cfg = self.get_action_config(change, user)
             if cfg:
                 job.run_action(
-                    action=cfg, user=user, tt_system=self.object, timestamp=change.timestamp
+                    action=cfg, user=user, tt_system=self.object, timestamp=change.timestamp or now
                 )
 
     def schedule_next(self, status):
@@ -149,10 +150,9 @@ class CheckTTJob(Job):
             ts = datetime.datetime.now() + datetime.timedelta(seconds=60)
             self.scheduler.postpone_job(self.attrs[self.ATTR_ID])
         else:
+            interval = self.object.check_updates_interval or config.escalator.wait_tt_check_interval
             # Schedule next run
-            ts = self.get_next_timestamp(
-                config.escalator.wait_tt_check_interval, self.attrs[self.ATTR_OFFSET]
-            )
+            ts = self.get_next_timestamp(interval, self.attrs[self.ATTR_OFFSET])
         # Error
         if not ts:
             # Remove disabled job

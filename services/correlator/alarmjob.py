@@ -295,9 +295,14 @@ class AlarmJob(object):
         if not self.is_allowed_action(action.action, user):
             self.logger.info("[%s] No Permission User for Run Action: %s", user, action.action)
             return
+        timestamp = timestamp or datetime.datetime.now()
         # self.add_action(action, timestamp)
         al = ActionLog.from_request(
-            action, started_at=timestamp, user=user, tt_system=tt_system, one_time=True
+            action,
+            started_at=timestamp,
+            user=user.id if user else None,
+            tt_system=str(tt_system.id) if tt_system else None,
+            one_time=True,
         )
         self.actions += [al]
         self.run()

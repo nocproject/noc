@@ -269,3 +269,4 @@ class ActionLog(object):
     def from_alarm(cls, alarm) -> List["ActionLog"]:
         """"""
         # Restore documentID, From WATCH, From LOG ?
+        return []

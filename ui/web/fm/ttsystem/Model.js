@@ -28,8 +28,9 @@ Ext.define("NOC.fm.ttsystem.Model", {
             type: "string"
         },
         {
-            name: "update_handler",
-            type: "string"
+            name: "check_updates_interval",
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "description",

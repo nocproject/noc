@@ -30,6 +30,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.tt.base import BaseTTSystem
 from noc.core.tt.types import TTSystemConfig
+from noc.core.scheduler.job import Job
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 
@@ -37,6 +38,7 @@ id_lock = Lock()
 logger = logging.getLogger(__name__)
 
 DEFAULT_TTSYSTEM_SHARD = "default"
+CHECK_TT_JOB = "noc.services.escalator.jobs.check_tt.CheckTTJob"
 
 
 @Label.match_labels("ttsystem", allowed_op={"="})
@@ -90,7 +92,7 @@ class TTSystem(Document):
         ],
         default="a",
     )
-    update_handler = StringField()
+    check_updates_interval = IntField(default=0)
     last_update_ts = DateTimeField()
     last_update_id = StringField()
     #
@@ -136,6 +138,8 @@ class TTSystem(Document):
             )
         ]
         cache.delete_many(deleted_cache_keys, version=MANAGEDOBJECT_CACHE_VERSION)
+        # Apply discovery jobs
+        self.ensure_update_job()
 
     def get_system(self) -> BaseTTSystem:
         """
@@ -219,7 +223,21 @@ class TTSystem(Document):
             return obj.remote_id
         return None
 
-    def ensure_job(self):
+    def ensure_update_job(self):
         """Ensure update job"""
-        if not self.update_handler:
+        if not self.check_updates_interval:
+            Job.remove(
+                "escalator",
+                CHECK_TT_JOB,
+                key=self.id,
+                pool=self.shard_name or DEFAULT_TTSYSTEM_SHARD,
+            )
             return
+        Job.submit(
+            "escalator",
+            CHECK_TT_JOB,
+            key=self.id,
+            pool=self.shard_name or DEFAULT_TTSYSTEM_SHARD,
+            # delta=self.pool.get_delta(),
+            keep_ts=True,
+        )
