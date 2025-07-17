@@ -190,15 +190,14 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
     },
   ],
   initComponent: function(){
-    var me = this;
-    me.callParent();
+    this.callParent();
 
     var store = this.down("grid").getStore(),
       filters = store.getFilters();
 
     store.on("datachanged", this.getController().onDataChanged, this);
     store.setGroupField("vendor");
-    me.getViewModel().bind({
+    this.getViewModel().bind({
       bindTo: {
         searchText: "{searchText}",
       },
