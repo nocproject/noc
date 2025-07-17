@@ -65,6 +65,10 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -74,6 +78,10 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
