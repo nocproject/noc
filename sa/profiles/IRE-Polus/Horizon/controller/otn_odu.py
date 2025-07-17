@@ -10,11 +10,19 @@ from typing import Iterable
 
 # NOC modules
 from noc.core.techdomain.profile.otn_odu import BaseODUProfileController
-from .base import ChannelMixin, SetValue, ADM_200
+from .base import ChannelMixin, SetValue, ADM_200, ADM_10
 
 
 class Controller(ChannelMixin, BaseODUProfileController):
     label = "ODU"
+
+    ADM10_CLIENT_PROTOCOL_MAP = {
+        "OTU1": "0",
+        "STM1": "128",
+        "STM4": "129",
+        "STM16": "130",
+        "TransEth1G": "257",
+    }
 
     ADM200_CLIENT_PROTOCOL_MAP = {
         "OTU2": "1",
@@ -25,6 +33,35 @@ class Controller(ChannelMixin, BaseODUProfileController):
         "8GFC": "515",
         "16GFC": "517",
     }
+
+    @ChannelMixin.setup_for(ADM_10)
+    def iter_adm10_setup(
+        self, name: str, /, client_protocol: str | None = None, **kwargs: dict[str, str]
+    ) -> Iterable[SetValue]:
+        """
+        ADM-10 initialization.
+
+        Args:
+            name: Port name.
+        """
+        prefix = self.get_port_prefix(name)
+        xcvr = self.get_adm10_xcvr_suffix(name)
+        # Bring port up
+        yield SetValue(
+            name=f"{prefix}_SetState", value="2", description="Bring port up. Set state to IS."
+        )
+        # Set client protocol
+        if client_protocol:
+            if client_protocol not in self.ADM10_CLIENT_PROTOCOL_MAP:
+                msg = f"Invalid client protocol: {client_protocol}"
+                raise ValueError(msg)
+            yield SetValue(
+                name=f"{prefix}_SetDataType",
+                value=self.ADM10_CLIENT_PROTOCOL_MAP[client_protocol],
+                description=f"Set data type to {client_protocol}",
+            )
+        # Enable laser
+        yield SetValue(name=f"{prefix}_{xcvr}_EnableTx", value="1", description="Enable laser.")
 
     @ChannelMixin.setup_for(ADM_200)
     def iter_adm200_setup(
@@ -54,6 +91,27 @@ class Controller(ChannelMixin, BaseODUProfileController):
             )
         # Enable laser
         yield SetValue(name=f"{prefix}_{xcvr}_EnableTx", value="1", description="Enable laser.")
+
+    @ChannelMixin.cleanup_for(ADM_200)
+    def iter_adm10_cleanup(self, name: str) -> Iterable[SetValue]:
+        """
+        ADM-10 initialization.
+
+        Args:
+            name: Port name.
+        """
+        prefix = self.get_port_prefix(name)
+        xcvr = self.get_adm10_xcvr_suffix(name)
+        # Bring port up
+        yield SetValue(
+            name=f"{prefix}_SetState", value="1", description="Bring port down. Set state to MT"
+        )
+        # Reset data type
+        yield SetValue(
+            name=f"{prefix}_SetDataType", value="257", description="Set data type to 1GE"
+        )
+        # Disable laser
+        yield SetValue(name=f"{prefix}_{xcvr}_EnableTx", value="0", description="Disable laser")
 
     @ChannelMixin.cleanup_for(ADM_200)
     def iter_adm200_cleanup(self, name: str) -> Iterable[SetValue]:

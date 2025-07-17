@@ -284,6 +284,8 @@ class OTNODUController(BaseController):
     def to_params(cls, constraints: ConstraintSet) -> list[Param]:
         def q_proto(s: str) -> str:
             match s:
+                case "TransEth1G":
+                    return "1GE"
                 case "TransEth10G":
                     return "10GE"
                 case "TransEth100G":
