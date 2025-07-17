@@ -17,6 +17,7 @@ from noc.inv.models.endpoint import Endpoint
 from noc.core.runner.job import JobRequest
 
 # Cards
+ADM_10 = UUID("60392e07-aab2-4d9f-a304-17b09b27675f")
 ADM_200 = UUID("1187f420-fa75-4701-9e7a-816f5923203b")
 OADM_4_V_4 = UUID("6aaed88a-4d69-4d91-ab45-3be075a60188")
 OADM_16_V_16 = UUID("c48af1f4-570e-4b1b-936d-24e5bb966064")
@@ -102,6 +103,27 @@ class HorizonMixin(object):
             return f"Ln_{name[4:]}"
         if name.startswith("CLIENT"):
             return f"Cl_{name[6:]}"
+        msg = f"Invalid port name: {name}"
+        raise ValueError(msg)
+
+    @classmethod
+    def get_adm10_xcvr_suffix(cls, name: str) -> str:
+        """
+        Get tranceiver suffix for ADM-200.
+
+        Args:
+            name: Port name.
+
+        Raises:
+            ValueError: On invalid name.
+
+        Returns:
+            Transceiver suffix.
+        """
+        if name.startswith("LINE"):
+            return "SFP"
+        if name.startswith("CLIENT"):
+            return "SFP"
         msg = f"Invalid port name: {name}"
         raise ValueError(msg)
 

@@ -26,11 +26,13 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "OTU1"
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "OTU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -45,11 +47,13 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "OTU1"
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "OTU2"
                 },
                 {
                     "direction": "*",
-                    "protocol__code": "OTU2"
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "QPSK"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -61,16 +65,10 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU1"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -80,16 +78,10 @@
             "direction": "i",
             "gender": "f",
             "group": "1",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU1"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "OTU2"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -116,6 +108,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -144,6 +141,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -172,6 +174,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -199,6 +206,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -226,6 +238,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -253,6 +270,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -280,6 +302,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -307,6 +334,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -334,6 +366,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -361,6 +398,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -388,6 +430,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -415,6 +462,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -442,6 +494,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -469,6 +526,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -496,6 +558,11 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
@@ -523,9 +590,112 @@
                 {
                     "direction": "*",
                     "protocol__code": "STM16"
+                },
+                {
+                    "direction": "*",
+                    "modes": ["AGG-2x10-EFEC"],
+                    "protocol__code": "ODU2"
                 }
             ],
             "type__name": "Transceiver | SFP+"
+        }
+    ],
+    "cross": [
+        {
+            "input": "CLIENT1",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-1"
+        },
+        {
+            "input": "CLIENT2",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-2"
+        },
+        {
+            "input": "CLIENT3",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-3"
+        },
+        {
+            "input": "CLIENT4",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-4"
+        },
+        {
+            "input": "CLIENT5",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-5"
+        },
+        {
+            "input": "CLIENT6",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-6"
+        },
+        {
+            "input": "CLIENT7",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-7"
+        },
+        {
+            "input": "CLIENT8",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE1",
+            "output_discriminator": "odu::ODU2::ODU0-8"
+        },
+        {
+            "input": "CLIENT9",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-1"
+        },
+        {
+            "input": "CLIENT10",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-2"
+        },
+        {
+            "input": "CLIENT11",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-3"
+        },
+        {
+            "input": "CLIENT12",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-4"
+        },
+        {
+            "input": "CLIENT13",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-5"
+        },
+        {
+            "input": "CLIENT14",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-6"
+        },
+        {
+            "input": "CLIENT15",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-7"
+        },
+        {
+            "input": "CLIENT16",
+            "modes": ["AGG-2x10-EFEC"],
+            "output": "LINE2",
+            "output_discriminator": "odu::ODU2::ODU0-8"
         }
     ],
     "data": [
@@ -561,5 +731,20 @@
         }
     ],
     "front_facade__name": "RBS | iData | ADM-10 1459-1",
+    "modes": [
+        {
+            "name": "ADM-10",
+            "is_default": true
+        },
+        {
+            "name": "AGG-2x10BS"
+        },
+        {
+            "name": "AGG-2x10-EFEC"
+        },
+        {
+            "name": "AGG-10BS+ADM-2.5"
+        }
+    ],
     "short_label": "ADM-10"
 }
