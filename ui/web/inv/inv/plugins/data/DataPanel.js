@@ -163,10 +163,8 @@ Ext.define("NOC.inv.inv.plugins.data.DataPanel", {
             },
             text = data.searchText.toLowerCase(),
             description = record.get("description").toLowerCase(),
-            _interface = record.get("interface").toLowerCase(),
             name = record.get("name").toLowerCase();
           return description.includes(text) ||
-            _interface.includes(text) ||
             name.includes(text) ||
             isValue();
         },
