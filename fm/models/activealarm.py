@@ -70,7 +70,7 @@ from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
-from .ttsystem import TTSystem
+from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 
 
 class Effect(enum.Enum):
@@ -140,7 +140,7 @@ class WatchItem(EmbeddedDocument):
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
             case Effect.ALARM_JOB:
-                alarm.refresh_job()
+                alarm.refresh_job(is_clear)
 
 
 @change(audit=False)
@@ -287,6 +287,12 @@ class ActiveAlarm(Document):
         for ii in esc.items:
             if ii.escalation_status == "fail" or ii.escalation_status == "temp":
                 return ii.escalation_error
+
+    @property
+    def escalator_shard(self):
+        if self.managed_object:
+            return self.managed_object.escalator_shard
+        return DEFAULT_TTSYSTEM_SHARD
 
     def clean(self):
         super().clean()
@@ -672,7 +678,7 @@ class ActiveAlarm(Document):
                 continue
             if w.immediate:
                 continue
-            w.run(self)
+            w.run(self, is_clear=is_clear)
 
     @property
     def duration(self) -> int:
@@ -1092,14 +1098,15 @@ class ActiveAlarm(Document):
                 template=str(template.id) if template else None,
                 **kwargs,
             )
-        self.add_watch(
-            Effect.TT_SYSTEM,
-            tt_id,
-            immediate=False,
-            clear_only=False,
-            template=str(open_template.id) if open_template else None,
-            **kwargs,
-        )
+        else:
+            self.add_watch(
+                Effect.TT_SYSTEM,
+                tt_id,
+                immediate=False,
+                clear_only=False,
+                template=str(open_template.id) if open_template else None,
+                **kwargs,
+            )
         self.wait_tt = wait_tt
         self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)
         # q = {"_id": self.id}
@@ -1252,11 +1259,11 @@ class ActiveAlarm(Document):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
-    def refresh_job(self):
+    def refresh_job(self, is_clear: bool = False):
         """Refresh Alarm Job by changes"""
         from noc.services.correlator.alarmjob import AlarmJob
 
-        job = AlarmJob.from_alarm(self)
+        job = AlarmJob.from_alarm(self, is_clear=is_clear)
         job.run()
 
 

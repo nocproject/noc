@@ -25,7 +25,7 @@ from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.fm.request import AllowedAction
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.activealarm import ActiveAlarm, Effect
 from noc.aaa.models.user import User
 from .actionlog import ActionResult
 
@@ -424,6 +424,7 @@ class AlarmActionRunner(object):
                 pre_reason=pre_reason,
             )
             #
+            self.alarm.add_watch(Effect.ALARM_JOB, key="")
             self.alarm.safe_save()
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id

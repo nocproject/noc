@@ -66,6 +66,9 @@ class Item(object):
     alarm: Union[ActiveAlarm, ArchivedAlarm]
     status: ItemStatus = ItemStatus.NEW
 
+    def __str__(self):
+        return f"{self.alarm}: {self.status}"
+
     @property
     def managed_object(self) -> Optional[ManagedObject]:
         return self.alarm.managed_object
@@ -74,8 +77,10 @@ class Item(object):
         return {"alarm": self.alarm.id, "status": self.status.value}
 
     @classmethod
-    def from_alarm(cls, alarm) -> "Item":
+    def from_alarm(cls, alarm, is_clear: bool = False) -> "Item":
         """Create Item from Alarm"""
+        if is_clear:
+            return Item(alarm=alarm, status=ItemStatus.REMOVED)
         return Item(alarm=alarm, status=ItemStatus.from_alarm(alarm))
 
 
@@ -214,7 +219,7 @@ class AlarmJob(object):
             self.actions = actions + self.actions
 
     def check_end(self) -> bool:
-        return self.alarm.status == "C"
+        return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status == "C"
 
     @classmethod
     def from_request(
@@ -258,6 +263,7 @@ class AlarmJob(object):
     def from_alarm(
         cls,
         alarm: ActiveAlarm,
+        is_clear: bool = False,
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
@@ -267,7 +273,7 @@ class AlarmJob(object):
         job = AlarmJob(
             # Job Context
             # Item.from_alarm
-            items=[Item.from_alarm(alarm)],
+            items=[Item.from_alarm(alarm, is_clear=is_clear)],
             id=ObjectId(),
             actions=ActionLog.from_alarm(alarm),
             allowed_actions=[
