@@ -123,4 +123,3 @@ class AlarmActionRequest(BaseModel):
     # From
     tt_system: Optional[str] = None
     user: Optional[int] = None
-
