@@ -88,49 +88,44 @@ class AlarmActionRunner(object):
                 raise NotImplementedError("Action %s not implemented" % action)
         return r
 
-    def get_escalation_items(self, tt_system: TTSystem) -> List[ECtxItem]:
+    def get_escalation_items(
+        self, tt_system: TTSystem, promote_items: Optional[str] = None
+    ) -> List[ECtxItem]:
         """
         Build escalation items for Escalation Doc
         Args:
             tt_system: TTSystem for checked item
+            promote_items:
 
         """
         r = []
         for item in self.items:
             # if item.is_already_escalated:
             #     continue
-            # rid = item.managed_object.get_mapping(rs)
-            # if rid:
-            #     r.append(
-            #         ECtxItem(id=str(item.managed_object.id), tt_id=rid),
-            #     )
-            #     continue
-            if not item.managed_object.can_escalate(True):
+            if not item.managed_object.can_escalate(True, tt_system):
                 err = f"Cannot append object {item.managed_object.name} to group tt: Escalations are disabled"
                 self.log_alarm(err)
                 # item.escalation_status = "fail"
                 continue
-            if item.managed_object.tt_system != tt_system:
+            if not tt_system.get_object_tt_id(item.managed_object):
                 err = f"Cannot append object {item.managed_object.name} to group tt: Belongs to other TT system"
                 self.log_alarm(err)
                 # item.escalation_status = "fail"
                 continue
-            ei = ECtxItem(id=str(item.managed_object.id), tt_id=item.managed_object.tt_system_id)
+            ei = ECtxItem(
+                id=str(item.managed_object.id),
+                tt_id=tt_system.get_object_tt_id(item.managed_object),
+            )
             r.append(ei)
         return r
 
-    def get_affected_services_items(self) -> List[EscalationServiceItem]:
+    def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
         if not self.services:
             return r
         for svc in self.services:
-            r.append(
-                EscalationServiceItem(
-                    id=str(svc.id),
-                    tt_id=svc.remote_id or "",
-                )
-            )
+            r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
         return r
 
     def get_action_context(self) -> List[TTActionContext]:
@@ -180,8 +175,8 @@ class AlarmActionRunner(object):
             login=login or cfg.login,
             timestamp=timestamp,
             actions=self.get_action_context(),
-            items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
-            services=self.get_affected_services_items() or None,
+            items=self.get_escalation_items(tt_system, cfg.promote_item),
+            services=self.get_affected_services_items(tt_system),
         )
         return ctx
 

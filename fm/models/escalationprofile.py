@@ -349,7 +349,11 @@ class EscalationProfile(Document):
         for e in self.escalations:
             if e.tt_system:
                 cfg = self.get_tt_system_config(e.tt_system)
-                actions += e.get_config(tt_loging=cfg.login, pre_reason=cfg.pre_reason)
+                actions += e.get_config(
+                    tt_loging=cfg.login,
+                    pre_reason=cfg.pre_reason,
+                    promote_item=cfg.promote_item,
+                )
             else:
                 actions += e.get_config()
         ma = []

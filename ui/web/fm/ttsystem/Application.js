@@ -66,6 +66,13 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     allowBlank: false
                 },
                 {
+                    name: "login",
+                    xtype: "textfield",
+                    fieldLabel: __("Login"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "shard_name",
                     xtype: "textfield",
                     fieldLabel: __("Shard"),
@@ -107,12 +114,35 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     uiStyle: "medium"
                 },
                 {
+                    name: "promote_items",
+                    xtype: "combobox",
+                    fieldLabel: __("Escalate Items Add Policy"),
+                    allowBlank: false,
+                    queryMode: "local",
+                    displayField: "label",
+                    valueField: "id",
+                    store: {
+                        fields: ["id", "label"],
+                        data: [
+                            {id: "D", label: "Disable"},
+                            {id: "T", label: "Items with TTSystem set"},
+                            {id: "R", label: "Items with RemoteSystem set"},
+                            {id: "I", label: "Any Items"}]
+                    },
+                    uiStyle: "medium"
+                },
+                {
                     name: "telemetry_sample",
                     xtype: "numberfield",
                     fieldLabel: __("Tememetry Sample"),
                     allowBlank: false,
                     min: 0,
                     uiStyle: "small"
+                },
+                {
+                    name: "update_handler",
+                    xtype: "textfield",
+                    fieldLabel: __("Update Handler")
                 }
             ]
         });
