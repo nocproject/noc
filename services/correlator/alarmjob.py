@@ -275,7 +275,7 @@ class AlarmJob(object):
             # Item.from_alarm
             items=[Item.from_alarm(alarm, is_clear=is_clear)],
             id=ObjectId(),
-            actions=ActionLog.from_alarm(alarm),
+            actions=ActionLog.from_alarm(alarm, is_clear=is_clear),
             allowed_actions=[
                 AllowedAction(action=AlarmAction.ACK),
                 AllowedAction(action=AlarmAction.UN_ACK),

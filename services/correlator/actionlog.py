@@ -268,7 +268,9 @@ class ActionLog(object):
         return r
 
     @classmethod
-    def from_watch(cls, watch: WatchItem, alarm: ActiveAlarm) -> List["ActionLog"]:
+    def from_watch(
+        cls, watch: WatchItem, alarm: ActiveAlarm, is_clear: bool = False
+    ) -> List["ActionLog"]:
         """Restore Action Log from Watch"""
         # Restore documentID, From WATCH, From LOG ?
         r = []
@@ -280,18 +282,7 @@ class ActionLog(object):
             # Create TT
             if "template" in args:
                 args["template"] = Template.get_by_id(int(watch.args["template"]))
-            if not watch.clear_only:
-                r += [
-                    ActionLog(
-                        action=AlarmAction.CREATE_TT,
-                        key=str(tt_s.id),
-                        document_id=tt_id,
-                        timestamp=alarm.last_update,
-                        status=ActionStatus.PENDING,
-                        **args,
-                    )
-                ]
-            else:
+            if is_clear:
                 r += [
                     ActionLog(
                         action=AlarmAction.CLOSE_TT,
@@ -303,12 +294,24 @@ class ActionLog(object):
                         **args,
                     )
                 ]
+            if not watch.clear_only:
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CREATE_TT,
+                        key=str(tt_s.id),
+                        document_id=tt_id,
+                        timestamp=alarm.last_update,
+                        # Set valid status
+                        status=ActionStatus.PENDING,
+                        **args,
+                    )
+                ]
         return r
 
     @classmethod
-    def from_alarm(cls, alarm: ActiveAlarm) -> List["ActionLog"]:
+    def from_alarm(cls, alarm: ActiveAlarm, is_clear: bool = False) -> List["ActionLog"]:
         """"""
         r = []
         for w in alarm.watchers:
-            r += ActionLog.from_watch(w, alarm)
+            r += ActionLog.from_watch(w, alarm, is_clear)
         return r

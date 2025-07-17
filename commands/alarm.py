@@ -249,7 +249,9 @@ class Command(BaseCommand):
         job = AlarmJob.from_request(req, dry_run=True)
         job.run()
 
-    def handle_test_escalation(self, alarms, profile: str = None, is_end: bool = False, *args, **options):
+    def handle_test_escalation(
+        self, alarms, profile: str = None, is_end: bool = False, *args, **options
+    ):
         alarm = get_alarm(alarms[0])
         profile = EscalationProfile.get_by_id(profile)
         if not profile:
