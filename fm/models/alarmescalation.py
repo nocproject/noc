@@ -198,6 +198,9 @@ class AlarmEscalation(Document):
         defer: bool = True,
         **kwargs,
     ):
+        if not is_clear:
+            # Update not implementer
+            return
         delay = alarm.alarm_class.get_control_time(alarm.reopens)
         call_later(
             "noc.services.escalator.escalation.notify_close",

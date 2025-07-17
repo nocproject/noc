@@ -415,7 +415,9 @@ class AlarmActionRunner(object):
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
         if r.document:
-            self.alarm.escalate(tt_system.get_tt_id(r.document))
+            self.alarm.escalate(
+                tt_system.get_tt_id(r.document), open_template=kwargs.get("template")
+            )
             #
             self.alarm.safe_save()
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)

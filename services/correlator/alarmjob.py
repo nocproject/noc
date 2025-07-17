@@ -309,7 +309,7 @@ class AlarmJob(object):
 
     @classmethod
     def ensure_job(cls, tt_id: str) -> Optional["AlarmJob"]:
-        """"""
+        """ensure_tt_job"""
         job = cls.get_by_tt_id(tt_id)
         if job:
             return job

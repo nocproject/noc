@@ -19,6 +19,7 @@ from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.activealarm import ActiveAlarm, WatchItem, Effect
 
 
 @dataclass(frozen=True)
@@ -130,6 +131,7 @@ class ActionLog(object):
         if self.template:
             r["subject"] = self.template.render_subject(**alarm_ctx)
             r["body"] = self.template.render_body(**alarm_ctx)
+            r["template"] = self.template
         elif self.subject:
             r["subject"] = self.subject
         if self.user:
@@ -266,7 +268,41 @@ class ActionLog(object):
         return r
 
     @classmethod
-    def from_alarm(cls, alarm) -> List["ActionLog"]:
-        """"""
+    def from_watch(cls, watch: WatchItem) -> List["ActionLog"]:
+        """Restore Action Log from Watch"""
         # Restore documentID, From WATCH, From LOG ?
-        return []
+        r = []
+        if watch.effect == Effect.TT_SYSTEM:
+            tt_s, tt_id = watch.key.split(":")
+            tt_s = TTSystem.get_by_name(tt_s)
+            # Create TT
+            if not watch.clear_only:
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CREATE_TT,
+                        key=str(watch.key),
+                        document_id=watch.args.get("tt_id"),
+                        template=watch.args.get("template"),
+                        status=ActionStatus.SUCCESS,
+                    )
+                ]
+            else:
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CLOSE_TT,
+                        key=str(tt_s),
+                        document_id=tt_id,
+                        template=watch.args.get("template"),
+                        status=ActionStatus.NEW,
+                        when="on_end",
+                    )
+                ]
+        return r
+
+    @classmethod
+    def from_alarm(cls, alarm: ActiveAlarm) -> List["ActionLog"]:
+        """"""
+        r = []
+        for w in alarm.watchers:
+            r += ActionLog.from_watch(w)
+        return r

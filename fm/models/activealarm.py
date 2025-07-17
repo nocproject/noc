@@ -140,8 +140,7 @@ class WatchItem(EmbeddedDocument):
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
             case Effect.ALARM_JOB:
-                job = alarm.ensure_job()
-                job.run()
+                alarm.refresh_job()
 
 
 @change(audit=False)
@@ -549,7 +548,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.safe_save()
+        self.save()
 
     def unsubscribe(self, user: "User"):
         self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
@@ -559,7 +558,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.safe_save()
+        self.save()
 
     def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
@@ -581,6 +580,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
+        self.refresh_job()
 
     def unacknowledge(self, user: "User", msg=""):
         self.ack_ts = None
@@ -595,6 +595,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
+        self.refresh_job()
 
     def register_clear(
         self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None
@@ -668,6 +669,8 @@ class ActiveAlarm(Document):
         """Processed watchers"""
         for w in self.watchers:
             if w.clear_only and not is_clear:
+                continue
+            if w.immediate:
                 continue
             w.run(self)
 
@@ -1077,6 +1080,7 @@ class ActiveAlarm(Document):
         close_tt: bool = False,
         wait_tt: Optional[str] = None,
         template: Optional[Template] = None,
+        open_template: Optional[Template] = None,
     ):
         if close_tt:
             self.add_watch(
@@ -1086,7 +1090,13 @@ class ActiveAlarm(Document):
                 clear_only=True,
                 template=str(template.id) if template else None,
             )
-        # self.close_tt = close_tt
+        self.add_watch(
+            Effect.TT_SYSTEM,
+            tt_id,
+            immediate=False,
+            clear_only=False,
+            template=str(open_template.id) if open_template else None,
+        )
         self.wait_tt = wait_tt
         self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)
         # q = {"_id": self.id}
@@ -1180,12 +1190,6 @@ class ActiveAlarm(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_alarm")
 
-    def ensure_job(self):
-        """Ensure action Job"""
-        from noc.services.correlator.alarmjob import AlarmJob
-
-        return AlarmJob.from_alarm(self)
-
     def get_matcher_ctx(self) -> Dict[str, Any]:
         r = {
             "alarm_class": str(self.alarm_class.id),
@@ -1245,10 +1249,18 @@ class ActiveAlarm(Document):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
+    def refresh_job(self):
+        """Refresh Alarm Job by changes"""
+        from noc.services.correlator.alarmjob import AlarmJob
+
+        job = AlarmJob.from_alarm(self)
+        job.run()
+
 
 @runtime_checkable
 class AlarmComponent(Protocol):
-    def get_component(self, **kwargs) -> Optional["Generic"]: ...
+    def get_component(self, **kwargs) -> Optional["Generic"]:
+        ...
 
 
 class ComponentHub(object):
