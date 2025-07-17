@@ -248,6 +248,10 @@ class ActiveAlarm(Document):
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ActiveAlarm"]:
         return ActiveAlarm.objects.filter(id=oid).first()
 
+    @classmethod
+    def get_by_tt_id(cls, tt_id: str) -> Optional["ActiveAlarm"]:
+        return ActiveAlarm.objects.filter(log__tt_id=tt_id).first()
+
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:
             yield "alarm", str(self.id)
