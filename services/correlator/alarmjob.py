@@ -14,6 +14,9 @@ import enum
 from dataclasses import dataclass
 from typing import List, Optional, Any, Union
 
+# Third-party modules
+from bson import ObjectId
+
 # NOC modules
 from noc.core.fm.enum import ActionStatus, AlarmAction
 from noc.core.log import PrefixLoggerAdapter
@@ -134,6 +137,10 @@ class AlarmJob(object):
         """Getting document alarm"""
         return self.leader_item.alarm
 
+    def get_lock_items(self):
+        """"""
+        return [f"a:{self.alarm}"]
+
     def run(self) -> None:
         """Run job for works"""
         actions = []
@@ -233,11 +240,65 @@ class AlarmJob(object):
         )
         return job
 
+    @classmethod
+    def from_alarm(
+        cls,
+        alarm: ActiveAlarm,
+        dry_run: bool = False,
+        sample: int = 0,
+        static_delay: Optional[int] = None,
+    ) -> "AlarmJob":
+        """"""
+        # TTSystem
+        job = AlarmJob(
+            # Job Context
+            items=[Item(alarm=alarm)],
+            id=ObjectId(),
+            actions=[],
+            allowed_actions=[
+                AllowedAction(action=AlarmAction.ACK),
+                AllowedAction(action=AlarmAction.UN_ACK),
+            ],
+            telemetry_sample=sample,
+            dry_run=dry_run,
+            static_delay=static_delay,
+        )
+        return job
+
+    def is_allowed_action(self, action: AlarmAction, user: User):
+        """"""
+        return True
+
     def run_action(
         self,
         action: ActionConfig,
         user: Optional[User] = None,
         tt_system: Optional[TTSystem] = None,
+        timestamp: Optional[datetime.datetime] = None,
     ):
         """Run action on Job"""
-        # check Allowed_action
+        if not self.is_allowed_action(action.action, user):
+            self.logger.info("[%s] No Permission User for Run Action: %s", user, action.action)
+            return
+        # self.add_action(action, timestamp)
+        al = ActionLog.from_request(
+            action, started_at=timestamp, user=user, tt_system=tt_system, one_time=True
+        )
+        self.actions += [al]
+        self.run()
+
+    @classmethod
+    def ensure_job(cls, tt_id: str) -> Optional["AlarmJob"]:
+        """"""
+        job = cls.get_by_tt_id(tt_id)
+        if job:
+            return job
+        aa = ActiveAlarm.get_by_tt_id(tt_id)
+        if not aa:
+            return
+        return AlarmJob.from_alarm(aa)
+
+    @classmethod
+    def get_by_tt_id(cls, tt_id) -> Optional["AlarmJob"]:
+        """Getting Alarm Job by TT ID"""
+        return None
