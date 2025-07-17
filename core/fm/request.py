@@ -124,37 +124,3 @@ class AlarmActionRequest(BaseModel):
     tt_system: Optional[str] = None
     user: Optional[int] = None
 
-# requester (actor) - /TTsystem/User/Group
-# allowed_actions - Set
-# max_escalation_retries
-# global_limit
-# login - assign username
-# Permission
-# queue
-
-
-# Action on TTSystem from Other TTSystem
-# /Manual actions - translate to To TTSystem as ID,prepared actions (with fixed options)
-# Do action by token
-# actions - allowed User/Group/TTSystem. Manually
-# Prepared Actions -> заполнить вызывающего и выполнить, run_by - user,job_id,action
-
-# TTSystem Credential
-
-# TTSystem queue - chat_id
-
-# Actor/Requester - who request action
-# On action - user
-# To action - TTSystem
-# on user from ttsystem
-
-
-# Group, Update_items/sync_items -> state, dirty_group/update_group -> Delete/Update
-
-# Delete Group Item?/Delete Root item | Policy
-# Update Group Item/Update Root item | Policy
-
-# Group/Group Reference -> Location,Service (from service, Caps Reference)
-# Custom subject (from group)
-
-# Alarm TTL !
