@@ -49,24 +49,24 @@ class TTCard(BaseCard):
         r["alarms"] = []
         now = datetime.datetime.now()
         for ac in (ActiveAlarm, ArchivedAlarm):
-            for a in ac.objects.filter(escalation_tt=r["full_id"]):
-                if a.status == "C":
-                    duration = a.clear_timestamp - a.timestamp
-                else:
-                    duration = now - a.timestamp
-                r["alarms"] += [
-                    {
-                        "alarm": a,
-                        "id": a.id,
-                        "timestamp": a.timestamp,
-                        "duration": duration,
-                        "subject": a.subject,
-                        "summary": {
-                            "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
-                            "service": SummaryItem.items_to_dict(a.total_services),
-                        },
-                    }
-                ]
+            a = ac.objects.get_by_tt_id(r["full_id"])
+            if a.status == "C":
+                duration = a.clear_timestamp - a.timestamp
+            else:
+                duration = now - a.timestamp
+            r["alarms"] += [
+                {
+                    "alarm": a,
+                    "id": a.id,
+                    "timestamp": a.timestamp,
+                    "duration": duration,
+                    "subject": a.subject,
+                    "summary": {
+                        "subscriber": SummaryItem.items_to_dict(a.total_subscribers),
+                        "service": SummaryItem.items_to_dict(a.total_services),
+                    },
+                }
+            ]
         return r
 
     def redirect_to_alarm(self, tt_id):
@@ -83,7 +83,6 @@ class TTCard(BaseCard):
                 .only("id")
                 .first()
             )
-        if a:
-            self.redirect("/api/card/view/alarm/%s/" % a.id)
-        else:
-            return None
+        if not a:
+            return
+        self.redirect("/api/card/view/alarm/%s/" % a.id)
