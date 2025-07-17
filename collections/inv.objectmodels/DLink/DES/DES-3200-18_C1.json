@@ -385,7 +385,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["DES-3200-18/B1", "DES-3200-18/C1"]
+            "value": ["DES-3200-18/C1"]
         },
         {
             "attr": "units",

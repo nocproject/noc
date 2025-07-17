@@ -1,0 +1,218 @@
+{
+    "name": "DLink | DGS | DGS-1210-12TS/ME",
+    "$collection": "inv.objectmodels",
+    "uuid": "762c9476-ae71-4403-a74a-62a89558ee66",
+    "vendor__code": "DLINK",
+    "description": "DGS-1210-12TS/ME Gigabit Ethernet Switch witch 10 ports 1000 SFP, 2 ports 10/100/1000BASE-T",
+    "connection_rule__name": "DLink | DxS",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
+    "connections": [
+        {
+            "name": "sfp1",
+            "description": "Fiber port 1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp2",
+            "description": "Fiber port 2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp3",
+            "description": "Fiber port 3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp4",
+            "description": "Fiber port 4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp5",
+            "description": "Fiber port 5",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp6",
+            "description": "Fiber port 6",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp7",
+            "description": "Fiber port 7",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp8",
+            "description": "Fiber port 8",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp9",
+            "description": "Fiber port 9",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp10",
+            "description": "Fiber port 10",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "11",
+            "description": "11",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "12",
+            "description": "12",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "IPWR",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DGS-1210-12TS/ME", "DGS-1210-12TS/ME/B1"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}
