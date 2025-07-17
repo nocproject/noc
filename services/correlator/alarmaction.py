@@ -88,6 +88,11 @@ class AlarmActionRunner(object):
                 raise NotImplementedError("Action %s not implemented" % action)
         return r
 
+    def check_escalated(self, tt_system: TTSystem) -> Optional[str]:
+        """Check alarm have tt_id for tt_system"""
+        log = self.alarm.get_escalation_log(tt_system)
+        return log.tt_id if log else None
+
     def get_escalation_items(
         self, tt_system: TTSystem, promote_items: Optional[str] = None
     ) -> List[ECtxItem]:
@@ -374,7 +379,7 @@ class AlarmActionRunner(object):
             body,
         )
         # Build Items for context
-        # self.check_escalated()
+        tt_id = tt_id or self.check_escalated(tt_system)
         if tt_id:
             self.logger.info("Changed TT in system %s:%s", tt_system.name, tt_id)
             self.log_alarm(f"Changed TT in system {tt_system.name}")
@@ -402,7 +407,9 @@ class AlarmActionRunner(object):
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
         if r.document:
-            self.alarm.escalate(f"{tt_system.name}: {r.document}")
+            self.alarm.escalate(tt_system.get_tt_id(r.document))
+            #
+            self.alarm.safe_save()
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id
         # Project result to escalation items
