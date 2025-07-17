@@ -196,6 +196,8 @@ class TTSystem(Document):
             last_update_ts,
             last_update_id,
         )
+        self.last_update_ts = last_update_ts
+        self.last_update_id = last_update_id
         TTSystem.objects.filter(id=self.id).update_one(
             last_update_ts=last_update_ts, last_update_id=last_update_id
         )

@@ -483,6 +483,7 @@ class EscalationSequence(BaseSequence):
             close_tt=esc_item.close_tt,
             wait_tt=tt if esc_item.wait_tt else None,
             template=esc_item.clear_template,
+            open_template=esc_item.template
         )
         # Save to escalation context
         self.escalation_doc.tt_id = tt

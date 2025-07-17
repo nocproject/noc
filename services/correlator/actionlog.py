@@ -76,7 +76,7 @@ class ActionLog(object):
         self.status = status
         self.error = error
         self.document_id = document_id
-        self.min_severity = min_severity
+        self.min_severity = min_severity or 0
         self.time_pattern: Optional[TimePattern] = time_pattern
         self.alarm_ack: str = alarm_ack or "any"
         self.when: str = when or "any"
@@ -268,33 +268,39 @@ class ActionLog(object):
         return r
 
     @classmethod
-    def from_watch(cls, watch: WatchItem) -> List["ActionLog"]:
+    def from_watch(cls, watch: WatchItem, alarm: ActiveAlarm) -> List["ActionLog"]:
         """Restore Action Log from Watch"""
         # Restore documentID, From WATCH, From LOG ?
         r = []
+        now = datetime.datetime.now()
         if watch.effect == Effect.TT_SYSTEM:
             tt_s, tt_id = watch.key.split(":")
             tt_s = TTSystem.get_by_name(tt_s)
+            args = watch.args.copy()
             # Create TT
+            if "template" in args:
+                args["template"] = Template.get_by_id(int(watch.args["template"]))
             if not watch.clear_only:
                 r += [
                     ActionLog(
                         action=AlarmAction.CREATE_TT,
-                        key=str(watch.key),
-                        document_id=watch.args.get("tt_id"),
-                        template=watch.args.get("template"),
-                        status=ActionStatus.SUCCESS,
+                        key=str(tt_s.id),
+                        document_id=tt_id,
+                        timestamp=alarm.last_update,
+                        status=ActionStatus.PENDING,
+                        **args,
                     )
                 ]
             else:
                 r += [
                     ActionLog(
                         action=AlarmAction.CLOSE_TT,
-                        key=str(tt_s),
+                        key=str(tt_s.id),
                         document_id=tt_id,
-                        template=watch.args.get("template"),
+                        timestamp=now,
                         status=ActionStatus.NEW,
                         when="on_end",
+                        **args,
                     )
                 ]
         return r
@@ -304,5 +310,5 @@ class ActionLog(object):
         """"""
         r = []
         for w in alarm.watchers:
-            r += ActionLog.from_watch(w)
+            r += ActionLog.from_watch(w, alarm)
         return r

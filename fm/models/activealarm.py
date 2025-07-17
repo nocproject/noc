@@ -1081,6 +1081,7 @@ class ActiveAlarm(Document):
         wait_tt: Optional[str] = None,
         template: Optional[Template] = None,
         open_template: Optional[Template] = None,
+        **kwargs,
     ):
         if close_tt:
             self.add_watch(
@@ -1089,6 +1090,7 @@ class ActiveAlarm(Document):
                 immediate=True,
                 clear_only=True,
                 template=str(template.id) if template else None,
+                **kwargs,
             )
         self.add_watch(
             Effect.TT_SYSTEM,
@@ -1096,6 +1098,7 @@ class ActiveAlarm(Document):
             immediate=False,
             clear_only=False,
             template=str(open_template.id) if open_template else None,
+            **kwargs,
         )
         self.wait_tt = wait_tt
         self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)

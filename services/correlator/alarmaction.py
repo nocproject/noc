@@ -47,10 +47,8 @@ class AlarmActionRunner(object):
     ):
         self.items = items
         self.alarm: "ActiveAlarm" = items[0].alarm
-        self.services: List[Service] = (
-            list(Service.objects.filter(id__in=services)) if services else None
-        )
-        self.allowed_actions: List[AllowedAction] = allowed_actions
+        self.services: List[Service] = services
+        self.allowed_actions: List[AllowedAction] = allowed_actions or []
         self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
 
@@ -135,6 +133,9 @@ class AlarmActionRunner(object):
         r = []
         if not self.services:
             return r
+        # (
+        #             list(Service.objects.filter(id__in=services)) if services else []
+        #         )
         for svc in self.services:
             r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
         return r
@@ -416,7 +417,11 @@ class AlarmActionRunner(object):
             return ActionResult(status=ActionStatus.FAILED, error=r.error)
         if r.document:
             self.alarm.escalate(
-                tt_system.get_tt_id(r.document), open_template=kwargs.get("template")
+                tt_system.get_tt_id(r.document),
+                open_template=kwargs.get("template"),
+                login=login,
+                queue=queue,
+                pre_reason=pre_reason,
             )
             #
             self.alarm.safe_save()

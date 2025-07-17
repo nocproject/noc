@@ -23,6 +23,7 @@ from noc.aaa.models.user import User
 from noc.fm.models.ttsystem import TTSystem
 from noc.services.correlator.service import AlarmJob
 from noc.config import config
+from noc.core.text import alnum_key
 
 RETRY_TIMEOUT = config.escalator.retry_timeout
 # @fixme have to be checked
@@ -61,7 +62,7 @@ class CheckTTJob(Job):
     def handler(self, **kwargs):
         tts = self.object.get_system()
         last_ts: datetime.datetime = datetime.datetime.now()
-        last_id: Optional[str] = None
+        last_id: Optional[str] = self.object.last_update_id
         changes = defaultdict(list)
         for c in tts.get_updates(
             self.object.last_update_id,
@@ -79,11 +80,13 @@ class CheckTTJob(Job):
             if not user:
                 self.logger.info("[%s] Unknown user: %s", c.change_id, c.user)
                 continue
+            if c.change_id and last_id and alnum_key(c.change_id) <= alnum_key(last_id):
+                continue
             changes[c.document_id] += [(user, c)]
             if c.timestamp:
                 last_ts = max(c.timestamp, last_ts)
             if c.change_id:
-                last_id = last_id
+                last_id = c.change_id
         if not changes:
             self.logger.debug("Nothing changes...")
             return
@@ -91,6 +94,7 @@ class CheckTTJob(Job):
         # From alarm (doc) and build jobs
         # Exists Alarm Job / Create from Alarm
         # a_jobs: Dict[str, AlarmJob] = {}
+        self.logger.debug("Processed changes: %s", changes)
         for doc_id, changes in changes.items():
             a_job = AlarmJob.ensure_job(self.object.get_tt_id(doc_id))
             if not a_job:
