@@ -1092,20 +1092,18 @@ Ext.define("NOC.core.ModelApplication", {
   // Returns form data
   getFormData: function(){
     var data, name, fields,
-      form = this, values = {};
+      form = this.form ||this, values = {};
 
-    if(!Ext.isEmpty(this.form)){
-      form = this.form;
-    }
     fields = form.getFields().items.filter(
       function(item){
         return !(Object.prototype.hasOwnProperty.call(item, "isListForm") && item.isListForm)
       });
-    fields.forEach(fieldCfg =>{
+    fields.forEach(fieldCfg => {
+      let formPanel = this.formPanel || this;
       if(Ext.isEmpty(fieldCfg.name)){
         return;
       }
-      var field = this.formPanel.down(`[name=${fieldCfg.name}]`);
+      var field = formPanel.down(`[name=${fieldCfg.name}]`);
       if(Ext.isEmpty(field) || !Ext.isFunction(field.getModelData)){
         return;
       }
