@@ -56,142 +56,121 @@ class ReportDsAlarms(BaseDataSource):
         ParamInfo(name="min_subscribers", type="int"),
     ]
 
-    fields: List[FieldInfo] = (
-        [
-            FieldInfo(
-                name="alarm_id",
-                # label="Alarm Id",
-                description="Идентификатор аварии",
-            ),
-            FieldInfo(
-                name="root_id",
-                # label="Alarm Root",
-                description="Первопричина",
-            ),
-            FieldInfo(
-                name="from_ts",
-                # label="FROM_TS",
-                description="Время начала",
-            ),
-            FieldInfo(
-                name="to_ts",
-                # label="TO_TS",
-                description="Время окончания",
-            ),
-            FieldInfo(
-                name="duration_sec",
-                # label="DURATION_SEC",
-                description="Продолжительность (сек)",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(
-                name="object_name",
-                # label="OBJECT_NAME",
-                description="Имя устройства",
-            ),
-            FieldInfo(
-                name="object_address",
-                # label="OBJECT_ADDRESS",
-                description="IP Адрес",
-            ),
-            FieldInfo(
-                name="object_hostname",
-                # label="OBJECT_HOSTNAME",
-                description="Hostname устройства",
-            ),
-            FieldInfo(
-                name="object_profile",
-                # label="OBJECT_PROFILE",
-                description="Профиль",
-            ),
-            FieldInfo(
-                name="object_object_profile",
-                # label="OBJECT_OBJECT_PROFILE",
-                description="Профиль объекта",
-            ),
-            FieldInfo(
-                name="object_admdomain",
-                # label="OBJECT_ADMDOMAIN",
-                description="Зона ответственности",
-            ),
-            FieldInfo(
-                name="object_platform",
-                # label="OBJECT_PLATFORM",
-                description="Платформа",
-            ),
-            FieldInfo(
-                name="object_version",
-                # label="OBJECT_VERSION",
-                description="Версия",
-            ),
-            FieldInfo(
-                name="object_project",
-                # label="OBJECT_PROJECT",
-                description="Проект",
-            ),
-            FieldInfo(
-                name="alarm_class",
-                # label="ALARM_CLASS",
-                description="Класс аварии",
-            ),
-            FieldInfo(
-                name="alarm_subject",
-                # label="ALARM_SUBJECT",
-                description="Тема",
-            ),
-            FieldInfo(
-                name="maintenance",
-                # label="MAINTENANCE",
-                description="Активный РНР",
-            ),
-            FieldInfo(
-                name="objects",
-                # label="OBJECTS",
-                description="Число задетых устройства",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(
-                name="subscribers",
-                # label="SUBSCRIBERS",
-                description="Абоненты",
-                type=FieldType.UINT,
-            ),
-            FieldInfo(
-                name="tt",
-                # label="TT",
-                description="Номер ТТ",
-            ),
-            FieldInfo(
-                name="escalation_ts",
-                # label="ESCALATION_TS",
-                description="Время эскалации",
-            ),
-            FieldInfo(
-                name="location",
-                # label="LOCATION",
-                description="Месторасположение",
-            ),
-        ]
-        + [
-            FieldInfo(name=f"subsprof_{sp.name}")  # label=sp.name.upper())
-            for sp in SubscriberProfile.objects.filter(show_in_summary=True).order_by("name")
-        ]
-        + [
-            FieldInfo(
-                name=f"container_{i}",
-                # label=f"CONTAINER_{i}",
-                description=f"Контейнер (Уровень {i + 1})",
-            )
-            for i in range(CONTAINER_PATH_DEPTH)
-        ]
-        + [
-            FieldInfo(
-                name=f"segment_{i}",  # label=f"SEGMENT_{i}",
-                description=f"Сегмент (Уровень {i + 1})",
-            )
-            for i in range(SEGMENT_PATH_DEPTH)
-        ]
-    )
+    fields: List[FieldInfo] = [
+        FieldInfo(
+            name="alarm_id",
+            # label="Alarm Id",
+            description="Идентификатор аварии",
+        ),
+        FieldInfo(
+            name="root_id",
+            # label="Alarm Root",
+            description="Первопричина",
+        ),
+        FieldInfo(
+            name="from_ts",
+            # label="FROM_TS",
+            description="Время начала",
+        ),
+        FieldInfo(
+            name="to_ts",
+            # label="TO_TS",
+            description="Время окончания",
+        ),
+        FieldInfo(
+            name="duration_sec",
+            # label="DURATION_SEC",
+            description="Продолжительность (сек)",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(
+            name="object_name",
+            # label="OBJECT_NAME",
+            description="Имя устройства",
+        ),
+        FieldInfo(
+            name="object_address",
+            # label="OBJECT_ADDRESS",
+            description="IP Адрес",
+        ),
+        FieldInfo(
+            name="object_hostname",
+            # label="OBJECT_HOSTNAME",
+            description="Hostname устройства",
+        ),
+        FieldInfo(
+            name="object_profile",
+            # label="OBJECT_PROFILE",
+            description="Профиль",
+        ),
+        FieldInfo(
+            name="object_object_profile",
+            # label="OBJECT_OBJECT_PROFILE",
+            description="Профиль объекта",
+        ),
+        FieldInfo(
+            name="object_admdomain",
+            # label="OBJECT_ADMDOMAIN",
+            description="Зона ответственности",
+        ),
+        FieldInfo(
+            name="object_platform",
+            # label="OBJECT_PLATFORM",
+            description="Платформа",
+        ),
+        FieldInfo(
+            name="object_version",
+            # label="OBJECT_VERSION",
+            description="Версия",
+        ),
+        FieldInfo(
+            name="object_project",
+            # label="OBJECT_PROJECT",
+            description="Проект",
+        ),
+        FieldInfo(
+            name="alarm_class",
+            # label="ALARM_CLASS",
+            description="Класс аварии",
+        ),
+        FieldInfo(
+            name="alarm_subject",
+            # label="ALARM_SUBJECT",
+            description="Тема",
+        ),
+        FieldInfo(
+            name="maintenance",
+            # label="MAINTENANCE",
+            description="Активный РНР",
+        ),
+        FieldInfo(
+            name="objects",
+            # label="OBJECTS",
+            description="Число задетых устройства",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(
+            name="subscribers",
+            # label="SUBSCRIBERS",
+            description="Абоненты",
+            type=FieldType.UINT,
+        ),
+        FieldInfo(
+            name="tt",
+            # label="TT",
+            description="Номер ТТ",
+        ),
+        FieldInfo(
+            name="escalation_ts",
+            # label="ESCALATION_TS",
+            description="Время эскалации",
+        ),
+        FieldInfo(
+            name="location",
+            # label="LOCATION",
+            description="Месторасположение",
+        ),
+    ]
 
     _object_location_cache = cachetools.TTLCache(maxsize=1000, ttl=600)
 
@@ -216,6 +195,24 @@ class ReportDsAlarms(BaseDataSource):
         Convert a list of summary items to dict profile -> summary
         """
         return {r["profile"]: r["summary"] for r in items}
+
+    @classmethod
+    def iter_ds_fields(cls):
+        yield from super().iter_ds_fields()
+
+        for sp in SubscriberProfile.objects.filter(show_in_summary=True).order_by("name"):
+            yield FieldInfo(name=f"subsprof_{sp.name}")  # label=sp.name.upper())
+        for i in range(cls.CONTAINER_PATH_DEPTH):
+            yield FieldInfo(
+                name=f"container_{i}",
+                # label=f"CONTAINER_{i}",
+                description=f"Контейнер (Уровень {i + 1})",
+            )
+        for i in range(cls.SEGMENT_PATH_DEPTH):
+            yield FieldInfo(
+                name=f"segment_{i}",  # label=f"SEGMENT_{i}",
+                description=f"Сегмент (Уровень {i + 1})",
+            )
 
     @classmethod
     def iter_data(
@@ -283,7 +280,10 @@ class ReportDsAlarms(BaseDataSource):
                         ex_resource_group
                     )
                 )
-            match["managed_object"] = {"$in": list(mos.values_list("id", flat=True))}
+            match["managed_object"] = {
+                "$in": list(mos.values_list("id", flat=True)),
+                "$exists": True,
+            }
         for coll in alarm_collections:
             # if isinstance(coll, ActiveAlarm):
             pipeline = []
@@ -390,13 +390,13 @@ class ReportDsAlarms(BaseDataSource):
             container_path_fields = [field for field in fields if field.startswith("container_")]
         else:
             container_path_fields = [
-                field.name for field in cls.fields if field.name.startswith("container_")
+                field.name for field in cls.iter_ds_fields() if field.name.startswith("container_")
             ]
         if fields:
             segment_path_fields = [field for field in fields if field.startswith("segment_")]
         else:
             segment_path_fields = [
-                field.name for field in cls.fields if field.name.startswith("segment_")
+                field.name for field in cls.iter_ds_fields() if field.name.startswith("segment_")
             ]
         subscribers_profile = []
         if not fields or "subscribers" in fields:
@@ -407,6 +407,8 @@ class ReportDsAlarms(BaseDataSource):
                 .order_by("name")
             ]
         for row_num, aa in enumerate(cls.iter_data(**kwargs), start=1):
+            if "managed_object" not in aa:
+                continue
             mo = moss[aa["managed_object"]]
             loc = ""
             if (not fields or "location" in fields) and aa.get("container_path"):
