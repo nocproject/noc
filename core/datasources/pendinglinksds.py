@@ -25,20 +25,21 @@ from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 
+DISCOVERY_JOB_PREFIX = "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-"
+JOBS_LIMIT = 10000
 
-def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
-    result = defaultdict(dict)  # id -> problem
-    rx_nf = re.compile(r"Remote object '(.*?)' is not found")
-    rg = re.compile(
-        r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
-        re.IGNORECASE,
-    )
-    mos_job = [
-        "discovery-noc.services.discovery.jobs.box.job.BoxDiscoveryJob-%d" % mo_id
-        for mo_id in ids
-    ]
-    n = 0
-    ignored_ifaces = []
+rx_not_found = re.compile(r"Remote object '(.*?)' is not found")
+rx_pending_link = re.compile(
+    r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
+    re.IGNORECASE,
+)
+
+
+def pending_links(mo_ids, ignore_profiles=None, filter_exists_link=False):
+    result = defaultdict(dict)  # mo_id -> {iface_name: problem}
+    mo_jobs = [f"{DISCOVERY_JOB_PREFIX}{mo_id}" for mo_id in mo_ids]
+    # Find list of managed objects that having some MAC-address equal to some MAC-address
+    # belonging to any other managed object
     find = DiscoveryID._get_collection().aggregate(
         [
             {"$unwind": "$macs"},
@@ -53,7 +54,10 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
     find = next(find, None)
     if find:
         duplicate_macs = set(find["mos"])
-    while mos_job[(0 + n) : (10000 + n)]:
+    # Cycle through all managed object jobs by chunks
+    n = 0
+    while mo_jobs[(0 + n) : (JOBS_LIMIT + n)]:
+        # Get one chunk
         job_logs = (
             get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -62,7 +66,7 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
                     {
                         "$match": {
                             "$and": [
-                                {"_id": {"$in": mos_job[(0 + n) : (10000 + n)]}},
+                                {"_id": {"$in": mo_jobs[(0 + n) : (JOBS_LIMIT + n)]}},
                                 {"problems.lldp": {"$exists": True}},
                             ]
                         }
@@ -71,29 +75,28 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
                 ]
             )
         )
-
+        # Cycle through jobs in the chunk
         for discovery in job_logs:
-            if (
-                "RPC Error:" in discovery["problems"]["lldp"]
-                or "Unhandled exception" in discovery["problems"]["lldp"]
-            ):
+            problems_lldp = discovery["problems"]["lldp"]
+            if "RPC Error:" in problems_lldp or "Unhandled exception" in problems_lldp:
                 continue
             mo_id = discovery["_id"].split("-")[2]
             mo = ManagedObject.get_by_id(mo_id)
+            # Get ignored interfaces
+            ignored_ifaces = []
             if ignore_profiles:
-                ignored_ifaces += [
+                ignored_ifaces = [
                     (mo_id, iface.name)
                     for iface in Interface.objects.filter(
                         managed_object=mo,
-                        # name__in=discovery["problems"]["lldp"].keys(),
                         profile__in=ignore_profiles,
                     )
                 ]
-            for iface in discovery["problems"]["lldp"]:
+            # Cycle through problem interfaces in managed object
+            for iface, iface_problem in problems_lldp.items():
                 if (mo.id, iface) in ignored_ifaces:
                     continue
-                # print iface
-                match = rx_nf.search(discovery["problems"]["lldp"][iface])
+                match = rx_not_found.search(iface_problem)
                 if match:
                     parsed_x = ast.literal_eval(match.group(1))
                     result[mo.id] = {
@@ -107,8 +110,8 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
                             "remote_chassis": parsed_x.get("remote_chassis_id"),
                         }
                     }
-                if "Pending link:" in discovery["problems"]["lldp"][iface]:
-                    pend_str = rg.search(discovery["problems"]["lldp"][iface])
+                if "Pending link:" in iface_problem:
+                    pend_str = rx_pending_link.search(iface_problem)
                     try:
                         rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                     except ManagedObject.DoesNotExist:
@@ -122,7 +125,6 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
                     detail = ""
                     if mo.id in duplicate_macs or rmo.id in duplicate_macs:
                         detail = "Duplicate ID"
-                    # mo = mos_id.get(mo_id, ManagedObject.get_by_id(mo_id))
                     result[mo.id][iface] = {
                         "problem": "Not found iface on remote",
                         "detail": detail,
@@ -135,7 +137,7 @@ def pending_links(ids, ignore_profiles=None, filter_exists_link=False):
                         "remote_id": "%s::: %s" % (mo.name, mo.profile.name),
                         "remote_iface": iface,
                     }
-        n += 10000
+        n += JOBS_LIMIT
     return result
 
 
@@ -174,7 +176,6 @@ class PendingLinksDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
-        print("kwargs", kwargs, type(kwargs))
         rn = re.compile(
             r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
             re.IGNORECASE,
