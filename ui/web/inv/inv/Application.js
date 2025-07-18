@@ -15,6 +15,8 @@ Ext.define("NOC.inv.inv.Application", {
     "NOC.inv.inv.NavModel",
     "NOC.inv.inv.NavSearch",
   ],
+  naviTreeMessageStack: [],
+  //
   initComponent: function(){
     var me = this;
     me.invPlugins = {};
@@ -34,14 +36,19 @@ Ext.define("NOC.inv.inv.Application", {
       lazyFill: true,
       listeners: {
         scope: me,
-        beforeload: function(){
+        beforeload: function(store, operation){
           if(this.navTree){
-            this.naviTreeMessageId = this.maskNaviTree.show(__("Loading..."));
+            let naviTreeMessageId = this.maskNaviTree.show(__("Loading..."));
+            operation.messageId = naviTreeMessageId;
+            this.naviTreeMessageStack.push({
+              id: naviTreeMessageId,
+              operation: operation,
+            });
           }
         },
-        load: function(){
-          if(this.navTree && this.navTree.isVisible()){
-            this.maskNaviTree.hide(this.naviTreeMessageId);
+        load: function(store, records, successful, operation){
+          if(this.navTree && this.navTree.isVisible() && !Ext.isEmpty(operation.messageId)){
+            this.hideNaviTreeMessage(operation.messageId);
           }
         },
       },
@@ -993,5 +1000,10 @@ Ext.define("NOC.inv.inv.Application", {
         NOC.error(__("Failed to delete group"));
       },
     });
+  },
+  //
+  hideNaviTreeMessage: function(messageId){
+    this.maskNaviTree.hide(messageId);
+    this.naviTreeMessageStack = this.naviTreeMessageStack.filter(item => item.id !== messageId);
   },
 });
