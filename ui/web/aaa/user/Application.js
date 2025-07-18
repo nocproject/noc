@@ -270,14 +270,14 @@ Ext.define("NOC.aaa.user.Application", {
     }
     this.callParent([defaults]);
   },
-  saveRecord: function(data){
+  saveRecord: function(data, goToGrid){
     var groups = [],
       groupStore = this.down("[name=groups]").getStore();
     groupStore.each(function(record){
       groups.push("" + record.id);
     });
     Ext.merge(data, {groups: groups});
-    this.callParent([data, true]);
+    this.callParent([data, goToGrid]);
   },
   onNewRecord: function(){
     var me = this;
