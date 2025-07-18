@@ -444,6 +444,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                       xtype: "textarea",
                       name: "compose_expression",
                       labelAlign: "top",
+                      width: "100%",
                       fieldLabel: __("Compose Expression"),
                       allowBlank: true,
                     },
