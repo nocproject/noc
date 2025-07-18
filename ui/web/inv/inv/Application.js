@@ -51,11 +51,6 @@ Ext.define("NOC.inv.inv.Application", {
             this.hideNaviTreeMessage(operation.messageId);
           }
         },
-        exception: function(proxy, response, operation){
-          if(this.navTree && this.navTree.isVisible() && !Ext.isEmpty(operation.messageId)){
-            this.hideNaviTreeMessage(operation.messageId);
-          }
-        },
       },
     });
 
