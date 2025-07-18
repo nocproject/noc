@@ -49,6 +49,7 @@ Ext.define("NOC.inv.inv.Application", {
         load: function(store, records, successful, operation){
           if(this.navTree && this.navTree.isVisible() && !Ext.isEmpty(operation.messageId)){
             this.maskNaviTree.hide(operation.messageId);
+            this.naviTreeMessageStack = this.naviTreeMessageStack.filter(item => item.id !== operation.messageId);
           }
         },
       },
