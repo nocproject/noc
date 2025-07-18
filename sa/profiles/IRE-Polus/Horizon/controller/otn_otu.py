@@ -38,15 +38,15 @@ class Controller(ChannelMixin, BaseOTUProfileController):
         prefix = self.get_port_prefix(name)
         xcvr = self.get_adm10_xcvr_suffix(name)
         # Set modulation
-        if modulation and not prefix.startswith("Cl_"):
-            if modulation not in self.ADM10_MODULATION_MAP:
-                msg = f"Invalid client protocol: {modulation}"
-                raise ValueError(msg)
-            yield SetValue(
-                name=f"{prefix}_SetModType",
-                value=self.ADM10_MODULATION_MAP[modulation],
-                description=f"Set modulation to {modulation}",
-            )
+        # if modulation and not prefix.startswith("Cl_"):
+        #     if modulation not in self.ADM10_MODULATION_MAP:
+        #         msg = f"Invalid client protocol: {modulation}"
+        #         raise ValueError(msg)
+        #     yield SetValue(
+        #         name=f"{prefix}_SetModType",
+        #         value=self.ADM10_MODULATION_MAP[modulation],
+        #         description=f"Set modulation to {modulation}",
+        #     )
         # Bring port up
         yield SetValue(
             name=f"{prefix}_SetState", value="2", description="Bring port up. Set state to IS."
