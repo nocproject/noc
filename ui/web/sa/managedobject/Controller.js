@@ -962,7 +962,9 @@ Ext.define("NOC.sa.managedobject.Controller", {
   setProtectedField(fields){
     Ext.Object.each(fields, function(fieldName, value){
       var field = this.getView().down("[name=" + fieldName + "]");
-
+      if(Ext.isEmpty(field)){
+        return;
+      }
       switch(value){
         case 0:
           field.setHidden(true);
