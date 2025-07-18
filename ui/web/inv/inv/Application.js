@@ -48,8 +48,12 @@ Ext.define("NOC.inv.inv.Application", {
         },
         load: function(store, records, successful, operation){
           if(this.navTree && this.navTree.isVisible() && !Ext.isEmpty(operation.messageId)){
-            this.maskNaviTree.hide(operation.messageId);
-            this.naviTreeMessageStack = this.naviTreeMessageStack.filter(item => item.id !== operation.messageId);
+            this.hideNaviTreeMessage(operation.messageId);
+          }
+        },
+        exception: function(proxy, response, operation){
+          if(this.navTree && this.navTree.isVisible() && !Ext.isEmpty(operation.messageId)){
+            this.hideNaviTreeMessage(operation.messageId);
           }
         },
       },
@@ -1001,5 +1005,10 @@ Ext.define("NOC.inv.inv.Application", {
         NOC.error(__("Failed to delete group"));
       },
     });
+  },
+  //
+  hideNaviTreeMessage: function(messageId){
+    this.maskNaviTree.hide(messageId);
+    this.naviTreeMessageStack = this.naviTreeMessageStack.filter(item => item.id !== messageId);
   },
 });
