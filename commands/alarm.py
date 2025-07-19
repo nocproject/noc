@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Manage alarms
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import time
 import datetime
 import argparse
+import yaml
 from typing import Optional, Dict, Any, List
 
 # Third-party modules
@@ -19,9 +20,12 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
+from noc.core.fm.request import AlarmActionRequest, ActionItem, ActionConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmrule import AlarmRule
 from noc.sa.models.managedobject import ManagedObject
+from noc.services.correlator.alarmjob import AlarmJob
 from noc.core.service.loader import get_service
 from noc.core.validators import is_ipv4
 
@@ -82,6 +86,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
+        test_rule = subparsers.add_parser("test-rule", help="Test Alarm Rule")
+        test_rule.add_argument("--rule", help="Alarm Rule", required=False)
+        test_rule.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
         clean = subparsers.add_parser("clean", help="Clean alarm")
         clean.add_argument("--before", help="Clear alarm before date")
         clean.add_argument("--before-days", type=int, help="Clear alarm older than N, days")
@@ -101,6 +108,7 @@ class Command(BaseCommand):
         send_close.add_argument("--reference", help="Alarm Reference")
         send_close.add_argument("--message", help="Close message")
         run_test = subparsers.add_parser("run-test", help="Send Correlator messages from file")
+        run_test.add_argument("--name", help="Scenario Name (form multi-set)")
         run_test.add_argument("args", nargs=argparse.REMAINDER)
 
     def handle(self, *args, **options):
@@ -176,29 +184,63 @@ class Command(BaseCommand):
             msg["vars"] = a_vars
         self.publish(mo, msg)
 
-    def handle_run_test(self, *args, **options):
+    def run_scr_action(self, config: AlarmConfig):
+        time.sleep(config.delay)
+        for rr in range(0, config.repeat or 1):
+            for r in config.alarms:
+                mo = self.resolve_object(r.managed_object)
+                if not mo:
+                    self.die(f"Unknown ManagedObject {r.managed_object}")
+                r.managed_object = str(mo.id)
+                r.reference = r.reference or self.get_default_reference(
+                    managed_object=mo,
+                    alarm_class=AlarmClass.get_by_name(r.alarm_class),
+                    vars=r.vars,
+                )
+                if not mo:
+                    continue
+                self.publish(managed_object=mo, msg=r.get_message())
+                time.sleep(r.delay)
+
+    def handle_run_test(self, *args, name: Optional[str] = None, **options):
+        name = name or "default"
         for path in args:
             with open(path) as f:
+                if path.endswith("yml"):
+                    data = yaml.safe_load(f.read())
+                    ac = AlarmConfig(**data[name])
+                    self.run_scr_action(ac)
+                    continue
                 for line in f:
                     try:
                         data = orjson.loads(line)
                         ac = AlarmConfig(**data)
+                        self.run_scr_action(ac)
                     except ValueError as e:
                         self.die(f'Failed to decode JSON file "{path}": {str(e)}')
-                    time.sleep(ac.delay)
-                    for rr in range(0, ac.repeat or 1):
-                        for r in ac.alarms:
-                            mo = self.resolve_object(r.managed_object)
-                            r.managed_object = str(mo.id)
-                            r.reference = r.reference or self.get_default_reference(
-                                managed_object=mo,
-                                alarm_class=AlarmClass.get_by_name(r.alarm_class),
-                                vars=r.vars,
-                            )
-                            if not mo:
-                                continue
-                            self.publish(managed_object=mo, msg=r.get_message())
-                            time.sleep(r.delay)
+
+    def handle_test_rule(self, alarms, rule: Optional[str] = None, *args, **options):
+        alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
+        if rule:
+            rule = AlarmRule.get_by_id(rule)
+        else:
+            rule = AlarmRule.get_by_alarm(alarm)
+            if rule:
+                rule = rule[0]
+            else:
+                self.die("Not found Rule for Alarm, Set static")
+        cfg = AlarmRule.get_config(rule)
+        actions = [ActionConfig.model_validate(a) for a in cfg["actions"]]
+        if not actions:
+            self.die("Nothing Actions on Alarm")
+        req = AlarmActionRequest(
+            item=ActionItem(alarm=str(alarm.id)),
+            ctx=0,
+            actions=actions,
+            start_at=alarm.timestamp,
+        )
+        job = AlarmJob.from_request(req, dry_run=True)
+        job.run()
 
     @staticmethod
     def get_default_reference(
