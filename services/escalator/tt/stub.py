@@ -11,10 +11,8 @@ import logging
 
 # NOC modules
 from noc.core.tt.base import BaseTTSystem
-from noc.core.tt.types import (
-    EscalationContext,
-    DeescalationContext,
-)
+from noc.core.tt.types import EscalationContext, DeescalationContext
+from noc.core.tt.error import TTError, TemporaryTTError
 from noc.core.span import Span
 
 
@@ -31,17 +29,24 @@ class StubTTSystem(BaseTTSystem):
         self.logger = logging.getLogger("StubTTSystem.%s" % name)
 
     def create(self, ctx: EscalationContext) -> str:
-        with Span(server="telegram", service="sendMessage"):
+        with Span(server="stub_tt", service="create"):
             self.logger.info(
                 "create_tt(queue=%s, obj=%s, reason=%s, subject=%s, body=%s, login=%s, timestamp=%s)",
                 ctx.queue,
-                ctx.leader,
+                ctx.leader if ctx.items else "",
                 ctx.reason,
                 ctx.subject,
                 ctx.body,
                 ctx.login,
                 ctx.timestamp,
             )
+            match ctx.reason:
+                case "sc2":
+                    raise TemporaryTTError("Service temp unavailable")
+                case "sc3":
+                    raise TTError("Service not found")
+            if ctx.login:
+                return ctx.login
             return str(uuid.uuid4())
 
     def add_comment(self, tt_id, subject=None, body=None, login=None, queue=None):

@@ -25,6 +25,7 @@ from noc.core.debug import error_report
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmwatch import Effect
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
@@ -214,6 +215,8 @@ class AlarmJob(object):
                 # Set Stop job status
                 break
         self.alarm_log += runner.get_bulk()
+        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id))
+        self.alarm.safe_save()
         if actions:
             # Split one_time actions/sequenced action
             self.actions = actions + self.actions

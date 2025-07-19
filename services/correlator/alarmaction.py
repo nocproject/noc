@@ -25,7 +25,7 @@ from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.fm.request import AllowedAction
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.activealarm import ActiveAlarm, Effect
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.aaa.models.user import User
 from .actionlog import ActionResult
 
@@ -44,6 +44,7 @@ class AlarmActionRunner(object):
         allowed_actions: List[AlarmAction] = None,
         logger: Optional[Logger] = None,
         services: Optional[List[Service]] = None,
+        dry_run: bool = False,
     ):
         self.items = items
         self.alarm: "ActiveAlarm" = items[0].alarm
@@ -51,6 +52,7 @@ class AlarmActionRunner(object):
         self.allowed_actions: List[AllowedAction] = allowed_actions or []
         self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
+        self.dry_run=dry_run
 
     def run_action(
         self,
@@ -217,7 +219,7 @@ class AlarmActionRunner(object):
         self,
         tt_system: TTSystem,
         tt_id: str,
-        message: str,
+        subject: str,
         timestamp: Optional[datetime.datetime] = None,
         login: Optional[str] = None,
         queue: Optional[str] = None,
@@ -231,7 +233,7 @@ class AlarmActionRunner(object):
             tt_system: TT System instance
             tt_id: Number of document on TT System
             timestamp:
-            message: comment message
+            subject: comment message
 
         Returns:
             Escalation Resul instance
@@ -240,7 +242,7 @@ class AlarmActionRunner(object):
         with self.get_tt_system_context(
             tt_system, tt_id, timestamp, login, queue, pre_reason
         ) as ctx:
-            ctx.comment(message)
+            ctx.comment(subject)
         r = ctx.get_result()
         if r.is_ok:
             metrics["escalation_tt_comment"] += 1
@@ -282,7 +284,7 @@ class AlarmActionRunner(object):
         self,
         user: User,
         requester: Optional[TTSystem] = None,
-        message: Optional[str] = None,
+        subject: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -290,9 +292,9 @@ class AlarmActionRunner(object):
 
         """
         if requester:
-            message = message or f"Acknowledge by {user} (from TTSystem: {requester.name})"
+            message = subject or f"Acknowledge by {user} (from TTSystem: {requester.name})"
         else:
-            message = message or f"Acknowledge by {user}"
+            message = subject or f"Acknowledge by {user}"
         self.alarm.acknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
@@ -300,7 +302,7 @@ class AlarmActionRunner(object):
         self,
         user: User,
         requester: Optional[TTSystem] = None,
-        message: Optional[str] = None,
+        subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         **kwargs,
     ):
@@ -309,9 +311,9 @@ class AlarmActionRunner(object):
 
         """
         if requester:
-            message = message or f"UnAcknowledge by {user} (from TTSystem: {requester.name})"
+            message = subject or f"UnAcknowledge by {user} (from TTSystem: {requester.name})"
         else:
-            message = message or f"UnAcknowledge by {user}"
+            message = subject or f"UnAcknowledge by {user}"
         self.alarm.unacknowledge(user, message)
         return ActionResult(status=ActionStatus.SUCCESS)
 
@@ -319,7 +321,7 @@ class AlarmActionRunner(object):
         self,
         user: User,
         requester: Optional[TTSystem] = None,
-        message: Optional[str] = None,
+        subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         **kwargs,
     ):
@@ -328,11 +330,14 @@ class AlarmActionRunner(object):
 
         """
         timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
-        self.alarm.register_clear(
-            message or f"Clear by: {user}",
-            user=user,
-            timestamp=timestamp,
-        )
+        if self.dry_run:
+            self.alarm.clear_alarm(subject, timestamp, dry_run=True)
+        else:
+            self.alarm.register_clear(
+                subject or f"Clear by: {user}",
+                user=user,
+                timestamp=timestamp,
+            )
         # Delayed, checked action - status return other service
         return ActionResult(status=ActionStatus.SUCCESS)
 
@@ -340,7 +345,7 @@ class AlarmActionRunner(object):
         self,
         user: User,
         requester: Optional[TTSystem] = None,
-        message: Optional[str] = None,
+        subject: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -418,13 +423,12 @@ class AlarmActionRunner(object):
         if r.document:
             self.alarm.escalate(
                 tt_system.get_tt_id(r.document),
-                open_template=kwargs.get("template"),
+                template=kwargs.get("template"),
                 login=login,
                 queue=queue,
                 pre_reason=pre_reason,
             )
             #
-            self.alarm.add_watch(Effect.ALARM_JOB, key="")
             self.alarm.safe_save()
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id

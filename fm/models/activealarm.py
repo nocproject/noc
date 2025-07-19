@@ -326,13 +326,21 @@ class ActiveAlarm(Document):
         if to_save and not bulk:
             self.safe_save()
 
-    def clear_alarm(self, message, ts=None, force=False, source=None) -> Optional["ArchivedAlarm"]:
+    def clear_alarm(
+        self,
+        message, ts: Optional[datetime.datetime] = None,
+        force: bool = False,
+        source=None,
+        dry_run: bool = False,
+    ) -> Optional["ArchivedAlarm"]:
         """
         Clear alarm
-        :param message: Log clearing message
-        :param ts: Clearing timestamp
-        :param force: Clear ever if wait_tt seg
-        :param source: Source clear alarm
+        Args:
+            message: Log clearing message
+            ts: Clearing timestamp
+            force: Clear ever if wait_tt seg
+            source: Source clear alarm
+            dry_run: Do not call save()
         """
         from .alarmdiagnosticconfig import AlarmDiagnosticConfig
 
@@ -401,6 +409,8 @@ class ActiveAlarm(Document):
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
+        if dry_run:
+            return a
         a.save()
         # Set checks on all consequences
         for d in self._get_collection().find(
@@ -1054,15 +1064,7 @@ class ActiveAlarm(Document):
             self.add_watch(
                 Effect.TT_SYSTEM,
                 tt_id,
-                immediate=True,
                 clear_only=True,
-                template=str(template.id) if template else None,
-                **kwargs,
-            )
-        else:
-            self.add_watch(
-                Effect.TT_SYSTEM,
-                tt_id,
                 template=str(template.id) if template else None,
                 **kwargs,
             )

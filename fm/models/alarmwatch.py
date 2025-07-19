@@ -27,6 +27,7 @@ class Effect(enum.Enum):
     NOTIFICATION_GROUP = "notification_group"
     SUBSCRIPTION = "subscription"
     HANDLER = "handler"
+    ALARM_JOB = "alarm_job"
 
 
 class WatchItem(EmbeddedDocument):

@@ -122,8 +122,13 @@ class ActionLog(object):
             document_id: External document on tt_system
             alarm_ctx: Alarm context
         """
-        r = {"timestamp": self.timestamp}
-        if self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT:
+        r: Dict[str, Any] = {"timestamp": self.timestamp}
+        if (
+            self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT
+        ) and self.key == "stub":
+            r["tt_system"] = self.tt_system
+            r["tt_id"] = self.document_id or document_id
+        elif self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT:
             r["tt_system"] = TTSystem.get_by_id(self.key)
             r["tt_id"] = self.document_id or document_id
         elif self.action == AlarmAction.NOTIFY:
@@ -134,6 +139,7 @@ class ActionLog(object):
             r["template"] = self.template
         elif self.subject:
             r["subject"] = self.subject
+            r["body"] = ""
         if self.user:
             r["user"] = self.user
         if self.tt_system:
@@ -171,6 +177,7 @@ class ActionLog(object):
         one_time: bool = False,
         user: Optional[int] = None,
         tt_system: Optional[str] = None,
+        stub_tt_system: Optional[TTSystem] = None,
     ) -> "ActionLog":
         """
         Create Action from Request
@@ -181,7 +188,14 @@ class ActionLog(object):
             one_time: Only one run, do not Repeat
             user: User Who requested Action
             tt_system: TT System who requested Action
+            stub_tt_system: TT system for test cases
         """
+        if user:
+            user = User.get_by_id(int(user))
+        if tt_system:
+            tt_system = TTSystem.get_by_id(tt_system)
+        elif stub_tt_system:
+            tt_system = stub_tt_system
         return ActionLog(
             action=action.action,
             key=action.key,
@@ -204,8 +218,8 @@ class ActionLog(object):
             promote_item_policy=action.promote_item_policy,
             #
             # Source
-            user=User.get_by_id(int(user)) if user else None,
-            tt_system=TTSystem.get_by_id(tt_system) if tt_system else None,
+            user=user,
+            tt_system=tt_system,
         )
 
     @classmethod
