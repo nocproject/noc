@@ -410,6 +410,7 @@ class CorrelatorService(FastAPIService):
             alarm.severity = e_severity
             alarm.last_update = datetime.datetime.now().replace(microsecond=0)
             alarm.save()
+        alarm.refresh_job()
 
     async def apply_rules(
         self, alarm: ActiveAlarm, alarm_groups: Set[int]

@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 
 # NOC modules
 from .enum import AlarmAction
+from noc.core.models.escalationpolicy import EscalationPolicy
 
 
 class ActionConfig(BaseModel):
@@ -36,19 +37,43 @@ class ActionConfig(BaseModel):
     key: Optional[str] = None
     delay: int = 0
     ack: Literal["any", "ack", "unack"] = "any"
-    when: Literal["any", "on_start", "on_end"] = "any"
+    when: Literal["any", "on_start", "on_end"] = "any"  # Manually
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
+    # Retry until - Disable, Count, TTL
     max_retries: int = 1
     template: Optional[str] = None
     subject: Optional[str] = None
-    # pre_reason: Optional[str] = None
-    login: Optional[str] = None
+    # TT System Settings
+    pre_reason: Optional[str] = None
+    login: Optional[str] = None  # queue
+    queue: Optional[str] = None
+    promote_item_policy: Optional[str] = None
+    # End options
     stop_processing: bool = False
     allow_fail: bool = True
+    register_message: bool = False
+    # Approve Required
+    # If approve required, it suspend processing and send
+    # Message to approver
     manually: bool = False
     # Manual, Group Access
     # root_only: bool = True
+    policy: EscalationPolicy = EscalationPolicy.ROOT
+
+
+class ActionPermission(BaseModel):
+    # By Role - Role, Role -> User, Group Map (Separate Config)
+    user: int
+    group: int
+    tt_system: str
+
+
+class AllowedAction(BaseModel):
+    action: AlarmAction
+    login: Optional[str] = None
+    access: Optional[List[ActionPermission]] = None
+    stop_processing: bool = False
 
 
 class ActionItem(BaseModel):
@@ -82,10 +107,16 @@ class AlarmActionRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(ObjectId()))
     #
     actions: List[ActionConfig]
+    allowed_actions: Optional[List[AllowedAction]] = None
     start_at: Optional[datetime.datetime] = None
     item: Optional[ActionItem] = None
+    # Group
+    end_condition: Literal["CR", "CA", "CT", "M", "E"] = "CR"
+    # policy: EscalationPolicy = EscalationPolicy.ROOT
+    # tt_system
     # Repeat action
     max_repeats: int = 0
+    # Repeat Until
     repeat_delay: int = 60
     # Span
     ctx: Optional[int] = None

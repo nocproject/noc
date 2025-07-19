@@ -106,6 +106,7 @@ class AlarmAction(enum.Enum):
     NOTIFY = "notify"
     HANDLER = "handler"
     SEVERITY = "severity"
+    REGISTER_MESSAGE = "register_mx"
 
 
 class ActionStatus(enum.Enum):

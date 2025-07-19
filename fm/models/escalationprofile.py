@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EscalationProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -27,7 +27,9 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
-from noc.core.tt.types import TTSystemConfig, EscalationMember, TTAction
+from noc.core.tt.types import TTSystemConfig, EscalationMember
+from noc.core.fm.enum import AlarmAction
+from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -35,6 +37,7 @@ from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.activealarm import ActiveAlarm
 
 id_lock = Lock()
 
@@ -49,6 +52,7 @@ class EscalationItem(EmbeddedDocument):
     meta = {"strict": False}
     # Delay part
     delay = IntField(min_value=0)
+    # Processed condition
     alarm_ack = StringField(
         choices=[
             ("ack", "Alarm Acknowledge"),
@@ -64,26 +68,34 @@ class EscalationItem(EmbeddedDocument):
     #
     close_template: Template = ForeignKeyField(Template)
     # Acton
+    # Notification: Group, Register, Local
     notification_group: NotificationGroup = ForeignKeyField(NotificationGroup)
+    register_message = BooleanField(default=False)
+    # TT System Action
     create_tt = BooleanField(default=False)
+    tt_queue: str = StringField(required=False)
+    # TT System that create escalation, Device by default
+    tt_system: Optional[TTSystem] = ReferenceField(TTSystem, required=False)
     # Repeat escalation
     repeat = BooleanField(default=False)
-    max_repeats = IntField(default=0)
-    # TT System that create escalation, Device by default
-    tt_system = ReferenceField(TTSystem, required=False)
-    # Processed condition
+    # Subscribe
+    # Assigned - User, From Contacts: Config, Local
+    assigned_user: Optional[User] = ForeignKeyField(User, required=False)
+    ack_policy: str = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("U", "UnAck"),
+            ("A", "Ack User"),
+            ("S", "Ack Subscriber"),
+        ],
+        default="D",
+    )
+    # wait_ack = BooleanField(default=False)  # Wait alarm Acknowledge
     # wait_condition = BooleanField(default=False)
-    wait_ack = BooleanField(default=False)  # Wait alarm Acknowledge
     # wait_approve = BooleanField(default=False) # Approved Escalation
     # Stop or continue to next rule
     stop_processing = BooleanField(default=False)
 
-    # user
-    # Group
-    # wait_ack
-    # stop
-    # create_tt
-    # repeat
     def __str__(self):
         return f"{self.delay}: {self.create_tt}/{self.template}"
 
@@ -103,6 +115,83 @@ class EscalationItem(EmbeddedDocument):
             return str(self.notification_group.id)
         return ""
 
+    def get_config(
+        self,
+        tt_loging: Optional[str] = None,
+        pre_reason: Optional[str] = None,
+        promote_item: Optional[str] = None,
+    ) -> List["ActionConfig"]:
+        """"""
+        r = []
+        if self.notification_group:
+            r += [
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.NOTIFY,
+                    key=str(self.notification_group.id),
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    allow_fail=True,
+                )
+            ]
+        if self.create_tt and self.tt_system:
+            r.append(
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.CREATE_TT,
+                    key=str(self.tt_system.id),
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    allow_fail=True,
+                    pre_reason=pre_reason,
+                    login=tt_loging,
+                    queue=self.tt_queue,
+                    promote_item_policy=promote_item,
+                )
+            )
+        if self.register_message:
+            r.append(
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.REGISTER_MESSAGE,
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    allow_fail=True,
+                )
+            )
+        if self.ack_policy == "U":
+            r.append(
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.UN_ACK,
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    allow_fail=True,
+                )
+            )
+        elif self.ack_policy == "A" and self.assigned_user:
+            r.append(
+                ActionConfig(
+                    delay=self.delay,
+                    action=AlarmAction.ACK,
+                    key=str(self.assigned_user.id),
+                    template=str(self.template.id) if self.template else None,
+                    ack=self.alarm_ack if self.alarm_ack != "nack" else "unack",
+                    min_severity=self.min_severity.severity if self.min_severity else None,
+                    time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
+                    allow_fail=True,
+                )
+            )
+        return r
+
 
 class TTSystemItem(EmbeddedDocument):
     meta = {"strict": False}
@@ -121,6 +210,17 @@ class EscalationAction(EmbeddedDocument):
     close = BooleanField(default=False)
     log = BooleanField(default=False)
     subscribe = BooleanField(default=False)
+
+    def get_config(self) -> List[AllowedAction]:
+        """"""
+        r = []
+        if self.ack:
+            r.append(AllowedAction(action=AlarmAction.ACK))
+        if self.close:
+            r.append(AllowedAction(action=AlarmAction.CLEAR))
+        if self.subscribe:
+            r.append(AllowedAction(action=AlarmAction.SUBSCRIBE))
+        return r
 
 
 @on_delete_check(
@@ -197,29 +297,11 @@ class EscalationProfile(Document):
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["EscalationProfile"]:
         return EscalationProfile.objects.filter(id=oid).first()
 
-    @property
-    def is_wait_ack(self) -> bool:
-        """
-        Check Escalation Wait alarm acknowledge
-        :return:
-        """
-        for item in self.escalations:
-            if item.wait_ack:
-                return True
-        return False
-
-    @property
-    def max_repeats(self) -> int:
-        if not self.escalations:
-            return 0
-        r = (e.max_repeats or 0 for e in self.escalations)
-        return max(r)
-
     def get_actions(
         self,
         user: Optional[User] = None,
         group: Optional[Group] = None,
-    ) -> FrozenSet[TTAction]:
+    ) -> FrozenSet[AlarmAction]:
         """
         Getting TT System Action support
 
@@ -235,9 +317,9 @@ class EscalationProfile(Document):
             if group and group != a.group:
                 continue
             if a.ack:
-                r += [TTAction.ACK, TTAction.UN_ACK]
+                r += [AlarmAction.ACK, AlarmAction.UN_ACK]
             if a.close:
-                r.append(TTAction.CLOSE)
+                r.append(AlarmAction.CLEAR)
         return frozenset(r)
 
     def get_tt_system_config(self, tt_system: TTSystem) -> TTSystemConfig:
@@ -251,6 +333,8 @@ class EscalationProfile(Document):
                 r.global_limit = item.global_limit
             if item.max_escalation_retries:
                 r.max_escalation_retries = item.max_escalation_retries
+            if item.pre_reason:
+                r.pre_reason = item.pre_reason
             break
         return r
 
@@ -258,3 +342,27 @@ class EscalationProfile(Document):
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
         return self.end_condition == "CT" or self.end_condition == "M"
+
+    def from_alarm(self, alarm: ActiveAlarm):
+        """"""
+        actions = []
+        for e in self.escalations:
+            if e.tt_system:
+                cfg = self.get_tt_system_config(e.tt_system)
+                actions += e.get_config(
+                    tt_loging=cfg.login,
+                    pre_reason=cfg.pre_reason,
+                    promote_item=cfg.promote_item,
+                )
+            else:
+                actions += e.get_config()
+        ma = []
+        for a in self.actions:
+            ma += a.get_config()
+        req = AlarmActionRequest(
+            item=ActionItem(alarm=str(alarm.id)),
+            start_at=alarm.timestamp,
+            actions=actions,
+            allowed_actions=ma,
+        )
+        return req

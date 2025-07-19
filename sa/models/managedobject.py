@@ -2027,12 +2027,14 @@ class ManagedObject(NOCModel):
     def open_session(self, idle_timeout=None):
         return SessionContext(self, idle_timeout)
 
-    def can_escalate(self, depended=False):
+    def can_escalate(self, depended=False, tt_system: Optional[TTSystem] = None):
         """
         Check alarm can be escalated
-        :return:
         """
-        if not self.tt_system or not self.tt_system_id:
+        tt_system = tt_system or self.tt_system
+        if not tt_system:
+            return False
+        if not tt_system.can_escalate(self):
             return False
         return self.can_notify(depended)
 
