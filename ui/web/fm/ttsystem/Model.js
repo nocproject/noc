@@ -20,8 +20,17 @@ Ext.define("NOC.fm.ttsystem.Model", {
             type: "string"
         },
         {
+            name: "login",
+            type: "string"
+        },
+        {
             name: "handler",
             type: "string"
+        },
+        {
+            name: "check_updates_interval",
+            type: "int",
+            defaultValue: 0
         },
         {
             name: "description",
@@ -54,6 +63,11 @@ Ext.define("NOC.fm.ttsystem.Model", {
         {
             name: "alarm_consequence_policy",
             type: "string"
+        },
+        {
+            name: "promote_items",
+            type: "string",
+            defaultValue: "T",
         }
     ]
 });
