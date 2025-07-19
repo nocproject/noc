@@ -30,7 +30,11 @@ from mongoengine.queryset.visitor import Q
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.ip import IP
 from noc.core.resource import from_resource
-from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
+from noc.core.models.serviceinstanceconfig import (
+    InstanceType,
+    ServiceInstanceConfig,
+    ServiceInstanceTypeConfig,
+)
 from noc.core.models.inputsources import InputSource
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
@@ -78,35 +82,37 @@ class ServiceInstance(Document):
             "service",
             "managed_object",
             "addresses.address",
+            "asset_refs",
             "resources",
             "#reference",
             "type",
             "remote_id",
             ("addresses.address_bin", "port"),
-            {"fields": ["service", "managed_object", "remote_id", "name"], "unique": True},
+            {"fields": ["service", "type", "managed_object", "remote_id", "name"], "unique": True},
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
     service = PlainReferenceField("sa.Service", required=True)
     # Instance Description
     type: InstanceType = EnumField(InstanceType, required=True, default=InstanceType.OTHER)
+    name: str = StringField(required=False)
+    # Sources that approved data
+    sources: List[InputSource] = ListField(EnumField(InputSource))
+    # Object
+    managed_object: Optional["ManagedObject"] = ForeignKeyField(ManagedObject, required=False)
+    # For ETL services, Object id in remote system
+    remote_id = StringField()
+    # NRI port id, converted by portmapper to native name
+    nri_port = StringField()
     # ? discriminator
     reference = BinaryField(required=False)
-    # Not required/TTL
-    # For port services
-    managed_object: Optional["ManagedObject"] = ForeignKeyField(ManagedObject, required=False)
+    # Endpoint Data
     fqdn: str = StringField()
-    # Sources that find sensor
-    sources: List[InputSource] = ListField(EnumField(InputSource))
-    port = IntField(min_value=0, max_value=65536, default=0)
     addresses: List[AddressItem] = EmbeddedDocumentListField(AddressItem)
-    # NRI port id, converted by portmapper to native name
-    name: str = StringField(required=False)
-    macs: List[str] = ListField(StringField(required=True))
-    nri_port = StringField()
-    # Object id in remote system
-    remote_id = StringField()
-    # CPE
+    port = IntField(min_value=0, max_value=65536, default=0)
+    # Asset Data
+    asset_refs: List[str] = ListField(StringField(required=True))
+    # Used Resources
     resources: List[str] = ListField(StringField(required=False))
     # Operation Attributes
     oper_status: bool = BooleanField()
@@ -114,6 +120,7 @@ class ServiceInstance(Document):
     # Timestamp of last confirmation
     last_seen = DateTimeField()
     uptime = FloatField(default=0)
+    # Not required/TTL
     expires = DateTimeField(required=False)
     # used by
     # weight ?
@@ -139,9 +146,10 @@ class ServiceInstance(Document):
                 return a.address
 
     @property
-    def config(self) -> "ServiceInstanceConfig":
+    def config(self) -> "ServiceInstanceTypeConfig":
         """Return configuration on type"""
-        return ServiceInstanceConfig.get_config(self.type, self.service)
+        cfg = self.service.profile.get_instance_config(self.type, self.name)
+        return cfg or ServiceInstanceTypeConfig()
 
     @property
     def weight(self) -> int:
@@ -158,21 +166,65 @@ class ServiceInstance(Document):
     def __str__(self) -> str:
         name = self.name or self.service.label
         if self.type == InstanceType.ASSET:
-            return f"[{self.type}|{','.join(self.macs)}] {name}"
+            return f"[{self.type}|{','.join(self.asset_refs)}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
             return f"[{self.type}|{self.managed_object}] {name}"
         elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
             return f"[{self.type}|{self.remote_id}] {name}"
         return f"[{self.type}] {name}"
 
-    def refresh_managed_object(
-        self, o: Optional["ManagedObject"] = None, source: Optional[InputSource] = None, bulk=None
+    @classmethod
+    def ensure_instance(cls, service, cfg: ServiceInstanceConfig) -> Optional["ServiceInstance"]:
+        """ """
+        qs = cfg.get_queryset(service)
+        instance = ServiceInstance.objects.filter(qs).first()
+        logger.debug("[%s] Find Instance by query: %s, Result: %s", service.id, qs, instance)
+        if not instance:
+            logger.info("[%s] Create new Instance: %s", service.id, cfg.type)
+            instance = ServiceInstance.from_config(service, cfg)
+        return instance
+
+    def update_config(self, cfg: ServiceInstanceConfig):
+        """Update instance Data from config"""
+        if self.asset_refs != cfg.asset_refs:
+            self.asset_refs = cfg.asset_refs
+        if self.fqdn != cfg.fqdn:
+            self.fqdn = cfg.fqdn
+
+    def seen(
+        self,
+        source: InputSource,
+        last_seen: Optional[datetime.datetime] = None,
+        dry_run: bool = False,
     ):
+        """Update source"""
+        if source not in self.sources:
+            self.sources += [source]
+        if source not in [InputSource.MANUAL, InputSource.CONFIG]:
+            self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
+            self.service.fire_event("seen")
+        # resource Seen
+        if not dry_run:
+            ServiceInstance.objects.filter(id=self.id).update(
+                sources=self.sources, last_seen=self.last_seen
+            )
+
+    def unseen(self, source: InputSource):
+        """Remove from source"""
+        if source in self.sources:
+            self.sources.remove(source)
+        if not self.sources:
+            # For empty source, clean sources
+            ServiceInstance.objects.filter(id=self.id).delete_one()
+        else:
+            # Clean Source, ETL - Remove Remote_id, NRI Port, Addresses
+            ServiceInstance.objects.filter(id=self.id).update(sources=self.sources)
+
+    def refresh_managed_object(self, o: Optional["ManagedObject"] = None, bulk=None):
         """
         Update ManagedObject on instance
         Args:
             o: ManagedObject
-            source: Update source
             bulk: Update query accumulator
         """
         if not o:
@@ -263,21 +315,6 @@ class ServiceInstance(Document):
         # Name, port
         return ServiceInstance.objects.filter(q).scalar("service")
 
-    def bind_object(
-        self,
-        o: ManagedObject,
-        iface: Optional[Any] = None,
-        ts: Optional[str] = None,
-    ):
-        self.refresh_managed_object(o)
-        now = datetime.datetime.now()
-        # ? Register Address
-        self.last_seen = ts or now
-
-    def unbind_object(self):
-        """Remove ManagedObject from ServiceInstance"""
-        # Unregister Address
-
     def register_endpoint(
         self,
         source: InputSource,
@@ -322,11 +359,7 @@ class ServiceInstance(Document):
             changed |= True
             self.port = port
         # Update instance
-        self.service.fire_event("seen")
-        now = datetime.datetime.now()
-        if source == InputSource.DISCOVERY:
-            self.last_seen = ts or now
-            changed |= True
+        self.seen(source, last_seen=ts)
         return changed
 
     def deregister_endpoint(
@@ -436,13 +469,13 @@ class ServiceInstance(Document):
         si = ServiceInstance(
             type=config.type,
             service=service,
-            name=kwargs.get("name"),
-            fqdn=kwargs.get("fqdn"),
-            remote_id=kwargs.get("remote_id"),
-            nri_port=kwargs.get("nri_port"),
+            name=config.name,
+            fqdn=config.fqdn,
+            remote_id=config.remote_id,
+            nri_port=config.nri_port,
         )
         if kwargs.get("macs"):
-            si.macs = [m for m in kwargs["macs"]]
+            si.asset_refs = [f"mac:{m}" for m in kwargs["macs"]]
         return si
 
     @classmethod

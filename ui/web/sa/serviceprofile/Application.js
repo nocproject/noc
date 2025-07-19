@@ -430,31 +430,31 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                 },
                 {
                     xtype: "fieldset",
-                    title: __("Resource Binding"),
+                    title: __("Instance Policy"),
                     items: [
                         {
                             name: "instance_policy",
                             xtype: "combobox",
                             fieldLabel: __("Resource Map Policy"),
                             tooltip: __("How bind resources to Service Instance <br/>" +
-                                'D - Disable Bind<br/>' +
-                                'N - By Remote System Data' +
-                                'O - By Defined Rules'),
+                                'D - Disable <br/>' +
+                                'A - Allowed Any' +
+                                'C - By Config'),
                             store: [
                                 ["D", __("Disable")],
-                                ["N", __("Resource Binding")],
-                                ["O", __("By Rule")]
+                                ["A", __("Allowed Any")],
+                                ["C", __("By Config")]
                             ],
                             allowBlank: true,
-                            value: "N",
+                            value: "A",
                             uiStyle: "medium",
                             listeners: {
                                 render: me.addTooltip
                             }
                         },
                         {
-                            name: "instance_policy_settings",
-                            fieldLabel: __("Resource Bind Rules"),
+                            name: "instance_settings",
+                            fieldLabel: __("Instance Configs"),
                             xtype: "gridfield",
                             allowBlank: true,
                             //width: 350,
@@ -510,11 +510,25 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     renderer: NOC.render.Bool
                                 },
                                 {
-                                    text: __("Only One Object"),
-                                    dataIndex: "only_one_object",
+                                    text: __("Only One Instance"),
+                                    dataIndex: "only_one_instance",
                                     width: 100,
                                     editor: "checkbox",
                                     renderer: NOC.render.Bool
+                                },
+                                {
+                                    text: __("Name"),
+                                    dataIndex: "name",
+                                    width: 100,
+                                    editor: "textfield",
+                                    allowBlank: true
+                                },
+                                {
+                                    text: __("Ref. Source"),
+                                    dataIndex: "refs_caps",
+                                    renderer: NOC.render.Lookup("refs_caps"),
+                                    width: 250,
+                                    editor: "inv.capability.LookupField"
                                 }
                             ]
                         }

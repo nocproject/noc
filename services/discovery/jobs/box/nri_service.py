@@ -41,7 +41,8 @@ class NRIServiceCheck(DiscoveryCheck):
                 continue
             if not si.managed_object or si.managed_object != self.object:
                 self.logger.info("Bind object to Service Instance: %s", si)
-                si.bind_object(self.object)
+                si.refresh_managed_object(self.object)
+                si.seen(DISCOVERY_SOURCE)
             processed_instances[si.id] = si
         # New Instances
         # unseen

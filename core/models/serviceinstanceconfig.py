@@ -7,7 +7,6 @@
 
 # Python modules
 import enum
-from hashlib import sha512
 from dataclasses import dataclass
 from typing import Optional, Any, List, ClassVar
 
@@ -33,102 +32,74 @@ class InstanceType(enum.Enum):
 
 
 @dataclass
-class ServiceInstanceConfig:
-    """Service Instance type configuration"""
-
-    type: ClassVar[InstanceType]
-    required_fields: ClassVar[List[str]]
+class ServiceInstanceTypeConfig:
     allow_resources: Optional[List[str]] = None
     allow_manual: bool = False
     # For multiple object, control TTL ?
-    only_one_object: bool = True
+    only_one_instance: bool = True
     send_approve: bool = False
+    allow_register: bool = False
 
-    def get_reference(self, service: Any) -> bytes:
-        """Calculate unique Reference"""
-        return sha512(f"{self.type}:{service.id}".encode("utf-8")).digest()[:10]
+
+@dataclass
+class ServiceInstanceConfig:
+    type: ClassVar[InstanceType]
+    name: str
+    # managed_object: Optional[Any] = None ?
+    remote_id: Optional[str] = None
+    nri_port: Optional[str] = None
+    fqdn: Optional[str] = None
+    addresses: List[str] = None
+    port: int = 0
+    asset_refs: List[str] = None
+
+    # type
+    @classmethod
+    def get_config(
+        cls,
+        i_type: InstanceType,
+        name: Optional[str] = None,
+        **kwargs,
+    ) -> "ServiceInstanceConfig":
+        """Return Config instance by type"""
+        match i_type:
+            case InstanceType.ASSET:
+                cfg = NetworkHostInstance
+            case InstanceType.NETWORK_CHANNEL:
+                cfg = NetworkChannelInstance
+            case InstanceType.SERVICE_ENDPOINT:
+                cfg = ServiceEndPont
+            case _:
+                cfg = ConfigInstance
+        return cfg(
+            name=name,
+            fqdn=kwargs.get("fqdn"),
+            addresses=kwargs.get("addresses"),
+            port=kwargs.get("port"),
+            remote_id=kwargs.get("remote_id"),
+            nri_port=kwargs.get("nri_port"),
+            asset_refs=kwargs.get("asset_refs"),
+        )
 
     def get_queryset(self, service: Any, **kwargs) -> Q:
         """Request ServiceInstance QuerySet"""
-        return Q(type=self.type, service=service)
-
-    @classmethod
-    def get_config(cls, type: InstanceType, service) -> "ServiceInstanceConfig":
-        """Return Config instance by type"""
-        match type:
-            case InstanceType.ASSET:
-                cfg = NetworkHostInstance()
-            case InstanceType.NETWORK_CHANNEL:
-                cfg = NetworkChannelInstance()
-            case InstanceType.SERVICE_ENDPOINT:
-                cfg = ServiceEndPont()
-            case _:
-                cfg = ConfigInstance()
-        if service.profile.instance_policy_settings:
-            p = service.profile.instance_policy_settings
-            if p.instance_type != type:
-                pass
-            cfg.allow_manual = p.allow_manual
-            cfg.only_one_object = p.only_one_object
-            cfg.allow_resources = list(p.allow_resources)
-            cfg.send_approve = p.send_approve
-        return cfg
+        return Q(service=service, type=self.type, name=self.name or None)
 
 
 class NetworkHostInstance(ServiceInstanceConfig):
-    """NetworkHost Instance, Describe Network host or CPE, defined by MAC Address"""
-
     type = InstanceType.ASSET
-    required_fields = ["mac"]
-    only_one_object = True
-
-    def get_reference(self, service: Any, macs=None, remote_id=None, **kwargs) -> bytes:
-        if remote_id:
-            return sha512(remote_id.encode("utf-8")).digest()[:10]
-        return sha512(macs[0].encode("utf-8")).digest()[:10]
-
-    def get_queryset(self, service: str, macs=None, remote_id=None, **kwargs):
-        q = Q()
-        if macs:
-            q |= Q(type=self.type, macs__in=macs)
-        if remote_id:
-            q |= Q(service=service, type=self.type, remote_id=remote_id)
-        if q:
-            return q
-        return Q(service=service, type=self.type)
 
 
 class NetworkChannelInstance(ServiceInstanceConfig):
     """Describe Network port bind Service, defined by port name on Managed Object"""
 
     type = InstanceType.NETWORK_CHANNEL
-    required_fields = ["managed_object"]
-
-    def get_queryset(self, service: str, managed_object=None, remote_id=None, **kwargs):
-        q = Q()
-        # By Group Resource Group
-        if remote_id:
-            # OR
-            # Remote System
-            q |= Q(service=service, type=self.type, remote_id=remote_id)
-        if self.only_one_object or not managed_object:
-            # self.only_one_object
-            q |= Q(service=service, type=self.type, managed_object=None)
-        elif managed_object:
-            q |= Q(service=service, type=self.type, managed_object=managed_object)
-        if not q:
-            q = Q(service=service, type=self.type)
-        return q
 
 
 class ServiceEndPont(ServiceInstanceConfig):
     """Describe OS Process, that running service tasks. Defined by name and ManagedObject Group"""
 
     type = InstanceType.SERVICE_ENDPOINT
-
-    def get_queryset(self, service: str, name=None, **kwargs):
-        # By Group and allow_one_object
-        return Q(service=service, type=self.type, name=name)
 
 
 class ConfigInstance(ServiceInstanceConfig):
