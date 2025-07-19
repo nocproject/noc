@@ -6,132 +6,139 @@
 # ----------------------------------------------------------------------
 
 # Third-party modules
-import datetime
-import logging
-from bson import ObjectId
+import pytest
 
 # NOC modules
 from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.fm.request import ActionConfig
-from noc.fm.models.activealarm import ActiveAlarm
 from noc.services.correlator.alarmaction import AlarmActionRunner
 from noc.services.correlator.alarmjob import Item
 from noc.services.correlator.actionlog import ActionLog
 from noc.aaa.models.user import User
-
-logger = logging.getLogger(__name__)
-
-
-class SegmentMock:
-    id: str = ObjectId()
-    name: str = "Test Segment"
-    is_redundant: bool = False
+from .utils import get_alarm_mock, get_tt_system_mock
 
 
-class MOMock:
-    id = 2
-    name = "Test Object"
-    segment = SegmentMock()
+@pytest.fixture(scope="module")
+def alarm():
+    return get_alarm_mock()
 
 
-class AlarmClassMock:
-    id = ObjectId()
-    name = "NOC | Managed Object | Ping Failed"
+@pytest.fixture(scope="module")
+def user():
+    return User(username="test User", first_name="Test")
 
 
-alarm = ActiveAlarm(
-    id=ObjectId(),
-    timestamp=datetime.datetime.now(),
-    last_update=datetime.datetime.now(),
-    managed_object=MOMock(),
-    alarm_class=AlarmClassMock(),
-    severity=1000,
-    base_severity=1000,
-    vars={},
-    reference=b"xxxx",
-    log=[],
+@pytest.fixture(scope="module")
+def tt_system():
+    return get_tt_system_mock()
+
+
+@pytest.fixture(
+    params=[
+        ActionConfig(action=AlarmAction.LOG, subject="Test Message"),
+        ActionConfig(action=AlarmAction.ACK),
+        ActionConfig(action=AlarmAction.UN_ACK),
+        ActionConfig(action=AlarmAction.SUBSCRIBE),
+        ActionConfig(action=AlarmAction.CLEAR),
+    ]
 )
-alarm.safe_save = lambda: None
-alarm.save = lambda: None
+def action_config(request):
+    return request.param
 
 
-def test_alar_action_notify():
-    items = [Item(alarm=alarm)]
-    runner = AlarmActionRunner(items, logger=logger)
+def test_alarm_action(alarm, action_config: ActionConfig, user):
+    runner = AlarmActionRunner([Item.from_alarm(alarm=alarm)], dry_run=True)
     alarm_ctx = alarm.get_message_ctx()
-    cfg = ActionConfig(action=AlarmAction.LOG, subject="Test Message")
-    aa = ActionLog.from_request(cfg, started_at=alarm.timestamp)
+    #
+    aa = ActionLog.from_request(action_config, started_at=alarm.timestamp)
+    aa.user = user
     r = runner.run_action(
         aa.action,
-        **aa.get_ctx(
-            document_id=aa.document_id,
-            alarm_ctx=alarm_ctx,
-        ),
+        **aa.get_ctx(alarm_ctx=alarm_ctx),
     )  # aa.get_ctx for job
-    assert len(runner.alarm_log) == 1
     assert r.status == ActionStatus.SUCCESS
+    # Check Alarm Attributes
+    match action_config.action:
+        case AlarmAction.LOG:
+            assert len(runner.alarm_log) == 1
+        case AlarmAction.ACK:
+            assert alarm.ack_user == user.username
+        case AlarmAction.UN_ACK:
+            assert alarm.ack_user is None
+        case AlarmAction.SUBSCRIBE:
+            assert len(alarm.watchers) == 1
+            assert alarm.watchers[0].key == str(user.id)
 
 
-def test_alarm_action_ack():
+@pytest.fixture(
+    params=[
+        ActionConfig(
+            action=AlarmAction.CREATE_TT,
+            key="stub",
+            subject="Test Message",
+            login="id1",
+            pre_reason="sc1",
+        ),
+        ActionConfig(
+            action=AlarmAction.CREATE_TT,
+            key="stub",
+            subject="Test Message",
+            login="id1",
+            pre_reason="sc2",
+        ),
+        ActionConfig(
+            action=AlarmAction.CREATE_TT,
+            key="stub",
+            subject="Test Message",
+            login="id1",
+            pre_reason="sc3",
+        ),
+        ActionConfig(
+            action=AlarmAction.CLOSE_TT,
+            key="stub",
+            subject="Test Message",
+            login="id1",
+            pre_reason="sc4",
+        ),
+        ActionConfig(
+            action=AlarmAction.CLOSE_TT,
+            key="stub",
+            subject="Test Message",
+            login="id1",
+            pre_reason="sc5",
+        ),
+    ]
+)
+def tt_action_config(request):
+    return request.param
+
+
+def test_escalation_action(alarm, tt_action_config: ActionConfig, tt_system):
     """"""
-    user = User(username="test User", first_name="Test")
-    items = [Item(alarm=alarm)]
-    runner = AlarmActionRunner(items, logger=logger)
+    # Scenario 1 - escalation with no error
+    # Scenario 2 - escalation with error with retry
+    # Scenario 3 - escalation with clear alarm
+    # Scenario 4 - escalation with clear error
+    # Scenario 5 - escalation group alarm
+    runner = AlarmActionRunner([Item.from_alarm(alarm=alarm)], dry_run=True)
     alarm_ctx = alarm.get_message_ctx()
-    aa = ActionLog(
-        action=AlarmAction.ACK,
-        key="",
-        subject="Test Message",
-        timestamp=alarm.timestamp,
-        user=user,
+    #
+    aa = ActionLog.from_request(
+        tt_action_config, started_at=alarm.timestamp, stub_tt_system=tt_system
     )
     r = runner.run_action(
         aa.action,
-        **aa.get_ctx(
-            document_id=aa.document_id,
-            alarm_ctx=alarm_ctx,
-        ),
+        **aa.get_ctx(alarm_ctx=alarm_ctx),
     )  # aa.get_ctx for job
-    assert r.status == ActionStatus.SUCCESS
-    assert alarm.ack_user == user.username
-    aa = ActionLog(
-        action=AlarmAction.UN_ACK,
-        key="",
-        subject="Test Message",
-        timestamp=alarm.timestamp,
-        user=user,
-    )
-    r = runner.run_action(
-        aa.action,
-        **aa.get_ctx(
-            document_id=aa.document_id,
-            alarm_ctx=alarm_ctx,
-        ),
-    )  # aa.get_ctx for job
-    assert r.status == ActionStatus.SUCCESS
-    assert alarm.ack_user is None
-
-
-def test_alarm_action_subscribe():
-    """"""
-    user = User(username="test User", first_name="Test")
-    items = [Item(alarm=alarm)]
-    runner = AlarmActionRunner(items, logger=logger)
-    alarm_ctx = alarm.get_message_ctx()
-    aa = ActionLog(
-        action=AlarmAction.SUBSCRIBE,
-        key="",
-        subject="Test Message",
-        timestamp=alarm.timestamp,
-        user=user,
-    )
-    r = runner.run_action(
-        aa.action,
-        **aa.get_ctx(
-            document_id=aa.document_id,
-            alarm_ctx=alarm_ctx,
-        ),
-    )  # aa.get_ctx for job
-    assert r.status == ActionStatus.SUCCESS
-    assert len(alarm.watchers) == 1
-    assert alarm.watchers[0].key == str(user.id)
+    match tt_action_config:
+        case "sc1":
+            assert r.status == ActionStatus.SUCCESS
+            assert r.document_id == "id1"
+        case "sc2":
+            assert r.status == ActionStatus.WARNING
+            assert r.document_id is None
+        case "sc3":
+            assert r.status == ActionStatus.FAILED
+            assert r.document_id is None
+        case "sc4":
+            assert r.status == ActionStatus.SUCCESS
