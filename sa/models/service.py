@@ -344,6 +344,7 @@ class Service(Document):
 
     @property
     def managed_object(self):
+        # to UP Path
         for si in self.service_instances:
             if si.managed_object:
                 return si.managed_object
@@ -824,16 +825,61 @@ class Service(Document):
             svc = svc.parent
         return None
 
+    def sync_instances(self):
+        """Synchronize Config-base instance"""
+        if self.profile.instance_policy != "C":
+            return
+        instances: List[ServiceInstanceConfig] = []
+        caps = self.get_caps()
+        for settings in self.profile.instance_settings:
+            if not settings.refs_caps or settings.refs_caps.name not in caps:
+                continue
+            refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+            if not refs:
+                continue
+            cfg = ServiceInstanceConfig.get_config(
+                settings.instance_type,
+                name=settings.name,
+                asset_refs=refs,
+            )
+            instances.append(cfg)
+        self.update_instances(InputSource.CONFIG, instances)
+
+    def update_instances(
+        self,
+        source: Union[str, InputSource],
+        instances: List[ServiceInstanceConfig],
+        last_update: Optional[datetime.datetime] = None,
+    ):
+        """Synchronize instances for source"""
+        if isinstance(source, str):
+            source = InputSource(source)
+        processed = set()
+        # Bulk
+        # Check only one instances
+        # By Service Group?
+        for cfg in instances:
+            instance = ServiceInstance.ensure_instance(self, cfg)
+            # Update Data, Run sync
+            instance.update_config(cfg)
+            # Add Source
+            instance.seen(source, last_update, dry_run=True)
+            instance.save()
+            processed.add(instance.id)
+        # Clean Source from Instances
+        for instance in ServiceInstance.objects.filter(sources__in=[source], id__nin=processed):
+            instance.unseen(source)
+
     def register_instance(
         self,
         type: InstanceType,
         source: InputSource = InputSource.MANUAL,
         name: Optional[str] = None,
-        macs: Optional[List[str]] = None,
         fqdn: Optional[str] = None,
-        nri_port: Optional[str] = None,
         managed_object: Optional[str] = None,
-        remote_id: Optional[str] = None,
+        # addresses
+        # port
+        # session_id ? register_session
     ):
         """
         Register Instance for Service
@@ -843,89 +889,29 @@ class Service(Document):
             source: Instance source: manual, etl, discovery
             name: Instance name, for host - process name
             fqdn: Instance FQDN (for resolve address)
-            macs: MAC Address List
             managed_object: Instance Host
-            remote_id: Instance ID on Remote System
-            nri_port: Network interface name on Remote System
         """
-        if source == InputSource.ETL and not remote_id:
-            raise AttributeError("remote_id required for ETL source")
         if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        cfg = ServiceInstanceConfig.get_config(type, self)
+        cfg = ServiceInstanceConfig.get_config(type, name=name, fqdn=fqdn)
         if not cfg:
             logger.info("[%s|%s] Instance Type is not allowed by Service settings", self.id, type)
             return
         # Check Allowed create instance
-        qs = cfg.get_queryset(
-            service=self,
-            name=name,
-            macs=macs,
-            remote_id=remote_id,
-            managed_object=managed_object,
-        )
         # Check multiple instances
-        si = ServiceInstance.objects.filter(qs).first()
-        logger.debug("[%s] Find Instance by query: %s, Result: %s", self.id, qs, si)
+        si = ServiceInstance.ensure_instance(self, cfg)
         changed = False
-        if not si:
-            si = ServiceInstance(
-                type=cfg.type,
-                service=self,
-                sources=[source],
-                name=name,
-                macs=macs or [],
-                remote_id=remote_id,
-                nri_port=nri_port,
-            )
-            logger.info("[%s] Create new Instance: %s", self.id, cfg.type)
-            changed |= True
         # Update data
-        if source not in si.sources:
-            si.sources += [source]
-            changed |= True
-        if si.nri_port != nri_port:
-            si.nri_port = nri_port
-            changed |= True
+        si.seen(source)
         if si.fqdn != fqdn:
             si.fqdn = fqdn
             changed |= True
         if si.managed_object:
             si.refresh_managed_object(managed_object)
-        if source == InputSource.ETL and si.remote_id != remote_id:
-            si.remote_id = remote_id
-            changed |= True
-        if source == InputSource.ETL and si.macs and set(si.macs) != set(macs):
-            si.macs = macs
-            changed |= True
         if changed:
             si.save()
         return si
-
-    def deregister_instance(
-        self,
-        type: InstanceType,
-        source: InputSource = InputSource.MANUAL,
-        name: Optional[str] = None,
-    ):
-        """Remove service info for source"""
-        # Check multiple instances
-        instances = ServiceInstance.objects.filter(type=type, service=self, name=name)
-        if not instances:
-            logger.info("[%s] Instance not found: %s", self.id, type)
-            return
-        for si in instances:
-            if source in si.sources:
-                si.sources.remove(source)
-            if not si.sources:
-                # For empty source, clean sources
-                ServiceInstance._get_collection().delete_one({"_id": si.id})
-            else:
-                ServiceInstance._get_collection().update_one(
-                    {"_id": si.id}, {"$set": {"sources": si.sources}}
-                )
-            # delete
 
     @classmethod
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:

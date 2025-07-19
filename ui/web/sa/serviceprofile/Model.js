@@ -118,10 +118,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
         {
             name: "instance_policy",
             type: "string",
-            defaultValue: "N"
+            defaultValue: "D"
         },
         {
-            name: "instance_policy_settings",
+            name: "instance_settings",
             type: "auto"
         },
         {
