@@ -12,10 +12,14 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.fm.alarmrule.Model",
         "NOC.core.label.LabelField",
         "NOC.core.ListFormField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.fm.alarmclass.LookupField",
         "NOC.fm.alarmseverity.LookupField",
+        "NOC.main.remotesystem.LookupField",
+        "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
         "NOC.main.handler.LookupField",
+        "NOC.sa.action.LookupField",
         "Ext.ux.form.GridField"
     ],
     model: "NOC.fm.alarmrule.Model",
@@ -67,7 +71,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                 {
                     name: "severity_policy",
                     xtype: "combobox",
-                    fieldLabel: __("Calc Severity Policy"),
+                    fieldLabel: __("Severity Policy"),
                     allowBlank: true,
                     store: [
                         ["CB", __("Class Based Policy")],
@@ -77,6 +81,39 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     ],
                     uiStyle: "medium",
                     value: "AL",
+                },
+                {
+                    name: "min_severity",
+                    xtype: "fm.alarmseverity.LookupField",
+                    fieldLabel: __("Min./Set Severity"),
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
+                    name: "min_severity",
+                    xtype: "fm.alarmseverity.LookupField",
+                    fieldLabel: __("Min./Set Severity"),
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
+                  name: "rule_action",
+                  xtype: "combobox",
+                  fieldLabel: __("Rule Action"),
+                  store: [
+                    ["continue", __("Continue")],
+                    ["drop", __("Drop Alarm")],
+                    ["rewrite", __("Rewrite")]
+                  ],
+                  value: "continue",
+                  uiStyle: "medium",
+                },
+                {
+                    name: "alarm_class",
+                    xtype: "fm.alarmclass.LookupField",
+                    fieldLabel: __("Alarm Class"),
+                    uiStyle: "large",
+                    allowBlank: true
                 },
                 {
                     name: "groups",
@@ -161,6 +198,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                                 xtype: "combobox",
                                 store: [
                                     ["raise", __("On Alarm Raise")],
+                                    ["update", __("On Update")],
                                     ["clear", __("On Alarm Clear")],
                                 ]
                             },
@@ -170,39 +208,35 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             })
                         },
                         {
-                            text: __("Action Policy"),
-                            dataIndex: "policy",
-                            width: 100,
-                            allowBlank: false,
-                            editor: {
-                                xtype: "combobox",
-                                store: [
-                                    ["continue", __("Continue Processed")],
-                                    ["drop", __("Drop Alarm")],
-                                    ["rewrite", __("Rewrite AlarmClass")]
-                                ]
-                            },
-                            value: "continue",
-                            renderer: NOC.render.Choices({
-                                "continue": __("Continue Processed"),
-                                "drop": __("Drop Alarm"),
-                                "rewrite": __("Rewrite AlarmClass")
-                            })
-                        },
-                        {
-                            text: __("Severity"),
-                            dataIndex: "severity",
-                            editor: "fm.alarmseverity.LookupField",
-                            width: 100,
-                            renderer: NOC.render.Lookup("severity")
-                        },
-                        {
                             text: __("Notification Group"),
                             dataIndex: "notification_group",
                             editor: "main.notificationgroup.LookupField",
                             width: 150,
                             allowBlank: true,
                             renderer: NOC.render.Lookup("notification_group")
+                        },
+                        {
+                            text: __("Template"),
+                            dataIndex: "template",
+                            editor: "main.template.LookupField",
+                            width: 150,
+                            allowBlank: true,
+                            renderer: NOC.render.Lookup("template")
+                        },
+                        {
+                            text: __("Object Action"),
+                            dataIndex: "object_action",
+                            editor: "sa.action.LookupField",
+                            width: 150,
+                            allowBlank: true,
+                            renderer: NOC.render.Lookup("object_action")
+                        },
+                        {
+                            text: __("Message"),
+                            dataIndex: "message",
+                            editor: "textfield",
+                            allowBlank: true,
+                            width: 200
                         },
                         {
                             text: __("Handler"),
@@ -215,14 +249,6 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             },
                             renderer: NOC.render.Lookup("handler"),
                             width: 200
-                        },
-                        {
-                            text: __("Alarm Class"),
-                            dataIndex: "alarm_class",
-                            editor: "fm.alarmclass.LookupField",
-                            allowBlank: true,
-                            renderer: NOC.render.Lookup("alarm_class"),
-                            width: 250
                         }
                     ]
                 },
@@ -264,6 +290,14 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             fieldLabel: __("Alarm Class"),
                             uiStyle: 'large',
                             allowBlank: true
+                        },
+                        {
+                            xtype: "core.tagfield",
+                            url: "/inv/resourcegroup/lookup/",
+                            fieldLabel: __("Object Groups"),
+                            name: "resource_groups",
+                            allowBlank: true,
+                            uiStyle: "extra"
                         },
                         {
                             name: "severity",
