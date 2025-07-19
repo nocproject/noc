@@ -1,0 +1,160 @@
+{
+  "ts": 1751556338,
+  "target": {
+    "address": "10.10.10.10",
+    "name": "HOST-TST",
+    "id": "23",
+    "pool": "default",
+    "is_agent": false,
+    "remote_id": null,
+    "service": null
+  },
+  "data": [
+    {
+      "name": "source",
+      "value": "SNMP Trap",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "collector",
+      "value": "default",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "message_id",
+      "value": "None",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "source_address",
+      "value": "10.128.46.39",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.2.1.1.3.0",
+      "value": "158184242",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.6.3.1.1.4.1.0",
+      "value": "1.3.6.1.4.1.47196.4.1.1.3.19.0.1",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.1",
+      "value": "1",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.2",
+      "value": "=C3=80m=C3=ADDxD",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.3",
+      "value": "0",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.4",
+      "value": "27",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.5",
+      "value": "3080",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.6",
+      "value": "",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "1.3.6.1.4.1.47196.4.1.1.3.19.3.1.1.7",
+      "value": "",
+      "scope": null,
+      "snmp_raw": true
+    },
+    {
+      "name": "DISMAN-EVENT-MIB::sysUpTimeInstance",
+      "value": "158184242",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "SNMPv2-MIB::snmpTrapOID.0",
+      "value": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyMacAddressTableChange",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyAction",
+      "value": "1",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyMacAddress",
+      "value": "c0:6d:ed:44:78:44",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyFromPortId",
+      "value": "0",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyToPortId",
+      "value": "27",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::arubaWiredMacNotifyVlanId",
+      "value": "3080",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::macNotifyChangeTableEntry.6",
+      "value": "",
+      "scope": null,
+      "snmp_raw": false
+    },
+    {
+      "name": "ARUBAWIRED-MACNOTIFY-MIB::macNotifyChangeTableEntry.7",
+      "value": "",
+      "scope": null,
+      "snmp_raw": false
+    }
+  ],
+  "id": "6866a0f27abf473734b21e56",
+  "type": {
+    "source": "SNMP Trap",
+    "id": "1.3.6.1.4.1.47196.4.1.1.3.19.0.1",
+    "severity": 1,
+    "facility": null,
+    "profile": "HP.Aruba",
+    "event_class": "Network | MAC | MAC Learned"
+  },
+  "remote_system": null,
+  "remote_id": null,
+  "labels": null,
+  "message": null,
+  "vars": null
+}
