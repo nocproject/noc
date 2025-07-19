@@ -551,7 +551,7 @@ class AlarmApplication(ExtApplication):
         # Subscribers
         if alarm.status == "A":
             d["subscribers"] = self.get_alarm_subscribers(alarm)
-            d["is_subscribed"] = self.has_alarm_ubscriber(alarm, user)
+            d["is_subscribed"] = alarm.is_subscribed(user)
         # Groups
         if alarm.groups:
             d["groups"] = []
@@ -583,14 +583,8 @@ class AlarmApplication(ExtApplication):
             del d["reference"]
         return d
 
-    def has_alarm_ubscriber(self, alarm: "ActiveAlarm", user: User) -> bool:
-        """Check user subscription in alarm"""
-        for w in alarm.watchers:
-            if w.effect == Effect.SUBSCRIPTION and w.key == str(user.id):
-                return True
-        return False
-
-    def get_alarm_subscribers(self, alarm: "ActiveAlarm"):
+    @staticmethod
+    def get_alarm_subscribers(alarm: "ActiveAlarm"):
         """JSON-serializable subscribers"""
         subscribers = []
         for w in alarm.watchers:
@@ -598,9 +592,7 @@ class AlarmApplication(ExtApplication):
                 continue
             try:
                 u = User.get_by_id(int(w.key))
-                subscribers += [
-                    {"id": u.id, "name": " ".join([u.first_name, u.last_name]), "login": u.username}
-                ]
+                subscribers += [{"id": u.id, "name": u.get_full_name(), "login": u.username}]
             except User.DoesNotExist:
                 pass
         return subscribers
