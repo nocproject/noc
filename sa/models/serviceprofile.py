@@ -23,7 +23,6 @@ from mongoengine.fields import (
     BooleanField,
     LongField,
     ListField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
     DynamicField,
     EnumField,
@@ -41,7 +40,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.models.servicestatus import Status
-from noc.core.models.serviceinstanceconfig import InstanceType
+from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceTypeConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
@@ -69,39 +68,50 @@ condition_map = {
 }
 
 
-class InstancePolicySettings(EmbeddedDocument):
+class InstanceSettings(EmbeddedDocument):
     """
     Rules for Resource to Instance map.
     Attributes:
         # type:
         #     * AS Service - on local instance
         #     * AS Client - create binding instance
-        type: global_id/resources
+        instance_type: global_id/resources
             * L2 (MAC) - interface, vlan
             * L3 (IP + Port ? pool) - interface, subinterface, vlan
             * OS Process (ManagedObject + Pid|Name) - L3
             * Chanel - Interface, BGP Peer
 
-        only_one_object: Instance only one object (if more - replace)
+        only_one_instance: Instance only one object (if more - replace)
         allow_manual: Allow manual binding instance
         send_approve: Send Resource Approve if bind to Instance   # Reserved ?
         allow_resources: Resource Codes Allowed to bind
-        allow_dynamic_register: Allow automatically update address/port
+        allow_register: Allow register instance for Discovery
     """
 
     meta = {"strict": False, "auto_create_index": False}
 
     # provide = StringField(choices=[("C", "AS Client"), ("S", "AS Service")], default="S")
-    instance_type = EnumField(InstanceType, default=InstanceType.OTHER)
+    instance_type: InstanceType = EnumField(InstanceType, default=InstanceType.OTHER, required=True)
     allow_manual: bool = BooleanField(default=False)
-    only_one_object = BooleanField(default=True)  # Allow bind multiple resources
+    only_one_instance = BooleanField(default=True)  # Allow bind multiple resources
     allow_resources: List[str] = ListField(
         StringField(choices=[("si", "SubInterface"), ("if", "Interface")])
     )
     send_approve: bool = BooleanField(default=False)
-    # allow_dynamic_register: bool  = BooleanField(default=False)
+    allow_register: bool = BooleanField(default=False)
+    refs_caps: Capability = ReferenceField(Capability)
+    name: str = StringField(required=False)
     # Update Instance Status from resource
     # update_status = BooleanField(default=False)
+
+    def get_config(self) -> "ServiceInstanceTypeConfig":
+        return ServiceInstanceTypeConfig(
+            allow_manual=self.allow_manual,
+            only_one_instance=self.only_one_instance,
+            allow_resources=self.allow_resources,
+            send_approve=self.send_approve,
+            allow_register=self.allow_register,
+        )
 
 
 class CalculatedStatusRule(EmbeddedDocument):
@@ -334,16 +344,20 @@ class ServiceProfile(Document):
         default="R",
     )
     # Instance Resources
+    # Default Config
     instance_policy = StringField(
         choices=[
-            ("D", "Disable"),
-            ("N", "Resource Binding"),
-            ("O", "Allow Register"),
+            ("D", "Disable"),  # Disabled
+            ("A", "Any"),
+            ("C", "From Config"),  # By Settings
+            # ("G", "By Group"),  # By Settings
+            # ("N", "Resource Binding"),
+            # ("O", "Allow Register"),
         ],
-        default="N",
+        default="A",
     )
-    instance_policy_settings: "InstancePolicySettings" = EmbeddedDocumentField(
-        InstancePolicySettings, required=False
+    instance_settings: List["InstanceSettings"] = EmbeddedDocumentListField(
+        InstanceSettings, required=False
     )
     # Send up/down notifications
     status_change_notification = StringField(
@@ -406,6 +420,25 @@ class ServiceProfile(Document):
             if s.severity <= severity and status >= Status.SLIGHTLY_DEGRADED:
                 return status
         return Status.UNKNOWN
+
+    def get_instance_config(
+        self, i_type: InstanceType, name: Optional[str] = None
+    ) -> Optional["ServiceInstanceTypeConfig"]:
+        """Getting instance Config"""
+        if self.instance_policy == "A":
+            cfg = ServiceInstanceTypeConfig()
+        else:
+            cfg = None
+        # Check policy
+        for s in self.instance_settings:
+            if s.instance_type != i_type:
+                continue
+            if name and name == s.name:
+                cfg = s.get_config()
+                break
+            elif not name and not s.name:
+                cfg = s.get_config()
+        return cfg
 
     @property
     def is_enabled_notification(self) -> bool:

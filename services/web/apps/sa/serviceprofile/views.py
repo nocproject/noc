@@ -19,16 +19,3 @@ class ServiceProfileApplication(ExtDocApplication):
     title = _("Service Profile")
     menu = [_("Setup"), _("Service Profiles")]
     model = ServiceProfile
-
-    def instance_to_dict(self, o, fields=None, nocustom=False):
-        r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
-        if "instance_policy_settings" in r and r["instance_policy_settings"]:
-            r["instance_policy_settings"] = [r["instance_policy_settings"]]
-        return r
-
-    def clean(self, data):
-        if data.get("instance_policy_settings"):
-            data["instance_policy_settings"] = data["instance_policy_settings"][0]
-        else:
-            del data["instance_policy_settings"]
-        return super().clean(data)

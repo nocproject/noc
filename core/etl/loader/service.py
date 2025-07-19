@@ -1,21 +1,20 @@
 # ----------------------------------------------------------------------
 # Service loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 # NOC modules
 from noc.inv.models.capability import Capability
 from noc.sa.models.service import Service as ServiceModel
-from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
 from .base import BaseLoader
-from ..models.service import Service, Instance
+from ..models.service import Service
 
 
 class ServiceLoader(BaseLoader):
@@ -38,44 +37,19 @@ class ServiceLoader(BaseLoader):
         self.available_caps = {x.name for x in Capability.objects.filter()}
 
     def post_save(self, o: ServiceModel, fields: Dict[str, Any]):
-        self.apply_instances(o, fields.get("instances") or [])
-        if not fields or "capabilities" not in fields:
-            return
+        if not fields:
+            capabilities, instances = [], []
+        else:
+            capabilities, instances = fields.get("capabilities"), fields.get("instances")
         caps = {}
-        for cc in fields["capabilities"] or []:
+        for cc in capabilities or []:
             c_name = cc["name"]
             if c_name not in self.available_caps:
                 continue
             caps[c_name] = cc["value"]
         o.update_caps(caps, source="etl", scope=self.system.name)
-
-    @classmethod
-    def apply_instances(cls, o: ServiceModel, fields: List[Dict[str, Any]]):
-        """Synchronize Service Instances"""
-        processed = set()
-        for etl_i in fields:
-            etl_i = Instance(**etl_i)
-            # Detect type to internal method
-            si = o.register_instance(
-                type=etl_i.type,
-                source=InputSource.ETL,
-                fqdn=etl_i.fqdn,
-                remote_id=etl_i.remote_id or o.remote_id,
-                nri_port=etl_i.nri_port,
-                macs=etl_i.mac_addresses or None,
-                name=etl_i.name,
-            )
-            changed = si.register_endpoint(
-                InputSource.ETL, addresses=etl_i.addresses, port=etl_i.port, ts=etl_i.last_update
-            )
-            if changed:
-                si.save()
-            processed.add(si.id)
-        for si in ServiceInstance.objects.filter(
-            service=o.id, sources=[InputSource.ETL], id__nin=list(processed)
-        ):
-            # Deregister
-            si.delete()
+        # Raise Error in not allowed on config
+        o.update_instances(source=InputSource.ETL, instances=[i.config for i in instances or []])
 
     def find_object(self, v: Dict[str, Any]):
         """
