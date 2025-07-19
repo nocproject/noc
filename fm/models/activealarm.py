@@ -65,7 +65,7 @@ from noc.core.debug import error_report
 from noc.core.mx import MessageType
 from noc.config import config
 from noc.core.span import get_current_span
-from noc.core.fm.enum import RCA_NONE, RCA_OTHER
+from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
 from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
@@ -362,7 +362,7 @@ class ActiveAlarm(Document):
         source: Optional[str] = None,
         tt_id: Optional[str] = None,
     ):
-        if bulk:
+        if bulk is not None:
             bulk += [
                 UpdateOne(
                     {"_id": self.id},
@@ -545,7 +545,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.save()
+        self.safe_save()
 
     def unsubscribe(self, user: "User"):
         self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
@@ -555,7 +555,7 @@ class ActiveAlarm(Document):
             to_save=False,
             source=user.username,
         )
-        self.save()
+        self.safe_save()
 
     def is_subscribed(self, user: "User"):
         return user.id in self.subscribers
@@ -690,6 +690,12 @@ class ActiveAlarm(Document):
             return self.custom_style
         else:
             return AlarmSeverity.get_severity(self.severity).style
+
+    def has_merged_downlinks(self):
+        """
+        Check if alarm has merged downlinks
+        """
+        return bool(ActiveAlarm.objects.filter(root=self.id, rca_type=RCA_DOWNLINK_MERGE).first())
 
     def get_root(self) -> "ActiveAlarm":
         """
@@ -1169,6 +1175,65 @@ class ActiveAlarm(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_alarm")
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        r = {
+            "alarm_class": str(self.alarm_class.id),
+            "labels": list(self.effective_labels),
+            "severity": self.severity,
+            "reference": getattr(self, "raw_reference", None),
+        }
+        if self.managed_object:
+            r["service_groups"] = list(self.managed_object.effective_service_groups)
+        return r
+
+    def get_message_ctx(self):
+        """
+        Get escalation context
+        """
+
+        def summary_to_list(summary, model):
+            r = []
+            for k in summary:
+                p = model.get_by_id(k.profile)
+                if not p or getattr(p, "show_in_summary", True) is False:
+                    continue
+                r += [{"profile": p.name, "summary": k.summary}]
+            return sorted(r, key=lambda x: -x["summary"])
+
+        from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+        from noc.sa.models.serviceprofile import ServiceProfile
+        from noc.crm.models.subscriberprofile import SubscriberProfile
+
+        if self.managed_object and self.managed_object.segment.is_redundant:
+            uplinks = self.managed_object.uplinks
+            lost_redundancy = len(uplinks) > 1
+            affected_subscribers = summary_to_list(
+                self.managed_object.segment.total_subscribers, SubscriberProfile
+            )
+            affected_services = summary_to_list(
+                self.managed_object.segment.total_services, ServiceProfile
+            )
+        else:
+            lost_redundancy = False
+            affected_subscribers = []
+            affected_services = []
+        return {
+            "alarm": self,
+            # "leader": self.alarm,
+            "services": self.affected_services,
+            "group": "",
+            "managed_object": self.managed_object,
+            "affected_objects": [self.managed_object],
+            "total_objects": summary_to_list(self.total_objects, ManagedObjectProfile),
+            "total_subscribers": summary_to_list(self.total_subscribers, SubscriberProfile),
+            "total_services": summary_to_list(self.total_services, ServiceProfile),
+            "tt": None,
+            "lost_redundancy": lost_redundancy,
+            "affected_subscribers": affected_subscribers,
+            "affected_services": affected_services,
+            "has_merged_downlinks": self.has_merged_downlinks(),
+        }
 
 
 @runtime_checkable
