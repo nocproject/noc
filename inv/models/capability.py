@@ -13,16 +13,23 @@ from typing import Any, Dict, Union, Optional, List
 
 # Third-party modules
 import bson
-from mongoengine.document import Document
-from mongoengine.fields import StringField, UUIDField, ObjectIdField, BooleanField, DictField
 import cachetools
+from mongoengine.document import Document
+from mongoengine.fields import (
+    StringField,
+    UUIDField,
+    ObjectIdField,
+    BooleanField,
+    DictField,
+    EnumField,
+)
 
 # NOC modules
 from noc.main.models.doccategory import category
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
-from noc.core.comp import smart_text
+from noc.core.models.valuetype import ValueType
 
 id_lock = Lock()
 
@@ -49,7 +56,7 @@ class Capability(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
-    type = StringField(choices=["bool", "str", "int", "float"])
+    type: ValueType = EnumField(ValueType, required=True)
     allow_manual = BooleanField(default=False)
     multi = BooleanField(default=False)
     values = DictField(default=lambda: {}.copy())
@@ -84,7 +91,7 @@ class Capability(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            "type": self.type,
+            "type": self.type.value,
             "card_template": self.card_template,
         }
         if self.agent_collector and self.agent_param:
@@ -114,24 +121,14 @@ class Capability(Document):
     def clean_value(self, v: TCapsValue) -> TCapsValue:
         if self.multi and isinstance(v, list):
             return [self.clean_value(x) for x in v]
-        elif self.type == "str":
-            return smart_text(v)
-        elif self.type == "int":
-            return int(v)
-        elif self.type == "float":
-            return float(v)
-        elif self.type == "bool":
-            if isinstance(v, bool):
-                return v
-            if isinstance(v, str):
-                return v.lower() in ("t", "true", "yes")
-            return bool(v)
-        raise ValueError(f"Invalid type: {self.type}")
+        if not self.type:
+            raise ValueError(f"Invalid type: {self.type}")
+        return self.type.clean_value(v)
 
     def get_editor(self) -> Optional[Dict[str, Any]]:
         if not self.allow_manual:
             return None
-        r = {"type": self.type, "multiple": self.multi, "choices": []}
+        r = {"type": self.type.value, "multiple": self.multi, "choices": []}
         if self.values:
             r["type"] = "choices"
         for k in self.values:

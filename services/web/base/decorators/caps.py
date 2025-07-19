@@ -64,7 +64,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
                 "id": str(capability.id),
                 "object": str(o.id),
                 "description": capability.description,
-                "type": capability.type,
+                "type": capability.type.value,
                 "value": value,
                 "source": "manual",
                 "scope": "",
@@ -82,7 +82,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             return self.app.render_json(
                 {"status": False, "message": "Not allowed manual edit"}, status=403
             )
-        o.set_caps(capability.name, "")
+        o.reset_caps(capability.name)
         return {"status": True}
 
 
