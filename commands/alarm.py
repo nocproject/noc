@@ -24,6 +24,8 @@ from noc.core.fm.request import AlarmActionRequest, ActionItem, ActionConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmrule import AlarmRule
+from noc.fm.models.escalationprofile import EscalationProfile
+from noc.fm.models.utils import get_alarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.correlator.alarmjob import AlarmJob
 from noc.core.service.loader import get_service
@@ -89,6 +91,11 @@ class Command(BaseCommand):
         test_rule = subparsers.add_parser("test-rule", help="Test Alarm Rule")
         test_rule.add_argument("--rule", help="Alarm Rule", required=False)
         test_rule.add_argument("alarms", nargs=argparse.REMAINDER, help="Run alarm escalations")
+        test_escalation = subparsers.add_parser("test-escalation", help="Test Alarm Rule")
+        test_escalation.add_argument("--profile", help="Escalation Profile", required=True)
+        test_escalation.add_argument(
+            "alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
+        )
         clean = subparsers.add_parser("clean", help="Clean alarm")
         clean.add_argument("--before", help="Clear alarm before date")
         clean.add_argument("--before-days", type=int, help="Clear alarm older than N, days")
@@ -220,7 +227,7 @@ class Command(BaseCommand):
                         self.die(f'Failed to decode JSON file "{path}": {str(e)}')
 
     def handle_test_rule(self, alarms, rule: Optional[str] = None, *args, **options):
-        alarm = ActiveAlarm.objects.filter(id=alarms[0]).first()
+        alarm = get_alarm(alarms[0])
         if rule:
             rule = AlarmRule.get_by_id(rule)
         else:
@@ -239,6 +246,17 @@ class Command(BaseCommand):
             actions=actions,
             start_at=alarm.timestamp,
         )
+        job = AlarmJob.from_request(req, dry_run=True)
+        job.run()
+
+    def handle_test_escalation(
+        self, alarms, profile: str = None, is_end: bool = False, *args, **options
+    ):
+        alarm = get_alarm(alarms[0])
+        profile = EscalationProfile.get_by_id(profile)
+        if not profile:
+            self.die("Not found Rule for Alarm, Set static")
+        req = profile.from_alarm(alarm)
         job = AlarmJob.from_request(req, dry_run=True)
         job.run()
 

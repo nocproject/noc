@@ -9,7 +9,7 @@
 # Python modules
 import datetime
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 # NOC modules
 from noc.core.fm.request import ActionConfig
@@ -19,6 +19,7 @@ from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.activealarm import ActiveAlarm, WatchItem, Effect
 
 
 @dataclass(frozen=True)
@@ -75,7 +76,7 @@ class ActionLog(object):
         self.status = status
         self.error = error
         self.document_id = document_id
-        self.min_severity = min_severity
+        self.min_severity = min_severity or 0
         self.time_pattern: Optional[TimePattern] = time_pattern
         self.alarm_ack: str = alarm_ack or "any"
         self.when: str = when or "any"
@@ -98,11 +99,15 @@ class ActionLog(object):
         if result.ctx:
             self.ctx |= result.ctx
 
-    def is_match(self, severity: int, timestamp: datetime.datetime):
+    def is_match(self, severity: int, timestamp: datetime.datetime, ack_user: Any):
         """Check job condition"""
         if severity < self.min_severity:
             return False
         elif self.time_pattern and not self.time_pattern.match(timestamp):
+            return False
+        elif self.alarm_ack == "ack" and not ack_user:
+            return False
+        elif self.alarm_ack == "unack" and ack_user:
             return False
         return True
 
@@ -126,6 +131,7 @@ class ActionLog(object):
         if self.template:
             r["subject"] = self.template.render_subject(**alarm_ctx)
             r["body"] = self.template.render_body(**alarm_ctx)
+            r["template"] = self.template
         elif self.subject:
             r["subject"] = self.subject
         if self.user:
@@ -154,6 +160,7 @@ class ActionLog(object):
             allow_fail=self.allow_fail,
             stop_processing=self.stop_processing,
             repeat_num=self.repeat_num + 1,
+            **self.ctx,
         )
 
     @classmethod
@@ -181,7 +188,6 @@ class ActionLog(object):
             template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
-            login=action.login,
             timestamp=started_at + datetime.timedelta(seconds=action.delay),
             #
             time_pattern=action.time_pattern,
@@ -191,6 +197,11 @@ class ActionLog(object):
             #
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
+            # Ctx
+            queue=action.queue,
+            pre_reason=action.pre_reason,
+            login=action.login,
+            promote_item_policy=action.promote_item_policy,
             #
             # Source
             user=User.get_by_id(int(user)) if user else None,
@@ -224,6 +235,7 @@ class ActionLog(object):
             document_id=data.get("document_id"),
             template=template,
             subject=data.get("subject"),
+            **data["ctx"] if "ctx" in data else {},
         )
 
     def get_state(self) -> Dict[str, Any]:
@@ -245,6 +257,7 @@ class ActionLog(object):
             "document_id": self.document_id,
             "template": None,
             "subject": self.subject or None,
+            "ctx": self.ctx,
         }
         if self.user:
             r["user"] = self.user.id
@@ -252,4 +265,53 @@ class ActionLog(object):
             r["tt_system"] = self.tt_system.id
         if self.template:
             r["template"] = self.template.id
+        return r
+
+    @classmethod
+    def from_watch(
+        cls, watch: WatchItem, alarm: ActiveAlarm, is_clear: bool = False
+    ) -> List["ActionLog"]:
+        """Restore Action Log from Watch"""
+        # Restore documentID, From WATCH, From LOG ?
+        r = []
+        now = datetime.datetime.now()
+        if watch.effect == Effect.TT_SYSTEM:
+            tt_s, tt_id = watch.key.split(":")
+            tt_s = TTSystem.get_by_name(tt_s)
+            args = watch.args.copy()
+            # Create TT
+            if "template" in args:
+                args["template"] = Template.get_by_id(int(watch.args["template"]))
+            if is_clear:
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CLOSE_TT,
+                        key=str(tt_s.id),
+                        document_id=tt_id,
+                        timestamp=now,
+                        status=ActionStatus.NEW,
+                        when="on_end",
+                        **args,
+                    )
+                ]
+            if not watch.clear_only:
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CREATE_TT,
+                        key=str(tt_s.id),
+                        document_id=tt_id,
+                        timestamp=alarm.last_update,
+                        # Set valid status
+                        status=ActionStatus.PENDING,
+                        **args,
+                    )
+                ]
+        return r
+
+    @classmethod
+    def from_alarm(cls, alarm: ActiveAlarm, is_clear: bool = False) -> List["ActionLog"]:
+        """"""
+        r = []
+        for w in alarm.watchers:
+            r += ActionLog.from_watch(w, alarm, is_clear)
         return r

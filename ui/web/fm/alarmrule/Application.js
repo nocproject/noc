@@ -15,6 +15,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
         "NOC.core.tagfield.Tagfield",
         "NOC.fm.alarmclass.LookupField",
         "NOC.fm.alarmseverity.LookupField",
+        "NOC.fm.escalationprofile.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.main.template.LookupField",
         "NOC.main.notificationgroup.LookupField",
@@ -93,6 +94,13 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     name: "min_severity",
                     xtype: "fm.alarmseverity.LookupField",
                     fieldLabel: __("Min./Set Severity"),
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
+                    name: "escalation_profile",
+                    xtype: "fm.escalationprofile.LookupField",
+                    fieldLabel: __("Escalation Profile"),
                     uiStyle: "medium",
                     allowBlank: true
                 },
