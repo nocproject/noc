@@ -52,7 +52,7 @@ class AlarmActionRunner(object):
         self.allowed_actions: List[AllowedAction] = allowed_actions or []
         self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
-        self.dry_run=dry_run
+        self.dry_run = dry_run
 
     def run_action(
         self,
@@ -427,9 +427,9 @@ class AlarmActionRunner(object):
                 login=login,
                 queue=queue,
                 pre_reason=pre_reason,
+                clear_template=kwargs.get("clear_template"),
             )
             #
-            self.alarm.safe_save()
             return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
         # @todo r.document != tt_id
         # Project result to escalation items

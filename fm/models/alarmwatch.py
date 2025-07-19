@@ -14,11 +14,11 @@ from mongoengine.fields import EnumField, StringField, BooleanField, DictField
 
 
 # Python modules
-from noc.models import get_model
 from noc.core.handler import get_handler
 from noc.core.mx import MessageType
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
+from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.aaa.models.user import User
 
 
@@ -66,8 +66,7 @@ class WatchItem(EmbeddedDocument):
     def run(self, alarm, is_clear: bool = False):
         match self.effect:
             case Effect.TT_SYSTEM:
-                m = get_model("fm.AlarmEscalation")
-                m.watch_alarm(**self.get_args(alarm, is_clear))
+                AlarmEscalation.watch_alarm(**self.get_args(alarm, is_clear))
             case Effect.NOTIFICATION_GROUP:
                 ng = NotificationGroup.get_by_id(int(self.key))
                 ng.notify(**self.get_args(alarm, is_clear))
@@ -79,3 +78,5 @@ class WatchItem(EmbeddedDocument):
             case Effect.HANDLER:
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
+            case Effect.ALARM_JOB:
+                alarm.refresh_job(alarm, is_clear, job_id=self.key)

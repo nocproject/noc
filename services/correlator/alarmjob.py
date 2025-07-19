@@ -215,7 +215,8 @@ class AlarmJob(object):
                 # Set Stop job status
                 break
         self.alarm_log += runner.get_bulk()
-        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id))
+        # Only if save-state
+        self.alarm.add_watch(Effect.ALARM_JOB, key="")
         self.alarm.safe_save()
         if actions:
             # Split one_time actions/sequenced action
@@ -267,11 +268,21 @@ class AlarmJob(object):
         cls,
         alarm: ActiveAlarm,
         is_clear: bool = False,
+        job_id: Optional[str] = None,
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
     ) -> "AlarmJob":
-        """"""
+        """
+        Restore Job State from Alarm:
+        Args:
+            alarm: Active alarm Instance
+            is_clear: Flag if run from clear_alarm
+            job_id: Job State Id
+            dry_run: Run from tests (No .save call)
+            sample: Telemetry sample
+            static_delay: Delay over action (for tests)
+        """
         # TTSystem
         job = AlarmJob(
             # Job Context

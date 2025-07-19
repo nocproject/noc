@@ -328,7 +328,8 @@ class ActiveAlarm(Document):
 
     def clear_alarm(
         self,
-        message, ts: Optional[datetime.datetime] = None,
+        message,
+        ts: Optional[datetime.datetime] = None,
         force: bool = False,
         source=None,
         dry_run: bool = False,
@@ -552,7 +553,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
-        self.refresh_job()
+        self.touch_watch()
 
     def unacknowledge(self, user: "User", msg=""):
         """Delete acknowledge alarm by user"""
@@ -568,7 +569,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
-        self.refresh_job()
+        self.touch_watch()
 
     def register_clear(
         self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None
@@ -1068,9 +1069,17 @@ class ActiveAlarm(Document):
                 template=str(template.id) if template else None,
                 **kwargs,
             )
+        else:
+            self.add_watch(
+                Effect.TT_SYSTEM,
+                tt_id,
+                clear_only=False,
+                immediate=True,
+                template=str(template.id) if template else None,
+                **kwargs,
+            )
         self.wait_tt = wait_tt
-        self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)
-        self.safe_save()
+        self.log_message("Escalated to %s" % tt_id, tt_id=tt_id, to_save=True)
         # q = {"_id": self.id}
         # op = {
         #     "$push": {
@@ -1221,11 +1230,11 @@ class ActiveAlarm(Document):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
-    def refresh_job(self, is_clear: bool = False):
+    def refresh_job(self, is_clear: bool = False, job_id: Optional[str] = None):
         """Refresh Alarm Job by changes"""
         from noc.services.correlator.alarmjob import AlarmJob
 
-        job = AlarmJob.from_alarm(self, is_clear=is_clear)
+        job = AlarmJob.from_alarm(self, job_id=job_id, is_clear=is_clear)
         job.run()
 
 

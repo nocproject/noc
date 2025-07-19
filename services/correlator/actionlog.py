@@ -294,21 +294,10 @@ class ActionLog(object):
             tt_s = TTSystem.get_by_name(tt_s)
             args = watch.args.copy()
             # Create TT
-            if "template" in args:
-                args["template"] = Template.get_by_id(int(watch.args["template"]))
-            if is_clear:
-                r += [
-                    ActionLog(
-                        action=AlarmAction.CLOSE_TT,
-                        key=str(tt_s.id),
-                        document_id=tt_id,
-                        timestamp=now,
-                        status=ActionStatus.NEW,
-                        when="on_end",
-                        **args,
-                    )
-                ]
             if not watch.clear_only:
+                # For TT System update Action
+                if "clear_template" in args:
+                    args["template"] = Template.get_by_id(int(watch.args["clear_template"]))
                 r += [
                     ActionLog(
                         action=AlarmAction.CREATE_TT,
@@ -317,6 +306,21 @@ class ActionLog(object):
                         timestamp=alarm.last_update,
                         # Set valid status
                         status=ActionStatus.PENDING,
+                        **args,
+                    )
+                ]
+            if is_clear:
+                # For TT System clear_action
+                if "template" in args:
+                    args["template"] = Template.get_by_id(int(watch.args["template"]))
+                r += [
+                    ActionLog(
+                        action=AlarmAction.CLOSE_TT,
+                        key=str(tt_s.id),
+                        document_id=tt_id,
+                        timestamp=now,
+                        status=ActionStatus.NEW,
+                        when="on_end",
                         **args,
                     )
                 ]
