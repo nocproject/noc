@@ -71,11 +71,12 @@ class TTSystemConfig(BaseModel):
     """
 
     login: str
+    pre_reason: Optional[str] = None
     telemetry_sample: int = 0
     max_escalation_retries: int = 30
     global_limit: Optional[int] = None
     actions: Optional[List[TTAction]] = None
-    promote_item: bool = False
+    promote_item: str = "D"
     promote_group_tt: bool = False
 
 

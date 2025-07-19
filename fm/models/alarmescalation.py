@@ -194,16 +194,22 @@ class AlarmEscalation(Document):
         is_clear: bool = False,
         subject: Optional[str] = None,
         body: Optional[str] = None,
+        queue: Optional[str] = None,
         force: bool = False,
         defer: bool = True,
         **kwargs,
     ):
+        if not is_clear:
+            # Update not implementer
+            return
+        if not queue and alarm.managed_object:
+            queue = alarm.managed_object.tt_queue
         delay = alarm.alarm_class.get_control_time(alarm.reopens)
         call_later(
             "noc.services.escalator.escalation.notify_close",
             delay=delay,
             scheduler="escalator",
-            pool=alarm.managed_object.escalator_shard,
+            pool=alarm.escalator_shard,
             max_runs=config.fm.alarm_close_retries,
             alarm_id=alarm.id,
             tt_id=tt_id,
@@ -215,5 +221,5 @@ class AlarmEscalation(Document):
             # ),
             close_tt=True,
             login="correlator",
-            queue=alarm.managed_object.tt_queue,
+            queue=queue,
         )
