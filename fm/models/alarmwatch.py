@@ -59,7 +59,7 @@ class WatchItem(EmbeddedDocument):
             r["tt_id"] = self.key
         template = self.args.get("template")
         if template:
-            template = Template.get_by_id(int(self.args["template"]))
+            template = Template.get_by_id(int(template))
         r |= alarm.get_message_body(is_clear=is_clear, template=template)
         return r
 
@@ -79,4 +79,4 @@ class WatchItem(EmbeddedDocument):
                 h = get_handler(self.key)
                 h(**self.get_args(alarm, is_clear))
             case Effect.ALARM_JOB:
-                alarm.refresh_job(alarm, is_clear, job_id=self.key)
+                alarm.refresh_job(is_clear, job_id=self.key)

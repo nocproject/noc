@@ -296,7 +296,7 @@ class ActionLog(object):
             # Create TT
             if not watch.clear_only:
                 # For TT System update Action
-                if "clear_template" in args:
+                if args.get("clear_template"):
                     args["template"] = Template.get_by_id(int(watch.args["clear_template"]))
                 r += [
                     ActionLog(
@@ -311,7 +311,7 @@ class ActionLog(object):
                 ]
             if is_clear:
                 # For TT System clear_action
-                if "template" in args:
+                if args.get("template"):
                     args["template"] = Template.get_by_id(int(watch.args["template"]))
                 r += [
                     ActionLog(
