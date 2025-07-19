@@ -52,6 +52,7 @@ alarm = ActiveAlarm(
     log=[],
 )
 alarm.safe_save = lambda: None
+alarm.save = lambda: None
 
 
 def test_alar_action_notify():

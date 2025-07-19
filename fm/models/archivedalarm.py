@@ -129,8 +129,8 @@ class ArchivedAlarm(Document):
         return ArchivedAlarm.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_tt_id(cls, tt_id: str) -> Optional["ActiveAlarm"]:
-        return ActiveAlarm.objects.filter(escalation_tt=tt_id).first()
+    def get_by_tt_id(cls, tt_id: str) -> Optional["ArchivedAlarm"]:
+        return ArchivedAlarm.objects.filter(escalation_tt=tt_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_alarm:

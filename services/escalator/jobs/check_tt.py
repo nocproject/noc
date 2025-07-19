@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Check TT Job
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,18 +9,21 @@
 import datetime
 import threading
 from collections import defaultdict
-from typing import Optional, Dict, List, Tuple
+from typing import Optional, List, Tuple
 
 # NOC modules
 from noc.core.scheduler.job import Job
-from noc.core.tt.types import TTAction, TTChange, EscalationStatus, EscalationMember
+from noc.core.tt.types import TTAction, TTChange
 from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.span import Span
+from noc.core.fm.request import ActionConfig
+from noc.core.fm.enum import AlarmAction
 from noc.aaa.models.user import User
 from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.escalation import Escalation
+from noc.services.correlator.service import AlarmJob
 from noc.config import config
+from noc.core.text import alnum_key
 
 RETRY_TIMEOUT = config.escalator.retry_timeout
 # @fixme have to be checked
@@ -47,25 +50,6 @@ class CheckTTJob(Job):
     lock = ProcessLock(category="escalator", owner="escalator")
     object: TTSystem
 
-    def get_waited_documents(self) -> Dict[str, Escalation]:
-        """
-        Getting escalated doc
-        :return:
-        """
-        r = {}
-        for doc in Escalation.objects.filter(
-            escalations__match={
-                "member": EscalationMember.TT_SYSTEM.value,
-                "key": str(self.object.id),
-                "document_id__exists": True,
-            },
-            end_timestamp__exists=False,
-        ):
-            item = doc.get_escalation(EscalationMember.TT_SYSTEM, str(self.object.id))
-            if item and item.document_id:
-                r[item.document_id] = doc
-        return r
-
     def resolve_user(self, username: str) -> Optional["User"]:
         """
         Resolve user by TT System Credential
@@ -78,87 +62,91 @@ class CheckTTJob(Job):
     def handler(self, **kwargs):
         tts = self.object.get_system()
         last_ts: datetime.datetime = datetime.datetime.now()
-        last_id: Optional[str] = None
-        docs = self.get_waited_documents()
-        if not docs:
-            return
+        last_id: Optional[str] = self.object.last_update_id
         changes = defaultdict(list)
         for c in tts.get_updates(
             self.object.last_update_id,
             self.object.last_update_ts,
-            list(docs),
+            [],
         ):
-            if c.document_id not in docs:
-                self.logger.info(
-                    "[%s] Updates on Unknown document with id: %s",
-                    c.change_id,
-                    c.document_id,
-                )
-                continue
+            # if c.document_id not in docs:
+            #    self.logger.info(
+            #        "[%s] Updates on Unknown document with id: %s",
+            #        c.change_id,
+            #        c.document_id,
+            #    )
+            #    continue
             user = self.resolve_user(c.user)
             if not user:
                 self.logger.info("[%s] Unknown user: %s", c.change_id, c.user)
+                continue
+            if c.change_id and last_id and alnum_key(c.change_id) <= alnum_key(last_id):
                 continue
             changes[c.document_id] += [(user, c)]
             if c.timestamp:
                 last_ts = max(c.timestamp, last_ts)
             if c.change_id:
-                last_id = last_id
+                last_id = c.change_id
         if not changes:
             self.logger.debug("Nothing changes...")
             return
+        # Request Jobs
+        # From alarm (doc) and build jobs
+        # Exists Alarm Job / Create from Alarm
+        # a_jobs: Dict[str, AlarmJob] = {}
+        self.logger.debug("Processed changes: %s", changes)
         for doc_id, changes in changes.items():
-            doc = docs[doc_id]
+            a_job = AlarmJob.ensure_job(self.object.get_tt_id(doc_id))
+            if not a_job:
+                self.logger.info(
+                    "[%s] Updates on Unknown document with id: '%s'",
+                    "",
+                    doc_id,
+                )
+                continue
+            # _job = a_jobs[doc_id]
             with (
                 Span(
                     client="escalator",
                     sample=self.object.telemetry_sample,
-                    context=doc.ctx_id,
+                    context=a_job.ctx_id,
                 ),
-                self.lock.acquire(doc.get_lock_items()),
+                self.lock.acquire(a_job.get_lock_items()),
                 change_tracker.bulk_changes(),
             ):
-                self.processed_changes(doc, changes)
-            doc.save()
+                self.processed_changes(a_job, changes)
+            # a_job.save_state()
         if last_ts or last_id:
             self.object.register_update(last_ts, last_id)
 
-    def processed_changes(self, doc: Escalation, changes: List[Tuple[User, TTChange]]):
+    def get_action_config(self, change: TTChange, user: User) -> ActionConfig:
+        match change.action:
+            case TTAction.CLOSE:
+                return ActionConfig(
+                    action=AlarmAction.CLEAR,
+                    subject=f"Clear by TTSystem: {self.object.name}",
+                )
+            case TTAction.ACK:
+                return ActionConfig(action=AlarmAction.ACK, key=str(user.id))
+            case TTAction.UN_ACK:
+                return ActionConfig(action=AlarmAction.UN_ACK)
+            case TTAction.LOG:
+                return ActionConfig(action=AlarmAction.LOG, subject=change.message)
+
+    def processed_changes(self, job: AlarmJob, changes: List[Tuple[User, TTChange]]):
         """
         Processed Alarm Action
         Args:
-            doc: Escalation Doc
+            job: Escalation Doc
             changes:
         """
-        alarm = doc.alarm
+        now = datetime.datetime.now()
         for user, change in changes:
-            action = doc.get_action(change.action, user)
-            if action:
-                # Already set
-                continue
-            actions = doc.profile.get_actions(user)
-            if change.action not in actions:
-                self.logger.info("[%s] No Permission User for Run Action: %s", user, change.action)
-                continue
-            match change.action:
-                case TTAction.CLOSE:
-                    alarm.register_clear(
-                        f"Clear by TTSystem: {self.object.name}",
-                        user=user,
-                        timestamp=change.timestamp,
-                    )
-                case TTAction.ACK:
-                    alarm.acknowledge(user, f"Acknowledge by TTSystem: {self.object.name}")
-                case TTAction.UN_ACK:
-                    alarm.unacknowledge(user, f"UnAcknowledge by TTSystem: {self.object.name}")
-                case TTAction.NOTIFY:
-                    alarm.log_message(change.message, source=str(user))
-            doc.set_action(
-                action=change.action,
-                status=EscalationStatus.OK,
-                user=user,
-                message=change.message,
-            )
+            cfg = self.get_action_config(change, user)
+            if cfg:
+                job.run_action(
+                    action=cfg, user=user, tt_system=self.object, timestamp=change.timestamp or now
+                )
 
     def schedule_next(self, status):
         # Get next run
@@ -166,10 +154,9 @@ class CheckTTJob(Job):
             ts = datetime.datetime.now() + datetime.timedelta(seconds=60)
             self.scheduler.postpone_job(self.attrs[self.ATTR_ID])
         else:
+            interval = self.object.check_updates_interval or config.escalator.wait_tt_check_interval
             # Schedule next run
-            ts = self.get_next_timestamp(
-                config.escalator.wait_tt_check_interval, self.attrs[self.ATTR_OFFSET]
-            )
+            ts = self.get_next_timestamp(interval, self.attrs[self.ATTR_OFFSET])
         # Error
         if not ts:
             # Remove disabled job

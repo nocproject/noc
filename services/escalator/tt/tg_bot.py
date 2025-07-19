@@ -98,7 +98,7 @@ class TGBotTTSystem(BaseTTSystem):
             ctx.actions,
         )
         msg = {
-            "chat_id": ctx.login,
+            "chat_id": ctx.queue,
             # "chat_id": self.chat_id,
             "text": "\n\n".join([ctx.subject, ctx.body or ""]),
             "parse_mode": "HTML",
