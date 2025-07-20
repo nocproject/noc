@@ -333,7 +333,7 @@ class EventClass(Document):
             vd += ['            "description": "%s",' % q(v.description)]
             vd += ['            "type": "%s",' % q(v.type.value)]
             vd += ['            "required": %s,' % q(v.required)]
-            vd += ['            "match_suppress": %s' % q(v.required)]
+            vd += ['            "match_suppress": %s' % q(v.match_suppress)]
             vd += ["        }"]
             vars += ["\n".join(vd)]
         r += ['    "vars": [']
