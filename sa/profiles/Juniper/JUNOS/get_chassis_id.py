@@ -34,22 +34,26 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.cli("show chassis mac-addresses")
         macs = []
-        for f, t in [
-            (mac, MAC(mac).shift(int(count) - 1)) for _, mac, count in self.rx_range.findall(v)
-        ]:
+        for _, mac, count in self.rx_range.findall(v):
+            mac = MAC(mac)
+            if not int(mac):
+                # Check if 00:00:00:00:00
+                continue
+            f, t = str(mac), mac.shift(int(count) - 1)
             if macs and MAC(f).shift(-1) == macs[-1][1]:
                 macs[-1][1] = t
             else:
                 macs += [[f, t]]
         # Found in some oldest switches
-        if macs == []:
+        if not macs and self.rx_range2.search(v):
             match = self.rx_range2.search(v)
             base = match.group("mac")
             count = int(match.group("count"))
-            return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
+            if MAC(base):
+                return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
         try:
             # Found in ex4550-32f JUNOS 15.1R7-S7.1
-            # Chassic ID MAC somehow differs from `Public base address`
+            # Chassis ID MAC somehow differs from `Public base address`
             v = self.cli("show lldp local-information", cached=True)
             match = self.rx_lldp.search(v)
             if match:
