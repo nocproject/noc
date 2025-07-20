@@ -49,7 +49,10 @@ class ServiceLoader(BaseLoader):
             caps[c_name] = cc["value"]
         o.update_caps(caps, source="etl", scope=self.system.name)
         # Raise Error in not allowed on config
-        o.update_instances(source=InputSource.ETL, instances=[Instance.model_validate(i).config for i in instances or []])
+        o.update_instances(
+            source=InputSource.ETL,
+            instances=[Instance.model_validate(i).config for i in instances or []],
+        )
 
     def find_object(self, v: Dict[str, Any]):
         """
