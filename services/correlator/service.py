@@ -410,7 +410,7 @@ class CorrelatorService(FastAPIService):
             alarm.severity = e_severity
             alarm.last_update = datetime.datetime.now().replace(microsecond=0)
             alarm.save()
-        alarm.touch_watch()
+            alarm.touch_watch()
 
     async def apply_rules(
         self, alarm: ActiveAlarm, alarm_groups: Set[int]
@@ -513,11 +513,8 @@ class CorrelatorService(FastAPIService):
                 if event:
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                a_severity = None
-                for rule in self.alarm_rule_set.iter_rules(alarm):
-                    for aa in rule.iter_actions(alarm):
-                        if aa.severity:
-                            a_severity = aa.severity
+                alarm_groups: Dict[str, GroupItem] = {}
+                rule_groups, a_severity, action_req = await self.apply_rules(alarm, alarm_groups.keys())
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
