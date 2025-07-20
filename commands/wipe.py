@@ -219,6 +219,7 @@ class Command(BaseCommand):
         from noc.main.models.favorites import Favorites
         from noc.sa.models.useraccess import UserAccess
         from noc.fm.models.activealarm import ActiveAlarm
+        from noc.fm.models.alarmwatch import Effect
         from noc.ip.models.prefixaccess import PrefixAccess
         from noc.ip.models.prefixbookmark import PrefixBookmark
         from noc.kb.models.kbentrypreviewlog import KBEntryPreviewLog
@@ -245,8 +246,10 @@ class Command(BaseCommand):
             Permission.objects.filter(users=o).delete()
         # Unsubscribe from alarms
         with self.log("Unsubscribing from alarms"):
-            for a in ActiveAlarm.objects.filter(subscribers=o.id):
-                a.subscribers = [s for s in a.subscribers if s != o]
+            for a in ActiveAlarm.objects.filter(
+                watchers__match={"key": str(o.id), "effect": Effect.SUBSCRIPTION.value},
+            ):
+                a.unsubscribe(o)
                 a.save()
         # Revoke prefix access
         with self.log("Revoking prefix access"):
