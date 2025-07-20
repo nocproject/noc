@@ -286,7 +286,9 @@ class ManagedObjectDS(BaseDataSource):
             Capability.objects.filter().order_by("name").scalar("id", "type", "name")
         ):
             c_type = caps_dtype_map.get(c_type.value, FieldType.STRING)
-            yield FieldInfo(name=c_name, type=c_type, internal_name=str(c_id))
+            yield FieldInfo(
+                name=c_name, type=c_type, internal_name=str(c_id), is_caps=True, is_vector=True
+            )
         # Adm Domain
         for level in range(1, get_adm_path_level() + 1):
             yield FieldInfo(
