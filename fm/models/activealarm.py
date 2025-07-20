@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # ActiveAlarm model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,6 @@
 import datetime
 import logging
 import asyncio
-import enum
 from collections import defaultdict
 from itertools import chain
 from typing import (
@@ -30,7 +29,7 @@ import orjson
 from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
-from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
     DateTimeField,
@@ -39,11 +38,9 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     IntField,
     LongField,
-    BooleanField,
     ObjectIdField,
     DictField,
     BinaryField,
-    EnumField,
 )
 from mongoengine.errors import SaveConditionError
 
@@ -52,7 +49,6 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.models import get_model
 from noc.aaa.models.user import User
 from noc.main.models.style import Style
-from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
@@ -62,7 +58,6 @@ from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.defer import defer
 from noc.core.debug import error_report
-from noc.core.mx import MessageType
 from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
@@ -71,76 +66,7 @@ from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
-
-
-class Effect(enum.Enum):
-    TT_SYSTEM = "tt_system"
-    NOTIFICATION_GROUP = "notification_group"
-    SUBSCRIPTION = "subscription"
-    HANDLER = "handler"
-    ALARM_JOB = "alarm_job"
-
-
-class WatchItem(EmbeddedDocument):
-    """
-    Attributes:
-        effect: Watch Effect
-        key: Id for action Instance
-        once: Run only once
-        immediate: Execute in runtime, not call later
-        clear_only: Execute when alarm clear
-        args: Addition options for run
-    """
-
-    effect: Effect = EnumField(Effect, required=True)
-    key: str = StringField(required=True)
-    once: bool = BooleanField(default=True)
-    immediate: bool = BooleanField(default=False)
-    clear_only: bool = BooleanField(default=False)
-    args = DictField(default=dict)
-
-    def __str__(self):
-        return f"{self.effect}:{self.key}"
-
-    def get_args(self, alarm, is_clear):
-        r = {"alarm": alarm, "is_clear": is_clear}
-        if self.args:
-            r |= self.args
-        if self.effect == Effect.TT_SYSTEM:
-            r["tt_id"] = self.key
-        if "template" in self.args and self.args["template"]:
-            template = Template.get_by_id(int(self.args["template"]))
-            r |= {
-                "subject": template.render_subject(
-                    alarm=alarm, managed_object=alarm.managed_object
-                ),
-                "body": template.render_body(alarm=alarm, managed_object=alarm.managed_object),
-            }
-        else:
-            r |= {
-                "subject": "Alarm cleared",
-                "body": "Alarm has been cleared",
-            }
-        return r
-
-    def run(self, alarm, is_clear: bool = False):
-        match self.effect:
-            case Effect.TT_SYSTEM:
-                m = get_model("fm.AlarmEscalation")
-                m.watch_alarm(**self.get_args(alarm, is_clear))
-            case Effect.NOTIFICATION_GROUP:
-                ng = NotificationGroup.get_by_id(int(self.key))
-                ng.notify(**self.get_args(alarm, is_clear))
-            case Effect.SUBSCRIPTION:
-                u = User.get_by_id(int(self.key))
-                NotificationGroup.notify_user(
-                    u, MessageType.ALARM, **self.get_args(alarm, is_clear)
-                )
-            case Effect.HANDLER:
-                h = get_handler(self.key)
-                h(**self.get_args(alarm, is_clear))
-            case Effect.ALARM_JOB:
-                alarm.refresh_job(is_clear)
+from .alarmwatch import Effect, WatchItem
 
 
 @change(audit=False)
@@ -320,8 +246,6 @@ class ActiveAlarm(Document):
     def safe_save(self, **kwargs):
         """
         Create new alarm or update existing if still exists
-        :param kwargs:
-        :return:
         """
         if self.id:
             # Update existing only if exists
@@ -402,13 +326,22 @@ class ActiveAlarm(Document):
         if to_save and not bulk:
             self.safe_save()
 
-    def clear_alarm(self, message, ts=None, force=False, source=None) -> Optional["ArchivedAlarm"]:
+    def clear_alarm(
+        self,
+        message,
+        ts: Optional[datetime.datetime] = None,
+        force: bool = False,
+        source=None,
+        dry_run: bool = False,
+    ) -> Optional["ArchivedAlarm"]:
         """
         Clear alarm
-        :param message: Log clearing message
-        :param ts: Clearing timestamp
-        :param force: Clear ever if wait_tt seg
-        :param source: Source clear alarm
+        Args:
+            message: Log clearing message
+            ts: Clearing timestamp
+            force: Clear ever if wait_tt seg
+            source: Source clear alarm
+            dry_run: Do not call save()
         """
         from .alarmdiagnosticconfig import AlarmDiagnosticConfig
 
@@ -477,6 +410,8 @@ class ActiveAlarm(Document):
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
+        if dry_run:
+            return a
         a.save()
         # Set checks on all consequences
         for d in self._get_collection().find(
@@ -504,9 +439,9 @@ class ActiveAlarm(Document):
                 "noc.sa.models.service.refresh_service_status",
                 svc_ids=[str(x) for x in self.affected_services],
             )
-        self.touch_watch(is_clear=True)
         # Close TT
         # MUST be after .delete() to prevent race conditions
+        self.touch_watch(is_clear=True)
         # Gather diagnostics
         AlarmDiagnosticConfig.on_clear(a)
         # Return archived
@@ -516,9 +451,11 @@ class ActiveAlarm(Document):
         """
         Prepare template variables
         """
-        vars = self.vars.copy()
-        vars.update({"alarm": self})
-        return vars
+        r = self.vars.copy()
+        r["alarm"] = self
+        if self.managed_object:
+            r["managed_object"] = self.managed_object
+        return r
 
     @property
     def subject(self) -> str:
@@ -532,8 +469,35 @@ class ActiveAlarm(Document):
 
     @property
     def body(self) -> str:
+        # Replace to message context
         s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
         return s
+
+    def get_message_body(
+        self,
+        template: Optional[Template] = None,
+        subject_tag: Optional[str] = None,
+        is_clear: bool = False,
+    ):
+        """
+        Render alarm message body and subject
+        Args:
+            template: Custom template for message
+            subject_tag: Custom subject tag for message
+            is_clear: For clear_alarm message
+        """
+        if template:
+            r = {
+                "subject": template.render_subject(alarm=self, managed_object=self.managed_object),
+                "body": template.render_body(alarm=self, managed_object=self.managed_object),
+            }
+        elif is_clear:
+            r = {"subject": f"[Alarm Cleared] {self.subject}", "body": "Alarm has been cleared"}
+        else:
+            r = {"subject": self.subject, "body": self.body}
+        if subject_tag:
+            r["subject"] = f"[{subject_tag}] {r['subject']}"
+        return r
 
     @property
     def components(self) -> "ComponentHub":
@@ -549,31 +513,34 @@ class ActiveAlarm(Document):
         """
         self.add_watch(Effect.SUBSCRIPTION, str(user.id))
         self.log_message(
-            "%s(%s): has been subscribed"
-            % (" ".join([user.first_name, user.last_name]), user.username),
+            f"{user.get_full_name()}({user.username}): has been subscribed",
             to_save=False,
             source=user.username,
         )
         self.save()
 
     def unsubscribe(self, user: "User"):
+        """Remove alarm subscription for user"""
         self.stop_watch(Effect.SUBSCRIPTION, str(user.id))
         self.log_message(
-            "%s(%s) has been unsubscribed"
-            % (" ".join([user.first_name, user.last_name]), user.username),
+            f"{user.get_full_name()}({user.username}): has been unsubscribed",
             to_save=False,
             source=user.username,
         )
         self.save()
 
-    def is_subscribed(self, user: "User"):
-        return user.id in self.subscribers
+    def is_subscribed(self, user: "User") -> bool:
+        for w in self.watchers:
+            if w.effect == Effect.SUBSCRIPTION and str(user.id) == w.key:
+                return True
+        return False
 
     @property
     def is_link_alarm(self) -> bool:
         return hasattr(self.components, "interface")
 
     def acknowledge(self, user: "User", msg=""):
+        """Acknowledge alarm by user"""
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username
         self.log = self.log + [
@@ -586,9 +553,10 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
-        self.refresh_job()
+        self.touch_watch()
 
     def unacknowledge(self, user: "User", msg=""):
+        """Delete acknowledge alarm by user"""
         self.ack_ts = None
         self.ack_user = None
         self.log = self.log + [
@@ -601,7 +569,7 @@ class ActiveAlarm(Document):
             )
         ]
         self.safe_save()
-        self.refresh_job()
+        self.touch_watch()
 
     def register_clear(
         self, msg: str, user: Optional[User] = None, timestamp: Optional[datetime.datetime] = None
@@ -662,7 +630,7 @@ class ActiveAlarm(Document):
             )
 
     def stop_watch(self, effect: Effect, key: str):
-        """"""
+        """Stop waiting callback"""
         r = []
         for w in self.watchers:
             if w.effect == effect and w.key == key:
@@ -672,11 +640,17 @@ class ActiveAlarm(Document):
             self.watchers = r
 
     def touch_watch(self, is_clear: bool = False):
-        """Processed watchers"""
+        """
+        Processed watchers
+        Args:
+            is_clear: Flag for alarm_clear procedure
+        """
         for w in self.watchers:
             if w.clear_only and not is_clear:
+                # Watch alarm_clear
                 continue
             if w.immediate:
+                # If Immediate, not run (used for save run only)
                 continue
             w.run(self, is_clear=is_clear)
 
@@ -701,8 +675,7 @@ class ActiveAlarm(Document):
     def effective_style(self) -> "Style":
         if self.custom_style:
             return self.custom_style
-        else:
-            return AlarmSeverity.get_severity(self.severity).style
+        return AlarmSeverity.get_severity(self.severity).style
 
     def has_merged_downlinks(self):
         """
@@ -1086,14 +1059,12 @@ class ActiveAlarm(Document):
         close_tt: bool = False,
         wait_tt: Optional[str] = None,
         template: Optional[Template] = None,
-        open_template: Optional[Template] = None,
         **kwargs,
     ):
         if close_tt:
             self.add_watch(
                 Effect.TT_SYSTEM,
                 tt_id,
-                immediate=True,
                 clear_only=True,
                 template=str(template.id) if template else None,
                 **kwargs,
@@ -1102,13 +1073,13 @@ class ActiveAlarm(Document):
             self.add_watch(
                 Effect.TT_SYSTEM,
                 tt_id,
-                immediate=False,
                 clear_only=False,
-                template=str(open_template.id) if open_template else None,
+                immediate=True,
+                template=str(template.id) if template else None,
                 **kwargs,
             )
         self.wait_tt = wait_tt
-        self.log_message("Escalated to %s" % tt_id, tt_id=tt_id)
+        self.log_message("Escalated to %s" % tt_id, tt_id=tt_id, to_save=True)
         # q = {"_id": self.id}
         # op = {
         #     "$push": {
@@ -1259,11 +1230,11 @@ class ActiveAlarm(Document):
             "has_merged_downlinks": self.has_merged_downlinks(),
         }
 
-    def refresh_job(self, is_clear: bool = False):
+    def refresh_job(self, is_clear: bool = False, job_id: Optional[str] = None):
         """Refresh Alarm Job by changes"""
         from noc.services.correlator.alarmjob import AlarmJob
 
-        job = AlarmJob.from_alarm(self, is_clear=is_clear)
+        job = AlarmJob.from_alarm(self, job_id=job_id, is_clear=is_clear)
         job.run()
 
 
