@@ -514,7 +514,9 @@ class CorrelatorService(FastAPIService):
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
                 alarm_groups: Dict[str, GroupItem] = {}
-                rule_groups, a_severity, action_req = await self.apply_rules(alarm, alarm_groups.keys())
+                rule_groups, a_severity, action_req = await self.apply_rules(
+                    alarm, alarm_groups.keys()
+                )
                 self.refresh_alarm(alarm, timestamp, a_severity or severity)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
