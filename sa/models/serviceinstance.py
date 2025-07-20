@@ -182,6 +182,7 @@ class ServiceInstance(Document):
         if not instance:
             logger.info("[%s] Create new Instance: %s", service.id, cfg.type)
             instance = ServiceInstance.from_config(service, cfg)
+            instance.save()
         return instance
 
     def update_config(self, cfg: ServiceInstanceConfig):
@@ -217,7 +218,7 @@ class ServiceInstance(Document):
             return
         if not self.sources:
             # For empty source, clean sources
-            ServiceInstance.objects.filter(id=self.id).delete_one()
+            ServiceInstance.objects.filter(id=self.id).delete()
         else:
             # Clean Source, ETL - Remove Remote_id, NRI Port, Addresses
             ServiceInstance.objects.filter(id=self.id).update(sources=self.sources)
@@ -440,14 +441,19 @@ class ServiceInstance(Document):
             resources.append(rid)
             if rid not in self.resources:
                 logger.info("Binding service %s to interface %s", self.service, o.name)
-        self.resources = resources
-        if resources:
-            self.seen(source, last_seen=update_ts, dry_run=True)
+        if resources and set(self.resources) == set(resources):
+            # Not changed - Update only last seen
+            self.seen(source, last_seen=update_ts)
+            return None
+        elif resources:
+            # Update last seen and not save (save on bulk)
+            self.seen(source, last_seen=update_ts, dry_run=bool(bulk))
         else:
             self.unseen(source)
-        if not self.sources or self.resources == resources:
-            # Instance Deleted or not Changed
-            return
+        self.resources = resources
+        if not self.sources:
+            # Instance Deleted
+            return None
         if bulk is not None:
             bulk += [
                 UpdateOne(
@@ -455,7 +461,7 @@ class ServiceInstance(Document):
                     {
                         "$set": {
                             "resources": self.resources,
-                            "sources": self.sources,
+                            "sources": [s.value for s in self.sources],
                             "last_seen": self.last_seen,
                         }
                     },

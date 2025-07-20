@@ -24,21 +24,22 @@ from noc.sa.models.servicesummary import ServiceSummary
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.inv.models.interface import Interface
 
+# bitTest(mac, 41) filter locally administered
 SQL = """
 SELECT managed_object, interface, groupUniqArray(MACNumToString(mac)) as u_macs,
    argMax(vlan, last_seen) as vlan, argMax(last_seen, last_seen) as ls, COUNT(DISTINCT mac) as macs_cnt
  FROM noc.macdb
- WHERE toDate(last_seen) > %s
+ WHERE toDate(last_seen) > %s AND NOT bitTest(mac, 41)
  GROUP BY managed_object, interface
- HAVING macs_cnt < 4
+ HAVING macs_cnt < 5
  FORMAT JSON
 """
 
-REQUEST_DAYS = 14
+REQUEST_DAYS = 7
 CHUNK = 1000
 
 
-class ServiceResourceBindJob(PeriodicJob):
+class NetworkInstanceDiscoveryJob(PeriodicJob):
     def handler(self, **kwargs):
         """
         Bind MAC address values
@@ -59,18 +60,25 @@ class ServiceResourceBindJob(PeriodicJob):
         for svc, refs in ServiceInstance.objects.filter(
             type=InstanceType.ASSET, asset_refs__in=list(mac_iface_map)
         ).scalar("service", "asset_refs"):
+            updates = len(bulk)
             for mac_ref in refs:
                 if mac_ref not in mac_iface_map:
                     continue
                 iface, update_ts = mac_iface_map[mac_ref]
-                self.logger.debug("[%s] Bind to interface: %s", svc, iface)
                 si = svc.register_instance(
-                    InstanceType.NETWORK_CHANNEL, managed_object=iface.managed_object
+                    InstanceType.NETWORK_CHANNEL,
+                    source=InputSource.DISCOVERY,
+                    managed_object=iface.managed_object,
                 )
                 si.update_resources(
                     [iface], source=InputSource.DISCOVERY, update_ts=update_ts, bulk=bulk
                 )
                 processed.add(svc.id)
+                if len(bulk) != updates:
+                    self.logger.info("[%s] Bind to interface: %s", svc, iface)
+                    objects.add(iface.managed_object)
+                for r in refs:
+                    mac_iface_map.pop(r, None)
                 break
         asset_services = [
             svc
@@ -80,8 +88,10 @@ class ServiceResourceBindJob(PeriodicJob):
                 asset_refs__exists=True,
             ).scalar("service")
         ]
+        # Removed All resources with Manual... ?
         for si in ServiceInstance.objects.filter(
             type=InstanceType.NETWORK_CHANNEL,
+            sources=InputSource.DISCOVERY,
             service__in=asset_services,
         ):
             self.logger.debug("[%s] UnBind from interface, ", si)
