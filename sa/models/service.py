@@ -46,6 +46,7 @@ from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceC
 from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
 from noc.core.caps.decorator import capabilities
+from noc.core.caps.types import CapsValue
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -746,6 +747,10 @@ class Service(Document):
     @classmethod
     def get_services_by_alarm(cls, alarm) -> List[str]:
         """Return service Ids for requested alarm"""
+        if alarm.alarm_class.name == SVC_AC:
+            return []
+        elif hasattr(alarm.components, "service") and getattr(alarm.components, "service", None):
+            return [alarm.components.service.id]
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
@@ -825,6 +830,21 @@ class Service(Document):
             svc = svc.parent
         return None
 
+    def save_caps(self, caps: List[CapsValue], dry_run: bool = False):
+        """"""
+        from noc.inv.models.capsitem import CapsItem
+
+        self.caps = [
+            CapsItem(
+                capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or ""
+            )
+            for c in caps
+        ]
+        if dry_run:
+            return
+        self.update(caps=self.caps)
+        self.sync_instances()
+
     def sync_instances(self):
         """Synchronize Config-base instance"""
         if self.profile.instance_policy != "C":
@@ -867,7 +887,9 @@ class Service(Document):
             instance.save()
             processed.add(instance.id)
         # Clean Source from Instances
-        for instance in ServiceInstance.objects.filter(sources__in=[source], id__nin=processed):
+        for instance in ServiceInstance.objects.filter(
+            service=self, sources__in=[source], id__nin=processed
+        ):
             instance.unseen(source)
 
     def register_instance(
@@ -876,11 +898,11 @@ class Service(Document):
         source: InputSource = InputSource.MANUAL,
         name: Optional[str] = None,
         fqdn: Optional[str] = None,
-        managed_object: Optional[str] = None,
+        managed_object: Optional[Any] = None,
         # addresses
         # port
         # session_id ? register_session
-    ):
+    ) -> Optional["ServiceInstance"]:
         """
         Register Instance for Service
 
@@ -896,8 +918,10 @@ class Service(Document):
             raise AttributeError("managed_object required for Discovery source")
         cfg = ServiceInstanceConfig.get_config(type, name=name, fqdn=fqdn)
         if not cfg:
-            logger.info("[%s|%s] Instance Type is not allowed by Service settings", self.id, type)
-            return
+            logger.warning(
+                "[%s|%s] Instance Type is not allowed by Service settings", self.id, type
+            )
+            return None
         # Check Allowed create instance
         # Check multiple instances
         si = ServiceInstance.ensure_instance(self, cfg)
@@ -907,8 +931,10 @@ class Service(Document):
         if si.fqdn != fqdn:
             si.fqdn = fqdn
             changed |= True
-        if si.managed_object:
+        if managed_object and si.managed_object != managed_object:
             si.refresh_managed_object(managed_object)
+        elif not managed_object and si.managed_object:
+            si.reset_object()
         if changed:
             si.save()
         return si

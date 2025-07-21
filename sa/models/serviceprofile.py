@@ -86,6 +86,7 @@ class InstanceSettings(EmbeddedDocument):
         send_approve: Send Resource Approve if bind to Instance   # Reserved ?
         allow_resources: Resource Codes Allowed to bind
         allow_register: Allow register instance for Discovery
+        ttl: Time to remove instance without sources
     """
 
     meta = {"strict": False, "auto_create_index": False}
@@ -99,6 +100,7 @@ class InstanceSettings(EmbeddedDocument):
     )
     send_approve: bool = BooleanField(default=False)
     allow_register: bool = BooleanField(default=False)
+    ttl: int = IntField(min_value=0, default=0)
     refs_caps: Capability = ReferenceField(Capability)
     name: str = StringField(required=False)
     # Update Instance Status from resource
@@ -111,6 +113,7 @@ class InstanceSettings(EmbeddedDocument):
             allow_resources=self.allow_resources,
             send_approve=self.send_approve,
             allow_register=self.allow_register,
+            ttl=self.ttl,
         )
 
 

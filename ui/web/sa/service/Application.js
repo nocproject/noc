@@ -700,7 +700,7 @@ Ext.define("NOC.sa.service.Application", {
             {
               text: __("Capability"),
               dataIndex: "capability",
-              width: 300,
+              width: 200,
             },
             {
               text: __("Value"),
@@ -720,12 +720,12 @@ Ext.define("NOC.sa.service.Application", {
             {
               text: __("Scope"),
               dataIndex: "scope",
-              width: 50,
+              width: 80,
             },
             {
               text: __("Source"),
               dataIndex: "source",
-              width: 100,
+              width: 70,
             },
             {
               text: __("Description"),

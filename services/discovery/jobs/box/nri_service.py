@@ -13,11 +13,12 @@ from typing import Dict, List, Any, DefaultDict
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.sa.models.serviceinstance import ServiceInstance, DISCOVERY_SOURCE
+from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.inv.models.interface import Interface
 from noc.inv.models.subinterface import SubInterface
 from noc.core.change.policy import change_tracker
+from noc.core.models.inputsources import InputSource
 from noc.core.ip import IP
 
 
@@ -43,14 +44,12 @@ class NRIServiceCheck(DiscoveryCheck):
             if not si.managed_object or si.managed_object != self.object:
                 self.logger.info("Bind object to Service Instance: %s", si)
                 si.refresh_managed_object(self.object)
-                si.seen(DISCOVERY_SOURCE)
             processed_instances[si.id] = si
-        # New Instances
-        # unseen
+        # For ManagedObject not in SI - Reset
         for si in ServiceInstance.objects.filter(
             managed_object=self.object,
             id__nin=list(processed_instances),
-            sources__in=[DISCOVERY_SOURCE],
+            sources__in=[InputSource.ETL, InputSource.CONFIG],
         ):
             si.reset_object()
             self.logger.info("UnBind object to Service Instance: %s", si)
@@ -59,7 +58,10 @@ class NRIServiceCheck(DiscoveryCheck):
         # resource_key -> ServiceInstance
         nri_map_instances: Dict[str, ServiceInstance] = {}
         address_map_instance: Dict[str, ServiceInstance] = {}
-        for si in ServiceInstance.objects.filter(managed_object=self.object):
+        for si in ServiceInstance.objects.filter(
+            managed_object=self.object,
+            sources__in=[InputSource.ETL, InputSource.CONFIG],
+        ):
             if si.service.profile.instance_policy == "D":
                 # Disabled resource binding
                 # Unbind
@@ -83,9 +85,9 @@ class NRIServiceCheck(DiscoveryCheck):
             return
         # Refresh resources
         for si, rs in resources.items():
-            si.update_resources(rs, source=DISCOVERY_SOURCE, bulk=bulk)
+            si.update_resources(rs, source=InputSource.CONFIG, bulk=bulk)
         for si in set(processed_instances) - {x.id for x in resources}:
-            processed_instances[si].update_resources([], source=DISCOVERY_SOURCE, bulk=bulk)
+            processed_instances[si].update_resources([], source=InputSource.CONFIG, bulk=bulk)
         for iface, profile in profiles.items():
             if iface.profile != profile:
                 self.logger.info("[%s] Set profile from service: %s", iface, profile)

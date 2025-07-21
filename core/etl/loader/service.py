@@ -14,7 +14,7 @@ from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
 from .base import BaseLoader
-from ..models.service import Service
+from ..models.service import Service, Instance
 
 
 class ServiceLoader(BaseLoader):
@@ -49,7 +49,10 @@ class ServiceLoader(BaseLoader):
             caps[c_name] = cc["value"]
         o.update_caps(caps, source="etl", scope=self.system.name)
         # Raise Error in not allowed on config
-        o.update_instances(source=InputSource.ETL, instances=[i.config for i in instances or []])
+        o.update_instances(
+            source=InputSource.ETL,
+            instances=[Instance.model_validate(i).config for i in instances or []],
+        )
 
     def find_object(self, v: Dict[str, Any]):
         """
