@@ -176,20 +176,12 @@ class PendingLinksDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
-        rn = re.compile(
-            r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
-            re.IGNORECASE,
-        )
-        problem = {
+        problem_map = {
             "Not found iface on remote": "->",
             "Not found local iface on remote": "<-",
             "Remote object is not found": "X",
         }
         data = []
-        # MAC, hostname, count
-        not_found = defaultdict(int)
-        # Name, IP, count
-        local_on_remote = defaultdict(int)
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool).values("id")
         if admin_domain_ads:
@@ -212,7 +204,7 @@ class PendingLinksDS(BaseDataSource):
                         mo.profile.name,
                         mo.administrative_domain.name,
                         iface,
-                        problem[problems[mo_id][iface]["problem"]],
+                        problem_map[problems[mo_id][iface]["problem"]],
                         problems[mo_id][iface]["remote_iface"],
                         problems[mo_id][iface]["remote_id"],
                         problems[mo_id][iface]["detail"],
@@ -221,20 +213,6 @@ class PendingLinksDS(BaseDataSource):
                         problems[mo_id][iface].get("remote_chassis"),
                     )
                 ]
-                if problems[mo_id][iface]["problem"] == "Remote object is not found":
-                    match = rn.findall(problems[mo_id][iface]["remote_id"])
-                    if match:
-                        not_found[match[0]] += 1
-                elif problems[mo_id][iface]["problem"] == "Not found iface on remote":
-                    local_on_remote[(mo.name, mo.address)] += 1
-        # data += [SectionRow(name="Summary information on u_object")]
-        # for c in not_found:
-        #    if not_found[c] > 4:
-        #        data += [c]
-        # data += [SectionRow(name="Summary information on agg")]
-        # for c in local_on_remote:
-        #    if local_on_remote[c] > 4:
-        #        data += [c]
         row_num = 0
         for o in data:
             row_num += 1
