@@ -25,6 +25,10 @@ class SchedulerService(FastAPIService):
 
     SYNC_PURGATORIUM_JOB = "noc.services.scheduler.jobs.sync_purgatorium.SyncPurgatoriumJob"
 
+    NETWORK_INSTANCE_DISCOVERY_JOB = (
+        "noc.services.scheduler.jobs.network_instance_service.NetworkInstanceDiscoveryJob"
+    )
+
     async def on_activate(self):
         self.scheduler = Scheduler(
             "scheduler", reset_running=True, max_threads=config.scheduler.max_threads
@@ -32,13 +36,11 @@ class SchedulerService(FastAPIService):
         self.scheduler.run()
         self.ensure_topology_job()
         self.ensure_purgatorium_job()
+        self.ensure_network_instance_discovery_job()
 
     @classmethod
     def ensure_topology_job(cls):
-        """
-        Create or remove Topology Scheduler job
-        :return:
-        """
+        """Create or remove Topology Scheduler job"""
         scheduler = Scheduler(cls.name)
         if config.topo.enable_scheduler_task:
             scheduler.submit(
@@ -49,13 +51,19 @@ class SchedulerService(FastAPIService):
 
     @classmethod
     def ensure_purgatorium_job(cls):
-        """
-        Create or remove Topology Scheduler job
-        :return:
-        """
+        """Create or remove Purgatorium Scheduler job"""
         scheduler = Scheduler(cls.name)
         scheduler.submit(
             jcls=cls.SYNC_PURGATORIUM_JOB,
+            ts=datetime.datetime.now() + datetime.timedelta(seconds=60),
+        )
+
+    @classmethod
+    def ensure_network_instance_discovery_job(cls):
+        """Create find Service Instance Job"""
+        scheduler = Scheduler(cls.name)
+        scheduler.submit(
+            jcls=cls.NETWORK_INSTANCE_DISCOVERY_JOB,
             ts=datetime.datetime.now() + datetime.timedelta(seconds=60),
         )
 

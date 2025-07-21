@@ -517,6 +517,22 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     renderer: NOC.render.Bool
                                 },
                                 {
+                                    text: __("Allow Register"),
+                                    dataIndex: "allow_register",
+                                    width: 100,
+                                    editor: "checkbox",
+                                    renderer: NOC.render.Bool
+                                },
+                                {
+                                    text: __("TTL"),
+                                    dataIndex: "ttl",
+                                    width: 50,
+                                    editor: {
+                                        xtype: "numberfield",
+                                        minValue: 0
+                                    }
+                                },
+                                {
                                     text: __("Name"),
                                     dataIndex: "name",
                                     width: 100,
