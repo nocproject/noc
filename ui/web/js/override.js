@@ -208,69 +208,6 @@ Ext.define("EXTJS-15862.tab.Bar", {
   },
 });
 
-Ext.define("NOC.data.request.Ajax", {
-  override: "Ext.data.request.Ajax",
-  onComplete: function(xdrResult){
-    var me = this,
-      owner = me.owner,
-      options = me.options,
-      xhr = me.xhr,
-      failure = {success: false, isException: false},
-      result, success, response;
-
-    if(xhr.responseURL.includes("/ui/login/index.html")){
-      NOC.restartReason = "Autologout";
-      window.location.pathname = "/ui/login/index.html";
-      window.location.search = "&msg=Session%20Ended.";
-    }
-    if(!xhr || me.destroyed){
-      return me.result = failure;
-    }
-
-    try{
-      result = Ext.data.request.Ajax.parseStatus(xhr.status);
-
-      if(result.success){
-        result.success = xhr.readyState === 4;
-      }
-    }
-    catch(e){
-      console.warn("Error parsing Ajax response status:", e);
-      result = failure;
-    }
-
-    success = me.success = me.isXdr ? xdrResult : result.success;
-
-    if(success){
-      response = me.createResponse(xhr);
-
-      owner.fireEvent("requestcomplete", owner, response, options);
-      Ext.callback(options.success, options.scope, [response, options]);
-    }
-    else{
-      if(result.isException || me.aborted || me.timedout){
-        response = me.createException(xhr);
-      }
-      else{
-        response = me.createResponse(xhr);
-      }
-
-      owner.fireEvent("requestexception", owner, response, options);
-      Ext.callback(options.failure, options.scope, [response, options]);
-    }
-
-    me.result = response;
-
-    Ext.callback(options.callback, options.scope, [options, success, response]);
-
-    owner.onRequestComplete(me);
-
-    me.superclass[arguments.callee.$name].apply(me, xdrResult);
-
-    return response;
-  },
-});
-
 // Ext.override("Ext.grid.header.Container", {
 //   getMenuItems: function(){
 //     var me = this,
