@@ -52,7 +52,7 @@ class Migration(BaseMigration):
                 r += [
                     {
                         "effect": "notification_group",
-                        "key": aa["clear_notification_group"],
+                        "key": str(aa["clear_notification_group"]),
                         "once": True,
                         "immediate": True,
                         "clear_only": True,

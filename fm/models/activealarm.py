@@ -621,7 +621,7 @@ class ActiveAlarm(Document):
             self.watchers.append(
                 WatchItem(
                     effect=effect,
-                    key=key,
+                    key=str(key),
                     once=once,
                     immediate=immediate,
                     clear_only=clear_only,
