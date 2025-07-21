@@ -172,9 +172,7 @@ class ServiceApplication(ExtDocApplication):
     def instance_to_dict_si(self, o: ServiceInstance) -> Dict[str, Any]:
         r = {
             "id": str(o.id),
-            "sources": [
-                {"discovery": "D", "etl": "E", "manual": "M"}[ss.value] for ss in o.sources
-            ],
+            "sources": [ss.code.upper() for ss in o.sources],
             "type": o.type,
             "fqdn": o.fqdn,
             "port": o.port,

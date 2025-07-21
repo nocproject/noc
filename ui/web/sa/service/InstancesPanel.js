@@ -29,6 +29,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           {id: "M", label: __("Manual")},
           {id: "D", label: __("Discovery")},
           {id: "E", label: __("ETL")},
+          {id: "C", label: __("Config")},
         ],
       },
       typeStore: {

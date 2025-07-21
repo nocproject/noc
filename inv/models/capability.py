@@ -34,6 +34,7 @@ from noc.core.models.valuetype import ValueType
 id_lock = Lock()
 
 TCapsValue = Union[bool, str, int, float, List[Any]]
+SPLITTER_MULTI = ";"
 
 
 @on_delete_check(
@@ -121,6 +122,8 @@ class Capability(Document):
     def clean_value(self, v: TCapsValue) -> TCapsValue:
         if self.multi and isinstance(v, list):
             return [self.type.clean_value(x) for x in v]
+        elif self.multi:
+            return [self.type.clean_value(x) for x in v.split(SPLITTER_MULTI)]
         if not self.type:
             raise ValueError(f"Invalid type: {self.type}")
         return self.type.clean_value(v)

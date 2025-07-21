@@ -75,6 +75,9 @@ Ext.define("NOC.inv.capability.Application", {
             ["str", "String"],
             ["int", "Integer"],
             ["float", "Float"],
+            ["mac", "MAC Address"],
+            ["ip_address", "IP Address"],
+            ["snmp_oid", "SNMP OID"],
           ],
         },
         {
