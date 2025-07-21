@@ -334,7 +334,7 @@ Ext.define("NOC.main.desktop.Application", {
   // Start logout sequence
   onLogout: function(msg){
     const url = "/api/login/logout/";
-    if(!Ext.isEmpty(msg)){
+    if(!Ext.isEmpty(msg) && typeof msg === "string"){
       window.removeEventListener("beforeunload", this.boundOnUnload);
       localStorage.setItem("NOC.restartReason", msg);
     }
