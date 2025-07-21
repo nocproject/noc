@@ -34,7 +34,7 @@ SELECT managed_object, interface, groupUniqArray(MACNumToString(mac)) as u_macs,
  WHERE toDate(last_seen) > %s
  GROUP BY managed_object, interface
  HAVING macs_cnt < %s
- ORDER BY managed_object 
+ ORDER BY managed_object
  FORMAT JSON
 """
 
