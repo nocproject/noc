@@ -22,6 +22,7 @@ from noc.sa.interfaces.base import (
 )
 
 BOOL_VALUES = frozenset(("t", "true", "yes"))
+REFERENCE_SCOPE_SPLITTER = "::"
 
 
 class ValueType(enum.Enum):
@@ -132,5 +133,5 @@ class ValueType(enum.Enum):
         """Generate References string for instance"""
         match self:
             case ValueType.MAC_ADDRESS:
-                return f"mac:{value}"
+                return f"mac{REFERENCE_SCOPE_SPLITTER}{value}"
         return None

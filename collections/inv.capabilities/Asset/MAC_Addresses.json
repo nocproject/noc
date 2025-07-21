@@ -1,0 +1,8 @@
+{
+    "name": "Asset | MAC Addresses",
+    "$collection": "inv.capabilities",
+    "uuid": "10b1afe0-706d-4cde-9745-f0af822cea35",
+    "description": null,
+    "type": "mac",
+    "card_template": null
+}

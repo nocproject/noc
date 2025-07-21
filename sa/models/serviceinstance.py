@@ -182,6 +182,7 @@ class ServiceInstance(Document):
         if not instance:
             logger.info("[%s] Create new Instance: %s", service.id, cfg.type)
             instance = ServiceInstance.from_config(service, cfg)
+            instance.save()
         return instance
 
     def update_config(self, cfg: ServiceInstanceConfig):
@@ -203,19 +204,31 @@ class ServiceInstance(Document):
         if source not in [InputSource.MANUAL, InputSource.CONFIG]:
             self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
             self.service.fire_event("seen")
+            self.expires = None
         # resource Seen
         if not dry_run:
             ServiceInstance.objects.filter(id=self.id).update(
-                sources=self.sources, last_seen=self.last_seen
+                sources=self.sources,
+                last_seen=self.last_seen,
+                expires=self.expires,
             )
 
-    def unseen(self, source: InputSource):
+    def unseen(self, source: InputSource, dry_run: bool = False, force: bool = False):
         """Remove from source"""
         if source in self.sources:
             self.sources.remove(source)
-        if not self.sources:
+        if dry_run:
+            return
+        if not self.sources and self.config.ttl and not force:
+            self.expires = self.expires or datetime.datetime.now() + datetime.timedelta(
+                seconds=self.config.ttl
+            )
+            ServiceInstance.objects.filter(id=self.id).update(
+                sources=self.sources, expires=self.expires
+            )
+        elif not self.sources:
             # For empty source, clean sources
-            ServiceInstance.objects.filter(id=self.id).delete_one()
+            ServiceInstance.objects.filter(id=self.id).delete()
         else:
             # Clean Source, ETL - Remove Remote_id, NRI Port, Addresses
             ServiceInstance.objects.filter(id=self.id).update(sources=self.sources)
@@ -422,7 +435,6 @@ class ServiceInstance(Document):
         """
         resources = []
         cfg = self.config
-        update_ts = datetime.datetime.now() or update_ts
         for o in res:
             if not o:
                 # Bad resource value.
@@ -434,30 +446,44 @@ class ServiceInstance(Document):
             rid = o.as_resource()
             c, _ = rid.split(":", 1)
             if c not in (cfg.allow_resources or []):  # has_resource
-                logger.info("Resource not allowed in service instance profile")
+                logger.warning("Resource not allowed in service instance profile")
                 continue
             resources.append(rid)
-            logger.info("Binding service %s to interface %s", self.service, o.name)
-            # if rid not in self.resources:
-            #    logger.info("Binding service %s to interface %s", self.service, o.name)
-        if self.resources and not set(self.resources) - set(resources):
-            self.last_seen = update_ts
-            ServiceInstance.objects.filter(id=self.id).update(last_seen=self.last_seen)
-            return
+            if rid not in self.resources:
+                logger.info("Binding service %s to interface %s", self.service, o.name)
+        if resources and set(self.resources) == set(resources):
+            # Not changed - Update only last seen
+            self.seen(source, last_seen=update_ts)
+            return None
+        elif resources:
+            # Update last seen and not save (save on bulk)
+            self.seen(source, last_seen=update_ts, dry_run=bool(bulk))
+        else:
+            self.unseen(source)
         self.resources = resources
+        if not self.sources:
+            # Instance Deleted
+            return None
         if bulk is not None:
             bulk += [
                 UpdateOne(
                     {"_id": self.id},
-                    {"$set": {"resources": self.resources, "last_seen": self.last_seen}},
+                    {
+                        "$set": {
+                            "resources": self.resources,
+                            "sources": [s.value for s in self.sources],
+                            "last_seen": self.last_seen,
+                        }
+                    },
                 )
             ]
         else:
             ServiceInstance.objects.filter(id=self.id).update(
                 resources=self.resources,
+                sources=self.sources,
                 last_seen=self.last_seen,
             )
-            if self.managed_object:
+            if self.managed_object and bulk is None:
                 ServiceSummary.refresh_object(self.managed_object)
 
     @classmethod
