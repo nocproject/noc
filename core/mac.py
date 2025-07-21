@@ -188,12 +188,26 @@ class MAC(str):
         return ":".join(r)
 
     @property
-    def is_multicast(self):
+    def is_multicast(self) -> bool:
         """
         Check if MAC address is multicast one
         :return: True if MAC is multicast
         """
         return bool(int(self.split(":", 1)[0], 16) & 0x1)
+
+    @property
+    def is_locally_administered(self) -> bool:
+        """
+        Locally-Administered-MAC-addresses
+        A locally administered address is assigned to a device by a network administrator,
+        overriding the burned-in address.
+        In this case, the second-least-significant bit of the first octet of the address is a 1.
+           * x2-xx-xx-xx-xx-xx
+           * x6-xx-xx-xx-xx-xx
+           * xA-xx-xx-xx-xx-xx
+           * xE-xx-xx-xx-xx-xx
+        """
+        return bool(int(self.split(":", 1)[0], 16) & 0x2)
 
     @property
     def is_private(self) -> bool:

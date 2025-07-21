@@ -156,3 +156,16 @@ def test_unicast(value):
 )
 def test_multicast(value):
     assert MAC(value).is_multicast is True
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        "02:00:0C:CC:CC:CC",
+        "36:80:C2:00:00:00",
+        "0A:80:C2:00:00:03",
+        "1E:80:C2:00:00:0E",
+    ],
+)
+def test_locally_administered(value):
+    assert MAC(value).is_locally_administered is True
