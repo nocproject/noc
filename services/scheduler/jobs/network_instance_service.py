@@ -101,7 +101,10 @@ class NetworkInstanceDiscoveryJob(PeriodicJob):
             service__in=asset_services,
         ):
             self.logger.debug("[%s] UnBind from interface, ", si)
-            si.update_resources([], source=InputSource.DISCOVERY)
+            # TTL Removed
+            si.unseen(source=InputSource.DISCOVERY)
+            # MAC Moved
+            # si.update_resources([], source=InputSource.DISCOVERY)
         coll = ServiceInstance._get_collection()
         self.logger.info("Updated: %s", len(bulk))
         if bulk:
@@ -168,9 +171,7 @@ class NetworkInstanceDiscoveryJob(PeriodicJob):
 
     @classmethod
     def get_mac_neighbors(
-        cls,
-        start: Optional[datetime.datetime] = None,
-        limit_mac_by_port: Optional[int] = None
+        cls, start: Optional[datetime.datetime] = None, limit_mac_by_port: Optional[int] = None
     ) -> Dict[str, Tuple[Interface, datetime.datetime]]:
         """Return Iface -> Mac Neighbor map"""
         limit_mac_by_port = limit_mac_by_port or LIMIT_MAC_BY_PORT

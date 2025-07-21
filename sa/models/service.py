@@ -749,6 +749,8 @@ class Service(Document):
         """Return service Ids for requested alarm"""
         if alarm.alarm_class.name == SVC_AC:
             return []
+        elif hasattr(alarm.components, "service") and getattr(alarm.components, "service", None):
+            return [alarm.components.service.id]
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)

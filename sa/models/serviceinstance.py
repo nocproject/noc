@@ -204,19 +204,23 @@ class ServiceInstance(Document):
         if source not in [InputSource.MANUAL, InputSource.CONFIG]:
             self.last_seen = last_seen or datetime.datetime.now().replace(microsecond=0)
             self.service.fire_event("seen")
+            self.expires = None
         # resource Seen
         if not dry_run:
             ServiceInstance.objects.filter(id=self.id).update(
-                sources=self.sources, last_seen=self.last_seen
+                sources=self.sources, last_seen=self.last_seen, expires=self.expires,
             )
 
-    def unseen(self, source: InputSource, dry_run: bool = False):
+    def unseen(self, source: InputSource, dry_run: bool = False, force: bool = False):
         """Remove from source"""
         if source in self.sources:
             self.sources.remove(source)
         if dry_run:
             return
-        if not self.sources:
+        if not self.sources and self.config.ttl and not force:
+            self.expires = self.expires or datetime.datetime.now() + datetime.timedelta(seconds=self.config.ttl)
+            ServiceInstance.objects.filter(id=self.id).update(sources=self.sources, expires=self.expires)
+        elif not self.sources:
             # For empty source, clean sources
             ServiceInstance.objects.filter(id=self.id).delete()
         else:
