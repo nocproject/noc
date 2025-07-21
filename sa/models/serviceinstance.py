@@ -208,7 +208,9 @@ class ServiceInstance(Document):
         # resource Seen
         if not dry_run:
             ServiceInstance.objects.filter(id=self.id).update(
-                sources=self.sources, last_seen=self.last_seen, expires=self.expires,
+                sources=self.sources,
+                last_seen=self.last_seen,
+                expires=self.expires,
             )
 
     def unseen(self, source: InputSource, dry_run: bool = False, force: bool = False):
@@ -218,8 +220,12 @@ class ServiceInstance(Document):
         if dry_run:
             return
         if not self.sources and self.config.ttl and not force:
-            self.expires = self.expires or datetime.datetime.now() + datetime.timedelta(seconds=self.config.ttl)
-            ServiceInstance.objects.filter(id=self.id).update(sources=self.sources, expires=self.expires)
+            self.expires = self.expires or datetime.datetime.now() + datetime.timedelta(
+                seconds=self.config.ttl
+            )
+            ServiceInstance.objects.filter(id=self.id).update(
+                sources=self.sources, expires=self.expires
+            )
         elif not self.sources:
             # For empty source, clean sources
             ServiceInstance.objects.filter(id=self.id).delete()
