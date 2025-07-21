@@ -4,20 +4,61 @@
   gather_facts: false
   become: true
   tasks:
-    - name: expose vars to playbook
+    - name: Expose cache variable
       set_fact:
-        use_cache: "{{ lookup('env','USE_CACHE') or True | bool }}"
+        use_cache: "{{ lookup('env', 'USE_CACHE') | bool if lookup('env', 'USE_CACHE') is defined else true }}"
 
-    - name: "Stop unattended upgrade"
-      raw: "systemctl disable --now unattended-upgrades"
-      changed_when: false
-      when: molecule_yml.platforms[0].distr is match("ubuntu.*")
+    - name: Ensure unattended-upgrades is disabled and removed
+      block:
+        - name: Stop and disable unattended-upgrades service
+          systemd:
+            name: unattended-upgrades
+            state: stopped
+            enabled: false
+          ignore_errors: true
 
-    - name: Wait 10sec for upgrade
-      raw: "sleep 10"
-      changed_when: false
-      when: molecule_yml.platforms[0].distr is match("ubuntu.*")
+        - name: Uninstall unattended-upgrades package
+          apt:
+            name: unattended-upgrades
+            state: absent
+            autoremove: true
+            purge: true
 
-    - name: download caches
+        - name: Disable automatic unattended upgrades in 20auto-upgrades
+          lineinfile:
+            path: /etc/apt/apt.conf.d/20auto-upgrades
+            regexp: '^APT::Periodic::Unattended-Upgrade'
+            line: 'APT::Periodic::Unattended-Upgrade "0";'
+            create: true
+
+        - name: Disable automatic package list updates
+          lineinfile:
+            path: /etc/apt/apt.conf.d/20auto-upgrades
+            regexp: '^APT::Periodic::Update-Package-Lists'
+            line: 'APT::Periodic::Update-Package-Lists "0";'
+            create: true
+
+        - name: Comment out Allowed-Origins to prevent upgrade sources
+          lineinfile:
+            path: /etc/apt/apt.conf.d/50unattended-upgrades
+            regexp: '^\s*Unattended-Upgrade::Allowed-Origins'
+            line: '//Unattended-Upgrade::Allowed-Origins {};'
+            backup: true
+
+        - name: Comment out Origins-Prohibited if present
+          lineinfile:
+            path: /etc/apt/apt.conf.d/50unattended-upgrades
+            regexp: '^\s*Unattended-Upgrade::Origins-Prohibited'
+            line: '//Unattended-Upgrade::Origins-Prohibited {};'
+            backup: true
+
+        - name: Wait 10 seconds after disabling upgrade mechanisms
+          wait_for:
+            timeout: 10
+
+      when: 
+        - molecule_yml.platforms[0].distr is match("ubuntu.*")
+
+    - name: Download caches
       import_tasks: cache_download.yml
       when: use_cache
