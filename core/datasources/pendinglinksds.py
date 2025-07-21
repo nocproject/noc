@@ -176,12 +176,11 @@ class PendingLinksDS(BaseDataSource):
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[int, str, Any]]:
-        problem_map = {
+        direction_map = {
             "Not found iface on remote": "->",
             "Not found local iface on remote": "<-",
             "Remote object is not found": "X",
         }
-        data = []
         # Get all managed objects
         mos = ManagedObject.objects.filter(is_managed=True, pool=pool).values("id")
         if admin_domain_ads:
@@ -194,37 +193,22 @@ class PendingLinksDS(BaseDataSource):
             ignore_profiles=list(InterfaceProfile.objects.filter(discovery_policy="I")),
             filter_exists_link=not show_already_linked,
         )
+        row_num = 0
         for mo_id in problems:
             mo = ManagedObject.get_by_id(mo_id)
             for iface in problems[mo_id]:
-                data += [
-                    (
-                        mo.name,
-                        mo.address,
-                        mo.profile.name,
-                        mo.administrative_domain.name,
-                        iface,
-                        problem_map[problems[mo_id][iface]["problem"]],
-                        problems[mo_id][iface]["remote_iface"],
-                        problems[mo_id][iface]["remote_id"],
-                        problems[mo_id][iface]["detail"],
-                        problems[mo_id][iface].get("remote_hostname"),
-                        problems[mo_id][iface].get("remote_description"),
-                        problems[mo_id][iface].get("remote_chassis"),
-                    )
-                ]
-        row_num = 0
-        for o in data:
-            row_num += 1
-            yield row_num, "managed_object", o[0]
-            yield row_num, "address", o[1]
-            yield row_num, "profile", o[2]
-            yield row_num, "administrative_domain", o[3]
-            yield row_num, "interface", o[4]
-            yield row_num, "direction", o[5]
-            yield row_num, "remote_interface", o[6]
-            yield row_num, "remote_object", o[7]
-            yield row_num, "detail", o[8]
-            yield row_num, "remote_hostname", o[9]
-            yield row_num, "remote_description", o[10]
-            yield row_num, "remote_chassis", o[11]
+                row_num += 1
+                yield row_num, "managed_object", mo.name
+                yield row_num, "address", mo.address
+                yield row_num, "profile", mo.profile.name
+                yield row_num, "administrative_domain", mo.administrative_domain.name
+                yield row_num, "interface", iface
+                yield row_num, "direction", direction_map[problems[mo_id][iface]["problem"]]
+                yield row_num, "remote_interface", problems[mo_id][iface]["remote_iface"]
+                yield row_num, "remote_object", problems[mo_id][iface]["remote_id"]
+                yield row_num, "detail", problems[mo_id][iface]["detail"]
+                yield row_num, "remote_hostname", problems[mo_id][iface].get("remote_hostname")
+                yield row_num, "remote_description", problems[mo_id][iface].get(
+                    "remote_description"
+                )
+                yield row_num, "remote_chassis", problems[mo_id][iface].get("remote_chassis")
