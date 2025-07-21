@@ -56,7 +56,7 @@
           wait_for:
             timeout: 10
 
-      when: 
+      when:
         - molecule_yml.platforms[0].distr is match("ubuntu.*")
 
     - name: Download caches
