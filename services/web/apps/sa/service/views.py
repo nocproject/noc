@@ -206,23 +206,6 @@ class ServiceApplication(ExtDocApplication):
             ]
         return r
 
-    @view(url=r"^(?P<sid>[0-9a-f]{24})/caps/$", method=["GET"], access="read", api=True)
-    def api_get_caps(self, request, sid):
-        o = self.get_object_or_404(Service, id=sid)
-        # if not o.has_access(request.user):
-        #    return self.response_forbidden("Access denied")
-        cfgs = {}
-        for cp in o.profile.caps:
-            cfgs[str(cp.capability.id)] = cp
-        r = []
-        for c in o.iter_caps():
-            c_id = str(c.capability.id)
-            cfg = cfgs.pop(c_id, None)
-            caps = c.get_form(allow_manual=cfg and cfg.allow_manual)
-            caps["object"] = str(o.id)
-            r.append(caps)
-        return sorted(r, key=lambda x: x["capability"])
-
     @view(r"^(?P<sid>[0-9a-f]{24})/resource/(?P<r_type>\S+)/", access="read", api=True)
     def api_get_instance_resources(self, request, sid: str, r_type: str):
         # o = self.get_object_or_404(Service, id=sid)

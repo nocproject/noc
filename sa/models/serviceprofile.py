@@ -41,12 +41,13 @@ from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceTypeConfig
+from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
+from noc.core.caps.types import CapsConfig
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
-from noc.core.model.decorator import on_delete_check
-from noc.core.change.decorator import change
 
 
 id_lock = Lock()
@@ -56,9 +57,27 @@ class CapsSettings(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     # Required
-    capability = ReferenceField(Capability)
+    capability: Capability = ReferenceField(Capability, required=True)
     default_value = DynamicField()
     allow_manual = BooleanField(default=False)
+    ref_scope = StringField(required=False)
+    # ref_remote_system
+
+    def __str__(self):
+        return f"{self.capability.name}: D:{self.default_value}; M: {self.allow_manual}"
+
+    def clean(self):
+        super().clean()
+        if self.default_value:
+            self.capability.clean_value(self.default_value)
+
+    def get_config(self) -> CapsConfig:
+        """"""
+        return CapsConfig(
+            default_value=self.default_value or None,
+            allow_manual=self.allow_manual,
+            ref_scope=self.ref_scope,
+        )
 
 
 condition_map = {
@@ -423,6 +442,13 @@ class ServiceProfile(Document):
             if s.severity <= severity and status >= Status.SLIGHTLY_DEGRADED:
                 return status
         return Status.UNKNOWN
+
+    def get_caps_config(self) -> Dict[str, CapsConfig]:
+        """Local Capabilities Config (from Profile)"""
+        r = {}
+        for c in self.caps:
+            r[str(c.capability.id)] = c.get_config()
+        return r
 
     def get_instance_config(
         self, i_type: InstanceType, name: Optional[str] = None
