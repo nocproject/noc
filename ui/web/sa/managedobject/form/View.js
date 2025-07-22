@@ -1531,6 +1531,7 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   text: __("Value"),
                   dataIndex: "value",
                   useModalEditor: true,
+                  width: 180,
                   urlPrefix: "/sa/managedobject",
                 },
                 {
