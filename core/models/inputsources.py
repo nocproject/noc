@@ -21,9 +21,12 @@ class InputSource(enum.Enum):
 
     ETL = "etl"
     DISCOVERY = "discovery"
+    DATABASE = "database"
     # ServiceDiscovery ?
     MANUAL = "manual"
     CONFIG = "config"  # profile
+    #
+    UNKNOWN = "unknown"
 
     @classmethod
     def from_sources(cls, code) -> FrozenSet["InputSource"]:

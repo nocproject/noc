@@ -40,6 +40,28 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             access="write",
             api=True,
         )
+        self.add_view(
+            "api_get_capabilities",
+            self.api_get_caps,
+            method=["GET"],
+            url=r"^(?P<sid>[0-9a-f]{24})/caps/$",
+            access="read",
+            api=True,
+        )
+
+    def api_get_caps(self, request, sid):
+        try:
+            o = self.app.queryset(request).get(**{self.app.pk: sid})
+        except self.app.model.DoesNotExist:
+            return self.app.response_not_found()
+        # if not o.has_access(request.user):
+        #    return self.response_forbidden("Access denied")
+        r = []
+        for c in o.iter_caps(include_default=True):
+            caps = c.get_form()
+            caps["object"] = str(o.id)
+            r.append(caps)
+        return sorted(r, key=lambda x: x["capability"])
 
     def api_set_capabilities(self, request, object_id, capabilities_id, value):
         try:
