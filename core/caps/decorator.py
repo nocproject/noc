@@ -66,12 +66,16 @@ def iter_document_caps(
     for ci in self.caps or []:
         if scope and scope != ci.scope:
             continue
+        try:
+            cs = InputSource(ci.source or "manual")
+        except ValueError:
+            cs = InputSource.UNKNOWN
         cv = ci.value
         cv = ci.capability.clean_value(cv)
         yield CapsValue(
             capability=ci.capability,
             value=cv,
-            source=InputSource(ci.source or "manual"),
+            source=cs,
             scope=ci.scope,
             config=configs.pop(str(ci.capability.id), CapsConfig()),
         )

@@ -55,5 +55,5 @@ class CapsValue(object):
             "value": self.value,
             "source": self.source,
             "scope": self.scope or "",
-            "editor": (self.capability.get_editor() if self.config.allow_manual else None),
+            "editor": self.capability.get_editor() if self.config.allow_manual else None,
         }
