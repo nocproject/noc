@@ -51,7 +51,7 @@ class CapsCheck(PolicyDiscoveryCheck):
                 "Received capabilities: \n%s",
                 orjson.dumps(result, option=orjson.OPT_INDENT_2).decode(DEFAULT_ENCODING),
             )
-            self.update_caps(result, source="caps")
+            self.update_caps(result, source="discovery")
         object_attrs = self.get_artefact("object_attributes")
         if object_attrs is None:
             return
@@ -64,7 +64,7 @@ class CapsCheck(PolicyDiscoveryCheck):
                 caps = f"Custom | Attribute | {k}"
                 self.logger.info("Custom attribute: %s, Use caps: %s", k, caps)
             object_caps[caps] = v
-        self.update_caps(object_caps, source="attributes")
+        self.update_caps(object_caps, source="database")
 
     def get_policy(self):
         return self.object.get_caps_discovery_policy()

@@ -129,9 +129,11 @@ class ValueType(enum.Enum):
                 return self.get_default(value)
             raise e
 
-    def clean_reference(self, value: Any) -> Optional[str]:
+    def clean_reference(self, value: Any, scope: Optional[str] = None) -> Optional[str]:
         """Generate References string for instance"""
         match self:
             case ValueType.MAC_ADDRESS:
-                return f"mac{REFERENCE_SCOPE_SPLITTER}{value}"
+                scope = "mac"
+        if scope:
+            return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None

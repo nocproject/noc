@@ -12,14 +12,18 @@ from typing import Optional, List, Dict, Any, Iterable
 # NOC modules
 from noc.models import is_document
 from noc.core.models.inputsources import InputSource
-from .types import CapsValue
+from .types import CapsValue, CapsConfig
 
 logger = logging.getLogger(__name__)
 
 
-def iter_model_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
-    """"""
+def iter_model_caps(
+    self, scope: Optional[str] = None, include_default: bool = False
+) -> Iterable[CapsValue]:
+    """Iterate over Model Capabilities"""
     from noc.inv.models.capability import Capability
+
+    configs = self.get_caps_config()
 
     for ci in self.caps or []:
         c = Capability.get_by_id(ci["capability"])
@@ -37,22 +41,53 @@ def iter_model_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
             value=value,
             source=InputSource(source),
             scope=cs,
+            config=configs.pop(str(c.id), CapsConfig()),
+        )
+    if not include_default:
+        return
+    for c, cfg in configs.items():
+        c = Capability.get_by_id(c)
+        yield CapsValue(
+            capability=c,
+            value=c.clean_value(cfg.default_value) if cfg.default_value else None,
+            source=InputSource.CONFIG,
+            config=cfg,
         )
 
 
-def iter_document_caps(self, scope: Optional[str] = None) -> Iterable[CapsValue]:
-    """"""
+def iter_document_caps(
+    self, scope: Optional[str] = None, include_default: bool = False
+) -> Iterable[CapsValue]:
+    """Iterate over document Capabilities"""
+    from noc.inv.models.capability import Capability
+
+    configs = self.get_caps_config()
+
     for ci in self.caps or []:
         if scope and scope != ci.scope:
             continue
-        cs = ci.source or "manual"
+        try:
+            cs = InputSource(ci.source or "manual")
+        except ValueError:
+            cs = InputSource.UNKNOWN
         cv = ci.value
         cv = ci.capability.clean_value(cv)
         yield CapsValue(
             capability=ci.capability,
             value=cv,
-            source=InputSource(cs),
+            source=cs,
             scope=ci.scope,
+            config=configs.pop(str(ci.capability.id), CapsConfig()),
+        )
+    if not include_default:
+        return
+    for c, cfg in configs.items():
+        c = Capability.get_by_id(c)
+        yield CapsValue(
+            capability=c,
+            value=c.clean_value(cfg.default_value) if cfg.default_value else None,
+            source=InputSource.CONFIG,
+            config=cfg,
         )
 
 
@@ -98,6 +133,13 @@ def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
             continue
         caps[c.name] = c.value
     return caps
+
+
+def get_caps_config(self) -> Dict[str, CapsConfig]:
+    """Return Dict with Local Capabilities Config"""
+    if hasattr(self, "profile") and hasattr(self.profile, "get_caps_config"):
+        return self.profile.get_caps_config()
+    return {}
 
 
 def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional[str] = "") -> None:
@@ -270,11 +312,15 @@ def capabilities(cls):
         cls.iter_caps = iter_document_caps
         if not hasattr(cls, "save_caps"):
             cls.save_caps = save_document_caps
+        if not hasattr(cls, "get_caps_config"):
+            cls.get_caps_config = get_caps_config
 
     else:
         # Django model
         cls.iter_caps = iter_model_caps
         if not hasattr(cls, "save_caps"):
             cls.save_caps = save_model_caps
+        if not hasattr(cls, "get_caps_config"):
+            cls.get_caps_config = get_caps_config
 
     return cls

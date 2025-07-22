@@ -40,7 +40,7 @@ class ETLMapping(BaseModel):
 
 class CapsItem(BaseModel):
     name: str
-    value: Union[str, bool, int]
+    value: Union[str, bool, int, list]
 
 
 class Reference(Generic[T]):

@@ -210,7 +210,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         self.resolve_properties()
         self.update_caps(
             {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
-            source="interface",
+            source="database",
         )
         #
         self.collate(if_map)
