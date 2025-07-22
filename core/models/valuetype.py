@@ -120,7 +120,7 @@ class ValueType(enum.Enum):
     def decode_interface_name(value):
         return value
 
-    def clean_value(self, value, errors: str = "strict"):
+    def clean_value(self, value, errors: str = "strict", default: Optional[str, int, float] = None):
         decoder = getattr(self, f"decode_{self.value}")
         try:
             return decoder(value)
@@ -129,9 +129,11 @@ class ValueType(enum.Enum):
                 return self.get_default(value)
             raise e
 
-    def clean_reference(self, value: Any) -> Optional[str]:
+    def clean_reference(self, value: Any, scope: Optional[str] = None) -> Optional[str]:
         """Generate References string for instance"""
         match self:
             case ValueType.MAC_ADDRESS:
-                return f"mac{REFERENCE_SCOPE_SPLITTER}{value}"
+                scope = "mac"
+        if scope:
+            return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None

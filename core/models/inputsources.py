@@ -21,6 +21,7 @@ class InputSource(enum.Enum):
 
     ETL = "etl"
     DISCOVERY = "discovery"
+    DATABASE = "database"
     # ServiceDiscovery ?
     MANUAL = "manual"
     CONFIG = "config"  # profile
