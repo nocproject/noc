@@ -38,6 +38,7 @@ class CPECheck(DiscoveryCheck):
         "modulation": "CPE | Modulation",
         "location": "CPE | Location",
         "distance": "CPE | Distance",
+        "site": "WiFi | AP | Site",
     }
 
     def handler(self):
@@ -74,7 +75,7 @@ class CPECheck(DiscoveryCheck):
                 cpe.extra_labels = {"sa": cpe.labels}
             # Update Caps
             caps = self.cleanup_caps(r)
-            cpe.update_caps(caps, source="cpe", scope="cpe")
+            cpe.update_caps(caps, source="discovery")
             # Sync Address
             if cpe.address != r.get("ip"):
                 cpe.address = r.get("ip")
@@ -96,7 +97,7 @@ class CPECheck(DiscoveryCheck):
                 cpe.unseen(self.object)
         self.update_caps(
             {"DB | CPEs": CPE.objects.filter(controllers__managed_object=self.object.id).count()},
-            source="cpe",
+            source="database",
         )
 
     def submit_managed_object(self, cpe: CPE):
