@@ -33,6 +33,7 @@ rx_pending_link = re.compile(
     r"Pending\slink:\s(?P<local_iface>.+?)(\s-\s)(?P<remote_mo>.+?):(?P<remote_iface>\S+)",
     re.IGNORECASE,
 )
+rx_nr = re.compile("[\n\r;]|&nbsp|<br/>")
 
 
 def pending_links(mo_ids, ignore_profiles=None, filter_exists_link=False):
@@ -165,6 +166,14 @@ class PendingLinksDS(BaseDataSource):
         ParamInfo(name="show_already_linked", type="bool", default=False),
     ]
 
+    @staticmethod
+    def clean_description(value: Optional[str]):
+        """Replace LF, CR and some other symbols in System Description to space
+        for proper data in .csv and .xlsx formats"""
+        if value:
+            value = rx_nr.sub(" ", value)
+        return value
+
     @classmethod
     async def iter_query(
         cls,
@@ -208,7 +217,7 @@ class PendingLinksDS(BaseDataSource):
                 yield row_num, "remote_object", problems[mo_id][iface]["remote_id"]
                 yield row_num, "detail", problems[mo_id][iface]["detail"]
                 yield row_num, "remote_hostname", problems[mo_id][iface].get("remote_hostname")
-                yield row_num, "remote_description", problems[mo_id][iface].get(
-                    "remote_description"
+                yield row_num, "remote_description", cls.clean_description(
+                    problems[mo_id][iface].get("remote_description")
                 )
                 yield row_num, "remote_chassis", problems[mo_id][iface].get("remote_chassis")
