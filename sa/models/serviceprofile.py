@@ -447,7 +447,7 @@ class ServiceProfile(Document):
         """Local Capabilities Config (from Profile)"""
         r = {}
         for c in self.caps:
-            r[c.capability.name] = c.get_config()
+            r[str(c.capability.id)] = c.get_config()
         return r
 
     def get_instance_config(

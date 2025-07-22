@@ -41,7 +41,7 @@ def iter_model_caps(
             value=value,
             source=InputSource(source),
             scope=cs,
-            config=configs.pop(c.name, CapsConfig()),
+            config=configs.pop(str(c.id), CapsConfig()),
         )
     if not include_default:
         return
@@ -73,6 +73,7 @@ def iter_document_caps(
             value=cv,
             source=InputSource(ci.source or "manual"),
             scope=ci.scope,
+            config=configs.pop(str(ci.capability.id), CapsConfig()),
         )
     if not include_default:
         return

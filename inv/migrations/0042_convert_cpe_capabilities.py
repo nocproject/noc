@@ -21,7 +21,7 @@ class Migration(BaseMigration):
         # DropIndex
         for cpe in cpe_coll.find({"caps": {"$exists": True}}, {"caps": 1}):
             caps = []
-            for c in caps:
+            for c in cpe.get("caps") or []:
                 if c.get("scope") == "cpe":
                     c.pop("scope", None)
                     c["source"] = "discovery"
