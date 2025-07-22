@@ -1532,15 +1532,6 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   dataIndex: "value",
                   useModalEditor: true,
                   urlPrefix: "/sa/managedobject",
-                  renderer: function(v, _, record){
-                    var value = v,
-                      iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil", 
-                      icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;' title='` + __("Read only") + "'></i>";
-                    if((v === true) || (v === false)){
-                      value = NOC.render.Bool(v);
-                    }
-                    return icon + value;
-                  },
                 },
                 {
                   text: __("Scope"),
