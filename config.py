@@ -451,6 +451,9 @@ class Config(BaseConfig):
         min_password_specials = IntParameter(default=0)
         password_ttl = SecondsParameter(default="0")
         password_history = IntParameter(default=0)
+        max_failed_attempts = IntParameter(default=0)
+        failed_attempts_window = SecondsParameter(default="0s")
+        failed_attempts_cooldown = SecondsParameter(default="0s")
 
     class mailsender(ConfigSection):
         smtp_server = StringParameter()

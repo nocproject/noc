@@ -82,6 +82,7 @@ _MCACHE: Dict[str, Any] = {}
 _MODELS = {
     # aaa models
     "aaa.APIKey": "noc.aaa.models.apikey.APIKey",
+    "aaa.FailedLogin": "noc.aaa.models.failedlogin.FailedLogin",
     "aaa.Group": "noc.aaa.models.group.Group",
     "aaa.ModelProtectionProfile": "noc.aaa.models.modelprotectionprofile.ModelProtectionProfile",
     "aaa.Permission": "noc.aaa.models.permission.Permission",

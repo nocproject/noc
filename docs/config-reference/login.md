@@ -130,3 +130,53 @@ Key-Value Path
 
 Environment
 : NOC_LOGIN_JWT_ALGORITHM
+
+## max_failed_attempts
+
+Block account after `max_failed_attempts` failed attempts in
+`failed_attempts_window`. If `0`, do not block on failed attemps.
+
+Default value
+: 0
+
+YAML Path
+: login.max_failed_attempts
+
+Key-Value Path
+: login/max_failed_attempts
+
+Environment
+: NOC_LOGIN_MAX_FAILED_ATTEMPTS
+
+## failed_attempts_window
+
+Failed attempts check window for [max_failed_attempts](#max_failed_attempts).
+
+Default value
+: 0s
+
+YAML Path
+: login.failed_attempts_window
+
+Key-Value Path
+: login/failed_attempts_window
+
+Environment
+: NOC_LOGIN_FAILED_ATTEMPTS_WINDOW
+
+## failed_attempts_cooldown
+
+Account blocking time if [max_failed_attempts](#max_failed_attempts)
+is enabled and exceeded.
+
+Default value
+: 0s
+
+YAML Path
+: login.failed_attempts_cooldown
+
+Key-Value Path
+: login/failed_attempts_cooldown
+
+Environment
+: NOC_LOGIN_FAILED_ATTEMPTS_COOLDOWN
