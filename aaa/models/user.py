@@ -10,6 +10,7 @@ import datetime
 import operator
 from threading import Lock
 from typing import Optional, List
+import logging
 
 # Third-party modules
 import cachetools
@@ -30,6 +31,7 @@ from noc.core.mx import NotificationContact
 from .group import Group
 
 id_lock = Lock()
+logger = logging.getLogger(__name__)
 
 
 @on_delete_check(
@@ -115,6 +117,9 @@ class User(NOCModel):
     valid_from = models.DateTimeField("Password valid from", blank=True, null=True)
     valid_until = models.DateTimeField("Password valid until", blank=True, null=True)
     password_history = ArrayField(models.CharField(max_length=128), blank=True, null=True)
+    # Account blocking logic
+    blocked_till = models.DateTimeField(blank=True, null=True)
+    failed_history = ArrayField(models.DateTimeField(), blank=True, null=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -129,8 +134,16 @@ class User(NOCModel):
         return User.objects.filter(id=id).first()
 
     @classmethod
+    def get_by_id_uncached(cls, id: int) -> Optional["User"]:
+        return User.objects.filter(id=id).first()
+
+    @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_username(cls, name) -> Optional["User"]:
+    def get_by_username(cls, name: str) -> Optional["User"]:
+        return User.objects.filter(username=name).first()
+
+    @classmethod
+    def get_by_username_uncached(cls, name: str) -> Optional["User"]:
         return User.objects.filter(username=name).first()
 
     @classmethod
@@ -330,3 +343,60 @@ class User(NOCModel):
         if not r:
             r += [self.username[:1].upper()]
         return "".join(r)
+
+    @classmethod
+    def register_failed_login(cls, username: str) -> Optional[datetime.datetime]:
+        """
+        Register failed login attempt.
+
+        Args:
+            username: Username.
+
+        Returns:
+            Time until user is blocked,
+            None if user is not blocked
+        """
+        if not config.login.max_failed_attempts:
+            return None
+        # Avoid caching
+        user = User.get_by_username_uncached(username)
+        if not user:
+            return None  # Strange situation
+        # Calculate retention time
+        now = datetime.datetime.now()
+        expire = now - datetime.timedelta(seconds=config.login.failed_attempts_window)
+        # Add to history
+        failed_history = user.failed_history or []
+        # Filter out expired items
+        failed_history = [ev for ev in failed_history if ev > expire]
+        # Add new item
+        failed_history.append(now)
+        user.failed_history = failed_history
+        # Check thresholds
+        if len(failed_history) >= config.login.max_failed_attempts:
+            # Block
+            user.blocked_till = now + datetime.timedelta(
+                seconds=config.login.failed_attempts_cooldown
+            )
+            logger.warning(
+                "Failed login attempt for user %s. "
+                "There are %d failed logins in %ds. "
+                "Blocking account till %s",
+                username,
+                len(failed_history),
+                config.login.failed_attempts_window,
+                user.blocked_till,
+            )
+        else:
+            # Unblock
+            user.blocked_till = None
+            logger.warning(
+                "Failed login attempt for user %s. There are %d of %d failed logins in %ds. ",
+                username,
+                len(failed_history),
+                config.login.max_failed_attempts,
+                config.login.failed_attempts_window,
+            )
+        # Finally save
+        user.save()
+        return user.blocked_till
