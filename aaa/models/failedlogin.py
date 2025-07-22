@@ -38,7 +38,7 @@ class FailedLogin(Document):
     }
 
     username = StringField(required=True, unique=True)
-    items = ListField(EmbeddedDocumentField(FailedLoginItem()))
+    items = ListField(EmbeddedDocumentField(FailedLoginItem))
     blocked_to = DateTimeField(required=False)
 
     def __str__(self) -> str:
