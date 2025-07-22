@@ -128,12 +128,16 @@ class Capability(Document):
             raise ValueError(f"Invalid type: {self.type}")
         return self.type.clean_value(v)
 
-    def get_references(self, v: TCapsValue) -> List[str]:
+    def get_references(self, v: TCapsValue, scope: Optional[str] = None) -> List[str]:
         if self.multi and isinstance(v, list):
-            return [self.type.clean_reference(x) for x in v if self.type.clean_reference(x)]
+            return [
+                self.type.clean_reference(x, scope)
+                for x in v
+                if self.type.clean_reference(x, scope)
+            ]
         if not self.type:
             raise ValueError(f"Invalid type: {self.type}")
-        r = self.type.clean_reference(v)
+        r = self.type.clean_reference(v, scope)
         if r:
             return [r]
         return []
