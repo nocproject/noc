@@ -211,14 +211,9 @@ class ServiceApplication(ExtDocApplication):
         o = self.get_object_or_404(Service, id=sid)
         # if not o.has_access(request.user):
         #    return self.response_forbidden("Access denied")
-        cfgs = {}
-        for cp in o.profile.caps:
-            cfgs[str(cp.capability.id)] = cp
         r = []
-        for c in o.iter_caps():
-            c_id = str(c.capability.id)
-            cfg = cfgs.pop(c_id, None)
-            caps = c.get_form(allow_manual=cfg and cfg.allow_manual)
+        for c in o.iter_caps(include_default=True):
+            caps = c.get_form()
             caps["object"] = str(o.id)
             r.append(caps)
         return sorted(r, key=lambda x: x["capability"])

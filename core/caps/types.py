@@ -12,11 +12,19 @@ from noc.core.models.inputsources import InputSource
 
 
 @dataclass(frozen=True)
+class CapsConfig(object):
+    allow_manual: bool = False
+    default_value: Optional[Any] = None
+    ref_scope: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class CapsValue(object):
     capability: Any
     value: Any
     source: InputSource
     scope: Optional[str] = None
+    config: CapsConfig = CapsConfig()
 
     def __str__(self):
         if self.scope:
@@ -47,9 +55,5 @@ class CapsValue(object):
             "value": self.value,
             "source": self.source,
             "scope": self.scope or "",
-            "editor": (
-                self.capability.get_editor()
-                if self.capability.allow_manual and allow_manual
-                else None
-            ),
+            "editor": (self.capability.get_editor() if self.config.allow_manual else None),
         }

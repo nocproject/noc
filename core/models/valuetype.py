@@ -120,7 +120,7 @@ class ValueType(enum.Enum):
     def decode_interface_name(value):
         return value
 
-    def clean_value(self, value, errors: str = "strict", default: Optional[str, int, float] = None):
+    def clean_value(self, value, errors: str = "strict"):
         decoder = getattr(self, f"decode_{self.value}")
         try:
             return decoder(value)
