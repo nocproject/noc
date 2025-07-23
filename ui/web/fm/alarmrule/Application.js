@@ -124,6 +124,26 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     allowBlank: true
                 },
                 {
+                  name: "rule_action",
+                  xtype: "combobox",
+                  fieldLabel: __("Rule Action"),
+                  store: [
+                    ["D", __("Disable")],
+                    ["C", __("After Create")],
+                    ["U", __("After Update")]
+                  ],
+                  value: "continue",
+                  uiStyle: "medium",
+                },
+                {
+                    name: "clear_after_ttl",
+                    xtype: "numberfield",
+                    fieldLabel: __("Clear After (sec.)"),
+                    allowBlank: true,
+                    min: 0,
+                    uiStyle: "small"
+                },
+                {
                     name: "groups",
                     xtype: "gridfield",
                     fieldLabel: __("Group Alarm"),

@@ -62,7 +62,7 @@ from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSumm
 from noc.core.version import version
 from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
-from noc.core.defer import defer
+from noc.core.defer import defer, call_later
 from noc.core.perf import metrics
 from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
 from noc.core.msgstream.message import Message
@@ -463,7 +463,7 @@ class CorrelatorService(FastAPIService):
                 alarm.add_watch(
                     Effect.CLEAR_ALARM,
                     key="",
-                    after=alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl)
+                    after=alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl),
                 )
         if actions:
             # Call marge_actions
@@ -671,6 +671,16 @@ class CorrelatorService(FastAPIService):
             defer(
                 "noc.sa.models.service.refresh_service_status",
                 svc_ids=[str(x) for x in a.affected_services],
+            )
+        if a.wait_ts:
+            call_later(
+                "noc.services.correlator.alarmjob.touch_alarm",
+                scheduler="correlator",
+                max_runs=5,
+                pool=a.managed_object.get_effective_fm_pool().name,
+                delay=a.wait_ts - datetime.datetime.now(),
+                shard=a.managed_object.id,
+                alarm=a.id,
             )
         return a
 
