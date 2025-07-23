@@ -228,7 +228,7 @@ class AlarmApplication(ExtApplication):
         #
         if "wait_tt" in q:
             if status == "A":
-                q["wait_tt__exists"] = True
+                q["watchers__effect"] = Effect.STOP_CLEAR.value
                 q["wait_ts__exists"] = False
             del q["wait_tt"]
         #

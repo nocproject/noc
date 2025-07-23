@@ -215,6 +215,14 @@ class AlarmRule(Document):
         ],
         default="continue",
     )
+    #
+    ttl_policy = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("D", "After Create"),
+            ("U", "After Update"),
+        ], default="D")
+    clear_after_ttl = IntField(min_value=0, default=0)
     # checks
     alarm_class = PlainReferenceField(AlarmClass, required=False)
     stop_processing = BooleanField(default=False)
