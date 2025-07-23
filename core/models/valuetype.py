@@ -137,3 +137,10 @@ class ValueType(enum.Enum):
         if scope:
             return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None
+
+    @property
+    def resource_model(self) -> Optional[str]:
+        match self:
+            case ValueType.IFACE_NAME:
+                return "inv.Interface"
+        return None
