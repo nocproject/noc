@@ -601,6 +601,17 @@ class ActiveAlarm(Document):
             partition=partition,
         )
 
+    def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
+        wait_ts = []
+        if timestamp:
+            wait_ts = [timestamp]
+        for w in self.watchers:
+            if w.after and wait_ts:
+                wait_ts.append(w.after)
+        if wait_ts:
+            return min(wait_ts)
+        return None
+
     def add_watch(
         self,
         effect: Effect,
@@ -637,11 +648,8 @@ class ActiveAlarm(Document):
                     args=kwargs,  # Convert to string
                 )
             )
-        if after and not self.wait_ts:
-            # Update waiter
-            self.wait_ts = after
-        elif self.wait_ts:
-            self.wait_ts = ""
+        if after:
+            self.wait_ts = self.get_wait_ts(self.wait_ts)
 
     def stop_watch(self, effect: Effect, key: str):
         """Stop waiting callback"""

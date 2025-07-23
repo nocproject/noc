@@ -456,7 +456,17 @@ class CorrelatorService(FastAPIService):
                     min_severity=rule.min_severity,
                     max_severity=rule.max_severity,
                 )
+            if rule.rewrite_alarm_class:
+                # Alarm Rewrite Class
+                ...
+            if rule.clear_after_ttl:
+                alarm.add_watch(
+                    Effect.CLEAR_ALARM,
+                    key="",
+                    after=alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl)
+                )
         if actions:
+            # Call marge_actions
             req = AlarmActionRequest(
                 ctx=0,
                 actions=actions,
@@ -610,6 +620,7 @@ class CorrelatorService(FastAPIService):
                     alarm_groups[gi.reference] = gi
         # Apply rules
         rule_groups, action_req = await self.apply_rules(a, alarm_groups.keys())
+        # Rewriter Alarm Class/Drop
         if rule_groups:
             alarm_groups |= rule_groups
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
