@@ -174,9 +174,15 @@ class ServiceInstance(Document):
         return f"[{self.type}] {name}"
 
     @classmethod
-    def ensure_instance(cls, service, cfg: ServiceInstanceConfig) -> Optional["ServiceInstance"]:
+    def ensure_instance(
+        cls,
+        service,
+        cfg: ServiceInstanceConfig,
+        settings: Optional[ServiceInstanceTypeConfig] = None,
+    ) -> Optional["ServiceInstance"]:
         """ """
-        qs = cfg.get_queryset(service)
+        settings = settings or ServiceInstanceTypeConfig()
+        qs = cfg.get_queryset(service, settings)
         instance = ServiceInstance.objects.filter(qs).first()
         logger.debug("[%s] Find Instance by query: %s, Result: %s", service.id, qs, instance)
         if not instance:

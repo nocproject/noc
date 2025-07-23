@@ -83,8 +83,13 @@ class ServiceInstanceConfig:
             asset_refs=kwargs.get("asset_refs"),
         )
 
-    def get_queryset(self, service: Any, **kwargs) -> Q:
+    def get_queryset(self, service: Any, settings: ServiceInstanceTypeConfig, **kwargs) -> Q:
         """Request ServiceInstance QuerySet"""
+        if not settings.only_one_instance:
+            # SourceETL, On Discovery - ManagedObject
+            return Q(
+                service=service, type=self.type, name=self.name or None, remote_id=self.remote_id
+            )
         return Q(service=service, type=self.type, name=self.name or None)
 
 
