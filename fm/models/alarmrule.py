@@ -300,4 +300,6 @@ class AlarmRule(Document):
             r["min_severity"] = rule.min_severity.severity
         if rule.max_severity:
             r["max_severity"] = rule.max_severity.severity
+        if rule.ttl_policy != "D" and rule.clear_after_ttl:
+            r |= {"ttl_policy": rule.ttl_policy, "clear_after_ttl": rule.clear_after_ttl}
         return r
