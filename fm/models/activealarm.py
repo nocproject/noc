@@ -354,7 +354,8 @@ class ActiveAlarm(Document):
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if not force and self.allow_clear:
+        if not force and not self.allow_clear:
+            self.add_watch(Effect.CLEAR_ALARM, key="", immediate=True)
             return None
         if self.alarm_class.clear_handlers:
             # Process clear handlers
@@ -603,11 +604,11 @@ class ActiveAlarm(Document):
 
     def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
         wait_ts = []
-        if timestamp:
-            wait_ts = [timestamp]
         for w in self.watchers:
-            if w.after and wait_ts:
+            if w.after:
                 wait_ts.append(w.after)
+        if timestamp:
+            wait_ts.append(timestamp)
         if wait_ts:
             return min(wait_ts)
         return None
@@ -632,10 +633,11 @@ class ActiveAlarm(Document):
             clear_only: Run only alarm clear
             after: Run After Timer
         """
-        if effect == Effect.CLEAR_ALARM and not after:
-            raise ValueError("Clear Alarm effected supported only deadline")
+        if effect == Effect.CLEAR_ALARM and (clear_only or once):
+            raise ValueError("Not supported options")
         for w in self.watchers:
             if effect == w.effect and key == w.key:
+                w.after = after
                 break
         else:
             self.watchers.append(
@@ -645,6 +647,7 @@ class ActiveAlarm(Document):
                     once=once,
                     immediate=immediate,
                     clear_only=clear_only,
+                    after=after,
                     args=kwargs,  # Convert to string
                 )
             )
@@ -667,12 +670,15 @@ class ActiveAlarm(Document):
         Args:
             is_clear: Flag for alarm_clear procedure
         """
+        now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
         for w in self.watchers:
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
                 continue
             if w.immediate:
                 # If Immediate, not run (used for save run only)
+                continue
+            if w.after and w.after > now:
                 continue
             w.run(self, is_clear=is_clear)
 

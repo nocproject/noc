@@ -346,13 +346,10 @@ class AlarmJob(object):
 
 
 def touch_alarm(alarm, *args, **kwargs):
-    a = get_alarm(alarm)
+    a = ActiveAlarm.objects.filter(id=alarm).first()
     if not a:
         logger.info("[%s] Alarm is not found, skipping", alarm)
         return
-    if a.status == "C":
-        logger.info("[%s] Alarm is closed, skipping", alarm)
-        return
-    alarm.touch_watch()
-    if alarm.wait_ts:
-        Job.retry_after(delay=alarm.wait_ts - datetime.datetime.now())
+    a.touch_watch()
+    if a.wait_ts:
+        Job.retry_after(delay=(a.wait_ts - datetime.datetime.now()).total_seconds())

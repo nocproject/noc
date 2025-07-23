@@ -87,4 +87,6 @@ class WatchItem(EmbeddedDocument):
                 alarm.refresh_job(is_clear, job_id=self.key)
             case Effect.CLEAR_ALARM:
                 # To Last Action
-                alarm.clear_alarm("Clear alarm by DeadLine")
+                if not is_clear:
+                    # Condition deny recursion
+                    alarm.clear_alarm("Clear alarm by DeadLine")
