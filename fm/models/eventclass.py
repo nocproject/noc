@@ -445,7 +445,7 @@ class EventClass(Document):
                     "type": vv.type.value,
                     "required": vv.required,
                     "match_suppress": vv.match_suppress,
-                    "resource_model": "inv.Interface" if event_class.link_event else None,
+                    "resource_model": vv.type.resource_model,
                 }
             )
         r["actions"] += DispositionRule.get_actions(event_class=event_class)
