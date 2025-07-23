@@ -368,6 +368,7 @@ class EscalationSequence(BaseSequence):
         ]
         return {
             "alarm": self.alarm,
+            "managed_object": self.alarm.managed_object,
             "affected_objects": affected_objects,
             "cons_escalated": cons_escalated,
             "total_objects": self.summary_to_list(self.alarm.total_objects, ManagedObjectProfile),
