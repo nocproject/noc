@@ -41,6 +41,16 @@ Ext.define("NOC.fm.alarmrule.Model", {
             type: "auto"
         },
         {
+            name: "ttl_policy",
+            type: "string",
+            defaultValue: "D"
+        },
+        {
+            name: "clear_after_ttl",
+            type: "integer",
+            defaultValue: 0
+        },
+        {
             name: "severity_policy",
             type: "string",
             defaultValue: "AL"
