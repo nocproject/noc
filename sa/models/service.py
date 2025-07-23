@@ -879,7 +879,8 @@ class Service(Document):
         # Check only one instances
         # By Service Group?
         for cfg in instances:
-            instance = ServiceInstance.ensure_instance(self, cfg)
+            settings = self.profile.get_instance_config(cfg.type, cfg.name)
+            instance = ServiceInstance.ensure_instance(self, cfg, settings)
             # Update Data, Run sync
             instance.update_config(cfg)
             # Add Source
@@ -924,7 +925,8 @@ class Service(Document):
             return None
         # Check Allowed create instance
         # Check multiple instances
-        si = ServiceInstance.ensure_instance(self, cfg)
+        settings = self.profile.get_instance_config(type, name)
+        si = ServiceInstance.ensure_instance(self, cfg, settings)
         changed = False
         # Update data
         si.seen(source)
