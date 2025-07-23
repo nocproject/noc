@@ -11,7 +11,7 @@ Ext.define("NOC.main.template.Application", {
   requires: [
     "NOC.main.template.Model",
     "NOC.main.ref.messagetype.LookupField",
-    "NOC.main.language.LookupField",
+    "NOC.main.ref.ulanguage.LookupField",
     "NOC.core.JSONPreviewII",
   ],
   model: "NOC.main.template.Model",
@@ -86,13 +86,14 @@ Ext.define("NOC.main.template.Application", {
           allowBlank: true,
         },
         {
-          name: "language",
-          xtype: "main.language.LookupField",
+          xtype: "core.combo",
+          restUrl: "/main/ref/ulanguage/lookup/",
           fieldLabel: __("Language"),
           allowBlank: false,
-          query: {
-            "is_active": true
-          }
+          typeAhead: false,
+          editable: false,
+          uiStyle: "medium-combo",
+          name: "language",
         },
         {
           name: "subject",
