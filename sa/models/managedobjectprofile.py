@@ -1111,11 +1111,13 @@ class ManagedObjectProfile(NOCModel):
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             FIRST_AVAIL,
-            show_in_display=False,
+            show_in_display=True,
+            hide_enable=True,
             display_description="On if ICMP available received",
             blocked=not self.enable_ping,
             run_policy="D",
             workflow_event="avail",
+            workflow_enabled_event="checked",
             reason="Disable Ping check" if not self.enable_ping else None,
         )
         policy, reason = self.address_resolution_policy, ""

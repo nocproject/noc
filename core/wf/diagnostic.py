@@ -120,7 +120,8 @@ class DiagnosticConfig(object):
         run_order: S - Before all discovery, E - After all discovery
         discovery_box: Run on Discovery Box
         discovery_periodic: Run on Periodic Discovery
-        workflow_event: Send fire event when set
+        workflow_enabled_event: Send fire event when set enabled
+        workflow_event: Send fire event on Diagnostic in Unknown/Failed state
         show_in_display: Show diagnostic on UI
         display_description: Description for show User
         display_order: Order on displayed list
@@ -146,11 +147,13 @@ class DiagnosticConfig(object):
     discovery_box: bool = False
     discovery_periodic: bool = False
     #
+    workflow_enabled_event: Optional[str] = None
     workflow_event: Optional[str] = None
     #
     save_history: bool = False
     # Display Config
     show_in_display: bool = True
+    hide_enable: bool = False
     display_description: Optional[str] = None
     display_order: int = 0
     # FM Config
@@ -245,6 +248,25 @@ class DiagnosticItem(BaseModel):
     @property
     def config(self):
         return self._config
+
+    @property
+    def show_in_display(self) -> bool:
+        """Show Diagnostic Value on Display"""
+        if (
+            self.config.show_in_display
+            and self.config.hide_enable
+            and self.state == DiagnosticState.enabled
+        ):
+            return False
+        return self.config.show_in_display
+
+    @property
+    def workflow_event(self) -> Optional[str]:
+        if not self.config.workflow_event:
+            return None
+        if self.state != DiagnosticState.enabled and self.state != DiagnosticState.blocked:
+            return self.config.workflow_event
+        return None
 
     def reset(self, reason="Reset by"):
         if self.config.blocked:
@@ -625,6 +647,13 @@ class DiagnosticHub(object):
             d_name = d_new.diagnostic
             d_current = self.get_object_diagnostic(d_name)
             # Diff
+            if d_new.workflow_event:
+                self.logger.debug(
+                    "[%s] Send Workflow Event: %s",
+                    d_name,
+                    d_new.workflow_event,
+                )
+                self.__object.fire_event(d_new.workflow_event)
             if d_current == d_new:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
                 continue
@@ -642,8 +671,8 @@ class DiagnosticHub(object):
                     reason=d_new.reason,
                     ts=d_new.changed,
                 )
-                if d_new.config.workflow_event:
-                    self.__object.fire_event(d_new.config.workflow_event)
+                if d_new.state == DiagnosticState.enabled and d_new.config.workflow_enabled_event:
+                    self.__object.fire_event(d_new.config.workflow_enabled_event)
             self.__object.diagnostics[d_name] = d_new.model_dump()
             updated += [d_new]
         removed = set(self.__object.diagnostics) - set(self.__diagnostics)
