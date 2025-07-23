@@ -648,7 +648,9 @@ class DiagnosticHub(object):
             d_current = self.get_object_diagnostic(d_name)
             # Diff
             if d_new.workflow_event:
-                self.logger.debug("[%s] Send Workflow Event", d_name, d_new.workflow_event)
+                self.logger.debug(
+                    "[%s] Send Workflow Event: %s", d_name, d_new.workflow_event,
+                )
                 self.__object.fire_event(d_new.workflow_event)
             if d_current == d_new:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
