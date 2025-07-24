@@ -4,5 +4,7 @@
     "uuid": "10b1afe0-706d-4cde-9745-f0af822cea35",
     "description": null,
     "type": "mac",
-    "card_template": null
+    "card_template": null,
+    "allow_manual": true,
+    "multi": true
 }

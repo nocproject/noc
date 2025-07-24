@@ -39,7 +39,7 @@ SELECT managed_object, interface, groupUniqArray(MACNumToString(mac)) as u_macs,
 """
 
 REQUEST_DAYS = 7
-LIMIT_MAC_BY_PORT = 50
+LIMIT_MAC_BY_PORT = 70
 CHUNK = 2000
 
 
@@ -65,26 +65,28 @@ class NetworkInstanceDiscoveryJob(PeriodicJob):
             type=InstanceType.ASSET, asset_refs__in=list(mac_iface_map)
         ).scalar("service", "asset_refs"):
             updates = len(bulk)
+            ifaces, update_ts = [], None
             for mac_ref in refs:
                 if mac_ref not in mac_iface_map:
                     continue
                 iface, update_ts = mac_iface_map[mac_ref]
+                ifaces.append(iface)
+            if ifaces:
                 si = svc.register_instance(
                     InstanceType.NETWORK_CHANNEL,
                     source=InputSource.DISCOVERY,
-                    managed_object=iface.managed_object,
+                    managed_object=ifaces[0].managed_object,
                 )
                 si.update_resources(
-                    [iface], source=InputSource.DISCOVERY, update_ts=update_ts, bulk=bulk
+                    ifaces, source=InputSource.DISCOVERY, update_ts=update_ts, bulk=bulk
                 )
                 processed.add(svc.id)
                 if len(bulk) != updates:
-                    self.logger.info("[%s] Bind to interface: %s", svc, iface)
-                    objects.add(iface.managed_object)
+                    self.logger.info("[%s] Bind to interface: %s", svc, ifaces)
+                    objects |= {i.managed_object for i in ifaces}
                 for r in refs:
                     # Exclude duplicate
                     mac_iface_map.pop(r, None)
-                break
         asset_services = [
             svc
             for svc in ServiceInstance.objects.filter(
