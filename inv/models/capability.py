@@ -94,6 +94,8 @@ class Capability(Document):
             "description": self.description,
             "type": self.type.value,
             "card_template": self.card_template,
+            "allow_manual": self.allow_manual,
+            "multi": self.multi,
         }
         if self.agent_collector and self.agent_param:
             r["agent_collector"] = self.agent_collector
