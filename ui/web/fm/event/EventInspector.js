@@ -139,9 +139,11 @@ Ext.define("NOC.fm.event.EventInspector", {
   },
   //
   onReclassify: function(){
+    var record = this.getViewModel().get("record");
     Ext.Ajax.request({
       url: "/fm/event/" + this.getViewModel().data.id + "/reclassify/",
       method: "POST",
+      jsonData: record.data,
       success: function(){
         NOC.info(__("Event reclassified"));
       },
