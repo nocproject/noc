@@ -139,7 +139,7 @@ class Command(BaseCommand):
                 while data:
                     chunk, data = data[:CHUNK], data[CHUNK:]
                     await client.publish(
-                        b"\n".join(chunk),
+                        "\n".join(chunk).encode(),
                         stream=f"ch.{table}",
                         partition=random.randint(0, n_parts - 1),
                     )
