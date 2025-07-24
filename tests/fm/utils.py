@@ -29,6 +29,7 @@ class MOMock:
     name = "Test Object"
     segment = SegmentMock()
     tt_queue = None
+    escalator_shard = ""
 
     def can_escalate(self, depended=False, tt_system=None):
         return True

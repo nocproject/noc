@@ -327,7 +327,7 @@ class ActiveAlarm(Document):
     @property
     def allow_clear(self) -> bool:
         """Check Alarm allowed for clear"""
-        for w in self.watchers:
+        for w in self.watchers or []:
             if w.effect == Effect.STOP_CLEAR:
                 return False
         return True
@@ -409,6 +409,7 @@ class ActiveAlarm(Document):
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         if dry_run:
+            self.status = "C"
             return a
         a.save()
         # Set checks on all consequences
@@ -663,12 +664,14 @@ class ActiveAlarm(Document):
             r.append(w)
         if len(r) != len(self.watchers):
             self.watchers = r
+            self.wait_ts = self.get_wait_ts()
 
-    def touch_watch(self, is_clear: bool = False):
+    def touch_watch(self, is_clear: bool = False, dry_run: bool = False):
         """
         Processed watchers
         Args:
             is_clear: Flag for alarm_clear procedure
+            dry_run: For tests run
         """
         now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
         for w in self.watchers:
@@ -680,7 +683,7 @@ class ActiveAlarm(Document):
                 continue
             if w.after and w.after > now:
                 continue
-            w.run(self, is_clear=is_clear)
+            w.run(self, is_clear=is_clear, dry_run=dry_run)
 
     @property
     def duration(self) -> int:
