@@ -140,7 +140,6 @@ Ext.define("NOC.core.MonacoPanel", {
       language: "python",
       readOnly: true,
       automaticLayout: true,
-      theme: "vs-dark",
     },
   ],
   preview: function(record, backItem){

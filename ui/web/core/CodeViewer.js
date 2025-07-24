@@ -23,7 +23,7 @@ Ext.define("NOC.core.CodeViewer", {
   language: "javascript",
   value: "",
   readOnly: false,
-  theme: "vs",
+  theme: "vs-dark",
   automaticLayout: true,
     
   editor: null,
