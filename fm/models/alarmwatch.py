@@ -68,7 +68,7 @@ class WatchItem(EmbeddedDocument):
         r |= alarm.get_message_body(is_clear=is_clear, template=template)
         return r
 
-    def run(self, alarm, is_clear: bool = False):
+    def run(self, alarm, is_clear: bool = False, dry_run: bool = False):
         match self.effect:
             case Effect.TT_SYSTEM:
                 AlarmEscalation.watch_alarm(**self.get_args(alarm, is_clear))
@@ -89,4 +89,4 @@ class WatchItem(EmbeddedDocument):
                 # To Last Action
                 if not is_clear:
                     # Condition deny recursion
-                    alarm.clear_alarm("Clear alarm by DeadLine")
+                    alarm.clear_alarm("Clear alarm by DeadLine", dry_run=dry_run)
