@@ -19,12 +19,37 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
   init: function(grid){
     this.grid = grid;
     grid.on("cellclick", function(view, cell, cellIndex, record, tr, rowIndex, e){
-      var column = e.position.column;
+      var column = e.position.column,
+        action = e.target.getAttribute("data-action");
+      
+      if(action === "copy"){
+        NOC.toClipboard(record.get(this.dataIndex));
+        return;
+      }
       if(column && column.useModalEditor){
         this.urlPrefix = column.urlPrefix || "urlPrefix_not_set";
         this.showEditor(record, column, view, cell);
       }
     }, this);
+    Ext.each(grid.columns
+      .filter(column => column.useModalEditor),
+             function(column){
+               column.renderer = function(v, _, record){
+                 var value = v,
+                   iconName = Ext.isEmpty(record.get("editor")) ? "lock" : "pencil",
+                   cursorStyle = iconName === "pencil" ? "cursor: pointer;" : "",
+                   icon = `<i class='fa fa-${iconName}' style='padding-right: 4px;${cursorStyle}' title='` + __(iconName === "pencil" ? "Edit" : "Read only") + "'></i>",
+                   copyIcon = NOC.clipboardIcon("").replace(/onclick='NOC\.toClipboard\(""\)'/, "data-action='copy'");
+                 if((v === true) || (v === false)){
+                   value = NOC.render.Bool(v);
+                   // Don't show copy icon for boolean values
+                   copyIcon = "";
+                 }
+                 value = Ext.isEmpty(value) ? "-" : value;
+                 return icon + value + copyIcon;
+               }
+             },
+    );
   },
   //
   addRowButtonHandler: function(button){
