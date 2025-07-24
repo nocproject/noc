@@ -92,6 +92,10 @@
     {
       "name": "monaco",
       "version": "0.52.2"
+    },
+    {
+      "name": "micromark",
+      "version": "3.0.2"
     }
   ]
 }
