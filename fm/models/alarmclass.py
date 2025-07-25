@@ -144,6 +144,8 @@ class AlarmClass(Document):
     is_unique = BooleanField(default=False)
     # Do not move alarm to Archive when clear, just delete
     is_ephemeral = BooleanField(default=False)
+    # Allow create alarm by reference (without managed_object)
+    by_reference = BooleanField(default=False)
     # List of var names to be used as default reference key
     reference = ListField(StringField())
     # Can alarm status be cleared by user
