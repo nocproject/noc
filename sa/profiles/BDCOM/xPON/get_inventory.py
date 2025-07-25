@@ -22,7 +22,8 @@ class Script(BaseScript):
         r"^(?P<ifname>(?:g0|tg0|gpon0|epon0)/\d+)\s*(?:.+\s*(?:\n)?)?\s+"
         r"(?P<status>shutdown|down|up)\s.+?"
         r"\s(?P<transceiver>Giga-FX-SFP|Giga-Combo-FX-SFP|10Giga-FX-SFP|GPON|Giga-PON|10Giga-DAC)\s*?\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_trans = re.compile(
         r"(^\s+Transceiver type\s+(?P<description>\S+)\s*\n)?"
         r"^Transceiver Info:\s*\n"
@@ -30,12 +31,14 @@ class Script(BaseScript):
         r"^\s+(?:SM (?P<ll>\d+)KM|CABLE (?P<lm>\d+)M)(?:\s*\n)?"
         r"\s+DDM:(?:YES|NO),Vend:(?P<vendor>\S+),PN:(?P<part_no>\S+)\s*\n"
         r"^\s+SerialNum:(?P<serial>\S+),Date:(?P<mfg_date>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_trans_old = re.compile(
         r"^Transceiver Info:\s*\n"
         r"^\s+SFP,(?P<plug>LC|SC|COP_PIGER),(?P<nm>\d+)nm,(?P<xcvr_type>\S+),[MS]M (?P<ll>\d+)K?M"
         r"\s+DDM:(?:YES|NO),Vend:(?P<vendor>\S+),SerialNum:(?P<serial>\S+),Date:(?P<mfg_date>\S+)\s*\n",
-        re.MULTILINE)
+        re.MULTILINE,
+    )
     rx_descr = re.compile(r"^(?P<vendor>\S+?)\-(?P<part_no>\S+)$")
 
     def convert_speed(self, rate: str) -> str:
@@ -194,11 +197,13 @@ class Script(BaseScript):
                     elif xcvr_type == "10000BASE-FX":
                         # Found in P3608-2TE
                         if match.group("plug") == "COP_PIGER":
-                             part_no = part_no + "10G | SFP+ Twinax"
+                            part_no = part_no + "10G | SFP+ Twinax"
                         else:
                             part_no = part_no + "SFP+"
                     else:
-                        self.logger.info(f"{ifname} - Unknown xcvr_type '{xcvr_type}' for SFP+ `part_no`.")
+                        self.logger.info(
+                            f"{ifname} - Unknown xcvr_type '{xcvr_type}' for SFP+ `part_no`."
+                        )
                         part_no = part_no + "SFP+"
                 elif p == "SFP":
                     if xcvr_type == "1000BASE-LX":
@@ -206,7 +211,9 @@ class Script(BaseScript):
                     elif xcvr_type in ["1000BASE-X", "1000BASE-FX"]:
                         part_no = part_no + "1G | SFP"
                     else:
-                        self.logger.info(f"{ifname} - Unknown xcvr_type '{xcvr_type}' for SFP `part_no`.")
+                        self.logger.info(
+                            f"{ifname} - Unknown xcvr_type '{xcvr_type}' for SFP `part_no`."
+                        )
                         part_no = part_no + "Unknown SFP"
                 else:
                     self.logger.info(f"{ifname} - Unknown `part_no` '{p}'.")
