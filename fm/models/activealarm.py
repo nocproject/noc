@@ -1260,6 +1260,10 @@ class ComponentHub(object):
         self.__components: Dict[str, Any] = {}
         self.__all_components: Optional[Set[str]] = None
 
+    def get_resources(self) -> List[str]:
+        """Return resources"""
+        return []
+
     def get(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
         if name in self.__components:
             return self.__components[name] if self.__components[name] is not None else default

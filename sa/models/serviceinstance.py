@@ -113,7 +113,7 @@ class ServiceInstance(Document):
     # Asset Data
     asset_refs: List[str] = ListField(StringField(required=True))
     # Used Resources
-    resources: List[str] = ListField(StringField(required=False))
+    resources: List[str] = ListField(StringField(required=True))
     # Operation Attributes
     oper_status: bool = BooleanField()
     oper_status_change = DateTimeField()
@@ -190,6 +190,25 @@ class ServiceInstance(Document):
             instance = ServiceInstance.from_config(service, cfg)
             instance.save()
         return instance
+
+    @classmethod
+    def from_config(
+        cls,
+        service,
+        config: ServiceInstanceConfig,
+        **kwargs,
+    ) -> "ServiceInstance":
+        """Create Service Instance"""
+        # First discovered
+        return ServiceInstance(
+            type=config.type,
+            service=service,
+            name=config.name,
+            fqdn=config.fqdn,
+            remote_id=config.remote_id,
+            nri_port=config.nri_port,
+            asset_refs=config.asset_refs,
+        )
 
     def update_config(self, cfg: ServiceInstanceConfig):
         """Update instance Data from config"""
@@ -320,9 +339,15 @@ class ServiceInstance(Document):
     @classmethod
     def get_services_by_alarm(cls, alarm: ActiveAlarm):
         """Getting Service Instance by alarm"""
+        # Instance | Save include managed object Global | Local reference
         q = Q(managed_object=alarm.managed_object.id)
-        if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
-            q |= Q(resources=alarm.components.interface.as_resource())
+        #
+        resources = alarm.components.get_resources()
+        if resources:
+            # Interface, Sub, Peer
+            q |= Q(resources=resources)
+        refs = alarm.get_references()
+        # pool/address
         address = None
         if "address" in alarm.vars:
             address = alarm.vars.get("address")
@@ -332,6 +357,7 @@ class ServiceInstance(Document):
         if address:
             q &= Q(addresses__address=address)
         # Name, port
+        # Get cfg
         return ServiceInstance.objects.filter(q).scalar("service")
 
     def register_endpoint(
@@ -491,27 +517,6 @@ class ServiceInstance(Document):
             )
             if self.managed_object and bulk is None:
                 ServiceSummary.refresh_object(self.managed_object)
-
-    @classmethod
-    def from_config(
-        cls,
-        service,
-        config: ServiceInstanceConfig,
-        **kwargs,
-    ) -> "ServiceInstance":
-        """Create Service Instance"""
-        # First discovered
-        si = ServiceInstance(
-            type=config.type,
-            service=service,
-            name=config.name,
-            fqdn=config.fqdn,
-            remote_id=config.remote_id,
-            nri_port=config.nri_port,
-        )
-        if kwargs.get("macs"):
-            si.asset_refs = [f"mac:{m}" for m in kwargs["macs"]]
-        return si
 
     @classmethod
     def get_object_resources(cls, o) -> Dict[str, str]:

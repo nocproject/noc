@@ -133,6 +133,7 @@ class InstanceSettings(EmbeddedDocument):
             send_approve=self.send_approve,
             allow_register=self.allow_register,
             ttl=self.ttl,
+            refs_caps=self.refs_caps,
         )
 
 

@@ -850,18 +850,11 @@ class Service(Document):
         if self.profile.instance_policy != "C":
             return
         instances: List[ServiceInstanceConfig] = []
-        caps = self.get_caps()
         for settings in self.profile.instance_settings:
-            if not settings.refs_caps or settings.refs_caps.name not in caps:
+            cfg = ServiceInstanceConfig.get_config(settings.instance_type)
+            cfg = cfg.from_settings(settings.get_config(), self, settings.name)
+            if not cfg:
                 continue
-            refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
-            if not refs:
-                continue
-            cfg = ServiceInstanceConfig.get_config(
-                settings.instance_type,
-                name=settings.name,
-                asset_refs=refs,
-            )
             instances.append(cfg)
         self.update_instances(InputSource.CONFIG, instances)
 
@@ -917,7 +910,8 @@ class Service(Document):
         if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        cfg = ServiceInstanceConfig.get_config(type, name=name, fqdn=fqdn)
+        cfg = ServiceInstanceConfig.get_config(type)
+        cfg = cfg.from_config(name=name, fqdn=fqdn)
         if not cfg:
             logger.warning(
                 "[%s|%s] Instance Type is not allowed by Service settings", self.id, type
