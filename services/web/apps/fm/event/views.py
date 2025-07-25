@@ -22,7 +22,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.bi.models.events import Events
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, EventSource
+from noc.core.fm.event import Event, MessageType, Target
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -220,38 +220,29 @@ class EventApplication(ExtApplication):
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/reclassify/$", method=["POST"], api=True, access="reclassify")
     def api_reclassify(self, request, id):
-        # q = self.parse_request_query(request)
-        e = Event.get_by_id(id)
-        if e.target.id:
-            mo = ManagedObject.get_by_id(int(e.target.id))
+        q = self.parse_request_query(request)
+        if "managed_object_id" in q:
+            mo = ManagedObject.get_by_id(q["managed_object_id"])
             s, p = mo.events_stream_and_partition
         else:
             s, p = "events.default", 0
-        if e.type.source == EventSource.SNMP_TRAP:
-            data = {
-                "ts": e.ts,
-                "target": {
-                    "address": e.target.address,
-                    "name": e.target.name,
-                    "pool": config.pool,
-                    "id": e.target.id,
-                },
-                "type": {"source": EventSource.SNMP_TRAP.value, "id": e.type.id},
-                "data": [
-                    {"name": v.name, "value": v.value, "snmp_raw": True}
-                    for v in e.data
-                    if v.snmp_raw
-                ],
-                # + [{"name": "message_id", "value": message_id}]
-            }
-        else:
-            data = e.model_dump()
-        svc = get_service()
-        svc.publish(
-            orjson.dumps(data),
-            stream=s,
-            partition=p,
+        remote_system = None
+        if q.get("remote_system"):
+            remote_system = RemoteSystem.get_by_name(q["remote_system"])
+        e = Event(
+            id=q["id"],
+            ts=datetime.datetime.fromisoformat(q["timestamp"]).timestamp(),
+            target=Target(**q["target_id"]),
+            type=MessageType(source=q["source"], id=q.get("snmp_trap_oid")),
+            data=q["data"],
+            labels=q["labels"],
+            message=q.get("message"),
+            remote_system=remote_system.name if remote_system else None,
+            remote_id=q["remote_id"] if remote_system else None,
         )
+        data = e.model_dump()
+        svc = get_service()
+        svc.publish(orjson.dumps(data), stream=s, partition=p)
         return {"status": True}
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/json/$", method=["GET"], api=True, access="launch")
