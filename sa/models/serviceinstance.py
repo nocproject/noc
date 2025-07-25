@@ -37,6 +37,7 @@ from noc.core.models.serviceinstanceconfig import (
 )
 from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
+from noc.core.validators import is_ipv4, is_fqdn
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -348,11 +349,26 @@ class ServiceInstance(Document):
         return r
 
     @classmethod
-    def get_services_by_alarm(cls, alarm: ActiveAlarm):
-        """Getting Service Instance by alarm"""
+    def get_alarm_addresses(cls, alarm: "ActiveAlarm") -> List[str]:
+        """Convert Active Alarm to addresses"""
+        r = []
+        # Alarm Class Vars ?
+        for vars_name in ["address", "peer"]:
+            if vars_name in alarm.vars and is_ipv4(alarm.vars[vars_name]):
+                r.append(IP.prefix(alarm.vars[vars_name]).address)
+        return r
+
+    @classmethod
+    def get_instance_filter_by_alarm(
+        cls, alarm: ActiveAlarm, include_object: bool = False
+    ) -> Optional[Q]:
+        """Build Alarm filter for query affected instances"""
         # Instance | Save include managed object Global | Local reference
-        q = Q(managed_object=alarm.managed_object.id)
-        #
+        if include_object and alarm.managed_object:
+            q = Q(managed_object=alarm.managed_object.id, type=InstanceType.ASSET)
+        else:
+            q = Q()
+        # Resources
         resources = alarm.components.get_resources()
         if resources:
             # Interface, Sub, Peer
@@ -362,10 +378,23 @@ class ServiceInstance(Document):
             if refs:
                 q |= Q(asset_refs__in=refs)
         except ValueError:
-            pass
-        # Name, port
-        # Get cfg
-        return ServiceInstance.objects.filter(q).scalar("service")
+            logger.error("[%s] Error converted reference for alarm", alarm.id)
+        # Addresses
+        addresses = cls.get_alarm_addresses(alarm)
+        if addresses:
+            q |= Q(addresses__address__in=addresses)
+        # Local Name
+        if not alarm.managed_object:
+            return q or None
+        return q or None
+
+    @classmethod
+    def get_services_by_alarm(cls, alarm: ActiveAlarm, include_object: bool = False):
+        """Getting Service Instance by alarm"""
+        q = cls.get_instance_filter_by_alarm(alarm, include_object)
+        if not q:
+            return []
+        return list(ServiceInstance.objects.filter(q).scalar("service"))
 
     def register_endpoint(
         self,

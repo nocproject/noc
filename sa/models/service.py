@@ -754,39 +754,30 @@ class Service(Document):
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        spr = {}
-        for p, rules in ServiceProfile.get_alarm_rules():
-            if rules is None:
-                # Any alarm by instance
-                spr[p] = True
-            if not rules:
-                continue
-            # Check rules
-            for rule in rules:
-                if rule.is_match(alarm):
-                    break
-            else:
-                continue
-            spr[p] = rule.affected_instance
-        if not q and not spr:
+        filters = ServiceProfile.get_alarm_service_filter(alarm)
+        if not q and not filters:
             return []
-        logger.info("Match Profiles: %s", spr)
+        logger.info("Match Profiles: %s", filters)
+        services, profile_rules = set(), []
+        # Iter Alarm filters
+        for instance_q, profiles in filters:
+            if instance_q is None:
+                profile_rules += profiles
+                continue
+            # Instances
+            profiles = frozenset(profiles)
+            for svc in ServiceInstance.objects.filter(instance_q).scalar("service"):
+                if svc.profile.id in profiles:
+                    continue
+                services.add(svc.id)
         # Alarm without affected instances
-        rules = [x for x in spr if not spr[x]]
-        if rules:
-            q |= m_q(profile__in=rules)
-        services = set()
-        # Instances
-        if alarm.managed_object:
-            for svc in ServiceInstance.get_services_by_alarm(alarm):
-                if svc.profile.id in spr and spr[svc.profile.id]:
-                    services.add(svc.id)
+        if profile_rules:
+            q |= m_q(profile__in=profile_rules)
         # Check dependency
-        deps = [x for x in spr if spr[x]]
-        if alarm.managed_object and alarm.managed_object.effective_service_groups and deps:
+        if alarm.managed_object and alarm.managed_object.effective_service_groups and profile_rules:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
-                profile__in=deps,
+                profile__in=profile_rules,
             )
         #
         logger.debug("Requested services by query: %s", q)
