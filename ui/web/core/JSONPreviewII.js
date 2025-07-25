@@ -14,28 +14,34 @@ Ext.define("NOC.core.JSONPreviewII", {
   app: null,
   restUrl: null,
   previewName: null,
-  tbar: [
-    {
-      itemId: "close",
-      text: __("Close"),
-      glyph: NOC.glyph.arrow_left,
-      handler: "onBack",
-    },
-    "-",
-    {
-      itemId: "save",
-      text: __("Save"),
-      glyph: NOC.glyph.save,
-      handler: "onSave",
-    },
-    "-",
-    {
-      text: __("Share"),
-      glyph: NOC.glyph.share,
-      handler: "onShare",
-    },
-  ],
+  config: {
+    saveDisabled: false,
+    shareDisabled: false,
+  },
   initComponent: function(){
+    this.tbar = [
+      {
+        itemId: "close",
+        text: __("Close"),
+        glyph: NOC.glyph.arrow_left,
+        handler: "onBack",
+      },
+      "-",
+      {
+        itemId: "save",
+        text: __("Save"),
+        glyph: NOC.glyph.save,
+        disabled: this.saveDisabled,
+        handler: "onSave",
+      },
+      "-",
+      {
+        text: __("Share"),
+        glyph: NOC.glyph.share,
+        disabled: this.shareDisabled,
+        handler: "onShare",
+      },
+    ];
     // setup editor language
     this.items[0].language = "json";
     this.callParent();

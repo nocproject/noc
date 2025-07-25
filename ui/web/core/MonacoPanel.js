@@ -144,7 +144,12 @@ Ext.define("NOC.core.MonacoPanel", {
   ],
   preview: function(record, backItem){
     this.startPreview(record, backItem);
-    this.requestText();
+    if(Ext.isEmpty(this.restUrl)){
+      var jsonData = JSON.stringify(record.data, null, 4);
+      this.setContent(jsonData);
+    } else{
+      this.requestText(record);
+    }
     this.requestRevisions();
     if(this.historyHashPrefix){
       this.app.setHistoryHash(
@@ -154,15 +159,14 @@ Ext.define("NOC.core.MonacoPanel", {
     }
   },
   startPreview: function(record, backItem){
-    var me = this,
-      bi = backItem === undefined ? me.backItem : backItem;
-    me.currentRecord = record;
-    me.backItem = bi;
-    me.rootUrl = Ext.String.format(me.restUrl, record.get("id"));
-    me.setTitle(Ext.String.format(me.previewName, record.get("name")));
-    me.fileName = Ext.String.format("{0}_{1}", Ext.util.Format.lowercase(record.get("pool__label")), record.get("address"));
+    var bi = backItem === undefined ? this.backItem : backItem;
+    this.currentRecord = record;
+    this.backItem = bi;
+    this.setTitle(Ext.String.format(this.previewName, record.get("name")));
+    this.fileName = Ext.String.format("{0}_{1}", Ext.util.Format.lowercase(record.get("pool__label")), record.get("address"));
   },
-  requestText: function(){
+  requestText: function(record){
+    this.rootUrl = Ext.String.format(this.restUrl, record.get("id"));
     this.mask(__("Loading"));
     Ext.Ajax.request({
       url: this.rootUrl,

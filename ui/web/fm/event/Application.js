@@ -60,6 +60,7 @@ Ext.define("NOC.fm.event.Application", {
       stateful: true,
       stateId: "fm.event-grid",
       allowDeselect: true,
+      emptyText: __("No events"),
       // * dispose (логическое)
       columns: [
         {
@@ -167,8 +168,9 @@ Ext.define("NOC.fm.event.Application", {
     //
     me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: "/fm/event/{0}/json/",
       previewName: "Event: {0}",
+      saveDisabled: true,
+      shareDisabled: true,
     });
     me.ITEM_GRID = me.registerItem(me.mainPanel);
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
