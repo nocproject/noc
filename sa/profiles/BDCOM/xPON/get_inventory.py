@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------
-# BDCOM_xPON.get_inventory
+# BDCOM.xPON.get_inventory
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
@@ -15,7 +15,7 @@ from noc.inv.models.vendor import Vendor
 
 
 class Script(BaseScript):
-    name = "BDCOM_xPON.get_inventory"
+    name = "BDCOM.xPON.get_inventory"
     interface = IGetInventory
 
     rx_brief = re.compile(
