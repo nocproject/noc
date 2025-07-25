@@ -119,8 +119,13 @@ Ext.define("NOC.main.desktop.LoginView", {
       form.setDisabled(false);
     }
   },
-  onLoginFailure: function(){
-    NOC.error(__("Failed to log in"));
+  onLoginFailure: function(response){
+    var responseData = Ext.decode(response.responseText);
+    if(Ext.isDefined(responseData.message)){
+      NOC.error(responseData.message);
+    } else{
+      NOC.error(__("Failed to log in"));
+    }
   },
   onLoginSuccess: function(failureFunc, response){
     var result = Ext.decode(response.responseText),
@@ -139,7 +144,7 @@ Ext.define("NOC.main.desktop.LoginView", {
         this.applicationOpen();
       }
     } else{
-      failureFunc();
+      failureFunc(response);
     }
   },
   applicationOpen: function(){
