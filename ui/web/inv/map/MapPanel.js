@@ -794,7 +794,8 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     // Get nodes position
     Ext.each(me.graph.getElements(), function(e){
-      if("wrench" !== e.get("data").type && "badge" !== e.get("data").type){
+      var data = e.get("data");
+      if(!Ext.isEmpty(data) && !["wrench", "badge"].includes(data.type)){
         var v = e.get("id").split(":");
         r.nodes.push({
           type: v[0],
