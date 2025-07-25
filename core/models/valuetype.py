@@ -23,6 +23,7 @@ from noc.sa.interfaces.base import (
     MACAddressParameter,
     OIDParameter,
 )
+from noc.core.validators import is_fqdn
 
 BOOL_VALUES = frozenset(("t", "true", "yes"))
 REFERENCE_SCOPE_SPLITTER = "::"
@@ -132,6 +133,8 @@ class ValueType(enum.Enum):
 
     @staticmethod
     def decode_http_url(value):
+        if is_fqdn(value):
+            value = f"http://{value}"
         try:
             HTTPURLModel(url=value)
             return value
@@ -158,7 +161,7 @@ class ValueType(enum.Enum):
                 scope = "mac"
             case ValueType.HTTP_URL:
                 scope = "url"
-                value = HTTPURLModel(url=value)
+                value = str(HTTPURLModel(url=value).url)
         if scope:
             return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None

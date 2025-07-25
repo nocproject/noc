@@ -36,6 +36,7 @@ from noc.core.models.serviceinstanceconfig import (
     ServiceInstanceTypeConfig,
 )
 from noc.core.models.inputsources import InputSource
+from noc.core.models.valuetype import ValueType
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -337,6 +338,16 @@ class ServiceInstance(Document):
         return False
 
     @classmethod
+    def get_alarm_reference(cls, alarm: "ActiveAlarm") -> List[str]:
+        """"""
+        r = []
+        if "mac" in alarm.vars:
+            r += [ValueType.MAC_ADDRESS.clean_reference(alarm.vars["mac"])]
+        elif "url" in alarm.vars:
+            r += [ValueType.HTTP_URL.clean_reference(alarm.vars["url"])]
+        return r
+
+    @classmethod
     def get_services_by_alarm(cls, alarm: ActiveAlarm):
         """Getting Service Instance by alarm"""
         # Instance | Save include managed object Global | Local reference
@@ -346,16 +357,12 @@ class ServiceInstance(Document):
         if resources:
             # Interface, Sub, Peer
             q |= Q(resources=resources)
-        refs = alarm.get_references()
-        # pool/address
-        address = None
-        if "address" in alarm.vars:
-            address = alarm.vars.get("address")
-        elif "peer" in alarm.vars:
-            # BGP alarms
-            address = alarm.vars.get("peer")
-        if address:
-            q &= Q(addresses__address=address)
+        try:
+            refs = cls.get_alarm_reference(alarm=alarm)
+            if refs:
+                q |= Q(asset_refs__in=refs)
+        except ValueError:
+            pass
         # Name, port
         # Get cfg
         return ServiceInstance.objects.filter(q).scalar("service")

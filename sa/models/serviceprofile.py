@@ -125,6 +125,11 @@ class InstanceSettings(EmbeddedDocument):
     # Update Instance Status from resource
     # update_status = BooleanField(default=False)
 
+    def __str__(self):
+        if self.refs_caps:
+            return f"{self.instance_type} ({self.refs_caps.name}): {self.name}"
+        return f"{self.instance_type}: {self.name}"
+
     def get_config(self) -> "ServiceInstanceTypeConfig":
         return ServiceInstanceTypeConfig(
             allow_manual=self.allow_manual,

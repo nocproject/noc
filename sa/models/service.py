@@ -856,6 +856,7 @@ class Service(Document):
             if not cfg:
                 continue
             instances.append(cfg)
+        logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
     def update_instances(

@@ -78,7 +78,7 @@ class ServiceInstanceConfig:
             case InstanceType.NETWORK_CHANNEL:
                 cfg = NetworkChannelInstance
             case InstanceType.SERVICE_ENDPOINT:
-                cfg = ServiceEndPont
+                cfg = ServiceEndPoint
             case _:
                 cfg = ConfigInstance
         return cfg
@@ -137,7 +137,7 @@ class NetworkChannelInstance(ServiceInstanceConfig):
     type = InstanceType.NETWORK_CHANNEL
 
 
-class ServiceEndPont(ServiceInstanceConfig):
+class ServiceEndPoint(ServiceInstanceConfig):
     """Describe OS Process, that running service tasks. Defined by name and ManagedObject Group"""
 
     type = InstanceType.SERVICE_ENDPOINT
@@ -153,13 +153,13 @@ class ServiceEndPont(ServiceInstanceConfig):
         Create Config from settings
         """
         caps = service.get_caps()
-        ref_caps = settings.refs_caps
-        if not ref_caps or ref_caps.name not in caps or ref_caps.type != ValueType.HTTP_URL:
+        refs_caps = settings.refs_caps
+        if not refs_caps or refs_caps.name not in caps or refs_caps.type != ValueType.HTTP_URL:
             return
-        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        refs = refs_caps.get_references(caps[refs_caps.name])
         if not refs:
             return
-        url = urlparse(refs[0])
+        url = urlparse(refs[0].split("::")[1])
         host, *port = url.netloc.split(":")
         addressed, fqdn = None, None
         if is_ipv4(host):
