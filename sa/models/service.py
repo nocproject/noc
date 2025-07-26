@@ -754,39 +754,30 @@ class Service(Document):
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
-        spr = {}
-        for p, rules in ServiceProfile.get_alarm_rules():
-            if rules is None:
-                # Any alarm by instance
-                spr[p] = True
-            if not rules:
-                continue
-            # Check rules
-            for rule in rules:
-                if rule.is_match(alarm):
-                    break
-            else:
-                continue
-            spr[p] = rule.affected_instance
-        if not q and not spr:
+        filters = ServiceProfile.get_alarm_service_filter(alarm)
+        if not q and not filters:
             return []
-        logger.info("Match Profiles: %s", spr)
+        logger.info("Match Profiles: %s", filters)
+        services, profile_rules = set(), []
+        # Iter Alarm filters
+        for instance_q, profiles in filters:
+            if instance_q is None:
+                profile_rules += profiles
+                continue
+            # Instances
+            profiles = frozenset(profiles)
+            for svc in ServiceInstance.objects.filter(instance_q).scalar("service"):
+                if svc.profile.id in profiles:
+                    continue
+                services.add(svc.id)
         # Alarm without affected instances
-        rules = [x for x in spr if not spr[x]]
-        if rules:
-            q |= m_q(profile__in=rules)
-        services = set()
-        # Instances
-        if alarm.managed_object:
-            for svc in ServiceInstance.get_services_by_alarm(alarm):
-                if svc.profile.id in spr and spr[svc.profile.id]:
-                    services.add(svc.id)
+        if profile_rules:
+            q |= m_q(profile__in=profile_rules)
         # Check dependency
-        deps = [x for x in spr if spr[x]]
-        if alarm.managed_object and alarm.managed_object.effective_service_groups and deps:
+        if alarm.managed_object and alarm.managed_object.effective_service_groups and profile_rules:
             q |= m_q(
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
-                profile__in=deps,
+                profile__in=profile_rules,
             )
         #
         logger.debug("Requested services by query: %s", q)
@@ -850,19 +841,13 @@ class Service(Document):
         if self.profile.instance_policy != "C":
             return
         instances: List[ServiceInstanceConfig] = []
-        caps = self.get_caps()
         for settings in self.profile.instance_settings:
-            if not settings.refs_caps or settings.refs_caps.name not in caps:
+            cfg = ServiceInstanceConfig.get_config(settings.instance_type)
+            cfg = cfg.from_settings(settings.get_config(), self, settings.name)
+            if not cfg:
                 continue
-            refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
-            if not refs:
-                continue
-            cfg = ServiceInstanceConfig.get_config(
-                settings.instance_type,
-                name=settings.name,
-                asset_refs=refs,
-            )
             instances.append(cfg)
+        logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
     def update_instances(
@@ -917,7 +902,8 @@ class Service(Document):
         if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        cfg = ServiceInstanceConfig.get_config(type, name=name, fqdn=fqdn)
+        cfg = ServiceInstanceConfig.get_config(type)
+        cfg = cfg.from_config(name=name, fqdn=fqdn)
         if not cfg:
             logger.warning(
                 "[%s|%s] Instance Type is not allowed by Service settings", self.id, type

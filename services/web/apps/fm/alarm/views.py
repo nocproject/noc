@@ -522,7 +522,11 @@ class AlarmApplication(ExtApplication):
             event = ActiveEvent(
                 id=r["event_id"],
                 timestamp=r["ts"],
-                managed_object=ManagedObject.get_by_bi_id(r["managed_object_bi_id"]),
+                managed_object=(
+                    ManagedObject.get_by_bi_id(r["managed_object_bi_id"])
+                    if r.get("managed_object_bi_id")
+                    else None
+                ),
                 event_class=EventClass.get_by_bi_id(r["event_class_bi_id"]),
                 start_timestamp=r["start_ts"],
                 source=r["source"],
@@ -537,8 +541,10 @@ class AlarmApplication(ExtApplication):
                     "event_class__label": event.event_class.name,
                     "timestamp": event.timestamp,
                     "status": event.status,
-                    "managed_object": event.managed_object.id,
-                    "managed_object__label": event.managed_object.name,
+                    "managed_object": event.managed_object.id if event.managed_object else None,
+                    "managed_object__label": (
+                        event.managed_object.name if event.managed_object else ""
+                    ),
                     "subject": event.subject,
                 }
             ]

@@ -9,6 +9,9 @@
 import enum
 from typing import Optional, Any
 
+# Third-party modules
+from pydantic import BaseModel, HttpUrl, ValidationError
+
 # NOC modules
 from noc.sa.interfaces.base import (
     IPv4Parameter,
@@ -20,9 +23,20 @@ from noc.sa.interfaces.base import (
     MACAddressParameter,
     OIDParameter,
 )
+from noc.core.validators import is_fqdn
 
 BOOL_VALUES = frozenset(("t", "true", "yes"))
 REFERENCE_SCOPE_SPLITTER = "::"
+
+
+class HTTPURLModel(BaseModel):
+    url: HttpUrl
+
+    @classmethod
+    def normalize(cls, value) -> "HttpUrl":
+        """https://xxxx"""
+        url = HTTPURLModel(url=value)
+        return url
 
 
 class ValueType(enum.Enum):
@@ -43,6 +57,7 @@ class ValueType(enum.Enum):
     MAC_ADDRESS = "mac"
     IFACE_NAME = "interface_name"
     SNMP_OID = "oid"
+    HTTP_URL = "http_url"
 
     def get_default(self, value):
         match self.value:
@@ -117,6 +132,16 @@ class ValueType(enum.Enum):
         return OIDParameter().clean(value)
 
     @staticmethod
+    def decode_http_url(value):
+        if is_fqdn(value):
+            value = f"http://{value}"
+        try:
+            HTTPURLModel(url=value)
+            return value
+        except ValidationError as e:
+            raise ValueError(str(e))
+
+    @staticmethod
     def decode_interface_name(value):
         return value
 
@@ -134,6 +159,9 @@ class ValueType(enum.Enum):
         match self:
             case ValueType.MAC_ADDRESS:
                 scope = "mac"
+            case ValueType.HTTP_URL:
+                scope = "url"
+                value = str(HTTPURLModel(url=value).url)
         if scope:
             return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None
