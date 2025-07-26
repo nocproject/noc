@@ -44,6 +44,7 @@ class WatchItem(EmbeddedDocument):
         after: Execute after deadline
         args: Addition options for run
     """
+    meta = {"strict": False, "auto_create_index": False}
 
     effect: Effect = EnumField(Effect, required=True)
     key: str = StringField(required=True)
