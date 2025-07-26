@@ -144,6 +144,8 @@ class AlarmClass(Document):
     is_unique = BooleanField(default=False)
     # Do not move alarm to Archive when clear, just delete
     is_ephemeral = BooleanField(default=False)
+    # Allow create alarm by reference (without managed_object)
+    by_reference = BooleanField(default=False)
     # List of var names to be used as default reference key
     reference = ListField(StringField())
     # Can alarm status be cleared by user
@@ -292,6 +294,7 @@ class AlarmClass(Document):
             "uuid": self.uuid,
             "is_unique": self.is_unique,
             "is_ephemeral": self.is_ephemeral,
+            "by_reference": self.by_reference,
             "reference": [d for d in self.reference],
             "user_clearable": self.user_clearable,
             "labels": self.labels,
@@ -342,6 +345,7 @@ class AlarmClass(Document):
                 "description",
                 "is_unique",
                 "reference",
+                "by_reference",
                 "is_ephemeral",
                 "user_clearable",
                 "datasources",
@@ -384,25 +388,21 @@ class AlarmClass(Document):
     def get_notification_delay(self):
         if self.config:
             return self.config.notification_delay or None
-        else:
-            return self.notification_delay or None
+        return self.notification_delay or None
 
     def get_control_time(self, reopens: int) -> Optional[int]:
         if reopens == 0:
             if self.config:
                 return self.config.control_time0 or None
-            else:
-                return self.control_time0 or None
+            return self.control_time0 or None
         elif reopens == 1:
             if self.config:
                 return self.config.control_time1 or None
-            else:
-                return self.control_time1 or None
+            return self.control_time1 or None
         else:
             if self.config:
                 return self.config.control_timeN or None
-            else:
-                return self.control_timeN or None
+            return self.control_timeN or None
 
     def get_labels_map(self):
         """

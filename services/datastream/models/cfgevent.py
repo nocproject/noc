@@ -44,6 +44,7 @@ class Rule(BaseModel):
     action: str = "ignore"
     # Disposition
     alarm_class: Optional[str] = None
+    ignore_target_on_dispose: bool = False
     stop_processing: bool = False
     # Conditions
     match_expr: Optional[Dict[str, Any]] = None

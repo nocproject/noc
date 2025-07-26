@@ -104,6 +104,11 @@ Ext.define("NOC.fm.alarmclass.Model", {
             defaultValue: true
         },
         {
+            name: "by_reference",
+            type: "boolean",
+            defaultValue: false
+        },
+        {
             name: "handlers"
         },
         {
