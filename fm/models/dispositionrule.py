@@ -27,6 +27,7 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     EmbeddedDocumentField,
     EnumField,
+    ObjectIdField,
 )
 
 # NOC modules
@@ -90,6 +91,8 @@ class MatchData(EmbeddedDocument):
 
 
 class Match(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
     # categories: List[EventCategory] = ListField(ReferenceField(EventCategory, required=True))
@@ -99,6 +102,7 @@ class Match(EmbeddedDocument):
     ex_groups: List[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
     # severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
+    event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
 
     def __str__(self):
         return f'{", ".join(self.labels)}'
@@ -108,6 +112,15 @@ class Match(EmbeddedDocument):
         if self.event_class_re:
             return {"event_class_re": self.event_class_re}
         return {}
+
+    def clean(self):
+        ec = EventClass.get_by_name(self.event_class_re)
+        if ec:
+            self.event_classes = [ec.id]
+        else:
+            self.event_classes = [
+                ec.id for ec in EventClass.objects.filter(name=re.compile(self.event_class_re))
+            ]
 
     def get_match_expr(self) -> Dict[str, Any]:
         r = {}
@@ -144,6 +157,10 @@ class ObjectActionItem(EmbeddedDocument):
         choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
         default="N",
     )
+
+    def __str__(self):
+        return f"C: {self.action_command}; A: {self.interaction_audit}; D: {self.run_discovery}"
+
     # resource as context
     # Set Diagnostic
     # affected_service ?
@@ -425,14 +442,20 @@ class DispositionRule(Document):
             "name": rule.name,
             "is_active": rule.is_active,
             "preference": rule.preference,
-            "alarm_class": rule.alarm_disposition.name if rule.alarm_disposition else None,
+            "alarm_class": None,
             "stop_processing": rule.stop_processing,
             # disposition_var_map
             "match_expr": {},
             "vars_match_expr": {},
+            "object_actions": {},
             "event_classes": [],
             "action": "ignore",
         }
+        if rule.alarm_disposition and rule.default_action in "RC":
+            r |= {
+                "ignore_target_on_dispose": rule.alarm_disposition.by_reference,
+                "alarm_class": rule.alarm_disposition.name,
+            }
         if rule.default_action:
             r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[
                 rule.default_action
@@ -456,12 +479,13 @@ class DispositionRule(Document):
         else:
             for c in rule.vars_conditions or []:
                 r["vars_match_expr"] |= c.get_match_expr()
-        if rule.object_actions:
-            r["object_actions"] = {
-                "interaction_audit": rule.object_actions.interaction_audit.value,
-                "run_discovery": rule.object_actions.run_discovery,
-                "update_avail_status": rule.object_actions.update_avail_status,
-            }
+        object_actions = {}
+        if rule.object_actions and rule.object_actions.interaction_audit:
+            r["object_actions"]["interaction_audit"] = rule.object_actions.interaction_audit.value
+        if rule.object_actions and rule.object_actions.run_discovery:
+            r["object_actions"]["run_discovery"] = rule.object_actions.run_discovery
+        if rule.object_actions and rule.object_actions.update_avail_status != "N":
+            r["object_actions"]["update_avail_status"] = rule.object_actions.update_avail_status
         if rule.update_oper_status != "N":
             r["resource_oper_status"] = rule.update_oper_status
             # enum_state

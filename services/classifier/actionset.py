@@ -108,7 +108,7 @@ class ActionSet(object):
                 )
             ]
             self.add_notifications += 1
-        if "object_actions" in data and "interaction_audit" in data["object_actions"]:
+        if data.get("object_actions") and "interaction_audit" in data["object_actions"]:
             target_a += [
                 partial(
                     self.interaction_audit,
@@ -116,11 +116,11 @@ class ActionSet(object):
                 ),
             ]
             self.add_handlers += 1
-        if "object_actions" in data and data["object_actions"]["run_discovery"]:
+        if data.get("object_actions") and "run_discovery" in data["object_actions"]:
             target_a += [
                 partial(
                     self.run_discovery,
-                    interaction=Interaction(data["object_actions"]["interaction_audit"]),
+                    interaction=Interaction(data["object_actions"].get("interaction_audit")),
                 ),
             ]
             self.add_handlers += 1

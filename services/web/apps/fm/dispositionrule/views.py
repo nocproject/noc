@@ -22,6 +22,11 @@ class DispositionRuleApplication(ExtDocApplication):
     parent_field = "replace_rule"
     query_condition = "icontains"
 
+    def cleaned_query(self, q):
+        if "event_class" in q:
+            q["conditions__event_classes"] = q.pop("event_class")
+        return super().cleaned_query(q)
+
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
         if isinstance(o, DispositionRule) and o.object_actions:
