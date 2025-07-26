@@ -341,9 +341,7 @@ class CorrelatorService(FastAPIService):
 
     @staticmethod
     def get_default_reference(
-        managed_object: Optional[ManagedObject],
-        alarm_class: AlarmClass,
-        vars: Optional[Dict[str, Any]],
+        managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
     ) -> str:
         """
         Generate default reference for event-based alarms.
