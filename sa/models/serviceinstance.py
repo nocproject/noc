@@ -37,7 +37,7 @@ from noc.core.models.serviceinstanceconfig import (
 )
 from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
-from noc.core.validators import is_ipv4, is_fqdn
+from noc.core.validators import is_ipv4
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject

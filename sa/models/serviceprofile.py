@@ -45,7 +45,6 @@ from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceT
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.caps.types import CapsConfig
-from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity

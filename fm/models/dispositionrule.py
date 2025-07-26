@@ -479,7 +479,6 @@ class DispositionRule(Document):
         else:
             for c in rule.vars_conditions or []:
                 r["vars_match_expr"] |= c.get_match_expr()
-        object_actions = {}
         if rule.object_actions and rule.object_actions.interaction_audit:
             r["object_actions"]["interaction_audit"] = rule.object_actions.interaction_audit.value
         if rule.object_actions and rule.object_actions.run_discovery:
