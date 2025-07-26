@@ -36,6 +36,8 @@ from noc.core.models.serviceinstanceconfig import (
     ServiceInstanceTypeConfig,
 )
 from noc.core.models.inputsources import InputSource
+from noc.core.models.valuetype import ValueType
+from noc.core.validators import is_ipv4
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -113,7 +115,7 @@ class ServiceInstance(Document):
     # Asset Data
     asset_refs: List[str] = ListField(StringField(required=True))
     # Used Resources
-    resources: List[str] = ListField(StringField(required=False))
+    resources: List[str] = ListField(StringField(required=True))
     # Operation Attributes
     oper_status: bool = BooleanField()
     oper_status_change = DateTimeField()
@@ -190,6 +192,25 @@ class ServiceInstance(Document):
             instance = ServiceInstance.from_config(service, cfg)
             instance.save()
         return instance
+
+    @classmethod
+    def from_config(
+        cls,
+        service,
+        config: ServiceInstanceConfig,
+        **kwargs,
+    ) -> "ServiceInstance":
+        """Create Service Instance"""
+        # First discovered
+        return ServiceInstance(
+            type=config.type,
+            service=service,
+            name=config.name,
+            fqdn=config.fqdn,
+            remote_id=config.remote_id,
+            nri_port=config.nri_port,
+            asset_refs=config.asset_refs,
+        )
 
     def update_config(self, cfg: ServiceInstanceConfig):
         """Update instance Data from config"""
@@ -318,21 +339,62 @@ class ServiceInstance(Document):
         return False
 
     @classmethod
-    def get_services_by_alarm(cls, alarm: ActiveAlarm):
+    def get_alarm_reference(cls, alarm: "ActiveAlarm") -> List[str]:
+        """"""
+        r = []
+        if "mac" in alarm.vars:
+            r += [ValueType.MAC_ADDRESS.clean_reference(alarm.vars["mac"])]
+        elif "url" in alarm.vars:
+            r += [ValueType.HTTP_URL.clean_reference(alarm.vars["url"])]
+        return r
+
+    @classmethod
+    def get_alarm_addresses(cls, alarm: "ActiveAlarm") -> List[str]:
+        """Convert Active Alarm to addresses"""
+        r = []
+        # Alarm Class Vars ?
+        for vars_name in ["address", "peer"]:
+            if vars_name in alarm.vars and is_ipv4(alarm.vars[vars_name]):
+                r.append(IP.prefix(alarm.vars[vars_name]).address)
+        return r
+
+    @classmethod
+    def get_instance_filter_by_alarm(
+        cls, alarm: ActiveAlarm, include_object: bool = False
+    ) -> Optional[Q]:
+        """Build Alarm filter for query affected instances"""
+        # Instance | Save include managed object Global | Local reference
+        if include_object and alarm.managed_object:
+            q = Q(managed_object=alarm.managed_object.id, type=InstanceType.ASSET)
+        else:
+            q = Q()
+        # Resources
+        resources = alarm.components.get_resources()
+        if resources:
+            # Interface, Sub, Peer
+            q |= Q(resources=resources)
+        try:
+            refs = cls.get_alarm_reference(alarm=alarm)
+            if refs:
+                q |= Q(asset_refs__in=refs)
+        except ValueError:
+            logger.error("[%s] Error converted reference for alarm", alarm.id)
+        # Addresses
+        addresses = cls.get_alarm_addresses(alarm)
+        if addresses:
+            q |= Q(addresses__address__in=addresses)
+        # Local Name
+        if not alarm.managed_object:
+            return q or None
+        return q or None
+
+    @classmethod
+    def get_services_by_alarm(cls, alarm: ActiveAlarm, include_object: bool = False):
         """Getting Service Instance by alarm"""
-        q = Q(managed_object=alarm.managed_object.id)
-        if alarm.is_link_alarm and getattr(alarm.components, "interface", None):
-            q |= Q(resources=alarm.components.interface.as_resource())
-        address = None
-        if "address" in alarm.vars:
-            address = alarm.vars.get("address")
-        elif "peer" in alarm.vars:
-            # BGP alarms
-            address = alarm.vars.get("peer")
-        if address:
-            q &= Q(addresses__address=address)
-        # Name, port
-        return ServiceInstance.objects.filter(q).scalar("service")
+        q = cls.get_instance_filter_by_alarm(alarm, include_object)
+        if not q:
+            return []
+        return list(ServiceInstance.objects.filter(q).scalar("service"))
 
     def register_endpoint(
         self,
@@ -491,27 +553,6 @@ class ServiceInstance(Document):
             )
             if self.managed_object and bulk is None:
                 ServiceSummary.refresh_object(self.managed_object)
-
-    @classmethod
-    def from_config(
-        cls,
-        service,
-        config: ServiceInstanceConfig,
-        **kwargs,
-    ) -> "ServiceInstance":
-        """Create Service Instance"""
-        # First discovered
-        si = ServiceInstance(
-            type=config.type,
-            service=service,
-            name=config.name,
-            fqdn=config.fqdn,
-            remote_id=config.remote_id,
-            nri_port=config.nri_port,
-        )
-        if kwargs.get("macs"):
-            si.asset_refs = [f"mac:{m}" for m in kwargs["macs"]]
-        return si
 
     @classmethod
     def get_object_resources(cls, o) -> Dict[str, str]:

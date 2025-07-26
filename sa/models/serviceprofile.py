@@ -8,6 +8,7 @@
 # Python modules
 import operator
 import re
+from collections import defaultdict
 from threading import Lock
 from typing import Optional, Union, Tuple, List, Dict
 from functools import partial
@@ -44,7 +45,6 @@ from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceT
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.caps.types import CapsConfig
-from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
@@ -122,8 +122,15 @@ class InstanceSettings(EmbeddedDocument):
     ttl: int = IntField(min_value=0, default=0)
     refs_caps: Capability = ReferenceField(Capability)
     name: str = StringField(required=False)
+    # Weight for calculate Alarm
+    weight: int = IntField(default=0)
     # Update Instance Status from resource
     # update_status = BooleanField(default=False)
+
+    def __str__(self):
+        if self.refs_caps:
+            return f"{self.instance_type} ({self.refs_caps.name}): {self.name}"
+        return f"{self.instance_type}: {self.name}"
 
     def get_config(self) -> "ServiceInstanceTypeConfig":
         return ServiceInstanceTypeConfig(
@@ -133,6 +140,7 @@ class InstanceSettings(EmbeddedDocument):
             send_approve=self.send_approve,
             allow_register=self.allow_register,
             ttl=self.ttl,
+            refs_caps=self.refs_caps,
         )
 
 
@@ -351,6 +359,7 @@ class ServiceProfile(Document):
     alarm_affected_policy = StringField(
         choices=[
             ("D", "Disable"),
+            ("B", "By Object"),
             ("A", "By Instance"),
             ("O", "By Filter"),
         ],
@@ -502,40 +511,49 @@ class ServiceProfile(Document):
             return self.get_status_by_severity(aa.severity)
         return Status.UNKNOWN
 
-    def get_alarm_service_filter(self):
-        r = m_q()
-        for rule in self.alarm_status_rules:
-            q = m_q()
-            if rule.alarm_class_template:
-                ac = list(
-                    AlarmClass.objects.filter(name=re.compile(rule.alarm_class_template)).scalar(
-                        "id"
-                    )
-                )
-                if not ac:
-                    continue
-                q &= m_q(alarm_class__in=ac)
-            if rule.include_labels:
-                q &= m_q(effective_labels__in=rule.include_labels)
-            if rule.min_severity:
-                q &= m_q(severity__gte=rule.min_severity)
-            if rule.max_severity:
-                q &= m_q(severity__lte=rule.max_severity)
-            if q:
-                r |= q
-        return r
-
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_alarm_rule_cache"), lock=lambda _: id_lock)
-    def get_alarm_rules(cls) -> List[Tuple[str, Optional[Tuple[AlarmStatusRule, ...]]]]:
+    def get_alarm_rules(cls) -> List[Tuple[str, Optional[Tuple[AlarmStatusRule, ...]], str]]:
         """"""
         r = []
         for p in ServiceProfile.objects.filter(alarm_affected_policy__ne="D"):
-            if p.alarm_affected_policy == "A":
-                r.append((p.id, None))
-                continue
-            r.append((p.id, tuple(p.alarm_status_rules)))
+            if p.alarm_affected_policy != "O":
+                r.append((p.id, None, p.alarm_affected_policy))
+            else:
+                r.append((p.id, tuple(p.alarm_status_rules), p.alarm_affected_policy))
         return r
+
+    @classmethod
+    def get_alarm_service_filter(cls, alarm) -> List[Tuple[m_q, List[str]]]:
+        """Getting alarm filter by ServiceProfile rules"""
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        r = defaultdict(list)
+        queries = {}
+        for pid, rules, policy in ServiceProfile.get_alarm_rules():
+            if rules is None:
+                #
+                q = ServiceInstance.get_instance_filter_by_alarm(
+                    alarm, include_object=policy == "B"
+                )
+                if q:
+                    queries[str(q)] = q
+                    r[str(q)] += [pid]
+            if not rules:
+                continue
+            q = m_q()
+            for rule in rules:
+                if not rule.is_match(alarm):
+                    continue
+                if rule.affected_instance:
+                    q |= ServiceInstance.get_instance_filter_by_alarm(alarm, include_object=True)
+                else:
+                    # Without instance rule
+                    r[None] += [pid]
+            if q:
+                queries[str(q)] = q
+                r[str(q)] += [pid]
+        return [(queries[x] if x else x, r[x]) for x in r]
 
 
 def refresh_interface_profiles(sp_id, ip_id):
