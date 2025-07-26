@@ -321,7 +321,7 @@ class EventClassificationRule(Document):
                 }
                 for ll in rule.labels
             ],
-            "to_drop": rule.event_class.action == "D",
-            "to_dispose": bool(rule.event_class.disposition),
+            "to_drop": rule.event_class.to_drop,
+            "to_dispose": rule.event_class.to_dispose,
         }
         return r

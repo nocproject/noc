@@ -273,6 +273,18 @@ class EventClass(Document):
     def get_by_bi_id(cls, bi_id: int) -> Optional["EventClass"]:
         return EventClass.objects.filter(bi_id=bi_id).first()
 
+    @property
+    def to_dispose(self) -> bool:
+        """Dispose event to correlator"""
+        if self.disposition:
+            return True
+        return False
+
+    @property
+    def to_drop(self) -> bool:
+        """Drop message for event_class"""
+        return self.action == "D"
+
     def get_handlers(self):
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
         def _get_handlers(event_class):

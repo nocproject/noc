@@ -7,11 +7,16 @@
 
 # Python modules
 import enum
+from urllib.parse import urlparse
 from dataclasses import dataclass
 from typing import Optional, Any, List, ClassVar
 
 # Third-party modules
 from mongoengine.queryset.visitor import Q
+
+# NOC Modules
+from noc.core.models.valuetype import ValueType
+from noc.core.validators import is_fqdn, is_ipv4
 
 
 class InstanceType(enum.Enum):
@@ -41,10 +46,18 @@ class ServiceInstanceTypeConfig:
     allow_register: bool = False
     #
     ttl: Optional[int] = None
+    #
+    refs_caps: Optional[Any] = None
 
 
 @dataclass
 class ServiceInstanceConfig:
+    """
+    Instance Configuration.
+    Source describe Instance, and create by it.
+    Config + Settings (from profile) -> Instance
+    """
+
     type: ClassVar[InstanceType]
     name: str
     # managed_object: Optional[Any] = None ?
@@ -57,12 +70,7 @@ class ServiceInstanceConfig:
 
     # type
     @classmethod
-    def get_config(
-        cls,
-        i_type: InstanceType,
-        name: Optional[str] = None,
-        **kwargs,
-    ) -> "ServiceInstanceConfig":
+    def get_config(cls, i_type: InstanceType) -> "ServiceInstanceConfig":
         """Return Config instance by type"""
         match i_type:
             case InstanceType.ASSET:
@@ -70,12 +78,38 @@ class ServiceInstanceConfig:
             case InstanceType.NETWORK_CHANNEL:
                 cfg = NetworkChannelInstance
             case InstanceType.SERVICE_ENDPOINT:
-                cfg = ServiceEndPont
+                cfg = ServiceEndPoint
             case _:
                 cfg = ConfigInstance
-        return cfg(
+        return cfg
+
+    @classmethod
+    def from_settings(
+        cls,
+        settings: "ServiceInstanceTypeConfig",
+        service,
+        name: Optional[str] = None,
+    ) -> Optional["ServiceInstanceConfig"]:
+        """Create Config from settings"""
+        caps = service.get_caps()
+        if not settings.refs_caps or settings.refs_caps.name not in caps:
+            return
+        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        if not refs:
+            return
+        cfg = cls.from_config(name=name, asset_refs=refs)
+        return cfg
+
+    @classmethod
+    def from_config(
+        cls,
+        name: Optional[str] = None,
+        fqdn: Optional[str] = None,
+        **kwargs,
+    ):
+        return cls(
             name=name,
-            fqdn=kwargs.get("fqdn"),
+            fqdn=fqdn,
             addresses=kwargs.get("addresses"),
             port=kwargs.get("port"),
             remote_id=kwargs.get("remote_id"),
@@ -103,10 +137,45 @@ class NetworkChannelInstance(ServiceInstanceConfig):
     type = InstanceType.NETWORK_CHANNEL
 
 
-class ServiceEndPont(ServiceInstanceConfig):
+class ServiceEndPoint(ServiceInstanceConfig):
     """Describe OS Process, that running service tasks. Defined by name and ManagedObject Group"""
 
     type = InstanceType.SERVICE_ENDPOINT
+
+    @classmethod
+    def from_settings(
+        cls,
+        settings: "ServiceInstanceTypeConfig",
+        service,
+        name: Optional[str] = None,
+    ) -> Optional["ServiceInstanceConfig"]:
+        """
+        Create Config from settings
+        """
+        caps = service.get_caps()
+        refs_caps = settings.refs_caps
+        if not refs_caps or refs_caps.name not in caps or refs_caps.type != ValueType.HTTP_URL:
+            return
+        refs = refs_caps.get_references(caps[refs_caps.name])
+        if not refs:
+            return
+        url = urlparse(refs[0].split("::")[1])
+        host, *port = url.netloc.split(":")
+        addressed, fqdn = None, None
+        if is_ipv4(host):
+            addressed = [host]
+        elif is_fqdn(host):
+            fqdn = host
+        if port:
+            port = int(port)
+        cfg = cls.from_config(
+            name=name,
+            fqdn=fqdn,
+            asset_refs=refs,
+            addresses=addressed,
+            port=port,
+        )
+        return cfg
 
 
 class ConfigInstance(ServiceInstanceConfig):
