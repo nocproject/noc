@@ -123,6 +123,8 @@ class InstanceSettings(EmbeddedDocument):
     ttl: int = IntField(min_value=0, default=0)
     refs_caps: Capability = ReferenceField(Capability)
     name: str = StringField(required=False)
+    # Weight for calculate Alarm
+    weight: int = IntField(default=0)
     # Update Instance Status from resource
     # update_status = BooleanField(default=False)
 

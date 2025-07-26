@@ -451,7 +451,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_CLASSIFIED] += 1
         return EventAction.LOG, event_config, r_vars
 
-    async def dispose_event(self, event: Event, mo: ManagedObject):
+    async def dispose_event(self, event: Event, mo: Optional[ManagedObject]):
         """
         Register Alarm
         Args:
@@ -465,14 +465,20 @@ class ClassifierService(FastAPIService):
             event.target.address,
         )
         # Calculate partition
-        fm_pool = mo.get_effective_fm_pool().name
+        if mo:
+            fm_pool = mo.get_effective_fm_pool().name
+        else:
+            fm_pool = Pool.get_default_fm_pool().name
         stream = f"dispose.{fm_pool}"
         num_partitions = self.pool_partitions.get(fm_pool)
         if not num_partitions:
             num_partitions = await self.get_stream_partitions(stream)
             self.pool_partitions[fm_pool] = num_partitions
-        partition = int(mo.id) % num_partitions
-        event.target.id = str(mo.id)
+        if mo:
+            partition = int(mo.id) % num_partitions
+            event.target.id = str(mo.id)
+        else:
+            partition = 0
         self.publish(
             orjson.dumps({"$op": "event", "event_id": str(event.id), "event": event.model_dump()}),
             # To dispose
@@ -713,7 +719,7 @@ class ClassifierService(FastAPIService):
             # Severity ignored
             return
         # Finally dispose event to further processing by correlator
-        if mo and e_action == EventAction.DISPOSITION:
+        if e_action == EventAction.DISPOSITION:
             await self.dispose_event(event, mo)
 
     async def report(self):

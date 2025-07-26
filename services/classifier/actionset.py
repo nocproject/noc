@@ -125,7 +125,11 @@ class ActionSet(object):
             ]
             self.add_handlers += 1
         if data["action"] in ["raise", "clear"]:
-            target_a += [self.dispose_event]
+            target_a += [
+                partial(
+                    self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
+                )
+            ]
         elif data["action"] == "drop":
             target_a += [self.drop_event]
         resource = {
@@ -308,9 +312,14 @@ class ActionSet(object):
         event: Event,
         managed_object: ManagedObject,
         resources: List[Any],
+        ignore_target: bool = False,
     ):
         """"""
-        return EventAction.DISPOSITION
+        if managed_object:
+            return EventAction.DISPOSITION
+        elif not managed_object and ignore_target:
+            return EventAction.DISPOSITION
+        return EventAction.LOG
 
     def get_resource_action(
         self,
