@@ -388,25 +388,21 @@ class AlarmClass(Document):
     def get_notification_delay(self):
         if self.config:
             return self.config.notification_delay or None
-        else:
-            return self.notification_delay or None
+        return self.notification_delay or None
 
     def get_control_time(self, reopens: int) -> Optional[int]:
         if reopens == 0:
             if self.config:
                 return self.config.control_time0 or None
-            else:
-                return self.control_time0 or None
+            return self.control_time0 or None
         elif reopens == 1:
             if self.config:
                 return self.config.control_time1 or None
-            else:
-                return self.control_time1 or None
+            return self.control_time1 or None
         else:
             if self.config:
                 return self.config.control_timeN or None
-            else:
-                return self.control_timeN or None
+            return self.control_timeN or None
 
     def get_labels_map(self):
         """

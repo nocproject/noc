@@ -316,8 +316,34 @@ class CorrelatorService(FastAPIService):
         return found
 
     @staticmethod
+    def get_default_optional_reference(
+        alarm_class: AlarmClass,
+        vars: Dict[str, Any],
+        # rule ?
+    ) -> Optional[str]:
+        """
+        Generate reference for event-based alarm without managed object
+        Reference has a form of
+
+        ```
+        r:<alarm class id>:<value1>:...:<value N>
+        ```
+        """
+        if not vars:
+            return None
+        var_suffix = ":".join(
+            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
+            for n in alarm_class.reference
+        )
+        if not var_suffix:
+            return None
+        return f"e:{alarm_class.id}:{var_suffix}"
+
+    @staticmethod
     def get_default_reference(
-        managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
+        managed_object: Optional[ManagedObject],
+        alarm_class: AlarmClass,
+        vars: Optional[Dict[str, Any]],
     ) -> str:
         """
         Generate default reference for event-based alarms.
@@ -647,10 +673,19 @@ class CorrelatorService(FastAPIService):
         managed_object = self.eval_expression(
             rule.managed_object, event=event, managed_object=managed_object
         )
-        if not managed_object:
+        reference = None
+        if not managed_object and not rule.alarm_class.by_reference:
             self.logger.info("Empty managed object, ignoring")
             return
-        if int(event.target.id) != managed_object.id:
+        elif not managed_object and rule.alarm_class.by_reference:
+            # Try reference
+            self.logger.info("Empty managed object, try calculate reference")
+            reference = self.get_default_optional_reference(
+                rule.alarm_class, rule.get_vars(event.vars)
+            )
+            if not reference:
+                return
+        elif int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
         if not event.type.severity:
@@ -666,7 +701,7 @@ class CorrelatorService(FastAPIService):
             rs = None
         # Extract variables
         r_vars = rule.get_vars(event.vars)
-        if rule.alarm_class.id in self.alarm_class_vars:
+        if rule.alarm_class.id in self.alarm_class_vars and managed_object:
             # Calculate dynamic defaults
             context = {"components": ComponentHub(rule.alarm_class, managed_object, r_vars.copy())}
             for k, v in self.alarm_class_vars[rule.alarm_class.id].items():
@@ -675,6 +710,7 @@ class CorrelatorService(FastAPIService):
                     r_vars[k] = str(x)
         return await self.raise_alarm(
             managed_object=managed_object,
+            reference=reference,
             timestamp=event.timestamp,
             alarm_class=rule.alarm_class,
             vars=r_vars,
@@ -1239,7 +1275,7 @@ class CorrelatorService(FastAPIService):
                 "event_id": str(e.id),
                 "alarm_id": str(a.id) if a else None,
                 "op": action,
-                "managed_object": managed_object.bi_id,
+                "managed_object": managed_object.bi_id if managed_object else 0,
                 "target_reference": e.target.reference,
                 "target": e.target.model_dump(exclude={"is_agent"}),
                 "event_class": event_class.bi_id,
@@ -1252,16 +1288,26 @@ class CorrelatorService(FastAPIService):
         self.logger.info("[%s] Disposing", event_id)
         event_class = EventClass.get_by_name(e.type.event_class)
         drc = self.rules.get(event_class.id)
-        managed_object = ManagedObject.get_by_id(int(e.target.id))
         if not drc:
             self.logger.info(
                 "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
             )
             return
+        elif not e.target.id:
+            self.logger.info(
+                "[%s] No Managed Object for event %s, Try raise reference",
+                event_id,
+                event_class.name,
+            )
+            managed_object = None
+        else:
+            managed_object = ManagedObject.get_by_id(int(e.target.id))
         # Apply disposition rules
         for rule in drc:
             if not rule.match_event(e):
                 continue  # Rule is not applicable
+            if not managed_object and not rule.alarm_class.by_reference:
+                continue  # Alarm Class is not applicable
             # Process action
             if rule.action == "drop":
                 self.logger.info("[%s] Dropped by action", event_id)

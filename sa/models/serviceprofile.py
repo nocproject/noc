@@ -360,7 +360,7 @@ class ServiceProfile(Document):
     alarm_affected_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("O", "By Object"),
+            ("B", "By Object"),
             ("A", "By Instance"),
             ("O", "By Filter"),
         ],
@@ -535,7 +535,7 @@ class ServiceProfile(Document):
             if rules is None:
                 #
                 q = ServiceInstance.get_instance_filter_by_alarm(
-                    alarm, include_object=policy == "O"
+                    alarm, include_object=policy == "B"
                 )
                 if q:
                     queries[str(q)] = q
@@ -544,7 +544,7 @@ class ServiceProfile(Document):
                 continue
             q = m_q()
             for rule in rules:
-                if rule.is_match(alarm):
+                if not rule.is_match(alarm):
                     continue
                 if rule.affected_instance:
                     q |= ServiceInstance.get_instance_filter_by_alarm(alarm, include_object=True)
@@ -554,7 +554,7 @@ class ServiceProfile(Document):
             if q:
                 queries[str(q)] = q
                 r[str(q)] += [pid]
-        return [(queries[x], r[x]) for x in r]
+        return [(queries[x] if x else x, r[x]) for x in r]
 
 
 def refresh_interface_profiles(sp_id, ip_id):
