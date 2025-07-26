@@ -163,6 +163,11 @@ Ext.define("NOC.fm.alarmclass.Application", {
                   boxLabel: __("Ephemeral"),
                 },
                 {
+                  name: "by_reference",
+                  xtype: "checkboxfield",
+                  boxLabel: __("By Reference"),
+                },
+                {
                   name: "reference",
                   xtype: "stringsfield",
                   fieldLabel: __("Reference"),

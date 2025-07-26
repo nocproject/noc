@@ -1237,6 +1237,13 @@ class ActiveAlarm(Document):
         job = AlarmJob.from_alarm(self, job_id=job_id, is_clear=is_clear)
         job.run()
 
+    def get_resources(self) -> List[str]:
+        """"""
+        try:
+            return self.components.get_resources()
+        except AttributeError:
+            return []
+
 
 @runtime_checkable
 class AlarmComponent(Protocol):
@@ -1259,6 +1266,16 @@ class ComponentHub(object):
         self.__vars = vars or {}
         self.__components: Dict[str, Any] = {}
         self.__all_components: Optional[Set[str]] = None
+
+    def get_resources(self) -> List[str]:
+        """Return resources"""
+        r = []
+        for c in self.__alarm_class.components:
+            res = getattr(self, c.name)
+            if res and hasattr(res, "as_resource"):
+                r.append(res.as_resource())
+        self.__refresh_all_components()
+        return r
 
     def get(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
         if name in self.__components:
