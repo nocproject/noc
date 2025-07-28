@@ -514,7 +514,7 @@ Ext.define("NOC.core.ModelApplication", {
   createForm: function(){
     var me = this,
       focusField = null,
-      autoFocusFields;
+      defaults, autoFocusFields;
     //
     me.saveButton = Ext.create("Ext.button.Button", {
       itemId: "save",
@@ -695,6 +695,20 @@ Ext.define("NOC.core.ModelApplication", {
         Ext.Array.each(formFields, find);
       });
     }
+    defaults = {
+      anchor: "100%",
+      labelWidth: 300,
+      enableKeyEvents: true,
+      listeners: {
+        specialkey: {
+          scope: me,
+          fn: me.onFormSpecialKey,
+        },
+      },
+    };
+    if(!Ext.isEmpty(me.labelWidth)){
+      defaults.labelWidth = me.labelWidth;
+    }
     me.formPanel = Ext.create("Ext.container.Container", {
       itemId: "form",
       layout: "fit",
@@ -705,16 +719,7 @@ Ext.define("NOC.core.ModelApplication", {
         padding: 4,
         bodyPadding: me.themeBodyPadding,
         autoScroll: true,
-        defaults: {
-          anchor: "100%",
-          enableKeyEvents: true,
-          listeners: {
-            specialkey: {
-              scope: me,
-              fn: me.onFormSpecialKey,
-            },
-          },
-        },
+        defaults: defaults,
         items: formFields,
         dockedItems: {
           xtype: "toolbar",

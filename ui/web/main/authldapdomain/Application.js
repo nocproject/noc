@@ -178,6 +178,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
           name: "ha_policy",
           xtype: "combobox",
           fieldLabel: __("Pool Strategy"),
+          editable: false,
           store: [
             ["f", __("First")],
             ["rr", __("Round Robin")],
@@ -212,6 +213,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
           name: "convert_username",
           xtype: "combobox",
           fieldLabel: __("Convert Username"),
+          editable: false,
           store: [
             ["0", __("Do not convert")],
             ["l", __("Lowercase")],
@@ -263,6 +265,8 @@ Ext.define("NOC.main.authldapdomain.Application", {
           ],
         },
       ],
+      
+      labelWidth: 250,
     });
     me.callParent();
   },
