@@ -30,7 +30,10 @@
 					"editor.codeActionsOnSave": {
 						"source.fixAll": true
 					},
-					"ruff.path": "/usr/local/bin/ruff"
+					"ruff.path": "/usr/local/bin/ruff",
+					"analysis.extraPaths": [
+						"/usr/local/lib/python3.11/site-packages/"
+					],
 				},
 				"[yaml]": {
 					"editor.defaultFormatter": "redhat.vscode-yaml",
