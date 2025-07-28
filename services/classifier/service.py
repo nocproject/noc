@@ -577,7 +577,6 @@ class ClassifierService(FastAPIService):
             for k, v in MIB.resolve_vars(
                 snmp_vars, include_raw=config.message.enable_event
             ).items():
-                v = fm_unescape(v).decode(DEFAULT_ENCODING)
                 event.data.append(Var(name=k, value=v))
                 raw_vars[k] = v
             # Append resolved vars to data
