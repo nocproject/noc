@@ -9,6 +9,7 @@ console.debug("Defining NOC.main.authldapdomain.Application");
 Ext.define("NOC.main.authldapdomain.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
+    "NOC.core.PasswordField",
     "NOC.main.authldapdomain.Model",
     "NOC.aaa.group.LookupField",
     "Ext.ux.form.GridField",
@@ -110,7 +111,7 @@ Ext.define("NOC.main.authldapdomain.Application", {
         },
         {
           name: "bind_password",
-          xtype: "textfield",
+          xtype: "password",
           fieldLabel: __("Bind Password"),
           allowBlank: true,
         },
