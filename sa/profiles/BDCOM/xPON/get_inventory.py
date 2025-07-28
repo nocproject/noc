@@ -194,6 +194,8 @@ class Script(BaseScript):
                 elif p == "SFP+":
                     if xcvr_type == "10000BASE-FX-LR":
                         part_no = part_no + "10G | SFP+ LR"
+                    elif xcvr_type == "10000BASE-FX-ER":
+                        part_no = part_no + "10G | SFP+ ER"
                     elif xcvr_type == "10000BASE-FX":
                         # Found in P3608-2TE
                         if match.group("plug") == "COP_PIGER":
