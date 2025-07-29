@@ -24,9 +24,16 @@ class SegmentMock:
     is_redundant: bool = False
 
 
+class ObjectProfile:
+    id: int = 2
+    name: str = "Object Profile"
+    weight = 2
+
+
 class MOMock:
     id = 2
     name = "Test Object"
+    object_profile = ObjectProfile()
     segment = SegmentMock()
     tt_queue = None
 
