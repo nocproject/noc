@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, List, Iterable, Dict, Any, Callable, Tuple
+from typing import Optional, List, Iterable, Dict, Any, Callable
 
 # Third-party modules
 from jinja2 import Template
@@ -19,7 +19,6 @@ from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.escalationprofile import EscalationProfile
-from noc.fm.models.alarmwatch import WatchItem
 
 
 DEFAULT_GROUP_CLASS = "Group"
