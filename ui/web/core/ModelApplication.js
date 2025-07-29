@@ -1112,9 +1112,12 @@ Ext.define("NOC.core.ModelApplication", {
         // WARNING: Will skip other inline editors
         return;
       }
-      if(field.xtype === "radiofield" && !field.getValue()){
-        // Skip unchecked field
-        return;
+      if(field.xtype === "radiofield"){
+        field = formPanel.down(`[name=${field.name}][inputValue=${fieldCfg.inputValue}]`);
+        if(!field.getValue()){
+          // Skip unchecked field
+          return;
+        }
       }
       data = field.getModelData();
       name = field.getName();
