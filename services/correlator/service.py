@@ -56,6 +56,7 @@ from noc.fm.models.alarmescalation import AlarmEscalation
 from noc.fm.models.alarmdiagnosticconfig import AlarmDiagnosticConfig
 from noc.fm.models.alarmrule import AlarmRule
 from noc.fm.models.alarmseverity import AlarmSeverity
+from noc.fm.models.alarmwatch import Effect
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.core.version import version
@@ -412,7 +413,7 @@ class CorrelatorService(FastAPIService):
         self,
         alarm: ActiveAlarm,
         timestamp: datetime.datetime,
-        severity: Optional[AlarmSeverity] = None,
+        severity: Optional[int] = None,
     ):
         """
         Refresh active alarm data
@@ -426,29 +427,35 @@ class CorrelatorService(FastAPIService):
             # Refresh last update
             alarm.last_update = timestamp
             alarm.save()
-        if not severity:
+        if not severity or severity == alarm.base_severity:
             return
-        e_severity = alarm.get_effective_severity(severity=severity)
+        alarm.base_severity = severity
+        e_severity = alarm.get_effective_severity()
         if e_severity != alarm.severity:
-            alarm.base_severity = severity.severity
             alarm.severity = e_severity
             alarm.last_update = datetime.datetime.now().replace(microsecond=0)
             alarm.save()
             alarm.touch_watch()
 
     async def apply_rules(
-        self, alarm: ActiveAlarm, alarm_groups: Set[int]
-    ) -> Tuple[Dict[str, Any], Optional[int], Optional[AlarmActionRequest]]:
+        self, alarm: ActiveAlarm, alarm_groups: Set[str]
+    ) -> Tuple[Dict[str, Any], Optional[AlarmActionRequest]]:
         """Apply alarm rules"""
-        groups, actions, severities = {}, [], []
-        for rule, severity in self.alarm_rule_set.iter_rules(alarm):
+        groups, actions = {}, []
+        for rule in self.alarm_rule_set.iter_rules(alarm):
             # Calculate Severity and to match
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
                     groups[gi.reference] = gi
             for ai in rule.iter_actions(alarm):
                 actions.append(ai)
-            severities.append(severity)
+            if rule.max_severity or rule.min_severity:
+                alarm.add_watch(
+                    Effect.SEVERITY,
+                    key=str(rule.id),
+                    min_severity=rule.min_severity,
+                    max_severity=rule.max_severity,
+                )
         if actions:
             req = AlarmActionRequest(
                 ctx=0,
@@ -457,9 +464,7 @@ class CorrelatorService(FastAPIService):
             )
         else:
             req = None
-        if not severities:
-            return groups, None, req
-        return groups, max(severities), req
+        return groups, req
 
     async def run_actions(self, alarm: ActiveAlarm, action_req: AlarmActionRequest):
         if not action_req:
@@ -480,7 +485,7 @@ class CorrelatorService(FastAPIService):
         groups: Optional[List[GroupItem]] = None,
         labels: Optional[List[str]] = None,
         min_group_size: Optional[int] = None,
-        severity: Optional[AlarmSeverity] = None,
+        severity: Optional[int] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -537,11 +542,11 @@ class CorrelatorService(FastAPIService):
                 if event:
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                alarm_groups: Dict[str, GroupItem] = {}
-                rule_groups, a_severity, action_req = await self.apply_rules(
-                    alarm, alarm_groups.keys()
-                )
-                self.refresh_alarm(alarm, timestamp, a_severity or severity)
+                self.refresh_alarm(alarm, timestamp, severity)
+                # alarm_groups: Dict[str, GroupItem] = {}
+                # rule_groups, action_req = await self.apply_rules(
+                #     alarm, alarm_groups.keys()
+                # )
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
                 return alarm
@@ -570,7 +575,7 @@ class CorrelatorService(FastAPIService):
             opening_event=ObjectId(event.id) if event else None,
             labels=labels,
             min_group_size=min_group_size,
-            base_severity=severity.severity if severity else 1000,
+            base_severity=severity,
             remote_system=remote_system,
             remote_id=remote_id,
         )
@@ -604,16 +609,13 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
-        rule_groups, a_severity, action_req = await self.apply_rules(a, alarm_groups.keys())
+        rule_groups, action_req = await self.apply_rules(a, alarm_groups.keys())
         if rule_groups:
             alarm_groups |= rule_groups
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups
-        if a_severity:
-            a.severity = a_severity
-        else:
-            a.severity = a.base_severity
+        a.severity = a.get_effective_severity(summary=summary)
         # Required Severity for match
         a.affected_services = Service.get_services_by_alarm(a)
         # @todo: Fix
@@ -713,7 +715,7 @@ class CorrelatorService(FastAPIService):
             alarm_class=rule.alarm_class,
             vars=r_vars,
             event=event,
-            severity=severity,
+            severity=severity.severity if severity else None,
             remote_system=rs,
             remote_id=event.remote_id,
         )
@@ -943,10 +945,6 @@ class CorrelatorService(FastAPIService):
                 x = eval(v, {}, context)
                 if x:
                     r_vars[k] = str(x)
-        if req.severity:
-            severity = AlarmSeverity.get_severity(req.severity)
-        else:
-            severity = None
         try:
             await self.raise_alarm(
                 managed_object=managed_object,
@@ -956,7 +954,7 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 groups=groups,
                 labels=req.labels or [],
-                severity=severity,
+                severity=req.severity,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )
@@ -998,7 +996,6 @@ class CorrelatorService(FastAPIService):
         r_vars = req.vars or {}
         if req.labels:
             r_vars.update(alarm_class.convert_labels_var(req.labels))
-        severity = AlarmSeverity.get_severity(req.severity) if req.severity else None
         try:
             await self.raise_alarm(
                 managed_object=None,
@@ -1008,7 +1005,7 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 groups=groups,
                 labels=req.labels or [],
-                severity=severity,
+                severity=req.severity,
                 remote_system=remote_system,
                 remote_id=req.remote_id if remote_system else None,
             )

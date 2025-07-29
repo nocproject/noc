@@ -272,7 +272,7 @@ class AlarmRule(Document):
     def get_config(cls, rule: "AlarmRule"):
         """Generate Rule config"""
         r = {
-            "id": rule.id,
+            "id": str(rule.id),
             "name": rule.name,
             "is_active": rule.is_active,
             "actions": [],
