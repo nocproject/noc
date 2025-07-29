@@ -109,6 +109,7 @@ class BaseMapper(object):
         """
         Render graph and get vis-js JSON
         """
+        self.set_label(f"{self.channel.name} [{self.channel.tech_domain.name}]")
         self.render(start, end)
         return self.g
 
@@ -131,6 +132,10 @@ class BaseMapper(object):
 
     def set_rankdir(self, rankdir: str) -> None:
         self.g["graphAttributes"]["rankdir"] = rankdir
+
+    def set_label(self, label: str) -> None:
+        self.g["graphAttributes"]["label"] = label
+        self.g["graphAttributes"]["labelloc"] = "top"
 
     def add_edge(
         self,

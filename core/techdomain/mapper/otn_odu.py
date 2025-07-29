@@ -69,6 +69,7 @@ class DWDMOdUMapper(BaseMapper):
         path = list(controller.iter_path(Endpoint.from_resource(db_ep.resource)))
         # Client protocol
         client_protocol = get_client_protocol(self.channel)
+        # Starting node
         self.add_subgraph(
             {
                 "name": "cluster_start",
@@ -85,6 +86,7 @@ class DWDMOdUMapper(BaseMapper):
                 ],
             }
         )
+        # Ending node
         self.add_subgraph(
             {
                 "name": "cluster_end",
@@ -108,6 +110,8 @@ class DWDMOdUMapper(BaseMapper):
             ch_label = f"{path[0].channel.name}\n{otu}"
         else:
             ch_label = path[0].channel.name
+        # Channel node
+        self.add_node({"name": "otu", "attributes": {"shape": "hexagon", "label": ch_label}})
         self.add_edge(
             start="start_odu",
             end="start_otu",
@@ -120,4 +124,5 @@ class DWDMOdUMapper(BaseMapper):
             label=q_disc_reverse(path[1].input_discriminator),
             style="dashed",
         )
-        self.add_edge(start="start_otu", end="end_otu", label=ch_label, penwidth=2, dir="both")
+        self.add_edge(start="start_otu", end="otu", penwidth=2)
+        self.add_edge(start="otu", end="end_otu", penwidth=2)
