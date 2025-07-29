@@ -111,7 +111,16 @@ class DWDMOdUMapper(BaseMapper):
         else:
             ch_label = path[0].channel.name
         # Channel node
-        self.add_node({"name": "otu", "attributes": {"shape": "hexagon", "label": ch_label}})
+        self.add_node(
+            {
+                "name": "otu",
+                "attributes": {
+                    "shape": self.CHANNEL_SHAPE,
+                    "label": ch_label,
+                    "class": self.SELECTABLE_CLASS,
+                },
+            }
+        )
         self.add_edge(
             start="start_odu",
             end="start_otu",
