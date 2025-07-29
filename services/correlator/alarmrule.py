@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, List, Iterable, Dict, Any, Callable, Tuple
+from typing import Optional, List, Iterable, Dict, Any, Callable
 
 # Third-party modules
 from jinja2 import Template
@@ -65,8 +65,9 @@ class AlarmRule(object):
     max_severity: Optional[int] = None
     escalation_profile: Optional[EscalationProfile] = None
 
-    def __init__(self, name):
+    def __init__(self, name, rid):
         self.name = name
+        self.id = rid
         self.matcher: Optional[Callable] = None
         self.groups: List[Group] = []
         self.actions: List[ActionConfig] = []
@@ -84,7 +85,7 @@ class AlarmRule(object):
     @classmethod
     def from_config(cls, config: Dict[str, Any]) -> "AlarmRule":
         """Generate rule from config"""
-        rule = AlarmRule(name=config["name"])
+        rule = AlarmRule(name=config["name"], rid=config["id"])
         if config["match_expr"]:
             rule.matcher = cls.get_matcher(config["match_expr"])
         for g in config["groups"]:
@@ -170,11 +171,11 @@ class AlarmRuleSet(object):
         for rule in self.common_rules:
             yield rule
 
-    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[Tuple[AlarmRule, int]]:
+    def iter_rules(self, alarm: ActiveAlarm) -> Iterable[AlarmRule]:
         """
         Iterate all matched rules
         """
         for rule in self.iter_candidates(alarm):
             severity = rule.get_severity(alarm)
             if rule.is_match(alarm, severity=severity):
-                yield rule, severity
+                yield rule
