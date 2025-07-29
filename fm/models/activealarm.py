@@ -707,14 +707,14 @@ class ActiveAlarm(Document):
     def get_effective_severity(
         self,
         summary: Optional[Dict[str, Any]] = None,
-        severity: Optional[AlarmSeverity] = None,
+        severity: Optional[int] = None,
         policy: Optional[str] = None,
     ) -> int:
         """
         Calculate Alarm Severities for policy
 
         Args:
-            severity: Alarm Based Severity
+            severity: Alarm Base Severity
             summary: Alarm Affected Summary
             policy:
                 * AS - Any Severity
@@ -728,29 +728,38 @@ class ActiveAlarm(Document):
         #    policy = "AB"
         # elif not policy:
         policy = policy or self.severity_policy
+        # Base Severity
         if severity:
-            severity = severity.severity
+            base_severity = severity
         elif self.base_severity:
-            severity = self.base_severity
+            base_severity = self.base_severity
         elif self.alarm_class.severity:
-            severity = self.alarm_class.severity.severity
+            base_severity = self.alarm_class.severity.severity
         else:
-            severity = 1000
+            base_severity = 1000
+        # Getting summary
         summary = summary or self.get_summary()
+        effective_severity = None
         match policy:
-            case "CB":
-                return severity
             case "AB":
-                return ServiceSummary.get_severity(summary)
+                effective_severity = ServiceSummary.get_severity(summary)
             case "AL":
                 ss = ServiceSummary.get_severity(summary)
-                if severity and severity <= ss:
-                    return severity
-                return ss
+                if base_severity and base_severity >= ss:
+                    effective_severity = ss
             case "ST":
                 sev = AlarmSeverity.get_from_labels(self.effective_labels)
                 if sev:
-                    return sev.severity
+                    effective_severity = sev.severity
+        severity = effective_severity or base_severity
+        # Apply limits
+        for w in self.watchers:
+            if w.effect != Effect.SEVERITY:
+                continue
+            if w.args.get("min_severity") and severity < w.args["min_severity"]:
+                severity = w.args["min_severity"]
+            if w.args.get("max_severity") and severity > w.args["max_severity"]:
+                severity = w.args["max_severity"]
         return severity
 
     def update_summary(self, force: bool = False):
