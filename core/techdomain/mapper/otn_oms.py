@@ -143,7 +143,5 @@ class OTNOMSMapper(BaseMapper):
             for y, (ch, _discriminator) in enumerate(used_by[ep_resource]):
                 k = f"u_{x}_{y}"
                 _, _, n = ep_resource.split(":", 2)
-                self.add_node(
-                    {"name": k, "attributes": {"shape": "hexagon", "label": ch, "style": "dashed"}}
-                )
+                self.add_channel(k, label=ch, is_client=True)
                 self.add_edge(start=k, end=node.get_ref(n), end_port=n)

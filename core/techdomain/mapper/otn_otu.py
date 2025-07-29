@@ -63,14 +63,8 @@ class DWDMOTUMapper(BaseMapper):
             for n, pi in enumerate(path):
                 if pi.channel:
                     name = f"{prefix}-{n}"
-                    self.add_node(
-                        {
-                            "name": name,
-                            "attributes": {
-                                "shape": "hexagon",
-                                "label": f"{pi.channel.name}\n{pi.channel.tech_domain.name}",
-                            },
-                        }
+                    self.add_channel(
+                        name, label=f"{pi.channel.name}\n{pi.channel.tech_domain.name}"
                     )
                     nodes.append(name)
             if len(nodes) > 1:
