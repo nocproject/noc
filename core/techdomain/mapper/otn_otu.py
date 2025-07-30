@@ -44,6 +44,7 @@ class DWDMOTUMapper(BaseMapper):
                             "attributes": {
                                 "shape": "record",
                                 "label": f"{card.name}|{ports}",
+                                "class": self.SELECTABLE_CLASS,
                             },
                         }
                     ],
