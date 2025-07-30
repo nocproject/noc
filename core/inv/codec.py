@@ -8,6 +8,7 @@
 # Python modules
 from dataclasses import dataclass
 from typing import Iterable, Optional, Union
+import uuid
 
 # Third-party modules
 from bson import ObjectId
@@ -18,7 +19,8 @@ from .result import Result
 from noc.inv.models.object import Object, ObjectAttr, ObjectConnectionData
 from noc.inv.models.objectconnection import ObjectConnection, ObjectConnectionItem
 from noc.inv.models.objectmodel import Crossing, ObjectModel
-from noc.inv.models.vendor import Vendor
+
+LC_LC_SMF_UID = uuid.UUID("217ba845-5309-4c4b-8543-d26dea35f11a")
 
 
 @dataclass
@@ -35,7 +37,6 @@ class DecodeResultInfo:
     found_connections_cable: Optional[int] = None
     created_objects: Optional[int] = None
     created_connections_direct: Optional[int] = None
-    created_cable_model: Optional[int] = None
     created_cable: Optional[int] = None
     created_connections_cable: Optional[int] = None
 
@@ -240,6 +241,20 @@ def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultI
     - also creates cable model and cable objects for cable connections.
     Cable connections defined as connections with null id in source file
     """
+
+    def create_connection(c1: PointItem, c2: PointItem) -> None:
+        c1 = c1.dict()
+        c1["object"] = o_map[c1["object"]]
+        c2 = c2.dict()
+        c2["object"] = o_map[c2["object"]]
+        ObjectConnection(
+            connection=[
+                ObjectConnectionItem(**c1),
+                ObjectConnectionItem(**c2),
+            ],
+            type="testing",  # todo: delete this flag
+        ).save()
+
     info = DecodeResultInfo()
     info.found_objects = len(data.objects)
     info.found_connections_direct = sum(int(c.id is not None) for c in data.connections)
@@ -272,39 +287,11 @@ def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultI
         o_counter += 1
     info.created_objects = o_counter
 
-    # Create cable model if needed
-    CABLE_NAME = "optical cable sm"
-    cable_model = ObjectModel.get_by_name(CABLE_NAME)
+    # Get cable model
+    cable_model = ObjectModel.get_by_uuid(LC_LC_SMF_UID)
     if not cable_model:
-        vendor = Vendor.get_by_code("NOC")
-        cable_model = ObjectModel(
-            name=CABLE_NAME,
-            description=CABLE_NAME,
-            data=[
-                {
-                    "interface": "length",
-                    "attr": "length",
-                    "value": 5,
-                }
-            ],
-            vendor=vendor,
-        ).save()
-        info.created_cable_model = 1
-    else:
-        info.created_cable_model = 0
-
-    def create_connection(c1: PointItem, c2: PointItem):
-        c1 = c1.dict()
-        c1["object"] = o_map[c1["object"]]
-        c2 = c2.dict()
-        c2["object"] = o_map[c2["object"]]
-        ObjectConnection(
-            connection=[
-                ObjectConnectionItem(**c1),
-                ObjectConnectionItem(**c2),
-            ],
-            type="testing",  # todo: delete this flag
-        ).save()
+        msg = f"Cable model {LC_LC_SMF_UID} is not found"
+        raise ValueError(msg)
 
     # Create connections
     c_counter_dir, c_counter_cab = 0, 0
