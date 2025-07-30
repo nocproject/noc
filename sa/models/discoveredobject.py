@@ -9,14 +9,12 @@
 import datetime
 import logging
 import itertools
-from dataclasses import dataclass
-from collections import defaultdict
-from typing import Dict, Optional, List, Any, Union, Iterable, Tuple
+from typing import Dict, Optional, List, Iterable, Tuple
 
 # Third-party modules
-import orjson
 from bson import ObjectId
 from django.db.models.query_utils import Q as d_Q
+from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -36,8 +34,13 @@ from mongoengine.queryset.visitor import Q as m_q
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync, bi_hash
 from noc.core.model.decorator import on_delete_check
-from noc.core.clickhouse.connect import connection
-from noc.core.purgatorium import ProtocolCheckResult, SOURCES, ETL_SOURCE
+from noc.core.purgatorium import (
+    ProtocolCheckResult,
+    PurgatoriumData,
+    iter_discovered_object,
+    SOURCES,
+    ETL_SOURCE,
+)
 from noc.core.mongo.fields import PlainReferenceField
 from noc.config import config
 from noc.core.ip import IP
@@ -45,83 +48,13 @@ from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
-from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
-from noc.pm.models.agent import Agent
 from noc.wf.models.state import State
 
 # Data source, data: Dict[str, str], source -> MergeRule[field-> policy]
 
-PURGATORIUM_SQL = """
-SELECT
-    IPv4NumToString(ip) as address,
-    pool,
-    groupArray(source) as sources,
-    groupArray((source, remote_system,
-        map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)),
-         data, labels, service_groups, clients_groups, is_delete)) as all_data,
-    groupUniqArrayArray(checks) as all_checks,
-    groupUniqArrayArray(labels) as all_labels,
-    groupUniqArray(router_id) as router_ids,
-    max(last_ts) as last_ts
-FROM (
-    SELECT ip, pool, remote_system, source,
-     argMax(is_delete, ts) as is_delete,
-     argMax(hostname, ts) as hostname, argMax(description, ts) as description,
-     argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
-     argMax(data, ts) as data, argMax(labels, ts) as labels,
-     argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
-     argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
-    FROM noc.purgatorium
-    WHERE date >= %s
-    GROUP BY ip, pool, remote_system, source
-    )
-GROUP BY ip, pool
-ORDER BY ip
-FORMAT JSONEachRow
-"""
-
 logger = logging.getLogger(__name__)
-
-
-class CheckData(EmbeddedDocument):
-    name = StringField()
-    status: bool = BooleanField()  # True - OK, False - Fail
-    # skipped: bool = False  # Check was skipped (Example, no credential)
-    # arg0: Optional[str] = None
-    # error: Optional[str] = None  # Description if Fail
-    data: Dict[str, Any] = DictField()  # Collected check data
-
-    def check_condition(self):
-        """
-
-        :return:
-        """
-
-
-@dataclass
-class PurgatoriumData(object):
-    source: str
-    ts: Optional[datetime.datetime] = None
-    remote_system: Optional[str] = None
-    labels: Optional[List[str]] = None
-    service_groups: Optional[List[ObjectId]] = None
-    client_groups: Optional[List[ObjectId]] = None
-    data: Optional[Dict[str, str]] = None
-    event: Optional[str] = None  # Workflow Event
-    is_delete: bool = False  # Delete Flag
-
-    def __str__(self):
-        if self.remote_system:
-            return f"{self.source}@{self.remote_system}: {self.data}"
-        return f"{self.source}: {self.data}"
-
-    @property
-    def key(self) -> str:
-        if not self.remote_system:
-            return self.source
-        return f"{self.source}@{self.remote_system}"
 
 
 class CheckStatus(EmbeddedDocument):
@@ -157,10 +90,8 @@ class DataItem(EmbeddedDocument):
 
     def __str__(self):
         if self.remote_system:
-            return (
-                f"{self.source}#{self.remote_system.name}:{self.remote_id}: {','.join(self.data)}"
-            )
-        return f"{self.source}: {','.join(self.data)}"
+            return f"{self.source}({self.last_update})@{self.remote_system.name}:{self.remote_id}: {','.join(self.data)}"
+        return f"{self.source}({self.last_update}): {','.join(self.data)}"
 
     def __eq__(self, other: "DataItem") -> bool:
         if self.source != other.source:
@@ -204,6 +135,7 @@ class DiscoveredObject(Document):
         "indexes": [
             {"fields": ["pool", "address"], "unique": True},
             {"fields": ["pool", "address_bin"]},
+            {"fields": ["data.remote_system", "data.remote_id"]},
             "address_bin",
             "sources",
             "is_dirty",
@@ -220,15 +152,15 @@ class DiscoveredObject(Document):
     state: "State" = PlainReferenceField(State)
     # profile = Predefined Profile
     # Flags
-    is_dirty = BooleanField(default=True)
-    origin = ReferenceField("self", required=False)
+    is_dirty: bool = BooleanField(default=True)
+    origin: Optional["DiscoveredObject"] = ReferenceField("self", required=False)
     # is_conflicted
     label = StringField()
     description = StringField()
     hostname = StringField()
     chassis_id = StringField()
     # Sources that find object,     timestamp: str = DateTimeField(required=True)
-    sources = ListField(StringField(choices=sorted(SOURCES)))
+    sources: List[str] = ListField(StringField(choices=sorted(SOURCES)))
     # Timestamp of last seen
     last_seen = DateTimeField()
     state_changed = DateTimeField()
@@ -242,9 +174,9 @@ class DiscoveredObject(Document):
     duplicate_keys = ListField(LongField())
     managed_object_id: Optional[int] = IntField(required=False)
     # Link to agent
-    agent: "Agent" = ObjectIdField(required=False)
+    agent: Optional["ObjectId"] = ObjectIdField(required=False)
     # Link to Rule
-    rule: "ObjectDiscoveryRule" = PlainReferenceField(ObjectDiscoveryRule, required=False)
+    rule: Optional["ObjectDiscoveryRule"] = PlainReferenceField(ObjectDiscoveryRule, required=False)
     effective_data: Dict[str, str] = DictField()
     # Labels
     extra_labels: Dict[str, List[str]] = DictField()
@@ -271,7 +203,6 @@ class DiscoveredObject(Document):
             * field
             * source_priority
             * policy: set, replace, union (for list)
-        :return:
         """
         data, labels, changed = {}, [], False
         rids = set()
@@ -320,6 +251,10 @@ class DiscoveredObject(Document):
         ):
             yield di
 
+    def set_dirty(self, msg: Optional[str] = None):
+        logger.debug("[%s] Set dirty %s", self.address, msg or "")
+        self.is_dirty |= True
+
     def is_ttl(self, ts: Optional[datetime.datetime] = None) -> bool:
         if not self.rule.expired_ttl:
             return False
@@ -331,78 +266,187 @@ class DiscoveredObject(Document):
         self.rule = rule
         self.save()
 
+    def refresh_rule(
+        self, sources: Optional[List[str]] = None, rule: Optional[ObjectDiscoveryRule] = None
+    ):
+        """Check assigned rules on Object"""
+        sources = sources or list(self.sources)
+        rule = rule or self.get_rule(sources)
+        if not rule:
+            if self.rule and self.state:
+                self.fire_event("expired")  # Remove
+            logger.debug(
+                "[%s|%s] Not find rule for address. Skipping", self.pool.name, self.address
+            )
+            return
+        elif self.rule != rule:
+            logger.info(
+                "[%s|%s] Update rule: %s -> %s",
+                self.pool.name,
+                self.address,
+                self.rule.name if self.rule else "<empty>",
+                rule.name,
+            )
+            self.rule = rule
+            self.set_dirty("Update Rules")
+        # Update sources
+        sources = rule.merge_sources(sources)
+        if list(self.sources) != sources:
+            # Remove unused data
+            for source in set(self.sources) - set(sources):
+                self.reset_data(source)
+            self.set_dirty("Update sources")
+            self.sources = sources
+
     @classmethod
-    def get_discovered_object_filter(
+    def find_object_by_data(
         cls,
-        sources: List[str],
         address: str,
         pool: Pool,
         data: List[PurgatoriumData],
-    ) -> m_q:
-        """Build filter for discovered record"""
+    ) -> List["DiscoveredObject"]:
+        """Find Discovered object by data"""
         q = m_q(pool=pool, address=address)
-        if ETL_SOURCE not in sources:
-            return q
         for d in data:
             if d.source == ETL_SOURCE and d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
                 q |= m_q(data__match={"remote_system": rs.id, "remote_id": d.data["remote_id"]})
-        return q
+        return list(DiscoveredObject.objects.filter(q))
 
     @classmethod
-    def merge_discovered_object(
+    def ensure_discovered_object(
         cls,
         sources: List[str],
         address: str,
         pool: Pool,
         data: List[PurgatoriumData],
+        checks: Optional[List[ProtocolCheckResult]] = None,
+        labels: Optional[List[str]] = None,
+        rule: Optional[str] = None,
+        update_ts: Optional[datetime.datetime] = None,
+        dry_run: bool = False,
     ) -> Optional["DiscoveredObject"]:
-        """Check ETL Source by RemoteSystem and RemoteId."""
-        oo: List["DiscoveredObject"] = list(
-            DiscoveredObject.objects.filter(
-                cls.get_discovered_object_filter(sources, address, pool, data)
+        """Check Discovered Object Exists"""
+        oo = cls.find_object_by_data(address, pool, data)
+        if len(oo) == 1 and oo[0].address == address:
+            # Replace pool ?
+            o = oo[0]
+        elif len(oo) == 1 and oo[0].address != address:
+            # Moved address in ETL system
+            o = None
+        elif oo:
+            # None ?
+            o, data = cls.merge_discovered_objects(oo, address, data, dry_run=dry_run)
+        else:
+            o = None
+        if not o:
+            # Create
+            o = DiscoveredObject(
+                pool=pool,
+                address=address,
+                sources=sources,
+                labels=labels or [],
+                rule=rule,
             )
-        )
-        if not oo:
-            return None
-        elif len(oo) == 1 and oo[0].address == address:
-            return oo[0]
-        elif len(oo) == 1:
-            return None
-        # Multiple instance - merge
-        o = None
-        moved_systems = {
-            (d.remote_system, d.data["remote_id"]) for d in data if d.source == ETL_SOURCE
-        }
-        addresses = []
-        # ETL Priority
-        for do in oo:
-            if do.address == address:
-                o = do
-                continue
-            data = []
-            for d in do.data:
-                if d.source == ETL_SOURCE and (d.remote_system.name, d.remote_id) in moved_systems:
-                    continue
-                data.append(d)
-            do.data = data
-            addresses.append(do.address)
-            do.save()
-        logger.info("[%s] ETL Source moved from %s. Merge...", address, addresses)
-        # Check origin
+        # timestamp = timestamp or datetime.datetime.now()
+        if not update_ts or update_ts != o.last_seen:
+            if o.id:
+                # For New object not logging
+                logger.debug(
+                    "[%s|%s] Run update data: %s/%s", pool.name, address, update_ts, o.last_seen
+                )
+            o.update_data(data, checks)  # Remove data
         return o
+
+    @classmethod
+    def merge_discovered_objects(
+        cls,
+        objects: List["DiscoveredObject"],
+        address: str,
+        data: List[PurgatoriumData],
+        dry_run: bool = False,
+    ) -> ["DiscoveredObject", List[PurgatoriumData]]:
+        """
+        get_moved object
+
+        Merge Multiple Discovered Object when processed discovered
+        When:
+          * Changed device address on Remote System
+          * When Change Device on Network (by hostname/mac)
+        Do:
+        1. When origin not Managed Object
+         * Move only data and set is_dirty
+        2. When origin and Destination with Managed Object
+         * Move data and set is_dirty (apply changes on sync)
+        3. When origin with ManagedObject and destination is not
+         *
+
+        """
+        # Find origin record (by same IP)
+        origin = None
+        for o in objects:
+            if o.address == address:
+                origin = o
+        # Current systems
+        origin_rids = {
+            (RemoteSystem.get_by_name(d.remote_system), d.remote_id): d.ts
+            for d in data
+            if d.source == ETL_SOURCE
+        }
+        # If not origin - New record, On other set delete_flag
+        addresses, merged_rids, clean_rids = [], [], []
+        for do in objects:
+            if do.address == address:
+                origin = do
+                continue
+            # set for moved
+            for (rs, rid), ts in origin_rids.items():
+                d = do.get_data(ETL_SOURCE, remote_system=rs)
+                if not d:
+                    continue
+                if d.remote_id != rid:
+                    continue
+                elif d.last_update > ts:
+                    # Clean from Purgatorium Data
+                    clean_rids.append((rs.name, rid))
+                    continue
+                # Set is_delete ? For Lost Deleted/by TTL
+                merged_rids += do.reset_data(ETL_SOURCE, remote_system=rs)
+            addresses.append(do.address)
+            # Bulk Data ?
+            if not dry_run:
+                do.save()
+        if merged_rids:
+            logger.info(
+                "[%s|%s|Merge] ETL Source moved from %s. Remote Ids: %s. Merge...",
+                address,
+                origin.rule if origin else "<new>",
+                addresses,
+                ",".join(merged_rids),
+            )
+        if clean_rids:
+            logger.info(
+                "[%s|%s|Merge] ETL Source on '%s' removed from own data. Remote Ids: %s. Merge...",
+                address,
+                origin.rule if origin else "<new>",
+                addresses,
+                ",".join(f"{x1}:{x2}" for x1, x2 in clean_rids),
+            )
+            return origin, [d for d in data if (d.remote_system, d.remote_id) not in clean_rids]
+        return origin, data
 
     @classmethod
     def register(
         cls,
-        pool: Union[str, Pool],
+        pool: Pool,
         address: str,
         sources: List[str],
-        data: List[PurgatoriumData],  # source, remote_system, data
+        data: List[PurgatoriumData],
         checks: Optional[List[ProtocolCheckResult]] = None,
-        labels: Optional[List[str]] = None,  # Manual Labels
+        labels: Optional[List[str]] = None,
         update_ts: Optional[datetime.datetime] = None,
-        rule=None,  # Processed rule
+        rule=None,
+        dry_run: bool = False,
     ) -> Optional["DiscoveredObject"]:  # MergeRule
         """
         Register New record
@@ -418,57 +462,34 @@ class DiscoveredObject(Document):
             checks: List of checks
             labels: Manual Set labels
             update_ts: Last update time
+            dry_run: Test run, not save changes
             rule:
         """
         if not isinstance(pool, Pool):
             pool = Pool.get_by_name(pool)
-        o = cls.merge_discovered_object(sources, address, pool, data)
-        # timestamp = timestamp or datetime.datetime.now()
-        if not o:
-            o = DiscoveredObject(
-                pool=pool,
-                address=address,
-                sources=sources,
-                labels=labels or [],
-                rule=rule,
-            )
-        if not update_ts or update_ts != o.last_seen:
-            if o.id:
-                # For New object not logging
-                logger.info(
-                    "[%s|%s] Run update data: %s/%s", pool.name, address, update_ts, o.last_seen
-                )
-            o.update_data(data, checks)  # Remove data
-        rule = rule or o.get_rule(sources)
-        # if address == "10.98.254.131":
-        #     logger.info("[%s|%s] Debug object: %s/%s/%s/%s", pool.name, address, sources, data, labels, rule)
-        if not rule:
-            if o.rule and o.state:
-                o.fire_event("expired")  # Remove
-            logger.debug("[%s|%s] Not find rule for address. Skipping", pool.name, address)
-            return
-        elif o.rule != rule:
-            logger.info(
-                "[%s|%s] Update rule: %s -> %s",
-                pool.name,
-                address,
-                o.rule.name if o.rule else "<empty>",
-                rule.name,
-            )
-            o.rule = rule
-            o.is_dirty = True
-        sources = rule.merge_sources(sources)
-        if o.sources != sources:
-            # Remove unused data
-            for source in set(o.sources) - set(sources):
-                o.reset_data(source)
-            o.is_dirty = True
-            o.sources = sources
-        o.touch(ts=update_ts)
-        if not o.is_dirty and rule == o.rule:
+        o = DiscoveredObject.ensure_discovered_object(
+            sources,
+            address,
+            pool,
+            data,
+            checks,
+            labels,
+            rule=rule,
+            update_ts=update_ts,
+            dry_run=dry_run,
+        )
+        o.refresh_rule(sources, rule=rule)
+        if not o.is_dirty or rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
+        if dry_run:
+            logger.debug(
+                "[%s|%s] Debug object: %s/%s/%s/%s", pool.name, address, sources, data, labels, rule
+            )
+            return o
         o.save()
+        if update_ts and o.last_seen != update_ts:
+            o.touch(ts=update_ts)
         return o
 
     def get_rule(self, sources: Optional[List[str]] = None) -> Optional["ObjectDiscoveryRule"]:
@@ -661,6 +682,8 @@ class DiscoveredObject(Document):
         q = m_q()
         addresses = set()
         for mo in mos:
+            if not mo.address:
+                continue
             addresses.add(IP.prefix(mo.address).address)
             # Pool
             for d in SubInterface._get_collection().find(
@@ -686,7 +709,7 @@ class DiscoveredObject(Document):
             return []
         return DiscoveredObject.objects.filter(id__ne=self.id).filter(q)
 
-    def sync(self, dry_run: bool = False, force: bool = False, template=None):
+    def sync(self, dry_run: bool = False, force: bool = False, template=None, bulk=None):
         """Sync"""
 
         rule = self.get_rule(list(self.sources))
@@ -698,7 +721,9 @@ class DiscoveredObject(Document):
             self.rule = rule
             self.save()
         action = rule.get_action(self.checks, self.effective_labels, self.effective_data)
-        if action == "ignore":
+        if dry_run:
+            logger.info("[%s] Send action: %s", self.address, action)
+        elif action == "ignore":
             self.fire_event("ignore")
         elif action == "approve":
             self.fire_event("approve")
@@ -707,6 +732,9 @@ class DiscoveredObject(Document):
         if self.is_approved or force:
             self.sync_object(dry_run=dry_run, template=template)
         if dry_run:
+            return
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$set": {"is_dirty": False}})]
             return
         self.is_dirty = False
         DiscoveredObject.objects.filter(id=self.id).update(is_dirty=False)
@@ -869,7 +897,7 @@ class DiscoveredObject(Document):
             d.last_update = last_update
             d.is_delete = is_delete
             d.event = event
-            self.is_dirty = True
+            self.set_dirty("Update data")
             break
         else:
             self.data += [
@@ -885,15 +913,38 @@ class DiscoveredObject(Document):
                     is_delete=is_delete,
                 )
             ]
-            self.is_dirty = True
+            self.set_dirty("Add New Data")
 
-    def reset_data(self, source, remote_id: Optional[str] = None):
-        self.data = [
-            item
-            for item in self.data
-            if (item.source != source and not remote_id)
-            or (remote_id and item.remote_id != remote_id)
-        ]
+    def get_data(
+        self, source: str, remote_system: Optional[RemoteSystem] = None
+    ) -> Optional[DataItem]:
+        if source == ETL_SOURCE and not remote_system:
+            raise AttributeError("")
+        for item in self.data:
+            if item.source != source and not remote_system:
+                return item
+            elif remote_system and item.remote_system == remote_system:
+                return item
+
+    def reset_data(self, source: str, remote_system: Optional[RemoteSystem] = None):
+        """
+        Remove data for source or remote identifier
+        Args:
+            source: Input Source
+            remote_system: Remote System
+        """
+        data, remote_rids = [], []
+        for item in self.data:
+            if item.source != source and not remote_system:
+                continue
+            elif remote_system and item.remote_system.id == remote_system.id:
+                remote_rids.append(item.remote_id)
+                continue
+            data.append(item)
+        if len(data) != len(self.data):
+            self.data = data
+            self.is_dirty |= True
+        return remote_rids
 
     def update_data(
         self,
@@ -917,6 +968,7 @@ class DiscoveredObject(Document):
             rs = None
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
+            # Check Update ts, if deleted
             self.set_data(
                 d.source,
                 d.data,
@@ -938,7 +990,7 @@ class DiscoveredObject(Document):
         ]
         if not self.checks or set(self.checks).symmetric_difference(set(checks)):
             self.checks = checks
-            self.is_dirty |= True
+            self.set_dirty("Update checks")
 
     def sync_object_data(
         self, ctx: ResourceItem, managed_object: Optional["ManagedObject"] = None, dry_run=False
@@ -947,14 +999,15 @@ class DiscoveredObject(Document):
             logger.warning("Not exists ManagedObject. Skipping...")
             return
         elif managed_object:
-            logger.info(
-                "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
-            )
             mo = managed_object
         else:
             mo = ManagedObject.get_by_id(int(self.managed_object_id))
         if not mo:
             return
+        elif mo.id != self.managed_object_id:
+            logger.info(
+                "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
+            )
         changed = False
         if mo.address != self.address:
             logger.info("Sync address to Discovered Object: %s -> %s", mo.address, self.address)
@@ -962,7 +1015,7 @@ class DiscoveredObject(Document):
             changed |= True
         if mo.name != self.hostname:
             logger.info("Sync Name to Discovered Object: %s -> %s", mo.name, self.hostname)
-            mo.name = self.hostname
+            mo.name = self.hostname or f"{mo.address}#not_name"
             changed |= True
         if ctx.data and self.rule.default_template:
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
@@ -970,12 +1023,13 @@ class DiscoveredObject(Document):
                 logger.info("[%s] Update existing ManagedObject from data: %s", mo.name, ctx)
         changed |= mo.update_remote_mappings(ctx.mappings or {})
         if dry_run:
+            logger.info("Send signal (managed_object): %s", ctx.event or "managed")
             return
         if ctx.event == "duplicate":
             mo.fire_event("unmanaged")
             logger.info("Send duplicate signal (managed_object)")
         elif ctx.event:
-            mo.fire_event(ctx.event or "managed")
+            mo.fire_event(ctx.event)
         elif (
             not ctx.event
             and ETL_SOURCE in self.sources
@@ -984,6 +1038,8 @@ class DiscoveredObject(Document):
         ):
             logger.info("[%s] Unsync ManagedObject, by lost master", mo.name)
             mo.fire_event("unmanaged")
+        elif not ctx.event:
+            mo.fire_event("managed")
         if changed:
             mo.save()
 
@@ -1003,6 +1059,14 @@ class DiscoveredObject(Document):
             o.save()
         return o
 
+    @classmethod
+    def get_start_sync_ts(cls) -> datetime.datetime:
+        """Getting Timestamp from started sync"""
+        now = datetime.datetime.now()
+        ls = DiscoveredObject.objects.filter().order_by("-last_seen").scalar("last_seen").first()
+        ls = ls or now
+        return ls - datetime.timedelta(seconds=config.network_scan.purgatorium_ttl)
+
 
 def sync_object():
     """
@@ -1011,14 +1075,15 @@ def sync_object():
     1. Deduplicate
     2. Synchronize records with Agent and ManagedObject
     3. Synchronize data with ManagedObject
-    :return:
     """
     for do in DiscoveredObject.objects.filter(is_dirty=True):
         if do.rule.allow_sync and not do.origin and do.is_approved:
             do.sync()
 
 
-def sync_purgatorium():
+def sync_purgatorium(
+    disable_sync: bool = False, dry_run: bool = False, print_addresses: Optional[List[str]] = None
+):
     """
     Sync Discovered records with Purgatorium
     1. Load by CHUNK from Purgatorium
@@ -1032,100 +1097,65 @@ def sync_purgatorium():
         approve/sync
 
      approve ?
-    :return:
     """
-    ls = (
-        DiscoveredObject.objects.filter().order_by("-last_seen").scalar("last_seen").first()
-        or datetime.datetime.now()
-    )
-    ls_ex = ls - datetime.timedelta(seconds=config.network_scan.purgatorium_ttl)
-    logger.info("Start Purgatorium Sync: %s, Expired: %s", ls, ls_ex)
-    ranges = defaultdict(list)
-    # ranges filter
-    for r in ObjectDiscoveryRule.objects.filter(is_active=True):
-        for p in r.get_prefixes():
-            ranges[p].append(r)
-    ch = connection()
-    r = ch.execute(PURGATORIUM_SQL, return_raw=True, args=[ls_ex.date().isoformat()])
+    # Start timestamp
+    ls_ex = DiscoveredObject.get_start_sync_ts()
+    logger.info("Start Purgatorium sync from %s", ls_ex)
     processed, updated, removed, synced = 0, 0, 0, 0
-    # New records
-    for num, row in enumerate(r.splitlines(), start=1):
-        row = orjson.loads(row)
-        pool = Pool.get_by_bi_id(row["pool"])
-        data = defaultdict(dict)
-        d_labels = defaultdict(list)
-        groups = defaultdict(list)
-        # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels, s_groups, c_groups, is_delete in row["all_data"]:
-            if is_delete:
-                logger.debug("[%s] Detect deleted flag", row["address"])
-            if not int(d1["uptime"]):
-                # Filter 0 uptime
-                del d1["uptime"]
-            if not rs:
-                del d1["remote_id"]
-            if rs:
-                rs = RemoteSystem.objects.filter(bi_id=rs).first()
-                if not rs:
-                    continue
-                rs = rs.name
-            # Check timestamp
-            data[(source, rs)].update(d1 | d2)
-            data[(source, rs)]["is_delete"] = bool(is_delete)
-            d_labels[(source, rs)] = labels
-            for rg in s_groups or []:
-                rg = ResourceGroup.get_by_bi_id(rg)
-                if rg:
-                    groups[(source, rs, "s")].append(rg.id)
-            for rg in c_groups or []:
-                rg = ResourceGroup.get_by_bi_id(rg)
-                if rg:
-                    groups[(source, rs, "c")].append(rg.id)
-        last_ts = datetime.datetime.fromisoformat(row["last_ts"]).replace(microsecond=0)
+    # Processed Discovered Objects
+    for pool, address, sources, data, checks, last_ts in iter_discovered_object(ls_ex):
+        if not address:
+            continue
+        pool = Pool.get_by_bi_id(pool)
+        if print_addresses and address in print_addresses:
+            logger.info("[%s] Data: %s", address, [str(d) for d in data])
         r = DiscoveredObject.register(
             pool,
-            row["address"],
-            list(set(row["sources"])),
-            data=[
-                PurgatoriumData(
-                    source=source,
-                    ts=datetime.datetime.fromisoformat(d.pop("ts")),
-                    remote_system=rs,
-                    data=d,
-                    labels=d_labels.get((source, rs)) or [],
-                    service_groups=groups.get((source, rs, "s")) or [],
-                    client_groups=groups.get((source, rs, "c")) or [],
-                    is_delete=bool(d.pop("is_delete")),
-                    event=d.pop("event", None),
-                )
-                for (source, rs), d in data.items()
-            ],
-            checks=[ProtocolCheckResult(**orjson.loads(c)) for c in row["all_checks"]],
+            address,
+            sources,
+            data=data,
+            checks=checks,
             update_ts=last_ts,
-            # data, check, labels
-            # TS (timestamp)
+            dry_run=dry_run,
         )
         processed += 1
         if r:
             logger.debug("Updated: %s", r)
             updated += 1
-    now = datetime.datetime.now()
     # Expired objects
-    for o in DiscoveredObject.objects.filter(expired__gt=now):
+    for o in DiscoveredObject.objects.filter(expired__gt=datetime.datetime.now()):
         o.fire_event("expired")
     logger.debug("Removing expired objects")
     # Removed objects
     for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
         removed += 1
         o.delete()
+    if disable_sync:
+        logger.info(
+            "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
+            ls_ex,
+            processed,
+            updated,
+            removed,
+            synced,
+        )
+        return
     # Sync objects and rules
     logger.info("Sync objects and rules")
+    bulk = []
+    coll = DiscoveredObject._get_collection()
     for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
-        do.sync()
-        # DiscoveredObject.objects.filter(id=do.id).update(is_dirty=False)
+        do.sync(bulk=bulk)
+        if len(bulk) > 1000:
+            coll.bulk_write(bulk)
+            synced += len(bulk)
+            bulk = []
+    if bulk:
+        coll.bulk_write(bulk)
+        synced += len(bulk)
     logger.info(
         "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
-        ls,
+        ls_ex,
         processed,
         updated,
         removed,
