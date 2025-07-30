@@ -22,15 +22,16 @@ from typing import (
     Generic,
     Union,
     List,
-    Tuple,
 )
+from threading import Lock
+import uuid
 
 # Third-party modules
 import orjson
 from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
-from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.document import Document
 from mongoengine.fields import (
     StringField,
     DateTimeField,
@@ -44,6 +45,7 @@ from mongoengine.fields import (
     BinaryField,
 )
 from mongoengine.errors import SaveConditionError
+from cachetools import TTLCache
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
@@ -55,6 +57,7 @@ from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from noc.inv.models.object import Object
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.defer import defer
@@ -63,13 +66,18 @@ from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
 from noc.core.handler import get_handler
-from noc.core.feature import Feature
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
 from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
+
+if HAS_FGALARMS:
+    _slot_cache = TTLCache(1_000, ttl=60)
+    _slot_mo = TTLCache(1_000, 60)
+    _slot_lock = Lock()
+    _slot_obj_lock = Lock()
 
 
 @change(audit=False)
@@ -1320,10 +1328,68 @@ class ActiveAlarm(Document):
     def _get_obj_path(self) -> Optional[List[str]]:
         if not HAS_FGALARMS:
             return None
-        print(">" * 72)
-        print("ALARM", self)
-        print("VARS", self.vars)
+        if self.vars and "slot_id" in self.vars and "port_name" in self.vars:
+            return self._get_obj_vendor_slotted_path(
+                slot_id=self.vars["slot_id"],
+                port_name=self.vars["port_name"],
+            )
         return None
+
+    def _get_obj_vendor_slotted_path(self, slot_id: str, port_name: str) -> Optional[List[str]]:
+        """Temporary vendor-specific implementation."""
+        try:
+            slot = int(slot_id)
+        except ValueError:
+            return None
+        key = (self.managed_object.id, slot, port_name)
+        with _slot_lock:
+            r = _slot_cache.get(key)
+            if r:
+                return r
+        # Resolve chassis
+        obj = self._get_object()
+        if not obj:
+            return None
+        # Go down the slot
+        # @todo: CU slots?
+        HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+        c_connection = str((slot - 1) // 2 + 1)
+        c_obj = Object.objects.filter(parent=obj.id, parent_connection=c_connection).first()
+        if not c_obj:
+            return None
+        if c_obj.model.uuid == HS_UUID:
+            # Half-sized module
+            c_connection = (slot - 1) % 2 + 1
+            c_obj = Object.objects.filter(parent=c_obj.id, parent_connection=c_connection).first()
+            if not c_obj:
+                return None
+        # Normalize port name
+        if port_name.startswith("Ln_"):
+            port_name = f"LINE{port_name[3:]}"
+        elif port_name.startswith("Cl_"):
+            port_name = f"CLIENT{port_name[3:]}"
+        # Go down to the transceiver
+        cn = c_obj.model.get_model_connection(port_name)
+        r = None
+        if cn and cn.direction == "i":
+            tx_obj = Object.objects.filter(parent=c_obj.id, parent_connection=port_name).first()
+            if tx_obj:
+                r = tx_obj.as_resource_path()
+        if not r:
+            r = c_obj.as_resource_path(port_name)
+        # Populate cache
+        with _slot_lock:
+            _slot_cache[key] = r
+
+    def _get_object(self) -> Optional[Object]:
+        with _slot_obj_lock:
+            r = _slot_mo.get(self.managed_object.id)
+            if r:
+                return r
+            r = next(iter(Object.get_managed(self.managed_object)), None)
+            if r:
+                _slot_mo[self.managed_object.id] = r
+            return r
 
 
 @runtime_checkable
