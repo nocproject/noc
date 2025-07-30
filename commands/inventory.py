@@ -132,7 +132,6 @@ class Command(BaseCommand):
         self.printbox("Created")
         self.printbox(f"  - objects: {result_info.created_objects}")
         self.printbox(f"  - direct connections: {result_info.created_connections_direct}")
-        self.printbox(f"  - cable model: {result_info.created_cable_model}")
         self.printbox(f"  - cables: {result_info.created_cable}")
         self.printbox(f"  - cable connections: {result_info.created_connections_cable}")
         self.printbox_border()
