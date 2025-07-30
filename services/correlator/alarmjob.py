@@ -22,6 +22,7 @@ from noc.core.fm.enum import ActionStatus, AlarmAction
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.core.debug import error_report
+from noc.core.scheduler.job import Job
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from noc.fm.models.activealarm import ActiveAlarm
@@ -31,6 +32,8 @@ from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.utils import get_alarm
 from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
+
+logger = logging.getLogger(__name__)
 
 
 class ItemStatus(enum.Enum):
@@ -50,7 +53,7 @@ class ItemStatus(enum.Enum):
     REMOVED = "removed"  # item removed
 
     @classmethod
-    def from_alarm(self, alarm: ActiveAlarm):
+    def from_alarm(cls, alarm: ActiveAlarm):
         """"""
         if alarm.status == "C":
             return ItemStatus.REMOVED
@@ -140,9 +143,7 @@ class AlarmJob(object):
         # Stats
         self.alarm_log = []
         # Alarm Severity
-        self.logger = logger or PrefixLoggerAdapter(
-            logging.getLogger(__name__), f"[{self.id}|{self.alarm}"
-        )
+        self.logger = logger or PrefixLoggerAdapter(logger, f"[{self.id}|{self.alarm}")
 
     def __str__(self):
         return f"AlarmJob: {self.alarm}"
@@ -342,3 +343,13 @@ class AlarmJob(object):
     def get_by_tt_id(cls, tt_id) -> Optional["AlarmJob"]:
         """Getting Alarm Job by TT ID"""
         return None
+
+
+def touch_alarm(alarm, *args, **kwargs):
+    a = ActiveAlarm.objects.filter(id=alarm).first()
+    if not a:
+        logger.info("[%s] Alarm is not found, skipping", alarm)
+        return
+    a.touch_watch()
+    if a.wait_ts:
+        Job.retry_after(delay=(a.wait_ts - datetime.datetime.now()).total_seconds())
