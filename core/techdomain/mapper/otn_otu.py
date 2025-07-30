@@ -45,6 +45,8 @@ class DWDMOTUMapper(BaseMapper):
                                 "shape": "record",
                                 "label": f"{card.name}|{ports}",
                                 "class": self.SELECTABLE_CLASS,
+                                "id": self.get_interaction_tag(resource=card.object.as_resource()),
+                                "tooltip": "",
                             },
                         }
                     ],

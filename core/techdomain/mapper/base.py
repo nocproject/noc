@@ -13,6 +13,12 @@ from typing import List, Iterable, Optional, Dict, Any
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.channel import Channel
+from noc.core.facade.interaction import (
+    Interaction,
+    InteractionAction,
+    InteractionEvent,
+    InteractionItem,
+)
 from ..controller.base import Endpoint
 
 
@@ -196,6 +202,18 @@ class BaseMapper(object):
                 "attributes": attrs,
             }
         )
+
+    def get_interaction_tag(self, resource: str) -> str:
+        """Encode data-interaction tag."""
+        return Interaction(
+            actions=[
+                InteractionItem(
+                    event=InteractionEvent.CLICK,
+                    action=InteractionAction.INFO,
+                    resource=resource,
+                )
+            ]
+        ).to_str()
 
     def reverse_graph(self, g: dict[str, Any]):
         """Reverse direction of the graph."""
