@@ -270,6 +270,7 @@ class DiscoveredObject(Document):
         self, sources: Optional[List[str]] = None, rule: Optional[ObjectDiscoveryRule] = None
     ):
         """Check assigned rules on Object"""
+        sources = sources or list(self.sources)
         rule = rule or self.get_rule(sources)
         if not rule:
             if self.rule and self.state:
