@@ -3069,9 +3069,10 @@ class ManagedObject(NOCModel):
         changed = False
         if capabilities:
             self.update_caps(capabilities, source="template")
-        if static_service_groups:
-            self.static_service_groups = [str(g.id) for g in static_service_groups]
-            changed = True
+        groups = [str(g.id) for g in static_service_groups]
+        if set(self.static_service_groups) != set(groups):
+            self.static_service_groups = groups
+            changed |= True
         if state:
             self.state = state
         for field, value in data.items():
@@ -3079,7 +3080,7 @@ class ManagedObject(NOCModel):
                 value = value[:240]
             if hasattr(self, field) and getattr(self, field) != value:
                 setattr(self, field, value)
-                changed = True
+                changed |= True
         return changed
 
     def get_controller_credentials(self):
