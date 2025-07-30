@@ -1,12 +1,13 @@
 # ---------------------------------------------------------------------
 # NOC models lazy loading and utilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
+from typing import Iterable
 
 # Third-party modules
 from typing import Dict, Any
@@ -69,7 +70,7 @@ def load_models():
         get_model(alias)
 
 
-def iter_model_id():
+def iter_model_id() -> Iterable[str]:
     """
     Iterate all model ids
     """

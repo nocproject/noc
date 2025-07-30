@@ -22,6 +22,7 @@ from typing import (
     Generic,
     Union,
     List,
+    Tuple,
 )
 
 # Third-party modules
@@ -29,7 +30,7 @@ import orjson
 from bson import ObjectId
 from jinja2 import Template as Jinja2Template
 from pymongo import UpdateOne
-from mongoengine.document import Document
+from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
     DateTimeField,
@@ -62,11 +63,13 @@ from noc.config import config
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
 from noc.core.handler import get_handler
+from noc.core.feature import Feature
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
+from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
 
 
 @change(audit=False)
@@ -76,24 +79,33 @@ class ActiveAlarm(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "timestamp",
-            "root",
-            "-severity",
-            ("alarm_class", "managed_object"),
-            "#reference",
-            ("timestamp", "managed_object"),
-            "log.tt_id",
-            # "escalation_ts",
-            "adm_path",
-            "segment_path",
-            "container_path",
-            "uplinks",
-            ("alarm_class", "rca_neighbors"),
-            "labels",
-            "effective_labels",
-            "groups",
-            ("root", "groups"),
-            "deferred_groups",
+            x
+            for x in (
+                "timestamp",
+                "root",
+                "-severity",
+                ("alarm_class", "managed_object"),
+                "#reference",
+                ("timestamp", "managed_object"),
+                "log.tt_id",
+                # "escalation_ts",
+                # FGALARMS: to be removed
+                "adm_path",
+                # FGALARMS: to be removed
+                "segment_path",
+                # FGALARMS: to be removed
+                "container_path",
+                "uplinks",
+                ("alarm_class", "rca_neighbors"),
+                "labels",
+                "effective_labels",
+                "groups",
+                ("root", "groups"),
+                "deferred_groups",
+                # FGALARMS: Enabled by feature gate
+                ("resource_path.code", "resource_path.path"),
+            )
+            if _is_required_index(x)
         ],
     }
     status = "A"
@@ -168,6 +180,8 @@ class ActiveAlarm(Document):
     remote_system = PlainReferenceField(RemoteSystem, required=False)
     # Object id in remote system
     remote_id = StringField(required=False)
+    if HAS_FGALARMS:
+        resource_path = ListField(EmbeddedDocumentField(PathItem))
 
     def __str__(self):
         return str(self.id)
@@ -229,6 +243,15 @@ class ActiveAlarm(Document):
             self.uplinks = self.managed_object.uplinks
             self.rca_neighbors = self.managed_object.rca_neighbors
             self.dlm_windows = self.managed_object.dlm_windows
+            if HAS_FGALARMS:
+                resource_path = [
+                    PathItem(code=PathCode.ADM_DOMAIN, path=[f"a:{x}" for x in self.adm_path]),
+                    PathItem(code=PathCode.SEGMENT, path=[f"s:{x}" for x in self.segment_path]),
+                ]
+                obj_path = self._get_obj_path()
+                if obj_path:
+                    resource_path.append(PathItem(code=PathCode.OBJECT, path=obj_path))
+                self.resource_path = resource_path
         else:
             self.adm_path = []
             self.segment_path = []
@@ -405,6 +428,8 @@ class ActiveAlarm(Document):
             remote_system=self.remote_system,
             remote_id=self.remote_id,
         )
+        if HAS_FGALARMS:
+            a.resource_path = self.resource_path
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
@@ -1291,6 +1316,14 @@ class ActiveAlarm(Document):
             return self.components.get_resources()
         except AttributeError:
             return []
+
+    def _get_obj_path(self) -> Optional[List[str]]:
+        if not HAS_FGALARMS:
+            return None
+        print(">" * 72)
+        print("ALARM", self)
+        print("VARS", self.vars)
+        return None
 
 
 @runtime_checkable
