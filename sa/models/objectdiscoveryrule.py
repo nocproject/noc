@@ -367,7 +367,7 @@ class ObjectDiscoveryRule(Document):
         ss = frozenset(sources)
         for rule in ObjectDiscoveryRule.get_rules_by_source(ss):
             if ETL_SOURCE in ss and rule.required_systems - {
-                str(d.remote_system.id) for d in data if d.remote_system
+                str(d.remote_system.id) for d in data if d.remote_system and not d.is_delete
             }:
                 continue
             r_data, r_labels, r_groups = cls.get_effective_data(

@@ -176,6 +176,7 @@ class RemoteSystem(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     SCHEDULER = "scheduler"
     JCLS = "noc.services.scheduler.jobs.remote_system.ETLSyncJob"
@@ -193,6 +194,11 @@ class RemoteSystem(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name: str) -> Optional["RemoteSystem"]:
         return RemoteSystem.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
+    def get_by_bi_id(cls, bi_id: int) -> Optional["RemoteSystem"]:
+        return RemoteSystem.objects.filter(bi_id=bi_id).first()
 
     @property
     def config(self) -> Dict[str, str]:
