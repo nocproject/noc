@@ -80,6 +80,8 @@ class Node(object):
 
 class BaseMapper(object):
     name: str = "base"
+    CHANNEL_SHAPE = "octagon"
+    SELECTABLE_CLASS = "ch-selectable"
 
     def __init__(self, channel: Channel):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
@@ -179,6 +181,21 @@ class BaseMapper(object):
     def add_subgraphs(self, iter: Iterable[Dict[str, Any]]) -> None:
         """Add nodes from iterable."""
         self.g["subgraphs"].extend(iter)
+
+    def add_channel(self, name: str, *, label: str, is_client: bool = False) -> None:
+        attrs = {
+            "shape": self.CHANNEL_SHAPE,
+            "label": label,
+            "class": self.SELECTABLE_CLASS,
+        }
+        if is_client:
+            attrs["style"] = "dashed"
+        self.add_node(
+            {
+                "name": name,
+                "attributes": attrs,
+            }
+        )
 
     def reverse_graph(self, g: dict[str, Any]):
         """Reverse direction of the graph."""
