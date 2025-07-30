@@ -55,7 +55,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
   onSchemeClick: function(evt, target){
     var findSelectableAncestor = function(element){
         while(element && element !== document.body){
-          if(element.classList.contains('selectable')){
+          if(element.classList.contains("selectable")){
             return element;
           }
           element = element.parentElement;
