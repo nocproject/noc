@@ -10,6 +10,7 @@ import os
 from threading import Lock
 import operator
 import re
+from uuid import UUID
 from typing import Any, Optional, List, Tuple, Union, Iterable
 
 # Third-party modules
@@ -431,6 +432,7 @@ class ObjectModel(Document):
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _model_cache = cachetools.TTLCache(maxsize=10000, ttl=60)
+    _uuid_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __str__(self):
         return self.name
@@ -444,6 +446,11 @@ class ObjectModel(Document):
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
     def get_by_name(cls, name) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_uuid_cache"), lock=lambda _: id_lock)
+    def get_by_uuid(cls, uuid: UUID) -> Optional["ObjectModel"]:
+        return ObjectModel.objects.filter(uuid=uuid).first()
 
     def get_short_label(self) -> str:
         """
