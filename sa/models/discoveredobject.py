@@ -49,7 +49,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
-from noc.pm.models.agent import Agent
 from noc.wf.models.state import State
 
 # Data source, data: Dict[str, str], source -> MergeRule[field-> policy]
@@ -90,10 +89,8 @@ class DataItem(EmbeddedDocument):
 
     def __str__(self):
         if self.remote_system:
-            return (
-                f"{self.source}#{self.remote_system.name}:{self.remote_id}: {','.join(self.data)}"
-            )
-        return f"{self.source}: {','.join(self.data)}"
+            return f"{self.source}({self.last_update})@{self.remote_system.name}:{self.remote_id}: {','.join(self.data)}"
+        return f"{self.source}({self.last_update}): {','.join(self.data)}"
 
     def __eq__(self, other: "DataItem") -> bool:
         if self.source != other.source:
@@ -253,6 +250,10 @@ class DiscoveredObject(Document):
         ):
             yield di
 
+    def set_dirty(self, msg: Optional[str] = None):
+        logger.debug("[%s] Set dirty %s", self.address, msg or "")
+        self.is_dirty |= True
+
     def is_ttl(self, ts: Optional[datetime.datetime] = None) -> bool:
         if not self.rule.expired_ttl:
             return False
@@ -285,20 +286,19 @@ class DiscoveredObject(Document):
                 rule.name,
             )
             self.rule = rule
-            self.is_dirty = True
+            self.set_dirty("Update Rules")
         # Update sources
         sources = rule.merge_sources(sources)
         if list(self.sources) != sources:
             # Remove unused data
             for source in set(self.sources) - set(sources):
                 self.reset_data(source)
-            self.is_dirty = True
+            self.set_dirty("Update sources")
             self.sources = sources
 
     @classmethod
     def find_object_by_data(
         cls,
-        sources: List[str],
         address: str,
         pool: Pool,
         data: List[PurgatoriumData],
@@ -322,9 +322,10 @@ class DiscoveredObject(Document):
         labels: Optional[List[str]] = None,
         rule: Optional[str] = None,
         update_ts: Optional[datetime.datetime] = None,
+        dry_run: bool = False,
     ) -> Optional["DiscoveredObject"]:
         """Check Discovered Object Exists"""
-        oo = cls.find_object_by_data(sources, address, pool, data)
+        oo = cls.find_object_by_data(address, pool, data)
         if len(oo) == 1 and oo[0].address == address:
             # Replace pool ?
             o = oo[0]
@@ -333,7 +334,7 @@ class DiscoveredObject(Document):
             o = None
         elif oo:
             # None ?
-            o = cls.merge_discovered_objects(oo, address, data)
+            o, data = cls.merge_discovered_objects(oo, address, data, dry_run=dry_run)
         else:
             o = None
         if not o:
@@ -349,7 +350,7 @@ class DiscoveredObject(Document):
         if not update_ts or update_ts != o.last_seen:
             if o.id:
                 # For New object not logging
-                logger.info(
+                logger.debug(
                     "[%s|%s] Run update data: %s/%s", pool.name, address, update_ts, o.last_seen
                 )
             o.update_data(data, checks)  # Remove data
@@ -361,7 +362,8 @@ class DiscoveredObject(Document):
         objects: List["DiscoveredObject"],
         address: str,
         data: List[PurgatoriumData],
-    ) -> "DiscoveredObject":
+        dry_run: bool = False,
+    ) -> ["DiscoveredObject", List[PurgatoriumData]]:
         """
         get_moved object
 
@@ -378,68 +380,58 @@ class DiscoveredObject(Document):
          *
 
         """
-        logger.info("Merge Objects")
         # Find origin record (by same IP)
         origin = None
         for o in objects:
             if o.address == address:
                 origin = o
         # Current systems
-        origin_rids = {d.data["remote_id"] for d in data if d.source == ETL_SOURCE}
+        origin_rids = {
+            (RemoteSystem.get_by_name(d.remote_system), d.remote_id): d.ts
+            for d in data
+            if d.source == ETL_SOURCE
+        }
         # If not origin - New record, On other set delete_flag
-        addresses = []
+        addresses, merged_rids, clean_rids = [], [], []
         for do in objects:
             if do.address == address:
                 origin = do
                 continue
             # set for moved
-            for rid in origin_rids:
+            for (rs, rid), ts in origin_rids.items():
+                d = do.get_data(ETL_SOURCE, remote_system=rs)
+                if not d:
+                    continue
+                if d.remote_id != rid:
+                    continue
+                elif d.last_update > ts:
+                    # Clean from Purgatorium Data
+                    clean_rids.append((rs.name, rid))
+                    continue
                 # Set is_delete ? For Lost Deleted/by TTL
-                do.reset_data(ETL_SOURCE, remote_id=rid)
+                merged_rids += do.reset_data(ETL_SOURCE, remote_system=rs)
             addresses.append(do.address)
             # Bulk Data ?
-            do.save()
-        logger.info("[%s] ETL Source moved from %s. Merge...", address, addresses)
-        return origin
-
-    @classmethod
-    def merge_discovered_objects_old(
-        cls,
-        sources: List[str],
-        address: str,
-        pool: Pool,
-        data: List[PurgatoriumData],
-    ) -> Optional["DiscoveredObject"]:
-        """Check ETL Source by RemoteSystem and RemoteId."""
-        oo = cls.find_object_by_data(sources, address, pool, data)
-        if not oo:
-            return None
-        elif len(oo) == 1 and oo[0].address == address:
-            return oo[0]
-        elif len(oo) == 1:
-            return None
-        # Multiple instance - merge
-        o = None
-        moved_systems = {
-            (d.remote_system, d.data["remote_id"]) for d in data if d.source == ETL_SOURCE
-        }
-        addresses = []
-        # ETL Priority
-        for do in oo:
-            if do.address == address:
-                o = do
-                continue
-            data = []
-            for d in do.data:
-                if d.source == ETL_SOURCE and (d.remote_system.name, d.remote_id) in moved_systems:
-                    continue
-                data.append(d)
-            do.data = data
-            addresses.append(do.address)
-            do.save()
-        logger.info("[%s] ETL Source moved from %s. Merge...", address, addresses)
-        # Check origin
-        return o
+            if not dry_run:
+                do.save()
+        if merged_rids:
+            logger.info(
+                "[%s|%s|Merge] ETL Source moved from %s. Remote Ids: %s. Merge...",
+                address,
+                origin.rule if origin else "<new>",
+                addresses,
+                ",".join(merged_rids),
+            )
+        if clean_rids:
+            logger.info(
+                "[%s|%s|Merge] ETL Source on '%s' removed from own data. Remote Ids: %s. Merge...",
+                address,
+                origin.rule if origin else "<new>",
+                addresses,
+                ",".join(f"{x1}:{x2}" for x1, x2 in clean_rids),
+            )
+            return origin, [d for d in data if (d.remote_system, d.remote_id) not in clean_rids]
+        return origin, data
 
     @classmethod
     def register(
@@ -468,19 +460,28 @@ class DiscoveredObject(Document):
             checks: List of checks
             labels: Manual Set labels
             update_ts: Last update time
+            dry_run: Test run, not save changes
             rule:
         """
         if not isinstance(pool, Pool):
             pool = Pool.get_by_name(pool)
         o = DiscoveredObject.ensure_discovered_object(
-            sources, address, pool, data, checks, labels, rule=rule, update_ts=update_ts
+            sources,
+            address,
+            pool,
+            data,
+            checks,
+            labels,
+            rule=rule,
+            update_ts=update_ts,
+            dry_run=dry_run,
         )
         o.refresh_rule(sources, rule=rule)
         if not o.is_dirty or rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
         if dry_run:
-            logger.info(
+            logger.debug(
                 "[%s|%s] Debug object: %s/%s/%s/%s", pool.name, address, sources, data, labels, rule
             )
             return o
@@ -887,7 +888,7 @@ class DiscoveredObject(Document):
             d.last_update = last_update
             d.is_delete = is_delete
             d.event = event
-            self.is_dirty = True
+            self.set_dirty("Update data")
             break
         else:
             self.data += [
@@ -903,21 +904,38 @@ class DiscoveredObject(Document):
                     is_delete=is_delete,
                 )
             ]
-            self.is_dirty = True
+            self.set_dirty("Add New Data")
 
-    def reset_data(self, source: str, remote_id: Optional[str] = None):
+    def get_data(
+        self, source: str, remote_system: Optional[RemoteSystem] = None
+    ) -> Optional[DataItem]:
+        if source == ETL_SOURCE and not remote_system:
+            raise AttributeError("")
+        for item in self.data:
+            if item.source != source and not remote_system:
+                return item
+            elif remote_system and item.remote_system == remote_system:
+                return item
+
+    def reset_data(self, source: str, remote_system: Optional[RemoteSystem] = None):
         """
         Remove data for source or remote identifier
         Args:
             source: Input Source
-            remote_id: Identifier on Remote System
+            remote_system: Remote System
         """
-        self.data = [
-            item
-            for item in self.data
-            if (item.source != source and not remote_id)
-            or (remote_id and item.remote_id != remote_id)
-        ]
+        data, remote_rids = [], []
+        for item in self.data:
+            if item.source != source and not remote_system:
+                continue
+            elif remote_system and item.remote_system.id == remote_system.id:
+                remote_rids.append(item.remote_id)
+                continue
+            data.append(item)
+        if len(data) != len(self.data):
+            self.data = data
+            self.is_dirty |= True
+        return remote_rids
 
     def update_data(
         self,
@@ -963,7 +981,7 @@ class DiscoveredObject(Document):
         ]
         if not self.checks or set(self.checks).symmetric_difference(set(checks)):
             self.checks = checks
-            self.is_dirty |= True
+            self.set_dirty("Update checks")
 
     def sync_object_data(
         self, ctx: ResourceItem, managed_object: Optional["ManagedObject"] = None, dry_run=False
@@ -1050,7 +1068,9 @@ def sync_object():
             do.sync()
 
 
-def sync_purgatorium(disable_sync: bool = False, dry_run: bool = False):
+def sync_purgatorium(
+    disable_sync: bool = False, dry_run: bool = False, print_addresses: Optional[List[str]] = None
+):
     """
     Sync Discovered records with Purgatorium
     1. Load by CHUNK from Purgatorium
@@ -1072,6 +1092,8 @@ def sync_purgatorium(disable_sync: bool = False, dry_run: bool = False):
     # Processed Discovered Objects
     for pool, address, sources, data, checks, last_ts in iter_discovered_object(ls_ex):
         pool = Pool.get_by_bi_id(pool)
+        if print_addresses and address in print_addresses:
+            logger.info("[%s] Data: %s", address, [str(d) for d in data])
         r = DiscoveredObject.register(
             pool,
             address,

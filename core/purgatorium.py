@@ -85,15 +85,24 @@ class PurgatoriumData(object):
     is_delete: bool = False  # Delete Flag
 
     def __str__(self):
-        if self.remote_system:
-            return f"{self.source}@{self.remote_system}: {self.data}"
-        return f"{self.source}: {self.data}"
+        if self.remote_system and self.is_delete:
+            return f"|DELETE]{self.source}@{self.remote_system}]: {self.data}"
+        elif self.remote_system:
+            return f"{self.source}@{self.remote_system}:{self.data['remote_id']}({self.ts}): {self.data}"
+        return f"{self.source}({self.ts}): {self.data}"
 
     @property
     def key(self) -> str:
         if not self.remote_system:
             return self.source
         return f"{self.source}@{self.remote_system}"
+
+    @property
+    def remote_id(self) -> Optional[str]:
+        """"""
+        if not self.remote_system:
+            return None
+        return self.data["remote_id"]
 
 
 @dataclass
