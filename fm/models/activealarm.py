@@ -137,9 +137,7 @@ class ActiveAlarm(Document):
     deferred_groups = ListField(BinaryField())
     # span context
     escalation_ctx = LongField(required=False)
-    # Do not clear alarm until *wait_tt* is closed
-    wait_tt = StringField()
-    wait_ts = DateTimeField()
+    wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
     # Directly affected services summary, grouped by profiles
     # (connected to the same managed object)
     direct_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
@@ -326,6 +324,14 @@ class ActiveAlarm(Document):
         if to_save and not bulk:
             self.safe_save()
 
+    @property
+    def allow_clear(self) -> bool:
+        """Check Alarm allowed for clear"""
+        for w in self.watchers or []:
+            if w.effect == Effect.STOP_CLEAR:
+                return False
+        return True
+
     def clear_alarm(
         self,
         message,
@@ -348,18 +354,9 @@ class ActiveAlarm(Document):
         if self.alarm_class.is_ephemeral:
             self.delete()
         ts = ts or datetime.datetime.now()
-        if self.wait_tt and not force:
-            # Wait for escalated tt to close
-            if not self.wait_ts:
-                self.wait_ts = ts
-                self.log_message("Waiting for TT to close")
-                call_later(
-                    "noc.services.escalator.wait_tt.wait_tt",
-                    scheduler="escalator",
-                    pool=self.managed_object.escalator_shard,
-                    alarm_id=self.id,
-                )
-            return
+        if not force and not self.allow_clear:
+            self.add_watch(Effect.CLEAR_ALARM, key="", immediate=True)
+            return None
         if self.alarm_class.clear_handlers:
             # Process clear handlers
             for h in self.alarm_class.get_clear_handlers():
@@ -383,6 +380,7 @@ class ActiveAlarm(Document):
             ack_user=self.ack_user,
             root=self.root,
             groups=self.groups,
+            # Escalation_tts - list
             escalation_ts=self.escalation_ts,
             escalation_tt=self.escalation_tt,
             escalation_ctx=self.escalation_ctx,
@@ -411,6 +409,7 @@ class ActiveAlarm(Document):
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
         if dry_run:
+            self.status = "C"
             return a
         a.save()
         # Set checks on all consequences
@@ -604,6 +603,17 @@ class ActiveAlarm(Document):
             partition=partition,
         )
 
+    def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
+        wait_ts = []
+        for w in self.watchers:
+            if w.after:
+                wait_ts.append(w.after)
+        if timestamp:
+            wait_ts.append(timestamp)
+        if wait_ts:
+            return min(wait_ts)
+        return None
+
     def add_watch(
         self,
         effect: Effect,
@@ -611,11 +621,24 @@ class ActiveAlarm(Document):
         once: bool = False,
         immediate: bool = False,
         clear_only: bool = False,
+        after: Optional[datetime.datetime] = None,
         **kwargs,
     ):
-        """Adding watch"""
+        """
+        Adding watch
+        Args:
+            effect: Watched effect
+            key: Effect key
+            once: Run only once
+            immediate: Already executed (used for save data/reference on external job)
+            clear_only: Run only alarm clear
+            after: Run After Timer
+        """
+        if effect == Effect.CLEAR_ALARM and (clear_only or once):
+            raise ValueError("Not supported options")
         for w in self.watchers:
             if effect == w.effect and key == w.key:
+                w.after = after
                 break
         else:
             self.watchers.append(
@@ -625,9 +648,12 @@ class ActiveAlarm(Document):
                     once=once,
                     immediate=immediate,
                     clear_only=clear_only,
+                    after=after,
                     args=kwargs,  # Convert to string
                 )
             )
+        if after:
+            self.wait_ts = self.get_wait_ts(self.wait_ts)
 
     def stop_watch(self, effect: Effect, key: str):
         """Stop waiting callback"""
@@ -638,13 +664,16 @@ class ActiveAlarm(Document):
             r.append(w)
         if len(r) != len(self.watchers):
             self.watchers = r
+            self.wait_ts = self.get_wait_ts()
 
-    def touch_watch(self, is_clear: bool = False):
+    def touch_watch(self, is_clear: bool = False, dry_run: bool = False):
         """
         Processed watchers
         Args:
             is_clear: Flag for alarm_clear procedure
+            dry_run: For tests run
         """
+        now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
         for w in self.watchers:
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
@@ -652,7 +681,9 @@ class ActiveAlarm(Document):
             if w.immediate:
                 # If Immediate, not run (used for save run only)
                 continue
-            w.run(self, is_clear=is_clear)
+            if w.after and w.after > now:
+                continue
+            w.run(self, is_clear=is_clear, dry_run=dry_run)
 
     @property
     def duration(self) -> int:
@@ -1087,7 +1118,15 @@ class ActiveAlarm(Document):
                 template=str(template.id) if template else None,
                 **kwargs,
             )
-        self.wait_tt = wait_tt
+        if wait_tt:
+            self.add_watch(Effect.STOP_CLEAR, key=wait_tt, immediate=True)
+            self.log_message("Waiting for TT to close")
+            call_later(
+                "noc.services.escalator.wait_tt.wait_tt",
+                scheduler="escalator",
+                pool=self.managed_object.escalator_shard,
+                alarm_id=self.id,
+            )
         self.log_message("Escalated to %s" % tt_id, tt_id=tt_id, to_save=True)
         # q = {"_id": self.id}
         # op = {
