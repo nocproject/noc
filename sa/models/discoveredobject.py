@@ -717,7 +717,9 @@ class DiscoveredObject(Document):
             self.rule = rule
             self.save()
         action = rule.get_action(self.checks, self.effective_labels, self.effective_data)
-        if action == "ignore":
+        if dry_run:
+            logger.info("[%s] Send action: %s", self.address, action)
+        elif action == "ignore":
             self.fire_event("ignore")
         elif action == "approve":
             self.fire_event("approve")
@@ -990,14 +992,15 @@ class DiscoveredObject(Document):
             logger.warning("Not exists ManagedObject. Skipping...")
             return
         elif managed_object:
-            logger.info(
-                "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
-            )
             mo = managed_object
         else:
             mo = ManagedObject.get_by_id(int(self.managed_object_id))
         if not mo:
             return
+        elif mo.id != self.managed_object_id:
+            logger.info(
+                "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
+            )
         changed = False
         if mo.address != self.address:
             logger.info("Sync address to Discovered Object: %s -> %s", mo.address, self.address)
@@ -1013,12 +1016,13 @@ class DiscoveredObject(Document):
                 logger.info("[%s] Update existing ManagedObject from data: %s", mo.name, ctx)
         changed |= mo.update_remote_mappings(ctx.mappings or {})
         if dry_run:
+            logger.info("Send signal (managed_object): %s", ctx.event or "managed")
             return
         if ctx.event == "duplicate":
             mo.fire_event("unmanaged")
             logger.info("Send duplicate signal (managed_object)")
         elif ctx.event:
-            mo.fire_event(ctx.event or "managed")
+            mo.fire_event(ctx.event)
         elif (
             not ctx.event
             and ETL_SOURCE in self.sources
@@ -1027,6 +1031,8 @@ class DiscoveredObject(Document):
         ):
             logger.info("[%s] Unsync ManagedObject, by lost master", mo.name)
             mo.fire_event("unmanaged")
+        elif not ctx.event:
+            mo.fire_event("managed")
         if changed:
             mo.save()
 
