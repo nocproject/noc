@@ -14,6 +14,7 @@ from typing import Dict, Optional, List, Iterable, Tuple
 # Third-party modules
 from bson import ObjectId
 from django.db.models.query_utils import Q as d_Q
+from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -680,6 +681,8 @@ class DiscoveredObject(Document):
         q = m_q()
         addresses = set()
         for mo in mos:
+            if not mo.address:
+                continue
             addresses.add(IP.prefix(mo.address).address)
             # Pool
             for d in SubInterface._get_collection().find(
@@ -705,7 +708,7 @@ class DiscoveredObject(Document):
             return []
         return DiscoveredObject.objects.filter(id__ne=self.id).filter(q)
 
-    def sync(self, dry_run: bool = False, force: bool = False, template=None):
+    def sync(self, dry_run: bool = False, force: bool = False, template=None, bulk=None):
         """Sync"""
 
         rule = self.get_rule(list(self.sources))
@@ -728,6 +731,9 @@ class DiscoveredObject(Document):
         if self.is_approved or force:
             self.sync_object(dry_run=dry_run, template=template)
         if dry_run:
+            return
+        if bulk is not None:
+            bulk += [UpdateOne({"_id": self.id}, {"$set": {"is_dirty": False}})]
             return
         self.is_dirty = False
         DiscoveredObject.objects.filter(id=self.id).update(is_dirty=False)
@@ -1008,7 +1014,7 @@ class DiscoveredObject(Document):
             changed |= True
         if mo.name != self.hostname:
             logger.info("Sync Name to Discovered Object: %s -> %s", mo.name, self.hostname)
-            mo.name = self.hostname
+            mo.name = self.hostname or f"{mo.address}#not_name"
             changed |= True
         if ctx.data and self.rule.default_template:
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
@@ -1097,6 +1103,8 @@ def sync_purgatorium(
     processed, updated, removed, synced = 0, 0, 0, 0
     # Processed Discovered Objects
     for pool, address, sources, data, checks, last_ts in iter_discovered_object(ls_ex):
+        if not address:
+            continue
         pool = Pool.get_by_bi_id(pool)
         if print_addresses and address in print_addresses:
             logger.info("[%s] Data: %s", address, [str(d) for d in data])
@@ -1133,8 +1141,17 @@ def sync_purgatorium(
         return
     # Sync objects and rules
     logger.info("Sync objects and rules")
+    bulk = []
+    coll = DiscoveredObject._get_collection()
     for do in DiscoveredObject.objects.filter(is_dirty=True, rule__exists=True):
-        do.sync()
+        do.sync(bulk=bulk)
+        if len(bulk) > 1000:
+            coll.bulk_write(bulk)
+            synced += len(bulk)
+            bulk = []
+    if bulk:
+        coll.bulk_write(bulk)
+        synced += len(bulk)
     logger.info(
         "End Purgatorium Sync: %s. Processed: %s/Updated: %s/Removed: %s/Synced: %s",
         ls_ex,
