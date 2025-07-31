@@ -93,7 +93,14 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
                 tooltip: button.hint,
                 handler: function(){
                   if(button.action === "go"){
-                    app.showObject(button.args);
+                    if(button.scope === "o"){
+                      app.showObject(button.args);
+                    }
+                    if(button.scope === "c"){
+                      NOC.launch("inv.channel", "history", {
+                        args: [button.args],
+                      });
+                    }
                   }
                   tooltip.destroy();
                 },
