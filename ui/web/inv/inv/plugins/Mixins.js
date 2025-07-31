@@ -100,9 +100,22 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
                       NOC.launch("inv.channel", "history", {
                         args: [button.args],
                         "override": [
-                          {"showGrid": function(){
-                            this.up().close();
-                          }},
+                          {
+                            "showGrid": function(){
+                              this.up().close();
+                            },
+                          },
+                          {
+                            "onEditRecord": function(){
+                              this.currentRecord = {id: button.args};
+                              this.onMap();
+                            },
+                          },
+                          {
+                            "onCloseMap": function(){
+                              this.up().close();
+                            },
+                          },
                         ],
                       });
                     }

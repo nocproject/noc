@@ -56,7 +56,7 @@ Ext.define("NOC.inv.channel.Application", {
           text: __("Close"),
           glyph: NOC.glyph.arrow_left,
           scope: me,
-          handler: me.onCloseMap,
+          handler: "onCloseMap",
         },
         {
           xtype: "invPluginsZoom",
@@ -342,7 +342,6 @@ Ext.define("NOC.inv.channel.Application", {
           handler: me.onMap,
         },
       ],
-
     });
     me.callParent();
   },
