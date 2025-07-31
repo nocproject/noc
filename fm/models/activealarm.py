@@ -73,6 +73,7 @@ from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
 from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
 
+
 if HAS_FGALARMS:
     _slot_cache = TTLCache(1_000, ttl=60)
     _slot_mo = TTLCache(1_000, 60)
@@ -1359,7 +1360,7 @@ class ActiveAlarm(Document):
             return None
         if c_obj.model.uuid == HS_UUID:
             # Half-sized module
-            c_connection = (slot - 1) % 2 + 1
+            c_connection = str((slot - 1) % 2 + 1)
             c_obj = Object.objects.filter(parent=c_obj.id, parent_connection=c_connection).first()
             if not c_obj:
                 return None
@@ -1380,6 +1381,7 @@ class ActiveAlarm(Document):
         # Populate cache
         with _slot_lock:
             _slot_cache[key] = r
+        return r
 
     def _get_object(self) -> Optional[Object]:
         with _slot_obj_lock:
