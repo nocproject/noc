@@ -163,3 +163,30 @@ class GroupPolicy(enum.Enum):
     # ALWAYS_FIRST = 3
     # Always escalate
     # ALWAYS = 4
+
+
+class ItemStatus(enum.Enum):
+    """
+    Attributes:
+        NEW: New items
+        CHANGED: Items was changed
+        FAIL: Failed when add to escalation
+        EXISTS: Escalate over another doc
+        REMOVED: Removed from escalation
+    """
+
+    NEW = "new"  # new item
+    CHANGED = "changed"  # item changed
+    FAIL = "fail"  # escalation fail
+    EXISTS = "exists"  # Exists on another escalation
+    REMOVED = "removed"  # item removed
+    ARCHIVED = "archived"
+
+    @classmethod
+    def from_alarm(cls, alarm):
+        """"""
+        if alarm.status == "C":
+            return ItemStatus.REMOVED
+        elif alarm.timestamp != alarm.last_update:
+            return ItemStatus.CHANGED
+        return ItemStatus.NEW

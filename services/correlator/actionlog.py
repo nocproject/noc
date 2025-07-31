@@ -279,9 +279,9 @@ class ActionLog(object):
         if self.user:
             r["user"] = self.user.id
         if self.tt_system:
-            r["tt_system"] = self.tt_system.id
+            r["tt_system"] = str(self.tt_system.id)
         if self.template:
-            r["template"] = self.template.id
+            r["template"] = str(self.template.id)
         return r
 
     @classmethod

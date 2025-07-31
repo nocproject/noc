@@ -155,7 +155,7 @@ class AlarmJob(Document):
     tt_docs = DictField()
     groups = EmbeddedDocumentListField(GroupItem)
     #
-    max_repeat: int = IntField(default=0)
+    max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
     # affected_services = ListField(ObjectIdField())
     # affected_maintenances = ListField(ObjectIdField())

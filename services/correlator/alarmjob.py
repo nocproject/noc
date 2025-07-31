@@ -32,8 +32,6 @@ from noc.fm.models.utils import get_alarm
 from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
 
-logger = logging.getLogger(__name__)
-
 
 @dataclass
 class Item(object):
@@ -85,7 +83,7 @@ class AlarmJob(object):
         allowed_actions: Optional[List[AllowedAction]] = None,
         maintenance_policy: str = None,
         # Repeat
-        max_repeat: int = 0,
+        max_repeats: int = 0,
         repeat_delay: int = 60,
         # Span Context
         ctx_id: Optional[int] = None,
@@ -106,7 +104,7 @@ class AlarmJob(object):
         # OneTime actions
         self.allowed_actions = allowed_actions
         # Repeat
-        self.max_repeat = max_repeat
+        self.max_repeats = max_repeats
         self.repeat_delay = repeat_delay
         # Span
         self.ctx_id = ctx_id
@@ -116,7 +114,9 @@ class AlarmJob(object):
         # Stats
         self.alarm_log = []
         # Alarm Severity
-        self.logger = logger or PrefixLoggerAdapter(logger, f"[{self.id}|{self.alarm}")
+        self.logger = logger or PrefixLoggerAdapter(
+            logging.getLogger(__name__), f"[{self.id}|{self.alarm}"
+        )
 
     def __str__(self):
         return f"AlarmJob: {self.alarm}"
@@ -184,7 +184,7 @@ class AlarmJob(object):
                 error_report()
                 # Job Status to Exception
             self.logger.info("[%s] Action result: %s", aa, r)
-            if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
+            if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
                 # If Repeat - add action to next on repeat delay
                 # Self register actions
                 self.actions.append(aa.get_repeat(self.repeat_delay))
@@ -196,7 +196,9 @@ class AlarmJob(object):
         self.alarm_log += runner.get_bulk()
         # Only if save-state
         self.alarm.add_watch(
-            Effect.ALARM_JOB, key=str(self.id), after=aa.timestamp,
+            Effect.ALARM_JOB,
+            key=str(self.id),
+            after=aa.timestamp,
         )  # Update after_at and key
         self.alarm.safe_save()
         if actions:
@@ -234,7 +236,7 @@ class AlarmJob(object):
             # Settings
             # maintenance_policy=req.maintenance_policy,
             # Repeat settings
-            max_repeat=req.max_repeats,
+            max_repeats=req.max_repeats,
             repeat_delay=req.repeat_delay,
             # Span
             ctx_id=req.ctx,
@@ -305,7 +307,7 @@ class AlarmJob(object):
             ctx_id=self.ctx_id,
             telemetry_sample=self.telemetry_sample,
             maintenance_policy=self.maintenance_policy,
-            max_repeat=self.max_repeat,
+            max_repeats=self.max_repeats,
             repeat_delay=self.repeat_delay,
             items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
             actions=actions,
@@ -345,7 +347,7 @@ class AlarmJob(object):
             # Settings
             maintenance_policy=data["maintenance_policy"],
             # Repeat settings
-            max_repeat=data["max_repeats"],
+            max_repeats=data["max_repeats"],
             repeat_delay=data["repeat_delay"],
             # Span
             ctx_id=data["ctx_id"],
