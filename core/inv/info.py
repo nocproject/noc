@@ -56,6 +56,13 @@ class ButtonAction(Enum):
     GO = "go"
 
 
+class GoScope(Enum):
+    """Scope for GO action"""
+
+    OBJECT = "o"
+    CHANNEL = "c"
+
+
 @dataclass
 class Button(object):
     label: str | None = None
@@ -63,6 +70,7 @@ class Button(object):
     hint: str | None = None
     action: ButtonAction | None = None
     args: str | None = None
+    scope: Optional[GoScope] = None
 
     def to_json(self) -> dict[str, str | int]:
         """Convert Button to JSON-serializable dict."""
@@ -77,6 +85,8 @@ class Button(object):
             r["action"] = self.action.value
         if self.args:
             r["args"] = self.args
+        if self.scope:
+            r["scope"] = self.scope.value
         return r
 
 
@@ -152,6 +162,7 @@ def _info_for_object(resource: str) -> Optional[Info]:
                 glyph=Glyph.ARROW_RIGHT,
                 hint=_("Go to object"),
                 action=ButtonAction.GO,
+                scope=GoScope.OBJECT,
                 args=str(obj.id),
             )
         ],
@@ -175,6 +186,7 @@ def _info_for_channel(resource: str) -> Optional[Info]:
                 glyph=Glyph.ARROW_RIGHT,
                 hint=_("Go to channel"),
                 action=ButtonAction.GO,
+                scope=GoScope.CHANNEL,
                 args=str(ch.id),
             )
         ],
