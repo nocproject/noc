@@ -70,32 +70,74 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     uiStyle: 'large'
                 },
                 {
-                    name: "severity_policy",
-                    xtype: "combobox",
-                    fieldLabel: __("Severity Policy"),
-                    allowBlank: true,
-                    store: [
-                        ["CB", __("Class Based Policy")],
-                        ["AB", __("Affected Based Severity Preferred")],
-                        ["AL", __("Affected Limit")],
-                        ["ST", __("By Tokens")]
-                    ],
-                    uiStyle: "medium",
-                    value: "AL",
+                  xtype: "fieldset",
+                  title: __("Severity Policy"),
+                  layout: "hbox",
+                  defaults: {
+                    labelAlign: "left",
+                    margin: 5,
+                  },
+                  items: [
+                    {
+                        name: "severity_policy",
+                        xtype: "combobox",
+                        fieldLabel: __("Severity Policy"),
+                        allowBlank: true,
+                        store: [
+                            ["CB", __("Class Based Policy")],
+                            ["AB", __("Affected Based Severity Preferred")],
+                            ["AL", __("Affected Limit")],
+                            ["ST", __("By Tokens")]
+                        ],
+                        uiStyle: "medium",
+                        value: "AL",
+                    },
+                    {
+                        name: "min_severity",
+                        xtype: "fm.alarmseverity.LookupField",
+                        fieldLabel: __("Min./Set Severity"),
+                        uiStyle: "medium",
+                        allowBlank: true
+                    },
+                    {
+                        name: "min_severity",
+                        xtype: "fm.alarmseverity.LookupField",
+                        fieldLabel: __("Min./Set Severity"),
+                        uiStyle: "medium",
+                        allowBlank: true
+                    }
+                  ]
                 },
                 {
-                    name: "min_severity",
-                    xtype: "fm.alarmseverity.LookupField",
-                    fieldLabel: __("Min./Set Severity"),
-                    uiStyle: "medium",
-                    allowBlank: true
-                },
-                {
-                    name: "min_severity",
-                    xtype: "fm.alarmseverity.LookupField",
-                    fieldLabel: __("Min./Set Severity"),
-                    uiStyle: "medium",
-                    allowBlank: true
+                  xtype: "fieldset",
+                  title: __("TTL Policy"),
+                  layout: "hbox",
+                  defaults: {
+                    labelAlign: "left",
+                    margin: 5,
+                  },
+                  items: [
+                    {
+                      name: "ttl_policy",
+                      xtype: "combobox",
+                      fieldLabel: __("TT Policy"),
+                      store: [
+                        ["D", __("Disable")],
+                        ["C", __("After Create")],
+                        ["U", __("After Update")]
+                      ],
+                      value: "continue",
+                      uiStyle: "medium",
+                    },
+                    {
+                        name: "clear_after_ttl",
+                        xtype: "numberfield",
+                        fieldLabel: __("Clear After (sec.)"),
+                        allowBlank: true,
+                        min: 0,
+                        uiStyle: "small"
+                    }
+                  ]
                 },
                 {
                     name: "escalation_profile",
