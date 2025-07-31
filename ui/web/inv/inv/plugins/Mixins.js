@@ -95,6 +95,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
                   if(button.action === "go"){
                     app.showObject(button.args);
                   }
+                  tooltip.destroy();
                 },
               }
             }),
