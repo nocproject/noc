@@ -193,6 +193,11 @@ class AlarmJob(object):
                 continue
             elif self.dry_run and self.static_delay:
                 time.sleep(self.static_delay)
+            elif aa.timestamp > now:
+                #
+                break
+            # if not aa.to_run(status, delay):
+            #    continue
             try:
                 r = runner.run_action(
                     aa.action,
@@ -217,7 +222,7 @@ class AlarmJob(object):
                 break
         self.alarm_log += runner.get_bulk()
         # Only if save-state
-        self.alarm.add_watch(Effect.ALARM_JOB, key="")
+        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=aa.timestamp)  # Update after_at and key
         self.alarm.safe_save()
         if actions:
             # Split one_time actions/sequenced action
@@ -300,6 +305,60 @@ class AlarmJob(object):
             static_delay=static_delay,
         )
         return job
+
+    def save_state(self):
+        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState, EscalationItem, ActionLog
+
+        job = AlarmJobState(
+            name=self.name,
+            status=self.status,
+            created_at=self.actions[0].timestamp,
+            started_at=self.actions[0].timestamp,
+            ctx_id=self.ctx_id,
+            telemetry_sample=self.telemetry_sample,
+            maintenance_policy=self.maintenance_policy,
+            max_repeat=self.max_repeat,
+            repeat_delay=self.repeat_delay,
+            items=[EscalationItem(alarm=i.alarm.id, status=i.status) for i in self.items],
+            actions=[ActionLog(
+                timestamp=a.timestamp,
+                action=a.action,
+                status=a.status,
+                key=a.key,
+                document_id=a.document_id,
+                min_severity=a.min_severity,
+                time_pattern=a.time_pattern,
+                alarm_ack=a.alarm_ack,
+                when=a.when,
+                stop_processing=a.stop_processing,
+                allow_fail=a.allow_fail,
+                tt_system=str(a.tt_system.id) if a.tt_system else None,
+                template=str(a.template.id) if a.template else None,
+                user=a.user.id if a.user else None,
+                error=a.error,
+            ) for a in self.actions],
+            tt_docs=self.tt_docs,
+            groups=[],
+            affected_services=self.affected_services,
+            severity=self.severity,
+            total_objects=self.total_objects,
+            total_services=self.total_services,
+            total_subscribers=self.total_subscribers,
+        )
+        try:
+            job.save()
+        except Exception:
+            error_report()
+
+    @classmethod
+    def from_state(cls, job: Any) -> Optional["AlarmJob"]:
+        """"""
+        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
+
+        job: AlarmJobState
+        return AlarmJob(
+
+        )
 
     def is_allowed_action(self, action: AlarmAction, user: User):
         """"""

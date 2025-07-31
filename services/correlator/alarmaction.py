@@ -133,6 +133,9 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
+        if "service" in self.alarm.components:
+            svc = self.alarm.components.service
+            return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
         if not self.services:
             return r
         # (
