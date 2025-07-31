@@ -10,15 +10,14 @@ import logging
 import datetime
 import operator
 import time
-import enum
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union
+from typing import List, Optional, Any, Union, Dict
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.core.fm.enum import ActionStatus, AlarmAction
+from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.core.debug import error_report
@@ -34,32 +33,6 @@ from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
 
 logger = logging.getLogger(__name__)
-
-
-class ItemStatus(enum.Enum):
-    """
-    Attributes:
-        NEW: New items
-        CHANGED: Items was changed
-        FAIL: Failed when add to escalation
-        EXISTS: Escalate over another doc
-        REMOVED: Removed from escalation
-    """
-
-    NEW = "new"  # new item
-    CHANGED = "changed"  # item changed
-    FAIL = "fail"  # escalation fail
-    EXISTS = "exists"  # Exists on another escalation
-    REMOVED = "removed"  # item removed
-
-    @classmethod
-    def from_alarm(cls, alarm: ActiveAlarm):
-        """"""
-        if alarm.status == "C":
-            return ItemStatus.REMOVED
-        elif alarm.timestamp != alarm.last_update:
-            return ItemStatus.CHANGED
-        return ItemStatus.NEW
 
 
 @dataclass
@@ -222,7 +195,9 @@ class AlarmJob(object):
                 break
         self.alarm_log += runner.get_bulk()
         # Only if save-state
-        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=aa.timestamp)  # Update after_at and key
+        self.alarm.add_watch(
+            Effect.ALARM_JOB, key=str(self.id), after=aa.timestamp,
+        )  # Update after_at and key
         self.alarm.safe_save()
         if actions:
             # Split one_time actions/sequenced action
@@ -307,43 +282,38 @@ class AlarmJob(object):
         return job
 
     def save_state(self):
-        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState, EscalationItem, ActionLog
+        from noc.fm.models.alarmjob import (
+            AlarmJob as AlarmJobState,
+            AlarmItem,
+            ActionLog,
+            JobStatus,
+        )
 
+        tt_docs, actions = {}, []
+        start_at = None
+        for a in self.actions:
+            if a.action == AlarmAction.CREATE_TT and a.document_id:
+                tt_docs[a.key] = a.document_id
+            if not start_at and a.status == ActionStatus.NEW:
+                start_at = a.timestamp
+            actions.append(ActionLog(**a.get_state()))
         job = AlarmJobState(
             name=self.name,
-            status=self.status,
+            status=JobStatus.WAITING,
             created_at=self.actions[0].timestamp,
-            started_at=self.actions[0].timestamp,
+            started_at=start_at,
             ctx_id=self.ctx_id,
             telemetry_sample=self.telemetry_sample,
             maintenance_policy=self.maintenance_policy,
             max_repeat=self.max_repeat,
             repeat_delay=self.repeat_delay,
-            items=[EscalationItem(alarm=i.alarm.id, status=i.status) for i in self.items],
-            actions=[ActionLog(
-                timestamp=a.timestamp,
-                action=a.action,
-                status=a.status,
-                key=a.key,
-                document_id=a.document_id,
-                min_severity=a.min_severity,
-                time_pattern=a.time_pattern,
-                alarm_ack=a.alarm_ack,
-                when=a.when,
-                stop_processing=a.stop_processing,
-                allow_fail=a.allow_fail,
-                tt_system=str(a.tt_system.id) if a.tt_system else None,
-                template=str(a.template.id) if a.template else None,
-                user=a.user.id if a.user else None,
-                error=a.error,
-            ) for a in self.actions],
-            tt_docs=self.tt_docs,
+            items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
+            actions=actions,
+            tt_docs=tt_docs,
             groups=[],
-            affected_services=self.affected_services,
-            severity=self.severity,
-            total_objects=self.total_objects,
-            total_services=self.total_services,
-            total_subscribers=self.total_subscribers,
+            # total_objects=self.total_objects,
+            # total_services=self.total_services,
+            # total_subscribers=self.total_subscribers,
         )
         try:
             job.save()
@@ -351,14 +321,37 @@ class AlarmJob(object):
             error_report()
 
     @classmethod
-    def from_state(cls, job: Any) -> Optional["AlarmJob"]:
+    def from_state(cls, data: Dict[str, Any]) -> Optional["AlarmJob"]:
         """"""
-        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
-
-        job: AlarmJobState
-        return AlarmJob(
-
+        alarms = {}
+        for d in data["items"]:
+            alarms[d["alarm"]] = ItemStatus(d["status"])
+        items = []
+        for aa in ActiveAlarm.objects.filter(id__in=list(alarms)):
+            items.append(Item(alarm=aa, status=alarms.pop(aa.id)))
+        for alarm_id, status in alarms.items():
+            alarm = get_alarm(alarm_id)
+            if alarm:
+                items.append(Item(alarm=aa, status=ItemStatus.from_alarm(alarm)))
+        if not items:
+            raise ValueError("Not Found alarm by id: %s", data["items"])
+        job = AlarmJob(
+            # Job Context
+            items=items,
+            name=str(data["name"]),
+            id=data["_id"],
+            actions=[ActionLog.from_state(a) for a in data["actions"]],
+            # allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
+            # Settings
+            maintenance_policy=data["maintenance_policy"],
+            # Repeat settings
+            max_repeat=data["max_repeats"],
+            repeat_delay=data["repeat_delay"],
+            # Span
+            ctx_id=data["ctx_id"],
+            telemetry_sample=data["telemetry_sample"],
         )
+        return job
 
     def is_allowed_action(self, action: AlarmAction, user: User):
         """"""

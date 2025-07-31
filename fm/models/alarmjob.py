@@ -6,14 +6,13 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import datetime
+from enum import Enum
 from typing import Iterable, List, Optional
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
-    ListField,
     BooleanField,
     ObjectIdField,
     EmbeddedDocumentListField,
@@ -23,12 +22,36 @@ from mongoengine.fields import (
     LongField,
     FloatField,
     IntField,
-    BinaryField,
 )
 
 # NOC models
-from noc.core.fm.enum import AlarmAction, ActionStatus, GroupPolicy
+from noc.core.fm.enum import AlarmAction, ActionStatus, GroupPolicy, ItemStatus
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+
+
+class JobStatus(Enum):
+    """
+    Job status.
+
+    Attributes:
+        * `p` - Pending, waiting for manual approve.
+        * `w` - Waiting, ready to run.
+        * `r` - Running
+        * `S` - Suspended
+        * `s` - Success
+        * `f` - Failed with error
+        * `w` - Warning. Failed, but allowed to fail.
+        * `c` - Cancelled
+    """
+
+    PENDING = "p"
+    WAITING = "w"
+    RUNNING = "r"
+    SUSPENDED = "S"
+    SUCCESS = "s"
+    FAILED = "f"
+    WARNING = "W"
+    CANCELLED = "c"
 
 
 class GroupItem(EmbeddedDocument):
@@ -36,7 +59,7 @@ class GroupItem(EmbeddedDocument):
     id: StringField(required=True)
 
 
-class EscalationItem(EmbeddedDocument):
+class AlarmItem(EmbeddedDocument):
     """
     Escalation affected items. First item it escalation leader
     Attributes:
@@ -63,24 +86,30 @@ class ActionLog(EmbeddedDocument):
 
     timestamp = DateTimeField(required=True)
     action: AlarmAction = EnumField(AlarmAction, required=True)
-    status: ActionStatus = EnumField(ActionStatus, required=True)
     key: str = StringField()
+    # Message
+    template: Optional[str] = StringField(required=False)
+    subject: str = StringField()
+    # Status
+    status: ActionStatus = EnumField(ActionStatus, default=ActionStatus.NEW)
+    error: Optional[str] = StringField()
     document_id = StringField()
     # Condition
     min_severity: int = IntField(default=0)
     time_pattern = StringField()
     alarm_ack = StringField()
-    when = StringField()
+    when = StringField(default="any")
     stop_processing: bool = BooleanField(default=False)
     allow_fail: bool = BooleanField(default=False)
-    policy: GroupPolicy = EnumField(GroupPolicy, required=True)
+    repeat_num: int = IntField(default=0)
+    policy: GroupPolicy = EnumField(GroupPolicy, default=GroupPolicy.ROOT)
     # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
-    tt_system: Optional[str] = StringField()
-    template: Optional[str] = StringField(required=False)
     # User Actions
     user: Optional[int] = IntField()
-    error: Optional[str] = StringField()
+    tt_system: Optional[str] = StringField()
+    #
+    ctx = DictField()
 
 
 class AlarmJob(Document):
@@ -109,7 +138,7 @@ class AlarmJob(Document):
     description = StringField()
     # labels = ListField(StringField())
     # effective_labels = ListField(StringField())
-    status = EnumField(JobStatus, default=JobStatus.WAIT, required=True)
+    status = EnumField(JobStatus, default=JobStatus.WAITING, required=True)
     # Start escalation timestamp
     created_at = DateTimeField(required=True)
     started_at = DateTimeField(required=False)
@@ -120,15 +149,18 @@ class AlarmJob(Document):
     end_condition: str = StringField()
     maintenance_policy: str = StringField()
     # Document options
-    items: List[EscalationItem] = EmbeddedDocumentListField(EscalationItem)
+    items: List[AlarmItem] = EmbeddedDocumentListField(AlarmItem)
     actions: List[ActionLog] = EmbeddedDocumentListField(ActionLog)
     # List of group references, if any
     tt_docs = DictField()
     groups = EmbeddedDocumentListField(GroupItem)
-    affected_services = ListField(ObjectIdField())
+    #
+    max_repeat: int = IntField(default=0)
+    repeat_delay: int = IntField(default=60)
+    # affected_services = ListField(ObjectIdField())
     # affected_maintenances = ListField(ObjectIdField())
     # Escalation summary
-    severity: int = IntField(min_value=0)
+    # severity: int = IntField(min_value=0)
     # subject: Optional[str] = StringField(required=False)
     total_objects: List[ObjectSummaryItem] = EmbeddedDocumentListField(ObjectSummaryItem)
     total_services: List[SummaryItem] = EmbeddedDocumentListField(SummaryItem)

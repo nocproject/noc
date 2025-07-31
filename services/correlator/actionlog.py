@@ -57,6 +57,7 @@ class ActionLog(object):
         timestamp: Optional[datetime.datetime] = None,
         status: ActionStatus = ActionStatus.NEW,
         error: Optional[str] = None,
+        repeat_num: Optional[int] = None,
         # Stop processed after action
         stop_processing: bool = False,
         allow_fail: bool = True,
@@ -82,7 +83,7 @@ class ActionLog(object):
         self.when: str = when or "any"
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
-        self.repeat_num = 0
+        self.repeat_num = repeat_num or 0
         #
         self.user = user
         self.tt_system = tt_system
@@ -240,6 +241,7 @@ class ActionLog(object):
             alarm_ack=data["alarm_ack"],
             when=data["when"],
             timestamp=data["timestamp"],
+            repeat_num=int(data["repeat_num"]),
             status=ActionStatus(data["status"]),
             error=data.get("error"),
             stop_processing=data["stop_processing"],
@@ -267,6 +269,7 @@ class ActionLog(object):
             "stop_processing": self.stop_processing,
             "allow_fail": self.allow_fail,
             "user": None,
+            "repeat_num": self.repeat_num,
             "tt_system": None,
             "document_id": self.document_id,
             "template": None,
