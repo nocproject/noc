@@ -40,12 +40,12 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           xtype: "treecolumn",
           dataIndex: "title",
           text: __("Title"),
-          width: 300,
+          width: 400,
         },
         {
           text: __("Alarm Class"),
           dataIndex: "alarm_class",
-          width: 200,
+          width: 300,
         },
       ],
     });
