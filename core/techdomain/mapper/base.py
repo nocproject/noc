@@ -188,11 +188,20 @@ class BaseMapper(object):
         """Add nodes from iterable."""
         self.g["subgraphs"].extend(iter)
 
-    def add_channel(self, name: str, *, label: str, is_client: bool = False) -> None:
+    def add_channel(self, name: str, *, channel: Channel, is_client: bool = False) -> None:
+        """
+        Add channel.
+
+        Args:
+            name: Name on the graph.
+            channel: Channel instance.
+            is_client: True, if the channel uses current one.
+        """
         attrs = {
             "shape": self.CHANNEL_SHAPE,
-            "label": label,
+            "label": f"{channel.name}\n{channel.tech_domain.name}",
             "class": self.SELECTABLE_CLASS,
+            "id": self.get_interaction_tag(resource=channel.as_resource()),
         }
         if is_client:
             attrs["style"] = "dashed"

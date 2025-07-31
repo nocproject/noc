@@ -7,11 +7,12 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional, Dict, Callable, List
 from enum import Enum
 
 # Python modules
 from noc.inv.models.object import Object
+from noc.inv.models.channel import Channel
 from noc.core.translation import ugettext as _
 from noc.core.glyph import Glyph
 
@@ -44,6 +45,11 @@ class PathItem(object):
             #    break
             current = current.parent
         return list(reversed(r)) if r else None
+
+    @classmethod
+    def from_channel(cls, ch: Channel) -> "Optional[List[PathItem]]":
+        """Get path for channel."""
+        return [PathItem(label=ch.name, id=str(id))]
 
 
 class ButtonAction(Enum):
@@ -95,7 +101,7 @@ class Info(object):
         return r
 
 
-def info(resource: str) -> Info | None:
+def info(resource: str) -> Optional[Info]:
     """
     Collect info for resource.
 
@@ -106,21 +112,37 @@ def info(resource: str) -> Info | None:
         Info: with info structure.
         None: when resource cannot be dereferenced.
     """
+    if ":" not in resource:
+        return None
+    schema = resource.split(":", 1)[0]
+    handler = INFO_HANDLERS.get(schema)
+    if not handler:
+        return None
+    return handler(resource)
+
+
+def _info_for_object(resource: str) -> Optional[Info]:
+    """
+    Build info for object.
+    """
     try:
         obj, name = Object.from_resource(resource)
         if obj is None:
             return None
     except ValueError:
         return None
-    if name is None:
-        return _info_for_object(obj)
-    return _info_for_connection(obj, name)
-
-
-def _info_for_object(obj: Object) -> Info:
-    """
-    Build info for object.
-    """
+    if name:
+        # info for connection
+        cn = obj.model.get_model_connection(name)
+        if cn and cn.type is not None:
+            ct = cn.type.name.split("|")[-1].strip()
+            description = ct
+            if cn.is_inner:
+                description += " - not connected"
+        else:
+            description = "Unknown connection"
+        return Info(title=name, path=PathItem.from_object(obj), description=description)
+    # Info for object
     return Info(
         title=obj.parent_connection if obj.parent_connection else obj.name,
         path=PathItem.from_object(obj),
@@ -136,16 +158,30 @@ def _info_for_object(obj: Object) -> Info:
     )
 
 
-def _info_for_connection(obj: Object, name: str) -> Info:
-    """
-    Build info for connection.
-    """
-    cn = obj.model.get_model_connection(name)
-    if cn and cn.type is not None:
-        ct = cn.type.name.split("|")[-1].strip()
-        description = ct
-        if cn.is_inner:
-            description += " - not connected"
-    else:
-        description = "Unknown connection"
-    return Info(title=name, path=PathItem.from_object(obj), description=description)
+def _info_for_channel(resource: str) -> Optional[Info]:
+    """Build info for channel."""
+    try:
+        ch, _unused = Channel.from_resource(resource)
+        if ch is None:
+            return None
+    except ValueError:
+        return None
+    return Info(
+        title=f"{ch.name} [{ch.tech_domain.name}]",
+        path=[],
+        description=ch.description or "",
+        buttons=[
+            Button(
+                glyph=Glyph.ARROW_RIGHT,
+                hint=_("Go to channel"),
+                action=ButtonAction.GO,
+                args=str(ch.id),
+            )
+        ],
+    )
+
+
+INFO_HANDLERS: Dict[str, Callable[[str], Optional[Info]]] = {
+    "o": _info_for_object,
+    "c": _info_for_channel,
+}

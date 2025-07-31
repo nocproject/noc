@@ -66,9 +66,7 @@ class DWDMOTUMapper(BaseMapper):
             for n, pi in enumerate(path):
                 if pi.channel:
                     name = f"{prefix}-{n}"
-                    self.add_channel(
-                        name, label=f"{pi.channel.name}\n{pi.channel.tech_domain.name}"
-                    )
+                    self.add_channel(name, channel=pi.channel)
                     nodes.append(name)
             if len(nodes) > 1:
                 # Connect nodes between each other

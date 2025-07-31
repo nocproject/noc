@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional, Union
+from typing import Optional, Union, Tuple
 import operator
 
 
@@ -180,3 +180,34 @@ class Channel(Document):
         if changed:
             self.params = new_params
             self.save()
+
+    def as_resource(self) -> str:
+        """
+        Convert channel to reference.
+
+        Returns:
+            Resource reference
+        """
+        return f"c:{self.id}"
+
+    @classmethod
+    def from_resource(cls, resource: str) -> "Tuple[Channel | None, str | None]":
+        """
+        Dereference from resource.
+
+        Args:
+            resource: Resource reference, only `c` scheme is supported.
+
+        Returns:
+            Tuple of Channel, connection name.
+
+        Raises:
+            ValueError: on invalid scheme.
+        """
+        if not resource.startswith("c:"):
+            raise ValueError("Invalid scheme")
+        parts = resource[2:].split(":", 2)
+        ch = Channel.get_by_id(parts[0])
+        if not ch:
+            return None, None
+        return ch, None
