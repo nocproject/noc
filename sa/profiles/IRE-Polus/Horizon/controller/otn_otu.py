@@ -55,7 +55,7 @@ class Controller(ChannelMixin, BaseOTUProfileController):
         if frequency:
             yield SetValue(
                 name=f"{prefix}_{xcvr}_SetTxFreq",
-                value=str(frequency),
+                value=f"{float(frequency) / 1_000_000.0:.02f}",  # to THz
                 description=f"Set frequency to {frequency} MHz",
             )
         # Enable laser
