@@ -91,7 +91,6 @@ class ActiveAlarm(Document):
             x
             for x in (
                 "timestamp",
-                "root",
                 "-severity",
                 ("alarm_class", "managed_object"),
                 "#reference",

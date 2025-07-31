@@ -62,8 +62,8 @@ class AlarmPlugin(InvPlugin):
         # top-level
         top: List[ObjectId] = []
         for a in alarms.values():
-            if a.parent and a.parent.id in alarms:
-                children[a.parent.id].append(a.id)
+            if a.root and a.root in alarms:
+                children[a.root].append(a.id)
             else:
                 top.append(a.id)
         r = [get_node(x) for x in top]
