@@ -63,6 +63,10 @@ class AlarmRule(object):
     severity_policy: str = "AL"
     min_severity: Optional[int] = None
     max_severity: Optional[int] = None
+    ttl_policy: str = "D"
+    clear_after_ttl: Optional[int] = 0
+    rewrite_alarm_class: Optional[AlarmClass] = None
+    action: Optional[str] = None
     escalation_profile: Optional[EscalationProfile] = None
 
     def __init__(self, name, rid):
@@ -95,6 +99,13 @@ class AlarmRule(object):
         for a in config["actions"]:
             rule.actions += [ActionConfig.model_validate(a)]
         rule.severity_policy = config["severity_policy"]
+        if "min_severity" in config:
+            rule.min_severity = config["min_severity"]
+        if "max_severity" in config:
+            rule.max_severity = config["max_severity"]
+        if "ttl_policy" in config:
+            rule.ttl_policy = config["ttl_policy"]
+            rule.clear_after_ttl = config["clear_after_ttl"]
         return rule
 
     @classmethod
