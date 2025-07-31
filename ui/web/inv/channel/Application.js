@@ -22,10 +22,12 @@ Ext.define("NOC.inv.channel.Application", {
     "NOC.inv.techdomain.LookupField",
     "Ext.ux.form.GridField",
   ],
+  mixins: [
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   model: "NOC.inv.channel.Model",
   xtype: "invchannel",
   search: true,
-
   initComponent: function(){
     var me = this;
 
@@ -40,6 +42,13 @@ Ext.define("NOC.inv.channel.Application", {
           layout: "fit",
           scrollable: true,
           itemId: "schemeContainer",
+          listeners: {
+            click: {
+              element: "el",
+              scope: me,
+              fn: me.onSchemeClick,
+            },
+          },
         },
       ],
       tbar: [
@@ -337,6 +346,7 @@ Ext.define("NOC.inv.channel.Application", {
     });
     me.callParent();
   },
+  //
   filters: [
     {
       title: __("By Tech Domai"),
@@ -418,6 +428,20 @@ Ext.define("NOC.inv.channel.Application", {
       ], me, Ext.bind(me._render, me, [data]));
     } else{
       me._render(data);
+    }
+  },
+  //
+  onSchemeClick: function(event, target){
+    let channelEl = target.closest(".ch-selectable");
+    if(Ext.isEmpty(channelEl)){
+      return;
+    }
+    if(channelEl.id && channelEl.id.startsWith("click:")){
+      let [, action, resource] = channelEl.id.split(":"),
+        resourceData = decodeURIComponent(resource);
+      if(action === "info"){
+        this.showBalloon(this, "schemeBalloon", resourceData, [event.pageX, event.pageY]);
+      }
     }
   },
 });
