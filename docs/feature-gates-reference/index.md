@@ -39,3 +39,10 @@ Enables the orchestrator framework.
 
 - **Status**: ALFA
 - **Available since**: 25.1
+
+## fgalarms
+
+Fine-grained alarms, alarm binding to arbitrary resources
+
+- **Status**: ALFA
+- **Available since**: 25.1

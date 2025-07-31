@@ -178,6 +178,7 @@ class InvApplication(ExtApplication):
                 plugins.append("channel")
                 plugins.append("commutation")
                 plugins.append("bom")
+                plugins.append("alarm")
                 plugins.append("job")
             if o.model.cross or o.cross or o.get_data("caps", "dynamic_crossing"):
                 plugins.append("crossing")
