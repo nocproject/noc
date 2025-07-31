@@ -99,6 +99,11 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
                     if(button.scope === "c"){
                       NOC.launch("inv.channel", "history", {
                         args: [button.args],
+                        "override": [
+                          {"showGrid": function(){
+                            this.up().close();
+                          }},
+                        ],
                       });
                     }
                   }
