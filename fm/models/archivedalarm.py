@@ -34,6 +34,7 @@ from noc.core.change.decorator import change
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.core.span import get_current_span
 from noc.core.fm.enum import RCA_NONE
+from .pathitem import _is_required_index, PathItem, HAS_FGALARMS
 from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .alarmseverity import AlarmSeverity
@@ -46,12 +47,18 @@ class ArchivedAlarm(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "root",
-            "timestamp",
-            "managed_object",
-            ("reference", "control_time"),
-            "escalation_tt",
-            "escalation_ts",
+            x
+            for x in [
+                "root",
+                "timestamp",
+                "managed_object",
+                ("reference", "control_time"),
+                "escalation_tt",
+                "escalation_ts",
+                # FGALARMS: Enabled by feature gate
+                ("resource_path.code", "resource_path.path"),
+            ]
+            if _is_required_index(x)
         ],
     }
     status = "C"
@@ -120,6 +127,8 @@ class ArchivedAlarm(Document):
     remote_system = PlainReferenceField(RemoteSystem, required=False)
     # Object id in remote system
     remote_id = StringField(required=False)
+    if HAS_FGALARMS:
+        resource_path = ListField(EmbeddedDocumentField(PathItem))
 
     def __str__(self):
         return str(self.id)

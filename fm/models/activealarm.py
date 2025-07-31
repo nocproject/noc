@@ -23,6 +23,8 @@ from typing import (
     Union,
     List,
 )
+from threading import Lock
+import uuid
 
 # Third-party modules
 import orjson
@@ -43,6 +45,7 @@ from mongoengine.fields import (
     BinaryField,
 )
 from mongoengine.errors import SaveConditionError
+from cachetools import TTLCache
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
@@ -54,6 +57,7 @@ from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
+from noc.inv.models.object import Object
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.defer import defer
@@ -67,6 +71,14 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
+from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
+
+
+if HAS_FGALARMS:
+    _slot_cache = TTLCache(1_000, ttl=60)
+    _slot_mo = TTLCache(1_000, 60)
+    _slot_lock = Lock()
+    _slot_obj_lock = Lock()
 
 
 @change(audit=False)
@@ -76,24 +88,32 @@ class ActiveAlarm(Document):
         "strict": False,
         "auto_create_index": False,
         "indexes": [
-            "timestamp",
-            "root",
-            "-severity",
-            ("alarm_class", "managed_object"),
-            "#reference",
-            ("timestamp", "managed_object"),
-            "log.tt_id",
-            # "escalation_ts",
-            "adm_path",
-            "segment_path",
-            "container_path",
-            "uplinks",
-            ("alarm_class", "rca_neighbors"),
-            "labels",
-            "effective_labels",
-            "groups",
-            ("root", "groups"),
-            "deferred_groups",
+            x
+            for x in (
+                "timestamp",
+                "-severity",
+                ("alarm_class", "managed_object"),
+                "#reference",
+                ("timestamp", "managed_object"),
+                "log.tt_id",
+                # "escalation_ts",
+                # FGALARMS: to be removed
+                "adm_path",
+                # FGALARMS: to be removed
+                "segment_path",
+                # FGALARMS: to be removed
+                "container_path",
+                "uplinks",
+                ("alarm_class", "rca_neighbors"),
+                "labels",
+                "effective_labels",
+                "groups",
+                ("root", "groups"),
+                "deferred_groups",
+                # FGALARMS: Enabled by feature gate
+                ("resource_path.code", "resource_path.path"),
+            )
+            if _is_required_index(x)
         ],
     }
     status = "A"
@@ -168,6 +188,8 @@ class ActiveAlarm(Document):
     remote_system = PlainReferenceField(RemoteSystem, required=False)
     # Object id in remote system
     remote_id = StringField(required=False)
+    if HAS_FGALARMS:
+        resource_path = ListField(EmbeddedDocumentField(PathItem))
 
     def __str__(self):
         return str(self.id)
@@ -229,6 +251,15 @@ class ActiveAlarm(Document):
             self.uplinks = self.managed_object.uplinks
             self.rca_neighbors = self.managed_object.rca_neighbors
             self.dlm_windows = self.managed_object.dlm_windows
+            if HAS_FGALARMS:
+                resource_path = [
+                    PathItem(code=PathCode.ADM_DOMAIN, path=[f"a:{x}" for x in self.adm_path]),
+                    PathItem(code=PathCode.SEGMENT, path=[f"s:{x}" for x in self.segment_path]),
+                ]
+                obj_path = self._get_obj_path()
+                if obj_path:
+                    resource_path.append(PathItem(code=PathCode.OBJECT, path=obj_path))
+                self.resource_path = resource_path
         else:
             self.adm_path = []
             self.segment_path = []
@@ -405,6 +436,8 @@ class ActiveAlarm(Document):
             remote_system=self.remote_system,
             remote_id=self.remote_id,
         )
+        if HAS_FGALARMS:
+            a.resource_path = self.resource_path
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
@@ -1291,6 +1324,73 @@ class ActiveAlarm(Document):
             return self.components.get_resources()
         except AttributeError:
             return []
+
+    def _get_obj_path(self) -> Optional[List[str]]:
+        if not HAS_FGALARMS:
+            return None
+        if self.vars and "slot_id" in self.vars and "port_name" in self.vars:
+            return self._get_obj_vendor_slotted_path(
+                slot_id=self.vars["slot_id"],
+                port_name=self.vars["port_name"],
+            )
+        return None
+
+    def _get_obj_vendor_slotted_path(self, slot_id: str, port_name: str) -> Optional[List[str]]:
+        """Temporary vendor-specific implementation."""
+        try:
+            slot = int(slot_id)
+        except ValueError:
+            return None
+        key = (self.managed_object.id, slot, port_name)
+        with _slot_lock:
+            r = _slot_cache.get(key)
+            if r:
+                return r
+        # Resolve chassis
+        obj = self._get_object()
+        if not obj:
+            return None
+        # Go down the slot
+        # @todo: CU slots?
+        HS_UUID = uuid.UUID("1fd48ae6-df10-4ba4-ba72-1150fadbe6fe")
+        c_connection = str((slot - 1) // 2 + 1)
+        c_obj = Object.objects.filter(parent=obj.id, parent_connection=c_connection).first()
+        if not c_obj:
+            return None
+        if c_obj.model.uuid == HS_UUID:
+            # Half-sized module
+            c_connection = str((slot - 1) % 2 + 1)
+            c_obj = Object.objects.filter(parent=c_obj.id, parent_connection=c_connection).first()
+            if not c_obj:
+                return None
+        # Normalize port name
+        if port_name.startswith("Ln_"):
+            port_name = f"LINE{port_name[3:]}"
+        elif port_name.startswith("Cl_"):
+            port_name = f"CLIENT{port_name[3:]}"
+        # Go down to the transceiver
+        cn = c_obj.model.get_model_connection(port_name)
+        r = None
+        if cn and cn.direction == "i":
+            tx_obj = Object.objects.filter(parent=c_obj.id, parent_connection=port_name).first()
+            if tx_obj:
+                r = tx_obj.as_resource_path()
+        if not r:
+            r = c_obj.as_resource_path(port_name)
+        # Populate cache
+        with _slot_lock:
+            _slot_cache[key] = r
+        return r
+
+    def _get_object(self) -> Optional[Object]:
+        with _slot_obj_lock:
+            r = _slot_mo.get(self.managed_object.id)
+            if r:
+                return r
+            r = next(iter(Object.get_managed(self.managed_object)), None)
+            if r:
+                _slot_mo[self.managed_object.id] = r
+            return r
 
 
 @runtime_checkable

@@ -40,18 +40,24 @@ class Feature(enum.Enum):
     Attributes:
         CHANNEL: Channel management.
         JOBS: Orchestrator jobs.
+        FGALARMS: Fine-grained alarms
     """
 
     CHANNEL = "channel"
     JOBS = "jobs"
+    FGALARMS = "fgalarms"
 
     def is_active(self) -> bool:
         """Check if feature is active."""
         return has_feature(self)
 
 
-_FEATURE_STATUS = {Feature.CHANNEL: FeatureStatus.ALPHA, Feature.JOBS: FeatureStatus.ALPHA}
-_FEATURE_DEFAULT = {Feature.CHANNEL: False, Feature.JOBS: False}
+_FEATURE_STATUS = {
+    Feature.CHANNEL: FeatureStatus.ALPHA,
+    Feature.JOBS: FeatureStatus.ALPHA,
+    Feature.FGALARMS: FeatureStatus.ALPHA,
+}
+_FEATURE_DEFAULT = {Feature.CHANNEL: False, Feature.JOBS: False, Feature.FGALARMS: False}
 _current_features: Optional[Set[Feature]] = None
 
 
