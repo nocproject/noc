@@ -1,26 +1,39 @@
 # ----------------------------------------------------------------------
 # VMWare vCenter Extractors
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, Optional, List
+import datetime
+import enum
+from typing import Iterable, Optional, List, Tuple, Union
 
 # Third-party modules
 from pyVmomi import vim
+from pyVmomi import vmodl
 from pyVim.connect import Disconnect, SmartConnect
 
 # NOC modules
 from noc.core.etl.extractor.base import BaseExtractor
-from noc.core.etl.models.typing import ETLMapping
+from noc.core.etl.models.typing import ETLMapping, MappingItem, RemoteReference
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
 from noc.core.etl.models.managedobject import ManagedObject, CapsItem
 from noc.core.etl.models.resourcegroup import ResourceGroup
 from noc.core.etl.models.object import Object, ObjectData
 from noc.core.etl.models.link import Link
+from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
+from noc.core.fm.event import EventSeverity
 from noc.core.validators import is_ipv4
+from noc.core.ip import IP
+
+
+class AlarmStatus(enum.Enum):
+    gray = "gray"
+    green = "green"
+    yellow = "yellow"
+    red = "red"
 
 
 class VCenterRemoteSystem(BaseRemoteSystem):
@@ -151,6 +164,7 @@ class VCenterResourceGroupExtractor(VCenterExtractor):
                 description=n.config.description,
                 parent="vcenter.networks",
             )
+        net_view.Destroy()
 
 
 @VCenterRemoteSystem.extractor
@@ -162,11 +176,48 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
         super().__init__(system)
         self.links = []
 
-    def parse_address(self, guest: vim.vm.GuestInfo) -> str:
+    def get_mappings(self, obj: Union[vim.VirtualMachine, vim.HostSystem]) -> List[MappingItem]:
+        """Additional mappings"""
+        return []
+
+    def get_administrative_domain(
+        self, obj: Union[vim.VirtualMachine, vim.HostSystem]
+    ) -> Union[str, ETLMapping, RemoteReference]:
+        """Detect ManagedObject"""
+        return ETLMapping(value="default", scope="adm_domain")
+
+    def get_labels(self, obj: Union[vim.VirtualMachine, vim.HostSystem]) -> List[str]:
+        """Additional mappings"""
+        return []
+
+    def get_vm_address(self, obj: vim.VirtualMachine) -> Optional[str]:
+        """Parse VM Management Address"""
+        if not obj.guest or not obj.guest.ipAddress:
+            return None
+        if (
+            not obj.guest.ipAddress.startswith("10.0.0.")
+            and is_ipv4(obj.guest.ipAddress)
+            and not IP.prefix(obj.guest.ipAddress).is_link_local
+        ):
+            return obj.guest.ipAddress
         addresses = []
-        for n in guest.net:
-            addresses += [a for a in n.ipAddress if is_ipv4(a)]
-        return addresses[0]
+        for net in obj.guest.net:
+            for a in net.ipAddress:
+                if is_ipv4(a) and not a.startswith("10.0.0.") and not IP.prefix(a).is_link_local:
+                    addresses.append(a)
+        return addresses[0] if addresses else None
+
+    def get_host_mgmt_address(self, obj: vim.HostSystem) -> Optional[str]:
+        """Parse Management Address"""
+        name, *domains = obj.summary.config.name.split(".", 1)
+        addrs = [vv.spec.ip.ipAddress for vv in obj.config.network.vnic]
+        if len(addrs) > 1:
+            self.logger.debug("[%s] Multiple Addresses on Host: %s", name, addrs)
+        if name.startswith("rtm"):
+            addrs = sorted(addrs)
+        if addrs:
+            return addrs[0]
+        return None
 
     def iter_data(self, checkpoint=None, **kwargs) -> Iterable[ManagedObject]:
         host_map = {}
@@ -193,13 +244,19 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 continue
             name, *domains = h.summary.config.name.split(".", 1)
             host_map[h._moId] = h.summary.hardware.uuid
-            addrs = [vv.spec.ip.ipAddress for vv in h.config.network.vnic]
-            if len(addrs) > 1:
-                self.logger.debug("[%s] Multiple Addresses on Host: %s", name, addrs)
+            if not h.summary.hardware.uuid:
+                self.register_quality_problem(
+                    int(h._moId[5:]),
+                    "VMWOGLOBALID",
+                    "VMachine without Global Id",
+                    [],
+                )
+                continue
+            mappings = self.get_mappings(h)
             yield ManagedObject(
                 id=h.summary.hardware.uuid,
                 name=name,
-                address=addrs[0],
+                address=self.get_host_mgmt_address(h),
                 # description=description,
                 profile="VMWare.vHost",
                 administrative_domain=ETLMapping(value="default", scope="adm_domain"),
@@ -212,6 +269,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                     CapsItem(name="Controller | LocalId", value=h._moId),
                     CapsItem(name="Controller | GlobalId", value=h.summary.hardware.uuid),
                 ],
+                mappings=mappings or None,
                 # static_service_groups=[str(r_type.value)],
             )
         host_view.Destroy()
@@ -219,34 +277,50 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             content.rootFolder, [vim.VirtualMachine], True
         )
         for vm in vm_view.view:
-            address = "0.0.0.0"
             op = ETLMapping(value="host.default", scope="objectprofile")
             if not vm.config:
                 self.logger.warning("[%s] VM without config", vm._moId)
                 continue
-            if vm.guest and vm.guest.ipAddress:
-                address = self.parse_address(vm.guest)
-            else:
+            elif not vm.config.uuid:
+                self.register_quality_problem(
+                    int(vm._moId[3:]),
+                    "VMWOGLOBALID",
+                    "VMachine without Global Id",
+                    [],
+                )
+                continue
+            address = self.get_vm_address(vm)
+            if not address:
                 op = ETLMapping(value="host.vm.disabled", scope="objectprofile")
             name = vm.config.name
             if name in names:
                 name = f"{name}#{vm._moId}"
+            mappings = self.get_mappings(vm)
+            wf_event = "power_on"
+            if vm.runtime.powerState == "poweredOff":
+                wf_event = "power_off"
+            elif vm.runtime.powerState == "suspended":
+                wf_event = "pause"
             yield ManagedObject(
                 id=vm.config.uuid,
                 name=name,
+                event=wf_event,
                 address=address,
                 # description=description,
                 profile="VMWare.vMachine",
-                administrative_domain=ETLMapping(value="default", scope="adm_domain"),
+                administrative_domain=self.get_administrative_domain(vm),
                 object_profile=op,
                 pool="default",
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
                 capabilities=[
+                    CapsItem(name="VMWare | VM | GlobalId", value=vm.config.uuid),
                     CapsItem(name="Controller | LocalId", value=vm._moId),
                     CapsItem(name="Controller | GlobalId", value=vm.config.uuid),
                 ],
+                mappings=mappings or None,
+                labels=self.get_labels(vm) or None,
             )
             names.add(name)
             for d in vm.config.hardware.device:
@@ -272,3 +346,158 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
         super().extract(incremental=incremental)
         mol = VCenterLinkExtractor(self.system, links=self.links)
         mol.extract_data(incremental=incremental)
+
+
+@VCenterRemoteSystem.extractor
+class VCenterFMEventExtractor(VCenterExtractor):
+    """
+    Extract Device Roles from NetBox
+    """
+
+    name = "fmevent"
+    model = FMEventObject
+
+    def get_object(
+        self, event: vim.event.Event, content: vim.ServiceInstanceContent
+    ) -> "RemoteObject":
+        """"""
+        if event.vm:
+            return RemoteObject(name=event.vm.name, remote_id=event.vm.vm.config.uuid)
+        elif event.host:
+            return RemoteObject(
+                name=event.host.name,
+                remote_id=event.host.host.summary.hardware.uuid,
+            )
+        return RemoteObject(
+            name=self.url,
+            address=content.sessionManager.currentSession.ipAddress,
+            remote_id=content.about.instanceUuid,
+        )
+
+    def parse_data(self, event: vim.event.Event) -> Tuple[str, List[Var]]:
+        """"""
+        message, r = None, []
+        if event.userName:
+            r.append(Var(name="username", value=event.userName))
+        for p in event._propList:
+            v = getattr(event, p.name)
+            if not v:
+                continue
+            elif isinstance(v, vim.event.HostEventArgument):
+                v = v.name
+            elif hasattr(v, "name"):
+                v = v.name
+            if p.name == "source" or p.name == "entity":
+                continue
+            elif p.name == "message":
+                message = v
+            elif p.name == "arguments" or p.name == "info":
+                # info - taskInfo
+                continue
+            else:
+                r.append(Var(name=p.name, value=str(v)))
+        if isinstance(event, vim.event.AlarmStatusChangedEvent):
+            print(
+                "xxxxxxxxx",
+                event.alarm.name,
+                event.alarm.alarm.info.key,
+                event.alarm.alarm.info.systemName,
+                event.alarm.alarm.info.description,
+            )
+        #    for a in event.source.entity.triggeredAlarmState:
+        #        print("AA", a.key, a.alarm.info.creationEventId, a.alarm.info)
+
+        return message, r
+
+    def iter_data(self, checkpoint=None, **kwargs) -> Iterable[FMEventObject]:
+        content = self.connection.RetrieveContent()
+        # alarm = content.alarmManager.GetAlarm()
+        # for a in alarm:
+        #    print(a.info.key, a.info.description, a.info.systemName)
+        # print(alarm)
+        # for ta in content.rootFolder.triggeredAlarmState:
+        #    print(ta.alarm.info.name+','+ta.entity.name+','+ta.overallStatus+','+str(ta.time))
+        # by_entity = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
+        #     ids = ['VmRelocatedEvent', 'DrsVmMigratedEvent', 'VmMigratedEvent']
+        #     filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=ids)
+        # Time Filter
+        time_filter = vim.event.EventFilterSpec.ByTime()
+        time_filter.endTime = datetime.datetime.now()
+        time_filter.beginTime = datetime.datetime.now() - datetime.timedelta(hours=24)
+        # Event IDS
+        ids = [
+            "AlarmClearedEvent",
+            "AlarmCreatedEvent",
+            "AlarmEvent",
+            "AlarmRemovedEvent",
+            "AlarmStatusChangedEvent",
+            "ClusterEvent",
+            "DatacenterEvent",
+            "DatastoreEvent",
+            "EnteredMaintenanceModeEvent",
+            "EnteringMaintenanceModeEvent",
+            "EnteredStandbyModeEvent",
+            "EnteringStandbyModeEvent",
+            "GeneralHostErrorEvent",
+            # "GeneralHostWarningEvent",
+            "MigrationEvent",
+            # "TaskEvent",
+            "VmCreatedEvent",
+            "VmDasBeingResetEvent",
+            "VmDiskFailedEvent",
+            "VmFailedRelayoutEvent",
+            "VmFailedToPowerOffEvent",
+            "VmFailedToPowerOnEvent",
+            "VmRegisteredEvent",
+            "VmStartingEvent",
+            "VmStoppingEvent",
+            "VmSuspendedEvent",
+            "VmSuspendingEvent",
+            "VmGuestRebootEvent",
+            "VmGuestShutdownEvent",
+            "VmGuestStandbyEvent",
+            "VmPoweredOffEvent",
+            "VmPoweredOnEvent",
+            "VmMigratedEvent",
+            "VmRelocatedEvent",
+            # "Event",
+        ]
+        event_filter = vim.event.EventFilterSpec(time=time_filter, eventTypeId=ids)
+        collector = content.eventManager.CreateCollector(event_filter)
+
+        vms_not_found = set()
+
+        while True:
+            try:
+                events = collector.ReadNext(20)
+            except (KeyError, TypeError) as e:
+                self.logger.error("Unknown server error: %s", e)
+                continue
+            if not events:
+                break
+            for event in events:
+                # ts = datetime.datetime.fromisoformat(event.createdTime)
+                if not hasattr(event, "severity") or not event.severity:
+                    severity = EventSeverity.INDETERMINATE
+                else:
+                    severity = EventSeverity.WARNING
+                if event.vm and event.vm.name in vms_not_found:
+                    continue
+                msg, data = self.parse_data(event)
+                try:
+                    obj = self.get_object(event, content)
+                except vmodl.fault.ManagedObjectNotFound:
+                    self.logger.info("VM Not Found: %s", event.vm.name)
+                    if event.vm:
+                        vms_not_found.add(event.vm.name)
+                    continue
+                yield FMEventObject(
+                    id=str(event.key),
+                    ts=int(event.createdTime.timestamp()),
+                    object=obj,
+                    event_class=str(event.__class__.__name__),
+                    severity=severity,
+                    message=event.fullFormattedMessage or msg,
+                    data=data,
+                )
+        Disconnect(self.connection)
