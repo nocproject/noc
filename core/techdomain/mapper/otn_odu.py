@@ -77,11 +77,25 @@ class DWDMOdUMapper(BaseMapper):
                 "nodes": [
                     {
                         "name": "start_odu",
-                        "attributes": {"label": q_uni(path[0].input), "shape": "box"},
+                        "attributes": {
+                            "label": q_uni(path[0].input),
+                            "shape": "box",
+                            "class": self.SELECTABLE_CLASS,
+                            "id": self.get_interaction_tag(
+                                resource=path[0].object.as_resource(path[0].input)
+                            ),
+                        },
                     },
                     {
                         "name": "start_otu",
-                        "attributes": {"label": path[0].output, "shape": "box"},
+                        "attributes": {
+                            "label": path[0].output,
+                            "shape": "box",
+                            "class": self.SELECTABLE_CLASS,
+                            "id": self.get_interaction_tag(
+                                resource=path[0].object.as_resource(path[0].output)
+                            ),
+                        },
                     },
                 ],
             }
@@ -94,11 +108,25 @@ class DWDMOdUMapper(BaseMapper):
                 "nodes": [
                     {
                         "name": "end_odu",
-                        "attributes": {"label": q_uni(path[1].output), "shape": "box"},
+                        "attributes": {
+                            "label": q_uni(path[1].output),
+                            "shape": "box",
+                            "class": self.SELECTABLE_CLASS,
+                            "id": self.get_interaction_tag(
+                                resource=path[1].object.as_resource(path[1].output)
+                            ),
+                        },
                     },
                     {
                         "name": "end_otu",
-                        "attributes": {"label": path[1].input, "shape": "box"},
+                        "attributes": {
+                            "label": path[1].input,
+                            "shape": "box",
+                            "class": self.SELECTABLE_CLASS,
+                            "id": self.get_interaction_tag(
+                                resource=path[1].object.as_resource(path[1].input)
+                            ),
+                        },
                     },
                 ],
             }
