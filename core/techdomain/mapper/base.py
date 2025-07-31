@@ -202,6 +202,7 @@ class BaseMapper(object):
             "label": f"{channel.name}\n{channel.tech_domain.name}",
             "class": self.SELECTABLE_CLASS,
             "id": self.get_interaction_tag(resource=channel.as_resource()),
+            "tooltip": channel.name,
         }
         if is_client:
             attrs["style"] = "dashed"
