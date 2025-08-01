@@ -32,6 +32,21 @@ class AlarmPlugin(InvPlugin):
         super().init_plugin()
 
     def get_data(self, request, obj: Object):
+        def get_path(resource: str) -> List[Dict[str, str]]:
+            obj, name = Object.from_resource(resource)
+            if not obj:
+                return []
+            path: List[Dict[str, str]] = []
+            if name:
+                path.append({"id": "", "title": name})
+            while obj.parent and obj != current:
+                if obj.parent_connection:
+                    path.append({"id": "", "title": obj.parent_connection})
+                else:
+                    path.append({"id": str(obj.id), "title": obj.name or "-"})
+                obj = obj.parent
+            return list(reversed(path))
+
         def get_node(a: ObjectId) -> Dict[str, Any]:
             alarm = alarms[a]
             children_alarms = children[a]
@@ -43,7 +58,6 @@ class AlarmPlugin(InvPlugin):
                 "channel": "",
                 "channel__label": "",
                 "object": "",
-                "object__label": "",
                 "iconCls": self.ROOT_ALARM_CLS if children_alarms else self.ALARM_CLS,
             }
             ch_path = alarm.get_resource_path(PathCode.CHANNEL)
@@ -52,9 +66,9 @@ class AlarmPlugin(InvPlugin):
                 if ch:
                     r["channel"] = str(ch.id)
                     r["channel__label"] = ch.name
-            # obj_path = alarm.get_resource_path(PathCode.OBJECT)
-            # if obj_path:
-            #     ...
+            obj_path = alarm.get_resource_path(PathCode.OBJECT)
+            if obj_path:
+                r["object"] = get_path(obj_path[-1])
             if children_alarms:
                 r["expanded"] = (True,)
                 r["children"] = [get_node(c) for c in children_alarms]
