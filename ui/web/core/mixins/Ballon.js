@@ -78,7 +78,7 @@ Ext.define("NOC.core.mixins.Ballon", {
                       self.showInvObject(app, button.args);
                     }
                     if(button.scope === "c"){
-                      self.showChannel(button.args);
+                      self.showChannel(app, button.args);
                     }
                   }
                   tooltip.destroy();
@@ -107,27 +107,32 @@ Ext.define("NOC.core.mixins.Ballon", {
     }
   },
   //
-  showChannel: function(value){
-    NOC.launch("inv.channel", "history", {
-      args: [value],
-      "override": [
-        {
-          "showGrid": function(){
-            this.up().close();
+  showChannel: function(app, value){
+    if(Ext.isFunction(app.onMap)){
+      app.currentRecord = {id: value};
+      app.onMap(value);
+    } else{
+      NOC.launch("inv.channel", "history", {
+        args: [value],
+        "override": [
+          {
+            "showGrid": function(){
+              this.up().close();
+            },
           },
-        },
-        {
-          "onEditRecord": function(){
-            this.currentRecord = {id: value};
-            this.onMap();
+          {
+            "onEditRecord": function(){
+              this.currentRecord = {id: value};
+              this.onMap();
+            },
           },
-        },
-        {
-          "onCloseMap": function(){
-            this.up().close();
+          {
+            "onCloseMap": function(){
+              this.up().close();
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
+    }
   },
 });
