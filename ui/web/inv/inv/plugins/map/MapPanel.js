@@ -19,6 +19,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   minZoomLevel: 0,
   maxZoomLevel: 19,
   mixins: [
+    "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
   // Zoom levels according to

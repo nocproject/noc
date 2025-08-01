@@ -13,6 +13,12 @@ from typing import List, Iterable, Optional, Dict, Any
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.channel import Channel
+from noc.core.facade.interaction import (
+    Interaction,
+    InteractionAction,
+    InteractionEvent,
+    InteractionItem,
+)
 from ..controller.base import Endpoint
 
 
@@ -80,6 +86,8 @@ class Node(object):
 
 class BaseMapper(object):
     name: str = "base"
+    CHANNEL_SHAPE = "octagon"
+    SELECTABLE_CLASS = "ch-selectable"
 
     def __init__(self, channel: Channel):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
@@ -109,6 +117,7 @@ class BaseMapper(object):
         """
         Render graph and get vis-js JSON
         """
+        self.set_label(f"{self.channel.name} [{self.channel.tech_domain.name}]")
         self.render(start, end)
         return self.g
 
@@ -131,6 +140,10 @@ class BaseMapper(object):
 
     def set_rankdir(self, rankdir: str) -> None:
         self.g["graphAttributes"]["rankdir"] = rankdir
+
+    def set_label(self, label: str) -> None:
+        self.g["graphAttributes"]["label"] = label
+        self.g["graphAttributes"]["labelloc"] = "top"
 
     def add_edge(
         self,
@@ -174,6 +187,43 @@ class BaseMapper(object):
     def add_subgraphs(self, iter: Iterable[Dict[str, Any]]) -> None:
         """Add nodes from iterable."""
         self.g["subgraphs"].extend(iter)
+
+    def add_channel(self, name: str, *, channel: Channel, is_client: bool = False) -> None:
+        """
+        Add channel.
+
+        Args:
+            name: Name on the graph.
+            channel: Channel instance.
+            is_client: True, if the channel uses current one.
+        """
+        attrs = {
+            "shape": self.CHANNEL_SHAPE,
+            "label": f"{channel.name}\n{channel.tech_domain.name}",
+            "class": self.SELECTABLE_CLASS,
+            "id": self.get_interaction_tag(resource=channel.as_resource()),
+            "tooltip": channel.name,
+        }
+        if is_client:
+            attrs["style"] = "dashed"
+        self.add_node(
+            {
+                "name": name,
+                "attributes": attrs,
+            }
+        )
+
+    def get_interaction_tag(self, resource: str) -> str:
+        """Encode data-interaction tag."""
+        return Interaction(
+            actions=[
+                InteractionItem(
+                    event=InteractionEvent.CLICK,
+                    action=InteractionAction.INFO,
+                    resource=resource,
+                )
+            ]
+        ).to_str()
 
     def reverse_graph(self, g: dict[str, Any]):
         """Reverse direction of the graph."""

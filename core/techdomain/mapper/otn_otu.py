@@ -30,6 +30,7 @@ class DWDMOTUMapper(BaseMapper):
             mode = card.object.get_mode()
             if mode:
                 label = f"{label} [{mode}]"
+            ports = "<tx>tx|<rx>rx" if name == "start" else "<rx>rx|<tx>tx"
             self.add_subgraph(
                 {
                     "name": f"cluster_{name}",
@@ -42,55 +43,43 @@ class DWDMOTUMapper(BaseMapper):
                             "name": name,
                             "attributes": {
                                 "shape": "record",
-                                "label": f"{card.name}|<tx>tx|<rx>rx",
+                                "label": f"{card.name}|{ports}",
+                                "class": self.SELECTABLE_CLASS,
+                                "id": self.get_interaction_tag(resource=card.object.as_resource()),
+                                "tooltip": "",
                             },
                         }
                     ],
                 }
             )
 
-        def render_path(path: List[PathItem], forward: bool) -> None:
-            if not path:
-                # Direct connection
-                self.add_edge(
-                    start="start" if forward else "end",
-                    end="end" if forward else "start",
-                    start_port="tx",
-                    end_port="rx",
-                )
-                return
-            # Pass trough channels
-            for pi in path:
-                if pi.channel:
-                    from .loader import loader as mapper_loader
+        def render_path(path: List[PathItem], forward: bool):
+            """
+            Append path to map.
 
-                    mapper = mapper_loader[pi.channel.tech_domain.code](pi.channel)
-                    start = Endpoint(object=pi.object, name=pi.input)
-                    end = Endpoint(object=pi.output_object, name=pi.output)
-                    ch_viz = mapper.to_viz(start=start, end=end)
-                    ch_viz["name"] = "cluster_forward" if forward else "cluster_backward"
-                    ch_viz["graphAttributes"]["label"] = pi.channel.name
-                    ch_viz["graphAttributes"]["style"] = "dashed"
-                    self.add_subgraph(ch_viz)
-                    if not forward:
-                        self.reverse_graph(ch_viz)
-                    # Connect
-                    if mapper.input:
-                        # input
-                        self.add_edge(
-                            start="start" if forward else "end",
-                            end=mapper.input,
-                            start_port="tx",
-                            end_port=mapper.input_port,
-                        )
-                    if mapper.output:
-                        # output
-                        self.add_edge(
-                            start=mapper.output,
-                            end="end" if forward else "start",
-                            start_port=mapper.output_port,
-                            end_port="rx",
-                        )
+            Returns:
+                Tuple of names of first and last node.
+            """
+            # Pass trough channels
+            prefix = "f" if forward else "b"
+            nodes: List[str] = []
+            for n, pi in enumerate(path):
+                if pi.channel:
+                    name = f"{prefix}-{n}"
+                    self.add_channel(name, channel=pi.channel)
+                    nodes.append(name)
+            if len(nodes) > 1:
+                # Connect nodes between each other
+                for f, t in zip(nodes, nodes[1:]):
+                    self.add_edge(start=f, end=t, penwidth=2)
+            if forward:
+                self.add_edge(
+                    start="start", end=nodes[0], start_port="tx", penwidth=2, dir="forward"
+                )
+                self.add_edge(start=nodes[-1], end="end", end_port="rx", penwidth=2, dir="forward")
+            else:
+                self.add_edge(end="end", start=nodes[-1], end_port="tx", penwidth=2, dir="back")
+                self.add_edge(end=nodes[0], start="start", start_port="rx", penwidth=2, dir="back")
 
         controller = OTNOTUController()
         paths = []
@@ -107,5 +96,20 @@ class DWDMOTUMapper(BaseMapper):
         card = Endpoint(object=forward[-1].object, name=forward[-1].input)
         add_termination_node("end", card)
         # Render paths
-        render_path(forward[2:-2], forward=True)
-        render_path(backward[2:-2], forward=False)
+        if len(forward) == 4 and len(backward) == 4:
+            # Direct connection
+            self.add_edge(
+                start="start",
+                end="end",
+                start_port="tx",
+                end_port="rx",
+            )
+            self.add_edge(
+                start="end",
+                end="start",
+                start_port="tx",
+                end_port="rx",
+            )
+        else:
+            render_path(forward[2:-2], forward=True)
+            render_path(backward[2:-2], forward=False)

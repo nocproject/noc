@@ -2,7 +2,7 @@
 // NOC.core.mixins.Export
 // export array of objects to csv
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.mixins.Export");
@@ -57,7 +57,7 @@ Ext.define("NOC.core.mixins.Export", {
         row = row.substring(0, row.length - 1);
         output += row;
       }
-      output += '\n';
+      output += "\n";
       row = "";
       for(n = 0, nl = names.length; n < nl; n += 1){
         name = names[n];
@@ -80,11 +80,11 @@ Ext.define("NOC.core.mixins.Export", {
       Ext.Array.forEach(this.columns, function(column){
         if(column.dataIndex){
           var index = column.dataIndex;
-          if((index + '__label') in this.item.data){
-            index += '__label';
+          if((index + "__label") in this.item.data){
+            index += "__label";
           }
-          if(index === 'labels'){
-            this.record[column.dataIndex] = Ext.Array.map(this.item.get(index), function(label){return label.id}).join(',');
+          if(index === "labels"){
+            this.record[column.dataIndex] = Ext.Array.map(this.item.get(index), function(label){return label.id}).join(",");
           } else{
             this.record[column.dataIndex] = this.item.get(index);
           }
@@ -100,8 +100,8 @@ Ext.define("NOC.core.mixins.Export", {
     var records, columns;
 
     try{
-      if('NOC.core.ModelStore' === Ext.getClassName(grid.getStore())){
-        var renderPlugin = grid.findPlugin('bufferedrenderer'),
+      if("NOC.core.ModelStore" === Ext.getClassName(grid.getStore())){
+        var renderPlugin = grid.findPlugin("bufferedrenderer"),
           first = renderPlugin.getFirstVisibleRowIndex(),
           last = renderPlugin.getLastVisibleRowIndex();
 
@@ -115,6 +115,7 @@ Ext.define("NOC.core.mixins.Export", {
         columns = grid.getVisibleColumns();
       }
     } catch(e){
+      console.error("Export error: ", e);
       return false;
     }
 
