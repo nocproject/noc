@@ -605,8 +605,8 @@ class BaseLoader(object):
                 changes[fn] = nv[fn]
                 if fn in self.incremental_change:
                     incremental_changes[fn] = {
-                        "add": list(set(nv[fn]) - set(ov[fn] or [])),
-                        "remove": list(set(ov[fn] or []) - set(nv[fn])),
+                        "add": list(set(nv[fn] or []) - set(ov[fn] or [])),
+                        "remove": list(set(ov[fn] or []) - set(nv[fn] or [])),
                     }
         if n.id not in self.mappings:
             self.logger.error("Cannot map id '%s'. Skipping.", n.id)
