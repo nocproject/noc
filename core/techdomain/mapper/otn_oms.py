@@ -41,7 +41,7 @@ class OTNOMSMapper(BaseMapper):
         starting = []
         endpoints = set()
         nodes = {}
-        used_by = defaultdict(list)  # endpoint resource -> (ch name, discriminator)
+        used_by = defaultdict(list)  # endpoint resource -> (channel, discriminator)
         endpoint_nodes = {}  # endpoint resource -> node
         query = {"channel": self.channel.id}
         if start and not end:
@@ -64,7 +64,7 @@ class OTNOMSMapper(BaseMapper):
             if not start and ep.used_by:
                 res = e.as_resource()
                 for u in ep.used_by:
-                    used_by[res].append((u.channel.name, u.discriminator))
+                    used_by[res].append((u.channel, u.discriminator))
         # Edge attributes
         if self.channel.is_unidirectional:
             edge_attrs = {"dir": "forward"}
@@ -143,7 +143,5 @@ class OTNOMSMapper(BaseMapper):
             for y, (ch, _discriminator) in enumerate(used_by[ep_resource]):
                 k = f"u_{x}_{y}"
                 _, _, n = ep_resource.split(":", 2)
-                self.add_node(
-                    {"name": k, "attributes": {"shape": "hexagon", "label": ch, "style": "dashed"}}
-                )
+                self.add_channel(k, channel=ch, is_client=True)
                 self.add_edge(start=k, end=node.get_ref(n), end_port=n)

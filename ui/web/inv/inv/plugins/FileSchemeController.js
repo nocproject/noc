@@ -10,6 +10,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
   extend: "Ext.app.ViewController",
   alias: "controller.filescheme",
   mixins: [
+    "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
   onReload: function(saveZoom){
@@ -55,7 +56,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
   onSchemeClick: function(evt, target){
     var findSelectableAncestor = function(element){
         while(element && element !== document.body){
-          if(element.classList.contains('selectable')){
+          if(element.classList.contains("selectable")){
             return element;
           }
           element = element.parentElement;

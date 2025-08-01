@@ -134,7 +134,7 @@ Ext.define("NOC.inv.inv.plugins.Zoom", {
   },
 
   _getSvgElement: function(){
-    var container, parent = this.up("filescheme,vizscheme,sajob");
+    var container, parent = this.up("filescheme,vizscheme,sajob, invchannel");
     if(Ext.isEmpty(parent)){
       return undefined
     }

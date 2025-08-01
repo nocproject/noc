@@ -12,6 +12,7 @@ Ext.define("NOC.inv.channel.Application", {
     "NOC.inv.channel.Model",
     "NOC.inv.channel.LookupField",
     "NOC.inv.channel.EndpointModel",
+    "NOC.inv.inv.plugins.Zoom",
     "NOC.inv.techdomain.LookupField",
     "NOC.core.label.LabelField",
     "NOC.project.project.LookupField",
@@ -21,9 +22,12 @@ Ext.define("NOC.inv.channel.Application", {
     "NOC.inv.techdomain.LookupField",
     "Ext.ux.form.GridField",
   ],
+  mixins: [
+    "NOC.core.mixins.Ballon",
+  ],
   model: "NOC.inv.channel.Model",
+  xtype: "invchannel",
   search: true,
-
   initComponent: function(){
     var me = this;
 
@@ -37,13 +41,14 @@ Ext.define("NOC.inv.channel.Application", {
           flex: 1,
           layout: "fit",
           scrollable: true,
-          items: [
-            {
-              xtype: "image",
-              itemId: "scheme",
-              padding: 5,
+          itemId: "schemeContainer",
+          listeners: {
+            click: {
+              element: "el",
+              scope: me,
+              fn: me.onSchemeClick,
             },
-          ],
+          },
         },
       ],
       tbar: [
@@ -51,29 +56,11 @@ Ext.define("NOC.inv.channel.Application", {
           text: __("Close"),
           glyph: NOC.glyph.arrow_left,
           scope: me,
-          handler: me.onCloseMap,
+          handler: "onCloseMap",
         },
         {
-          xtype: "combobox",
-          store: [
-            [0.25, "25%"],
-            [0.5, "50%"],
-            [0.75, "75%"],
-            [1.0, "100%"],
-            [1.25, "125%"],
-            [1.5, "150%"],
-            [2.0, "200%"],
-            [3.0, "300%"],
-            [4.0, "400%"],
-          ],
-          width: 100,
-          value: 1.0,
-          valueField: "zoom",
-          displayField: "label",
-          listeners: {
-            scope: me,
-            select: me.onZoom,
-          },    
+          xtype: "invPluginsZoom",
+          itemId: "zoomControl",
         },
       ],
     });
@@ -355,10 +342,10 @@ Ext.define("NOC.inv.channel.Application", {
           handler: me.onMap,
         },
       ],
-
     });
     me.callParent();
   },
+  //
   filters: [
     {
       title: __("By Tech Domai"),
@@ -409,26 +396,26 @@ Ext.define("NOC.inv.channel.Application", {
     me.showForm();
   },
   //
-  onZoom: function(combo){
-    var me = this,
-      imageComponent = me.down("#scheme");
-    imageComponent.getEl().dom.style.transformOrigin = "0 0";
-    imageComponent.getEl().dom.style.transform = "scale(" + combo.getValue() + ")";
-  },
-  //
   svgToBase64: function(svgString){
     var base64String = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgString)));
     return base64String;
   },
   //
-  //
   _render: function(data){
     var me = this;
     Viz.instance().then(function(viz){ 
-      var imageComponent = me.down("[itemId=scheme]"),
-        svg = viz.renderSVGElement(data);
-      imageComponent.setHidden(false);
-      imageComponent.setSrc(me.svgToBase64(svg.outerHTML));
+      var svg, container = me.down("[itemId=schemeContainer]"),
+        svgData = viz.renderSVGElement(data),
+        zoomControl = me.down("#zoomControl");
+      svgData.setAttribute("height", "100%");
+      svgData.setAttribute("width", "100%");
+      svgData.setAttribute("preserveAspectRatio", "xMinYMin meet");
+      svgData.setAttribute("object-fit", "contain");
+      container.setHtml(svgData.outerHTML);
+      svg = container.getEl().dom.querySelector("svg");
+      svg.onwheel = Ext.bind(zoomControl.onWheel, zoomControl);
+      zoomControl.reset();
+
     });
   },
   //
@@ -440,6 +427,20 @@ Ext.define("NOC.inv.channel.Application", {
       ], me, Ext.bind(me._render, me, [data]));
     } else{
       me._render(data);
+    }
+  },
+  //
+  onSchemeClick: function(event, target){
+    let channelEl = target.closest(".ch-selectable");
+    if(Ext.isEmpty(channelEl)){
+      return;
+    }
+    if(channelEl.id && channelEl.id.startsWith("click:")){
+      let [, action, resource] = channelEl.id.split(":"),
+        resourceData = decodeURIComponent(resource);
+      if(action === "info"){
+        this.showBalloon(this, "schemeBalloon", resourceData, [event.pageX, event.pageY]);
+      }
     }
   },
 });

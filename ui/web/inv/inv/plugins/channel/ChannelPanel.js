@@ -15,6 +15,10 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     "NOC.inv.inv.plugins.channel.MagicPanel",
     "NOC.inv.inv.plugins.channel.ParamsForm",
   ],
+  mixins: [
+    "NOC.core.mixins.Ballon",
+    "NOC.inv.inv.plugins.Mixins",
+  ],
   viewModel: {
     data: {
       createInvChannelBtnDisabled: true,
@@ -202,8 +206,21 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
         var recordId = target.getAttribute("data-record-id"),
           rowIndex = target.getAttribute("data-row-index");
         this.handleEyeClick(recordId, rowIndex);
+      } else if(target.classList.contains("ch-selectable")){
+        if(target.id && target.id.startsWith("click:")){
+          let [, action, resource] = target.id.split(":"),
+            app = this.up("[appId=inv.inv]"),
+            resourceData = decodeURIComponent(resource);
+          if(action === "go"){
+            var value = resourceData.split(":")[1];
+            app.showObject(value);
+          }
+          if(action === "info"){
+            this.showBalloon(app, "schemeBalloon", resourceData, [event.pageX, event.pageY]);
+          }
+        }
       }
-    }, this, {delegate: ".job-status"});
+    }, this, {delegate: ".job-status, .ch-selectable"});
   },
   //
   handleEyeClick: function(recordId, rowIndex){
