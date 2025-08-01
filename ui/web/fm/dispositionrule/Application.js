@@ -77,8 +77,8 @@ Ext.define("NOC.fm.dispositionrule.Application", {
     var me = this;
     me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
-      restUrl: "/fm/dispositionrule/{id}/json/",
-      previewName: "Disposition Rule: {name}",
+      restUrl: "/fm/dispositionrule/{0}/json/",
+      previewName: "Disposition Rule: {0}",
     });
     me.ITEM_JSON = me.registerItem(me.jsonPanel);
 
