@@ -33,7 +33,7 @@ from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
 
 
-@dataclass
+@dataclass(repr=True)
 class Item(object):
     """Over Job Item"""
 
@@ -59,7 +59,7 @@ class Item(object):
         return Item(alarm=alarm, status=ItemStatus.from_alarm(alarm))
 
 
-@dataclass
+@dataclass(repr=True)
 class AllowedAction(object):
     action: AlarmAction
     login: Optional[str] = None
@@ -119,7 +119,11 @@ class AlarmJob(object):
         )
 
     def __str__(self):
+        # additional
         return f"AlarmJob: {self.alarm}"
+
+    def __repr__(self):
+        return self.__str__()
 
     @property
     def leader_item(self) -> "Item":
@@ -216,6 +220,7 @@ class AlarmJob(object):
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
+        stub_tt_system: Optional[TTSystem] = None,
     ) -> "AlarmJob":
         """Create Job from Request"""
         if not alarm and req.item:
@@ -229,10 +234,16 @@ class AlarmJob(object):
             name=str(req),
             id=req.id,
             actions=[
-                ActionLog.from_request(a, started_at=start, user=req.user, tt_system=req.tt_system)
+                ActionLog.from_request(
+                    a,
+                    started_at=start,
+                    user=req.user,
+                    tt_system=req.tt_system,
+                    stub_tt_system=stub_tt_system,
+                )
                 for a in req.actions
             ],
-            allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
+            allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions or []],
             # Settings
             # maintenance_policy=req.maintenance_policy,
             # Repeat settings
@@ -347,10 +358,10 @@ class AlarmJob(object):
             # Settings
             maintenance_policy=data["maintenance_policy"],
             # Repeat settings
-            max_repeats=data["max_repeats"],
+            max_repeats=data.get("max_repeats", 0),
             repeat_delay=data["repeat_delay"],
             # Span
-            ctx_id=data["ctx_id"],
+            ctx_id=data.get("ctx_id"),
             telemetry_sample=data["telemetry_sample"],
         )
         return job
@@ -402,7 +413,7 @@ class AlarmJob(object):
 def touch_alarm(alarm, *args, **kwargs):
     a = ActiveAlarm.objects.filter(id=alarm).first()
     if not a:
-        logger.info("[%s] Alarm is not found, skipping", alarm)
+        print("[%s] Alarm is not found, skipping", alarm)
         return
     a.touch_watch()
     if a.wait_ts:

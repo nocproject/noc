@@ -93,6 +93,9 @@ class ActionLog(object):
     def __str__(self):
         return f"{self.action} ({self.key}): {self.status} ({self.timestamp})"
 
+    def __repr__(self):
+        return self.__str__()
+
     def set_status(self, result: ActionResult):
         """Update Action result"""
         self.status = result.status
