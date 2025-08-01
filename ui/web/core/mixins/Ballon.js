@@ -9,6 +9,7 @@ console.debug("Defining NOC.core.mixins.Ballon");
 
 Ext.define("NOC.core.mixins.Ballon", {
   showBalloon: function(app, itemId, resourceData, pos){
+    var self = this;
     Ext.Ajax.request({
       url: "/inv/inv/baloon/",
       method: "POST",
@@ -57,7 +58,8 @@ Ext.define("NOC.core.mixins.Ballon", {
                 element.addEventListener("click", function(evt){
                   var value = element.dataset.itemId;
                   evt.stopPropagation(); 
-                  app.showObject(value);
+                  self.showInvObject(app, value);
+                  tooltip.destroy();
                 }); 
               });
             },
@@ -73,30 +75,10 @@ Ext.define("NOC.core.mixins.Ballon", {
                 handler: function(){
                   if(button.action === "go"){
                     if(button.scope === "o"){
-                      app.showObject(button.args);
+                      self.showInvObject(app, button.args);
                     }
                     if(button.scope === "c"){
-                      NOC.launch("inv.channel", "history", {
-                        args: [button.args],
-                        "override": [
-                          {
-                            "showGrid": function(){
-                              this.up().close();
-                            },
-                          },
-                          {
-                            "onEditRecord": function(){
-                              this.currentRecord = {id: button.args};
-                              this.onMap();
-                            },
-                          },
-                          {
-                            "onCloseMap": function(){
-                              this.up().close();
-                            },
-                          },
-                        ],
-                      });
+                      self.showChannel(button.args);
                     }
                   }
                   tooltip.destroy();
@@ -114,5 +96,38 @@ Ext.define("NOC.core.mixins.Ballon", {
       },
     });
   },
-
+  //
+  showInvObject: function(app, value){
+    if(Ext.isFunction(app.showObject)){
+      app.showObject(value);
+    } else{
+      NOC.launch("inv.inv", "history", {
+        args: [value],
+      });
+    }
+  },
+  //
+  showChannel: function(value){
+    NOC.launch("inv.channel", "history", {
+      args: [value],
+      "override": [
+        {
+          "showGrid": function(){
+            this.up().close();
+          },
+        },
+        {
+          "onEditRecord": function(){
+            this.currentRecord = {id: value};
+            this.onMap();
+          },
+        },
+        {
+          "onCloseMap": function(){
+            this.up().close();
+          },
+        },
+      ],
+    });
+  },
 });
