@@ -125,36 +125,45 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   createLayer: function(cfg, objectLayer){
     var me = this,
-      layer;
-    layer = L.geoJSON({
-      "type": "FeatureCollection",
-      "features": [],
-    }, {
-      nocCode: cfg.code,
-      nocMinZoom: cfg.min_zoom,
-      nocMaxZoom: cfg.max_zoom,
-      pointToLayer: function(geoJsonPoint, latlng){
-        return L.circleMarker(latlng, {
-          color: cfg.fill_color,
-          fillColor: cfg.fill_color,
-          fillOpacity: 1,
-          radius: 5,
-        });
-      },
-      style: function(){
-        return {
-          color: cfg.fill_color,
-          fillColor: cfg.fill_color,
-          strokeColor: cfg.stroke_color,
-          weight: cfg.stroke_width,
-        };
-      },
-      filter: function(){
+      layer = L.geoJSON({
+        "type": "FeatureCollection",
+        "features": [],
+      }, {
+        nocCode: cfg.code,
+        nocMinZoom: cfg.min_zoom,
+        nocMaxZoom: cfg.max_zoom,
+        pointToLayer: function(geoJsonPoint, latlng){
+          switch(cfg.point_graphic){
+            case "circle":
+              return L.circleMarker(latlng, {
+                color: cfg.fill_color,
+                fillColor: cfg.fill_color,
+                fillOpacity: 1,
+                radius: cfg.point_radius,
+              });
+            default:
+              return L.circleMarker(latlng, {
+                color: cfg.fill_color,
+                fillColor: cfg.fill_color,
+                fillOpacity: 1,
+                radius: cfg.point_radius,
+              });
+          }
+        },
+        style: function(){
+          return {
+            color: cfg.fill_color,
+            fillColor: cfg.fill_color,
+            strokeColor: cfg.stroke_color,
+            weight: cfg.stroke_width,
+          };
+        },
+        filter: function(){
         // Remove invisible layers on zoom
-        var zoom = me.map.getZoom();
-        return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
-      },
-    });
+          var zoom = me.map.getZoom();
+          return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
+        },
+      });
     if(cfg.code === objectLayer){
       me.objectLayer = layer;
     }
@@ -204,6 +213,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     Ext.each(me.layers, function(layer){
       me.loadLayer(layer);
     });
+    me.updateStatuses();
   },
   //
   createMap: function(data){
@@ -269,6 +279,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       },
     });
 
+  },
+  //
+  updateStatuses: function(){
+    console.log("updateStatuses");
+    var me = this;
+    // Get all visible layers
+    var bounds = me.map.getBounds();
+    var layers = [];
+    me.map.eachLayer(layer => {
+      console.log(">>> LAYER",layer);
+    });
+    console.log("layers>>>",layers);
   },
   //
   centerToObject: function(){

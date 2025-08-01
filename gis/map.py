@@ -96,7 +96,7 @@ class Map(object):
             )
             for d in Object._get_collection().find(
                 {"layer": lr.id, "point": {"$geoWithin": {"$geometry": bbox}}},
-                {"_id": 1, "point": 1, "label": 1},
+                {"_id": 1, "point": 1, "name": 1},
             )
         ]
         return geojson.FeatureCollection(features=features, crs=srid)
