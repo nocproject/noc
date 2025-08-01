@@ -21,7 +21,7 @@ from .base import InvPlugin
 
 
 class AlarmPlugin(InvPlugin):
-    name = "job"
+    name = "alarm"
     js = "NOC.inv.inv.plugins.alarm.AlarmPanel"
     required_feature = Feature.FGALARMS
 
