@@ -1415,7 +1415,7 @@ class ActiveAlarm(Document):
                 return r
         # Resolve
         ep = Endpoint._get_collection().find_one(
-            {"resource": {"$in": obj_path}}, {"_id": 1, "channel": 1}
+            {"resource": {"$in": obj_path}}, {"_id": 1, "channel": 1, "resource": 1}
         )
         if ep:
             return [f"c:{ep['channel']}", ep["resource"]]
