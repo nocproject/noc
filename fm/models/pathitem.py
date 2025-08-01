@@ -36,14 +36,12 @@ class PathCode(Enum):
         CHANNEL: Channel.
         ADM_DOMAIN: Administrative domain.
         SEGMENT: Network Segmwent.
-        CHANNEL: Channel
     """
 
     OBJECT = "o"
     CHANNEL = "c"
     ADM_DOMAIN = "a"
     SEGMENT = "s"
-    CHANNEL = "c"
 
 
 class PathItem(EmbeddedDocument):
