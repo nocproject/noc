@@ -17,6 +17,7 @@ from mongoengine.fields import EnumField, ListField, StringField
 from noc.core.feature import Feature
 
 HAS_FGALARMS = Feature.FGALARMS.is_active()
+HAS_CHANNEL = Feature.CHANNEL.is_active()
 
 
 def _is_required_index(x: Union[str, Tuple[str, ...]]) -> bool:
@@ -35,12 +36,14 @@ class PathCode(Enum):
         CHANNEL: Channel.
         ADM_DOMAIN: Administrative domain.
         SEGMENT: Network Segmwent.
+        CHANNEL: Channel
     """
 
     OBJECT = "o"
     CHANNEL = "c"
     ADM_DOMAIN = "a"
     SEGMENT = "s"
+    CHANNEL = "c"
 
 
 class PathItem(EmbeddedDocument):
