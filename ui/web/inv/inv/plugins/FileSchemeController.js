@@ -10,6 +10,7 @@ Ext.define("NOC.inv.inv.plugins.FileSchemeController", {
   extend: "Ext.app.ViewController",
   alias: "controller.filescheme",
   mixins: [
+    "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
   onReload: function(saveZoom){

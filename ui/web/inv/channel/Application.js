@@ -23,7 +23,7 @@ Ext.define("NOC.inv.channel.Application", {
     "Ext.ux.form.GridField",
   ],
   mixins: [
-    "NOC.inv.inv.plugins.Mixins",
+    "NOC.core.mixins.Ballon",
   ],
   model: "NOC.inv.channel.Model",
   xtype: "invchannel",

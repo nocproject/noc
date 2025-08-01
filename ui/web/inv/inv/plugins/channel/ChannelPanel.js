@@ -16,6 +16,7 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
     "NOC.inv.inv.plugins.channel.ParamsForm",
   ],
   mixins: [
+    "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
   viewModel: {
