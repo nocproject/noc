@@ -46,6 +46,21 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           text: __("Alarm Class"),
           dataIndex: "alarm_class",
           width: 300,
+          renderer: NOC.render.Lookup("alarm_class"),
+        },
+        {
+          text: __("Channel"),
+          dataIndex: "channel",
+          width: 300,
+          renderer: NOC.render.Lookup("channel"),
+        },
+        {
+          text: __("Object"),
+          dataIndex: "object",
+          flex: 1,
+          renderer: function(v){
+            return v.map(function(x){return x["title"]}).join(" > ");
+          },
         },
       ],
     });

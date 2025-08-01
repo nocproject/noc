@@ -14,6 +14,7 @@ from bson import ObjectId
 
 # NOC modules
 from noc.inv.models.object import Object
+from noc.inv.models.channel import Channel
 from noc.fm.models.activealarm import ActiveAlarm, PathCode
 from noc.core.feature import Feature
 from .base import InvPlugin
@@ -37,9 +38,23 @@ class AlarmPlugin(InvPlugin):
             r: Dict[str, Any] = {
                 "id": str(a),
                 "title": alarm.subject,
-                "alarm_class": alarm.alarm_class.name,
+                "alarm_class": str(alarm.alarm_class.id),
+                "alarm_class__label": alarm.alarm_class.name,
+                "channel": "",
+                "channel__label": "",
+                "object": "",
+                "object__label": "",
                 "iconCls": self.ROOT_ALARM_CLS if children_alarms else self.ALARM_CLS,
             }
+            ch_path = alarm.get_resource_path(PathCode.CHANNEL)
+            if ch_path:
+                ch = Channel.get_by_id(ch_path[0][2:])
+                if ch:
+                    r["channel"] = str(ch.id)
+                    r["channel__label"] = ch.name
+            # obj_path = alarm.get_resource_path(PathCode.OBJECT)
+            # if obj_path:
+            #     ...
             if children_alarms:
                 r["expanded"] = (True,)
                 r["children"] = [get_node(c) for c in children_alarms]

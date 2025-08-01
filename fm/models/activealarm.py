@@ -58,6 +58,8 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.inv.models.object import Object
+from noc.inv.models.channel import Channel
+from noc.inv.models.endpoint import Endpoint
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.defer import defer
@@ -71,7 +73,7 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
-from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
+from .pathitem import HAS_FGALARMS, HAS_CHANNEL, _is_required_index, PathItem, PathCode
 
 
 if HAS_FGALARMS:
@@ -79,6 +81,9 @@ if HAS_FGALARMS:
     _slot_mo = TTLCache(1_000, 60)
     _slot_lock = Lock()
     _slot_obj_lock = Lock()
+    if HAS_CHANNEL:
+        _channel_cache = TTLCache(1_000, ttl=60)
+        _channel_lock = Lock()
 
 
 @change(audit=False)
@@ -259,6 +264,10 @@ class ActiveAlarm(Document):
                 obj_path = self._get_obj_path()
                 if obj_path:
                     resource_path.append(PathItem(code=PathCode.OBJECT, path=obj_path))
+                    if HAS_CHANNEL:
+                        ch_path = self._get_channel_path(obj_path)
+                        if ch_path:
+                            resource_path.append(PathItem(code=PathCode.CHANNEL, path=ch_path))
                 self.resource_path = resource_path
         else:
             self.adm_path = []
@@ -1395,6 +1404,37 @@ class ActiveAlarm(Document):
             if r:
                 _slot_mo[self.managed_object.id] = r
             return r
+
+    def _get_channel_path(self, obj_path: List[str]) -> Optional[List[str]]:
+        """Get channel path."""
+        # Cached
+        key = tuple(obj_path)
+        with _channel_lock:
+            r = _channel_cache.get(key)
+            if r:
+                return r
+        # Resolve
+        ep = Endpoint._get_collection().find_one(
+            {"resource": {"$in": obj_path}}, {"_id": 1, "channel": 1}
+        )
+        if ep:
+            return [f"c:{ep['channel']}", ep["resource"]]
+        return None
+
+    def get_resource_path(self, code: PathCode) -> Optional[List[str]]:
+        """
+        Get resource path for code.
+
+        Args:
+            code: Path code.
+
+        Returns:
+            Path if found, None otherwise.
+        """
+        for pc in self.resource_path or []:
+            if pc.code == code:
+                return pc.path
+        return None
 
 
 @runtime_checkable
