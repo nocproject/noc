@@ -147,7 +147,8 @@ class ActionLog(object):
         if self.user:
             r["user"] = self.user
         if self.tt_system:
-            r["requester"] = self.tt_system
+            # from_system
+            r["from_system"] = self.tt_system
         if self.ctx:
             r |= self.ctx
         return r
@@ -158,11 +159,12 @@ class ActionLog(object):
         Args:
             delay: Repeat delay
         """
+        ts = self.timestamp + datetime.timedelta(seconds=delay)
         return ActionLog(
             action=self.action,
             key=self.key,
             status=ActionStatus.NEW,
-            timestamp=self.timestamp + datetime.timedelta(seconds=delay),
+            timestamp=ts.replace(microsecond=0),
             time_pattern=self.time_pattern,
             alarm_ack=self.alarm_ack,
             when=self.when,
@@ -170,6 +172,8 @@ class ActionLog(object):
             allow_fail=self.allow_fail,
             stop_processing=self.stop_processing,
             repeat_num=self.repeat_num + 1,
+            template=self.template,
+            subject=self.subject,
             **self.ctx,
         )
 
@@ -194,19 +198,20 @@ class ActionLog(object):
             tt_system: TT System who requested Action
             stub_tt_system: TT system for test cases
         """
-        if user:
+        if user and not isinstance(user, User):
             user = User.get_by_id(int(user))
         if tt_system:
             tt_system = TTSystem.get_by_id(tt_system)
         elif stub_tt_system:
             tt_system = stub_tt_system
+        ts = started_at + datetime.timedelta(seconds=action.delay)
         return ActionLog(
             action=action.action,
             key=action.key,
             template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
-            timestamp=started_at + datetime.timedelta(seconds=action.delay),
+            timestamp=ts.replace(microsecond=0),
             #
             time_pattern=action.time_pattern,
             alarm_ack=action.ack,
@@ -266,7 +271,7 @@ class ActionLog(object):
             "min_severity": self.min_severity,
             "alarm_ack": self.alarm_ack,
             "when": self.when,
-            "timestamp": self.timestamp,
+            "timestamp": self.timestamp.replace(microsecond=0),
             "status": self.status.value,
             "error": self.error,
             "stop_processing": self.stop_processing,

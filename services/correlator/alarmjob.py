@@ -90,13 +90,13 @@ class AlarmJob(object):
         telemetry_sample: Optional[int] = None,
         # Id document
         name: Optional[str] = None,
-        id: Optional[str] = None,
+        job_id: Optional[str] = None,
         # Debug
         logger: Optional[Any] = None,
         dry_run: bool = False,
         static_delay: Optional[int] = None,
     ):
-        self.id = id
+        self.id = job_id
         self.name = name
         self.items: List[Item] = items
         self.actions = actions
@@ -139,18 +139,19 @@ class AlarmJob(object):
         """"""
         return [f"a:{self.alarm}"]
 
-    def run(self) -> None:
+    def run(self, ts: Optional[datetime.datetime] = None) -> None:
         """Run job for works"""
-        actions = []
         is_end = self.check_end()
         severity = self.alarm.severity
-        now = datetime.datetime.now()
+        now = ts or datetime.datetime.now().replace(microsecond=0)
         alarm_ctx = self.alarm.get_message_ctx()
         self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
+        self.logger.info("Actions: %s", self.actions)
         runner = AlarmActionRunner(
             self.items, logger=self.logger, allowed_actions=self.allowed_actions
         )
-        for aa in sorted(actions[:] + self.actions, key=operator.attrgetter("timestamp")):
+        # Sorted return new list, not needed copying self.actions
+        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
             self.logger.debug("[%s] Processed action", aa)
             if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
                 # Skip already running job
@@ -172,6 +173,7 @@ class AlarmJob(object):
                 time.sleep(self.static_delay)
             elif aa.timestamp > now:
                 #
+                self.logger.info("Next action delayed: %s", aa.timestamp - now)
                 break
             # if not aa.to_run(status, delay):
             #    continue
@@ -198,19 +200,27 @@ class AlarmJob(object):
                 # Set Stop job status
                 break
         self.alarm_log += runner.get_bulk()
+        # Update after_at and key
+        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=self.get_next_ts())
         # Only if save-state
-        self.alarm.add_watch(
-            Effect.ALARM_JOB,
-            key=str(self.id),
-            after=aa.timestamp,
-        )  # Update after_at and key
         self.alarm.safe_save()
-        if actions:
-            # Split one_time actions/sequenced action
-            self.actions = actions + self.actions
+        if self.alarm.wait_ts:
+            touch_alarm(self.alarm)
+        # if actions:
+        #     # Split one_time actions/sequenced action
+        #     self.actions = actions + self.actions
 
     def check_end(self) -> bool:
         return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status == "C"
+
+    def get_next_ts(self) -> Optional[datetime.datetime]:
+        """
+        Calculate next run ts. When set delay or Temp Error
+        """
+        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
+            if aa.status == ActionStatus.NEW:
+                return aa.timestamp.replace(microsecond=0) + datetime.timedelta(seconds=1)
+        return None
 
     @classmethod
     def from_request(
@@ -221,6 +231,7 @@ class AlarmJob(object):
         sample: int = 0,
         static_delay: Optional[int] = None,
         stub_tt_system: Optional[TTSystem] = None,
+        stub_user: Optional[User] = None,
     ) -> "AlarmJob":
         """Create Job from Request"""
         if not alarm and req.item:
@@ -232,12 +243,12 @@ class AlarmJob(object):
             # Job Context
             items=[Item.from_alarm(alarm)],
             name=str(req),
-            id=req.id,
+            job_id=req.id,
             actions=[
                 ActionLog.from_request(
                     a,
                     started_at=start,
-                    user=req.user,
+                    user=req.user or stub_user,
                     tt_system=req.tt_system,
                     stub_tt_system=stub_tt_system,
                 )
@@ -282,7 +293,7 @@ class AlarmJob(object):
             # Job Context
             # Item.from_alarm
             items=[Item.from_alarm(alarm, is_clear=is_clear)],
-            id=ObjectId(),
+            job_id=str(ObjectId()),
             actions=ActionLog.from_alarm(alarm, is_clear=is_clear),
             allowed_actions=[
                 AllowedAction(action=AlarmAction.ACK),
@@ -294,7 +305,7 @@ class AlarmJob(object):
         )
         return job
 
-    def save_state(self):
+    def save_state(self, dry_run: bool = False):
         from noc.fm.models.alarmjob import (
             AlarmJob as AlarmJobState,
             AlarmItem,
@@ -310,7 +321,8 @@ class AlarmJob(object):
             if not start_at and a.status == ActionStatus.NEW:
                 start_at = a.timestamp
             actions.append(ActionLog(**a.get_state()))
-        job = AlarmJobState(
+        state = AlarmJobState(
+            id=self.id,
             name=self.name,
             status=JobStatus.WAITING,
             created_at=self.actions[0].timestamp,
@@ -328,31 +340,37 @@ class AlarmJob(object):
             # total_services=self.total_services,
             # total_subscribers=self.total_subscribers,
         )
+        if dry_run:
+            return state
         try:
-            job.save()
+            state.save()
         except Exception:
             error_report()
 
     @classmethod
-    def from_state(cls, data: Dict[str, Any]) -> Optional["AlarmJob"]:
+    def from_state(
+        cls, data: Dict[str, Any], stub_alarms: Optional[List[ActiveAlarm]] = None
+    ) -> Optional["AlarmJob"]:
         """"""
-        alarms = {}
-        for d in data["items"]:
-            alarms[d["alarm"]] = ItemStatus(d["status"])
-        items = []
-        for aa in ActiveAlarm.objects.filter(id__in=list(alarms)):
-            items.append(Item(alarm=aa, status=alarms.pop(aa.id)))
+        alarms, items = {}, []
+        if stub_alarms:
+            items = [Item.from_alarm(a) for a in stub_alarms]
+        else:
+            for d in data["items"]:
+                alarms[d["alarm"]] = ItemStatus(d["status"])
+            for aa in ActiveAlarm.objects.filter(id__in=list(alarms)):
+                items.append(Item(alarm=aa, status=alarms.pop(aa.id)))
         for alarm_id, status in alarms.items():
             alarm = get_alarm(alarm_id)
             if alarm:
-                items.append(Item(alarm=aa, status=ItemStatus.from_alarm(alarm)))
+                items.append(Item(alarm=alarm, status=ItemStatus.from_alarm(alarm)))
         if not items:
             raise ValueError("Not Found alarm by id: %s", data["items"])
         job = AlarmJob(
             # Job Context
             items=items,
             name=str(data["name"]),
-            id=data["_id"],
+            job_id=data["_id"],
             actions=[ActionLog.from_state(a) for a in data["actions"]],
             # allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
             # Settings
@@ -385,7 +403,7 @@ class AlarmJob(object):
         # self.add_action(action, timestamp)
         al = ActionLog.from_request(
             action,
-            started_at=timestamp,
+            started_at=timestamp.replace(microsecond=0),
             user=user.id if user else None,
             tt_system=str(tt_system.id) if tt_system else None,
             one_time=True,

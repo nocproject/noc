@@ -227,6 +227,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
+        from_system: Optional[TTSystem] = None,
         **kwargs,
     ) -> EscalationResult:
         """
@@ -323,7 +324,7 @@ class AlarmActionRunner(object):
     def alarm_clear(
         self,
         user: User,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         **kwargs,
@@ -347,7 +348,7 @@ class AlarmActionRunner(object):
     def alarm_subscribe(
         self,
         user: User,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         subject: Optional[str] = None,
         **kwargs,
     ):
@@ -368,7 +369,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
     ) -> ActionResult:
@@ -382,7 +383,7 @@ class AlarmActionRunner(object):
             login:
             tt_id: If set, do changes
             timestamp: Action timestamp
-            requester: TTSystem, request action
+            from_system: TTSystem, request action
             queue: TT Queue
             pre_reason: Diagnostic Pre Reason
             user: User, request action
@@ -467,7 +468,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
     ) -> ActionResult:
@@ -483,7 +484,7 @@ class AlarmActionRunner(object):
             timestamp: Action timestamp
             login:
             queue:
-            requester: TTSystem, request action
+            from_system: TTSystem, request action
             user: User, request action
 
         Returns:

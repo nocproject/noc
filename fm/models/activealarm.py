@@ -652,7 +652,7 @@ class ActiveAlarm(Document):
                     args=kwargs,  # Convert to string
                 )
             )
-        if after:
+        if after or self.wait_ts:
             self.wait_ts = self.get_wait_ts(self.wait_ts)
 
     def stop_watch(self, effect: Effect, key: str):
@@ -1354,7 +1354,10 @@ class ComponentHub(object):
         return default if v is None else v
 
     def __contains__(self, name: str) -> bool:
-        return self.get(name) is not None
+        try:
+            return self.get(name) is not None
+        except AttributeError:
+            return False
 
     def __get_component(self, name: str) -> Optional[Any]:
         for c in self.__alarm_class.components:
