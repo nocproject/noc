@@ -213,7 +213,8 @@ class AlarmActionRunner(object):
             self.alarm.log_message(msg)
             self.alarm.save()
         else:
-            self.alarm.log_message(msg, bulk=self.alarm_log)
+            self.alarm.log_message(msg)  # bulk=self.alarm_log
+            self.alarm.safe_save()
 
     def get_bulk(self) -> List[Any]:
         return self.alarm_log

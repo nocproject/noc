@@ -69,7 +69,7 @@ from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
 from noc.core.fm.event import Event
 from noc.core.fm.enum import EventSeverity
-from noc.core.fm.request import AlarmActionRequest
+from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmjob import AlarmJob
 
@@ -434,22 +434,22 @@ class CorrelatorService(FastAPIService):
         if e_severity != alarm.severity:
             alarm.severity = e_severity
             alarm.last_update = datetime.datetime.now().replace(microsecond=0)
-            alarm.save()
-            alarm.touch_watch()
+        alarm.save()
+        alarm.touch_watch()
 
     async def apply_rules(
         self, alarm: ActiveAlarm, alarm_groups: Set[str]
-    ) -> Tuple[Dict[str, Any], Optional[AlarmActionRequest]]:
+    ) -> Tuple[Dict[str, Any], List[AlarmActionRequest]]:
         """Apply alarm rules"""
-        groups, actions = {}, []
+        groups, jobs = {}, []
         for rule in self.alarm_rule_set.iter_rules(alarm):
             self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
             # Calculate Severity and to match
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
                     groups[gi.reference] = gi
-            for ai in rule.iter_actions(alarm):
-                actions.append(ai)
+            # for ai in rule.iter_jobs(alarm):
+            #     jobs.append(ai)
             if rule.max_severity or rule.min_severity:
                 alarm.add_watch(
                     Effect.SEVERITY,
@@ -460,40 +460,23 @@ class CorrelatorService(FastAPIService):
             if rule.rewrite_alarm_class:
                 # Alarm Rewrite Class ? Compat variables ?
                 ...
+            job = rule.get_job(alarm)
+            if job:
+                jobs.append(job)
             if rule.clear_after_ttl:
                 if rule.ttl_policy == "C":
                     after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl)
                 else:
                     after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_ttl)
                 alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
-        if actions:
-            # Call marge_actions
-            req = AlarmActionRequest(
-                ctx=0,
-                actions=actions,
-                start_at=alarm.timestamp,
-            )
-        else:
-            req = None
-        return groups, req
+        return groups, jobs
 
-    async def run_actions(self, alarm: ActiveAlarm, action_req: AlarmActionRequest):
-        if not action_req:
+    async def run_alarm_jobs(self, alarm: ActiveAlarm, jobs: List[AlarmActionRequest]):
+        if not jobs:
             return
-        job = AlarmJob.from_request(action_req, alarm=alarm)
-        job.run()
-
-    def ensure_alarm_job(self, alarm: ActiveAlarm):
-        if alarm.wait_ts:
-            call_later(
-                "noc.services.correlator.alarmjob.touch_alarm",
-                scheduler="correlator",
-                max_runs=5,
-                pool=alarm.managed_object.get_effective_fm_pool().name,
-                delay=(alarm.wait_ts - datetime.datetime.now()).total_seconds(),
-                shard=alarm.managed_object.id,
-                alarm=alarm.id,
-            )
+        for req in jobs:
+            job = AlarmJob.from_request(req, alarm=alarm)
+            job.run()
 
     async def raise_alarm(
         self,
@@ -633,7 +616,8 @@ class CorrelatorService(FastAPIService):
                 if gi.reference and gi.reference not in alarm_groups:
                     alarm_groups[gi.reference] = gi
         # Apply rules
-        rule_groups, action_req = await self.apply_rules(a, alarm_groups.keys())
+        rule_groups, jobs = await self.apply_rules(a, alarm_groups.keys())
+        # actions, jobs
         # Rewriter Alarm Class/Drop
         if rule_groups:
             alarm_groups |= rule_groups
@@ -677,8 +661,8 @@ class CorrelatorService(FastAPIService):
         await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
         # Apply actions
-        if action_req:
-            await self.run_actions(a, action_req)
+        if jobs:
+            await self.run_alarm_jobs(a, jobs)
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)
         if a.affected_services:
@@ -686,7 +670,17 @@ class CorrelatorService(FastAPIService):
                 "noc.sa.models.service.refresh_service_status",
                 svc_ids=[str(x) for x in a.affected_services],
             )
-        self.ensure_alarm_job(a)
+        # Ensure Alarm Jobs when set delayed actions
+        if a.wait_ts:
+            call_later(
+                "noc.services.correlator.alarmjob.touch_alarm",
+                scheduler="correlator",
+                max_runs=5,
+                pool=config.pool,
+                delay=(alarm.wait_ts - datetime.datetime.now()).total_seconds(),
+                shard=alarm.managed_object.id,
+                alarm=alarm.id,
+            )
         return a
 
     async def raise_alarm_from_rule(

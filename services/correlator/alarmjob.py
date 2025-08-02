@@ -111,8 +111,6 @@ class AlarmJob(object):
         self.telemetry_sample = telemetry_sample
         self.dry_run = dry_run
         self.static_delay: Optional[str] = static_delay
-        # Stats
-        self.alarm_log = []
         # Alarm Severity
         self.logger = logger or PrefixLoggerAdapter(
             logging.getLogger(__name__), f"[{self.id}|{self.alarm}"
@@ -139,14 +137,14 @@ class AlarmJob(object):
         """"""
         return [f"a:{self.alarm}"]
 
-    def run(self, ts: Optional[datetime.datetime] = None) -> None:
+    def run(self, ts: Optional[datetime.datetime] = None, to_save_state: bool = True) -> None:
         """Run job for works"""
         is_end = self.check_end()
         severity = self.alarm.severity
         now = ts or datetime.datetime.now().replace(microsecond=0)
         alarm_ctx = self.alarm.get_message_ctx()
         self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
-        self.logger.info("Actions: %s", self.actions)
+        self.logger.debug("Actions: %s", self.actions)
         runner = AlarmActionRunner(
             self.items, logger=self.logger, allowed_actions=self.allowed_actions
         )
@@ -193,22 +191,25 @@ class AlarmJob(object):
             if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
                 # If Repeat - add action to next on repeat delay
                 # Self register actions
-                self.actions.append(aa.get_repeat(self.repeat_delay))
+                self.actions.append(aa.get_repeat(self.repeat_delay))  #! repeat after end actions
             aa.set_status(r)
             # Processed Result
             if aa.stop_processing:
                 # Set Stop job status
                 break
-        self.alarm_log += runner.get_bulk()
+        # alarm_log = runner.get_bulk()
+        if to_save_state:
+            self.save_state()
         # Update after_at and key
-        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=self.get_next_ts())
+        if is_end:
+            return
+        # Post.objects(comments__by="joe").update(inc__comments__S__votes=1)
+        ts = self.get_next_ts()
+        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=ts)
         # Only if save-state
         self.alarm.safe_save()
-        if self.alarm.wait_ts:
-            touch_alarm(self.alarm)
-        # if actions:
-        #     # Split one_time actions/sequenced action
-        #     self.actions = actions + self.actions
+        # if self.alarm.wait_ts:
+        #     touch_alarm(self.alarm)
 
     def check_end(self) -> bool:
         return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status == "C"
