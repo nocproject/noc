@@ -123,6 +123,15 @@ class AlarmJob(object):
     def __repr__(self):
         return self.__str__()
 
+    @classmethod
+    def get_by_id(cls, oid) -> Optional["AlarmJob"]:
+        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
+
+        state = AlarmJobState.objects.filter(id=oid).as_pymongo()
+        if state:
+            return AlarmJob.from_state(state[0])
+        return None
+
     @property
     def leader_item(self) -> "Item":
         """Return first item"""
@@ -223,6 +232,12 @@ class AlarmJob(object):
                 return aa.timestamp.replace(microsecond=0) + datetime.timedelta(seconds=1)
         return None
 
+    def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
+        """Update job item"""
+        for i in self.items:
+            if i.alarm.id == alarm.id:
+                i.status = ItemStatus.from_alarm(alarm, is_clear)
+
     @classmethod
     def from_request(
         cls,
@@ -243,7 +258,7 @@ class AlarmJob(object):
         job = AlarmJob(
             # Job Context
             items=[Item.from_alarm(alarm)],
-            name=str(req),
+            name=str(req.name),
             job_id=req.id,
             actions=[
                 ActionLog.from_request(
@@ -274,7 +289,6 @@ class AlarmJob(object):
         cls,
         alarm: ActiveAlarm,
         is_clear: bool = False,
-        job_id: Optional[str] = None,
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
@@ -284,7 +298,6 @@ class AlarmJob(object):
         Args:
             alarm: Active alarm Instance
             is_clear: Flag if run from clear_alarm
-            job_id: Job State Id
             dry_run: Run from tests (No .save call)
             sample: Telemetry sample
             static_delay: Delay over action (for tests)
@@ -326,7 +339,7 @@ class AlarmJob(object):
             id=self.id,
             name=self.name,
             status=JobStatus.WAITING,
-            created_at=self.actions[0].timestamp,
+            created_at=actions[0].timestamp,
             started_at=start_at,
             ctx_id=self.ctx_id,
             telemetry_sample=self.telemetry_sample,

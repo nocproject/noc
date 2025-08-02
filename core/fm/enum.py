@@ -183,9 +183,9 @@ class ItemStatus(enum.Enum):
     ARCHIVED = "archived"
 
     @classmethod
-    def from_alarm(cls, alarm):
+    def from_alarm(cls, alarm, is_clear: bool = False):
         """"""
-        if alarm.status == "C":
+        if alarm.status == "C" or is_clear:
             return ItemStatus.REMOVED
         elif alarm.timestamp != alarm.last_update:
             return ItemStatus.CHANGED

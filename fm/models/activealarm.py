@@ -1281,8 +1281,11 @@ class ActiveAlarm(Document):
     def refresh_job(self, is_clear: bool = False, job_id: Optional[str] = None):
         """Refresh Alarm Job by changes"""
         from noc.services.correlator.alarmjob import AlarmJob
-
-        job = AlarmJob.from_alarm(self, job_id=job_id, is_clear=is_clear)
+        if job_id:
+            job = AlarmJob.get_by_id(job_id)
+            job.update_item(self, is_clear=is_clear)
+        else:
+            job = AlarmJob.from_alarm(self, is_clear=is_clear)
         job.run()
 
     def get_resources(self) -> List[str]:

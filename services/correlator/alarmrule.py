@@ -110,7 +110,7 @@ class AlarmRule(object):
         for a in config["actions"]:
             rule.actions += [ActionConfig.model_validate(a)]
         if config.get("job"):
-            rule.job = JobConfig(
+            rule.job_config = JobConfig(
                 name=config["job"]["name"],
                 repeat_delay=config["job"].get("repeat_delay"),
                 max_repeats=config["job"].get("max_repeats"),

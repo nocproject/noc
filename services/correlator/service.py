@@ -677,9 +677,9 @@ class CorrelatorService(FastAPIService):
                 scheduler="correlator",
                 max_runs=5,
                 pool=config.pool,
-                delay=(alarm.wait_ts - datetime.datetime.now()).total_seconds(),
-                shard=alarm.managed_object.id,
-                alarm=alarm.id,
+                delay=(a.wait_ts - datetime.datetime.now()).total_seconds(),
+                shard=a.managed_object.id,
+                alarm=a.id,
             )
         return a
 
