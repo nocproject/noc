@@ -561,6 +561,11 @@ class IPv4(IP):
         """10.0.0.0/8,100.64.0.0/10,172.16.0.0/12,192.0.0.0/24,192.168.0.0/16"""
         return self in private_ips
 
+    @property
+    def is_link_local(self) -> bool:
+        """169.254.0.0/16"""
+        return self in LINK_LOCAL_IPv4
+
 
 class IPv6(IP):
     """
@@ -1049,6 +1054,7 @@ class PrefixDB(object):
 
 
 LOOPBACK_IPv4 = IP.prefix("127.0.0.0/8")
+LINK_LOCAL_IPv4 = IP.prefix("169.254.0.0/16")
 PRIVATE_IPv4 = [
     IP.prefix("10.0.0.0/8"),
     IP.prefix("100.64.0.0/10"),

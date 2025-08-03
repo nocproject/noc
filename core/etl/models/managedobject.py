@@ -1,18 +1,18 @@
 # ----------------------------------------------------------------------
 # ManagedObjectModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Annotated
 from enum import Enum
 from pydantic import IPvAnyAddress, field_validator
 
 # Third-party modules
-from pydantic import ConfigDict
+from pydantic import ConfigDict, StringConstraints
 
 # NOC modules
 from .base import BaseModel, _BaseModel
@@ -43,6 +43,14 @@ class CapsItem(_BaseModel):
     value: Union[str, bool, int]
 
 
+DomainName = Annotated[
+    str,
+    StringConstraints(
+        pattern=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9].?$"
+    ),
+]
+
+
 class ManagedObject(BaseModel):
     id: str
     name: str
@@ -62,7 +70,8 @@ class ManagedObject(BaseModel):
     static_client_groups: Optional[List[Reference["ResourceGroup"]]] = None
     static_service_groups: Optional[List[Reference["ResourceGroup"]]] = None
     scheme: str
-    address: str
+    address: Optional[str] = None
+    fqdn: Optional[DomainName] = None
     port: Optional[str] = None
     user: Optional[str] = None
     password: Optional[str] = None
@@ -88,9 +97,11 @@ class ManagedObject(BaseModel):
 
     @field_validator("address")
     @classmethod
-    def address_must_ipaddress(cls, v: str) -> str:
-        IPvAnyAddress(v)
-        return v.strip()
+    def address_must_ipaddress(cls, v: str) -> Optional[str]:
+        if v:
+            IPvAnyAddress(v)
+            return v.strip()
+        return None
 
     model_config = ConfigDict(exclude={"is_managed"}, populate_by_name=True)
 
