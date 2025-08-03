@@ -448,8 +448,6 @@ class CorrelatorService(FastAPIService):
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
                     groups[gi.reference] = gi
-            # for ai in rule.iter_jobs(alarm):
-            #     jobs.append(ai)
             if rule.max_severity or rule.min_severity:
                 alarm.add_watch(
                     Effect.SEVERITY,
@@ -457,6 +455,8 @@ class CorrelatorService(FastAPIService):
                     min_severity=rule.min_severity,
                     max_severity=rule.max_severity,
                 )
+            else:
+                alarm.stop_watch(Effect.STOP_CLEAR, key=str(rule.id))
             if rule.rewrite_alarm_class:
                 # Alarm Rewrite Class ? Compat variables ?
                 ...
@@ -469,6 +469,8 @@ class CorrelatorService(FastAPIService):
                 else:
                     after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_ttl)
                 alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
+            else:
+                alarm.stop_watch(Effect.CLEAR_ALARM, key="")
         return groups, jobs
 
     async def run_alarm_jobs(self, alarm: ActiveAlarm, jobs: List[AlarmActionRequest]):
@@ -549,13 +551,10 @@ class CorrelatorService(FastAPIService):
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
                 self.refresh_alarm(alarm, timestamp, severity)
-                # alarm_groups: Dict[str, GroupItem] = {}
-                # rule_groups, action_req = await self.apply_rules(
-                #     alarm, alarm_groups.keys()
-                # )
+                alarm_groups: Dict[str, GroupItem] = {}
+                await self.apply_rules(alarm, alarm_groups)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
-                self.ensure_alarm_job(alarm)
                 return alarm
         if event:
             msg = f"Alarm risen from event {event.id}({event.type.event_class})"
@@ -672,13 +671,14 @@ class CorrelatorService(FastAPIService):
             )
         # Ensure Alarm Jobs when set delayed actions
         if a.wait_ts:
+            ts = a.wait_ts - datetime.datetime.now().replace(microsecond=0)
             call_later(
                 "noc.services.correlator.alarmjob.touch_alarm",
                 scheduler="correlator",
                 max_runs=5,
                 pool=config.pool,
-                delay=(a.wait_ts - datetime.datetime.now()).total_seconds(),
-                shard=a.managed_object.id,
+                delay=ts.total_seconds(),
+                shard=a.managed_object.id if a.managed_object else 0,
                 alarm=a.id,
             )
         return a

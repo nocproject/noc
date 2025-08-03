@@ -165,6 +165,13 @@ class AlarmJob(object):
                 if self.dry_run:
                     self.logger.debug("[%s] Action already executed. Next...", aa)
                 continue
+            elif is_end and aa.when != "on_end":
+                self.logger.debug("[%s] Action execute on End. Next...", aa.action)
+                continue
+            elif aa.timestamp > now:
+                #
+                self.logger.info("Next action delayed: %s", aa.timestamp - now)
+                break
             elif not aa.is_match(severity, now, self.alarm.ack_user):
                 # Set Skip (Condition)
                 self.logger.debug(
@@ -172,16 +179,10 @@ class AlarmJob(object):
                     aa.action,
                     severity,
                 )
-                continue
-            elif is_end and aa.when != "on_end":
-                self.logger.debug("[%s] Action execute on End. Next...", aa.action)
+                aa.set_status(ActionResult(status=ActionStatus.SKIP))
                 continue
             elif self.dry_run and self.static_delay:
                 time.sleep(self.static_delay)
-            elif aa.timestamp > now:
-                #
-                self.logger.info("Next action delayed: %s", aa.timestamp - now)
-                break
             # if not aa.to_run(status, delay):
             #    continue
             try:
@@ -228,8 +229,8 @@ class AlarmJob(object):
         Calculate next run ts. When set delay or Temp Error
         """
         for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
-            if aa.status == ActionStatus.NEW:
-                return aa.timestamp.replace(microsecond=0) + datetime.timedelta(seconds=1)
+            if aa.status == ActionStatus.NEW and aa.when != "on_end":
+                return (aa.timestamp + datetime.timedelta(seconds=1)).replace(microsecond=0)
         return None
 
     def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
@@ -237,6 +238,7 @@ class AlarmJob(object):
         for i in self.items:
             if i.alarm.id == alarm.id:
                 i.status = ItemStatus.from_alarm(alarm, is_clear)
+                i.alarm = alarm
 
     @classmethod
     def from_request(
@@ -445,7 +447,7 @@ class AlarmJob(object):
 def touch_alarm(alarm, *args, **kwargs):
     a = ActiveAlarm.objects.filter(id=alarm).first()
     if not a:
-        print("[%s] Alarm is not found, skipping", alarm)
+        print(f"[{alarm}] Alarm is not found, skipping")
         return
     a.touch_watch()
     if a.wait_ts:
