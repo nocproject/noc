@@ -14,7 +14,7 @@ from jinja2 import Template
 
 # NOC modules
 from noc.core.matcher import build_matcher
-from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction, ActionItem
+from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction
 from noc.core.span import get_current_span
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass

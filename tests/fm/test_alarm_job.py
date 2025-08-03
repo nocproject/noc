@@ -4,15 +4,15 @@
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-import datetime
 
 # Third-party modules
+import datetime
 import orjson
 import pytest
 
 # NOC modules
 from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.fm.request import AlarmActionRequest, ActionItem, ActionConfig
+from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.services.correlator.alarmjob import AlarmJob
 from noc.aaa.models.user import User
 from .utils import get_alarm_mock, get_tt_system_mock, get_notification_group_mock

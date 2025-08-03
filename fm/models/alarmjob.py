@@ -171,7 +171,7 @@ class AlarmJob(Document):
         return f"{self.name}::{self.status}"
 
     @classmethod
-    def iter_last_for_entities(cls, entities: Iterable[str]) -> Iterable["Job"]:
+    def iter_last_for_entities(cls, entities: Iterable[str]) -> Iterable["AlarmJob"]:
         """
         Iterate last jobs for entities.
 
