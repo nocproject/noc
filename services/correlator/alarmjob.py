@@ -202,6 +202,14 @@ class AlarmJob(object):
                 # If Repeat - add action to next on repeat delay
                 # Self register actions
                 self.actions.append(aa.get_repeat(self.repeat_delay))  #! repeat after end actions
+            if r.action:
+                self.actions.append(
+                    ActionLog.from_request(
+                        r.action,
+                        started_at=aa.timestamp,
+                        document_id=r.document_id,
+                    )
+                )
             aa.set_status(r)
             # Processed Result
             if aa.stop_processing:

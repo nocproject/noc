@@ -22,7 +22,7 @@ from noc.core.tt.types import (
 )
 from noc.core.tt.base import TTSystemCtx, TTAction
 from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.fm.request import AllowedAction
+from noc.core.fm.request import AllowedAction, ActionConfig
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
@@ -435,7 +435,20 @@ class AlarmActionRunner(object):
                 clear_template=kwargs.get("clear_template"),
             )
             #
-            return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
+            return ActionResult(
+                status=ActionStatus.SUCCESS,
+                document_id=r.document,
+                action=ActionConfig(
+                    when="on_end",
+                    action=AlarmAction.CLOSE_TT,
+                    key=str(tt_system.id),
+                    # template=str(self.close_template.id) if self.close_template else None,
+                    subject="Closed",
+                    allow_fail=False,
+                    login=login,
+                    queue=queue,
+                ),
+            )
         # @todo r.document != tt_id
         # Project result to escalation items
         ctx_map = {}

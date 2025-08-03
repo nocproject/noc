@@ -118,7 +118,7 @@ class EscalationItem(EmbeddedDocument):
 
     def get_config(
         self,
-        tt_loging: Optional[str] = None,
+        tt_login: Optional[str] = None,
         pre_reason: Optional[str] = None,
         promote_item: Optional[str] = None,
     ) -> List["ActionConfig"]:
@@ -149,7 +149,7 @@ class EscalationItem(EmbeddedDocument):
                     time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
                     allow_fail=True,
                     pre_reason=pre_reason,
-                    login=tt_loging,
+                    login=tt_login,
                     queue=self.tt_queue,
                     promote_item_policy=promote_item,
                 )
@@ -352,7 +352,7 @@ class EscalationProfile(Document):
             if e.tt_system:
                 cfg = self.get_tt_system_config(e.tt_system)
                 actions += e.get_config(
-                    tt_loging=cfg.login,
+                    tt_login=cfg.login,
                     pre_reason=cfg.pre_reason,
                     promote_item=cfg.promote_item,
                 )
@@ -377,7 +377,7 @@ class EscalationProfile(Document):
             if e.tt_system:
                 cfg = profile.get_tt_system_config(e.tt_system)
                 actions += e.get_config(
-                    tt_loging=cfg.login,
+                    tt_login=cfg.login,
                     pre_reason=cfg.pre_reason,
                     promote_item=cfg.promote_item,
                 )

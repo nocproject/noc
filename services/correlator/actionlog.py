@@ -37,6 +37,7 @@ class ActionResult(object):
     error: Optional[str] = None
     document_id: Optional[str] = None
     ctx: Optional[Dict[str, str]] = None
+    action: Optional[ActionConfig] = None
 
 
 class ActionLog(object):
@@ -185,6 +186,7 @@ class ActionLog(object):
         one_time: bool = False,
         user: Optional[int] = None,
         tt_system: Optional[str] = None,
+        document_id: Optional[str] = None,
         stub_tt_system: Optional[TTSystem] = None,
     ) -> "ActionLog":
         """
@@ -196,6 +198,7 @@ class ActionLog(object):
             one_time: Only one run, do not Repeat
             user: User Who requested Action
             tt_system: TT System who requested Action
+            document_id: External document
             stub_tt_system: TT system for test cases
         """
         if user and not isinstance(user, User):
@@ -211,6 +214,7 @@ class ActionLog(object):
             template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
+            document_id=document_id,
             timestamp=ts.replace(microsecond=0),
             #
             time_pattern=action.time_pattern,
