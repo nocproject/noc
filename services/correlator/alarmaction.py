@@ -22,7 +22,7 @@ from noc.core.tt.types import (
 )
 from noc.core.tt.base import TTSystemCtx, TTAction
 from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.fm.request import AllowedAction
+from noc.core.fm.request import AllowedAction, ActionConfig
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
@@ -133,6 +133,9 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
+        if "service" in self.alarm.components:
+            svc = self.alarm.components.service
+            return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
         if not self.services:
             return r
         # (
@@ -210,7 +213,8 @@ class AlarmActionRunner(object):
             self.alarm.log_message(msg)
             self.alarm.save()
         else:
-            self.alarm.log_message(msg, bulk=self.alarm_log)
+            self.alarm.log_message(msg)  # bulk=self.alarm_log
+            self.alarm.safe_save()
 
     def get_bulk(self) -> List[Any]:
         return self.alarm_log
@@ -224,6 +228,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
+        from_system: Optional[TTSystem] = None,
         **kwargs,
     ) -> EscalationResult:
         """
@@ -320,7 +325,7 @@ class AlarmActionRunner(object):
     def alarm_clear(
         self,
         user: User,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
         **kwargs,
@@ -344,7 +349,7 @@ class AlarmActionRunner(object):
     def alarm_subscribe(
         self,
         user: User,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         subject: Optional[str] = None,
         **kwargs,
     ):
@@ -365,7 +370,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
     ) -> ActionResult:
@@ -379,7 +384,7 @@ class AlarmActionRunner(object):
             login:
             tt_id: If set, do changes
             timestamp: Action timestamp
-            requester: TTSystem, request action
+            from_system: TTSystem, request action
             queue: TT Queue
             pre_reason: Diagnostic Pre Reason
             user: User, request action
@@ -430,7 +435,20 @@ class AlarmActionRunner(object):
                 clear_template=kwargs.get("clear_template"),
             )
             #
-            return ActionResult(status=ActionStatus.SUCCESS, document_id=r.document)
+            return ActionResult(
+                status=ActionStatus.SUCCESS,
+                document_id=r.document,
+                action=ActionConfig(
+                    when="on_end",
+                    action=AlarmAction.CLOSE_TT,
+                    key=str(tt_system.id),
+                    # template=str(self.close_template.id) if self.close_template else None,
+                    subject="Closed",
+                    allow_fail=False,
+                    login=login,
+                    queue=queue,
+                ),
+            )
         # @todo r.document != tt_id
         # Project result to escalation items
         ctx_map = {}
@@ -464,7 +482,7 @@ class AlarmActionRunner(object):
         login: Optional[str] = None,
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
-        requester: Optional[TTSystem] = None,
+        from_system: Optional[TTSystem] = None,
         user: Optional[User] = None,
         **kwargs,
     ) -> ActionResult:
@@ -480,7 +498,7 @@ class AlarmActionRunner(object):
             timestamp: Action timestamp
             login:
             queue:
-            requester: TTSystem, request action
+            from_system: TTSystem, request action
             user: User, request action
 
         Returns:
