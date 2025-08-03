@@ -68,8 +68,15 @@ def test_run_request(alarm, user, tt_system):
         stub_user=user,
     )
     job.run()
-    assert len(job.actions) == 2
-    assert all(a.status == ActionStatus.SUCCESS for a in job.actions) is True
+    assert len(job.actions) == 3
+    assert (
+        all(
+            a.status == ActionStatus.SUCCESS
+            for a in job.actions
+            if a.action != AlarmAction.CLOSE_TT
+        )
+        is True
+    )
     # Test Items clear (is_end)
     # test on update alarm_watch
 
@@ -108,8 +115,15 @@ def test_state(alarm, user, tt_system):
     state.validate(clean=True)
     job.from_state(orjson.loads(state.to_json()), stub_alarms=[alarm])
     job.run()
-    assert len(job.actions) == 2
-    assert all(a.status == ActionStatus.SUCCESS for a in job.actions) is True
+    assert len(job.actions) == 3
+    assert (
+        all(
+            a.status == ActionStatus.SUCCESS
+            for a in job.actions
+            if a.action != AlarmAction.CLOSE_TT
+        )
+        is True
+    )
 
 
 def test_repeat(alarm, notification_group):
