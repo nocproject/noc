@@ -10,15 +10,14 @@ import logging
 import datetime
 import operator
 import time
-import enum
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union
+from typing import List, Optional, Any, Union, Dict
 
 # Third-party modules
 from bson import ObjectId
 
 # NOC modules
-from noc.core.fm.enum import ActionStatus, AlarmAction
+from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.request import AlarmActionRequest, ActionConfig
 from noc.core.debug import error_report
@@ -33,36 +32,8 @@ from noc.fm.models.utils import get_alarm
 from .actionlog import ActionLog, ActionResult
 from .alarmaction import AlarmActionRunner
 
-logger = logging.getLogger(__name__)
 
-
-class ItemStatus(enum.Enum):
-    """
-    Attributes:
-        NEW: New items
-        CHANGED: Items was changed
-        FAIL: Failed when add to escalation
-        EXISTS: Escalate over another doc
-        REMOVED: Removed from escalation
-    """
-
-    NEW = "new"  # new item
-    CHANGED = "changed"  # item changed
-    FAIL = "fail"  # escalation fail
-    EXISTS = "exists"  # Exists on another escalation
-    REMOVED = "removed"  # item removed
-
-    @classmethod
-    def from_alarm(cls, alarm: ActiveAlarm):
-        """"""
-        if alarm.status == "C":
-            return ItemStatus.REMOVED
-        elif alarm.timestamp != alarm.last_update:
-            return ItemStatus.CHANGED
-        return ItemStatus.NEW
-
-
-@dataclass
+@dataclass(repr=True)
 class Item(object):
     """Over Job Item"""
 
@@ -88,7 +59,7 @@ class Item(object):
         return Item(alarm=alarm, status=ItemStatus.from_alarm(alarm))
 
 
-@dataclass
+@dataclass(repr=True)
 class AllowedAction(object):
     action: AlarmAction
     login: Optional[str] = None
@@ -112,20 +83,20 @@ class AlarmJob(object):
         allowed_actions: Optional[List[AllowedAction]] = None,
         maintenance_policy: str = None,
         # Repeat
-        max_repeat: int = 0,
+        max_repeats: int = 0,
         repeat_delay: int = 60,
         # Span Context
         ctx_id: Optional[int] = None,
         telemetry_sample: Optional[int] = None,
         # Id document
         name: Optional[str] = None,
-        id: Optional[str] = None,
+        job_id: Optional[str] = None,
         # Debug
         logger: Optional[Any] = None,
         dry_run: bool = False,
         static_delay: Optional[int] = None,
     ):
-        self.id = id
+        self.id = job_id
         self.name = name
         self.items: List[Item] = items
         self.actions = actions
@@ -133,20 +104,33 @@ class AlarmJob(object):
         # OneTime actions
         self.allowed_actions = allowed_actions
         # Repeat
-        self.max_repeat = max_repeat
+        self.max_repeats = max_repeats
         self.repeat_delay = repeat_delay
         # Span
         self.ctx_id = ctx_id
         self.telemetry_sample = telemetry_sample
         self.dry_run = dry_run
         self.static_delay: Optional[str] = static_delay
-        # Stats
-        self.alarm_log = []
         # Alarm Severity
-        self.logger = logger or PrefixLoggerAdapter(logger, f"[{self.id}|{self.alarm}")
+        self.logger = logger or PrefixLoggerAdapter(
+            logging.getLogger(__name__), f"[{self.id}|{self.alarm}"
+        )
 
     def __str__(self):
+        # additional
         return f"AlarmJob: {self.alarm}"
+
+    def __repr__(self):
+        return self.__str__()
+
+    @classmethod
+    def get_by_id(cls, oid) -> Optional["AlarmJob"]:
+        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
+
+        state = AlarmJobState.objects.filter(id=oid).as_pymongo()
+        if state:
+            return AlarmJob.from_state(state[0])
+        return None
 
     @property
     def leader_item(self) -> "Item":
@@ -162,24 +146,32 @@ class AlarmJob(object):
         """"""
         return [f"a:{self.alarm}"]
 
-    def run(self) -> None:
+    def run(self, ts: Optional[datetime.datetime] = None, to_save_state: bool = True) -> None:
         """Run job for works"""
-        actions = []
         is_end = self.check_end()
         severity = self.alarm.severity
-        now = datetime.datetime.now()
+        now = ts or datetime.datetime.now().replace(microsecond=0)
         alarm_ctx = self.alarm.get_message_ctx()
         self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
+        self.logger.debug("Actions: %s", self.actions)
         runner = AlarmActionRunner(
             self.items, logger=self.logger, allowed_actions=self.allowed_actions
         )
-        for aa in sorted(actions[:] + self.actions, key=operator.attrgetter("timestamp")):
+        # Sorted return new list, not needed copying self.actions
+        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
             self.logger.debug("[%s] Processed action", aa)
             if aa.status in [ActionStatus.SUCCESS, ActionStatus.FAILED]:
                 # Skip already running job
                 if self.dry_run:
                     self.logger.debug("[%s] Action already executed. Next...", aa)
                 continue
+            elif is_end and aa.when != "on_end":
+                self.logger.debug("[%s] Action execute on End. Next...", aa.action)
+                continue
+            elif aa.timestamp > now:
+                #
+                self.logger.info("Next action delayed: %s", aa.timestamp - now)
+                break
             elif not aa.is_match(severity, now, self.alarm.ack_user):
                 # Set Skip (Condition)
                 self.logger.debug(
@@ -187,12 +179,12 @@ class AlarmJob(object):
                     aa.action,
                     severity,
                 )
-                continue
-            elif is_end and aa.when != "on_end":
-                self.logger.debug("[%s] Action execute on End. Next...", aa.action)
+                aa.set_status(ActionResult(status=ActionStatus.SKIP))
                 continue
             elif self.dry_run and self.static_delay:
                 time.sleep(self.static_delay)
+            # if not aa.to_run(status, delay):
+            #    continue
             try:
                 r = runner.run_action(
                     aa.action,
@@ -206,25 +198,55 @@ class AlarmJob(object):
                 error_report()
                 # Job Status to Exception
             self.logger.info("[%s] Action result: %s", aa, r)
-            if aa.repeat_num < self.max_repeat and r.status == ActionStatus.SUCCESS:
+            if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
                 # If Repeat - add action to next on repeat delay
                 # Self register actions
-                self.actions.append(aa.get_repeat(self.repeat_delay))
+                self.actions.append(aa.get_repeat(self.repeat_delay))  #! repeat after end actions
+            if r.action:
+                self.actions.append(
+                    ActionLog.from_request(
+                        r.action,
+                        started_at=aa.timestamp,
+                        document_id=r.document_id,
+                    )
+                )
             aa.set_status(r)
             # Processed Result
             if aa.stop_processing:
                 # Set Stop job status
                 break
-        self.alarm_log += runner.get_bulk()
+        # alarm_log = runner.get_bulk()
+        if to_save_state:
+            self.save_state()
+        # Update after_at and key
+        if is_end:
+            return
+        # Post.objects(comments__by="joe").update(inc__comments__S__votes=1)
+        ts = self.get_next_ts()
+        self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=ts)
         # Only if save-state
-        self.alarm.add_watch(Effect.ALARM_JOB, key="")
         self.alarm.safe_save()
-        if actions:
-            # Split one_time actions/sequenced action
-            self.actions = actions + self.actions
+        # if self.alarm.wait_ts:
+        #     touch_alarm(self.alarm)
 
     def check_end(self) -> bool:
         return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status == "C"
+
+    def get_next_ts(self) -> Optional[datetime.datetime]:
+        """
+        Calculate next run ts. When set delay or Temp Error
+        """
+        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
+            if aa.status == ActionStatus.NEW and aa.when != "on_end":
+                return (aa.timestamp + datetime.timedelta(seconds=1)).replace(microsecond=0)
+        return None
+
+    def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
+        """Update job item"""
+        for i in self.items:
+            if i.alarm.id == alarm.id:
+                i.status = ItemStatus.from_alarm(alarm, is_clear)
+                i.alarm = alarm
 
     @classmethod
     def from_request(
@@ -234,6 +256,8 @@ class AlarmJob(object):
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
+        stub_tt_system: Optional[TTSystem] = None,
+        stub_user: Optional[User] = None,
     ) -> "AlarmJob":
         """Create Job from Request"""
         if not alarm and req.item:
@@ -244,17 +268,23 @@ class AlarmJob(object):
         job = AlarmJob(
             # Job Context
             items=[Item.from_alarm(alarm)],
-            name=str(req),
-            id=req.id,
+            name=str(req.name),
+            job_id=req.id,
             actions=[
-                ActionLog.from_request(a, started_at=start, user=req.user, tt_system=req.tt_system)
+                ActionLog.from_request(
+                    a,
+                    started_at=start,
+                    user=req.user or stub_user,
+                    tt_system=req.tt_system,
+                    stub_tt_system=stub_tt_system,
+                )
                 for a in req.actions
             ],
-            allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
+            allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions or []],
             # Settings
             # maintenance_policy=req.maintenance_policy,
             # Repeat settings
-            max_repeat=req.max_repeats,
+            max_repeats=req.max_repeats,
             repeat_delay=req.repeat_delay,
             # Span
             ctx_id=req.ctx,
@@ -269,7 +299,6 @@ class AlarmJob(object):
         cls,
         alarm: ActiveAlarm,
         is_clear: bool = False,
-        job_id: Optional[str] = None,
         dry_run: bool = False,
         sample: int = 0,
         static_delay: Optional[int] = None,
@@ -279,7 +308,6 @@ class AlarmJob(object):
         Args:
             alarm: Active alarm Instance
             is_clear: Flag if run from clear_alarm
-            job_id: Job State Id
             dry_run: Run from tests (No .save call)
             sample: Telemetry sample
             static_delay: Delay over action (for tests)
@@ -289,7 +317,7 @@ class AlarmJob(object):
             # Job Context
             # Item.from_alarm
             items=[Item.from_alarm(alarm, is_clear=is_clear)],
-            id=ObjectId(),
+            job_id=str(ObjectId()),
             actions=ActionLog.from_alarm(alarm, is_clear=is_clear),
             allowed_actions=[
                 AllowedAction(action=AlarmAction.ACK),
@@ -298,6 +326,85 @@ class AlarmJob(object):
             telemetry_sample=sample,
             dry_run=dry_run,
             static_delay=static_delay,
+        )
+        return job
+
+    def save_state(self, dry_run: bool = False):
+        from noc.fm.models.alarmjob import (
+            AlarmJob as AlarmJobState,
+            AlarmItem,
+            ActionLog,
+            JobStatus,
+        )
+
+        tt_docs, actions = {}, []
+        start_at = None
+        for a in self.actions:
+            if a.action == AlarmAction.CREATE_TT and a.document_id:
+                tt_docs[a.key] = a.document_id
+            if not start_at and a.status == ActionStatus.NEW:
+                start_at = a.timestamp
+            actions.append(ActionLog(**a.get_state()))
+        state = AlarmJobState(
+            id=self.id,
+            name=self.name,
+            status=JobStatus.WAITING,
+            created_at=actions[0].timestamp,
+            started_at=start_at,
+            ctx_id=self.ctx_id,
+            telemetry_sample=self.telemetry_sample,
+            maintenance_policy=self.maintenance_policy,
+            max_repeats=self.max_repeats,
+            repeat_delay=self.repeat_delay,
+            items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
+            actions=actions,
+            tt_docs=tt_docs,
+            groups=[],
+            # total_objects=self.total_objects,
+            # total_services=self.total_services,
+            # total_subscribers=self.total_subscribers,
+        )
+        if dry_run:
+            return state
+        try:
+            state.save()
+        except Exception:
+            error_report()
+
+    @classmethod
+    def from_state(
+        cls, data: Dict[str, Any], stub_alarms: Optional[List[ActiveAlarm]] = None
+    ) -> Optional["AlarmJob"]:
+        """"""
+        alarms, items = {}, []
+        if stub_alarms:
+            items = [Item.from_alarm(a) for a in stub_alarms]
+        else:
+            for d in data["items"]:
+                alarms[d["alarm"]] = ItemStatus(d["status"])
+            for aa in ActiveAlarm.objects.filter(id__in=list(alarms)):
+                items.append(Item(alarm=aa, status=alarms.pop(aa.id)))
+        for alarm_id, status in alarms.items():
+            alarm = get_alarm(alarm_id)
+            if alarm:
+                items.append(Item(alarm=alarm, status=ItemStatus.from_alarm(alarm)))
+        if not items:
+            raise ValueError("Not Found alarm by id: %s", data["items"])
+        job = AlarmJob(
+            # Job Context
+            items=items,
+            name=str(data["name"]),
+            job_id=data["_id"],
+            actions=[ActionLog.from_state(a) for a in data["actions"]],
+            # allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions],
+            # Settings
+            maintenance_policy=data["maintenance_policy"],
+            # Repeat settings
+            max_repeats=data.get("max_repeats", 0),
+            repeat_delay=data["repeat_delay"],
+            # Span
+            ctx_id=data.get("ctx_id"),
+            telemetry_sample=data["telemetry_sample"],
         )
         return job
 
@@ -320,7 +427,7 @@ class AlarmJob(object):
         # self.add_action(action, timestamp)
         al = ActionLog.from_request(
             action,
-            started_at=timestamp,
+            started_at=timestamp.replace(microsecond=0),
             user=user.id if user else None,
             tt_system=str(tt_system.id) if tt_system else None,
             one_time=True,
@@ -348,7 +455,7 @@ class AlarmJob(object):
 def touch_alarm(alarm, *args, **kwargs):
     a = ActiveAlarm.objects.filter(id=alarm).first()
     if not a:
-        logger.info("[%s] Alarm is not found, skipping", alarm)
+        print(f"[{alarm}] Alarm is not found, skipping")
         return
     a.touch_watch()
     if a.wait_ts:

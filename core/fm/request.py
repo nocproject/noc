@@ -37,7 +37,7 @@ class ActionConfig(BaseModel):
     key: Optional[str] = None
     delay: int = 0
     ack: Literal["any", "ack", "unack"] = "any"
-    when: Literal["any", "on_start", "on_end"] = "any"  # Manually
+    when: Literal["any", "on_start", "on_end"] = "any"  # Manually, end sequence
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     # Retry until - Disable, Count, TTL
@@ -120,6 +120,7 @@ class AlarmActionRequest(BaseModel):
     repeat_delay: int = 60
     # Span
     ctx: Optional[int] = None
+    name: Optional[str] = None
     # From
     tt_system: Optional[str] = None
     user: Optional[int] = None
