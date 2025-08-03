@@ -28,6 +28,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.fm.enum import AlarmAction
 from noc.core.fm.request import ActionConfig
 from noc.core.matcher import build_matcher
@@ -144,33 +145,41 @@ class Action(EmbeddedDocument):
     def get_config(self) -> List["ActionConfig"]:
         """Get AlarmAction Config"""
         r = []
+        when = {"raise": "on_start", "clear": "on_end", "update": "any"}[self.when]
         if self.handler:
             r.append(
                 ActionConfig(
+                    when=when,
                     action=AlarmAction.HANDLER,
                     key=str(self.handler.handler),
                     template=str(self.template.id) if self.template else None,
+                    subject=self.message,
                 )
             )
         if self.notification_group:
             r.append(
                 ActionConfig(
+                    when=when,
                     action=AlarmAction.NOTIFY,
                     key=str(self.notification_group.id),
                     template=str(self.template.id) if self.template else None,
+                    subject=self.message,
                 )
             )
         if self.user:
             r.append(
                 ActionConfig(
+                    when=when,
                     action=AlarmAction.ACK,
                     key=str(self.user.id),
                     template=str(self.template.id) if self.template else None,
+                    subject=self.message,
                 )
             )
         return r
 
 
+@change
 @bi_sync
 class AlarmRule(Document):
     meta = {
@@ -300,6 +309,8 @@ class AlarmRule(Document):
             r["rule_action"] = "continue"
         if rule.min_severity:
             r["min_severity"] = rule.min_severity.severity
+        if rule.escalation_profile:
+            r["job"] = EscalationProfile.get_config(rule.escalation_profile)
         if rule.max_severity:
             r["max_severity"] = rule.max_severity.severity
         if rule.ttl_policy != "D" and rule.clear_after_ttl:
