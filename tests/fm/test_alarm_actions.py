@@ -60,7 +60,7 @@ def test_alarm_action(alarm, action_config: ActionConfig, user):
     # Check Alarm Attributes
     match action_config.action:
         case AlarmAction.LOG:
-            assert len(runner.alarm_log) == 1
+            assert len(alarm.log) == 1
         case AlarmAction.ACK:
             assert alarm.ack_user == user.username
         case AlarmAction.UN_ACK:

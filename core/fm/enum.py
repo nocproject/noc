@@ -132,3 +132,61 @@ class ActionStatus(enum.Enum):
     PENDING = "p"
     # WAIT_END = "we"
     # STOP = "stop/break"
+
+
+class GroupPolicy(enum.Enum):
+    """
+    Attributes:
+        NEVER: Escalate only alarm
+        ROOT: Escalate Root Cause group
+        GROUP: Escalate group
+        SERVICE: Escalate Service Affected Group
+        CUSTOM: User former group
+    """
+
+    # Never Group, Alarm Only
+    NEVER = 0
+    # Escalate only first root cause in group
+    ROOT = 1
+    # Escalate any first alarm in the group
+    GROUP = 2
+    # Escalate
+    SERVICE = 3
+    #
+    CUSTOM = 4  # handler ?
+    # Escalate only first root cause in group
+    # ROOT_FIRST = 1
+    # Escalate only root causes
+    # ROOT = 2
+    # Escalate any first alarm in the group,
+    # prefer root causes
+    # ALWAYS_FIRST = 3
+    # Always escalate
+    # ALWAYS = 4
+
+
+class ItemStatus(enum.Enum):
+    """
+    Attributes:
+        NEW: New items
+        CHANGED: Items was changed
+        FAIL: Failed when add to escalation
+        EXISTS: Escalate over another doc
+        REMOVED: Removed from escalation
+    """
+
+    NEW = "new"  # new item
+    CHANGED = "changed"  # item changed
+    FAIL = "fail"  # escalation fail
+    EXISTS = "exists"  # Exists on another escalation
+    REMOVED = "removed"  # item removed
+    ARCHIVED = "archived"
+
+    @classmethod
+    def from_alarm(cls, alarm, is_clear: bool = False):
+        """"""
+        if alarm.status == "C" or is_clear:
+            return ItemStatus.REMOVED
+        elif alarm.timestamp != alarm.last_update:
+            return ItemStatus.CHANGED
+        return ItemStatus.NEW

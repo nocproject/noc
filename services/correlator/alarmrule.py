@@ -14,7 +14,8 @@ from jinja2 import Template
 
 # NOC modules
 from noc.core.matcher import build_matcher
-from noc.core.fm.request import ActionConfig
+from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction
+from noc.core.span import get_current_span
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -58,6 +59,15 @@ class GroupItem(object):
     window: int = 0
 
 
+@dataclass
+class JobConfig(object):
+    name: str
+    actions: List[ActionConfig]
+    repeat_delay: Optional[int] = None
+    max_repeats: Optional[int] = None
+    allowed_actions: Optional[List[AllowedAction]] = None
+
+
 class AlarmRule(object):
     _default_alarm_class: Optional[AlarmClass] = None
     severity_policy: str = "AL"
@@ -75,6 +85,7 @@ class AlarmRule(object):
         self.matcher: Optional[Callable] = None
         self.groups: List[Group] = []
         self.actions: List[ActionConfig] = []
+        self.job_config: Optional[JobConfig] = None
         self.severity_match: bool = True
 
     def get_severity(self, alarm: ActiveAlarm) -> int:
@@ -98,6 +109,16 @@ class AlarmRule(object):
             rule.groups.append(g)
         for a in config["actions"]:
             rule.actions += [ActionConfig.model_validate(a)]
+        if config.get("job"):
+            rule.job_config = JobConfig(
+                name=config["job"]["name"],
+                repeat_delay=config["job"].get("repeat_delay"),
+                max_repeats=config["job"].get("max_repeats"),
+                actions=[ActionConfig.model_validate(c) for c in config["job"]["actions"]],
+                allowed_actions=[
+                    AllowedAction.model_validate(c) for c in config["job"]["allowed_actions"]
+                ],
+            )
         rule.severity_policy = config["severity_policy"]
         if "min_severity" in config:
             rule.min_severity = config["min_severity"]
@@ -149,10 +170,24 @@ class AlarmRule(object):
                 window=group.window,
             )
 
-    def iter_actions(self, alarm: ActiveAlarm) -> Iterable[ActionConfig]:
-        """Render Group Item"""
-        for action in self.actions:
-            yield action
+    def get_job(self, alarm) -> Optional["AlarmActionRequest"]:
+        if not self.job_config:
+            return None
+        cfg = self.job_config
+        if not alarm.escalation_ctx:
+            current_context, current_span = get_current_span()
+            if current_context or current_span:
+                alarm.escalation_ctx = current_context
+        req = AlarmActionRequest(
+            actions=cfg.actions,
+            allowed_actions=cfg.allowed_actions,
+            # By policy
+            start_at=alarm.timestamp,
+            repeat_delay=cfg.repeat_delay,
+            name=cfg.name,
+            ctx=alarm.escalation_ctx,
+        )
+        return req
 
 
 class AlarmRuleSet(object):

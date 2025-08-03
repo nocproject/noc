@@ -37,6 +37,7 @@ class ActionResult(object):
     error: Optional[str] = None
     document_id: Optional[str] = None
     ctx: Optional[Dict[str, str]] = None
+    action: Optional[ActionConfig] = None
 
 
 class ActionLog(object):
@@ -57,6 +58,7 @@ class ActionLog(object):
         timestamp: Optional[datetime.datetime] = None,
         status: ActionStatus = ActionStatus.NEW,
         error: Optional[str] = None,
+        repeat_num: Optional[int] = None,
         # Stop processed after action
         stop_processing: bool = False,
         allow_fail: bool = True,
@@ -82,7 +84,7 @@ class ActionLog(object):
         self.when: str = when or "any"
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
-        self.repeat_num = 0
+        self.repeat_num = repeat_num or 0
         #
         self.user = user
         self.tt_system = tt_system
@@ -91,6 +93,9 @@ class ActionLog(object):
 
     def __str__(self):
         return f"{self.action} ({self.key}): {self.status} ({self.timestamp})"
+
+    def __repr__(self):
+        return self.__str__()
 
     def set_status(self, result: ActionResult):
         """Update Action result"""
@@ -143,7 +148,8 @@ class ActionLog(object):
         if self.user:
             r["user"] = self.user
         if self.tt_system:
-            r["requester"] = self.tt_system
+            # from_system
+            r["from_system"] = self.tt_system
         if self.ctx:
             r |= self.ctx
         return r
@@ -154,11 +160,12 @@ class ActionLog(object):
         Args:
             delay: Repeat delay
         """
+        ts = self.timestamp + datetime.timedelta(seconds=delay)
         return ActionLog(
             action=self.action,
             key=self.key,
             status=ActionStatus.NEW,
-            timestamp=self.timestamp + datetime.timedelta(seconds=delay),
+            timestamp=ts.replace(microsecond=0),
             time_pattern=self.time_pattern,
             alarm_ack=self.alarm_ack,
             when=self.when,
@@ -166,6 +173,8 @@ class ActionLog(object):
             allow_fail=self.allow_fail,
             stop_processing=self.stop_processing,
             repeat_num=self.repeat_num + 1,
+            template=self.template,
+            subject=self.subject,
             **self.ctx,
         )
 
@@ -177,6 +186,7 @@ class ActionLog(object):
         one_time: bool = False,
         user: Optional[int] = None,
         tt_system: Optional[str] = None,
+        document_id: Optional[str] = None,
         stub_tt_system: Optional[TTSystem] = None,
     ) -> "ActionLog":
         """
@@ -188,21 +198,24 @@ class ActionLog(object):
             one_time: Only one run, do not Repeat
             user: User Who requested Action
             tt_system: TT System who requested Action
+            document_id: External document
             stub_tt_system: TT system for test cases
         """
-        if user:
+        if user and not isinstance(user, User):
             user = User.get_by_id(int(user))
         if tt_system:
             tt_system = TTSystem.get_by_id(tt_system)
         elif stub_tt_system:
             tt_system = stub_tt_system
+        ts = started_at + datetime.timedelta(seconds=action.delay)
         return ActionLog(
             action=action.action,
             key=action.key,
             template=Template.get_by_id(int(action.template)) if action.template else None,
             subject=action.subject,
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
-            timestamp=started_at + datetime.timedelta(seconds=action.delay),
+            document_id=document_id,
+            timestamp=ts.replace(microsecond=0),
             #
             time_pattern=action.time_pattern,
             alarm_ack=action.ack,
@@ -240,6 +253,7 @@ class ActionLog(object):
             alarm_ack=data["alarm_ack"],
             when=data["when"],
             timestamp=data["timestamp"],
+            repeat_num=int(data["repeat_num"]),
             status=ActionStatus(data["status"]),
             error=data.get("error"),
             stop_processing=data["stop_processing"],
@@ -261,12 +275,13 @@ class ActionLog(object):
             "min_severity": self.min_severity,
             "alarm_ack": self.alarm_ack,
             "when": self.when,
-            "timestamp": self.timestamp,
+            "timestamp": self.timestamp.replace(microsecond=0),
             "status": self.status.value,
             "error": self.error,
             "stop_processing": self.stop_processing,
             "allow_fail": self.allow_fail,
             "user": None,
+            "repeat_num": self.repeat_num,
             "tt_system": None,
             "document_id": self.document_id,
             "template": None,
@@ -276,9 +291,9 @@ class ActionLog(object):
         if self.user:
             r["user"] = self.user.id
         if self.tt_system:
-            r["tt_system"] = self.tt_system.id
+            r["tt_system"] = str(self.tt_system.id)
         if self.template:
-            r["template"] = self.template.id
+            r["template"] = str(self.template.id)
         return r
 
     @classmethod
