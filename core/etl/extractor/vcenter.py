@@ -25,7 +25,7 @@ from noc.core.etl.models.object import Object, ObjectData
 from noc.core.etl.models.link import Link
 from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
 from noc.core.fm.event import EventSeverity
-from noc.core.validators import is_ipv4
+from noc.core.validators import is_ipv4, is_fqdn
 from noc.core.ip import IP
 
 
@@ -232,6 +232,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             name=self.url,
             profile="VMWare.vCenter",
             address=content.sessionManager.currentSession.ipAddress,
+            fqdn=f"{self.url}." if is_fqdn(self.url) else None,
             auth_profile=ETLMapping(value="default.vcenter", scope="auth_profile"),
             administrative_domain=ETLMapping(value="default", scope="adm_domain"),
             object_profile=ETLMapping(value="host.vcenter.default", scope="objectprofile"),
@@ -240,10 +241,10 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             scheme="4",
         )
         for h in host_view.view:
+            host_map[h._moId] = h.summary.hardware.uuid
             if h.runtime.powerState != "poweredOn":
                 continue
             name, *domains = h.summary.config.name.split(".", 1)
-            host_map[h._moId] = h.summary.hardware.uuid
             if not h.summary.hardware.uuid:
                 self.register_quality_problem(
                     int(h._moId[5:]),
@@ -396,36 +397,22 @@ class VCenterFMEventExtractor(VCenterExtractor):
                 continue
             else:
                 r.append(Var(name=p.name, value=str(v)))
-        if isinstance(event, vim.event.AlarmStatusChangedEvent):
-            print(
-                "xxxxxxxxx",
-                event.alarm.name,
-                event.alarm.alarm.info.key,
-                event.alarm.alarm.info.systemName,
-                event.alarm.alarm.info.description,
-            )
+        # if isinstance(event, vim.event.AlarmStatusChangedEvent):
+        #     print(
+        #         "xxxxxxxxx",
+        #         event.alarm.name,
+        #         event.alarm.alarm.info.key,
+        #         event.alarm.alarm.info.systemName,
+        #         event.alarm.alarm.info.description,
+        #     )
         #    for a in event.source.entity.triggeredAlarmState:
         #        print("AA", a.key, a.alarm.info.creationEventId, a.alarm.info)
 
         return message, r
 
-    def iter_data(self, checkpoint=None, **kwargs) -> Iterable[FMEventObject]:
-        content = self.connection.RetrieveContent()
-        # alarm = content.alarmManager.GetAlarm()
-        # for a in alarm:
-        #    print(a.info.key, a.info.description, a.info.systemName)
-        # print(alarm)
-        # for ta in content.rootFolder.triggeredAlarmState:
-        #    print(ta.alarm.info.name+','+ta.entity.name+','+ta.overallStatus+','+str(ta.time))
-        # by_entity = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
-        #     ids = ['VmRelocatedEvent', 'DrsVmMigratedEvent', 'VmMigratedEvent']
-        #     filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=ids)
-        # Time Filter
-        time_filter = vim.event.EventFilterSpec.ByTime()
-        time_filter.endTime = datetime.datetime.now()
-        time_filter.beginTime = datetime.datetime.now() - datetime.timedelta(hours=24)
-        # Event IDS
-        ids = [
+    def get_event_type_filter(self) -> List[str]:
+        """Return list event types for extract"""
+        return [
             "AlarmClearedEvent",
             "AlarmCreatedEvent",
             "AlarmEvent",
@@ -462,6 +449,24 @@ class VCenterFMEventExtractor(VCenterExtractor):
             "VmRelocatedEvent",
             # "Event",
         ]
+
+    def iter_data(self, checkpoint=None, **kwargs) -> Iterable[FMEventObject]:
+        content = self.connection.RetrieveContent()
+        # alarm = content.alarmManager.GetAlarm()
+        # for a in alarm:
+        #    print(a.info.key, a.info.description, a.info.systemName)
+        # print(alarm)
+        # for ta in content.rootFolder.triggeredAlarmState:
+        #    print(ta.alarm.info.name+','+ta.entity.name+','+ta.overallStatus+','+str(ta.time))
+        # by_entity = vim.event.EventFilterSpec.ByEntity(entity=vm, recursion="self")
+        #     ids = ['VmRelocatedEvent', 'DrsVmMigratedEvent', 'VmMigratedEvent']
+        #     filter_spec = vim.event.EventFilterSpec(entity=by_entity, eventTypeId=ids)
+        # Time Filter
+        time_filter = vim.event.EventFilterSpec.ByTime()
+        time_filter.endTime = datetime.datetime.now()
+        time_filter.beginTime = datetime.datetime.now() - datetime.timedelta(hours=24)
+        # Event IDS
+        ids = self.get_event_type_filter()
         event_filter = vim.event.EventFilterSpec(time=time_filter, eventTypeId=ids)
         collector = content.eventManager.CreateCollector(event_filter)
 
