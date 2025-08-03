@@ -7,7 +7,7 @@
 
 # Python modules
 import operator
-from typing import Optional, Union, List, FrozenSet
+from typing import Optional, Union, List, FrozenSet, Dict, Any
 from threading import Lock
 
 # Third-party modules
@@ -25,6 +25,7 @@ import cachetools
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.tt.types import TTSystemConfig, EscalationMember
@@ -117,7 +118,7 @@ class EscalationItem(EmbeddedDocument):
 
     def get_config(
         self,
-        tt_loging: Optional[str] = None,
+        tt_login: Optional[str] = None,
         pre_reason: Optional[str] = None,
         promote_item: Optional[str] = None,
     ) -> List["ActionConfig"]:
@@ -148,7 +149,7 @@ class EscalationItem(EmbeddedDocument):
                     time_pattern=self.time_pattern.time_pattern if self.time_pattern else None,
                     allow_fail=True,
                     pre_reason=pre_reason,
-                    login=tt_loging,
+                    login=tt_login,
                     queue=self.tt_queue,
                     promote_item_policy=promote_item,
                 )
@@ -223,6 +224,7 @@ class EscalationAction(EmbeddedDocument):
         return r
 
 
+@change
 @on_delete_check(
     check=[
         ("fm.Escalation", "profile"),
@@ -350,7 +352,7 @@ class EscalationProfile(Document):
             if e.tt_system:
                 cfg = self.get_tt_system_config(e.tt_system)
                 actions += e.get_config(
-                    tt_loging=cfg.login,
+                    tt_login=cfg.login,
                     pre_reason=cfg.pre_reason,
                     promote_item=cfg.promote_item,
                 )
@@ -366,3 +368,32 @@ class EscalationProfile(Document):
             allowed_actions=ma,
         )
         return req
+
+    @classmethod
+    def get_config(cls, profile: "EscalationProfile") -> Dict[str, Any]:
+        """Build job config"""
+        actions = []
+        for e in profile.escalations:
+            if e.tt_system:
+                cfg = profile.get_tt_system_config(e.tt_system)
+                actions += e.get_config(
+                    tt_login=cfg.login,
+                    pre_reason=cfg.pre_reason,
+                    promote_item=cfg.promote_item,
+                )
+            else:
+                actions += e.get_config()
+        if profile.close_alarm:
+            # @todo options after end sequence
+            actions.append(ActionConfig(action=AlarmAction.CLEAR, delay=9999))
+        ma = []
+        for a in profile.actions:
+            ma += a.get_config()
+        r = {
+            "name": profile.name,
+            "actions": [a.model_dump() for a in actions],
+            "allowed_actions": [aa.model_dump() for aa in ma],
+        }
+        if profile.repeat_escalations == "D":
+            r |= {"repeat_delay": profile.repeat_delay, "max_repeats": 2}
+        return r

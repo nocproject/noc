@@ -219,10 +219,10 @@ class TTSystem(Document):
             return obj.tt_system_id
         if self.promote_items == "R" and not self.remote_system:
             return None
+        elif self.promote_items == "R" and self.remote_system == obj.remote_system:
+            return obj.remote_id
         elif self.promote_items == "R" and hasattr(obj, "get_mapping"):
             return obj.get_mapping(self.remote_system)
-        elif self.promote_items == "R" and self.remote_system == obj.remote_id:
-            return obj.remote_id
         return None
 
     def ensure_update_job(self):
