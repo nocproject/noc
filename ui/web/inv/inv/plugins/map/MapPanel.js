@@ -336,8 +336,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         data.resource_status.forEach(item => {
           let resourceData = resources[item.resource];
           if(Ext.isDefined(resourceData.leafletLayer)){
+            let iconName = item.status === "alarm" ? "alarm" : "up";
             resourceData.leafletLayer.setIcon(
-              this.createStatusIcon("alarm", resourceData.leafletLayer),
+              this.createStatusIcon(iconName, resourceData.leafletLayer),
             );
           }
         });
@@ -645,7 +646,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         iconHtml = `<i class="fa fa-times-circle" style="color: red; font-size: ${fontSize}px;"></i>`;
         break;
       case "up":
-        iconHtml = `<i class="fa fa-check-circle" style="color: green; font-size: ${fontSize}px;"></i>`;
+        iconHtml = `<i class="fa fa-circle" style="color: green; font-size: ${fontSize}px;"></i>`;
         break;
       default:
         iconHtml = `<i class="fa fa-circle" style="color: grey; font-size: ${fontSize}px;"></i>`;
