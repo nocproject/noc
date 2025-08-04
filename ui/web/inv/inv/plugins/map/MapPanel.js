@@ -249,11 +249,12 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   onRefresh: function(){
-    var me = this;
-    Ext.each(me.layers, function(layer){
-      me.loadLayer(layer);
+    Ext.each(this.layers, (layer) => {
+      this.loadLayer(layer);
     });
-    me.updateStatuses();
+    if(this.getViewModel().get("autoReload")){
+      this.updateStatuses();
+    }
   },
   //
   createMap: function(data){
@@ -487,6 +488,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   onAutoReloadToggle: function(self){
+    this.getViewModel().set("autoReload", self.pressed);
     this.autoReloadIcon(self.pressed);
     this.autoReloadText(self.pressed);
     if(this.getViewModel()){
