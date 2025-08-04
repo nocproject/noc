@@ -22,6 +22,17 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
+  pollingTaskId: undefined,
+  pollingInterval: 120000,
+  // ViewModel for this panel
+  viewModel: {
+    data: {
+      autoReload: false,
+      autoReloadIcon: "xf05e", // NOC.glyph.ban
+      autoReloadText: __("Auto reload : OFF"),
+      icon: "<i class='fa fa-fw' style='width:16px;'></i>",
+    },
+  },
   // Zoom levels according to
   // http://wiki.openstreetmap.org/wiki/Zoom_levels
   zoomLevels: [
@@ -86,6 +97,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         toggle: me.onSetPositionToggle,
       },
     });
+    //
     me.mapPanel = Ext.create("Ext.panel.Panel", {
       xtype: "panel",
       // Generate unique id
@@ -101,6 +113,28 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           me.zoomLevelButton,
           "-",
           me.setPositionButton,
+          {
+            text: __("Reload"),
+            iconAlign: "right",
+            enableToggle: true,
+            bind: {
+              glyph: "{autoReloadIcon}",
+              tooltip: "{autoReloadText}",
+              pressed: "{autoReload}",
+            },
+            listeners: {
+              scope: me,
+              toggle: me.onAutoReloadToggle,
+            },
+          },
+          "->",
+          {
+            xtype: "tbtext",
+            padding: "3 0 0 4",
+            bind: {
+              html: "{icon}",
+            },
+          },
         ],
       }],
       items: [me.mapPanel],
@@ -426,5 +460,29 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   onSetPositionToggle: function(self){
     this.mapPanel.getEl().dom.querySelector(".leaflet-container").style.cursor = self.pressed ? "crosshair" : "";
+  },
+  //
+  onAutoReloadToggle: function(self){
+    this.autoReloadIcon(self.pressed);
+    this.autoReloadText(self.pressed);
+    if(this.getViewModel()){
+      this.getViewModel().set("icon",this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
+    }
+  },
+  //
+  autoReloadIcon: function(isReloading){
+    //  NOC.glyph.refresh or NOC.glyph.ban
+    this.getViewModel().set("autoReloadIcon", isReloading ? "xf021" : "xf05e");
+  },
+  //
+  autoReloadText: function(isReloading){
+    this.getViewModel().set("autoReloadText", __("Auto reload : ") + (isReloading ? __("ON") : __("OFF")));
+  },
+  //
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='width:16px;'></i>";
   },
 });
