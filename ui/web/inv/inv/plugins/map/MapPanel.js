@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.inv.inv.plugins.Mixins",
   ],
   pollingTaskId: undefined,
-  pollingInterval: 120000,
+  pollingInterval: 10000,
   // ViewModel for this panel
   viewModel: {
     data: {
@@ -320,7 +320,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     let resources = this.getVisibleResources();
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
     Ext.Ajax.request({
-      url: "/inv/inv/plugin/resource_status/",
+      url: "/inv/inv/plugin/map/resource_status/",
       method: "POST",
       jsonData: {
         resources: Object.keys(resources),
