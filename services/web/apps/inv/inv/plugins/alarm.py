@@ -41,7 +41,7 @@ class AlarmPlugin(InvPlugin):
             path: List[Dict[str, str]] = []
             if name:
                 path.append({"id": "", "title": name})
-            while obj.parent and obj != current:
+            while obj.parent and obj.as_resource() != current:
                 if obj.parent_connection:
                     path.append({"id": "", "title": obj.parent_connection})
                 else:
