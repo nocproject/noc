@@ -240,9 +240,9 @@ class MonMapCard(BaseCard):
 
     @staticmethod
     def get_alarms_info(mo_ids, alarms_all=False):
-        q = {"severity": {"$exists": True}}
+        q = {"severity": {"$exists": True}, "managed_object": {"$exists": True}}
         if not alarms_all:
-            q["managed_object"] = {"$in": mo_ids}
+            q["managed_object"]["$in"] = mo_ids
         coll = ActiveAlarm._get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED
         )
