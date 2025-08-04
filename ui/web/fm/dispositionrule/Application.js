@@ -306,6 +306,8 @@ Ext.define("NOC.fm.dispositionrule.Application", {
                 ["R", __("Raise Alarm")],
                 ["I", __("Ignore Disposition")],
                 ["C", __("Clear Alarm")],
+                ["D", __("Drop Event")],
+                ["F", __("Drop Event (with MX)")],
               ],
               uiStyle: "medium",
             },

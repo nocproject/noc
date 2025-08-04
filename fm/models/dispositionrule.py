@@ -280,6 +280,7 @@ class DispositionRule(Document):
             ("C", "Clear Disposition Alarm"),
             ("I", "Ignore Disposition Alarm"),
             ("D", "Drop Event"),
+            ("F", "Drop Event (with MX)"),
         ],
         required=False,
     )
@@ -457,7 +458,7 @@ class DispositionRule(Document):
                 "alarm_class": rule.alarm_disposition.name,
             }
         if rule.default_action:
-            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop"}[
+            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
                 rule.default_action
             ]
         if rule.notification_group:

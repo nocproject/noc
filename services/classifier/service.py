@@ -702,10 +702,7 @@ class ClassifierService(FastAPIService):
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
-        self.register_event(event, e_cfg, e_action, resolved_vars, mo)
-        if config.message.enable_event:
-            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
-        if e_action == EventAction.DROP:
+        if e_action == EventAction.DROP or e_action == EventAction.DROP_MX:
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
                 event.id,
@@ -713,7 +710,12 @@ class ClassifierService(FastAPIService):
                 event.target.address,
             )
             metrics[EventMetrics.CR_DELETED] += 1
+            if config.message.enable_event and e_action != EventAction.DROP_MX:
+                await self.register_mx_message(event, e_cfg, resolved_vars, mo)
             return
+        self.register_event(event, e_cfg, e_action, resolved_vars, mo)
+        if config.message.enable_event:
+            await self.register_mx_message(event, e_cfg, resolved_vars, mo)
         if event.type.severity == EventSeverity.IGNORED:
             # Severity ignored
             return
