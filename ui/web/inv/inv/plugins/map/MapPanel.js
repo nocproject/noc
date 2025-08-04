@@ -169,13 +169,18 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         nocMaxZoom: cfg.max_zoom,
         pointToLayer: function(geoJsonPoint, latlng){
           switch(cfg.point_graphic){
-            case "circle":
-              return L.circleMarker(latlng, {
-                color: cfg.fill_color,
-                fillColor: cfg.fill_color,
-                fillOpacity: 1,
-                radius: cfg.point_radius,
+            case "circle": {
+              let iconSize = cfg.point_radius * 4,
+                anchorPoint = iconSize / 2;
+              return L.marker(latlng, {
+                icon: L.divIcon({
+                  html: `<i class="fa fa-circle" style="color: ${cfg.fill_color}; font-size: ${iconSize}px;"></i>`,
+                  iconSize: [0, 0],
+                  iconAnchor: [anchorPoint, anchorPoint],
+                  fontSize: iconSize,
+                }),
               });
+            }
             default:
               return L.circleMarker(latlng, {
                 color: cfg.fill_color,
@@ -327,7 +332,14 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       },
       success: function(response){
         let data = Ext.decode(response.responseText);
-        console.log("updateStatuses>>>", data);
+        data.resource_status.forEach(item => {
+          let resourceData = resources[item.resource];
+          if(Ext.isDefined(resourceData.leafletLayer)){
+            resourceData.leafletLayer.setIcon(
+              this.createStatusIcon("alarm", resourceData.leafletLayer),
+            );
+          }
+        });
       },
       failure: function(){
         NOC.error(__("Failed to update statuses"));
@@ -527,6 +539,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       Ext.TaskManager.stop(this.pollingTaskId);
       this.pollingTaskId = undefined;
     }
+    if(!Ext.isEmpty(this.observer)){
+      this.observer.unobserve(this.getEl().dom);
+    }
   },
   //
   pollingTask: function(){
@@ -593,6 +608,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
             id: feature.feature.id,
             properties: feature.feature.properties,
             coordinates: latlng,
+            leafletLayer: feature,
           });
         }
       });
@@ -610,5 +626,32 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         })
     });
     return resources;
+  },
+  //
+  createStatusIcon: function(status, marker){
+    let iconHtml,
+      fontSize = marker.options?.icon?.options?.fontSize || 16
+    switch(status){
+      case "alarm":
+      case "critical":
+        iconHtml = `<i class="fa fa-fire" style="color: red; font-size: ${fontSize}px;"></i>`;
+        break;
+      case "warning":
+        iconHtml = `<i class="fa fa-exclamation-triangle" style="color: orange; font-size: ${fontSize}px;"></i>`;
+        break;
+      case "down":
+        iconHtml = `<i class="fa fa-times-circle" style="color: red; font-size: ${fontSize}px;"></i>`;
+        break;
+      case "up":
+        iconHtml = `<i class="fa fa-check-circle" style="color: green; font-size: ${fontSize}px;"></i>`;
+        break;
+      default:
+        iconHtml = `<i class="fa fa-circle" style="color: grey; font-size: ${fontSize}px;"></i>`;
+    }
+  
+    return L.divIcon({
+      ...marker.options?.icon?.options,
+      html: iconHtml,
+    });
   },
 });
