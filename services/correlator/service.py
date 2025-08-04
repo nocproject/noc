@@ -1192,7 +1192,7 @@ class CorrelatorService(FastAPIService):
             ref = f"p:{mo.id}"
             try:
                 if item.status:
-                    await self.clear_by_reference(ref, ts=ts)
+                    await self.clear_by_reference(ref, ts=ts, message=item.message)
                 else:
                     await self.raise_alarm(
                         managed_object=mo,
