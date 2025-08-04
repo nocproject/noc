@@ -474,7 +474,7 @@ class DispositionRule(Document):
                 "combo_event_classes": [str(ec.id) for ec in rule.combo_event_classes],
             }
         if rule.handlers:
-            r["handlers"] = [str(h.handler) for h in rule.handlers]
+            r["handlers"] = [str(h.handler.handler) for h in rule.handlers]
         if rule.vars_conditions_op == "OR":
             r["vars_match_expr"] = {"$or": [c.get_match_expr() for c in rule.vars_conditions]}
         else:
