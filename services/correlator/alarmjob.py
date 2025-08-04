@@ -165,7 +165,7 @@ class AlarmJob(object):
                 if self.dry_run:
                     self.logger.debug("[%s] Action already executed. Next...", aa)
                 continue
-            elif is_end and aa.when != "on_end":
+            elif aa.when == "on_end" and not is_end:
                 self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                 continue
             elif aa.timestamp > now:
