@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.inv.inv.plugins.Mixins",
   ],
   pollingTaskId: undefined,
-  pollingInterval: 120000,
+  pollingInterval: 5000,
   // ViewModel for this panel
   viewModel: {
     data: {
@@ -140,6 +140,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       items: [me.mapPanel],
     });
     me.callParent();
+    this.subscribeToEvents();
   },
   //
   preview: function(data){
@@ -468,6 +469,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     if(this.getViewModel()){
       this.getViewModel().set("icon",this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
     }
+    if(self.pressed){
+      this.startPolling();
+    } else{
+      this.stopPolling();
+    }
   },
   //
   autoReloadIcon: function(isReloading){
@@ -484,5 +490,89 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
     }
     return "<i class='fa fa-fw' style='width:16px;'></i>";
+  },
+  //
+  startPolling: function(){
+    this.observer = new IntersectionObserver(function(entries){
+      this.isIntersecting = entries[0].isIntersecting;
+      console.log("isIntersecting", this.isIntersecting);
+      this.disableHandler(!entries[0].isIntersecting);
+    }.bind(this), {
+      threshold: 0.1,
+    });
+    this.observer.observe(this.getEl().dom);
+    if(Ext.isEmpty(this.pollingTaskId)){
+      this.pollingTaskId = Ext.TaskManager.start({
+        run: this.pollingTask,
+        interval: this.pollingInterval,
+        scope: this,
+      });
+    } else{
+      console.log("Polling task already started");
+      this.pollingTask();
+    }
+  },
+  //
+  stopPolling: function(){
+    if(this.pollingTaskId){
+      Ext.TaskManager.stop(this.pollingTaskId);
+      this.pollingTaskId = undefined;
+    }
+  },
+  //
+  pollingTask: function(){
+    let isVisible = !document.hidden, // check is user has switched to another tab browser
+      isFocused = document.hasFocus(), // check is user has minimized browser window
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
+      console.log("Polling task executed");
+    }
+  },
+  //
+  disableHandler: function(state){
+    var isVisible = !document.hidden, // check is user has switched to another tab browser
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(this.pollingTaskId && isIntersecting && isVisible){
+      this.setContainerDisabled(state);
+      console.log("Polling task disabled");
+      this.pollingTask();
+    }
+  },
+  //
+  setContainerDisabled: function(state){
+    let icon;
+    this.mapPanel.setDisabled(state);
+    if(state){
+      icon = this.generateIcon(true, "stop-circle-o", "grey", __("suspend"));
+    } else{
+      icon = this.generateIcon(true, "circle", NOC.colors.yes, __("online"));
+    }
+    this.getViewModel().set("icon", icon);
+  },
+  subscribeToEvents: function(){
+    window.addEventListener("focus", this.handleWindowFocus.bind(this));
+    window.addEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  unsubscribeFromEvents: function(){
+    window.removeEventListener("focus", this.handleWindowFocus.bind(this));
+    window.removeEventListener("blur", this.handleWindowBlur.bind(this));
+  },
+  //
+  destroy: function(){
+    this.unsubscribeFromEvents();
+    this.stopPolling();
+    this.setContainerDisabled(false);
+  },
+  //
+  handleWindowFocus: function(){
+    setTimeout(function(me){
+      console.log("Window focused, enabling handler");
+      me.disableHandler(false);
+    }, 100, this);
+  },
+  //
+  handleWindowBlur: function(){
+    console.log("Window blurred, disabling handler");
+    this.disableHandler(true);
   },
 });
