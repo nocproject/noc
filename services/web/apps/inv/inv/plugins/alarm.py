@@ -8,6 +8,7 @@
 # Python modules
 from typing import Dict, DefaultDict, List, Any
 from collections import defaultdict
+import datetime
 
 # Third-party modules
 from bson import ObjectId
@@ -15,6 +16,7 @@ from bson import ObjectId
 # NOC modules
 from noc.inv.models.object import Object
 from noc.inv.models.channel import Channel
+from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activealarm import ActiveAlarm, PathCode
 from noc.core.feature import Feature
 from .base import InvPlugin
@@ -49,6 +51,7 @@ class AlarmPlugin(InvPlugin):
 
         def get_node(a: ObjectId) -> Dict[str, Any]:
             alarm = alarms[a]
+            severity = AlarmSeverity.get_severity(alarm.severity)
             children_alarms = children[a]
             r: Dict[str, Any] = {
                 "id": str(a),
@@ -59,6 +62,11 @@ class AlarmPlugin(InvPlugin):
                 "channel__label": "",
                 "object": "",
                 "iconCls": self.ROOT_ALARM_CLS if children_alarms else self.ALARM_CLS,
+                "row_class": severity.style.css_class_name,
+                "severity": alarm.severity,
+                "severity__label": severity.name,
+                "timestamp": self.to_json(alarm.timestamp),
+                "duration": alarm.duration,
             }
             ch_path = alarm.get_resource_path(PathCode.CHANNEL)
             if ch_path:
@@ -97,3 +105,15 @@ class AlarmPlugin(InvPlugin):
                 top.append(a.id)
         r = [get_node(x) for x in top]
         return {"expanded": True, "children": r}
+
+    def to_json(self, v):
+        """
+        Convert custom types to json string
+        :param v:
+        :return:
+        """
+        if v is None:
+            return None
+        if isinstance(v, datetime.datetime):
+            return v.astimezone(self.TZ).isoformat()
+        raise ValueError("Invalid to_json type")

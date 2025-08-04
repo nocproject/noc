@@ -39,5 +39,26 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmModel", {
       name: "object",
       type: "auto",
     },
+    {
+      name: "row_class",
+      type: "string",
+      persist: true,
+    },
+    {
+      name: "timestamp",
+      type: "date",
+    },
+    {
+      name: "duration",
+      type: "int",
+    },
+    {
+      name: "severity",
+      type: "int",
+    },
+    {
+      name: "severity__label",
+      type: "string",
+    },
   ],
 });

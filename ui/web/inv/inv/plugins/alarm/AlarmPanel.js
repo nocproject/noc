@@ -49,6 +49,26 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           renderer: NOC.render.Lookup("alarm_class"),
         },
         {
+          text: __("Severity"),
+          dataIndex: "severity",
+          width: 70,
+          renderer: function(v, _, record){
+            return record.get("severity__label") +
+                    "<br/>" +
+                    record.get("severity");
+          },
+        },
+        {
+          text: __("Time/Duration"),
+          dataIndex: "timestamp",
+          width: 120,
+          renderer: function(v, _, record){
+            return NOC.render.DateTime(record.get("timestamp")) +
+                    "<br/>" +
+                    NOC.render.Duration(record.get("duration"));
+          },
+        },
+        {
           text: __("Channel"),
           dataIndex: "channel",
           width: 300,
@@ -63,6 +83,9 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           },
         },
       ],
+      viewConfig: {
+        getRowClass: Ext.bind(me.getRowClass, me),
+      },
     });
     //
     Ext.apply(me, {
@@ -76,5 +99,14 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
   preview: function(data, objectId){
     var me = this;
     me.store.setRootNode(data || me.defaultRoot)
+  },
+  // Return Grid's row classes
+  getRowClass: function(record, index, params, store){
+    var c = record.get("row_class");
+    if(c){
+      return c;
+    } else{
+      return "";
+    }
   },
 });
