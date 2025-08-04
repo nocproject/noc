@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.inv.inv.plugins.Mixins",
   ],
   pollingTaskId: undefined,
-  pollingInterval: 5000,
+  pollingInterval: 120000,
   // ViewModel for this panel
   viewModel: {
     data: {
@@ -57,7 +57,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "1:2 000",
     "1:1 000",
   ],
-
+  //
   initComponent: function(){
     var me = this;
     //
@@ -194,7 +194,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           };
         },
         filter: function(){
-        // Remove invisible layers on zoom
+          // Remove invisible layers on zoom
           var zoom = me.map.getZoom();
           return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
         },
@@ -255,7 +255,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     var me = this,
       mapDiv = "leaf-map-" + me.id,
       mapLayersCreator = Ext.create("NOC.core.MapLayersCreator", {
-        default_layer: NOC.settings.gis.default_layer, 
+        default_layer: NOC.settings.gis.default_layer,
         allowed_layers: NOC.settings.gis.base,
         yandex_supported: NOC.settings.gis.yandex_supported,
         translator: __,
@@ -317,15 +317,26 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   updateStatuses: function(){
-    console.log("updateStatuses");
-    var me = this;
-    // Get all visible layers
-    var bounds = me.map.getBounds();
-    var layers = [];
-    me.map.eachLayer(layer => {
-      console.log(">>> LAYER",layer);
+    let resources = this.getVisibleResources();
+    this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+    Ext.Ajax.request({
+      url: "/inv/inv/plugin/resource_status/",
+      method: "POST",
+      jsonData: {
+        resources: Object.keys(resources),
+      },
+      success: function(response){
+        let data = Ext.decode(response.responseText);
+        console.log("updateStatuses>>>", data);
+      },
+      failure: function(){
+        NOC.error(__("Failed to update statuses"));
+      },
+      callback: function(){
+        this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+      },
+      scope: this,
     });
-    console.log("layers>>>",layers);
   },
   //
   centerToObject: function(){
@@ -467,7 +478,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     this.autoReloadIcon(self.pressed);
     this.autoReloadText(self.pressed);
     if(this.getViewModel()){
-      this.getViewModel().set("icon",this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
+      this.getViewModel().set("icon", this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
     }
     if(self.pressed){
       this.startPolling();
@@ -495,7 +506,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   startPolling: function(){
     this.observer = new IntersectionObserver(function(entries){
       this.isIntersecting = entries[0].isIntersecting;
-      console.log("isIntersecting", this.isIntersecting);
       this.disableHandler(!entries[0].isIntersecting);
     }.bind(this), {
       threshold: 0.1,
@@ -508,7 +518,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         scope: this,
       });
     } else{
-      console.log("Polling task already started");
       this.pollingTask();
     }
   },
@@ -525,7 +534,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       isFocused = document.hasFocus(), // check is user has minimized browser window
       isIntersecting = this.isIntersecting; // switch to other application tab
     if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
-      console.log("Polling task executed");
+      this.updateStatuses();
     }
   },
   //
@@ -534,7 +543,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       isIntersecting = this.isIntersecting; // switch to other application tab
     if(this.pollingTaskId && isIntersecting && isVisible){
       this.setContainerDisabled(state);
-      console.log("Polling task disabled");
       this.pollingTask();
     }
   },
@@ -566,13 +574,41 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   handleWindowFocus: function(){
     setTimeout(function(me){
-      console.log("Window focused, enabling handler");
       me.disableHandler(false);
     }, 100, this);
   },
   //
   handleWindowBlur: function(){
-    console.log("Window blurred, disabling handler");
     this.disableHandler(true);
+  },
+  //
+  getVisibleFeaturesInLayer: function(layer){
+    let bounds = this.map.getBounds(),
+      visibleFeatures = [];
+    if(layer && this.map.hasLayer(layer) && Ext.isFunction(layer.eachLayer)){
+      layer.eachLayer(function(feature){
+        var latlng = feature.getLatLng ? feature.getLatLng() : feature.getBounds().getCenter();
+        if(bounds.contains(latlng)){
+          visibleFeatures.push({
+            id: feature.feature.id,
+            properties: feature.feature.properties,
+            coordinates: latlng,
+          });
+        }
+      });
+    }
+    return visibleFeatures;
+  },
+  //
+  getVisibleResources: function(){
+    let resources = {};
+    this.map.eachLayer(layer => {
+      this.getVisibleFeaturesInLayer(layer)
+        .filter(feature => feature.properties?.resource)
+        .forEach(feature => {
+          resources[feature.properties.resource] = feature;
+        })
+    });
+    return resources;
   },
 });
