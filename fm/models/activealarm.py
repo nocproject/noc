@@ -1436,6 +1436,27 @@ class ActiveAlarm(Document):
                 return pc.path
         return None
 
+    @classmethod
+    def get_resource_statuses(cls, iter: Iterable[str]) -> Dict[str, bool]:
+        """
+        Get alarm status for resources.
+
+        Args:
+            iter: Iterable of resources.
+
+        Returns:
+            Dict of resource -> alarm status.
+        """
+        r = {x: False for x in iter}
+        for doc in ActiveAlarm._get_collection().find(
+            {"resource_path.p": {"$in": list(r)}}, {"_id": 0, "resource_path": 1}
+        ):
+            for pi in doc.get("resource_path", []):
+                for p in pi.get("p"):
+                    if p in r:
+                        r[p] = True
+        return r
+
 
 @runtime_checkable
 class AlarmComponent(Protocol):

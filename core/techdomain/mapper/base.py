@@ -19,6 +19,7 @@ from noc.core.facade.interaction import (
     InteractionEvent,
     InteractionItem,
 )
+from noc.fm.models.activealarm import ActiveAlarm
 from ..controller.base import Endpoint
 
 
@@ -88,6 +89,7 @@ class BaseMapper(object):
     name: str = "base"
     CHANNEL_SHAPE = "octagon"
     SELECTABLE_CLASS = "ch-selectable"
+    ALARM_SYMBOL = "\U0001f525"  # Fire
 
     def __init__(self, channel: Channel):
         self.logger = PrefixLoggerAdapter(logging.getLogger("tracer"), self.name)
@@ -98,6 +100,7 @@ class BaseMapper(object):
         self.output_port: Optional[str] = None
         self.g = self.get_graph()
         self._seen_edges = set()
+        self._resources: Dict[str, Dict[str, Any]] = {}
 
     def render(
         self,
@@ -119,7 +122,24 @@ class BaseMapper(object):
         """
         self.set_label(f"{self.channel.name} [{self.channel.tech_domain.name}]")
         self.render(start, end)
+        if self._resources:
+            self.apply_statuses()
         return self.g
+
+    def apply_statuses(self) -> None:
+        """Apply resoure statuses."""
+        statuses = ActiveAlarm.get_resource_statuses(self._resources)
+        for res, s in statuses.items():
+            if not s:
+                continue
+            node = self._resources[res]
+            if not node["attributes"]:
+                continue
+            label = node["attributes"].get("label")
+            if label:
+                node["attributes"]["label"] = f"{self.ALARM_SYMBOL} {label}"
+            else:
+                node["attributes"]["label"] = self.ALARM_SYMBOL
 
     @staticmethod
     def get_graph() -> Dict[str, Any]:
@@ -172,9 +192,10 @@ class BaseMapper(object):
         self.g["edges"].append(r)
         self._seen_edges.add(h)
 
-    def add_node(self, node: Dict[str, Any]) -> None:
+    def add_node(self, node: Dict[str, Any]) -> Dict[str, Any]:
         """Add node to graph."""
         self.g["nodes"].append(node)
+        return node
 
     def add_nodes(self, iter: Iterable[Dict[str, Any]]) -> None:
         """Add nodes from iterable."""
@@ -188,7 +209,31 @@ class BaseMapper(object):
         """Add nodes from iterable."""
         self.g["subgraphs"].extend(iter)
 
-    def add_channel(self, name: str, *, channel: Channel, is_client: bool = False) -> None:
+    def add_port(
+        self,
+        name: str,
+        *,
+        label: Optional[str] = None,
+        resource: Optional[str] = None,
+        ports: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        attrs = {"class": self.SELECTABLE_CLASS, "tooltip": ""}
+        attrs["shape"] = "record" if ports else "box"
+        if label:
+            if ports:
+                suffix = "|".join(f"<{x}>{x}" for x in ports)
+                label = f"{label}|{suffix}"
+            attrs["label"] = label
+        if resource:
+            attrs["id"] = self.get_interaction_tag(resource=resource)
+        node = {"name": name, "attributes": attrs}
+        if resource:
+            self._resources[resource] = node
+        return node
+
+    def add_channel(
+        self, name: str, *, channel: Channel, is_client: bool = False
+    ) -> Dict[str, Any]:
         """
         Add channel.
 
@@ -197,6 +242,7 @@ class BaseMapper(object):
             channel: Channel instance.
             is_client: True, if the channel uses current one.
         """
+        res = channel.as_resource()
         attrs = {
             "shape": self.CHANNEL_SHAPE,
             "label": f"{channel.name}\n{channel.tech_domain.name}",
@@ -206,12 +252,14 @@ class BaseMapper(object):
         }
         if is_client:
             attrs["style"] = "dashed"
-        self.add_node(
+        node = self.add_node(
             {
                 "name": name,
                 "attributes": attrs,
             }
         )
+        self._resources[res] = node
+        return node
 
     def get_interaction_tag(self, resource: str) -> str:
         """Encode data-interaction tag."""

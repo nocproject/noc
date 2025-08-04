@@ -39,16 +39,12 @@ class DWDMOTUMapper(BaseMapper):
                         "bgcolor": "#bec3c6",
                     },
                     "nodes": [
-                        {
-                            "name": name,
-                            "attributes": {
-                                "shape": "record",
-                                "label": f"{card.name}|{ports}",
-                                "class": self.SELECTABLE_CLASS,
-                                "id": self.get_interaction_tag(resource=card.object.as_resource()),
-                                "tooltip": "",
-                            },
-                        }
+                        self.add_port(
+                            name,
+                            label=card.name,
+                            ports=["tx", "rx"] if name == "start" else ["rx", "tx"],
+                            resource=card.object.as_resource(),
+                        ),
                     ],
                 }
             )
