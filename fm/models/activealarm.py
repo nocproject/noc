@@ -787,9 +787,9 @@ class ActiveAlarm(Document):
         for w in self.watchers:
             if w.effect != Effect.SEVERITY:
                 continue
-            if w.args.get("min_severity") and severity < w.args["min_severity"]:
+            if w.args.get("min_severity") is not None and severity < w.args["min_severity"]:
                 severity = w.args["min_severity"]
-            if w.args.get("max_severity") and severity > w.args["max_severity"]:
+            if w.args.get("max_severity") is not None and severity > w.args["max_severity"]:
                 severity = w.args["max_severity"]
         return severity
 

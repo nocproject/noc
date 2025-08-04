@@ -17,6 +17,7 @@ class StatusItem(BaseModel):
     status: bool
     timestamp: Optional[str] = None
     labels: Optional[List[str]] = None
+    message: Optional[str] = None
 
 
 class SetStatusRequest(BaseModel):
