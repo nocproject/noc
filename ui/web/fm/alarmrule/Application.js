@@ -84,7 +84,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                         fieldLabel: __("Severity Policy"),
                         allowBlank: true,
                         store: [
-                            ["CB", __("Class Based Policy")],
+                            ["B", __("Class Based Policy")],
                             ["AB", __("Affected Based Severity Preferred")],
                             ["AL", __("Affected Limit")],
                             ["ST", __("By Tokens")]
@@ -100,9 +100,9 @@ Ext.define("NOC.fm.alarmrule.Application", {
                         allowBlank: true
                     },
                     {
-                        name: "min_severity",
+                        name: "max_severity",
                         xtype: "fm.alarmseverity.LookupField",
-                        fieldLabel: __("Min./Set Severity"),
+                        fieldLabel: __("Max./Set Severity"),
                         uiStyle: "medium",
                         allowBlank: true
                     }

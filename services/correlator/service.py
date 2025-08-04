@@ -427,9 +427,6 @@ class CorrelatorService(FastAPIService):
             # Refresh last update
             alarm.last_update = timestamp
             alarm.save()
-        if not severity or severity == alarm.base_severity:
-            return
-        alarm.base_severity = severity
         e_severity = alarm.get_effective_severity()
         if e_severity != alarm.severity:
             alarm.severity = e_severity
@@ -438,7 +435,10 @@ class CorrelatorService(FastAPIService):
         alarm.touch_watch()
 
     async def apply_rules(
-        self, alarm: ActiveAlarm, alarm_groups: Set[str]
+        self,
+        alarm: ActiveAlarm,
+        alarm_groups: Set[str],
+        on_refresh: bool = False,
     ) -> Tuple[Dict[str, Any], List[AlarmActionRequest]]:
         """Apply alarm rules"""
         groups, jobs = {}, []
@@ -448,7 +448,9 @@ class CorrelatorService(FastAPIService):
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
                     groups[gi.reference] = gi
-            if rule.max_severity or rule.min_severity:
+            if rule.max_severity is not None or rule.min_severity is not None:
+                if on_refresh:
+                    alarm.stop_watch(Effect.SEVERITY, key=str(rule.id))
                 alarm.add_watch(
                     Effect.SEVERITY,
                     key=str(rule.id),
@@ -550,9 +552,11 @@ class CorrelatorService(FastAPIService):
                 if event:
                     # event.contribute_to_alarm(alarm)  # Add Dispose Log
                     metrics["alarm_contribute"] += 1
-                self.refresh_alarm(alarm, timestamp, severity)
                 alarm_groups: Dict[str, GroupItem] = {}
-                await self.apply_rules(alarm, alarm_groups)
+                if severity and severity != alarm.base_severity:
+                    alarm.base_severity = severity
+                await self.apply_rules(alarm, alarm_groups, on_refresh=True)
+                self.refresh_alarm(alarm, timestamp, severity)
                 if config.correlator.auto_escalation:
                     AlarmEscalation.watch_escalations(alarm)
                 return alarm
@@ -1192,7 +1196,7 @@ class CorrelatorService(FastAPIService):
             ref = f"p:{mo.id}"
             try:
                 if item.status:
-                    await self.clear_by_reference(ref, ts=ts)
+                    await self.clear_by_reference(ref, ts=ts, message=item.message)
                 else:
                     await self.raise_alarm(
                         managed_object=mo,
