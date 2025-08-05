@@ -489,7 +489,12 @@ class Profile(BaseProfile):
         slots = script.http.get("/api/slots", json=True, cached=True)
         # Getting ControlUnit
         for s in slots["slots"]:
-            if ("name" not in s) or not s["name"].lower().startswith("cu") or s["name"].lower().startswith("cu") and ("my" not in s):
+            if (
+                ("name" not in s)
+                or not s["name"].lower().startswith("cu")
+                or s["name"].lower().startswith("cu")
+                and ("my" not in s)
+            ):
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")
