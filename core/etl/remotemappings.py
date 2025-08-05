@@ -19,6 +19,7 @@ from noc.core.models.inputsources import InputSource
 
 logger = logging.getLogger(__name__)
 DEFAULT_SOURCE = InputSource.UNKNOWN.value
+DEFAULT_PRIORITY = "uem"
 
 
 @dataclass(frozen=True)
@@ -39,6 +40,11 @@ class RemoteMappingValue(object):
     def rs(self) -> Any:
         """short alias for remote_system"""
         return self.remote_system
+
+    @property
+    def source_weight(self) -> int:
+        """Calculate source weight"""
+        return max(x.get_priority_weight(DEFAULT_PRIORITY) for x in self.sources)
 
     def render_url(self, obj: Any) -> str:
         """"""
@@ -98,6 +104,13 @@ def iter_model_mappings(self) -> Iterable[RemoteMappingValue]:
             remote_id=m["remote_id"],
             sources=frozenset(InputSource.from_sources(m.get("sources", "u"))),
         )
+    remote_system = getattr(self, "remote_system", None)
+    if remote_system:
+        yield RemoteMappingValue(
+            remote_system=self.remote_system,
+            remote_id=self.remote_id,
+            sources=frozenset([InputSource.ETL])
+        )
 
 
 def iter_document_mappings(self) -> Iterable[RemoteMappingValue]:
@@ -108,6 +121,13 @@ def iter_document_mappings(self) -> Iterable[RemoteMappingValue]:
             remote_system=m.remote_system,
             remote_id=m.remote_id,
             sources=frozenset(InputSource.from_sources(m.sources or "u")),
+        )
+    remote_system = getattr(self, "remote_system", None)
+    if remote_system:
+        yield RemoteMappingValue(
+            remote_system=self.remote_system,
+            remote_id=self.remote_id,
+            sources=frozenset([InputSource.ETL])
         )
 
 
@@ -154,16 +174,25 @@ def set_mapping(self, remote_system: Any, remote_id: str, source: Optional[str] 
         source:
     """
     source = InputSource(source or "unknown")
+    weight = source.get_priority_weight(DEFAULT_PRIORITY)
     new_mappings: List[RemoteMappingValue] = []
     changed, is_new = False, True
 
     for item in self.iter_remote_mappings():
-        item: RemoteMappingValue
-        if item.remote_system.id == remote_system.id and item.remote_id != remote_id:
-            item.set_remote_id(remote_id, source)
+        # Priority ?
+        if (
+            item.remote_system.id == remote_system.id
+            and item.remote_id != remote_id
+            and weight >= item.source_weight
+        ):
+            item = item.set_remote_id(remote_id, source)
+            logger.info("[%s] Set mapping: %s", self, item)
             changed |= True
         elif item.remote_system.id == remote_system.id:
-            item.set_remote_id(remote_id, source)
+            if source not in item.sources:
+                item = item.set_remote_id(remote_id, source)
+                logger.info("[%s] Update mapping: %s", self, item)
+                changed |= True
             is_new = False
         new_mappings.append(item)
     if is_new:
@@ -171,7 +200,7 @@ def set_mapping(self, remote_system: Any, remote_id: str, source: Optional[str] 
             RemoteMappingValue(
                 remote_system=remote_system,
                 remote_id=remote_id,
-                sources=[source],
+                sources=frozenset([source]),
             )
         ]
         changed |= True
@@ -206,10 +235,10 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
         source: Source Code
           * m - manual
           * e - elt
-          * o - other
+          * u - unknown
     """
     source = InputSource(source or DEFAULT_SOURCE)
-    priority = "uem"
+    weight = source.get_priority_weight(DEFAULT_PRIORITY)
     new_mappings = []
     changed = False
     seen = set()
@@ -217,14 +246,13 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
         item: RemoteMappingValue
         rs = item.remote_system
         sources = set(item.sources)
-        max_p = max(x.get_priority(priority) for x in sources)
         if rs not in mappings and source in sources:
             # Remove Source
             sources.remove(source)
         elif rs not in mappings:
             # Set on different source
             pass
-        elif mappings[rs] != item.remote_id and source.get_priority(priority) >= max_p:
+        elif mappings[rs] != item.remote_id and weight >= item.source_weight:
             # Change ID
             logger.info(
                 "[%s] Mapping over priority and will be replace: %s -> %s",
@@ -247,6 +275,7 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
             continue
         elif sources != item.sources:
             item = item.update_sources(sources)
+            logger.info("[%s] Update sources: %s", self, sources)
             changed |= True
         new_mappings.append(item)
         seen.add(rs)

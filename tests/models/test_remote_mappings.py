@@ -34,12 +34,30 @@ def get_object_caps_mock() -> "MockManagedObject":
 
 
 @pytest.fixture(scope="function")
-def object_caps():
+def object_mappings():
     return get_object_caps_mock()
 
 
-def test_set_mappings(object_caps):
+def test_set_mappings(object_mappings):
+    """"""
     rs = RemoteSystem(id=bson.ObjectId(), name="External")
     for _ in range(1, 4):
-        object_caps.set_mapping(rs, "1000")
-    assert len(object_caps.mappings) == 1
+        object_mappings.set_mapping(rs, "1000")
+    assert len(object_mappings.mappings) == 1
+    assert object_mappings.get_mappings() == {rs.name: "1000"}
+
+
+def test_update_mappings(object_mappings):
+    """"""
+    rs1 = RemoteSystem(id=bson.ObjectId(), name="External")
+    rs2 = RemoteSystem(id=bson.ObjectId(), name="Internal")
+    mappings = {rs1: "xxx22", rs2: "xxx234"}
+    object_mappings.update_remote_mappings(mappings, source="etl")
+    object_mappings.set_mapping(rs1, "xxx22", source="manual")
+    assert object_mappings.get_mappings() == {rs1.name: "xxx22", rs2.name: "xxx234"}
+    # Remove mappings
+    object_mappings.update_remote_mappings({}, source="etl")
+    object_mappings.update_remote_mappings({}, source="unknown")
+    assert object_mappings.get_mappings() == {rs1.name: "xxx22"}
+    object_mappings.update_remote_mappings({}, source="manual")
+    assert object_mappings.get_mappings() == {}
