@@ -303,33 +303,8 @@ class ManagedObjectApplication(ExtModelApplication):
                     "reason": d.reason or "",
                 }
             )
-        for m in data.get("mappings") or []:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            m |= {
-                "remote_system__label": rs.name,
-                "is_master": False,
-                "url": None,
-            }
-            if rs.object_url_template:
-                tpl = Jinja2Template(rs.object_url_template)
-                m["url"] = tpl.render(
-                    {
-                        "remote_system": rs,
-                        "remote_id": m["remote_id"],
-                        "object": o,
-                        "config": rs.config,
-                    },
-                )
-        if o.remote_system:
-            data["mappings"].append(
-                {
-                    "remote_system": str(o.remote_system.id),
-                    "remote_system__label": o.remote_system.name,
-                    "remote_id": o.remote_id,
-                    "url": None,
-                    "is_master": False,
-                }
-            )
+        if "mappings" in data or o.remote_system:
+            data["mappings"] = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         return data
 
     def instance_to_dict_list(self, o: "ManagedObject", fields=None):
@@ -1040,7 +1015,7 @@ class ManagedObjectApplication(ExtModelApplication):
             if dump:
                 result["confdb"] = orjson.loads(cdb.dump("json"))
         except SyntaxError as e:
-            result = {"status": False, "error": str(e)}
+            result = {"status": False, "message": str(e)}
         return result
 
     @view(url=r"^(?P<id>\d+)/job_log/(?P<job>\S+)/$", method=["GET"], access="read", api=True)
@@ -1175,28 +1150,11 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_update_mappings(self, request, id, mappings):
         o = self.get_object_or_404(ManagedObject, id=id)
         mappings = {m["remote_system"]: m["remote_id"] for m in mappings}
-        o.update_remote_mappings(mappings)
-        o.save()
-        r = []
-        for m in o.mappings:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            s = {
-                "remote_system__label": rs.name,
-                "is_master": False,
-                "url": None,
-            }
-            if rs.object_url_template:
-                tpl = Jinja2Template(rs.object_url_template)
-                s["url"] = tpl.render(
-                    {
-                        "remote_system": rs,
-                        "remote_id": m["remote_id"],
-                        "object": o,
-                        "config": rs.config,
-                    },
-                )
-            s |= m
-            r.append(s)
+        try:
+            o.update_remote_mappings(mappings)
+        except Exception as e:
+            return {"status": False, "data": [], "message": str(e)}
+        r = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         return {"status": True, "data": r}
 
     @view(url=r"^link/fix/(?P<link_id>[0-9a-f]{24})/$", method=["POST"], access="change_link")
