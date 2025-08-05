@@ -20,7 +20,7 @@ class ISetParam(BaseInterface):
     # Chassis id
     chassis = IntParameter(default=1)
     # Card id
-    card = IntParameter(required=True)
+    card = IntParameter(default=0)
     # Param name
     name = StringParameter(required=True)
     # Param value
@@ -40,12 +40,20 @@ class Script(BaseScript):
         }
 
         try:
-            self.http.post(
-                "/api/devices/params/set",
-                orjson.dumps(req_data),
-                headers={"Content-Type": b"application/json"},
-                json=True,
-            )
+            if card:
+                self.http.post(
+                    "/api/devices/params/set",
+                    orjson.dumps(req_data),
+                    headers={"Content-Type": b"application/json"},
+                    json=True,
+                )
+            else:
+                self.http.post(
+                    "/api/crates/params/set",
+                    orjson.dumps(req_data),
+                    headers={"Content-Type": b"application/json"},
+                    json=True,
+                )
         except HTTPError as e:
             self.logger.warning(
                 "Error core %s received while set_param. Message is |%s|", e.code, e

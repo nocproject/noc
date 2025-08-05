@@ -264,7 +264,7 @@ class PConfPlugin(InvPlugin):
         Returns:
             Parsed data
         """
-        slot = self._get_card(obj)
+        slot, _ = self._get_card(obj)
         slot_cfg: dict[str, Any]
         for item in data["RK"][0]["DV"]:
             s = item.get("slt")
@@ -345,11 +345,11 @@ class PConfPlugin(InvPlugin):
             # Get number of slots
             n_slots = sum(1 for cn in obj.parent.model.connections if cn.type.uuid == H8_CT_UUID)
             cu_n = int(obj.parent_connection[2:])
-            return 2 * n_slots + cu_n
+            return 2 * n_slots + cu_n, True
         if obj.parent and obj.parent.model.uuid == HS_UUID:
             # Half-sized card
-            return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection)
-        return (int(obj.parent_connection) - 1) * 2 + 1
+            return (int(obj.parent.parent_connection) - 1) * 2 + int(obj.parent_connection), False
+        return (int(obj.parent_connection) - 1) * 2 + 1, False
 
     def iter_headless(self, obj: Object) -> Iterable[Item]:
         """
@@ -462,8 +462,19 @@ class PConfPlugin(InvPlugin):
         Returns:
             Dict for response.
         """
-        # @todo: Wrap to catch errors
-        mo.scripts.set_param(card=self._get_card(obj), name=name, value=value)
+        crate_params = []
+        card, is_cu = self._get_card(obj)
+        if is_cu:
+            crate_params = mo.scripts.get_params_crate()
+
+            if name in crate_params:
+                mo.scripts.set_param(name=name, value=value)
+            else:
+                mo.scripts.set_param(card=card, name=name, value=value)
+        else:
+            # @todo: Wrap to catch errors
+            mo.scripts.set_param(card=card, name=name, value=value)
+
         model = self.get_model_name(obj)
         if name == "SetMode" and model == "ADM-200":
             mode_name = ADM200_VMAP.get(value)
