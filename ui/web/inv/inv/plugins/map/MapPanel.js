@@ -251,17 +251,64 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     }
   },
   //
+  loadLayerPromise: function(layer){
+    return new Promise((resolve, reject) => {
+      var me = this,
+        zoom = me.map.getZoom();
+    
+      if((zoom < layer.options.nocMinZoom) || (zoom > layer.options.nocMaxZoom)){
+        layer.clearLayers();
+        resolve();
+        return;
+      }
+    
+      if(me.map.hasLayer(layer)){
+        Ext.Ajax.request({
+          url: "/inv/inv/plugin/map/layers/" + me.getQuery(layer.options.nocCode),
+          method: "GET",
+          scope: me,
+          success: function(response){
+            var data = Ext.decode(response.responseText);
+            layer.clearLayers();
+            if(!Ext.Object.isEmpty(data)){
+              layer.addData(data);
+            }
+            resolve();
+          },
+          failure: function(error){
+            NOC.error(__("Failed to get layer"));
+            reject(error);
+          },
+        });
+      } else{
+        resolve();
+      }
+    });
+  },
+  //
   getQuery: function(layerCode){
     return Ext.String.format(layerCode + "/?bbox={0},EPSG%3A4326", this.map.getBounds().toBBoxString());
   },
   //
   onRefresh: function(){
+    let layerPromises = [];
+  
     Ext.each(this.layers, (layer) => {
-      this.loadLayer(layer);
+      layerPromises.push(this.loadLayerPromise(layer));
     });
-    if(this.getViewModel().get("autoReload")){
-      this.updateStatuses();
-    }
+  
+    Promise.all(layerPromises).then(() => {
+      if(this.getViewModel().get("autoReload")){
+        setTimeout(() => {
+          this.updateStatuses();
+        }, 100);
+      }
+    }).catch((error) => {
+      console.error("Error loading layers:", error);
+      if(this.getViewModel().get("autoReload")){
+        this.updateStatuses();
+      }
+    });
   },
   //
   createMap: function(data){
