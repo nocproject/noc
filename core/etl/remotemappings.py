@@ -265,7 +265,6 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
     changed = False
     seen = set()
     for item in self.iter_remote_mappings():
-        item: RemoteMappingValue
         rs = item.remote_system
         sources = set(item.sources)
         if rs not in mappings and source in sources:
@@ -299,6 +298,8 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
             item = item.update_sources(sources)
             logger.info("[%s] Update sources: %s", self, sources)
             changed |= True
+        if item.is_master and len(item.sources) == 1:
+            continue
         new_mappings.append(item)
         seen.add(rs)
     for rs in set(mappings) - seen:

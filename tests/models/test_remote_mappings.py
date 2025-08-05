@@ -61,3 +61,18 @@ def test_update_mappings(object_mappings):
     assert object_mappings.get_mappings() == {rs1.name: "xxx22"}
     object_mappings.update_remote_mappings({}, source="manual")
     assert object_mappings.get_mappings() == {}
+
+
+def test_master_mappings(object_mappings):
+    """"""
+    rs1 = RemoteSystem(id=bson.ObjectId(), name="External")
+    rs2 = RemoteSystem(id=bson.ObjectId(), name="Internal")
+    object_mappings.remote_system = rs1
+    object_mappings.remote_id = "xxx23"
+    assert object_mappings.get_mappings() == {rs1.name: "xxx23"}
+    mappings = {rs1: "xxx23", rs2: "xxx234"}
+    object_mappings.update_remote_mappings(mappings, source="etl")
+    assert len(object_mappings.mappings) == 2
+    object_mappings.update_remote_mappings({}, source="etl")
+    assert len(object_mappings.mappings) == 0
+    assert object_mappings.get_mappings() == {rs1.name: "xxx23"}
