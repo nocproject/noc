@@ -100,6 +100,7 @@ class ActionSet(object):
                 self.logger.error("Failed to load handler '%s'. Ignoring", h)
             self.add_handlers += 1
         target_a = []
+        action = EventAction.from_rule(data["action"])
         if "notification_group" in data:
             target_a += [
                 partial(
@@ -124,14 +125,16 @@ class ActionSet(object):
                 ),
             ]
             self.add_handlers += 1
-        if data["action"] in ["raise", "clear"]:
+        if action == EventAction.DISPOSITION:
             target_a += [
                 partial(
                     self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
                 )
             ]
-        elif data["action"] == "drop":
+        elif action == EventAction.DROP:
             target_a += [self.drop_event]
+        elif action == EventAction.DROP_MX:
+            target_a += [self.drop_mx_event]
         resource = {
             "action": partial(self.run_resources_action, handler=partial(self.get_resource_action))
         }
@@ -306,6 +309,15 @@ class ActionSet(object):
     ):
         """"""
         return EventAction.DROP
+
+    @staticmethod
+    def drop_mx_event(
+        event: Event,
+        managed_object: ManagedObject,
+        resources: List[Any],
+    ):
+        """"""
+        return EventAction.DROP_MX
 
     @staticmethod
     def dispose_event(

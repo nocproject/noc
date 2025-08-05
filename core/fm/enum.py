@@ -78,11 +78,25 @@ class EventAction(enum.Enum):
     LOG = 2
     DISPOSITION = 3
     LOG_ERROR = 4
+    DROP_MX = 5
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
             return self.value < other.value
         return NotImplemented
+
+    @classmethod
+    def from_rule(cls, action: str) -> "EventAction":
+        """Convert rule value to Action"""
+        if action == "raise" or action == "clear":
+            return EventAction.DISPOSITION
+        elif action == "ignore" or action == "log":
+            return EventAction.LOG
+        elif action == "drop":
+            return EventAction.DROP
+        elif action == "drop_mx":
+            return EventAction.DROP_MX
+        return EventAction.LOG
 
 
 class AlarmAction(enum.Enum):
