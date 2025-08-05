@@ -142,7 +142,17 @@ def get_caps_config(self) -> Dict[str, CapsConfig]:
     return {}
 
 
-def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional[str] = "") -> None:
+def set_caps(
+    self, key: str, value: Any, source: str = "manual", scope: Optional[str] = None
+) -> None:
+    """
+    Set capability or update
+    Args:
+        key: Capability name
+        value: Capability value
+        source: Source setting value
+        scope: Capability value scope
+    """
     from noc.inv.models.capability import Capability
 
     new_caps: List[CapsValue] = []
@@ -151,16 +161,20 @@ def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional
         return
     value = caps.clean_value(value)
     source = InputSource(source)
-    changed = False
+    scope = scope or ""
+    changed, is_new = False, True
     for item in self.iter_caps():
         if item.capability == caps:
-            if not scope or item.scope == scope:
+            # Set found scope
+            if is_new and item.scope == scope:
+                is_new = False
+            if item.scope == scope and item.value != value:
                 new_caps.append(item.set_value(value))
                 changed |= True
                 logger.info("Change capability value: %s -> %s", item, value)
                 continue
         new_caps += [item]
-    if not changed:
+    if is_new:
         new_caps += [
             CapsValue(
                 capability=caps,
@@ -169,8 +183,9 @@ def set_caps(self, key: str, value: Any, source: str = "manual", scope: Optional
                 scope=scope or "",
             )
         ]
+        changed |= True
         logger.info("Adding capability: %s", new_caps[-1])
-    if new_caps:
+    if changed:
         self.save_caps(new_caps)
 
 
