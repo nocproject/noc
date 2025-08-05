@@ -47,9 +47,11 @@ from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
 from noc.core.caps.decorator import capabilities
 from noc.core.caps.types import CapsValue
+from noc.core.etl.remotemappings import mappings
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.remotemappingsitem import RemoteMappingItem
 from noc.main.models.label import Label
 from noc.main.models.pool import Pool
 from noc.sla.models.slaprobe import SLAProbe
@@ -66,16 +68,6 @@ id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 SVC_REF_PREFIX = "svc"
 SVC_AC = "Service | Status | Change"
-
-
-class RemoteMappingItem(EmbeddedDocument):
-    """source priority: m - manual, e - etl, o - other"""
-
-    meta = {"strict": False, "auto_create_index": False}
-
-    remote_system = PlainReferenceField(RemoteSystem, required=True)
-    remote_id: str = StringField(required=True)
-    sources: str = StringField(default="o")
 
 
 class Instance(EmbeddedDocument):
@@ -158,6 +150,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @change
 @workflow
 @capabilities
+@mappings
 @on_delete_check(
     clean=[
         ("phone.PhoneNumber", "service"),
@@ -932,89 +925,6 @@ class Service(Document):
         if service:
             return Service.get_by_id(service)
 
-    def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
-        """
-        Set Object mapping
-        Args:
-            remote_system: Remote System Instance
-            remote_id: Id on Remote system
-        """
-        rid = remote_system.id
-        for m in self.mappings:
-            if m.remote_system.id == rid and m.remote_id != remote_id:
-                m.remote_id = remote_id
-                break
-            elif m.remote_system.id == rid:
-                break
-        else:
-            self.mappings += [RemoteMappingItem(remote_system=remote_system, remote_id=remote_id)]
-
-    def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
-        """return object mapping from"""
-        for m in self.mappings:
-            if m.remote_system.id == remote_system.id:
-                return m.remote_id
-        return None
-
-    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
-        """
-        Update managed Object mappings
-        Source Priority, for mappings on different sources
-        Attrs:
-            mappings: Map remote_system -> remote_id
-            source: Source Code
-              * m - manual
-              * e - elt
-              * o - other
-        """
-        priority = "oem"
-        new_mappings = []
-        changed = False
-        seen = set()
-        for m in self.mappings:
-            rs = m.remote_system
-            sources = set(m.sources or "o")
-            max_p = max(priority.index(x) for x in source)
-            if rs not in mappings and source in sources:
-                # Remove Source
-                sources.remove(source)
-            elif rs not in mappings:
-                # Set on different source
-                pass
-            elif mappings[rs] != m.remote_id and priority.index(source) >= max_p:
-                # Change ID
-                logger.info(
-                    "[%s] Mapping over priority and will be replace: %s -> %s",
-                    rs,
-                    m.remote_id,
-                    mappings[rs],
-                )
-                # replace, skip
-                m.remote_id = mappings[rs]
-                sources.add(source)
-                changed |= True
-            elif mappings[rs] != m.remote_id:
-                pass
-            elif source not in sources:
-                changed |= True
-                sources.add(source)
-            if not sources:
-                changed |= True
-                continue
-            elif sources != set(m.sources or "o"):
-                m.sources = "".join(sorted(sources))
-                changed |= True
-            new_mappings.append(m)
-            seen.add(rs)
-        for rs in set(mappings) - seen:
-            new_mappings.append(
-                RemoteMappingItem(remote_system=rs, remote_id=mappings[rs], sources=source)
-            )
-            changed |= True
-        if changed:
-            self.mappings = new_mappings
-        return changed
-
 
 def refresh_service_status(svc_ids: List[str]):
     logger.info("Refresh service status: %s", svc_ids)
@@ -1025,6 +935,8 @@ def refresh_service_status(svc_ids: List[str]):
         if svc.parent and svc.oper_status != os:
             affected_paths.update(set(svc.parent.service_path))
     logger.info("Affected paths: %s", affected_paths)
+    if not affected_paths:
+        return
     # Check changed
     # Update linked
     for svc in Service.objects.filter(id__in=list(affected_paths)):
