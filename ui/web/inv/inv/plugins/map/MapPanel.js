@@ -336,8 +336,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         data.resource_status.forEach(item => {
           let resourceData = resources[item.resource];
           if(Ext.isDefined(resourceData.leafletLayer)){
-            let iconName = item.status === "alarm" ? "alarm" : "up";
-            if(Exit.isFunction(resourceData.leafletLayer.setIcon)){
+            let iconName = item.alarm ? "alarm" : "up";
+            if(Ext.isFunction(resourceData.leafletLayer.setIcon)){
               resourceData.leafletLayer.setIcon(
                 this.createStatusIcon(iconName, resourceData.leafletLayer),
               );
