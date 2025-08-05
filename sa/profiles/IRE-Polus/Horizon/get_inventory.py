@@ -137,54 +137,6 @@ class Script(BaseScript):
         else:
             raise ValueError(f"datatype {datatype} is not in map")
 
-    @staticmethod
-    def get_default_datatype(mode: str, port: str) -> str:
-        """
-        Returns default datatype for card ADM-200 on port in different mode
-        """
-        DEFAULT_DATATYPE_MAP = {
-            "AGG-200": {
-                "LINE1": "OTUC2",
-                "LINE2": "OTUC2",
-            },
-            "AGG-100-BS": {
-                "LINE1": "OTU4",
-                "LINE2": "OTU4",
-            },
-            "AGG-2x100": {
-                "LINE1": "OTU4",
-                "LINE2": "OTU4",
-            },
-            "TP-100+TP-10x10": {
-                "LINE1": "OTU4",
-                "LINE2": "OTU4",
-                "CLIENT11": "OTU2",
-                "CLIENT12": "OTU2",
-                "CLIENT13": "OTU2",
-                "CLIENT14": "OTU2",
-                "CLIENT15": "OTU2",
-                "CLIENT16": "OTU2",
-                "CLIENT17": "OTU2",
-                "CLIENT18": "OTU2",
-                "CLIENT19": "OTU2",
-                "CLIENT20": "OTU2",
-            },
-        }
-
-        if mode in DEFAULT_DATATYPE_MAP:
-            if port in DEFAULT_DATATYPE_MAP[mode]:
-                return DEFAULT_DATATYPE_MAP[mode][port]
-            else:
-                raise ValueError(f"Unknown port {port} in mode {mode}")
-        else:
-            raise ValueError(f"Unknown mode {mode}")
-
-    @staticmethod
-    def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
-        if not dst_datatype:
-            dst_datatype = Script.get_default_datatype(card_mode, dst_port)
-
-        return Script.convert_datatype_to_odu(dst_datatype)
 
     @staticmethod
     def get_discriminator(outer_odu: str, code_dst: str) -> str:
@@ -417,6 +369,55 @@ class Script(BaseScript):
 
         return crossings, None
 
+    @staticmethod
+    def get_default_datatype(mode: str, port: str) -> str:
+        """
+        Returns default datatype for card ADM-200 on port in different mode
+        """
+        DEFAULT_DATATYPE_MAP = {
+            "AGG-200": {
+                "LINE1": "OTUC2",
+                "LINE2": "OTUC2",
+            },
+            "AGG-100-BS": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "AGG-2x100": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "TP-100+TP-10x10": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+                "CLIENT11": "OTU2",
+                "CLIENT12": "OTU2",
+                "CLIENT13": "OTU2",
+                "CLIENT14": "OTU2",
+                "CLIENT15": "OTU2",
+                "CLIENT16": "OTU2",
+                "CLIENT17": "OTU2",
+                "CLIENT18": "OTU2",
+                "CLIENT19": "OTU2",
+                "CLIENT20": "OTU2",
+            },
+        }
+
+        if mode in DEFAULT_DATATYPE_MAP:
+            if port in DEFAULT_DATATYPE_MAP[mode]:
+                return DEFAULT_DATATYPE_MAP[mode][port]
+            else:
+                raise ValueError(f"Unknown port {port} in mode {mode}")
+        else:
+            raise ValueError(f"Unknown mode {mode}")
+
+    @staticmethod
+    def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
+        if not dst_datatype:
+            dst_datatype = Script.get_default_datatype(card_mode, dst_port)
+
+        return Script.convert_datatype_to_odu(dst_datatype)
+
     def parse_cross_atp(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
         dst: Dict[str, str] = {}
@@ -451,16 +452,16 @@ class Script(BaseScript):
             if cname not in dst:
                 continue
 
-            print(cname)
-            print(src[cname])
-            print(dst[cname])
+            #print(cname)
+            #print(src[cname])
+            #print(dst[cname])
 
             input = self.get_port(self.get_raw_port(src[cname]))
             output = self.get_port(self.get_raw_port(dst[cname]))
             rest_dst = dst[cname].split("_", 2)[-1]
 
-            print(input, output, rest_dst)
-            print(datatypes)
+            #print(input, output, rest_dst)
+            #print(datatypes)
 
             datatype = datatypes[output]
             if not datatype:
@@ -492,6 +493,56 @@ class Script(BaseScript):
                 )
 
         return crossings, None
+
+    @staticmethod
+    def get_default_datatype_adm200(mode: str, port: str) -> str:
+        """
+        Returns default datatype for card ADM-200 on port in different mode
+        """
+        DEFAULT_DATATYPE_MAP = {
+            "AGG-200": {
+                "LINE1": "OTUC2",
+                "LINE2": "OTUC2",
+            },
+            "AGG-100-BS": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "AGG-2x100": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+            },
+            "TP-100+TP-10x10": {
+                "LINE1": "OTU4",
+                "LINE2": "OTU4",
+                "CLIENT11": "OTU2",
+                "CLIENT12": "OTU2",
+                "CLIENT13": "OTU2",
+                "CLIENT14": "OTU2",
+                "CLIENT15": "OTU2",
+                "CLIENT16": "OTU2",
+                "CLIENT17": "OTU2",
+                "CLIENT18": "OTU2",
+                "CLIENT19": "OTU2",
+                "CLIENT20": "OTU2",
+            },
+        }
+
+        if mode in DEFAULT_DATATYPE_MAP:
+            if port in DEFAULT_DATATYPE_MAP[mode]:
+                return DEFAULT_DATATYPE_MAP[mode][port]
+            else:
+                raise ValueError(f"Unknown port {port} in mode {mode}")
+        else:
+            raise ValueError(f"Unknown mode {mode}")
+
+    @staticmethod
+    def get_outer_odu_adm200(card_mode: str, dst_port: str, dst_datatype: str) -> str:
+        if not dst_datatype:
+            dst_datatype = Script.get_default_datatype_adm200(card_mode, dst_port)
+
+        return Script.convert_datatype_to_odu(dst_datatype)
+
 
     def parse_cross_adm200(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -549,7 +600,7 @@ class Script(BaseScript):
             rest_dst = dst[cname].split("_", 2)[-1]
 
             datatype = datatypes[output]
-            outer_odu = self.get_outer_odu(mode, output, datatype)
+            outer_odu = self.get_outer_odu_adm200(mode, output, datatype)
 
             if cname in enable_oduflex and rest_dst != "ODUFlex":
                 continue
@@ -565,6 +616,191 @@ class Script(BaseScript):
             )
 
         return crossings, card_mode
+
+    @staticmethod
+    def get_default_datatype_adm10(mode: str, port: str) -> str:
+        """
+        Returns default datatype for card ADM-10 on port in different mode
+        """
+        DEFAULT_DATATYPE_MAP = {
+            "ADM-10": {
+                "LINE1": "OTU2",
+                "LINE2": "OTU2",
+                "LINE3": "OTU2",
+                "LINE4": "OTU2",
+                "CLIENT1": "OTU1",
+                "CLIENT2": "OTU1",
+                "CLIENT3": "OTU1",
+                "CLIENT4": "OTU1",
+                "CLIENT5": "OTU1",
+                "CLIENT6": "OTU1",
+                "CLIENT7": "OTU1",
+                "CLIENT8": "OTU1",
+                "CLIENT9": "OTU1",
+                "CLIENT10": "OTU1",
+                "CLIENT11": "OTU1",
+                "CLIENT12": "OTU1",
+                "CLIENT13": "OTU1",
+                "CLIENT14": "OTU1",
+                "CLIENT15": "OTU1",
+                "CLIENT16": "OTU1",
+            },
+            "AGG-10BS+ADM-2.5": {
+                "LINE1": "OTU2",
+                "LINE2": "OTU2",
+                "LINE3": "OTU2",
+                "LINE4": "OTU2",
+                "CLIENT1": "OTU1",
+                "CLIENT2": "OTU1",
+                "CLIENT3": "OTU1",
+                "CLIENT4": "OTU1",
+                "CLIENT5": "OTU1",
+                "CLIENT6": "OTU1",
+                "CLIENT7": "OTU1",
+                "CLIENT8": "OTU1",
+                "CLIENT9": "OTU1",
+                "CLIENT10": "OTU1",
+                "CLIENT11": "OTU1",
+                "CLIENT12": "OTU1",
+                "CLIENT13": "OTU1",
+                "CLIENT14": "OTU1",
+                "CLIENT15": "OTU1",
+                "CLIENT16": "OTU1",
+            },
+#            "AGG-2x10-EFEC": {
+#                "LINE1": "OTU2",
+#                "LINE2": "OTU2",
+#                "LINE3": "OTU2"
+#                "LINE4": "OTU2"
+#                "CLIENT1": "OTU1",
+#                "CLIENT2": "OTU1",
+#                "CLIENT3": "OTU1",
+#                "CLIENT4": "OTU1",
+#                "CLIENT5": "OTU1",
+#                "CLIENT6": "OTU1",
+#                "CLIENT7": "OTU1",
+#                "CLIENT8": "OTU1",
+#                "CLIENT9": "OTU1",
+#                "CLIENT10": "OTU1",
+#                "CLIENT11": "OTU1",
+#                "CLIENT12": "OTU1",
+#                "CLIENT13": "OTU1",
+#                "CLIENT14": "OTU1",
+#                "CLIENT15": "OTU1",
+#                "CLIENT16": "OTU1",
+#            },
+            "AGG-2x10BS": {
+                "LINE1": "OTU2",
+                "LINE2": "OTU2",
+                "LINE3": "OTU2",
+                "LINE4": "OTU2",
+                "CLIENT1": "OTU1",
+                "CLIENT2": "OTU1",
+                "CLIENT3": "OTU1",
+                "CLIENT4": "OTU1",
+                "CLIENT5": "OTU1",
+                "CLIENT6": "OTU1",
+                "CLIENT7": "OTU1",
+                "CLIENT8": "OTU1",
+                "CLIENT9": "OTU1",
+                "CLIENT10": "OTU1",
+                "CLIENT11": "OTU1",
+                "CLIENT12": "OTU1",
+                "CLIENT13": "OTU1",
+                "CLIENT14": "OTU1",
+                "CLIENT15": "OTU1",
+                "CLIENT16": "OTU1",
+            },
+        }
+
+        if mode in DEFAULT_DATATYPE_MAP:
+            if port in DEFAULT_DATATYPE_MAP[mode]:
+                return DEFAULT_DATATYPE_MAP[mode][port]
+            else:
+                raise ValueError(f"Unknown port {port} in mode {mode}")
+        else:
+            raise ValueError(f"Unknown mode {mode}")
+
+    @staticmethod
+    def get_outer_odu_adm10(card_mode: str, dst_port: str, dst_datatype: str) -> str:
+        if not dst_datatype:
+            dst_datatype = Script.get_default_datatype_adm10(card_mode, dst_port)
+
+        return Script.convert_datatype_to_odu(dst_datatype)
+
+
+    def parse_cross_adm10(self, config) -> List[Dict[str, str]]:
+        src: Dict[str, str] = {}
+        dst: Dict[str, str] = {}
+        datatypes: Dict[str, str] = {}
+        port_states: Dict[str, str] = {}
+        mode: Optional[str] = None
+        enable_oduflex = set()
+        crossings = []
+        card_mode = None
+
+        # Find card mode for parametrized crossing
+        # For all ADM10 modes returns empty crossing except AGG-2x10-EFEC
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            value = oo["val"]
+            if name == "SetMode":
+                card_mode = value
+                if card_mode != "AGG-2x10-EFEC":
+                    return crossings, card_mode
+
+        # Parse crossings
+        for oo in config:
+            if "nam" not in oo or "val" not in oo:
+                continue
+            name = oo["nam"]
+            value = oo["val"]
+            if name.endswith("_SetState"):
+                # IS - In Service
+                # OOS - Out Of Service
+                # MT - Maintenance
+                port_states[self.get_port(name[:-9])] = value in ["IS", "MT"]
+            if name.endswith("_SetSrc"):
+                if value != "None":
+                    src[name[:-7]] = value
+            elif name.endswith("_SetDst"):
+                if value != "None":
+                    dst[name[:-7]] = value
+            elif name == "SetMode":
+                mode = value
+            elif name.endswith("_SetDataType"):
+                if "GFC" in value:
+                    enable_oduflex.add(name[:-12])
+                datatypes[self.get_port(name[:-12])] = value
+
+        for cname in src:
+            if cname not in dst:
+                continue
+
+            input = self.get_port(self.get_raw_port(src[cname]))
+            output = self.get_port(self.get_raw_port(dst[cname]))
+            rest_dst = dst[cname].split("_", 2)[-1]
+
+            datatype = datatypes[output]
+            outer_odu = self.get_outer_odu_adm10(mode, output, datatype)
+
+            if cname in enable_oduflex and rest_dst != "ODUFlex":
+                continue
+            if cname not in enable_oduflex and rest_dst == "ODUFlex":
+                continue
+
+            crossings.append(
+                {
+                    "input": input,
+                    "output": output,
+                    "output_discriminator": self.get_discriminator(outer_odu, rest_dst),
+                }
+            )
+
+        return crossings, card_mode
+
 
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -606,7 +842,7 @@ class Script(BaseScript):
             rest_dst = dst[cname].split("_", 2)[-1]
 
             datatype = datatypes[output]
-            outer_odu = self.get_outer_odu(mode, output, datatype)
+            outer_odu = self.get_outer_odu_adm200(mode, output, datatype)
 
             if cname in enable_oduflex and rest_dst != "ODUFlex":
                 continue
@@ -635,11 +871,12 @@ class Script(BaseScript):
             "sroadm7": self.parse_cross_roadm2x9,
             "sroadm5": self.parse_cross_roadm2,
             "adm200": self.parse_cross_adm200,
+            "adm10": self.parse_cross_adm10,
         }
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
-                continue
+                continue 
 
             # print("###CLS###|%s|" % (o["cls"]))
             self.logger.debug("Parse card class |%s|", o["cls"])
@@ -647,7 +884,8 @@ class Script(BaseScript):
                 if cls_part in o["cls"]:
                     return parser_mapping[cls_part](o["PM"])
 
-            return self.parse_cross_default(o["PM"])
+            raise ValueError(f'Card class {o["cls"]} has not supported for crossing')
+#            return self.parse_cross_default(o["PM"])
 
         return crossings, card_mode
 
@@ -723,8 +961,17 @@ class Script(BaseScript):
                 ]
                 adapters.append(adapter)
 
-            crossings, card_mode = self.get_crossings(config, d.crate_id - 1, slot)
-            self.logger.debug("==|CROSS|==\n%s\n", crossings)
+            crossings = []
+            card_mode = ""
+            try:
+                crossings, card_mode = self.get_crossings(config, d.crate_id - 1, slot)
+                self.logger.debug("==|CROSS|==\n%s\n", crossings)
+            except ValueError as e:
+                self.logger.warning("ValueError occured while parsing crossings on crateid %s slot %s |%s|", d.crate_id - 1, slot, e)
+                pass
+            except Exception as e:
+                self.logger.warning("Error occured while parsing crossings on crateid %s slot %s |%s|", d.crate_id - 1, slot, e)
+                continue
 
             params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"] if "value" in p]
             self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
