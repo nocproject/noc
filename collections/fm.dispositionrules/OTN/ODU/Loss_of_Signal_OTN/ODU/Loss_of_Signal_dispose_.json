@@ -3,7 +3,7 @@
     "$collection": "fm.dispositionrules",
     "uuid": "b6b994f2-e4ce-44c5-ba95-e05c740f1013",
     "description": null,
-    "preference": 1000,
+    "preference": 1100,
     "alarm_disposition__name": "OTN | ODU | Loss of Signal",
     "conditions": [{
         "event_class_re": "OTN | ODU | Loss of Signal"

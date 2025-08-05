@@ -1,0 +1,13 @@
+{
+    "name": "OTN | OTU | TIM Clear (OTN | OTU | TIM,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "bc2a1e2f-0d5b-4687-9632-18be9ce6a9e2",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "OTN | OTU | TIM",
+    "conditions": [{
+        "event_class_re": "OTN | OTU | TIM Clear"
+    }],
+    "default_action": "C",
+    "stop_processing": false
+}

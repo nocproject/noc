@@ -1302,6 +1302,7 @@
             "value": ["ADM-200-MRFL/CFP2-H8"]
         }
     ],
+    "front_facade__name": "RBS | iData | ADM-200-MRFL",
     "modes": [
         {
             "name": "AGG-200",
@@ -1322,5 +1323,5 @@
             "name": "ADM-100"
         }
     ],
-    "short_label": "ADM-200"
+    "short_label": "ADM-200MR"
 }
