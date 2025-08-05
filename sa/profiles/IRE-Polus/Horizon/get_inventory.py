@@ -137,7 +137,6 @@ class Script(BaseScript):
         else:
             raise ValueError(f"datatype {datatype} is not in map")
 
-
     @staticmethod
     def get_discriminator(outer_odu: str, code_dst: str) -> str:
         dst_odu = code_dst
@@ -174,7 +173,7 @@ class Script(BaseScript):
                 else:
                     r.part_no = fix_fru(p.value)
                 r.type = p.component_type
-#            elif p.code == ""
+            #            elif p.code == ""
             elif p.code == "SrNumber":
                 r.serial = p.value
             elif p.code == "HwNumber":
@@ -452,20 +451,22 @@ class Script(BaseScript):
             if cname not in dst:
                 continue
 
-            #print(cname)
-            #print(src[cname])
-            #print(dst[cname])
+            # print(cname)
+            # print(src[cname])
+            # print(dst[cname])
 
             input = self.get_port(self.get_raw_port(src[cname]))
             output = self.get_port(self.get_raw_port(dst[cname]))
             rest_dst = dst[cname].split("_", 2)[-1]
 
-            #print(input, output, rest_dst)
-            #print(datatypes)
+            # print(input, output, rest_dst)
+            # print(datatypes)
 
             datatype = datatypes[output]
             if not datatype:
-                self.logger.debug("datatype for |%s| is None. Ignore crossing |%s|->|%s|.", output, input, output)
+                self.logger.debug(
+                    "datatype for |%s| is None. Ignore crossing |%s|->|%s|.", output, input, output
+                )
                 continue
 
             outer_odu = self.get_outer_odu(None, output, datatype)
@@ -542,7 +543,6 @@ class Script(BaseScript):
             dst_datatype = Script.get_default_datatype_adm200(card_mode, dst_port)
 
         return Script.convert_datatype_to_odu(dst_datatype)
-
 
     def parse_cross_adm200(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -667,28 +667,28 @@ class Script(BaseScript):
                 "CLIENT15": "OTU1",
                 "CLIENT16": "OTU1",
             },
-#            "AGG-2x10-EFEC": {
-#                "LINE1": "OTU2",
-#                "LINE2": "OTU2",
-#                "LINE3": "OTU2"
-#                "LINE4": "OTU2"
-#                "CLIENT1": "OTU1",
-#                "CLIENT2": "OTU1",
-#                "CLIENT3": "OTU1",
-#                "CLIENT4": "OTU1",
-#                "CLIENT5": "OTU1",
-#                "CLIENT6": "OTU1",
-#                "CLIENT7": "OTU1",
-#                "CLIENT8": "OTU1",
-#                "CLIENT9": "OTU1",
-#                "CLIENT10": "OTU1",
-#                "CLIENT11": "OTU1",
-#                "CLIENT12": "OTU1",
-#                "CLIENT13": "OTU1",
-#                "CLIENT14": "OTU1",
-#                "CLIENT15": "OTU1",
-#                "CLIENT16": "OTU1",
-#            },
+            #            "AGG-2x10-EFEC": {
+            #                "LINE1": "OTU2",
+            #                "LINE2": "OTU2",
+            #                "LINE3": "OTU2"
+            #                "LINE4": "OTU2"
+            #                "CLIENT1": "OTU1",
+            #                "CLIENT2": "OTU1",
+            #                "CLIENT3": "OTU1",
+            #                "CLIENT4": "OTU1",
+            #                "CLIENT5": "OTU1",
+            #                "CLIENT6": "OTU1",
+            #                "CLIENT7": "OTU1",
+            #                "CLIENT8": "OTU1",
+            #                "CLIENT9": "OTU1",
+            #                "CLIENT10": "OTU1",
+            #                "CLIENT11": "OTU1",
+            #                "CLIENT12": "OTU1",
+            #                "CLIENT13": "OTU1",
+            #                "CLIENT14": "OTU1",
+            #                "CLIENT15": "OTU1",
+            #                "CLIENT16": "OTU1",
+            #            },
             "AGG-2x10BS": {
                 "LINE1": "OTU2",
                 "LINE2": "OTU2",
@@ -727,7 +727,6 @@ class Script(BaseScript):
             dst_datatype = Script.get_default_datatype_adm10(card_mode, dst_port)
 
         return Script.convert_datatype_to_odu(dst_datatype)
-
 
     def parse_cross_adm10(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -800,7 +799,6 @@ class Script(BaseScript):
             )
 
         return crossings, card_mode
-
 
     def parse_cross_default(self, config) -> List[Dict[str, str]]:
         src: Dict[str, str] = {}
@@ -876,7 +874,7 @@ class Script(BaseScript):
 
         for o in config["RK"][crate_num]["DV"]:
             if o["slt"] != slot:
-                continue 
+                continue
 
             # print("###CLS###|%s|" % (o["cls"]))
             self.logger.debug("Parse card class |%s|", o["cls"])
@@ -885,7 +883,7 @@ class Script(BaseScript):
                     return parser_mapping[cls_part](o["PM"])
 
             raise ValueError(f'Card class {o["cls"]} has not supported for crossing')
-#            return self.parse_cross_default(o["PM"])
+        #            return self.parse_cross_default(o["PM"])
 
         return crossings, card_mode
 
@@ -967,13 +965,25 @@ class Script(BaseScript):
                 crossings, card_mode = self.get_crossings(config, d.crate_id - 1, slot)
                 self.logger.debug("==|CROSS|==\n%s\n", crossings)
             except ValueError as e:
-                self.logger.warning("ValueError occured while parsing crossings on crateid %s slot %s |%s|", d.crate_id - 1, slot, e)
+                self.logger.warning(
+                    "ValueError occured while parsing crossings on crateid %s slot %s |%s|",
+                    d.crate_id - 1,
+                    slot,
+                    e,
+                )
                 pass
             except Exception as e:
-                self.logger.warning("Error occured while parsing crossings on crateid %s slot %s |%s|", d.crate_id - 1, slot, e)
+                self.logger.warning(
+                    "Error occured while parsing crossings on crateid %s slot %s |%s|",
+                    d.crate_id - 1,
+                    slot,
+                    e,
+                )
                 continue
 
-            params: List[PolusParam] = [PolusParam.from_code(**p) for p in v["params"] if "value" in p]
+            params: List[PolusParam] = [
+                PolusParam.from_code(**p) for p in v["params"] if "value" in p
+            ]
             self.logger.debug("[%s] Params: %s", num, [p for p in params if p.value])
             # Getting components
             components = Component.get_components(params=params)
