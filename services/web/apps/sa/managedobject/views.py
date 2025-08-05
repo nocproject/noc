@@ -303,23 +303,8 @@ class ManagedObjectApplication(ExtModelApplication):
                     "reason": d.reason or "",
                 }
             )
-        for m in data.get("mappings") or []:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            m |= {
-                "remote_system__label": rs.name,
-                "is_master": False,
-                "url": None,
-            }
-            if rs.object_url_template:
-                tpl = Jinja2Template(rs.object_url_template)
-                m["url"] = tpl.render(
-                    {
-                        "remote_system": rs,
-                        "remote_id": m["remote_id"],
-                        "object": o,
-                        "config": rs.config,
-                    },
-                )
+        if "mappings" in data:
+            data["mappings"] = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         if o.remote_system:
             data["mappings"].append(
                 {
