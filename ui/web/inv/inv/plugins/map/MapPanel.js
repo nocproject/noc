@@ -23,7 +23,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.inv.inv.plugins.Mixins",
   ],
   pollingTaskId: undefined,
-  pollingInterval: 10000,
+  pollingInterval: 5000,
   // ViewModel for this panel
   viewModel: {
     data: {
@@ -178,16 +178,23 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
                   iconSize: [0, 0],
                   iconAnchor: [anchorPoint, anchorPoint],
                   fontSize: iconSize,
+                  originalColor: cfg.fill_color,
                 }),
               });
             }
-            default:
-              return L.circleMarker(latlng, {
+            default: {
+              let marker = L.circleMarker(latlng, {
                 color: cfg.fill_color,
                 fillColor: cfg.fill_color,
                 fillOpacity: 1,
                 radius: cfg.point_radius,
               });
+              marker.originalStyle = {
+                color: cfg.fill_color,
+                fillColor: cfg.fill_color,
+              };
+              return marker;
+            }
           }
         },
         style: function(){
@@ -635,7 +642,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   createStatusIcon: function(status, marker){
     let iconHtml,
-      fontSize = marker.options?.icon?.options?.fontSize || 16
+      fontSize = marker.options?.icon?.options?.fontSize || 16,
+      originalColor = marker.options?.icon?.options?.originalColor || "grey";
     switch(status){
       case "alarm":
       case "critical":
@@ -648,7 +656,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         iconHtml = `<i class="fa fa-times-circle" style="color: red; font-size: ${fontSize}px;"></i>`;
         break;
       case "up":
-        iconHtml = `<i class="fa fa-circle" style="color: green; font-size: ${fontSize}px;"></i>`;
+        iconHtml = `<i class="fa fa-circle" style="color: ${originalColor}; font-size: ${fontSize}px;"></i>`;
         break;
       default:
         iconHtml = `<i class="fa fa-circle" style="color: grey; font-size: ${fontSize}px;"></i>`;
