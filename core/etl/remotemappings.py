@@ -85,7 +85,7 @@ class RemoteMappingValue(object):
     def get_object_form(self, obj: Any) -> Dict[str, str]:
         """Render Mapping Form"""
         return {
-            "remote_system": self.remote_system,
+            "remote_system": str(self.remote_system.id),
             "remote_system__label": self.remote_system.name,
             "remote_id": self.remote_id,
             "is_master": self.is_master,
@@ -97,37 +97,59 @@ def iter_model_mappings(self) -> Iterable[RemoteMappingValue]:
     """Iterate mapping over Django Model"""
     from noc.main.models.remotesystem import RemoteSystem
 
+    remote_system = getattr(self, "remote_system", None)
     for m in self.mappings:
         rs = RemoteSystem.get_by_id(m["remote_system"])
+        sources = frozenset(InputSource.from_sources(m.get("sources", "u")))
+        if remote_system and rs == remote_system:
+            yield RemoteMappingValue(
+                remote_system=rs,
+                remote_id=m["remote_id"],
+                sources=frozenset([InputSource.ETL]) | sources,
+                is_master=True,
+            )
+            remote_system = None
+            continue
         yield RemoteMappingValue(
             remote_system=rs,
             remote_id=m["remote_id"],
-            sources=frozenset(InputSource.from_sources(m.get("sources", "u"))),
+            sources=sources,
         )
-    remote_system = getattr(self, "remote_system", None)
     if remote_system:
         yield RemoteMappingValue(
-            remote_system=self.remote_system,
+            remote_system=remote_system,
             remote_id=self.remote_id,
-            sources=frozenset([InputSource.ETL])
+            sources=frozenset([InputSource.ETL]),
+            is_master=True,
         )
 
 
 def iter_document_mappings(self) -> Iterable[RemoteMappingValue]:
     """Iterate mapping over Django Model"""
-
+    remote_system = getattr(self, "remote_system", None)
     for m in self.mappings:
+        sources = frozenset(InputSource.from_sources(m.sources or "u"))
+        if remote_system and m.remote_system == remote_system:
+            # Master system
+            yield RemoteMappingValue(
+                remote_system=self.remote_system,
+                remote_id=self.remote_id,
+                sources=frozenset([InputSource.ETL]) | sources,
+                is_master=True,
+            )
+            remote_system = None
+            continue
         yield RemoteMappingValue(
             remote_system=m.remote_system,
             remote_id=m.remote_id,
-            sources=frozenset(InputSource.from_sources(m.sources or "u")),
+            sources=sources,
         )
-    remote_system = getattr(self, "remote_system", None)
     if remote_system:
         yield RemoteMappingValue(
-            remote_system=self.remote_system,
+            remote_system=remote_system,
             remote_id=self.remote_id,
-            sources=frozenset([InputSource.ETL])
+            sources=frozenset([InputSource.ETL]),
+            is_master=True,
         )
 
 
