@@ -50,7 +50,7 @@ class InputSource(enum.Enum):
         return self.value[0]
 
     def get_priority_weight(self, priority: Optional[str] = None) -> int:
-        """Return source priority. More, """
+        """Return source priority. More,"""
         priority = priority or SOURCE_PRIORITY
         if self.code in priority:
             return priority.index(self.code)
