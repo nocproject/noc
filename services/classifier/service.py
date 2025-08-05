@@ -32,7 +32,6 @@ from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.version import version
 from noc.core.debug import error_report
-from noc.core.escape import fm_unescape
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
