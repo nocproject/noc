@@ -169,7 +169,12 @@ class Command(BaseCommand):
                 elif export_model_uuids:
                     kwargs["uuid__in"] = export_model_uuids
                 elif export_model_vendors:
-                    vendors = MODELS["inv.vendors"].objects.filter(code__in=export_model_vendors).order_by("name").scalar("id")
+                    vendors = (
+                        MODELS["inv.vendors"]
+                        .objects.filter(code__in=export_model_vendors)
+                        .order_by("name")
+                        .scalar("id")
+                    )
                     kwargs["vendor__in"] = vendors
                 objs = MODELS[ecname].objects.filter(**kwargs).order_by("name")
                 for o in objs:
