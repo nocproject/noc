@@ -128,7 +128,7 @@ def set_mapping(self, remote_system: Any, remote_id: str, source: Optional[str] 
         remote_id: Id on Remote system
         source:
     """
-    source = InputSource(source or "o")
+    source = InputSource(source or "unknown")
     new_mappings: List[RemoteMappingValue] = []
     changed, is_new = False, True
 
