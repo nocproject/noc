@@ -3,7 +3,7 @@
     "$collection": "fm.dispositionrules",
     "uuid": "0e13968d-cc68-4655-8846-a033d0991e29",
     "description": null,
-    "preference": 1000,
+    "preference": 1100,
     "alarm_disposition__name": "OTN | ODU | AIS",
     "conditions": [{
         "event_class_re": "OTN | ODU | AIS"

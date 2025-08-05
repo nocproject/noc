@@ -1,0 +1,37 @@
+{
+    "name": "IRE-Polus | Horizon | OTN | OTU | LOS 2 (SNMP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5e739ae1-a4e5-4069-badf-5a851186f0aa",
+    "description": "IPG-MIB::rack",
+    "event_class__name": "OTN | OTU | Loss of Signal",
+    "preference": 100,
+    "sources": ["SNMP Trap"],
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<card_name>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDeviceModule$",
+            "value_re": "^(?P<module_name>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^(?P<port_name>.+)_OTU(?P<otu_num>.+)_Alarms.+LOS"
+        }
+    ],
+    "labels": [],
+    "profiles": ["IRE-Polus.Horizon"]
+}
