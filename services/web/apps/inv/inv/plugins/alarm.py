@@ -65,7 +65,7 @@ class AlarmPlugin(InvPlugin):
                 "row_class": severity.style.css_class_name,
                 "severity": alarm.severity,
                 "severity__label": severity.name,
-                "timestamp": self.to_json(alarm.timestamp),
+                "timestamp": self.app.to_json(alarm.timestamp),
                 "duration": alarm.duration,
             }
             ch_path = alarm.get_resource_path(PathCode.CHANNEL)
@@ -105,15 +105,3 @@ class AlarmPlugin(InvPlugin):
                 top.append(a.id)
         r = [get_node(x) for x in top]
         return {"expanded": True, "children": r}
-
-    def to_json(self, v):
-        """
-        Convert custom types to json string
-        :param v:
-        :return:
-        """
-        if v is None:
-            return None
-        if isinstance(v, datetime.datetime):
-            return v.astimezone(self.TZ).isoformat()
-        raise ValueError("Invalid to_json type")
