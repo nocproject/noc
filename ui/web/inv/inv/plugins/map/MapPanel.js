@@ -337,9 +337,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           let resourceData = resources[item.resource];
           if(Ext.isDefined(resourceData.leafletLayer)){
             let iconName = item.status === "alarm" ? "alarm" : "up";
-            resourceData.leafletLayer.setIcon(
-              this.createStatusIcon(iconName, resourceData.leafletLayer),
-            );
+            if(Exit.isFunction(resourceData.leafletLayer.setIcon)){
+              resourceData.leafletLayer.setIcon(
+                this.createStatusIcon(iconName, resourceData.leafletLayer),
+              );
+            }
           }
         });
       },
