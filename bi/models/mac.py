@@ -6,8 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import datetime
+from collections import defaultdict
+from typing import Dict, Any
 
 # NOC modules
 from noc.config import config
@@ -69,18 +70,18 @@ class MAC(Model):
     segment = ReferenceField(NetworkSegment, description=_("Network Segment"))
     vlan = UInt16Field(description=_("VLAN"))
     is_uni = UInt8Field(description=_("Is UNI"))
+    from_event = UInt8Field(description=_("Row deployed from event"))
 
-    def mac_filter(self, query, offset=0, limit=400, convert_mac=False):
+    def mac_filter(
+        self, query: Dict[str, Any], offset: int = 0, limit: int = 400, convert_mac: bool = False
+    ):
         """
         Filter interface to MACDB
-        :param query: Query to MACDB
-        :param query: dict
-        :param offset: Offset output data
-        :type offset: int
-        :param limit: Offset output data
-        :type limit: limit data count
-        :param convert_mac: Conver MAC from int to str represent
-        :return: list query result from MACDB
+        Args:
+            query: Query to MACDB
+            offset: Offset output data
+            limit: limit data count
+            convert_mac: Conver MAC from int to str represent
         select max(ts), managed_object, interface, vlan from mac
         where like(MACNumToString(mac), 'A0:AB:1B%') group by managed_object, interface, vlan;
         """
