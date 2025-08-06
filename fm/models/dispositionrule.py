@@ -103,15 +103,21 @@ class Match(EmbeddedDocument):
     # severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
     event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
+    object_status: Optional[str] = StringField(
+        choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")], required=False,
+    )
 
     def __str__(self):
         return f'{", ".join(self.labels)}'
 
     @property
     def json_data(self) -> Dict[str, Any]:
+        r = {}
         if self.event_class_re:
-            return {"event_class_re": self.event_class_re}
-        return {}
+            r["event_class_re"] = self.event_class_re
+        if self.object_status == "D" or self.object_status == "U":
+            r["object_status"] = self.object_status
+        return r
 
     def clean(self):
         ec = EventClass.get_by_name(self.event_class_re)
@@ -130,6 +136,8 @@ class Match(EmbeddedDocument):
             r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.name)
+        if self.object_status == "D" or self.object_status == "U":
+            r["object_status"] = {"$eq": self.object_status}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:

@@ -993,6 +993,9 @@ class CorrelatorService(FastAPIService):
         r_vars: Dict[str, Any],
         alarm_class: Optional[AlarmClass] = None,
         event_class: Optional[EventClass] = None,
+        object_avail: Optional[bool] = None,
+        labels: Optional[List[str]] = None,
+        remote_system: Optional[RemoteSystem] = None,
     ):
         """
         Iterate over disposition rule
@@ -1001,15 +1004,24 @@ class CorrelatorService(FastAPIService):
             r_vars: Variables
             alarm_class: Alarm class for match
             event_class: Event class for match
+            object_avail: Object availability condition
+            labels: Alarm labels
+            remote_system: Alarm remote system
         """
-        ctx = {"vars": r_vars}
+        ctx = {"labels": [], "service_groups": []}
+        if labels:
+            ctx["labels"] = frozenset(labels or [])
+        if remote_system:
+            ctx["remote_system"] = str(remote_system.id)
+        if object_avail is not None:
+            ctx["object_avail"] = {True: "U", False: "D"}[object_avail]
         rules: List[EventAlarmRule] = []
         if event_class and event_class.id in rules:
             rules = self.rules[event_class.id]
         elif alarm_class and alarm_class.id in self.rules_alarm:
             rules = self.rules_alarm[alarm_class.id]
         for rule in rules:
-            if not rule.is_match(ctx):
+            if not rule.is_match(ctx) or not rule.is_vars(r_vars):
                 # Rule is not applicable
                 continue
             # Process action
@@ -1054,7 +1066,10 @@ class CorrelatorService(FastAPIService):
         if req.labels:
             r_vars.update(alarm_class.convert_labels_var(req.labels))
         for rule in self.iter_disposition_rules(
-            req.reference, alarm_class=alarm_class, r_vars=r_vars
+            req.reference,
+            alarm_class=alarm_class,
+            r_vars=r_vars,
+            labels=req.labels,
         ):
             try:
                 if rule.action == "raise" and rule.combo_condition == "none":
@@ -1234,7 +1249,9 @@ class CorrelatorService(FastAPIService):
             # @todo bulk alarm method
             ref = f"p:{managed_object.id}"
             try:
-                for rule in self.iter_disposition_rules(ref, r_vars={}, alarm_class=ac):
+                for rule in self.iter_disposition_rules(
+                    ref, r_vars={}, alarm_class=ac, labels=item.labels, object_avail=item.status
+                ):
                     if item.status and rule.action == "clear" and rule.combo_condition == "none":
                         await self.clear_alarm_from_rule(
                             rule,
@@ -1393,7 +1410,7 @@ class CorrelatorService(FastAPIService):
         rules = 0
         # Apply disposition rules
         for num, rule in enumerate(
-            self.iter_disposition_rules(reference, e.vars, event_class=event_class)
+            self.iter_disposition_rules(reference, e.vars, event_class=event_class, labels=e.labels)
         ):
             if not managed_object and not rule.alarm_class.by_reference:
                 continue  # Alarm Class is not applicable

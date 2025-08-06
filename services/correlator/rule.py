@@ -56,9 +56,16 @@ class EventAlarmRule:
             r.combo_event_classes = data["combo_condition"]["combo_event_classes"]
         if data["vars_match_expr"]:
             r.match_vars = build_matcher(data["vars_match_expr"])
+        if data["match_expr"]:
+            r.match = build_matcher(data["match_expr"])
         return r
 
-    def is_match(self, r_vars: Dict[str, Any]) -> bool:
+    def is_match(self, ctx: Dict[str, Any]) -> bool:
+        if self.match and not self.match(ctx):
+            return False
+        return True
+
+    def is_vars(self, r_vars: Dict[str, Any]) -> bool:
         if self.match_vars and not self.match_vars(r_vars):
             return False
         return True
