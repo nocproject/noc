@@ -32,7 +32,8 @@ class Instance(_BaseModel):
 
     @property
     def config(self) -> ServiceInstanceConfig:
-        return ServiceInstanceConfig.get_config(
+        cfg = ServiceInstanceConfig.get_config(self.type)
+        return cfg.from_config(
             i_type=self.type,
             name=self.name,
             remote_id=self.remote_id,
