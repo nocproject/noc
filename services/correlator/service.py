@@ -91,6 +91,7 @@ class CorrelatorService(FastAPIService):
         super().__init__()
         self.version = version.version
         self.rules: Dict[ObjectId, List[EventAlarmRule]] = {}
+        self.rules_alarm: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.back_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
@@ -161,9 +162,11 @@ class CorrelatorService(FastAPIService):
         """
         self.logger.debug("Loading rules")
         self.rules = {}
+        self.rules_alarm = defaultdict(list)
         self.back_rules = {}
         nr = 0
         nbr = 0
+        anr = 0
         for c in EventClass.objects.all():
             cfg = EventClass.get_event_config(c)
             r = []
@@ -173,6 +176,9 @@ class CorrelatorService(FastAPIService):
                 rule = EventAlarmRule.from_config(dr, c)
                 r += [rule]
                 nr += 1
+                if rule.alarm_class:
+                    anr += 1
+                    self.rules_alarm[rule.alarm_class.id] += [rule]
                 if "combo_condition" not in dr or not dr["combo_condition"]["combo_window"]:
                     continue
                 for cc in dr.combo_event_classes:
@@ -183,7 +189,7 @@ class CorrelatorService(FastAPIService):
                     nbr += 1
             if r:
                 self.rules[c.id] = r
-        self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
+        self.logger.info("%d rules are loaded. %d combos. %d alarms", nr, nbr, anr)
 
     def load_vars(self):
         self.logger.info("Loading AlarmClass vars")
@@ -815,7 +821,7 @@ class CorrelatorService(FastAPIService):
         )
         alarm = await self.clear_by_reference(
             reference,
-            message="Cleared by disposition rule '%s'" % rule.name,
+            message=f"Cleared by disposition rule '{rule.name}'",
             ts=timestamp,
             event=event,
         )
@@ -1000,10 +1006,10 @@ class CorrelatorService(FastAPIService):
         rules: List[EventAlarmRule] = []
         if event_class and event_class.id in rules:
             rules = self.rules[event_class.id]
-        elif alarm_class:
-            rules = []
+        elif alarm_class and alarm_class.id in self.rules_alarm:
+            rules = self.rules_alarm[alarm_class.id]
         for rule in rules:
-            if not rule.match(ctx):
+            if not rule.is_match(ctx):
                 # Rule is not applicable
                 continue
             # Process action
@@ -1809,10 +1815,7 @@ class CorrelatorService(FastAPIService):
         self.status_changes.append((oid, status, ts))
 
     async def update_object_statuses(self):
-        """
-        Update object statuses
-        :return:
-        """
+        """Update object statuses"""
         from noc.sa.models.managedobject import ManagedObjectStatus
 
         self.logger.info("Running object status updater")

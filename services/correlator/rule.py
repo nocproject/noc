@@ -58,6 +58,11 @@ class EventAlarmRule:
             r.match_vars = build_matcher(data["vars_match_expr"])
         return r
 
+    def is_match(self, r_vars: Dict[str, Any]) -> bool:
+        if self.match_vars and not self.match_vars(r_vars):
+            return False
+        return True
+
     def match_event(self, e: Event) -> bool:
         if self.match_vars and not self.match_vars(e.vars):
             return False
