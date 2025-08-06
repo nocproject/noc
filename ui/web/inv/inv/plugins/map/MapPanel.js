@@ -356,7 +356,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
     me.layers = [];
     Ext.each(data.layers, function(cfg){
-      cfg.is_visible = true;
       me.layers.push(me.createLayer(cfg, data.layer));
     });
     me.onRefresh();
@@ -696,11 +695,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
-    
-    if(this.map){
-      this.map.remove();
-      this.map = null;
-    }
     
     if(this.contextMenu){
       this.contextMenu.destroy();
