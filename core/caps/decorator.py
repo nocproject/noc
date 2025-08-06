@@ -117,7 +117,7 @@ def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False):
     ]
     if dry_run:
         return
-    self.objects.filter(id=self.id).update(caps=self.caps)
+    self.__class__.objects.filter(id=self.id).update(caps=self.caps)
     self.update_init()
     self._reset_caches(self.id, credential=True)
 
