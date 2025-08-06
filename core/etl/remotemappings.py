@@ -182,7 +182,7 @@ def save_model_mappings(self, mappings: List[RemoteMappingValue], dry_run: bool 
     ]
     if dry_run:
         return
-    self.objects.filter(id=self.id).update(mappings=self.mappings)
+    self.__class__.objects.filter(id=self.id).update(mappings=self.mappings)
     self.update_init()
     self._reset_caches(self.id, credential=True)
 
