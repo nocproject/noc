@@ -91,6 +91,7 @@ class CorrelatorService(FastAPIService):
         super().__init__()
         self.version = version.version
         self.rules: Dict[ObjectId, List[EventAlarmRule]] = {}
+        self.disposition_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.object_avail_rules = Dict[self, List[EventAlarmRule]]
         self.back_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
@@ -162,23 +163,19 @@ class CorrelatorService(FastAPIService):
         """
         self.logger.debug("Loading rules")
         self.rules = {}
-        self.object_avail_rules = defaultdict(list)
         self.back_rules = {}
+        self.disposition_rules = {}
+        self.object_avail_rules = {}
         nr, nbr, anr, ocr = 0, 0, 0, 0
         for c in EventClass.objects.all():
             cfg = EventClass.get_event_config(c)
-            r = []
+            rules = []
             for dr in cfg["actions"]:
                 if not dr["alarm_class"]:
                     continue
                 rule = EventAlarmRule.from_config(dr, c)
-                r += [rule]
+                rules += [rule]
                 nr += 1
-                if rule.alarm_class:
-                    anr += 1
-                if rule.has_avail_condition:
-                    self.object_avail_rules[rule.object_avail_condition] += [rule]
-                    ocr += 1
                 if "combo_condition" not in dr or not dr["combo_condition"]["combo_window"]:
                     continue
                 for cc in dr.combo_event_classes:
@@ -187,8 +184,22 @@ class CorrelatorService(FastAPIService):
                     except KeyError:
                         self.back_rules[cc.id] = [dr]
                     nbr += 1
-            if r:
-                self.rules[c.id] = r
+            if not rules:
+                continue
+            self.rules[c.id] = rules
+            for rule in rules:
+                if rule.has_avail_condition:
+                    try:
+                        self.object_avail_rules[rule.object_avail_condition] += [rule]
+                    except KeyError:
+                        self.object_avail_rules[rule.object_avail_condition] = [rule]
+                    ocr += 1
+                if rule.alarm_class:
+                    try:
+                        self.disposition_rules[rule.alarm_class.id] += [rule]
+                    except KeyError:
+                        self.disposition_rules[rule.alarm_class.id] = [rule]
+                    anr += 1
         self.logger.info(
             "%d rules are loaded. %d combos. %d alarms. %d avail",
             nr,
@@ -1031,9 +1042,19 @@ class CorrelatorService(FastAPIService):
         # elif alarm_class and alarm_class.id in self.rules_alarm:
         #    rules = self.rules_alarm[alarm_class.id]
         for rule in rules:
-            if not rule.is_match(ctx) or not rule.is_vars(r_vars):
+            if not rule.is_vars(r_vars):
+                self.logger.info(
+                    "[%s] Rule is not applicable (variables not match): %s, %s",
+                    reference,
+                    rule.name,
+                    r_vars,
+                )
+                continue
+            if not rule.is_match(ctx):
                 # Rule is not applicable
-                self.logger.info("[%s] Rule is not applicable: %s; %s", reference, rule.name, ctx)
+                self.logger.info(
+                    "[%s] Rule is not applicable (context not match): %s", reference, rule.name
+                )
                 continue
             # Process action
             if rule.action == "drop":
@@ -1045,7 +1066,7 @@ class CorrelatorService(FastAPIService):
                 self.logger.info("[%s] Ignored by action", reference)
                 # save_to_disposelog("ignore")
                 continue
-            self.logger.info("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
+            self.logger.debug("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
             yield rule
 
     async def on_msg_disposition(self, req: DispositionRequest) -> None:
@@ -1262,7 +1283,7 @@ class CorrelatorService(FastAPIService):
             ref = f"p:{managed_object.id}"
             try:
                 for rule in self.iter_disposition_rules(
-                    ref, r_vars={}, alarm_class=ac, labels=item.labels, object_avail=item.status
+                    ref, r_vars={}, labels=item.labels, object_avail=item.status
                 ):
                     if item.status and rule.action == "clear" and rule.combo_condition == "none":
                         await self.clear_alarm_from_rule(
