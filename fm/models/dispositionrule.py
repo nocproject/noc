@@ -104,7 +104,8 @@ class Match(EmbeddedDocument):
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
     event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
     object_status: Optional[str] = StringField(
-        choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")], required=False,
+        choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")],
+        required=False,
     )
 
     def __str__(self):
@@ -137,7 +138,7 @@ class Match(EmbeddedDocument):
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.name)
         if self.object_status == "D" or self.object_status == "U":
-            r["object_status"] = {"$eq": self.object_status}
+            r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -499,9 +500,18 @@ class DispositionRule(Document):
             # enum_state
         if not rule.conditions:
             return r
-        elif len(rule.conditions) == 1:
-            r["match_expr"] = rule.conditions[0].get_match_expr()
-        else:
-            r["match_expr"] = {"$or": [x.get_match_expr() for x in rule.conditions]}
+        rule_conditions = []
+        for c in rule.conditions:
+            if c.object_status == "D" or c.object_status == "U":
+                r["object_avail_condition"] = {"U": True, "D": False}[c.object_status]
+                continue
+            expr = c.get_match_expr()
+            if not expr:
+                continue
+            rule_conditions.append(expr)
+        if len(rule_conditions) == 1:
+            r["match_expr"] = rule_conditions[0]
+        elif rule_conditions:
+            r["match_expr"] = {"$or": rule_conditions}
         r["event_classes"] = [str(x.id) for x in rule.get_event_classes()]
         return r
