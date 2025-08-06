@@ -291,23 +291,31 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   onRefresh: function(){
+    if(this.destroyed || this.isRefreshing) return;
+    
+    this.isRefreshing = true;
+    
     let layerPromises = [];
-  
     Ext.each(this.layers, (layer) => {
       layerPromises.push(this.loadLayerPromise(layer));
     });
-  
+
     Promise.all(layerPromises).then(() => {
-      if(this.getViewModel().get("autoReload")){
+      if(this.destroyed) return;
+      if(this.getViewModel() && this.getViewModel().get("autoReload")){
         setTimeout(() => {
-          this.updateStatuses();
+          if(!this.destroyed){
+            this.updateStatuses();
+          }
         }, 100);
       }
     }).catch((error) => {
       console.error("Error loading layers:", error);
-      if(this.getViewModel().get("autoReload")){
+      if(!this.destroyed && this.getViewModel() && this.getViewModel().get("autoReload")){
         this.updateStatuses();
       }
+    }).finally(() => {
+      this.isRefreshing = false;
     });
   },
   //
@@ -377,8 +385,13 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   updateStatuses: function(){
+    if(this.destroyed || this.isUpdatingStatuses) return;
+    
+    this.isUpdatingStatuses = true;
     let resources = this.getVisibleResources();
+    
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+    
     Ext.Ajax.request({
       url: "/inv/inv/plugin/map/resource_status/",
       method: "POST",
@@ -386,8 +399,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         resources: Object.keys(resources),
       },
       success: function(response){
+        if(this.destroyed) return;
         let data = Ext.decode(response.responseText);
         data.resource_status.forEach(item => {
+          if(this.destroyed) return;
           let resourceData = resources[item.resource];
           if(Ext.isDefined(resourceData.leafletLayer)){
             let iconName = item.alarm ? "alarm" : "up";
@@ -400,10 +415,15 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         });
       },
       failure: function(){
-        NOC.error(__("Failed to update statuses"));
+        if(!this.destroyed){
+          NOC.error(__("Failed to update statuses"));
+        }
       },
       callback: function(){
-        this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+        if(!this.destroyed){
+          this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+        }
+        this.isUpdatingStatuses = false;
       },
       scope: this,
     });
@@ -430,24 +450,25 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   getContextMenu: function(){
-    var me = this,
-      addHandler = function(items){
-        Ext.each(items, function(item){
-          if(Object.prototype.hasOwnProperty.call(item, "menu")){
-            addHandler(item.menu);
-          } else if(Object.prototype.hasOwnProperty.call(item, "objectTypeId")){
-            item.listeners = {
-              scope: me,
-              click: me.onContextMenuAdd,
-            }
-          }
-        });
-        return items;
-      };
+    var me = this;
+    
     // Return cached
     if(me.contextMenu){
       return me.contextMenu;
     }
+    
+    var addHandler = function(items){
+      return items.map(function(item){
+        if(item.menu){
+          item.menu = addHandler(item.menu);
+        } else if(item.objectTypeId){
+          item.scope = me;
+          item.handler = me.onContextMenuAdd;
+        }
+        return item;
+      });
+    };
+    
     me.contextMenu = Ext.create("Ext.menu.Menu", {
       renderTo: me.mapDom,
       items: [
@@ -575,13 +596,24 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   startPolling: function(){
+    var me = this;
+    
+    if(this.observer){
+      this.stopPolling();
+    }
+    
     this.observer = new IntersectionObserver(function(entries){
-      this.isIntersecting = entries[0].isIntersecting;
-      this.disableHandler(!entries[0].isIntersecting);
-    }.bind(this), {
+      if(me.destroyed) return;
+      me.isIntersecting = entries[0].isIntersecting;
+      me.disableHandler(!entries[0].isIntersecting);
+    }, {
       threshold: 0.1,
     });
-    this.observer.observe(this.getEl().dom);
+    
+    if(this.getEl() && this.getEl().dom){
+      this.observer.observe(this.getEl().dom);
+    }
+    
     if(Ext.isEmpty(this.pollingTaskId)){
       this.pollingTaskId = Ext.TaskManager.start({
         run: this.pollingTask,
@@ -598,12 +630,16 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       Ext.TaskManager.stop(this.pollingTaskId);
       this.pollingTaskId = undefined;
     }
-    if(!Ext.isEmpty(this.observer)){
+    if(this.observer && this.getEl() && this.getEl().dom){
       this.observer.unobserve(this.getEl().dom);
+      this.observer.disconnect();
+      this.observer = null;
     }
   },
   //
   pollingTask: function(){
+    if(this.destroyed) return;
+    
     let isVisible = !document.hidden, // check is user has switched to another tab browser
       isFocused = document.hasFocus(), // check is user has minimized browser window
       isIntersecting = this.isIntersecting; // switch to other application tab
@@ -613,6 +649,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   disableHandler: function(state){
+    if(this.destroyed) return;
+    
     var isVisible = !document.hidden, // check is user has switched to another tab browser
       isIntersecting = this.isIntersecting; // switch to other application tab
     if(this.pollingTaskId && isIntersecting && isVisible){
@@ -622,6 +660,8 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   setContainerDisabled: function(state){
+    if(this.destroyed) return;
+    
     let icon;
     this.mapPanel.setDisabled(state);
     if(state){
@@ -629,30 +669,65 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     } else{
       icon = this.generateIcon(true, "circle", NOC.colors.yes, __("online"));
     }
-    this.getViewModel().set("icon", icon);
+    if(this.getViewModel()){
+      this.getViewModel().set("icon", icon);
+    }
   },
   subscribeToEvents: function(){
-    window.addEventListener("focus", this.handleWindowFocus.bind(this));
-    window.addEventListener("blur", this.handleWindowBlur.bind(this));
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
+    this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    window.addEventListener("focus", this.handleWindowFocus);
+    window.addEventListener("blur", this.handleWindowBlur);
   },
+  
   unsubscribeFromEvents: function(){
-    window.removeEventListener("focus", this.handleWindowFocus.bind(this));
-    window.removeEventListener("blur", this.handleWindowBlur.bind(this));
+    if(this.handleWindowFocus){
+      window.removeEventListener("focus", this.handleWindowFocus);
+    }
+    if(this.handleWindowBlur){
+      window.removeEventListener("blur", this.handleWindowBlur);
+    }
   },
   //
   destroy: function(){
+    this.destroyed = true;
+    
     this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
+    
+    if(this.map){
+      this.map.remove();
+      this.map = null;
+    }
+    
+    if(this.contextMenu){
+      this.contextMenu.destroy();
+      this.contextMenu = null;
+    }
+    
+    if(this.layers){
+      this.layers = null;
+    }
+    
+    this.isRefreshing = false;
+    this.isUpdatingStatuses = false;
+    
+    this.callParent();
   },
   //
   handleWindowFocus: function(){
-    setTimeout(function(me){
-      me.disableHandler(false);
-    }, 100, this);
+    if(this.destroyed) return;
+    var me = this;
+    setTimeout(function(){
+      if(!me.destroyed){
+        me.disableHandler(false);
+      }
+    }, 100);
   },
   //
   handleWindowBlur: function(){
+    if(this.destroyed) return;
     this.disableHandler(true);
   },
   //
@@ -676,9 +751,15 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   getVisibleResources: function(){
-    let resources = {};
-    this.map.eachLayer(layer => {
-      this.getVisibleFeaturesInLayer(layer)
+    let me = this,
+      resources = {};
+    
+    if(!this.map || this.destroyed){
+      return resources;
+    }
+    
+    this.map.eachLayer(function(layer){
+      me.getVisibleFeaturesInLayer(layer)
         .filter(feature => feature.properties?.resource)
         .forEach(feature => {
           resources[feature.properties.resource] = feature;
