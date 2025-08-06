@@ -98,7 +98,7 @@ def iter_model_mappings(self) -> Iterable[RemoteMappingValue]:
     from noc.main.models.remotesystem import RemoteSystem
 
     remote_system = getattr(self, "remote_system", None)
-    for m in self.mappings:
+    for m in self.mappings or []:
         rs = RemoteSystem.get_by_id(m["remote_system"])
         sources = frozenset(InputSource.from_sources(m.get("sources", "u")))
         if remote_system and rs == remote_system:
