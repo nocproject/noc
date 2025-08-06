@@ -440,8 +440,8 @@ class Script(BaseScript):
             elif name.endswith("_SetDst"):
                 if oo["val"] != "None":
                     dst[name[:-7]] = oo["val"]
-            elif name == "SetMode":
-                mode = oo["val"]
+            # elif name == "SetMode":
+            #     mode = oo["val"]
             elif name.endswith("_SetDataType"):
                 if "GFC" in oo["val"]:
                     enable_oduflex.add(name[:-12])
