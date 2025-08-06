@@ -356,6 +356,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
     me.layers = [];
     Ext.each(data.layers, function(cfg){
+      cfg.is_visible = true;
       me.layers.push(me.createLayer(cfg, data.layer));
     });
     me.onRefresh();
