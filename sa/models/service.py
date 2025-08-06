@@ -559,7 +559,7 @@ class Service(Document):
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {
-                "$op": "raiseref",
+                "$op": "disposition",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "timestamp": self.oper_status_change.isoformat(),
                 "alarm_class": SVC_AC,
@@ -569,11 +569,13 @@ class Service(Document):
                     {"reference": f"{SVC_REF_PREFIX}:{svc.id}"}
                     for svc in Service.objects.filter(parent=self.id)
                 ],
+                "subject": self.label,
                 "vars": {
                     "title": self.description,
                     "type": self.profile.name,
                     "service": str(self.id),
-                    "status": self.oper_status.name,
+                    "to_status": self.oper_status.name,
+                    "from_status": old_status.name,
                     "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
                 },
             }

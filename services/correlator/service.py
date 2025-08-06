@@ -496,6 +496,7 @@ class CorrelatorService(FastAPIService):
         labels: Optional[List[str]] = None,
         min_group_size: Optional[int] = None,
         severity: Optional[int] = None,
+        subject: Optional[str] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -555,6 +556,8 @@ class CorrelatorService(FastAPIService):
                 alarm_groups: Dict[str, GroupItem] = {}
                 if severity and severity != alarm.base_severity:
                     alarm.base_severity = severity
+                if subject and subject != alarm.custom_subject:
+                    alarm.custom_subject = subject
                 await self.apply_rules(alarm, alarm_groups, on_refresh=True)
                 self.refresh_alarm(alarm, timestamp, severity)
                 if config.correlator.auto_escalation:
@@ -638,6 +641,8 @@ class CorrelatorService(FastAPIService):
             managed_object.address if managed_object else reference,
             a.severity,
         )
+        if subject:
+            a.custom_subject = subject
         # Save
         a.save()
         # Update group if Service Group Alarm

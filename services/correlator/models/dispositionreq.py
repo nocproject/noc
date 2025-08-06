@@ -31,4 +31,5 @@ class DispositionRequest(BaseModel):
     remote_system: Optional[str] = None
     remote_id: Optional[str] = None
     name: Optional[str] = None
+    subject: Optional[str] = None
     # services: Optional[List[str]] = None
