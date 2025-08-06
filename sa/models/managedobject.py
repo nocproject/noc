@@ -139,6 +139,7 @@ from noc.core.topology.types import (
 from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
+from noc.core.etl.remotemappings import mappings
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -420,6 +421,7 @@ class ManagedObjectManager(Manager):
 @workflow
 @diagnostic
 @change
+@mappings
 @resourcegroup
 @Label.model
 @on_delete_check(
@@ -2922,89 +2924,6 @@ class ManagedObject(NOCModel):
             MessageMeta.GROUPS: list(self.effective_service_groups),
             MessageMeta.LABELS: list(self.effective_labels),
         }
-
-    def set_mapping(self, remote_system: RemoteSystem, remote_id: str):
-        """
-        Set Object mapping
-        Args:
-            remote_system: Remote System Instance
-            remote_id: Id on Remote system
-        """
-        rid = str(remote_system.id)
-        for m in self.mappings:
-            if m["remote_system"] == rid and m["remote_id"] != remote_id:
-                m["remote_id"] = remote_id
-                break
-            elif m["remote_system"] == rid:
-                break
-        else:
-            self.mappings += [{"remote_system": rid, "remote_id": remote_id}]
-
-    def get_mapping(self, remote_system: RemoteSystem) -> Optional[str]:
-        """return object mapping from"""
-        for m in self.mappings:
-            if m["remote_system"] == str(remote_system.id):
-                return m["remote_id"]
-        return None
-
-    def update_remote_mappings(self, mappings: Dict[RemoteSystem, str], source: str = "o") -> bool:
-        """
-        Update managed Object mappings
-        Source Priority, for mappings on different sources
-        Attrs:
-            mappings: Map remote_system -> remote_id
-            source: Source Code
-              * m - manual
-              * e - elt
-              * o - other
-        """
-        priority = "oem"
-        new_mappings = []
-        changed = False
-        seen = set()
-        for m in self.mappings:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            sources = set(m.get("sources", "o"))
-            max_p = max(priority.index(x) for x in source)
-            if rs not in mappings and source in sources:
-                # Remove Source
-                sources.remove(source)
-            elif rs not in mappings:
-                # Set on different source
-                pass
-            elif mappings[rs] != m["remote_id"] and priority.index(source) >= max_p:
-                # Change ID
-                logger.info(
-                    "[%s] Mapping over priority and will be replace: %s -> %s",
-                    rs,
-                    m["remote_id"],
-                    mappings[rs],
-                )
-                # replace, skip
-                m["remote_id"] = mappings[rs]
-                sources.add(source)
-                changed |= True
-            elif mappings[rs] != m["remote_id"]:
-                pass
-            elif source not in sources:
-                changed |= True
-                sources.add(source)
-            if not sources:
-                changed |= True
-                continue
-            elif "sources" not in m or sources != set(m["sources"]):
-                m["sources"] = "".join(sorted(sources))
-                changed |= True
-            new_mappings.append(m)
-            seen.add(rs)
-        for rs in set(mappings) - seen:
-            new_mappings.append(
-                {"remote_system": str(rs.id), "remote_id": mappings[rs], "sources": source}
-            )
-            changed |= True
-        if changed:
-            self.mappings = new_mappings
-        return changed
 
     @classmethod
     def from_template(
