@@ -11,7 +11,6 @@ import operator
 from collections import defaultdict
 
 # Third-party modules
-from jinja2 import Template
 from django.db.models import Q
 from mongoengine.errors import DoesNotExist
 
@@ -31,7 +30,6 @@ from noc.inv.models.interface import Interface
 from noc.inv.models.link import Link
 from noc.inv.models.firmwarepolicy import FirmwarePolicy
 from noc.inv.models.sensor import Sensor
-from noc.main.models.remotesystem import RemoteSystem
 from noc.maintenance.models.maintenance import Maintenance
 from noc.core.text import alnum_key, list_to_ranges
 from noc.core.pm.utils import MetricProxy
@@ -337,26 +335,8 @@ class ManagedObjectCard(BaseCard):
             version = ""
         # Mappings
         mappings = []
-        for m in self.object.mappings:
-            rs = RemoteSystem.get_by_id(m["remote_system"])
-            url = ""
-            if rs.object_url_template:
-                tpl = Template(rs.object_url_template)
-                url = tpl.render(
-                    {
-                        "remote_system": rs,
-                        "remote_id": m["remote_id"],
-                        "object": self.object,
-                        "config": rs.config,
-                    },
-                )
-            mappings.append(
-                {
-                    "remote_system": rs,
-                    "remote_id": m["remote_id"],
-                    "url": url,
-                }
-            )
+        for m in self.object.iter_remote_mappings():
+            mappings.append(m.get_object_form(self.object))
         # Diagnostics
         diagnostics = []
         for d in sorted(self.object.diagnostic, key=lambda x: x.config.display_order):
