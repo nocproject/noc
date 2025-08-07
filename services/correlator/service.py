@@ -482,9 +482,12 @@ class CorrelatorService(FastAPIService):
                 )
             else:
                 alarm.stop_watch(Effect.STOP_CLEAR, key=str(rule.id))
-            if rule.rewrite_alarm_class:
-                # Alarm Rewrite Class ? Compat variables ?
-                ...
+            if rule.rewrite_alarm_class and rule.rewrite_alarm_class.allow_rewrite(alarm.alarm_class):
+                alarm.add_watch(
+                    Effect.REWRITE_ALARM_CLASS, key=str(rule.id), alarm_class=str(rule.rewrite_alarm_class.id),
+                )
+            else:
+                alarm.add_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
             job = rule.get_job(alarm)
             if job:
                 jobs.append(job)
@@ -653,6 +656,10 @@ class CorrelatorService(FastAPIService):
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups
+        # Calculate Effective AlarmClass
+        ac = a.effective_alarm_class()
+        # ?Refresh rules ?
+        a.rewrite_alarm_class(ac)
         a.severity = a.get_effective_severity(summary=summary)
         # Required Severity for match
         a.affected_services = Service.get_services_by_alarm(a)
