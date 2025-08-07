@@ -5,9 +5,14 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "NOC | Managed Object | Ping Failed",
-    "conditions": [{
-        "event_class_re": "NOC | Managed Object | Ping Failed"
-    }],
+    "conditions": [
+        {
+            "event_class_re": "NOC | Managed Object | Ping Failed"
+        },
+        {
+            "object_status": "D"
+        }
+    ],
     "default_action": "R",
     "stop_processing": false
 }

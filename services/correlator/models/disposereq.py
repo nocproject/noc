@@ -15,7 +15,7 @@ from .eventreq import EventRequest
 from .raisereq import RaiseRequest
 from .ensuregroupreq import EnsureGroupRequest
 from .setstatusreq import SetStatusRequest
-from .raiserefreq import RaiseReferenceRequest
+from .dispositionreq import DispositionRequest
 
 DisposeRequest = Union[
     ClearRequest,
@@ -24,5 +24,5 @@ DisposeRequest = Union[
     RaiseRequest,
     EnsureGroupRequest,
     SetStatusRequest,
-    RaiseReferenceRequest,
+    DispositionRequest,
 ]
