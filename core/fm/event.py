@@ -108,6 +108,7 @@ class Var(BaseModel):
     value: str  # Variable Value
     scope: Optional[str] = None  # Scope for variable
     snmp_raw: bool = False  # SNMP Raw value
+    escaped: bool = False
 
     def __str__(self):
         return f"{self.name}: {self.value}"
@@ -119,8 +120,9 @@ class Var(BaseModel):
                 "value": self.value,
                 "scope": self.scope,
                 "snmp_raw": self.snmp_raw,
+                "escaped": self.escaped,
             }
-        return {"name": self.name, "value": self.value, "snmp_raw": self.snmp_raw}
+        return {"name": self.name, "value": self.value, "snmp_raw": self.snmp_raw, "escaped": self.escaped}
 
 
 class Event(BaseModel):

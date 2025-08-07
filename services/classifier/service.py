@@ -31,6 +31,7 @@ from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.version import version
 from noc.core.debug import error_report
+from noc.core.escape import fm_unescape
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
@@ -592,7 +593,8 @@ class ClassifierService(FastAPIService):
                 return True
         return False
 
-    def resolve_vars(self, event: Event) -> Dict[str, Any]:
+    @classmethod
+    def resolve_vars(cls, event: Event) -> Dict[str, Any]:
         """
         Resolve Event data list to vars
         Args:
@@ -605,6 +607,8 @@ class ClassifierService(FastAPIService):
         for d in event.data:
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value
+            elif d.escaped:
+                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
             else:
                 raw_vars[d.name] = d.value
         # Resolve MIB variables for SNMP Traps
