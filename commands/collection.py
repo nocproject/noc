@@ -79,7 +79,7 @@ class Command(BaseCommand):
             help="Export model uuids",
         )
         export_group_exp.add_argument(
-            "-v",
+            "-o",
             "--object-vendor",
             dest="export_model_vendors",
             metavar="vendor",
