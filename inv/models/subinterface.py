@@ -169,6 +169,7 @@ class SubInterface(Document):
             vlan = VLAN.get_by_vlan_num(l2_domain.id, instance.untagged_vlan)
             if vlan and vlan.vlan_role_label:
                 yield [vlan.vlan_role_label]
+        yield [f"noc::interface::afi::{afi.lower()}" for afi in instance.enabled_afi]
 
     @property
     def service(self):
