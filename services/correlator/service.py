@@ -184,8 +184,6 @@ class CorrelatorService(FastAPIService):
                     except KeyError:
                         self.back_rules[cc.id] = [dr]
                     nbr += 1
-            if not rules:
-                continue
             self.rules[c.id] = rules
             for rule in rules:
                 if rule.has_avail_condition:
