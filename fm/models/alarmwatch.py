@@ -31,6 +31,7 @@ class Effect(enum.Enum):
     SEVERITY = "severity"
     STOP_CLEAR = "stop_clear"
     CLEAR_ALARM = "clear_alarm"
+    REWRITE_ALARM_CLASS = "rewrite_ac"
 
 
 class WatchItem(EmbeddedDocument):

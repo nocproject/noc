@@ -759,6 +759,21 @@ class ActiveAlarm(Document):
             return self.custom_style
         return AlarmSeverity.get_severity(self.severity).style
 
+    def rewrite_alarm_class(self, alarm_class: "AlarmClass"):
+        """Replace Alarm Class on Active Alarm"""
+        if alarm_class == self.alarm_class:
+            return
+        self.alarm_class = alarm_class
+
+    def effective_alarm_class(self) -> "AlarmClass":
+        """Calculate effective AlarmClass"""
+        ac = None
+        for w in self.watchers:
+            if w.effect == Effect.REWRITE_ALARM_CLASS:
+                ac = AlarmClass.get_by_id(w.args["alarm_class"])
+                break
+        return ac or self.alarm_class
+
     def has_merged_downlinks(self):
         """
         Check if alarm has merged downlinks
