@@ -241,12 +241,5 @@ class MapPlugin(InvPlugin):
         return {"id": str(o.id)}
 
     def api_get_resource_status(self, request, resources: List[str]):
-        alarmed = set()
-        for doc in ActiveAlarm._get_collection().find(
-            {"resource_path": {"$elemMatch": {"c": PathCode.OBJECT.value, "p": resources}}},
-            {"_id": 0, "resource_path": 1},
-        ):
-            for rp in doc.get("resource_path", []):
-                if rp.get("c", "") == PathCode.OBJECT.value:
-                    alarmed.update(rp.get("p", []))
-        return {"resource_status": [{"resource": r, "alarm": r in alarmed} for r in resources]}
+        alarmed = ActiveAlarm.get_resource_statuses(resources)
+        return {"resource_status": [{"resource": r, "alarm": alarmed[r]} for r in resources]}
