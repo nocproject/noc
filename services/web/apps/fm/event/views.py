@@ -235,7 +235,9 @@ class EventApplication(ExtApplication):
             ts=datetime.datetime.fromisoformat(q["timestamp"]).timestamp(),
             target=Target(**q["target_id"]),
             type=MessageType(
-                source=q["source"], id=q.get("snmp_trap_oid"), severity=EventSeverity[q["severity"]],
+                source=q["source"],
+                id=q.get("snmp_trap_oid"),
+                severity=EventSeverity[q["severity"]],
             ),
             data=q["data"],
             labels=q["labels"],
