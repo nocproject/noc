@@ -489,7 +489,9 @@ class ClassifierService(FastAPIService):
         metrics[EventMetrics.CR_DISPOSED] += 1
 
     async def dispose_reference(self, event: Event):
-        """"""
+        """Raise alarm by reference string"""
+        from noc.fm.models.alarmseverity import AlarmSeverity
+
         self.logger.info(
             "[%s|%s|%s] Disposing by reference",
             event.id,
@@ -510,9 +512,12 @@ class ClassifierService(FastAPIService):
             "timestamp": event.timestamp.isoformat(),
             "event_class": event.type.event_class,
             "labels": list(event.labels),
-            # "severity": ,
             "vars": event.vars,
         }
+        if event.type.severity:
+            severity = AlarmSeverity.get_by_code(event.type.severity.name)
+            if severity:
+                msg["severity"] = severity.severity
         if event.remote_system and event.remote_id:
             msg |= {"remote_system": event.remote_system, "remote_id": event.remote_id}
         self.publish(orjson.dumps(msg), stream=stream, partition=partition)
