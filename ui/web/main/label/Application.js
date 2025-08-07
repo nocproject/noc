@@ -279,6 +279,12 @@ Ext.define("NOC.main.label.Application", {
           disabled: true,
         },
         {
+          name: "unique_value",
+          xtype: "checkbox",
+          boxLabel: __("Unique Value"),
+          disabled: true,
+        },
+        {
           name: "is_builtin",
           xtype: "checkbox",
           boxLabel: __("Is Builtin"),
