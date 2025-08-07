@@ -138,7 +138,14 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           panel.getEl().on("click", function(e, target){
             var objectId = target.getAttribute("data-object-id");
             if(objectId){
-              this.up("[appId]").showObject(objectId);
+              if(e.shiftKey){
+                NOC.launch("inv.inv", "history", {
+                  args: [objectId],
+                });
+
+              } else{
+                this.up("[appId]").showObject(objectId);
+              }
             }
           }, this, {
             delegate: ".noc-clickable-object",
