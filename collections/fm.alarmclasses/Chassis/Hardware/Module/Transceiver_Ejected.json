@@ -1,0 +1,26 @@
+{
+    "name": "Chassis | Hardware | Module | Transceiver Ejected",
+    "$collection": "fm.alarmclasses",
+    "uuid": "daf8964b-c3a6-42c3-b62f-69e82bd4980b",
+    "is_unique": false,
+    "reference": [],
+    "by_reference": false,
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "module",
+            "description": null
+        },
+        {
+            "name": "interface",
+            "description": null
+        }
+    ],
+    "subject_template": "Transceiver on {{module}}/{{interface}} is absent",
+    "body_template": "Transceiver on {{module}}/{{interface}} is absent",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": []
+}

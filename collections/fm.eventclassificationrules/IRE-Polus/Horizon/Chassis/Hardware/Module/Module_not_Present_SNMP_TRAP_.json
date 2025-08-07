@@ -1,0 +1,36 @@
+{
+    "name": "IRE-Polus | Horizon | Chassis | Hardware | Module | Module not Present (SNMP_TRAP)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8b01e969-e3fb-4ff5-a8a5-37715d75ff0a",
+    "event_class__name": "Chassis | Hardware | Module | Module not Present",
+    "preference": 1000,
+    "sources": ["SNMP Trap"],
+    "vars": [{
+        "name": "module",
+        "value": "=f\"{crate_id}/{slot_id}\""
+    }],
+    "patterns": [
+        {
+            "key_re": "^SNMPv2-MIB::snmpTrapOID.0$",
+            "value_re": "^IPG-MIB::rack$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapCrateId$",
+            "value_re": "^(?P<crate_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapSlot$",
+            "value_re": "^(?P<slot_id>.+)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDevice$",
+            "value_re": "^(?P<device>.*)$"
+        },
+        {
+            "key_re": "^IPG-MIB::cfgTrapDescr$",
+            "value_re": "^Alarm raised:\\s+^(?P<interface>.*)_SFP_State=Absent\\s*$"
+        }
+    ],
+    "labels": [],
+    "profiles": ["IRE-Polus.Horizon"]
+}
