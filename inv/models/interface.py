@@ -575,10 +575,14 @@ class Interface(Document):
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(
-                {"managed_object": mo.id, "type": {"$in": ["physical", "aggregated", "tunnel"]}},
+                {
+                    "managed_object": mo.id,
+                    "type": {"$in": ["physical", "aggregated", "tunnel", "SVI"]},
+                },
                 {
                     "_id": 1,
                     "name": 1,
+                    "type": 1,
                     "admin_status": 1,
                     "oper_status": 1,
                     "ifindex": 1,
@@ -590,6 +594,8 @@ class Interface(Document):
             logger.debug("Interface %s. ipr=%s", i["name"], i_profile)
             if not i_profile:
                 continue  # No metrics configured
+            elif i["type"] == "SVI" and i_profile.is_default and i["name"] not in s_map:
+                continue  # Not allowed apply default profile to SVI
             metrics: List[MetricItem] = []
             for mc in i_profile.metrics:
                 # Check metric collected policy
