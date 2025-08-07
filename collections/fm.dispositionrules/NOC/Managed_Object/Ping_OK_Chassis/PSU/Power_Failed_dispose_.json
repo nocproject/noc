@@ -5,9 +5,14 @@
     "description": null,
     "preference": 1000,
     "alarm_disposition__name": "Chassis | PSU | Power Failed",
-    "conditions": [{
-        "event_class_re": "NOC | Managed Object | Ping OK"
-    }],
+    "conditions": [
+        {
+            "event_class_re": "NOC | Managed Object | Ping OK"
+        },
+        {
+            "object_status": "U"
+        }
+    ],
     "default_action": "C",
     "stop_processing": false
 }

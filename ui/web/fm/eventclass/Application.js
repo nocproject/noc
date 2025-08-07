@@ -201,67 +201,13 @@ Ext.define("NOC.fm.eventclass.Application", {
             {
               title: __("Disposition"),
               items: [
-                {
-                  name: "disposition",
-                  xtype: "gridfield",
-                  fieldLabel: __("Disposition"),
-                  columns: [
-                    {
-                      text: __("Name"),
-                      dataIndex: "name",
-                      width: 100,
-                      editor: "textfield",
-                    },
-                    {
-                      text: __("Condition"),
-                      dataIndex: "condition",
-                      width: 100,
-                      editor: "textfield",
-                    },
-                    {
-                      text: __("Action"),
-                      dataIndex: "action",
-                      width: 70,
-                      editor: {
-                        xtype: "combobox",
-                        store: [
-                          "drop",
-                          "ignore",
-                          "raise",
-                          "clear",
-                        ],
-                      },
-                    },
-                    {
-                      text: __("Alarm"),
-                      dataIndex: "alarm_class",
-                      renderer: NOC.render.Lookup("alarm_class"),
-                      width: 200,
-                      editor: "fm.alarmclass.LookupField",
-                    },
-                    {
-                      text: __("Stop"),
-                      dataIndex: "stop_disposition",
-                      renderer: NOC.render.Bool,
-                      width: 50,
-                      editor: "checkbox",
-                    },
-                    {
-                      text: __("Managed Object"),
-                      dataIndex: "managed_object",
-                      editor: "textfield",
-                      width: 100,
-                    },
-                    {
-                      text: __("Var.  Map."),
-                      dataIndex: "var_mapping",
-                      renderer: NOC.render.JSON,
-                      editor: "jsonfield",
-                      flex: 1,
-                    },
+                        {
+                            xtype: "displayfield",
+                            fieldLabel: __("Deprecated"),
+                            uiStyle: "medium",
+                            value: __("Moved to FM -> Setup -> Disposition Rules collection")
+                        }
                   ],
-                },
-              ],
             },
             {
               title: __("Suppression"),

@@ -70,6 +70,7 @@ class EventMetrics(enum.Enum):
     CR_UNKNOWN = "events_unknown"
     CR_CLASSIFIED = "events_classified"
     CR_DISPOSED = "events_disposed"
+    CR_DISPOSED_REF = "events_disposed_reference"
     CR_DUPLICATED = "events_duplicated"
     CR_UDUPLICATED = "events_unk_duplicated"
     CR_UOBJECT = "events_unk_object"
@@ -451,7 +452,7 @@ class ClassifierService(FastAPIService):
             metrics[EventMetrics.CR_CLASSIFIED] += 1
         return EventAction.LOG, event_config, r_vars
 
-    async def dispose_event(self, event: Event, mo: Optional[ManagedObject]):
+    async def dispose_event(self, event: Event, mo: ManagedObject):
         """
         Register Alarm
         Args:
@@ -486,6 +487,41 @@ class ClassifierService(FastAPIService):
             partition=partition,
         )
         metrics[EventMetrics.CR_DISPOSED] += 1
+
+    async def dispose_reference(self, event: Event):
+        """Raise alarm by reference string"""
+        from noc.fm.models.alarmseverity import AlarmSeverity
+
+        self.logger.info(
+            "[%s|%s|%s] Disposing by reference",
+            event.id,
+            event.target.name,
+            event.target.address,
+        )
+        # Calculate partition
+        fm_pool = Pool.get_default_fm_pool().name
+        stream = f"dispose.{fm_pool}"
+        num_partitions = self.pool_partitions.get(fm_pool)
+        if not num_partitions:
+            num_partitions = await self.get_stream_partitions(stream)
+            self.pool_partitions[fm_pool] = num_partitions
+        partition = 0
+        msg = {
+            "$op": "disposition",
+            "reference": "",
+            "timestamp": event.timestamp.isoformat(),
+            "event_class": event.type.event_class,
+            "labels": list(event.labels),
+            "vars": event.vars,
+        }
+        if event.type.severity:
+            severity = AlarmSeverity.get_by_code(event.type.severity.name)
+            if severity:
+                msg["severity"] = severity.severity
+        if event.remote_system and event.remote_id:
+            msg |= {"remote_system": event.remote_system, "remote_id": event.remote_id}
+        self.publish(orjson.dumps(msg), stream=stream, partition=partition)
+        metrics[EventMetrics.CR_DISPOSED_REF] += 1
 
     def deduplicate_event(
         self,
@@ -720,8 +756,10 @@ class ClassifierService(FastAPIService):
             # Severity ignored
             return
         # Finally dispose event to further processing by correlator
-        if e_action == EventAction.DISPOSITION:
+        if e_action == EventAction.DISPOSITION and mo:
             await self.dispose_event(event, mo)
+        elif e_action == EventAction.DISPOSITION:
+            await self.dispose_reference(event)
 
     async def report(self):
         t = perf_counter()

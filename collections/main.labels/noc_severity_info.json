@@ -15,5 +15,5 @@
     "is_matching": false,
     "expose_metric": false,
     "expose_datastream": false,
-    "expose_alarm": false
+    "expose_alarm": true
 }
