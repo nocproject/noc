@@ -22,6 +22,7 @@ from typing import (
     Generic,
     Union,
     List,
+    DefaultDict,
 )
 from threading import Lock
 import uuid
@@ -1447,10 +1448,31 @@ class ActiveAlarm(Document):
         Returns:
             Dict of resource -> alarm status.
         """
+
+        def query_for_code(code: str) -> Dict[str, Any]:
+            items = by_codes[code]
+            if len(items) == 1:
+                return {"resource_path": {"$elemMatch": {"c": code, "p": items[0]}}}
+            return {"resource_path": {"$elemMatch": {"c": code, "p": {"$in": items}}}}
+
         r = {x: False for x in iter}
-        for doc in ActiveAlarm._get_collection().find(
-            {"resource_path.p": {"$in": list(r)}}, {"_id": 0, "resource_path": 1}
-        ):
+        if not r:
+            return r
+        by_codes: DefaultDict[str, List[str]] = defaultdict(list)
+        for res in r:
+            match res.split(":", 1)[0]:
+                case "o":
+                    by_codes["o"].append(res)
+                case "c":
+                    by_codes["c"].append(res)
+                case _:
+                    continue
+        q = [query_for_code(c) for c in by_codes]
+        if len(q) == 1:
+            query = q
+        else:
+            query = {"$or": q}
+        for doc in ActiveAlarm._get_collection().find(query, {"_id": 0, "resource_path": 1}):
             for pi in doc.get("resource_path", []):
                 for p in pi.get("p"):
                     if p in r:
