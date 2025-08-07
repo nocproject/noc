@@ -421,7 +421,7 @@ class ClassifierService(FastAPIService):
             return EventAction.DROP, self.get_event_config(rule.event_class_id), r_vars
         # Apply transform
         for t in rule.vars_transform or []:
-            t.transform(r_vars, raw_vars)
+            t.transform(r_vars, raw_vars | r_vars)
         if rule.is_unknown_syslog:
             # Append to codebook
             cb = self.get_msg_codebook(event.message or "")
