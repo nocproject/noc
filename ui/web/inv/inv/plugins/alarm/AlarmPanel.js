@@ -79,12 +79,35 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           dataIndex: "object",
           flex: 1,
           renderer: function(v){
-            return v.map(function(x){return x["title"]}).join(" > ");
-          },
+            if(v && v.length > 0){
+              return v.map(function(x){
+                let html = "<span";
+                if(!Ext.isEmpty(x.id)){
+                  html += ` class="noc-clickable-object"  data-object-id="${x.id}"`;
+                }
+                return html + `>${x.title}</span>`;
+              }).join(" > ");
+            }
+            return "";
+          },  
         },
       ],
       viewConfig: {
         getRowClass: Ext.bind(me.getRowClass, me),
+      },
+      listeners: {
+        scope: this,
+        afterrender: function(panel){
+          panel.getEl().on("click", function(e, target){
+            var objectId = target.getAttribute("data-object-id");
+            if(objectId){
+              this.up("[appId]").showObject(objectId);
+            }
+          }, this, {
+            delegate: ".noc-clickable-object",
+            stopEvent: true,
+          });
+        },
       },
     });
     //
@@ -96,12 +119,12 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
     me.callParent();
   },
   //
-  preview: function(data, objectId){
+  preview: function(data){
     var me = this;
     me.store.setRootNode(data || me.defaultRoot)
   },
   // Return Grid's row classes
-  getRowClass: function(record, index, params, store){
+  getRowClass: function(record){
     var c = record.get("row_class");
     if(c){
       return c;
