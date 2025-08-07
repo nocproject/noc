@@ -13,6 +13,6 @@
         "vc.L2Domain",
         "crm.Subscriber",
         "crm.Supplier",
-        "inv.Interface",
+        "inv.Interface"
     ]
 }
