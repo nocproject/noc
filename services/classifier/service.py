@@ -506,7 +506,7 @@ class ClassifierService(FastAPIService):
         partition = 0
         msg = {
             "$op": "disposition",
-            "reference": f"",
+            "reference": "",
             "timestamp": event.timestamp.isoformat(),
             "event_class": event.type.event_class,
             "labels": list(event.labels),

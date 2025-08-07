@@ -1042,6 +1042,8 @@ class CorrelatorService(FastAPIService):
         elif alarm_class and alarm_class.id in self.disposition_rules:
             rules += self.disposition_rules[alarm_class.id]
         for rule in rules:
+            # if rule.alarm_class and labels:
+            #    r_vars.update(alarm_class.convert_labels_var(labels))
             if not rule.is_vars(r_vars):
                 self.logger.info(
                     "[%s] Rule is not applicable (variables not match): %s, %s",
@@ -1096,10 +1098,8 @@ class CorrelatorService(FastAPIService):
             groups = None
         # Remote system
         if req.remote_system and req.remote_id:
-            remote_system = RemoteSystem.get_by_id(req.remote_system)
+            remote_system = RemoteSystem.get_by_name(req.remote_system)
         r_vars = req.vars or {}
-        if req.labels:
-            r_vars.update(alarm_class.convert_labels_var(req.labels))
         for rule in self.iter_disposition_rules(
             req.reference,
             alarm_class=alarm_class,
@@ -1432,19 +1432,13 @@ class CorrelatorService(FastAPIService):
         event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
         event_class = EventClass.get_by_name(e.type.event_class)
-        # drc = self.rules.get(event_class.id)
-        # if not drc:
-        #     self.logger.info(
-        #         "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
-        #     )
-        #     return
         if not e.target.id:
             self.logger.info(
                 "[%s] No Managed Object for event %s, Try raise reference",
                 event_id,
                 event_class.name,
             )
-            managed_object = None
+            return
         else:
             managed_object = ManagedObject.get_by_id(int(e.target.id))
         processed = 0
