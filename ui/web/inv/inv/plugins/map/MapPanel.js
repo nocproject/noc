@@ -770,7 +770,24 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     switch(status){
       case "alarm":
       case "critical":
-        iconHtml = `<i class="fa fa-fire" style="color: red; font-size: ${fontSize}px;"></i>`;
+        iconHtml = `
+  <div style="position: relative; width: 1em; height: 1em; font-size: ${fontSize}px;">
+    <i class="fa fa-fire" style="
+      position: absolute;
+      top: -0.9em;
+      left: 50%;
+      transform: translateX(-50%);
+      color: red;
+      font-size: ${fontSize * 0.8}px;"></i>
+    <i class="fa fa-circle" style="
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: red;
+      font-size: ${fontSize}px;"></i>
+  </div>
+`;
         break;
       case "warning":
         iconHtml = `<i class="fa fa-exclamation-triangle" style="color: orange; font-size: ${fontSize}px;"></i>`;
