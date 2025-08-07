@@ -937,6 +937,8 @@ class DiscoveredObject(Document):
         for item in self.data:
             if item.source != source and not remote_system:
                 continue
+            elif remote_system and not item.remote_system:
+                continue
             elif remote_system and item.remote_system.id == remote_system.id:
                 remote_rids.append(item.remote_id)
                 continue

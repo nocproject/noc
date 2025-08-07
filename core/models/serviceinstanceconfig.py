@@ -167,7 +167,7 @@ class ServiceEndPoint(ServiceInstanceConfig):
         elif is_fqdn(host):
             fqdn = host
         if port:
-            port = int(port)
+            port = int(port[0])
         cfg = cls.from_config(
             name=name,
             fqdn=fqdn,
