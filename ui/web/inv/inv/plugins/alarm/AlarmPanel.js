@@ -91,8 +91,8 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           width: 70,
           renderer: function(v, _, record){
             return record.get("severity__label") +
-                    "<br/>" +
-                    record.get("severity");
+              "<br/>" +
+              record.get("severity");
           },
         },
         {
@@ -101,15 +101,23 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
           width: 120,
           renderer: function(v, _, record){
             return NOC.render.DateTime(record.get("timestamp")) +
-                    "<br/>" +
-                    NOC.render.Duration(record.get("duration"));
+              "<br/>" +
+              NOC.render.Duration(record.get("duration"));
           },
         },
         {
           text: __("Channel"),
           dataIndex: "channel",
           width: 300,
-          renderer: NOC.render.Lookup("channel"),
+          renderer: function(v, _, record){
+            let html = "<span",
+              channelId = record.get("channel"),
+              channelLabel = record.get("channel__label") || v || "";
+            if(!Ext.isEmpty(channelId)){
+              html += ` class="noc-clickable-object noc-channel"  data-object-id="${channelId}"`;
+            }
+            return html + `>${channelLabel}</span>`;
+          },
         },
         {
           text: __("Object"),
@@ -120,7 +128,7 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
               return v.map(function(x){
                 let html = "<span";
                 if(!Ext.isEmpty(x.id)){
-                  html += ` class="noc-clickable-object"  data-object-id="${x.id}"`;
+                  html += ` class="noc-clickable-object noc-object"  data-object-id="${x.id}"`;
                 }
                 return html + `>${x.title}</span>`;
               }).join(" > ");
@@ -137,7 +145,7 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
         afterrender: function(panel){
           panel.getEl().on("click", function(e, target){
             var objectId = target.getAttribute("data-object-id");
-            if(objectId){
+            if(objectId && target.classList.contains("noc-object")){
               if(e.shiftKey){
                 NOC.launch("inv.inv", "history", {
                   args: [objectId],
@@ -146,6 +154,11 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
               } else{
                 this.up("[appId]").showObject(objectId);
               }
+            }
+            if(objectId && target.classList.contains("noc-channel")){
+              NOC.launch("inv.channel", "history", {
+                args: [objectId],
+              });
             }
           }, this, {
             delegate: ".noc-clickable-object",
