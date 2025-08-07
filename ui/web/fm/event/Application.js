@@ -95,9 +95,15 @@ Ext.define("NOC.fm.event.Application", {
           dataIndex: "source",
         },
         {
+          text: __("Severity"),
+          dataIndex: "severity",
+          width: 50,
+        },
+        {
           text: __("Dispose"),
           dataIndex: "dispose",
           renderer: NOC.render.Bool,
+          width: 20,
         },
       ],
       viewConfig: {

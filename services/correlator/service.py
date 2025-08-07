@@ -45,7 +45,7 @@ from noc.services.correlator.models.clearidreq import ClearIdRequest
 from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.services.correlator.models.setstatusreq import SetStatusRequest
-from noc.services.correlator.models.raiserefreq import RaiseReferenceRequest
+from noc.services.correlator.models.dispositionreq import DispositionRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
 from noc.fm.models.alarmlog import AlarmLog
@@ -91,6 +91,8 @@ class CorrelatorService(FastAPIService):
         super().__init__()
         self.version = version.version
         self.rules: Dict[ObjectId, List[EventAlarmRule]] = {}
+        self.disposition_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
+        self.object_avail_rules = Dict[self, List[EventAlarmRule]]
         self.back_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
@@ -162,16 +164,17 @@ class CorrelatorService(FastAPIService):
         self.logger.debug("Loading rules")
         self.rules = {}
         self.back_rules = {}
-        nr = 0
-        nbr = 0
+        self.disposition_rules = {}
+        self.object_avail_rules = {}
+        nr, nbr, anr, ocr = 0, 0, 0, 0
         for c in EventClass.objects.all():
             cfg = EventClass.get_event_config(c)
-            r = []
+            rules = []
             for dr in cfg["actions"]:
                 if not dr["alarm_class"]:
                     continue
                 rule = EventAlarmRule.from_config(dr, c)
-                r += [rule]
+                rules += [rule]
                 nr += 1
                 if "combo_condition" not in dr or not dr["combo_condition"]["combo_window"]:
                     continue
@@ -181,9 +184,27 @@ class CorrelatorService(FastAPIService):
                     except KeyError:
                         self.back_rules[cc.id] = [dr]
                     nbr += 1
-            if r:
-                self.rules[c.id] = r
-        self.logger.debug("%d rules are loaded. %d combos", nr, nbr)
+            self.rules[c.id] = rules
+            for rule in rules:
+                if rule.has_avail_condition:
+                    try:
+                        self.object_avail_rules[rule.object_avail_condition] += [rule]
+                    except KeyError:
+                        self.object_avail_rules[rule.object_avail_condition] = [rule]
+                    ocr += 1
+                if rule.alarm_class:
+                    try:
+                        self.disposition_rules[rule.alarm_class.id] += [rule]
+                    except KeyError:
+                        self.disposition_rules[rule.alarm_class.id] = [rule]
+                    anr += 1
+        self.logger.info(
+            "%d rules are loaded. %d combos. %d alarms. %d avail",
+            nr,
+            nbr,
+            anr,
+            ocr,
+        )
 
     def load_vars(self):
         self.logger.info("Loading AlarmClass vars")
@@ -340,9 +361,9 @@ class CorrelatorService(FastAPIService):
             return None
         return f"e:{alarm_class.id}:{var_suffix}"
 
-    @staticmethod
+    @classmethod
     def get_default_reference(
-        managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
+        cls, managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
     ) -> str:
         """
         Generate default reference for event-based alarms.
@@ -357,6 +378,8 @@ class CorrelatorService(FastAPIService):
         :param vars: Variables
         :returns: Reference string
         """
+        if alarm_class.name == cls.AVAIL_CLS:
+            return f"p:{managed_object.id}"
         if not vars:
             return f"e:{managed_object.id}:{alarm_class.id}"
         var_suffix = ":".join(
@@ -496,6 +519,7 @@ class CorrelatorService(FastAPIService):
         labels: Optional[List[str]] = None,
         min_group_size: Optional[int] = None,
         severity: Optional[int] = None,
+        subject: Optional[str] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -555,6 +579,8 @@ class CorrelatorService(FastAPIService):
                 alarm_groups: Dict[str, GroupItem] = {}
                 if severity and severity != alarm.base_severity:
                     alarm.base_severity = severity
+                if subject and subject != alarm.custom_subject:
+                    alarm.custom_subject = subject
                 await self.apply_rules(alarm, alarm_groups, on_refresh=True)
                 self.refresh_alarm(alarm, timestamp, severity)
                 if config.correlator.auto_escalation:
@@ -638,6 +664,8 @@ class CorrelatorService(FastAPIService):
             managed_object.address if managed_object else reference,
             a.severity,
         )
+        if subject:
+            a.custom_subject = subject
         # Save
         a.save()
         # Update group if Service Group Alarm
@@ -697,25 +725,22 @@ class CorrelatorService(FastAPIService):
         managed_object = self.eval_expression(
             rule.managed_object, event=event, managed_object=managed_object
         )
-        reference = None
-        if not managed_object and not rule.alarm_class.by_reference:
+        if not managed_object:
             self.logger.info("Empty managed object, ignoring")
             return
-        elif not managed_object and rule.alarm_class.by_reference:
-            # Try reference
-            self.logger.info("Empty managed object, try calculate reference")
-            reference = self.get_default_optional_reference(
-                rule.alarm_class, rule.get_vars(event.vars)
-            )
-            if not reference:
-                return
-        elif int(event.target.id) != managed_object.id:
+        if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
         if not event.type.severity:
             severity = None
         elif event.type.severity == EventSeverity.CLEARED:
-            return await self.clear_alarm_from_rule(rule, event, managed_object)
+            return await self.clear_alarm_from_rule(
+                rule,
+                managed_object,
+                r_vars=event.vars,
+                timestamp=event.timestamp,
+                event=event,
+            )
         else:
             severity = AlarmSeverity.get_by_code(event.type.severity.name)
             self.logger.info("Try request severity %s -> %s", event.type.severity, severity)
@@ -725,7 +750,7 @@ class CorrelatorService(FastAPIService):
             rs = None
         # Extract variables
         r_vars = rule.get_vars(event.vars)
-        if rule.alarm_class.id in self.alarm_class_vars and managed_object:
+        if rule.alarm_class.id in self.alarm_class_vars:
             # Calculate dynamic defaults
             context = {"components": ComponentHub(rule.alarm_class, managed_object, r_vars.copy())}
             for k, v in self.alarm_class_vars[rule.alarm_class.id].items():
@@ -734,7 +759,6 @@ class CorrelatorService(FastAPIService):
                     r_vars[k] = str(x)
         return await self.raise_alarm(
             managed_object=managed_object,
-            reference=reference,
             timestamp=event.timestamp,
             alarm_class=rule.alarm_class,
             vars=r_vars,
@@ -791,9 +815,12 @@ class CorrelatorService(FastAPIService):
     async def clear_alarm_from_rule(
         self,
         rule: "EventAlarmRule",
-        event: "Event",
         managed_object: ManagedObject,
+        r_vars: Dict[str, Any],
+        timestamp: Optional[datetime.datetime] = None,
+        event: Optional["Event"] = None,
     ) -> Optional["ActiveAlarm"]:
+        """Clear alarm by rule"""
         managed_object = self.eval_expression(
             rule.managed_object, event=event, managed_object=managed_object
         )
@@ -805,30 +832,16 @@ class CorrelatorService(FastAPIService):
             return
         if not rule.unique:
             return
-        r_vars = rule.get_vars(event.vars)
+        r_vars = rule.get_vars(r_vars)
         reference = self.get_default_reference(
             managed_object=managed_object, alarm_class=rule.alarm_class, vars=r_vars
         )
-        ref_hash = self.get_reference_hash(reference)
-        alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
-        if not alarm:
-            return
-        self.logger.info(
-            "[%s|%s|%s] %s clears alarm %s(%s)",
-            event.id,
-            managed_object.name,
-            managed_object.address,
-            event.type.event_class,
-            alarm.alarm_class.name,
-            alarm.id,
+        alarm = await self.clear_by_reference(
+            reference,
+            message=f"Cleared by disposition rule '{rule.name}'",
+            ts=timestamp,
+            event=event,
         )
-        # event.contribute_to_alarm(alarm)
-        alarm.closing_event = ObjectId(event.id)
-        alarm.last_update = max(alarm.last_update, event.timestamp)
-        groups = alarm.groups
-        alarm.clear_alarm("Cleared by disposition rule '%s'" % rule.name, ts=event.timestamp)
-        metrics["alarm_clear"] += 1
-        await self.clear_groups(groups, ts=event.timestamp)
         return alarm
 
     def get_delayed_event(
@@ -991,17 +1004,86 @@ class CorrelatorService(FastAPIService):
                 await self.topo_rca_lock.release()
                 self.topo_rca_lock = None
 
-    async def on_msg_raiseref(self, req: RaiseReferenceRequest) -> None:
+    def iter_disposition_rules(
+        self,
+        reference: str,
+        r_vars: Dict[str, Any],
+        alarm_class: Optional[AlarmClass] = None,
+        event_class: Optional[EventClass] = None,
+        object_avail: Optional[bool] = None,
+        labels: Optional[List[str]] = None,
+        remote_system: Optional[RemoteSystem] = None,
+    ):
         """
-        Process `raise` message.
+        Iterate over disposition rule
+        Args:
+            reference: Default reference
+            r_vars: Variables
+            alarm_class: Alarm class for match
+            event_class: Event class for match
+            object_avail: Object availability condition
+            labels: Alarm labels
+            remote_system: Alarm remote system
+        """
+        rules: List[EventAlarmRule] = []
+        ctx = {"labels": [], "service_groups": []}
+        if labels:
+            ctx["labels"] = frozenset(labels or [])
+        if remote_system:
+            ctx["remote_system"] = str(remote_system.id)
+        if event_class and event_class.id in rules:
+            rules = self.rules[event_class.id]
+        if object_avail is not None:
+            ctx["object_avail"] = object_avail
+            if object_avail in self.object_avail_rules:
+                rules += self.object_avail_rules[object_avail]
+        elif alarm_class and alarm_class.id in self.disposition_rules:
+            rules += self.disposition_rules[alarm_class.id]
+        for rule in rules:
+            # if rule.alarm_class and labels:
+            #    r_vars.update(alarm_class.convert_labels_var(labels))
+            if not rule.is_vars(r_vars):
+                self.logger.info(
+                    "[%s] Rule is not applicable (variables not match): %s, %s",
+                    reference,
+                    rule.name,
+                    r_vars,
+                )
+                continue
+            if not rule.is_match(ctx):
+                # Rule is not applicable
+                self.logger.info(
+                    "[%s] Rule is not applicable (context not match): %s", reference, rule.name
+                )
+                continue
+            # Process action
+            if rule.action == "drop":
+                self.logger.info("[%s] Dropped by action", reference)
+                # e.delete()
+                # save_to_disposelog("drop")  # ignore + stop
+                return
+            elif rule.action == "ignore":
+                self.logger.info("[%s] Ignored by action", reference)
+                # save_to_disposelog("ignore")
+                continue
+            self.logger.debug("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
+            yield rule
+
+    async def on_msg_disposition(self, req: DispositionRequest) -> None:
+        """
+        Process `disposition` message.
         """
         # Fetch timestamp
         ts = self.parse_timestamp(req.timestamp)
         # Get alarm class
-        alarm_class = AlarmClass.get_by_name(req.alarm_class)
-        if not alarm_class:
-            self.logger.error("Invalid alarm class: %s", req.alarm_class)
-            return
+        alarm_class, event_class, managed_object, remote_system = None, None, None, None
+        if req.alarm_class:
+            alarm_class = AlarmClass.get_by_name(req.alarm_class)
+        if req.event_class:
+            event_class = EventClass.get_by_name(req.event_class)
+        # Get Managed Object
+        if req.managed_object:
+            managed_object = ManagedObject.get_by_id(int(req.managed_object))
         # Groups
         if req.groups:
             groups = []
@@ -1014,28 +1096,39 @@ class CorrelatorService(FastAPIService):
             groups = None
         # Remote system
         if req.remote_system and req.remote_id:
-            remote_system = RemoteSystem.get_by_id(req.remote_system)
-        else:
-            remote_system = None
+            remote_system = RemoteSystem.get_by_name(req.remote_system)
         r_vars = req.vars or {}
-        if req.labels:
-            r_vars.update(alarm_class.convert_labels_var(req.labels))
-        try:
-            await self.raise_alarm(
-                managed_object=None,
-                timestamp=ts,
-                alarm_class=alarm_class,
-                vars=r_vars,
-                reference=req.reference,
-                groups=groups,
-                labels=req.labels or [],
-                severity=req.severity,
-                remote_system=remote_system,
-                remote_id=req.remote_id if remote_system else None,
-            )
-        except Exception:
-            metrics["alarm_dispose_error"] += 1
-            error_report()
+        for rule in self.iter_disposition_rules(
+            req.reference,
+            alarm_class=alarm_class,
+            event_class=event_class,
+            r_vars=r_vars,
+            labels=req.labels,
+        ):
+            try:
+                if rule.action == "raise" and rule.combo_condition == "none":
+                    await self.raise_alarm(
+                        managed_object=managed_object,
+                        timestamp=ts,
+                        alarm_class=alarm_class,
+                        vars=r_vars,
+                        reference=req.reference,
+                        groups=groups,
+                        labels=req.labels or [],
+                        severity=req.severity,
+                        remote_system=remote_system,
+                        remote_id=req.remote_id if remote_system else None,
+                    )
+                elif rule.action == "clear" and rule.combo_condition == "none":
+                    await self.clear_alarm_from_rule(
+                        rule,
+                        managed_object=managed_object,
+                        r_vars=r_vars,
+                        timestamp=ts,
+                    )
+            except Exception:
+                metrics["alarm_dispose_error"] += 1
+                error_report()
 
     def parse_timestamp(self, iso_timestamp: str) -> datetime.datetime:
         """
@@ -1187,25 +1280,42 @@ class CorrelatorService(FastAPIService):
         ac = AlarmClass.get_by_name(self.AVAIL_CLS)
 
         for item in req.statuses:
-            mo = self.parse_object(item.managed_object)
-            if not mo:
+            managed_object = self.parse_object(item.managed_object)
+            if not managed_object:
                 continue
             ts = self.parse_timestamp(item.timestamp)
-            self.set_status(mo.id, item.status, ts)
+            self.set_status(managed_object.id, item.status, ts)
             # @todo bulk alarm method
-            ref = f"p:{mo.id}"
+            ref = f"p:{managed_object.id}"
             try:
-                if item.status:
-                    await self.clear_by_reference(ref, ts=ts, message=item.message)
-                else:
-                    await self.raise_alarm(
-                        managed_object=mo,
-                        timestamp=ts,
-                        alarm_class=ac,
-                        reference=ref,
-                        vars={},
-                        labels=item.labels,
-                    )
+                for rule in self.iter_disposition_rules(
+                    ref, r_vars={}, labels=item.labels, object_avail=item.status
+                ):
+                    if item.status and rule.action == "clear" and rule.combo_condition == "none":
+                        await self.clear_alarm_from_rule(
+                            rule,
+                            managed_object=managed_object,
+                            r_vars={},
+                            timestamp=ts,
+                        )
+                    elif item.status:
+                        await self.clear_by_reference(ref, ts=ts, message=item.message)
+                    if (
+                        rule.action == "raise"
+                        and rule.combo_condition == "none"
+                        and not item.status
+                    ):
+                        await self.raise_alarm(
+                            managed_object=managed_object,
+                            timestamp=ts,
+                            alarm_class=ac,
+                            reference=ref,
+                            vars={},
+                            labels=item.labels,
+                        )
+                    else:
+                        # Not rule for raise Ping Failed
+                        pass
             except Exception:
                 metrics["alarm_dispose_error"] += 1
                 error_report()
@@ -1251,7 +1361,8 @@ class CorrelatorService(FastAPIService):
         reference: Union[str, bytes],
         ts: Optional[datetime.datetime] = None,
         message: Optional[str] = None,
-    ) -> None:
+        event: Optional[Event] = None,
+    ) -> Optional[ActiveAlarm]:
         """
         Clear alarm by reference
         """
@@ -1267,19 +1378,32 @@ class CorrelatorService(FastAPIService):
             self.logger.info("Alarm '%s' is not found. Skipping", reference)
             return
         # Clear alarm
-        self.logger.info(
-            "[%s|%s] Clear alarm %s(%s): %s",
-            alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
-            alarm.managed_object.address if alarm.managed_object else reference,
-            alarm.alarm_class.name,
-            alarm.id,
-            message or f"by reference {reference}",
-        )
+        if event:
+            alarm.closing_event = ObjectId(event.id)
+            self.logger.info(
+                "[%s|%s|%s] %s clears alarm %s(%s)",
+                event.id,
+                alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
+                alarm.managed_object.address if alarm.managed_object else reference,
+                event.type.event_class,
+                alarm.alarm_class.name,
+                alarm.id,
+            )
+        else:
+            self.logger.info(
+                "[%s|%s] Clear alarm %s(%s): %s",
+                alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
+                alarm.managed_object.address if alarm.managed_object else reference,
+                alarm.alarm_class.name,
+                alarm.id,
+                message or f"by reference {reference}",
+            )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
         alarm.clear_alarm(message or "Cleared by reference", ts=ts)
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
+        return alarm
 
     async def dispose_event(self, e: Event):
         """
@@ -1306,42 +1430,34 @@ class CorrelatorService(FastAPIService):
         event_id = str(e.id)
         self.logger.info("[%s] Disposing", event_id)
         event_class = EventClass.get_by_name(e.type.event_class)
-        drc = self.rules.get(event_class.id)
-        if not drc:
-            self.logger.info(
-                "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
-            )
-            return
-        elif not e.target.id:
+        if not e.target.id:
             self.logger.info(
                 "[%s] No Managed Object for event %s, Try raise reference",
                 event_id,
                 event_class.name,
             )
-            managed_object = None
+            return
         else:
             managed_object = ManagedObject.get_by_id(int(e.target.id))
+        processed = 0
         # Apply disposition rules
-        for rule in drc:
-            if not rule.match_event(e):
-                continue  # Rule is not applicable
+        for processed, rule in enumerate(
+            self.iter_disposition_rules(event_id, e.vars, event_class=event_class, labels=e.labels),
+            start=1,
+        ):
             if not managed_object and not rule.alarm_class.by_reference:
                 continue  # Alarm Class is not applicable
-            # Process action
-            if rule.action == "drop":
-                self.logger.info("[%s] Dropped by action", event_id)
-                # e.delete()
-                save_to_disposelog("drop")  # ignore + stop
-                return
-            elif rule.action == "ignore":
-                self.logger.info("[%s] Ignored by action", event_id)
-                save_to_disposelog("ignore")
-                continue
             elif rule.action == "raise" and rule.combo_condition == "none":
                 alarm = await self.raise_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("raise", alarm)
             elif rule.action == "clear" and rule.combo_condition == "none":
-                alarm = await self.clear_alarm_from_rule(rule, e, managed_object)
+                alarm = await self.clear_alarm_from_rule(
+                    rule,
+                    managed_object=managed_object,
+                    r_vars=e.vars,
+                    timestamp=e.timestamp,
+                    event=e,
+                )
                 save_to_disposelog("clear", alarm)
             # Write reference if can trigger delayed event
             # Save reference and event_class
@@ -1363,10 +1479,21 @@ class CorrelatorService(FastAPIService):
                             alarm = await self.raise_alarm_from_rule(br, de, managed_object)
                             save_to_disposelog("raise", alarm)
                         elif br.action == "clear":
-                            alarm = await self.clear_alarm_from_rule(br, de, managed_object)
+                            alarm = await self.clear_alarm_from_rule(
+                                br,
+                                managed_object,
+                                de.vars,
+                                timestamp=de.timestamp,
+                                event=de,
+                            )
                             save_to_disposelog("clear", alarm)
             if rule.stop_disposition:
                 break
+        if not processed:
+            self.logger.info(
+                "[%s] No disposition rules for class %s, skipping", event_id, event_class.name
+            )
+            return
         self.logger.info("[%s] Disposition complete", event_id)
 
     async def topology_rca(self, alarm: ActiveAlarm):
@@ -1738,10 +1865,7 @@ class CorrelatorService(FastAPIService):
         self.status_changes.append((oid, status, ts))
 
     async def update_object_statuses(self):
-        """
-        Update object statuses
-        :return:
-        """
+        """Update object statuses"""
         from noc.sa.models.managedobject import ManagedObjectStatus
 
         self.logger.info("Running object status updater")

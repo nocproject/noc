@@ -391,7 +391,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               name: "event_class_re",
               xtype: "textfield",
               fieldLabel: __("Event Class RE"),
-              uiStyle: "medium",
+              uiStyle: "large",
               allowBlank: true,
             },
             {
@@ -421,6 +421,17 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               fieldLabel: __("Remote System"),
               allowBlank: true,
             },
+            {
+              name: "object_status",
+              xtype: "combobox",
+              fieldLabel: __("Object Avail"),
+              store: [
+                ["A", __("Any")],
+                ["D", __("To DOWN")],
+                ["U", __("To UP")]
+              ],
+              uiStyle: "medium",
+            }
           ],
         },
 
