@@ -85,18 +85,12 @@ class Layer(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["Layer"]:
-        try:
-            return Layer.objects.get(id=oid)
-        except Layer.DoesNotExist:
-            return None
+        return Layer.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
     def get_by_code(cls, code):
-        try:
-            return Layer.objects.get(code=code)
-        except Layer.DoesNotExist:
-            return None
+        return Layer.objects.filter(code=code).first()
 
     @property
     def json_data(self) -> Dict[str, Any]:
