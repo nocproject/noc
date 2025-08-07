@@ -1468,7 +1468,7 @@ class ActiveAlarm(Document):
                     continue
         q = [query_for_code(c) for c in by_codes]
         if len(q) == 1:
-            query = q
+            query = q[0]
         else:
             query = {"$or": q}
         for doc in ActiveAlarm._get_collection().find(query, {"_id": 0, "resource_path": 1}):
