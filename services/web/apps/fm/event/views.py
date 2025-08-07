@@ -22,7 +22,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.bi.models.events import Events
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, MessageType, Target, EventSeverity
+from noc.core.fm.event import Event, MessageType, Target, EventSeverity, EventSource, Var
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -230,16 +230,27 @@ class EventApplication(ExtApplication):
         remote_system = None
         if q.get("remote_system"):
             remote_system = RemoteSystem.get_by_name(q["remote_system"])
+        source = EventSource(q["source"])
+        data = []
+        for d in q["data"]:
+            d = Var.model_validate(d)
+            if (
+                source == EventSource.SNMP_TRAP
+                and not d.snmp_raw
+                and d.name not in ["collector", "source"]
+            ):
+                continue
+            data.append(d)
         e = Event(
             id=q["id"],
             ts=datetime.datetime.fromisoformat(q["timestamp"]).timestamp(),
             target=Target(**q["target_id"]),
             type=MessageType(
-                source=q["source"],
+                source=source,
                 id=q.get("snmp_trap_oid"),
                 severity=EventSeverity[q["severity"]],
             ),
-            data=q["data"],
+            data=data,
             labels=q["labels"],
             message=q.get("message"),
             remote_system=remote_system.name if remote_system else None,

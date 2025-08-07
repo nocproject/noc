@@ -1031,7 +1031,7 @@ class CorrelatorService(FastAPIService):
             ctx["labels"] = frozenset(labels or [])
         if remote_system:
             ctx["remote_system"] = str(remote_system.id)
-        if event_class and event_class.id in rules:
+        if event_class and event_class.id in self.rules:
             rules = self.rules[event_class.id]
         if object_avail is not None:
             ctx["object_avail"] = object_avail
