@@ -1,0 +1,17 @@
+{
+    "name": "OTN | ODU | TIM ERR",
+    "$collection": "fm.alarmclasses",
+    "uuid": "e521e19e-2d94-46c9-ae02-6e2cce688235",
+    "is_unique": false,
+    "reference": [],
+    "by_reference": false,
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [],
+    "subject_template": "ODU SAPI/DAPI not matched",
+    "body_template": "ODU SAPI/DAPI not matched",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": []
+}

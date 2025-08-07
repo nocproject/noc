@@ -1,0 +1,13 @@
+{
+    "name": "Chassis | Hardware | Module | Module Present ",
+    "$collection": "fm.dispositionrules",
+    "uuid": "337fc9ca-aa9f-4cff-b84c-292007fd856b",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Chassis | Hardware | Module | Transceiver Ejected",
+    "conditions": [{
+        "event_class_re": "Chassis | Hardware | Module | Module Present"
+    }],
+    "default_action": "C",
+    "stop_processing": false
+}
