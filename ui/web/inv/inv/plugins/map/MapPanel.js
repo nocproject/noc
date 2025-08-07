@@ -170,13 +170,13 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         pointToLayer: function(geoJsonPoint, latlng){
           switch(cfg.point_graphic){
             case "circle": {
-              let iconSize = cfg.point_radius * 4,
+              let iconSize = cfg.point_radius * 2,
                 anchorPoint = iconSize / 2;
               return L.marker(latlng, {
                 icon: L.divIcon({
                   html: `<i class="fa fa-circle" style="color: ${cfg.fill_color}; font-size: ${iconSize}px;"></i>`,
                   iconSize: [0, 0],
-                  iconAnchor: [anchorPoint, anchorPoint],
+                  iconAnchor: [anchorPoint, iconSize],
                   fontSize: iconSize,
                   originalColor: cfg.fill_color,
                 }),
@@ -765,7 +765,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   createStatusIcon: function(status, marker){
     let iconHtml,
-      fontSize = marker.options?.icon?.options?.fontSize || 16,
+      fontSize = marker.options?.icon?.options?.fontSize || 10,
       originalColor = marker.options?.icon?.options?.originalColor || "grey";
     switch(status){
       case "alarm":
