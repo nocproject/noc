@@ -22,6 +22,17 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "NOC.core.mixins.Ballon",
     "NOC.inv.inv.plugins.Mixins",
   ],
+  pollingTaskId: undefined,
+  pollingInterval: 5000,
+  // ViewModel for this panel
+  viewModel: {
+    data: {
+      autoReload: false,
+      autoReloadIcon: "xf05e", // NOC.glyph.ban
+      autoReloadText: __("Auto reload : OFF"),
+      icon: "<i class='fa fa-fw' style='width:16px;'></i>",
+    },
+  },
   // Zoom levels according to
   // http://wiki.openstreetmap.org/wiki/Zoom_levels
   zoomLevels: [
@@ -46,7 +57,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     "1:2 000",
     "1:1 000",
   ],
-
+  //
   initComponent: function(){
     var me = this;
     //
@@ -86,6 +97,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         toggle: me.onSetPositionToggle,
       },
     });
+    //
     me.mapPanel = Ext.create("Ext.panel.Panel", {
       xtype: "panel",
       // Generate unique id
@@ -101,11 +113,34 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
           me.zoomLevelButton,
           "-",
           me.setPositionButton,
+          {
+            text: __("Reload"),
+            iconAlign: "right",
+            enableToggle: true,
+            bind: {
+              glyph: "{autoReloadIcon}",
+              tooltip: "{autoReloadText}",
+              pressed: "{autoReload}",
+            },
+            listeners: {
+              scope: me,
+              toggle: me.onAutoReloadToggle,
+            },
+          },
+          "->",
+          {
+            xtype: "tbtext",
+            padding: "3 0 0 4",
+            bind: {
+              html: "{icon}",
+            },
+          },
         ],
       }],
       items: [me.mapPanel],
     });
     me.callParent();
+    this.subscribeToEvents();
   },
   //
   preview: function(data){
@@ -125,36 +160,57 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   createLayer: function(cfg, objectLayer){
     var me = this,
-      layer;
-    layer = L.geoJSON({
-      "type": "FeatureCollection",
-      "features": [],
-    }, {
-      nocCode: cfg.code,
-      nocMinZoom: cfg.min_zoom,
-      nocMaxZoom: cfg.max_zoom,
-      pointToLayer: function(geoJsonPoint, latlng){
-        return L.circleMarker(latlng, {
-          color: cfg.fill_color,
-          fillColor: cfg.fill_color,
-          fillOpacity: 1,
-          radius: 5,
-        });
-      },
-      style: function(){
-        return {
-          color: cfg.fill_color,
-          fillColor: cfg.fill_color,
-          strokeColor: cfg.stroke_color,
-          weight: cfg.stroke_width,
-        };
-      },
-      filter: function(){
-        // Remove invisible layers on zoom
-        var zoom = me.map.getZoom();
-        return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
-      },
-    });
+      layer = L.geoJSON({
+        "type": "FeatureCollection",
+        "features": [],
+      }, {
+        nocCode: cfg.code,
+        nocMinZoom: cfg.min_zoom,
+        nocMaxZoom: cfg.max_zoom,
+        pointToLayer: function(geoJsonPoint, latlng){
+          switch(cfg.point_graphic){
+            case "circle": {
+              let iconSize = cfg.point_radius * 2,
+                anchorPoint = iconSize / 2;
+              return L.marker(latlng, {
+                icon: L.divIcon({
+                  html: `<i class="fa fa-circle" style="color: ${cfg.fill_color}; font-size: ${iconSize}px;"></i>`,
+                  iconSize: [0, 0],
+                  iconAnchor: [anchorPoint, iconSize],
+                  fontSize: iconSize,
+                  originalColor: cfg.fill_color,
+                }),
+              });
+            }
+            default: {
+              let marker = L.circleMarker(latlng, {
+                color: cfg.fill_color,
+                fillColor: cfg.fill_color,
+                fillOpacity: 1,
+                radius: cfg.point_radius,
+              });
+              marker.originalStyle = {
+                color: cfg.fill_color,
+                fillColor: cfg.fill_color,
+              };
+              return marker;
+            }
+          }
+        },
+        style: function(){
+          return {
+            color: cfg.fill_color,
+            fillColor: cfg.fill_color,
+            strokeColor: cfg.stroke_color,
+            weight: cfg.stroke_width,
+          };
+        },
+        filter: function(){
+          // Remove invisible layers on zoom
+          var zoom = me.map.getZoom();
+          return (zoom >= cfg.min_zoom) && (zoom <= cfg.max_zoom)
+        },
+      });
     if(cfg.code === objectLayer){
       me.objectLayer = layer;
     }
@@ -195,14 +251,71 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     }
   },
   //
+  loadLayerPromise: function(layer){
+    return new Promise((resolve, reject) => {
+      var me = this,
+        zoom = me.map.getZoom();
+    
+      if((zoom < layer.options.nocMinZoom) || (zoom > layer.options.nocMaxZoom)){
+        layer.clearLayers();
+        resolve();
+        return;
+      }
+    
+      if(me.map.hasLayer(layer)){
+        Ext.Ajax.request({
+          url: "/inv/inv/plugin/map/layers/" + me.getQuery(layer.options.nocCode),
+          method: "GET",
+          scope: me,
+          success: function(response){
+            var data = Ext.decode(response.responseText);
+            layer.clearLayers();
+            if(!Ext.Object.isEmpty(data)){
+              layer.addData(data);
+            }
+            resolve();
+          },
+          failure: function(error){
+            NOC.error(__("Failed to get layer"));
+            reject(error);
+          },
+        });
+      } else{
+        resolve();
+      }
+    });
+  },
+  //
   getQuery: function(layerCode){
     return Ext.String.format(layerCode + "/?bbox={0},EPSG%3A4326", this.map.getBounds().toBBoxString());
   },
   //
   onRefresh: function(){
-    var me = this;
-    Ext.each(me.layers, function(layer){
-      me.loadLayer(layer);
+    if(this.destroyed || this.isRefreshing) return;
+    
+    this.isRefreshing = true;
+    
+    let layerPromises = [];
+    Ext.each(this.layers, (layer) => {
+      layerPromises.push(this.loadLayerPromise(layer));
+    });
+
+    Promise.all(layerPromises).then(() => {
+      if(this.destroyed) return;
+      if(this.getViewModel() && this.getViewModel().get("autoReload")){
+        setTimeout(() => {
+          if(!this.destroyed){
+            this.updateStatuses();
+          }
+        }, 100);
+      }
+    }).catch((error) => {
+      console.error("Error loading layers:", error);
+      if(!this.destroyed && this.getViewModel() && this.getViewModel().get("autoReload")){
+        this.updateStatuses();
+      }
+    }).finally(() => {
+      this.isRefreshing = false;
     });
   },
   //
@@ -210,7 +323,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     var me = this,
       mapDiv = "leaf-map-" + me.id,
       mapLayersCreator = Ext.create("NOC.core.MapLayersCreator", {
-        default_layer: NOC.settings.gis.default_layer, 
+        default_layer: NOC.settings.gis.default_layer,
         allowed_layers: NOC.settings.gis.base,
         yandex_supported: NOC.settings.gis.yandex_supported,
         translator: __,
@@ -271,6 +384,51 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
 
   },
   //
+  updateStatuses: function(){
+    if(this.destroyed || this.isUpdatingStatuses) return;
+    
+    this.isUpdatingStatuses = true;
+    let resources = this.getVisibleResources();
+    
+    this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+    
+    Ext.Ajax.request({
+      url: "/inv/inv/plugin/map/resource_status/",
+      method: "POST",
+      jsonData: {
+        resources: Object.keys(resources),
+      },
+      success: function(response){
+        if(this.destroyed) return;
+        let data = Ext.decode(response.responseText);
+        data.resource_status.forEach(item => {
+          if(this.destroyed) return;
+          let resourceData = resources[item.resource];
+          if(Ext.isDefined(resourceData.leafletLayer)){
+            let iconName = item.alarm ? "alarm" : "up";
+            if(Ext.isFunction(resourceData.leafletLayer.setIcon)){
+              resourceData.leafletLayer.setIcon(
+                this.createStatusIcon(iconName, resourceData.leafletLayer),
+              );
+            }
+          }
+        });
+      },
+      failure: function(){
+        if(!this.destroyed){
+          NOC.error(__("Failed to update statuses"));
+        }
+      },
+      callback: function(){
+        if(!this.destroyed){
+          this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+        }
+        this.isUpdatingStatuses = false;
+      },
+      scope: this,
+    });
+  },
+  //
   centerToObject: function(){
     var me = this;
     me.map.setView(me.center, me.initScale);
@@ -292,24 +450,25 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   },
   //
   getContextMenu: function(){
-    var me = this,
-      addHandler = function(items){
-        Ext.each(items, function(item){
-          if(Object.prototype.hasOwnProperty.call(item, "menu")){
-            addHandler(item.menu);
-          } else if(Object.prototype.hasOwnProperty.call(item, "objectTypeId")){
-            item.listeners = {
-              scope: me,
-              click: me.onContextMenuAdd,
-            }
-          }
-        });
-        return items;
-      };
+    var me = this;
+    
     // Return cached
     if(me.contextMenu){
       return me.contextMenu;
     }
+    
+    var addHandler = function(items){
+      return items.map(function(item){
+        if(item.menu){
+          item.menu = addHandler(item.menu);
+        } else if(item.objectTypeId){
+          item.scope = me;
+          item.handler = me.onContextMenuAdd;
+        }
+        return item;
+      });
+    };
+    
     me.contextMenu = Ext.create("Ext.menu.Menu", {
       renderTo: me.mapDom,
       items: [
@@ -404,5 +563,248 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   onSetPositionToggle: function(self){
     this.mapPanel.getEl().dom.querySelector(".leaflet-container").style.cursor = self.pressed ? "crosshair" : "";
+  },
+  //
+  onAutoReloadToggle: function(self){
+    this.getViewModel().set("autoReload", self.pressed);
+    this.autoReloadIcon(self.pressed);
+    this.autoReloadText(self.pressed);
+    if(this.getViewModel()){
+      this.getViewModel().set("icon", this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
+    }
+    if(self.pressed){
+      this.startPolling();
+    } else{
+      this.stopPolling();
+    }
+  },
+  //
+  autoReloadIcon: function(isReloading){
+    //  NOC.glyph.refresh or NOC.glyph.ban
+    this.getViewModel().set("autoReloadIcon", isReloading ? "xf021" : "xf05e");
+  },
+  //
+  autoReloadText: function(isReloading){
+    this.getViewModel().set("autoReloadText", __("Auto reload : ") + (isReloading ? __("ON") : __("OFF")));
+  },
+  //
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='width:16px;'></i>";
+  },
+  //
+  startPolling: function(){
+    var me = this;
+    
+    if(this.observer){
+      this.stopPolling();
+    }
+    
+    this.observer = new IntersectionObserver(function(entries){
+      if(me.destroyed) return;
+      me.isIntersecting = entries[0].isIntersecting;
+      me.disableHandler(!entries[0].isIntersecting);
+    }, {
+      threshold: 0.1,
+    });
+    
+    if(this.getEl() && this.getEl().dom){
+      this.observer.observe(this.getEl().dom);
+    }
+    
+    if(Ext.isEmpty(this.pollingTaskId)){
+      this.pollingTaskId = Ext.TaskManager.start({
+        run: this.pollingTask,
+        interval: this.pollingInterval,
+        scope: this,
+      });
+    } else{
+      this.pollingTask();
+    }
+  },
+  //
+  stopPolling: function(){
+    if(this.pollingTaskId){
+      Ext.TaskManager.stop(this.pollingTaskId);
+      this.pollingTaskId = undefined;
+    }
+    if(this.observer && this.getEl() && this.getEl().dom){
+      this.observer.unobserve(this.getEl().dom);
+      this.observer.disconnect();
+      this.observer = null;
+    }
+  },
+  //
+  pollingTask: function(){
+    if(this.destroyed) return;
+    
+    let isVisible = !document.hidden, // check is user has switched to another tab browser
+      isFocused = document.hasFocus(), // check is user has minimized browser window
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
+      this.updateStatuses();
+    }
+  },
+  //
+  disableHandler: function(state){
+    if(this.destroyed) return;
+    
+    var isVisible = !document.hidden, // check is user has switched to another tab browser
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(this.pollingTaskId && isIntersecting && isVisible){
+      this.setContainerDisabled(state);
+      this.pollingTask();
+    }
+  },
+  //
+  setContainerDisabled: function(state){
+    if(this.destroyed) return;
+    
+    let icon;
+    this.mapPanel.setDisabled(state);
+    if(state){
+      icon = this.generateIcon(true, "stop-circle-o", "grey", __("suspend"));
+    } else{
+      icon = this.generateIcon(true, "circle", NOC.colors.yes, __("online"));
+    }
+    if(this.getViewModel()){
+      this.getViewModel().set("icon", icon);
+    }
+  },
+  subscribeToEvents: function(){
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
+    this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    window.addEventListener("focus", this.handleWindowFocus);
+    window.addEventListener("blur", this.handleWindowBlur);
+  },
+  
+  unsubscribeFromEvents: function(){
+    if(this.handleWindowFocus){
+      window.removeEventListener("focus", this.handleWindowFocus);
+    }
+    if(this.handleWindowBlur){
+      window.removeEventListener("blur", this.handleWindowBlur);
+    }
+  },
+  //
+  destroy: function(){
+    this.destroyed = true;
+    
+    this.unsubscribeFromEvents();
+    this.stopPolling();
+    this.setContainerDisabled(false);
+    
+    if(this.contextMenu){
+      this.contextMenu.destroy();
+      this.contextMenu = null;
+    }
+    
+    if(this.layers){
+      this.layers = null;
+    }
+    
+    this.isRefreshing = false;
+    this.isUpdatingStatuses = false;
+    
+    this.callParent();
+  },
+  //
+  handleWindowFocus: function(){
+    if(this.destroyed) return;
+    var me = this;
+    setTimeout(function(){
+      if(!me.destroyed){
+        me.disableHandler(false);
+      }
+    }, 100);
+  },
+  //
+  handleWindowBlur: function(){
+    if(this.destroyed) return;
+    this.disableHandler(true);
+  },
+  //
+  getVisibleFeaturesInLayer: function(layer){
+    let bounds = this.map.getBounds(),
+      visibleFeatures = [];
+    if(layer && this.map.hasLayer(layer) && Ext.isFunction(layer.eachLayer)){
+      layer.eachLayer(function(feature){
+        var latlng = feature.getLatLng ? feature.getLatLng() : feature.getBounds().getCenter();
+        if(bounds.contains(latlng)){
+          visibleFeatures.push({
+            id: feature.feature.id,
+            properties: feature.feature.properties,
+            coordinates: latlng,
+            leafletLayer: feature,
+          });
+        }
+      });
+    }
+    return visibleFeatures;
+  },
+  //
+  getVisibleResources: function(){
+    let me = this,
+      resources = {};
+    
+    if(!this.map || this.destroyed){
+      return resources;
+    }
+    
+    this.map.eachLayer(function(layer){
+      me.getVisibleFeaturesInLayer(layer)
+        .filter(feature => feature.properties?.resource)
+        .forEach(feature => {
+          resources[feature.properties.resource] = feature;
+        })
+    });
+    return resources;
+  },
+  //
+  createStatusIcon: function(status, marker){
+    let iconHtml,
+      fontSize = marker.options?.icon?.options?.fontSize || 10,
+      originalColor = marker.options?.icon?.options?.originalColor || "grey";
+    switch(status){
+      case "alarm":
+      case "critical":
+        iconHtml = `
+  <div style="position: relative; width: 1em; height: 1em; font-size: ${fontSize}px;">
+    <i class="fa fa-fire" style="
+      position: absolute;
+      top: -0.9em;
+      left: 50%;
+      transform: translateX(-50%);
+      color: red;
+      font-size: ${fontSize * 0.8}px;"></i>
+    <i class="fa fa-circle" style="
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: red;
+      font-size: ${fontSize}px;"></i>
+  </div>
+`;
+        break;
+      case "warning":
+        iconHtml = `<i class="fa fa-exclamation-triangle" style="color: orange; font-size: ${fontSize}px;"></i>`;
+        break;
+      case "down":
+        iconHtml = `<i class="fa fa-times-circle" style="color: red; font-size: ${fontSize}px;"></i>`;
+        break;
+      case "up":
+        iconHtml = `<i class="fa fa-circle" style="color: ${originalColor}; font-size: ${fontSize}px;"></i>`;
+        break;
+      default:
+        iconHtml = `<i class="fa fa-circle" style="color: grey; font-size: ${fontSize}px;"></i>`;
+    }
+  
+    return L.divIcon({
+      ...marker.options?.icon?.options,
+      html: iconHtml,
+    });
   },
 });
