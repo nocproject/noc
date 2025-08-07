@@ -6,10 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-from threading import Lock, RLock
-from typing import Optional, Dict, Union, Callable, Any, Tuple
-from dataclasses import dataclass
 import operator
+from threading import Lock, RLock
+from dataclasses import dataclass
+from functools import partial
+from typing import Optional, Dict, Union, Callable, Any, Tuple
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -131,10 +132,13 @@ class InterfaceProfile(Document):
             ("dynamic_classification_policy", "match_rules.labels"),
         ],
     }
-    name = StringField(unique=True)
+    name = StringField(unique=True, required=True)
     description = StringField()
     style = ForeignKeyField(Style, required=False)
-    workflow = PlainReferenceField(Workflow)
+    workflow = PlainReferenceField(
+        Workflow,
+        default=partial(Workflow.get_default_workflow, "inv.Interface"),
+    )
     # Interface-level events processing
     link_events = StringField(
         required=True,
@@ -347,6 +351,10 @@ class InterfaceProfile(Document):
     @property
     def allow_subinterface_metrics(self):
         return self.subinterface_apply_policy != "D" and self.metrics
+
+    @property
+    def is_default(self):
+        return self.name == self.DEFAULT_PROFILE_NAME
 
     def allow_collected_metric(
         self,

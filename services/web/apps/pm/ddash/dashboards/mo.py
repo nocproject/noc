@@ -114,7 +114,7 @@ class MODashboard(JinjaDashboard):
             radio = []
             dom = []
             for iface in sorted(ifaces, key=lambda el: alnum_key(el.name)):
-                if iface.type == "SVI" and not iface.profile.allow_subinterface_metrics:
+                if iface.type == "SVI" and (iface.profile.is_default or not iface.profile.metrics):
                     continue
                 if iface.type == "aggregated" and iface.lag_members:
                     lags += [
@@ -155,7 +155,17 @@ class MODashboard(JinjaDashboard):
                             "profile_name": profile.name,
                         }
                     ]
-                if iface.type == "physical":
+                if iface.type == "SVI":
+                    ports += [
+                        {
+                            "name": iface.name,
+                            "descr": self.str_cleanup(
+                                iface.description, remove_letters=TITLE_BAD_CHARS
+                            ),
+                            "status": iface.status,
+                        }
+                    ]
+                if iface.type in ("physical", "tunnel"):
                     ports += [
                         {
                             "name": iface.name,

@@ -1,0 +1,19 @@
+{
+    "name": "noc::interface::afi::*",
+    "$collection": "main.labels",
+    "uuid": "8aaccd1c-1f47-4b61-806e-99b9c5b30dbc",
+    "description": "Builtin Labels Scope for Interface enabled AFI",
+    "bg_color1": 15965202,
+    "fg_color1": 16777215,
+    "bg_color2": 9323693,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["inv.Interface"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": true,
+    "expose_datastream": false,
+    "expose_alarm": false
+}

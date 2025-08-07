@@ -12,6 +12,7 @@
         "vc.VPN",
         "vc.L2Domain",
         "crm.Subscriber",
-        "crm.Supplier"
+        "crm.Supplier",
+        "inv.Interface"
     ]
 }
