@@ -18,15 +18,19 @@ class GroupItem(BaseModel):
     name: Optional[str] = None
 
 
-class RaiseReferenceRequest(BaseModel):
-    op: Literal["raiseref"] = Field(None, alias="$op")
+class DispositionRequest(BaseModel):
+    op: Literal["disposition"] = Field(None, alias="$op")
     reference: str
-    alarm_class: str
+    alarm_class: Optional[str] = None
+    event_class: Optional[str] = None
     severity: Optional[int] = None
     timestamp: Optional[str] = None
     groups: Optional[List[GroupItem]] = None
     vars: Optional[Dict[str, Any]] = None
     labels: Optional[List[str]] = None
+    managed_object: Optional[str] = None
     remote_system: Optional[str] = None
     remote_id: Optional[str] = None
     name: Optional[str] = None
+    subject: Optional[str] = None
+    # services: Optional[List[str]] = None

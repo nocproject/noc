@@ -103,17 +103,27 @@ class Match(EmbeddedDocument):
     # severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
     event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
+    object_status: Optional[str] = StringField(
+        choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")],
+        required=False,
+    )
 
     def __str__(self):
         return f'{", ".join(self.labels)}'
 
     @property
     def json_data(self) -> Dict[str, Any]:
+        r = {}
         if self.event_class_re:
-            return {"event_class_re": self.event_class_re}
-        return {}
+            r["event_class_re"] = self.event_class_re
+        if self.object_status == "D" or self.object_status == "U":
+            r["object_status"] = self.object_status
+        return r
 
     def clean(self):
+        if not self.event_class_re:
+            super().clean()
+            return
         ec = EventClass.get_by_name(self.event_class_re)
         if ec:
             self.event_classes = [ec.id]
@@ -121,6 +131,7 @@ class Match(EmbeddedDocument):
             self.event_classes = [
                 ec.id for ec in EventClass.objects.filter(name=re.compile(self.event_class_re))
             ]
+        super().clean()
 
     def get_match_expr(self) -> Dict[str, Any]:
         r = {}
@@ -130,6 +141,8 @@ class Match(EmbeddedDocument):
             r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.name)
+        if self.object_status == "D" or self.object_status == "U":
+            r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -491,9 +504,18 @@ class DispositionRule(Document):
             # enum_state
         if not rule.conditions:
             return r
-        elif len(rule.conditions) == 1:
-            r["match_expr"] = rule.conditions[0].get_match_expr()
-        else:
-            r["match_expr"] = {"$or": [x.get_match_expr() for x in rule.conditions]}
+        rule_conditions = []
+        for c in rule.conditions:
+            if c.object_status == "D" or c.object_status == "U":
+                r["object_avail_condition"] = {"U": True, "D": False}[c.object_status]
+                continue
+            expr = c.get_match_expr()
+            if not expr:
+                continue
+            rule_conditions.append(expr)
+        if len(rule_conditions) == 1:
+            r["match_expr"] = rule_conditions[0]
+        elif rule_conditions:
+            r["match_expr"] = {"$or": rule_conditions}
         r["event_classes"] = [str(x.id) for x in rule.get_event_classes()]
         return r

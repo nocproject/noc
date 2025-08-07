@@ -27,11 +27,16 @@ class EventAlarmRule:
     managed_object: str = "managed_object"
     match: Optional[Callable] = None
     match_vars: Optional[Callable] = None
+    object_avail_condition: Optional[str] = None
     combo_condition: Optional[str] = None
     combo_window: int = 0
     combo_count: int = 0
     combo_event_classes: List[str] = None
     stop_disposition: bool = False
+
+    @property
+    def has_avail_condition(self) -> bool:
+        return self.object_avail_condition is not None
 
     @classmethod
     def from_config(cls, data, event_class: EventClass) -> "EventAlarmRule":
@@ -56,7 +61,21 @@ class EventAlarmRule:
             r.combo_event_classes = data["combo_condition"]["combo_event_classes"]
         if data["vars_match_expr"]:
             r.match_vars = build_matcher(data["vars_match_expr"])
+        if data["match_expr"]:
+            r.match = build_matcher(data["match_expr"])
+        if "object_avail_condition" in data:
+            r.object_avail_condition = data["object_avail_condition"]
         return r
+
+    def is_match(self, ctx: Dict[str, Any]) -> bool:
+        if self.match and not self.match(ctx):
+            return False
+        return True
+
+    def is_vars(self, r_vars: Dict[str, Any]) -> bool:
+        if self.match_vars and not self.match_vars(r_vars):
+            return False
+        return True
 
     def match_event(self, e: Event) -> bool:
         if self.match_vars and not self.match_vars(e.vars):
