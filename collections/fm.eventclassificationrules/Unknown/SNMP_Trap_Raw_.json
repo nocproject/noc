@@ -1,0 +1,43 @@
+{
+    "name": "Unknown | SNMP Trap (Raw)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "45f119a7-d9fb-40ea-aec8-36bbdae56f91",
+    "description": "Next to last in the chain. Catches all unclassified syslog messages",
+    "event_class__name": "Unknown | SNMP Trap",
+    "preference": 4990,
+    "sources": ["SNMP Trap"],
+    "patterns": [
+        {
+            "key_re": "^1\\.3\\.6\\.1\\.6\\.3\\.1\\.1\\.4\\.1\\.0$",
+            "value_re": "^(?P<trap_oid>\\S+)$"
+        }
+    ],
+    "labels": [],
+    "test_cases": [
+        {
+            "message": "",
+            "raw_vars": [
+                {
+                    "name": "1.3.6.1.2.1.1.3.0",
+                    "snmp_raw": true,
+                    "value": "283957812"
+                },
+                {
+                    "name": "1.3.6.1.6.3.1.1.4.1.0",
+                    "snmp_raw": true,
+                    "value": "1.3.6.1.4.1.47196.4.1.1.3.4.1.1"
+                },
+                {
+                    "name": "1.3.6.1.2.1.16.9.1.1.1",
+                    "snmp_raw": true,
+                    "value": "403"
+                },
+                {
+                    "name": "1.3.6.1.2.1.16.9.1.1.2",
+                    "snmp_raw": true,
+                    "value": "Link status for interface 2/1/13 is up at 1 Gbps"
+                }
+            ]
+        }
+    ]
+}

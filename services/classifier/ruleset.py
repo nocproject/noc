@@ -167,10 +167,12 @@ class RuleSet(object):
         gen_lookup = self.rules.get((GENERIC_PROFILE, event.type.source.value))
         if gen_lookup:
             gen_lookup = gen_lookup.lookup_rules(event, vars)
+        logger.debug("Check rules for data: %s, labels: %s", vars, event.labels)
         for r in chain.from_iterable([lookup or [], gen_lookup or []]):
             # Try to match rule
             metrics["rules_checked"] += 1
             v = r.match(event.message, vars, event.labels)
+            logger.debug("[%s] Check rule: %s", r.event_class_name, r.name)
             if v is not None:
                 logger.debug(
                     "[%s] Matching class for event %s found: %s (Rule: %s)",
