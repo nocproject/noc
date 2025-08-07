@@ -249,6 +249,12 @@ class AlarmClass(Document):
             return AlarmSeverity.get_by_code(self.labels[0][15:].upper())
         return None
 
+    def allow_rewrite(self, alarm_class: "AlarmClass") -> bool:
+        """Check allowed Alarm Class for rewrite"""
+        if not self.vars and not alarm_class.vars:
+            return True
+        return False
+
     def get_handlers(self) -> List[Callable]:
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
         def _get_handlers(alarm_class: AlarmClass):
