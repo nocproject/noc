@@ -22,7 +22,7 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.bi.models.events import Events
 from noc.main.models.remotesystem import RemoteSystem
 from noc.core.service.loader import get_service
-from noc.core.fm.event import Event, MessageType, Target
+from noc.core.fm.event import Event, MessageType, Target, EventSeverity
 from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
@@ -133,7 +133,7 @@ class EventApplication(ExtApplication):
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.eventclass', ('id', 'name'), e.event_class) as event_class,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.managedobject', ('id', 'name'), e.managed_object) as managed_object,"
             f" dictGetOrNull('{config.clickhouse.db_dictionaries}.administrativedomain', ('id', 'name'), e.administrative_domain) as administrative_domain,"
-            f" e.source, e.vars, e.labels, e.message, e.data, nullIf(e.remote_system, 0) as remote_system, e.remote_id"
+            f" e.source, e.vars, e.labels, e.severity, e.message, e.data, nullIf(e.remote_system, 0) as remote_system, e.remote_id"
             f" FROM {Events._get_db_table()} AS e",
         ]
         filter_x = cls.get_filter(
@@ -192,6 +192,7 @@ class EventApplication(ExtApplication):
                 "remote_id": None,
                 "remote_system": None,
                 "dispose": False,
+                "severity": EventSeverity(int(d["severity"])).name,
                 "object": None,
             }
             # if d["administrative_domain"]:

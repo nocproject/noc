@@ -22,6 +22,7 @@ class DispositionRequest(BaseModel):
     op: Literal["disposition"] = Field(None, alias="$op")
     reference: str
     alarm_class: Optional[str] = None
+    event_class: Optional[str] = None
     severity: Optional[int] = None
     timestamp: Optional[str] = None
     groups: Optional[List[GroupItem]] = None
