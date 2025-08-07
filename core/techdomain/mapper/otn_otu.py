@@ -30,7 +30,6 @@ class DWDMOTUMapper(BaseMapper):
             mode = card.object.get_mode()
             if mode:
                 label = f"{label} [{mode}]"
-            ports = "<tx>tx|<rx>rx" if name == "start" else "<rx>rx|<tx>tx"
             self.add_subgraph(
                 {
                     "name": f"cluster_{name}",

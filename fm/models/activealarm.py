@@ -59,7 +59,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.inv.models.object import Object
-from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
