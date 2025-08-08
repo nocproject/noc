@@ -33,6 +33,7 @@ from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
 )
 from noc.core.service.stormprotection import StormProtection
+from noc.core.escape import fm_escape
 from noc.services.trapcollector.trapserver import TrapServer
 from noc.services.trapcollector.datastream import TrapDataStreamClient
 from noc.services.trapcollector.sourceconfig import SourceConfig, ManagedObjectData
@@ -127,12 +128,25 @@ class TrapCollectorService(FastAPIService):
         return None
 
     def register_trap_message(
-        self, cfg: SourceConfig, timestamp: int, data: Dict[str, Any], address: str = None
+        self,
+        cfg: SourceConfig,
+        timestamp: int,
+        body: Dict[str, Any],
+        address: str = None,
+        message_id: Optional[str] = None,
     ):
         """
         Spool message to be sent
         """
         metrics["events_out"] += 1
+        data = [
+            {"name": "source", "value": "SNMP Trap"},
+            {"name": "collector", "value": config.pool},
+            {"name": "source_address", "value": address[0]},
+        ]
+        if message_id:
+            data.append({"name": "message_id", "message_id": message_id})
+        data += [{"name": k, "value": fm_escape(v), "snmp_raw": True} for k, v in body.items()]
         self.publish(
             orjson.dumps(
                 {
@@ -144,8 +158,8 @@ class TrapCollectorService(FastAPIService):
                         "profile": cfg.sa_profile or "",
                         "id": cfg.id,
                     },
-                    "type": {"source": EventSource.SNMP_TRAP.value, "id": data.get(SNMP_TRAP_OID)},
-                    "data": [{"name": k, "value": v, "snmp_raw": True} for k, v in data.items()],
+                    "type": {"source": EventSource.SNMP_TRAP.value, "id": body.get(SNMP_TRAP_OID)},
+                    "data": data,
                     # + [{"name": "message_id", "value": message_id}]
                 }
             ),

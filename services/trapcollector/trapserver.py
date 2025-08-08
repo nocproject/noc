@@ -60,14 +60,8 @@ class TrapServer(UDPServer):
         if config.fm.generate_message_id:
             message_id = str(uuid.uuid4())
         # Build body
-        body = {
-            "source": "SNMP Trap",
-            "collector": config.pool,
-            "message_id": message_id,
-            "source_address": address[0],
-        }
-        body.update(varbinds)
-        body = {k: fm_escape(body[k]) for k in body}
-        self.service.register_trap_message(cfg, ts, body, address=address[0])
+        self.service.register_trap_message(
+            cfg, ts, varbinds, address=address[0], message_id=message_id
+        )
         if config.message.enable_snmptrap:
             self.service.register_mx_message(cfg, ts, address[0], message_id, raw_pdu, raw_varbinds)
