@@ -122,7 +122,12 @@ class Var(BaseModel):
                 "snmp_raw": self.snmp_raw,
                 "escaped": self.escaped,
             }
-        return {"name": self.name, "value": self.value, "snmp_raw": self.snmp_raw, "escaped": self.escaped}
+        return {
+            "name": self.name,
+            "value": self.value,
+            "snmp_raw": self.snmp_raw,
+            "escaped": self.escaped,
+        }
 
 
 class Event(BaseModel):
