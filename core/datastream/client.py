@@ -18,12 +18,14 @@ from noc.core.http.async_client import HttpClient, ERR_TIMEOUT, ERR_READ_TIMEOUT
 from noc.core.error import NOCError, ERR_DS_BAD_CODE, ERR_DS_PARSE_ERROR
 from noc.core.dcs.error import ResolutionError
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.timeout import retry_timeout
 
 logger = logging.getLogger(__name__)
 
 
 class DataStreamClient(object):
     RETRY_TIMEOUT = 1.0
+    NEXT_GET_DELAY = 2.0
 
     def __init__(self, name, service=None):
         self.name = name
@@ -111,13 +113,15 @@ class DataStreamClient(object):
             # Get data
             logger.debug("Request: %s", url)
             t0 = loop.time()
+            if self._is_ready and self.NEXT_GET_DELAY:
+                await retry_timeout(self.NEXT_GET_DELAY)
             code, headers, data = await self.client.get(url)
             # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
             logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
             if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
                 if dt < self.RETRY_TIMEOUT:
-                    await asyncio.sleep(self.RETRY_TIMEOUT - dt)
+                    await retry_timeout(self.RETRY_TIMEOUT - dt, name="datastream_client_retry")
                 continue  # Retry on timeout
             elif code != 200:
                 logger.info("Invalid response code: %s", code)
