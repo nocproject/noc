@@ -443,12 +443,18 @@ class CorrelatorService(FastAPIService):
                 )
             else:
                 alarm.stop_watch(Effect.STOP_CLEAR, key=str(rule.id))
-            if rule.rewrite_alarm_class and rule.rewrite_alarm_class.allow_rewrite(alarm.alarm_class):
+            if rule.rewrite_alarm_class and rule.rewrite_alarm_class.allow_rewrite(
+                alarm.alarm_class
+            ):
                 alarm.add_watch(
-                    Effect.REWRITE_ALARM_CLASS, key=str(rule.id), alarm_class=str(rule.rewrite_alarm_class.id),
+                    Effect.REWRITE_ALARM_CLASS,
+                    key=str(rule.id),
+                    alarm_class=str(rule.rewrite_alarm_class.id),
                 )
+                alarm.refresh_alarm_class()
             else:
                 alarm.add_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
+                alarm.refresh_alarm_class()
             job = rule.get_job(alarm)
             if job:
                 jobs.append(job)

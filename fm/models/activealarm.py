@@ -765,6 +765,14 @@ class ActiveAlarm(Document):
             return
         self.alarm_class = alarm_class
 
+    def refresh_alarm_class(self):
+        """Check current alarm class is actual, and update it"""
+        # Calculate Effective AlarmClass
+        ac = self.effective_alarm_class
+        # ?Refresh rules ?
+        self.rewrite_alarm_class(ac)
+
+    @property
     def effective_alarm_class(self) -> "AlarmClass":
         """Calculate effective AlarmClass"""
         ac = None
