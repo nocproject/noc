@@ -145,6 +145,7 @@ class ActiveAlarm(Document):
     watchers: List[WatchItem] = EmbeddedDocumentListField(WatchItem)
     #
     custom_subject = StringField(required=False)
+    custom_object = StringField(required=False)
     custom_style = ForeignKeyField(Style, required=False)
     #
     reopens = IntField(required=False)

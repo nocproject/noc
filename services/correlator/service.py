@@ -789,7 +789,7 @@ class CorrelatorService(FastAPIService):
         if not a.severity:
             # Alarm severity has been reset to 0 by handlers
             # Silently drop alarm
-            self.logger.debug("Alarm severity is 0, dropping")
+            self.logger.info("Alarm severity is 0, dropping")
             a.delete()
             metrics["alarm_drop"] += 1
             return
@@ -1715,9 +1715,9 @@ class CorrelatorService(FastAPIService):
                         def_h_ref = h_ref
                 # Raise group alarm
                 g_alarm = await self.raise_alarm(
-                    managed_object=alarm.managed_object,
                     timestamp=alarm.timestamp,
                     alarm_class=group.alarm_class,
+                    subject=group.title,
                     vars={"name": group.title},
                     reference=group.reference,
                     labels=group.labels,
