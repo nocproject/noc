@@ -617,6 +617,18 @@ class CorrelatorService(FastAPIService):
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
+        # Calculate severity, required for properly Service match
+        a.severity = a.get_effective_severity(summary=summary)
+        # @todo: Fix
+        self.logger.info(
+            "[%s|%s|%s] Calculated alarm severity is: %s",
+            scope_label,
+            managed_object.name if managed_object else DEFAULT_REFERENCE,
+            managed_object.address if managed_object else reference,
+            a.severity,
+        )
+        # Calculate Affected Services, required for fill groups
+        a.affected_services = Service.get_services_by_alarm(a)
         # Static groups
         alarm_groups: Dict[str, GroupItem] = {}
         if groups:
@@ -632,24 +644,10 @@ class CorrelatorService(FastAPIService):
         all_groups, deferred_groups = await self.get_groups(a, alarm_groups.values())
         a.groups = [g.reference for g in all_groups]
         a.deferred_groups = deferred_groups
-        a.severity = a.get_effective_severity(summary=summary)
-        # Required Severity for match
-        a.affected_services = Service.get_services_by_alarm(a)
-        # @todo: Fix
-        self.logger.info(
-            "[%s|%s|%s] Calculated alarm severity is: %s",
-            scope_label,
-            managed_object.name if managed_object else DEFAULT_REFERENCE,
-            managed_object.address if managed_object else reference,
-            a.severity,
-        )
         if subject:
             a.custom_subject = subject
         # Save
         a.save()
-        # Update group if Service Group Alarm
-        if reference.startswith(SVC_REF_PREFIX):
-            self.resolve_deferred_groups(a.reference)
         # if event:
         #     event.contribute_to_alarm(a)
         self.logger.info(
@@ -1011,8 +1009,10 @@ class CorrelatorService(FastAPIService):
             ctx["object_avail"] = object_avail
             if object_avail in self.object_avail_rules:
                 rules += self.object_avail_rules[object_avail]
-        elif alarm_class and alarm_class.id in self.disposition_rules:
+        if alarm_class and alarm_class.id in self.disposition_rules:
             rules += self.disposition_rules[alarm_class.id]
+        if not rules:
+            self.logger.info("[%s] No disposition rules, skipping", reference)
         for rule in rules:
             # if rule.alarm_class and labels:
             #    r_vars.update(alarm_class.convert_labels_var(labels))
@@ -1040,7 +1040,7 @@ class CorrelatorService(FastAPIService):
                 self.logger.info("[%s] Ignored by action", reference)
                 # save_to_disposelog("ignore")
                 continue
-            self.logger.debug("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
+            self.logger.info("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
             yield rule
 
     @classmethod
@@ -1090,7 +1090,7 @@ class CorrelatorService(FastAPIService):
             r_vars=r_vars,
             labels=req.labels,
         ):
-            if alarm_class and rule.alarm_class == alarm_class and req.reference:
+            if alarm_class and rule.alarm_class == alarm_class:
                 reference = req.reference
             else:
                 reference = self.get_disposition_reference(
@@ -1190,7 +1190,7 @@ class CorrelatorService(FastAPIService):
         """
         # Find existing group alarm
         group_alarm = self.get_by_reference(req.reference)
-        if not group_alarm and not req.alarms:
+        if not group_alarm and not req.alarms and req.g_type != GroupType.SERVICE:
             return  # Nothing to clear, nothing to create
         # Check managed objects and timestamps
         mos: Dict[str, ManagedObject] = {}
@@ -1217,8 +1217,7 @@ class CorrelatorService(FastAPIService):
         if not group_alarm:
             # Create group alarm
             # Calculate timestamp and managed object
-            mo_id = req.alarms[0].managed_object
-            min_ts = now
+            min_ts, mo_id = now, None
             for ai in req.alarms:
                 if not ai.timestamp:
                     continue
@@ -1227,7 +1226,12 @@ class CorrelatorService(FastAPIService):
                     mo_id = ai.managed_object
                     min_ts = ts
             # Resolve managed object
-            mo = mos[mo_id]
+            if not mo_id and req.alarms:
+                mo_id = req.alarms[0].managed_object
+            if mo_id:
+                mo = mos[mo_id]
+            else:
+                mo = None
             # Get group alarm's alarm class
             if req.alarm_class:
                 alarm_class = AlarmClass.get_by_name(req.alarm_class)
@@ -1236,16 +1240,23 @@ class CorrelatorService(FastAPIService):
                     return
             else:
                 alarm_class = CAlarmRule.get_default_alarm_class()
+            a_vars = {"name": req.name or "Group"}
+            if req.vars:
+                a_vars |= req.vars
             # Raise group alarm
             group_alarm = await self.raise_alarm(
                 managed_object=mo,
                 timestamp=min_ts,
                 alarm_class=alarm_class,
-                vars={"name": req.name or "Group"},
+                vars=a_vars,
                 reference=req.reference,
                 labels=req.labels or [],
                 group_type=GroupType.GROUP,
+                subject=req.name,
             )
+        if req.g_type == GroupType.SERVICE and not req.alarms:
+            # For auto groups not clear Group Alarm
+            return
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {
             alarm.reference: alarm

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Raise Request By Reference
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,14 +12,13 @@ from typing import Optional, Dict, Any, List, Literal
 from pydantic import BaseModel, Field
 
 # NOC modules
-from noc.core.fm.enum import EventSeverity, GroupType
+from noc.core.fm.enum import EventSeverity
 
 
 class GroupItem(BaseModel):
     reference: str
     alarm_class: Optional[str] = None
     name: Optional[str] = None
-    g_type: GroupType = GroupType.GROUP
 
 
 class Event(BaseModel):
