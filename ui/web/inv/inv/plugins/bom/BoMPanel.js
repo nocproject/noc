@@ -196,28 +196,29 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
           width: 100,
         },
       ],
-      listeners: {
-        scope: this,
-        afterrender: function(panel){
-          panel.getEl().on("click", function(e, target){
-            var objectId = target.getAttribute("data-object-id");
-            if(objectId && target.classList.contains("noc-object")){
-              this.up("[appId]").showObject(objectId);
-            }
-          }, this, {
-            delegate: ".noc-clickable-object",
-            stopEvent: true,
-          });
-        },
-      },
     },
   ],
   initComponent: function(){
     this.callParent();
 
-    var store = this.down("grid").getStore(),
+    var grid = this.down("grid"),
+      store = grid.getStore(),
       filters = store.getFilters();
 
+    grid.on({
+      scope: this,
+      afterrender: function(panel){
+        panel.getEl().on("click", function(e, target){
+          var objectId = target.getAttribute("data-object-id");
+          if(objectId && target.classList.contains("noc-object")){
+            this.up("[appId]").showObject(objectId);
+          }
+        }, this, {
+          delegate: ".noc-clickable-object",
+          stopEvent: true,
+        });
+      },
+    });
     store.on("datachanged", this.getController().onDataChanged, this);
     store.setGroupField("vendor");
     this.getViewModel().bind({
