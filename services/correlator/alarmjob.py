@@ -241,6 +241,10 @@ class AlarmJob(object):
                 return (aa.timestamp + datetime.timedelta(seconds=1)).replace(microsecond=0)
         return None
 
+    def refresh_items(self):
+        """Refresh items by policy"""
+        #
+
     def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
         """Update job item"""
         for i in self.items:

@@ -64,7 +64,7 @@ from noc.core.debug import format_frames, get_traceback_frames, error_report
 from noc.services.correlator import utils
 from noc.core.defer import defer, call_later
 from noc.core.perf import metrics
-from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE
+from noc.core.fm.enum import RCA_RULE, RCA_TOPOLOGY, RCA_DOWNLINK_MERGE, GroupType
 from noc.core.msgstream.message import Message
 from noc.core.wf.interaction import Interaction
 from noc.core.fm.event import Event
@@ -520,6 +520,7 @@ class CorrelatorService(FastAPIService):
         min_group_size: Optional[int] = None,
         severity: Optional[int] = None,
         subject: Optional[str] = None,
+        group_type: Optional[GroupType] = None,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm
@@ -592,6 +593,7 @@ class CorrelatorService(FastAPIService):
             msg = "Alarm risen directly (by reference)"
         else:
             msg = "Alarm risen directly"
+        group_type = group_type or group_type.NEVER
         # Create new alarm
         a = ActiveAlarm(
             timestamp=timestamp,
@@ -614,6 +616,7 @@ class CorrelatorService(FastAPIService):
             base_severity=severity,
             remote_system=remote_system,
             remote_id=remote_id,
+            group_type=group_type,
         )
         a.effective_labels = list(chain.from_iterable(ActiveAlarm.iter_effective_labels(a)))
         a.raw_reference = reference
@@ -1238,6 +1241,7 @@ class CorrelatorService(FastAPIService):
                 vars={"name": req.name or "Group"},
                 reference=req.reference,
                 labels=req.labels or [],
+                group_type=GroupType.GROUP,
             )
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {

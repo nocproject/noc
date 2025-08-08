@@ -52,6 +52,7 @@ class ActionConfig(BaseModel):
     # End options
     stop_processing: bool = False
     allow_fail: bool = True
+    root_only: bool = False
     register_message: bool = False
     # Approve Required
     # If approve required, it suspend processing and send
