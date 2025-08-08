@@ -510,14 +510,12 @@ class ClassifierService(FastAPIService):
             "$op": "disposition",
             "reference": "",
             "timestamp": event.timestamp.isoformat(),
-            "event_class": event.type.event_class,
+            "event": {"event_class": event.type.event_class, "event_id": str(event.id)},
             "labels": list(event.labels),
             "vars": event.vars,
         }
         if event.type.severity:
-            severity = AlarmSeverity.get_by_code(event.type.severity.name)
-            if severity:
-                msg["severity"] = severity.severity
+            msg["event"]["severity"] = event.type.severity.value
         if event.remote_system and event.remote_id:
             msg |= {"remote_system": event.remote_system, "remote_id": event.remote_id}
         self.publish(orjson.dumps(msg), stream=stream, partition=partition)

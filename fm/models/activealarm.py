@@ -128,7 +128,6 @@ class ActiveAlarm(Document):
     # Calculated Severity
     severity = IntField(required=True)
     base_severity = IntField(required=False)
-    severity_policy = StringField(default="AS")
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -243,6 +242,11 @@ class ActiveAlarm(Document):
         if self.managed_object:
             return self.managed_object.escalator_shard
         return DEFAULT_TTSYSTEM_SHARD
+
+    @property
+    def severity_policy(self):
+        """Getting severity policy for alarm"""
+        return
 
     def clean(self):
         super().clean()
@@ -795,7 +799,6 @@ class ActiveAlarm(Document):
         # if not policy and self.alarm_class.affected_service:
         #    policy = "AB"
         # elif not policy:
-        policy = policy or self.severity_policy
         # Base Severity
         if severity:
             base_severity = severity

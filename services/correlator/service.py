@@ -337,30 +337,6 @@ class CorrelatorService(FastAPIService):
                     found = True
         return found
 
-    @staticmethod
-    def get_default_optional_reference(
-        alarm_class: AlarmClass,
-        vars: Dict[str, Any],
-        # rule ?
-    ) -> Optional[str]:
-        """
-        Generate reference for event-based alarm without managed object
-        Reference has a form of
-
-        ```
-        r:<alarm class id>:<value1>:...:<value N>
-        ```
-        """
-        if not vars:
-            return None
-        var_suffix = ":".join(
-            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
-            for n in alarm_class.reference
-        )
-        if not var_suffix:
-            return None
-        return f"e:{alarm_class.id}:{var_suffix}"
-
     @classmethod
     def get_default_reference(
         cls, managed_object: ManagedObject, alarm_class: AlarmClass, vars: Optional[Dict[str, Any]]
@@ -719,7 +695,10 @@ class CorrelatorService(FastAPIService):
         return a
 
     async def raise_alarm_from_rule(
-        self, rule: EventAlarmRule, event: Event, managed_object
+        self,
+        rule: EventAlarmRule,
+        event: Event,
+        managed_object: ManagedObject,
     ) -> Optional[ActiveAlarm]:
         """
         Raise alarm from incoming event
@@ -961,15 +940,7 @@ class CorrelatorService(FastAPIService):
             self.logger.error("Invalid alarm class: %s", req.alarm_class)
             return
         # Groups
-        if req.groups:
-            groups = []
-            for gi in req.groups:
-                ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
-                ac = ac or CAlarmRule.get_default_alarm_class()
-                gi_name = gi.name or "Alarm Group"
-                groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
-        else:
-            groups = None
+        groups = self.parse_groups(req.groups)
         # Remote system
         if req.remote_system and req.remote_id:
             remote_system = RemoteSystem.get_by_id(req.remote_system)
@@ -1072,6 +1043,25 @@ class CorrelatorService(FastAPIService):
             self.logger.debug("[%s] Processed rule: %s;%s", reference, rule.name, ctx)
             yield rule
 
+    @classmethod
+    def get_disposition_reference(
+        cls,
+        alarm_class: AlarmClass,
+        a_vars: Optional[Dict[str, Any]],
+        managed_object: Optional[ManagedObject] = None,
+        code: str = "e",
+    ):
+        """Calculate reference for Dispostion Rule"""
+        if managed_object:
+            return cls.get_default_reference(managed_object, alarm_class, a_vars)
+        if not a_vars:
+            return f"{code}:{alarm_class.id}"
+        var_suffix = ":".join(
+            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
+            for n in alarm_class.reference
+        )
+        return f"{code}:{alarm_class.id}:{var_suffix}"
+
     async def on_msg_disposition(self, req: DispositionRequest) -> None:
         """
         Process `disposition` message.
@@ -1082,21 +1072,13 @@ class CorrelatorService(FastAPIService):
         alarm_class, event_class, managed_object, remote_system = None, None, None, None
         if req.alarm_class:
             alarm_class = AlarmClass.get_by_name(req.alarm_class)
-        if req.event_class:
-            event_class = EventClass.get_by_name(req.event_class)
+        if req.event:
+            event_class = EventClass.get_by_name(req.event.event_class)
         # Get Managed Object
         if req.managed_object:
             managed_object = ManagedObject.get_by_id(int(req.managed_object))
         # Groups
-        if req.groups:
-            groups = []
-            for gi in req.groups:
-                ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
-                ac = ac or CAlarmRule.get_default_alarm_class()
-                gi_name = gi.name or "Alarm Group"
-                groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
-        else:
-            groups = None
+        groups = self.parse_groups(req.groups)
         # Remote system
         if req.remote_system and req.remote_id:
             remote_system = RemoteSystem.get_by_name(req.remote_system)
@@ -1108,30 +1090,51 @@ class CorrelatorService(FastAPIService):
             r_vars=r_vars,
             labels=req.labels,
         ):
+            if alarm_class and rule.alarm_class == alarm_class and req.reference:
+                reference = req.reference
+            else:
+                reference = self.get_disposition_reference(
+                    alarm_class=rule.alarm_class,
+                    a_vars=r_vars,
+                    managed_object=managed_object,
+                )
             try:
-                if rule.action == "raise" and rule.combo_condition == "none":
-                    await self.raise_alarm(
-                        managed_object=managed_object,
-                        timestamp=ts,
-                        alarm_class=alarm_class,
-                        vars=r_vars,
-                        reference=req.reference,
-                        groups=groups,
-                        labels=req.labels or [],
-                        severity=req.severity,
-                        remote_system=remote_system,
-                        remote_id=req.remote_id if remote_system else None,
-                    )
-                elif rule.action == "clear" and rule.combo_condition == "none":
+                if (rule.action == "clear" and rule.combo_condition == "none") or (
+                    req.event and req.event.event_severity == EventSeverity.CLEARED
+                ):
                     await self.clear_alarm_from_rule(
                         rule,
                         managed_object=managed_object,
                         r_vars=r_vars,
                         timestamp=ts,
                     )
+                elif rule.action == "raise" and rule.combo_condition == "none":
+                    await self.raise_alarm(
+                        managed_object=managed_object,
+                        timestamp=ts,
+                        alarm_class=alarm_class,
+                        vars=r_vars,
+                        reference=reference,
+                        groups=groups,
+                        labels=req.labels or [],
+                        severity=req.severity,
+                        remote_system=remote_system,
+                        remote_id=req.remote_id if remote_system else None,
+                    )
             except Exception:
                 metrics["alarm_dispose_error"] += 1
                 error_report()
+
+    @classmethod
+    def parse_groups(cls, req_groups) -> Optional[List[GroupItem]]:
+        """Parse Alarm Group from request"""
+        groups = []
+        for gi in req_groups or []:
+            ac = AlarmClass.get_by_name(gi.alarm_class) if gi.alarm_class else None
+            ac = ac or CAlarmRule.get_default_alarm_class()
+            gi_name = gi.name or "Alarm Group"
+            groups.append(GroupItem(reference=gi.reference, alarm_class=ac, title=gi_name))
+        return groups or None
 
     def parse_timestamp(self, iso_timestamp: str) -> datetime.datetime:
         """
@@ -1719,6 +1722,7 @@ class CorrelatorService(FastAPIService):
                     reference=group.reference,
                     labels=group.labels,
                     min_group_size=group.max_threshold,
+                    group_type=group.g_type,
                 )
                 if g_alarm:
                     # Update cache

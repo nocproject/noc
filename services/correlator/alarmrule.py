@@ -16,6 +16,7 @@ from jinja2 import Template
 from noc.core.matcher import build_matcher
 from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction
 from noc.core.span import get_current_span
+from noc.core.fm.enum import GroupType
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
@@ -57,6 +58,7 @@ class GroupItem(object):
     min_threshold: int = 0
     max_threshold: int = 0
     window: int = 0
+    g_type: GroupType.GROUP = GroupType.GROUP
 
 
 @dataclass
@@ -168,6 +170,7 @@ class AlarmRule(object):
                 min_threshold=group.min_threshold,
                 max_threshold=group.max_threshold,
                 window=group.window,
+                g_type=GroupType.RULE,
             )
 
     def get_job(self, alarm) -> Optional["AlarmActionRequest"]:

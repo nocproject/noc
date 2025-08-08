@@ -551,6 +551,13 @@ class Service(Document):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
+    def get_alarm_severity(self) -> int:
+        """Calculate Service alarm severity"""
+        default_map = {4: 5000, 3: 4000, 2: 3000}
+        if self.oper_status.value in default_map:
+            return default_map[self.oper_status.value]
+        return 0
+
     def register_alarm(self, old_status: Status):
         """
         Register Group alarm when changed Oper Status
@@ -564,9 +571,10 @@ class Service(Document):
                 "timestamp": self.oper_status_change.isoformat(),
                 "alarm_class": SVC_AC,
                 "labels": list(self.labels),
-                "severity": {4: 5000, 3: 4000, 2: 3000}[self.oper_status.value],
+                "severity": self.get_alarm_severity(),
                 "groups": [
-                    {"reference": f"{SVC_REF_PREFIX}:{svc.id}"}
+                    # Service path
+                    {"reference": f"{SVC_REF_PREFIX}:{svc.id}", "g_type": 3}
                     for svc in Service.objects.filter(parent=self.id)
                 ],
                 "subject": self.label,
@@ -579,9 +587,6 @@ class Service(Document):
                     "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
                 },
             }
-            caps = self.get_caps()
-            if caps and "Channel | Address" in caps:
-                msg["vars"]["address"] = caps["Channel | Address"]
             if self.interface:
                 msg["vars"]["interface"] = self.interface.name
         elif self.oper_status <= Status.UP < old_status:
