@@ -50,6 +50,10 @@
       "version": "4.7.0"
     },
     {
+      "name": "fontawesome7",
+      "version": "7.0.0"
+    },
+    {
       "name": "nocsound",
       "version": "1.0.0"
     },
