@@ -569,7 +569,7 @@ class CorrelatorService(FastAPIService):
             msg = "Alarm risen directly (by reference)"
         else:
             msg = "Alarm risen directly"
-        group_type = group_type or group_type.NEVER
+        group_type = group_type or GroupType.NEVER
         # Create new alarm
         a = ActiveAlarm(
             timestamp=timestamp,
