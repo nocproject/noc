@@ -158,6 +158,13 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
             if(objectId && target.classList.contains("noc-channel")){
               NOC.launch("inv.channel", "history", {
                 args: [objectId],
+                "override": [
+                  {
+                    "showGrid": function(){
+                      this.up().close();
+                    },
+                  },
+                ],
               });
             }
           }, this, {
