@@ -30,6 +30,7 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from noc.main.models.favorites import Favorites
 from noc.sa.models.job import Job
 from noc.core.feature import Feature
+from noc.fm.models.activealarm import ActiveAlarm
 from .base import InvPlugin
 
 
@@ -138,6 +139,9 @@ class ChannelPlugin(InvPlugin):
                 if job:
                     x["job_id"] = str(job.id)
                     x["job_status"] = job.status
+        statuses = ActiveAlarm.get_resource_statuses(f"c:{item['id']}" for item in r)
+        for item in r:
+            item["is_alarm"] = statuses[f"c:{item['id']}"]
         return {"records": r}
 
     def get_endpoint_label(self, ep: Endpoint) -> str:
