@@ -16,7 +16,7 @@ from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object, ObjectAttr
-from noc.fm.models.activealarm import ActiveAlarm, PathCode
+from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.interfaces.base import (
     StringParameter,
     FloatParameter,

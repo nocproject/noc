@@ -1461,9 +1461,9 @@ class ActiveAlarm(Document):
         for res in r:
             match res.split(":", 1)[0]:
                 case "o":
-                    by_codes["o"].append(res)
+                    by_codes[PathCode.OBJECT.value].append(res)
                 case "c":
-                    by_codes["c"].append(res)
+                    by_codes[PathCode.CHANNEL.value].append(res)
                 case _:
                     continue
         q = [query_for_code(c) for c in by_codes]
