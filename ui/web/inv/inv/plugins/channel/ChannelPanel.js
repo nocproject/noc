@@ -48,6 +48,18 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
       ],
     },
     {
+      text: __("Alarm"),
+      dataIndex: "is_alarm",
+      width: 50,
+      renderer: function(value){
+        if(value){
+          return `<i class='fa fa-exclamation-triangle' style='color: ${NOC.colors.no};'></i>`;
+        } else{
+          return `<i class='fa fa-check' style='color: ${NOC.colors.yes};'></i>`;
+        }
+      },
+    },
+    {
       text: __("Name"),
       dataIndex: "name",
       width: 200,
@@ -93,18 +105,6 @@ Ext.define("NOC.inv.inv.plugins.channel.ChannelPanel", {
             + "' data-record-id='" + record.get("job_id")
             + "' data-row-index='" + metaData.rowIndex + "'>"
             + NOC.render.JobStatusIcon(value) + "</span>"
-        }
-      },
-    },
-    {
-      text: __("Alarm"),
-      dataIndex: "is_alarm",
-      width: 50,
-      renderer: function(value){
-        if(value){
-          return `<i class='fa fa-exclamation-triangle' style='color: ${NOC.colors.no};'></i>`;
-        } else{
-          return `<i class='fa fa-check' style='color: ${NOC.colors.yes};'></i>`;
         }
       },
     },
