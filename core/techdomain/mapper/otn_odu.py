@@ -75,28 +75,16 @@ class DWDMOdUMapper(BaseMapper):
                 "name": "cluster_start",
                 "graphAttributes": {"label": node_label(path[0].object), "bgcolor": "#bec3c6"},
                 "nodes": [
-                    {
-                        "name": "start_odu",
-                        "attributes": {
-                            "label": q_uni(path[0].input),
-                            "shape": "box",
-                            "class": self.SELECTABLE_CLASS,
-                            "id": self.get_interaction_tag(
-                                resource=path[0].object.as_resource(path[0].input)
-                            ),
-                        },
-                    },
-                    {
-                        "name": "start_otu",
-                        "attributes": {
-                            "label": path[0].output,
-                            "shape": "box",
-                            "class": self.SELECTABLE_CLASS,
-                            "id": self.get_interaction_tag(
-                                resource=path[0].object.as_resource(path[0].output)
-                            ),
-                        },
-                    },
+                    self.add_port(
+                        "start_odu",
+                        label=q_uni(path[0].input),
+                        resource=path[0].object.as_resource(path[0].input),
+                    ),
+                    self.add_port(
+                        "start_otu",
+                        label=path[0].output,
+                        resource=path[0].object.as_resource(path[0].output),
+                    ),
                 ],
             }
         )
@@ -106,28 +94,16 @@ class DWDMOdUMapper(BaseMapper):
                 "name": "cluster_end",
                 "graphAttributes": {"label": node_label(path[1].object), "bgcolor": "#bec3c6"},
                 "nodes": [
-                    {
-                        "name": "end_odu",
-                        "attributes": {
-                            "label": q_uni(path[1].output),
-                            "shape": "box",
-                            "class": self.SELECTABLE_CLASS,
-                            "id": self.get_interaction_tag(
-                                resource=path[1].object.as_resource(path[1].output)
-                            ),
-                        },
-                    },
-                    {
-                        "name": "end_otu",
-                        "attributes": {
-                            "label": path[1].input,
-                            "shape": "box",
-                            "class": self.SELECTABLE_CLASS,
-                            "id": self.get_interaction_tag(
-                                resource=path[1].object.as_resource(path[1].input)
-                            ),
-                        },
-                    },
+                    self.add_port(
+                        "end_odu",
+                        label=q_uni(path[1].output),
+                        resource=path[1].object.as_resource(path[1].output),
+                    ),
+                    self.add_port(
+                        "end_otu",
+                        label=path[1].input,
+                        resource=path[1].object.as_resource(path[1].input),
+                    ),
                 ],
             }
         )

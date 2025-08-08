@@ -919,3 +919,17 @@ table {
 .noc-white-space {
     word-break: break-word;
 }
+
+.noc-clickable-object {
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.noc-clickable-object:hover {
+    color: #fff;
+    background-color: #34495e;
+    text-decoration: none;
+    padding: 2px 4px;
+    border-radius: 3px;
+}

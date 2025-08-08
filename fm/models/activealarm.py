@@ -22,6 +22,7 @@ from typing import (
     Generic,
     Union,
     List,
+    DefaultDict,
 )
 from threading import Lock
 import uuid
@@ -58,6 +59,7 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.inv.models.object import Object
+from noc.inv.models.endpoint import Endpoint
 from noc.core.change.decorator import change
 from noc.core.defer import call_later
 from noc.core.defer import defer
@@ -71,7 +73,7 @@ from .alarmclass import AlarmClass
 from .alarmlog import AlarmLog
 from .ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 from .alarmwatch import Effect, WatchItem
-from .pathitem import HAS_FGALARMS, _is_required_index, PathItem, PathCode
+from .pathitem import HAS_FGALARMS, HAS_CHANNEL, _is_required_index, PathItem, PathCode
 
 
 if HAS_FGALARMS:
@@ -79,6 +81,9 @@ if HAS_FGALARMS:
     _slot_mo = TTLCache(1_000, 60)
     _slot_lock = Lock()
     _slot_obj_lock = Lock()
+    if HAS_CHANNEL:
+        _channel_cache = TTLCache(1_000, ttl=60)
+        _channel_lock = Lock()
 
 
 @change(audit=False)
@@ -259,6 +264,10 @@ class ActiveAlarm(Document):
                 obj_path = self._get_obj_path()
                 if obj_path:
                     resource_path.append(PathItem(code=PathCode.OBJECT, path=obj_path))
+                    if HAS_CHANNEL:
+                        ch_path = self._get_channel_path(obj_path)
+                        if ch_path:
+                            resource_path.append(PathItem(code=PathCode.CHANNEL, path=ch_path))
                 self.resource_path = resource_path
         else:
             self.adm_path = []
@@ -1395,6 +1404,79 @@ class ActiveAlarm(Document):
             if r:
                 _slot_mo[self.managed_object.id] = r
             return r
+
+    def _get_channel_path(self, obj_path: List[str]) -> Optional[List[str]]:
+        """Get channel path."""
+        # Cached
+        key = tuple(obj_path)
+        with _channel_lock:
+            r = _channel_cache.get(key)
+            if r:
+                return r
+        # Resolve
+        ep = Endpoint._get_collection().find_one(
+            {"resource": {"$in": obj_path}}, {"_id": 1, "channel": 1, "resource": 1}
+        )
+        if ep:
+            return [f"c:{ep['channel']}", ep["resource"]]
+        return None
+
+    def get_resource_path(self, code: PathCode) -> Optional[List[str]]:
+        """
+        Get resource path for code.
+
+        Args:
+            code: Path code.
+
+        Returns:
+            Path if found, None otherwise.
+        """
+        for pc in self.resource_path or []:
+            if pc.code == code:
+                return pc.path
+        return None
+
+    @classmethod
+    def get_resource_statuses(cls, iter: Iterable[str]) -> Dict[str, bool]:
+        """
+        Get alarm status for resources.
+
+        Args:
+            iter: Iterable of resources.
+
+        Returns:
+            Dict of resource -> alarm status.
+        """
+
+        def query_for_code(code: str) -> Dict[str, Any]:
+            items = by_codes[code]
+            if len(items) == 1:
+                return {"resource_path": {"$elemMatch": {"c": code, "p": items[0]}}}
+            return {"resource_path": {"$elemMatch": {"c": code, "p": {"$in": items}}}}
+
+        r = {x: False for x in iter}
+        if not r:
+            return r
+        by_codes: DefaultDict[str, List[str]] = defaultdict(list)
+        for res in r:
+            match res.split(":", 1)[0]:
+                case "o":
+                    by_codes[PathCode.OBJECT.value].append(res)
+                case "c":
+                    by_codes[PathCode.CHANNEL.value].append(res)
+                case _:
+                    continue
+        q = [query_for_code(c) for c in by_codes]
+        if len(q) == 1:
+            query = q[0]
+        else:
+            query = {"$or": q}
+        for doc in ActiveAlarm._get_collection().find(query, {"_id": 0, "resource_path": 1}):
+            for pi in doc.get("resource_path", []):
+                for p in pi.get("p"):
+                    if p in r:
+                        r[p] = True
+        return r
 
 
 @runtime_checkable
