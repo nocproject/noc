@@ -91,6 +91,11 @@ Ext.define("NOC.main.label.Model", {
             persist: false
         },
         {
+            name: "unique_value",
+            type: "boolean",
+            persist: false
+        },
+        {
             name: "allow_auto_create",
             type: "boolean",
         },
