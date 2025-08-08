@@ -25,9 +25,9 @@ class BoMPlugin(InvPlugin):
             current = o
             while current.parent and current != obj:
                 if current.parent_connection:
-                    path.append(current.parent_connection)
+                    path.append({"id": str(current.id), "title": current.parent_connection})
                 else:
-                    path.append(current.name or "-")
+                    path.append({"id": str(current.id), "title": current.name or "-"})
                 current = current.parent
             #
             r.append(
