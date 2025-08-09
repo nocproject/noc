@@ -72,6 +72,8 @@ from noc.core.fm.enum import EventSeverity
 from noc.core.fm.request import AlarmActionRequest
 from noc.services.correlator.rcalock import RCALock
 from noc.services.correlator.alarmjob import AlarmJob
+from noc.services.datastream.models.cfgalarm import CfgAlarm
+
 
 ref_lock = threading.Lock()
 ta_DisposeRequest = TypeAdapter(DisposeRequest)
@@ -151,79 +153,78 @@ class CorrelatorService(FastAPIService):
         """
         super().on_start()
         connect()  # use_mongo connect do after on_start.
-        self.load_rules()
+        self.load_config()
         self.load_triggers()
-        self.load_rca_rules()
         self.load_alarm_rules()
-        self.load_vars()
 
-    def load_rules(self):
-        """
-        Load rules from database
-        """
-        self.logger.debug("Loading rules")
-        self.rules = {}
-        self.back_rules = {}
-        self.disposition_rules = {}
-        self.object_avail_rules = {}
-        nr, nbr, anr, ocr = 0, 0, 0, 0
-        for c in EventClass.objects.all():
-            cfg = EventClass.get_event_config(c)
-            rules = []
-            for dr in cfg["actions"]:
-                if not dr["alarm_class"]:
+    def load_config(self):
+        self.logger.debug("Loading config")
+        rca_forward, rca_reverse = defaultdict(list), defaultdict(list)
+        # Disposition Rules
+        d_rules, back_rules = defaultdict(list), defaultdict(list)
+        # Avail rules
+        oa_rules, ac_rules = defaultdict(list), defaultdict(list)
+        rca_count = 0
+        n_rule, n_br, n_oar, n_aor = 0, 0, 0, 0
+        for ac in AlarmClass.objects.filter():
+            cfg = CfgAlarm.model_validate(AlarmClass.get_config(ac))
+            # Variables
+            for v in cfg.vars:
+                if not v.default:
                     continue
-                rule = EventAlarmRule.from_config(dr, c)
-                rules += [rule]
-                nr += 1
-                if "combo_condition" not in dr or not dr["combo_condition"]["combo_window"]:
+                if v.component:
+                    # Expression
+                    self.alarm_class_vars[ac.id][v.name] = compile(
+                        f'{v.default[1:]} if "{v.component}" in components else None',
+                        "<string>",
+                        "eval",
+                    )
+                else:
+                    # Constant
+                    self.alarm_class_vars[ac.id][v.name] = v.default
+            # Dispositions
+            for dr in cfg.dispositions:
+                if not dr.event_classes:
+                    rule = EventAlarmRule.from_config(dr, ac)
+                    ac_rules[ac.id] += [rule]
+                    n_aor += 1
                     continue
-                for cc in dr.combo_event_classes:
-                    try:
-                        self.back_rules[cc.id] += [dr]
-                    except KeyError:
-                        self.back_rules[cc.id] = [dr]
-                    nbr += 1
-            self.rules[c.id] = rules
-            for rule in rules:
-                if rule.has_avail_condition:
-                    try:
-                        self.object_avail_rules[rule.object_avail_condition] += [rule]
-                    except KeyError:
-                        self.object_avail_rules[rule.object_avail_condition] = [rule]
-                    ocr += 1
-                if rule.alarm_class:
-                    try:
-                        self.disposition_rules[rule.alarm_class.id] += [rule]
-                    except KeyError:
-                        self.disposition_rules[rule.alarm_class.id] = [rule]
-                    anr += 1
+                for ec in EventClass.objects.filter(id__in=dr.event_classes):
+                    rule = EventAlarmRule.from_config(dr, ac, ec)
+                    d_rules[ec.id].append(rule)
+                    n_rule += 1
+                    if dr.object_avail_condition is not None:
+                        oa_rules[dr.object_avail_condition] += [rule]
+                        n_oar += 1
+                    if not dr.combo_condition:
+                        # Skip
+                        continue
+                    for cc in EventClass.objects.filter(id__in=dr.event_classes):
+                        back_rules[cc.id].append(dr.combo_condition)
+                        n_br += 1
+            # RCA
+            if not ac.root_cause:
+                continue
+            rca_forward[ac.id] = []
+            for c in ac.root_cause:
+                rc = RCACondition(ac, c)
+                rca_forward[ac.id] += [rc]
+                if rc.root.id not in rca_reverse:
+                    rca_reverse[rc.root.id] = []
+                rca_reverse[rc.root.id] += [rc]
+                rca_count += 1
+        self.rca_forward = {k: tuple(v) for k, v in rca_forward.items()}
+        self.rca_reverse = {k: tuple(v) for k, v in rca_reverse.items()}
+        self.logger.info("%d RCA Rules have been loaded", rca_count)
+        self.rules = {k: tuple(v) for k, v in d_rules.items()}
+        self.object_avail_rules = {k: tuple(v) for k, v in oa_rules.items()}
         self.logger.info(
             "%d rules are loaded. %d combos. %d alarms. %d avail",
-            nr,
-            nbr,
-            anr,
-            ocr,
+            n_rule,
+            n_br,
+            n_aor,
+            n_oar,
         )
-
-    def load_vars(self):
-        self.logger.info("Loading AlarmClass vars")
-        for alarm_class in AlarmClass.objects.all():
-            # Default variables
-            for v in alarm_class.vars:
-                if v.default:
-                    if v.default.startswith("="):
-                        # Expression
-                        # Check component '=component.<name>'
-                        _, c_name, *_ = v.default[1:].split(".", 2)
-                        self.alarm_class_vars[alarm_class.id][v.name] = compile(
-                            f'{v.default[1:]} if "{c_name}" in components else None',
-                            "<string>",
-                            "eval",
-                        )
-                    else:
-                        # Constant
-                        self.alarm_class_vars[alarm_class.id][v.name] = v.default
 
     def load_triggers(self):
         self.logger.info("Loading triggers")
@@ -243,27 +244,6 @@ class CorrelatorService(FastAPIService):
                     self.logger.debug("    %s", c_name)
             n += 1
         self.logger.info("%d triggers has been loaded to %d classes", n, cn)
-
-    def load_rca_rules(self):
-        """
-        Load root cause analisys rules
-        """
-        self.logger.info("Loading RCA Rules")
-        n = 0
-        self.rca_forward = {}
-        self.rca_reverse = {}
-        for a in AlarmClass.objects.filter(root_cause__0__exists=True):
-            if not a.root_cause:
-                continue
-            self.rca_forward[a.id] = []
-            for c in a.root_cause:
-                rc = RCACondition(a, c)
-                self.rca_forward[a.id] += [rc]
-                if rc.root.id not in self.rca_reverse:
-                    self.rca_reverse[rc.root.id] = []
-                self.rca_reverse[rc.root.id] += [rc]
-                n += 1
-        self.logger.info("%d RCA Rules have been loaded", n)
 
     def load_alarm_rules(self):
         """
@@ -617,6 +597,14 @@ class CorrelatorService(FastAPIService):
         a.total_objects = ObjectSummaryItem.dict_to_items(summary["object"])
         a.total_services = a.direct_services
         a.total_subscribers = a.direct_subscribers
+        # Static groups
+        alarm_groups: Dict[str, GroupItem] = {}
+        if groups:
+            for gi in groups:
+                if gi.reference and gi.reference not in alarm_groups:
+                    alarm_groups[gi.reference] = gi
+        # Apply rules
+        rule_groups, jobs = await self.apply_rules(a, alarm_groups.keys())
         # Calculate severity, required for properly Service match
         a.severity = a.get_effective_severity(summary=summary)
         # @todo: Fix
@@ -629,14 +617,6 @@ class CorrelatorService(FastAPIService):
         )
         # Calculate Affected Services, required for fill groups
         a.affected_services = Service.get_services_by_alarm(a)
-        # Static groups
-        alarm_groups: Dict[str, GroupItem] = {}
-        if groups:
-            for gi in groups:
-                if gi.reference and gi.reference not in alarm_groups:
-                    alarm_groups[gi.reference] = gi
-        # Apply rules
-        rule_groups, jobs = await self.apply_rules(a, alarm_groups.keys())
         # actions, jobs
         # Rewriter Alarm Class/Drop
         if rule_groups:
@@ -662,6 +642,15 @@ class CorrelatorService(FastAPIService):
         )
         metrics["alarm_raise"] += 1
         await self.correlate(a)
+        # Check ignored severity
+        if not a.severity:
+            # Alarm severity has been reset to 0 by handlers
+            # Silently drop alarm
+            self.logger.info("Alarm severity is 0, dropping")
+            a.delete()
+            metrics["alarm_drop"] += 1
+            return
+        #
         if managed_object:
             # Gather diagnostics when necessary
             AlarmDiagnosticConfig.on_raise(a)
@@ -783,14 +772,6 @@ class CorrelatorService(FastAPIService):
                     t.call(a)
                 except:  # noqa. Can probable happens anything from trigger
                     error_report()
-        #
-        if not a.severity:
-            # Alarm severity has been reset to 0 by handlers
-            # Silently drop alarm
-            self.logger.info("Alarm severity is 0, dropping")
-            a.delete()
-            metrics["alarm_drop"] += 1
-            return
 
     async def clear_alarm_from_rule(
         self,
@@ -1057,7 +1038,7 @@ class CorrelatorService(FastAPIService):
         if not a_vars:
             return f"{code}:{alarm_class.id}"
         var_suffix = ":".join(
-            str(vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
+            str(a_vars.get(n, "")).replace("\\", "\\\\").replace(":", r"\:")
             for n in alarm_class.reference
         )
         return f"{code}:{alarm_class.id}:{var_suffix}"
@@ -1112,7 +1093,7 @@ class CorrelatorService(FastAPIService):
                     await self.raise_alarm(
                         managed_object=managed_object,
                         timestamp=ts,
-                        alarm_class=alarm_class,
+                        alarm_class=rule.alarm_class,
                         vars=r_vars,
                         reference=reference,
                         groups=groups,
@@ -1726,6 +1707,7 @@ class CorrelatorService(FastAPIService):
                         def_h_ref = h_ref
                 # Raise group alarm
                 g_alarm = await self.raise_alarm(
+                    managed_object=None,
                     timestamp=alarm.timestamp,
                     alarm_class=group.alarm_class,
                     subject=group.title,
