@@ -142,6 +142,7 @@ class ActionType(enum.Enum):
         delay: Optional[int] = None,
         check: Optional[str] = None,
         audit: Optional[int] = None,
+        **kwargs,
     ):
         """Run ManagedObject discovery"""
         if audit:
