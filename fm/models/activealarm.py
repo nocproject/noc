@@ -9,6 +9,7 @@
 import datetime
 import logging
 import asyncio
+import operator
 from collections import defaultdict
 from itertools import chain
 from typing import (
@@ -41,6 +42,7 @@ from mongoengine.fields import (
     ObjectIdField,
     DictField,
     BinaryField,
+    EnumField,
 )
 from mongoengine.errors import SaveConditionError
 
@@ -60,7 +62,7 @@ from noc.core.defer import defer
 from noc.core.debug import error_report
 from noc.config import config
 from noc.core.span import get_current_span
-from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE
+from noc.core.fm.enum import RCA_NONE, RCA_OTHER, RCA_DOWNLINK_MERGE, GroupType
 from noc.core.handler import get_handler
 from .alarmseverity import AlarmSeverity
 from .alarmclass import AlarmClass
@@ -93,6 +95,7 @@ class ActiveAlarm(Document):
             "effective_labels",
             "groups",
             ("root", "groups"),
+            ("root", "rca_type"),
             "deferred_groups",
         ],
     }
@@ -105,7 +108,6 @@ class ActiveAlarm(Document):
     # Calculated Severity
     severity = IntField(required=True)
     base_severity = IntField(required=False)
-    severity_policy = StringField(default="AS")
     vars = DictField()
     # Alarm reference is a hash of discriminator
     # for external systems
@@ -123,6 +125,7 @@ class ActiveAlarm(Document):
     watchers: List[WatchItem] = EmbeddedDocumentListField(WatchItem)
     #
     custom_subject = StringField(required=False)
+    custom_object = StringField(required=False)
     custom_style = ForeignKeyField(Style, required=False)
     #
     reopens = IntField(required=False)
@@ -161,6 +164,7 @@ class ActiveAlarm(Document):
     dlm_windows = ListField(IntField())
     # RCA_* enums
     rca_type = IntField(default=RCA_NONE)
+    group_type: GroupType = EnumField(GroupType, default=GroupType.NEVER)
     # labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -217,6 +221,11 @@ class ActiveAlarm(Document):
         if self.managed_object:
             return self.managed_object.escalator_shard
         return DEFAULT_TTSYSTEM_SHARD
+
+    @property
+    def severity_policy(self):
+        """Getting severity policy for alarm"""
+        return
 
     def clean(self):
         super().clean()
@@ -758,7 +767,6 @@ class ActiveAlarm(Document):
         # if not policy and self.alarm_class.affected_service:
         #    policy = "AB"
         # elif not policy:
-        policy = policy or self.severity_policy
         # Base Severity
         if severity:
             base_severity = severity
@@ -1175,6 +1183,8 @@ class ActiveAlarm(Document):
         """
         Generator yielding all groups
         """
+        if not self.groups:
+            return
         for a in ActiveAlarm.objects.filter(reference__in=self.groups):
             yield a
 
@@ -1230,7 +1240,7 @@ class ActiveAlarm(Document):
             r["service_groups"] = list(self.managed_object.effective_service_groups)
         return r
 
-    def get_message_ctx(self):
+    def get_message_ctx(self, include_affected: bool = True):
         """
         Get escalation context
         """
@@ -1261,13 +1271,21 @@ class ActiveAlarm(Document):
             lost_redundancy = False
             affected_subscribers = []
             affected_services = []
+        # Include affected
+        if include_affected:
+            affected_objects = sorted(self.iter_affected(), key=operator.attrgetter("name"))
+        elif self.managed_object:
+            affected_objects = [self.managed_object]
+        else:
+            affected_objects = []
         return {
             "alarm": self,
             # "leader": self.alarm,
             "services": self.affected_services,
-            "group": "",
+            "group": None,
+            "service": None,
             "managed_object": self.managed_object,
-            "affected_objects": [self.managed_object],
+            "affected_objects": affected_objects,
             "total_objects": summary_to_list(self.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(self.total_subscribers, SubscriberProfile),
             "total_services": summary_to_list(self.total_services, ServiceProfile),

@@ -148,35 +148,22 @@ class ActionStatus(enum.Enum):
     # STOP = "stop/break"
 
 
-class GroupPolicy(enum.Enum):
+class GroupType(enum.Enum):
     """
     Attributes:
-        NEVER: Escalate only alarm
-        ROOT: Escalate Root Cause group
-        GROUP: Escalate group
-        SERVICE: Escalate Service Affected Group
+        NEVER: Never Group, Alarm Only
+        RULE: Rule based group
+        GROUP: Group
+        SERVICE: Service-based group
         CUSTOM: User former group
     """
 
     # Never Group, Alarm Only
     NEVER = 0
-    # Escalate only first root cause in group
-    ROOT = 1
-    # Escalate any first alarm in the group
+    RULE = 1
     GROUP = 2
-    # Escalate
     SERVICE = 3
-    #
     CUSTOM = 4  # handler ?
-    # Escalate only first root cause in group
-    # ROOT_FIRST = 1
-    # Escalate only root causes
-    # ROOT = 2
-    # Escalate any first alarm in the group,
-    # prefer root causes
-    # ALWAYS_FIRST = 3
-    # Always escalate
-    # ALWAYS = 4
 
 
 class ItemStatus(enum.Enum):
