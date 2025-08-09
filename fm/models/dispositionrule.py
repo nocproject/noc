@@ -496,13 +496,13 @@ class DispositionRule(Document):
                 {
                     "action": ActionType.AUDIT_COMMAND.value,
                     "key": "",
-                    "audit": rule.object_actions.interaction_audit.value,
+                    "args": {"audit": rule.object_actions.interaction_audit.value},
                 },
             )
             if rule.object_actions.run_discovery:
                 object_actions.append(
                     {"action": ActionType.RUN_DISCOVERY.value, "key": "",
-                     "audit": rule.object_actions.interaction_audit.value},
+                     "args": {"audit": rule.object_actions.interaction_audit.value}},
                 )
         elif rule.object_actions and rule.object_actions.run_discovery:
             object_actions.append(
