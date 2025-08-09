@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # EnsureGroup Request
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,6 +10,9 @@ from typing import Optional, Dict, Any, List, Literal
 
 # Third-party modules
 from pydantic import BaseModel, Field
+
+# NOC modules
+from noc.core.fm.enum import GroupType
 
 
 class AlarmItem(BaseModel):
@@ -27,7 +30,9 @@ class AlarmItem(BaseModel):
 class EnsureGroupRequest(BaseModel):
     op: Literal["ensure_group"] = Field(None, alias="$op")
     reference: str
+    g_type: GroupType = GroupType.GROUP
     name: Optional[str] = None
     alarm_class: Optional[str] = None
     labels: Optional[List[str]] = None
+    vars: Optional[Dict[str, Any]] = None
     alarms: List[AlarmItem]
