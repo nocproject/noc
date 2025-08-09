@@ -11,9 +11,6 @@ import datetime
 from functools import partial
 from typing import Callable, Optional, Any, Dict
 
-# Third-party modules
-from pymongo import InsertOne
-
 # NOC Modules
 from noc.core.wf.diagnostic import DiagnosticState
 from noc.core.defer import call_later
@@ -143,23 +140,30 @@ class ActionType(enum.Enum):
     def run_discovery(
         obj,
         delay: Optional[int] = None,
-        discovery: Optional[str] = None,
+        check: Optional[str] = None,
         audit: Optional[int] = None,
     ):
         """Run ManagedObject discovery"""
         if audit:
             audit = Interaction(int(audit))
-        if audit == Interaction.OP_REBOOT:
-            delay = obj.object_profile.box_discovery_on_system_start
-        if audit == Interaction.OP_CONFIG_CHANGED:
-            delay = obj.object_profile.box_discovery_on_config_changed
+        if audit == Interaction.OP_REBOOT and not obj.object_profile.box_discovery_on_system_start:
+            return
+        elif audit == Interaction.OP_REBOOT:
+            delay = obj.object_profile.box_discovery_system_start_delay
+        elif (
+            audit == Interaction.OP_CONFIG_CHANGED
+            and not obj.object_profile.box_discovery_on_config_changed
+        ):
+            return
+        elif audit == Interaction.OP_CONFIG_CHANGED:
+            delay = obj.object_profile.box_discovery_config_changed_delay
         else:
             delay = max(delay or config.correlator.discovery_delay, MIN_DISCOVERY_DELAY_SEC)
-        if discovery:
+        if check:
             call_later(
                 obj.id,
                 job_class=obj.BOX_DISCOVERY_JOB,
-                _checks=[discovery],
+                _checks=[check],
                 max_runs=1,
                 delay=delay,
             )

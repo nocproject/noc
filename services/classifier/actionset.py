@@ -7,7 +7,6 @@
 
 # Python modules
 import logging
-import datetime
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
@@ -22,7 +21,6 @@ from noc.core.matcher import build_matcher
 from noc.core.handler import get_handler
 from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.interactionlog import Interaction, InteractionLog
 from noc.services.classifier.eventconfig import EventConfig
 from noc.services.datastream.models.cfgevent import Rule
 
@@ -38,6 +36,7 @@ class Action:
     event: Tuple[Callable, ...] = None
     target: Tuple[Callable, ...] = None
     resource: Dict[str, Tuple[Callable, ...]] = None
+    action: EventAction.LOG = EventAction.LOG
 
 
 class ActionSet(object):
@@ -47,7 +46,8 @@ class ActionSet(object):
         self.logger = logger or action_logger
         self.actions: Dict[str, List[Action]] = {}
         self.add_handlers: int = 0
-        self.add_actions: int = 0
+        self.add_event_actions: int = 0
+        self.add_target_actions: int = 0
         self.add_notifications: int = 0
         self.default_resource_action = EventAction.LOG
 
@@ -80,7 +80,7 @@ class ActionSet(object):
         for d in data:
             actions += self.from_config(d)
         if rid not in self.actions:
-            self.add_actions += 1
+            self.add_event_actions += 1
         else:
             self.logger.info("[%s] Update event actions: %s", rid, actions)
         self.actions[rid] = actions
@@ -116,15 +116,15 @@ class ActionSet(object):
                 if h:
                     target_actions.append(h)
         if rule.action == EventAction.DISPOSITION:
-            target_actions += [
+            event_actions += [
                 partial(
                     self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
                 )
             ]
         elif rule.action == EventAction.DROP:
-            target_actions += [self.drop_event]
+            event_actions += [self.drop_event]
         elif rule.action == EventAction.DROP_MX:
-            target_actions += [self.drop_mx_event]
+            event_actions += [self.drop_mx_event]
         for r in rule.resources or []:
             for a in r.actions:
                 args = a.args or {}
@@ -224,66 +224,6 @@ class ActionSet(object):
             message_type=MessageType.EVENT,
             headers=headers,
         )
-
-    @staticmethod
-    def run_action(
-        event: Event,
-        managed_object: ManagedObject,
-        action: Optional[str] = None,
-    ):
-        """"""
-
-    @staticmethod
-    def run_discovery(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        interaction: Interaction,
-    ):
-        """Run Discovery"""
-        if (
-            interaction == Interaction.OP_STARTED
-            and managed_object.object_profile.box_discovery_on_system_start
-        ):
-            managed_object.run_discovery(
-                delta=managed_object.object_profile.box_discovery_system_start_delay
-            )
-        elif (
-            interaction == Interaction.OP_CONFIG_CHANGED
-            and managed_object.object_profile.box_discovery_on_config_changed
-        ):
-            managed_object.run_discovery(
-                delta=managed_object.object_profile.box_discovery_config_changed_delay
-            )
-
-    @staticmethod
-    def interaction_audit(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        interaction: Interaction,
-    ):
-        """Audit interaction"""
-        if interaction == Interaction.OP_COMMAND:
-            text = event.vars.get("command")
-        else:
-            text = interaction.config.text
-        InteractionLog(
-            timestamp=event.timestamp,
-            expire=event.timestamp + datetime.timedelta(seconds=interaction.config.ttl),
-            object=managed_object.id,
-            user=event.vars.get("user"),
-            op=interaction,
-            text=text,
-        ).save()
-
-    def send_workflow_event(self):
-        """"""
-
-    @staticmethod
-    def set_resource_status(event, resource, status: bool):
-        """"""
-        resource.set_oper_status(status=status, timestamp=event.timestamp)
 
     @staticmethod
     def drop_event(

@@ -436,18 +436,18 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class: Optional[EventClass] = None):
+    def get_actions(cls, event_class: Optional[EventClass] = None, event_config: bool = False):
         """"""
         r = []
         for rule in DispositionRule.objects.filter(
             conditions__event_class_re=event_class.name,
             is_active=True,
         ).order_by("preference"):
-            r.append(DispositionRule.get_rule_config(rule))
+            r.append(DispositionRule.get_rule_config(rule, event_config=event_config))
         return r
 
     @classmethod
-    def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
+    def get_rule_config(cls, rule: "DispositionRule", event_config: bool = False) -> Dict[str, Any]:
         """Generate DataStream Config from rule"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
             # Merge Rule ?
@@ -468,7 +468,11 @@ class DispositionRule(Document):
         object_actions = []
         if rule.alarm_disposition and rule.default_action in "RC":
             r["alarm_class"] = rule.alarm_disposition.name
-        if rule.default_action:
+        if rule.default_action and event_config:
+            r["action"] = {"R": "dispose", "C": "dispose", "I": "log", "D": "drop", "F": "drop_mx"}[
+                rule.default_action
+            ]
+        elif rule.default_action:
             r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
                 rule.default_action
             ]
@@ -501,8 +505,11 @@ class DispositionRule(Document):
             )
             if rule.object_actions.run_discovery:
                 object_actions.append(
-                    {"action": ActionType.RUN_DISCOVERY.value, "key": "",
-                     "args": {"audit": rule.object_actions.interaction_audit.value}},
+                    {
+                        "action": ActionType.RUN_DISCOVERY.value,
+                        "key": "",
+                        "args": {"audit": rule.object_actions.interaction_audit.value},
+                    },
                 )
         elif rule.object_actions and rule.object_actions.run_discovery:
             object_actions.append(
