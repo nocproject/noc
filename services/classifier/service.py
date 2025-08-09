@@ -490,8 +490,6 @@ class ClassifierService(FastAPIService):
 
     async def dispose_reference(self, event: Event):
         """Raise alarm by reference string"""
-        from noc.fm.models.alarmseverity import AlarmSeverity
-
         self.logger.info(
             "[%s|%s|%s] Disposing by reference",
             event.id,
