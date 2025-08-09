@@ -38,15 +38,15 @@ from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.interactionlog import Interaction
+from noc.core.models.cfgactions import ActionType
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import tree, on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
-from noc.fm.models.alarmclass import AlarmClass
-
 
 id_lock = Lock()
 
@@ -461,15 +461,12 @@ class DispositionRule(Document):
             # disposition_var_map
             "match_expr": {},
             "vars_match_expr": {},
-            "object_actions": {},
             "event_classes": [],
             "action": "ignore",
         }
+        object_actions = []
         if rule.alarm_disposition and rule.default_action in "RC":
-            r |= {
-                "ignore_target_on_dispose": rule.alarm_disposition.by_reference,
-                "alarm_class": rule.alarm_disposition.name,
-            }
+            r["alarm_class"] = rule.alarm_disposition.name
         if rule.default_action:
             r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
                 rule.default_action
@@ -494,14 +491,17 @@ class DispositionRule(Document):
             for c in rule.vars_conditions or []:
                 r["vars_match_expr"] |= c.get_match_expr()
         if rule.object_actions and rule.object_actions.interaction_audit:
-            r["object_actions"]["interaction_audit"] = rule.object_actions.interaction_audit.value
+            object_actions.append(
+                {
+                    "action": ActionType.AUDIT_COMMAND.value,
+                    "key": "",
+                    "audit": rule.object_actions.interaction_audit.value,
+                },
+            )
         if rule.object_actions and rule.object_actions.run_discovery:
-            r["object_actions"]["run_discovery"] = rule.object_actions.run_discovery
-        if rule.object_actions and rule.object_actions.update_avail_status != "N":
-            r["object_actions"]["update_avail_status"] = rule.object_actions.update_avail_status
-        if rule.update_oper_status != "N":
-            r["resource_oper_status"] = rule.update_oper_status
-            # enum_state
+            object_actions.append(
+                {"action": ActionType.RUN_DISCOVERY.value, "key": ""},
+            )
         if not rule.conditions:
             return r
         rule_conditions = []

@@ -433,6 +433,30 @@ class AlarmClass(Document):
             r[var_labels_map[scope]] = values[0]
         return r
 
+    @classmethod
+    def get_config(cls, alarm_class: "AlarmClass") -> Dict[str, Any]:
+        """Alarm Class configuration"""
+        from noc.fm.models.dispositionrule import DispositionRule
+
+        r = {
+            "id": str(alarm_class.id),
+            "name": alarm_class.name,
+            "bi_id": str(alarm_class.bi_id),
+            "is_unique": alarm_class.is_unique,
+            "is_ephemeral": alarm_class.is_ephemeral,
+            "by_reference": alarm_class.by_reference,
+            "reference": alarm_class.reference,
+            "user_clearable": alarm_class.user_clearable,
+            "open_handlers": list(alarm_class.handlers),
+            "dispositions": [],
+        }
+        for rule in DispositionRule.objects.filter(alarm_disposition=alarm_class, is_active=True):
+            cfg = DispositionRule.get_rule_config(rule)
+            if "alarm_class" in cfg:
+                del cfg["alarm_class"]
+            r["dispositions"].append(cfg)
+        return r
+
 
 # Avoid circular references
 from .alarmclassconfig import AlarmClassConfig
