@@ -23,6 +23,7 @@ from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.services.classifier.eventconfig import EventConfig
 from noc.services.datastream.models.cfgevent import Rule
+from noc.models import get_model_id
 
 action_logger = logging.getLogger(__name__)
 
@@ -37,6 +38,23 @@ class Action:
     target: Tuple[Callable, ...] = None
     resource: Dict[str, Tuple[Callable, ...]] = None
     action: EventAction.LOG = EventAction.LOG
+
+    def run_actions(self, event: Event, target: Any, resources: List[Any]) -> Iterable[EventAction]:
+        """Run setting actions"""
+        # First Event Handler
+        for h in self.event:
+            yield h(event, target)
+        # Second - check object actions
+        for h in self.target:
+            yield h(target, event=event, ts=event.ts, **event.vars)
+        if not self.resource:
+            return
+        for r in resources:
+            mid = get_model_id(r)
+            if mid not in self.resource:
+                continue
+            for h in self.resource[mid]:
+                yield h(r, event=event, ts=event.ts, **event.vars)
 
 
 class ActionSet(object):
@@ -56,7 +74,7 @@ class ActionSet(object):
         event_class: str,
         ctx: Dict[str, Any],
         e_vars: Dict[str, Any],
-    ) -> Iterable[Callable]:
+    ) -> Iterable[Action]:
         """"""
         if event_class not in self.actions:
             return
@@ -68,9 +86,7 @@ class ActionSet(object):
                 continue
             if a.event_match and not a.event_match(e_vars):
                 continue
-            yield from a.event or []
-            yield from a.target or []
-            yield from a.resource.values()
+            yield a
             if a.stop_processing:
                 break
 
@@ -96,7 +112,7 @@ class ActionSet(object):
         event_actions = []
         for h in rule.handlers or []:
             try:
-                event_actions += [partial(self.run_handler, handler=get_handler(h))]
+                event_actions += [partial(self.run_event_handler, handler=get_handler(h))]
             except ImportError:
                 self.logger.error("Failed to load handler '%s'. Ignoring", h)
             self.add_handlers += 1
@@ -115,16 +131,7 @@ class ActionSet(object):
                 h = a.action.from_config(a.key, **args)
                 if h:
                     target_actions.append(h)
-        if rule.action == EventAction.DISPOSITION:
-            event_actions += [
-                partial(
-                    self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
-                )
-            ]
-        elif rule.action == EventAction.DROP:
-            event_actions += [self.drop_event]
-        elif rule.action == EventAction.DROP_MX:
-            event_actions += [self.drop_mx_event]
+        # Resource action
         for r in rule.resources or []:
             for a in r.actions:
                 args = a.args or {}
@@ -138,8 +145,9 @@ class ActionSet(object):
                 ),
                 event=tuple(event_actions),
                 target=tuple(target_actions),
-                resource={k: tuple(v) for k, v in resource_actions},
+                resource={k: tuple(v) for k, v in resource_actions.items()},
                 stop_processing=data["stop_processing"],
+                action=rule.action,
             )
         ]
 
@@ -161,9 +169,15 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
-        categories=None,
     ) -> EventAction:
-        """Processed actions on Event"""
+        """
+        Processed actions on Event
+        Args:
+            event: Event instance
+            target: Object
+            resources: Resources resolved from event
+            config: EventConfig
+        """
         ctx = {
             "labels": frozenset(event.labels or []),
             "service_groups": frozenset(target.effective_service_groups or []) if target else [],
@@ -172,33 +186,28 @@ class ActionSet(object):
         action = None
         # Event and Target action
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
-            r = a(event, target, resources)
-            if r == EventAction.DROP:
-                return r
-            elif r and r != EventAction.LOG:
-                action = EventAction.DISPOSITION
+            try:
+                for r in a.run_actions(event, target, resources):
+                    if not r:
+                        continue
+                    elif r.is_drop:
+                        return r
+                    elif r.to_dispose:
+                        action = r
+            except Exception as e:
+                self.logger.error("[%s] Error when execute action: %s", event.id, str(e))
+            if a.action.is_drop:
+                return a.action
+        # Default resource action
+        for r in resources:
+            if get_model_id(r) == "inv.Interface":
+                action = self.get_resource_action(r, event=event)
         return action
 
     @staticmethod
-    def run_resources_action(
+    def run_event_handler(
         event: Event,
         managed_object: ManagedObject,
-        resources: List[Any],
-        handler: Callable,
-    ) -> EventAction:
-        """"""
-        action = EventAction.LOG
-        for res in resources:
-            r = handler(event, res)
-            if r and r == EventAction.DROP:
-                return r
-        return action
-
-    @staticmethod
-    def run_handler(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
         handler: Callable,
     ):
         """Run Event Handlers"""
@@ -208,11 +217,24 @@ class ActionSet(object):
             error_report()
 
     @staticmethod
-    def send_notification(
+    def run_resource_handler(
         event: Event,
+        resource: Any,
+        handler: Callable,
+        **kwargs,
+    ):
+        """Run Event Handlers"""
+        try:
+            handler(resource, event=event)
+        except Exception:
+            error_report()
+
+    @staticmethod
+    def send_notification(
         managed_object: ManagedObject,
-        resources: List[Any],
+        event: Event,
         notification_group: Optional[str] = None,
+        **kwargs,
     ):
         """Send Event Notification"""
         action_logger.debug("Sending status change notification")
@@ -225,42 +247,11 @@ class ActionSet(object):
             headers=headers,
         )
 
-    @staticmethod
-    def drop_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-    ):
-        """"""
-        return EventAction.DROP
-
-    @staticmethod
-    def drop_mx_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-    ):
-        """"""
-        return EventAction.DROP_MX
-
-    @staticmethod
-    def dispose_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        ignore_target: bool = False,
-    ):
-        """"""
-        if managed_object:
-            return EventAction.DISPOSITION
-        elif not managed_object and ignore_target:
-            return EventAction.DISPOSITION
-        return EventAction.LOG
-
     def get_resource_action(
         self,
-        event: Event,
         resource: Any,
+        event: Event,
+        **kwargs,
     ):
         """"""
         action = resource.profile.link_events

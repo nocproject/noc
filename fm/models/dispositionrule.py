@@ -41,6 +41,7 @@ from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.interactionlog import Interaction
 from noc.core.models.cfgactions import ActionType
+from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
@@ -469,9 +470,9 @@ class DispositionRule(Document):
         if rule.alarm_disposition and rule.default_action in "RC":
             r["alarm_class"] = rule.alarm_disposition.name
         if rule.default_action and event_config:
-            r["action"] = {"R": "dispose", "C": "dispose", "I": "log", "D": "drop", "F": "drop_mx"}[
-                rule.default_action
-            ]
+            r["action"] = EventAction.from_rule(rule.default_action).value
+        elif event_config:
+            r["action"] = EventAction.LOG.value
         elif rule.default_action:
             r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
                 rule.default_action
