@@ -110,7 +110,7 @@ class AlarmClassVar(EmbeddedDocument):
         if self.default and self.default.startswith("="):
             # Expression
             # Check component '=component.<name>'
-            _, c_name, default = self.default[1:].split(".", 2)
+            _, c_name, *_ = self.default[1:].split(".", 2)
             r |= {"component": c_name, "default": self.default[1:]}
         elif self.default:
             r["default"] = self.default

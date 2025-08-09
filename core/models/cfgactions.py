@@ -11,10 +11,15 @@ import datetime
 from functools import partial
 from typing import Callable, Optional, Any, Dict
 
+# Third-party modules
+from pymongo import InsertOne
+
 # NOC Modules
 from noc.core.wf.diagnostic import DiagnosticState
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
+from noc.core.models.cfginteractions import Interaction
+from noc.models import get_model_id
 from noc.config import config
 
 MIN_DISCOVERY_DELAY_SEC = 60
@@ -46,6 +51,8 @@ class ActionType(enum.Enum):
         match self:
             case self.ACTION_COMMAND:
                 return hasattr(obj, "actions")
+            case self.AUDIT_COMMAND:
+                return get_model_id(obj) == "sa.ManagedObject"
             case self.RUN_DISCOVERY:
                 return hasattr(obj, "run_discovery")
             case self.FIRE_WF_EVENT:
@@ -82,6 +89,8 @@ class ActionType(enum.Enum):
         """Callable for execute action"""
         match self:
             case self.ACTION_COMMAND:
+                return
+            case self.AUDIT_COMMAND:
                 return
             case self.RUN_DISCOVERY:
                 return partial(self.run_discovery, **kwargs)
@@ -135,12 +144,14 @@ class ActionType(enum.Enum):
         obj,
         delay: Optional[int] = None,
         discovery: Optional[str] = None,
-        reason_code: Optional[str] = None,
+        audit: Optional[int] = None,
     ):
         """Run ManagedObject discovery"""
-        if reason_code == "on_start":
+        if audit:
+            audit = Interaction(int(audit))
+        if audit == Interaction.OP_REBOOT:
             delay = obj.object_profile.box_discovery_on_system_start
-        elif reason_code == "on_config_changed":
+        if audit == Interaction.OP_CONFIG_CHANGED:
             delay = obj.object_profile.box_discovery_on_config_changed
         else:
             delay = max(delay or config.correlator.discovery_delay, MIN_DISCOVERY_DELAY_SEC)
@@ -165,3 +176,29 @@ class ActionType(enum.Enum):
         """Run Action Command on ManagedObject Action Proxy"""
         scr = getattr(obj.actions, action_name)
         scr(**kwargs)
+
+    @staticmethod
+    def interaction_audit(
+        obj,
+        audit: int,
+        ts: Optional[datetime.datetime] = None,
+        command: Optional[str] = None,
+        user: Optional[str] = None,
+        **kwargs,
+    ):
+        """Audit interaction"""
+        from noc.sa.models.interactionlog import InteractionLog
+
+        interaction = Interaction(int(audit))
+        if interaction == Interaction.OP_COMMAND:
+            text = command
+        else:
+            text = interaction.config.text
+        InteractionLog(
+            timestamp=ts,
+            expire=ts + datetime.timedelta(seconds=interaction.config.ttl),
+            object=obj.id,
+            user=user,
+            op=interaction,
+            text=text,
+        ).save()

@@ -13,7 +13,7 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
-from noc.core.models.cfgactions import ActionType
+from .utils import DisposeTargetObject, DisposeResource
 
 
 class VarItem(BaseModel):
@@ -70,42 +70,12 @@ class Rule(BaseModel):
     stop_processing: bool = False
 
 
-class DisposeAction(BaseModel):
-    """
-    # Action
-    # Run command
-    # Run diagnostic
-    # Run discovery (all/config)
-    # Send workflow event
-    # Set Diagnostic -> UP/DOWN
-    # Audit
-    """
-
-    action: ActionType
-    key: str
-    # checks
-    args: Optional[Dict[str, Any]] = None
-
-
-class DisposeTargetObject(BaseModel):
-    model: str = "sa.ManagedObject"
-    actions: Optional[List[DisposeAction]]
-    is_agent: bool = False
-    # CPE, Agent
-    # audit
-
-
-class Resource(BaseModel):
-    model: str
-    actions: Optional[List[DisposeAction]]
-
-
 class DispositionRule(BaseModel):
     name: str
     is_active: bool
     preference: int
     target: Optional[DisposeTargetObject] = None
-    resources: Optional[List[Resource]] = None
+    resources: Optional[List[DisposeResource]] = None
     event_classes: Optional[List[str]] = None
     stop_processing: bool = False
     action: Literal["ignore", "raise", "clear", "drop", "drop_mx"] = "ignore"

@@ -24,6 +24,7 @@ from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.interactionlog import Interaction, InteractionLog
 from noc.services.classifier.eventconfig import EventConfig
+from noc.services.datastream.models.cfgevent import Rule
 
 action_logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class Action:
     event_match: Optional[Callable] = None
     event: Tuple[Callable, ...] = None
     target: Tuple[Callable, ...] = None
-    resource: Dict[str, Callable] = None
+    resource: Dict[str, Tuple[Callable, ...]] = None
 
 
 class ActionSet(object):
@@ -91,60 +92,43 @@ class ActionSet(object):
 
     def from_config(self, data: Dict[str, Any]) -> List[Action]:
         """Create actions"""
-
-        event_a = []
-        for h in data.get("handlers") or []:
+        rule = Rule.model_validate(data)
+        event_actions = []
+        for h in rule.handlers or []:
             try:
-                event_a += [partial(self.run_handler, handler=get_handler(h))]
+                event_actions += [partial(self.run_handler, handler=get_handler(h))]
             except ImportError:
                 self.logger.error("Failed to load handler '%s'. Ignoring", h)
             self.add_handlers += 1
-        target_a = []
-        action = EventAction.from_rule(data["action"])
-        if "notification_group" in data:
-            target_a += [
+        target_actions, resource_actions = [], defaultdict(list)
+        if rule.notification_group:
+            target_actions += [
                 partial(
                     self.send_notification,
-                    notification_group=str(data["notification_group"]),
+                    notification_group=str(rule.notification_group),
                 )
             ]
             self.add_notifications += 1
-        if data.get("object_actions") and "interaction_audit" in data["object_actions"]:
-            target_a += [
-                partial(
-                    self.interaction_audit,
-                    interaction=Interaction(data["object_actions"]["interaction_audit"]),
-                ),
-            ]
-            self.add_handlers += 1
-        if data.get("object_actions") and "run_discovery" in data["object_actions"]:
-            target_a += [
-                partial(
-                    self.run_discovery,
-                    interaction=Interaction(data["object_actions"].get("interaction_audit")),
-                ),
-            ]
-            self.add_handlers += 1
-        if action == EventAction.DISPOSITION:
-            target_a += [
+        if rule.target:
+            for a in rule.target.actions or []:
+                args = a.args or {}
+                h = a.action.from_config(a.key, **args)
+                if h:
+                    target_actions.append(h)
+        if rule.action == EventAction.DISPOSITION:
+            target_actions += [
                 partial(
                     self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
                 )
             ]
-        elif action == EventAction.DROP:
-            target_a += [self.drop_event]
-        elif action == EventAction.DROP_MX:
-            target_a += [self.drop_mx_event]
-        resource = {
-            "action": partial(self.run_resources_action, handler=partial(self.get_resource_action))
-        }
-        if "resource_oper_status" in data and data["resource_oper_status"] != "N":
-            resource["oper_status"] = partial(
-                self.run_resources_action,
-                handler=partial(
-                    self.set_resource_status, status=data["resource_oper_status"] == "U"
-                ),
-            )
+        elif rule.action == EventAction.DROP:
+            target_actions += [self.drop_event]
+        elif rule.action == EventAction.DROP_MX:
+            target_actions += [self.drop_mx_event]
+        for r in rule.resources or []:
+            for a in r.actions:
+                args = a.args or {}
+                resource_actions[r.model].append(a.action.from_config(key=a.key, **args))
         return [
             Action(
                 name=data["name"],
@@ -152,9 +136,9 @@ class ActionSet(object):
                 event_match=(
                     build_matcher(data["vars_match_expr"]) if data.get("vars_match_expr") else None
                 ),
-                event=tuple(event_a),
-                target=tuple(target_a),
-                resource=resource,
+                event=tuple(event_actions),
+                target=tuple(target_actions),
+                resource={k: tuple(v) for k, v in resource_actions},
                 stop_processing=data["stop_processing"],
             )
         ]

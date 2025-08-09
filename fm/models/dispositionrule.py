@@ -463,6 +463,7 @@ class DispositionRule(Document):
             "vars_match_expr": {},
             "event_classes": [],
             "action": "ignore",
+            "target": {"model": "sa.ManagedObject"},
         }
         object_actions = []
         if rule.alarm_disposition and rule.default_action in "RC":
@@ -498,10 +499,17 @@ class DispositionRule(Document):
                     "audit": rule.object_actions.interaction_audit.value,
                 },
             )
-        if rule.object_actions and rule.object_actions.run_discovery:
+            if rule.object_actions.run_discovery:
+                object_actions.append(
+                    {"action": ActionType.RUN_DISCOVERY.value, "key": "",
+                     "audit": rule.object_actions.interaction_audit.value},
+                )
+        elif rule.object_actions and rule.object_actions.run_discovery:
             object_actions.append(
                 {"action": ActionType.RUN_DISCOVERY.value, "key": ""},
             )
+        if object_actions:
+            r["target"]["actions"] = object_actions
         if not rule.conditions:
             return r
         rule_conditions = []
