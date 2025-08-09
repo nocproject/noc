@@ -25,7 +25,7 @@ from mongoengine.fields import (
 )
 
 # NOC models
-from noc.core.fm.enum import AlarmAction, ActionStatus, GroupPolicy, ItemStatus
+from noc.core.fm.enum import AlarmAction, ActionStatus, ItemStatus
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 
 
@@ -102,7 +102,7 @@ class ActionLog(EmbeddedDocument):
     stop_processing: bool = BooleanField(default=False)
     allow_fail: bool = BooleanField(default=False)
     repeat_num: int = IntField(default=0)
-    policy: GroupPolicy = EnumField(GroupPolicy, default=GroupPolicy.ROOT)
+    # policy: GroupPolicy = EnumField(GroupPolicy, default=GroupPolicy.ROOT)
     # Approve flag (is user Approved Received Message)
     # Notification adapter for sender
     # User Actions

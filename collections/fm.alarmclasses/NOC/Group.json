@@ -5,6 +5,7 @@
     "description": "Default Alarm Class for grouping alarms",
     "is_unique": false,
     "reference": [],
+    "by_reference": true,
     "is_ephemeral": true,
     "user_clearable": false,
     "vars": [
@@ -15,8 +16,8 @@
     ],
     "subject_template": "Group Alarm {{alarm.vars.name}}",
     "body_template": "Alarm by group {{alarm.vars.name}}",
-    "symptoms": null,
-    "probable_causes": null,
+    "symptoms": "",
+    "probable_causes": "",
     "recommended_actions": "Ignore this",
-    "labels": ["noc::severity::ignore"]
+    "labels": []
 }
