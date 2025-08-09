@@ -239,9 +239,6 @@ class AlarmActionRunner(object):
             tt_id: Number of document on TT System
             timestamp:
             subject: comment message
-            login:
-            queue: TT Queue
-            pre_reason: Alarm Pre-Diagnostic code
 
         Returns:
             Escalation Resul instance
