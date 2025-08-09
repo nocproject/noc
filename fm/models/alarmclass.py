@@ -104,6 +104,20 @@ class AlarmClassVar(EmbeddedDocument):
             r["default_labels"] = self.default_labels
         return r
 
+    def get_config(self) -> Dict[str, Any]:
+        """"""
+        r = {"name": self.name, "default": None}
+        if self.default and self.default.startswith("="):
+            # Expression
+            # Check component '=component.<name>'
+            _, c_name, default = self.default[1:].split(".", 2)
+            r |= {"component": c_name, "default": self.default[1:]}
+        elif self.default:
+            r["default"] = self.default
+        if self.default_labels:
+            r["default_labels"] = list(self.default_labels)
+        return r
+
 
 @bi_sync
 @change
@@ -152,9 +166,9 @@ class AlarmClass(Document):
     #
     datasources = ListField(EmbeddedDocumentField(DataSource))
     #
-    components = ListField(EmbeddedDocumentField(Component))
+    components: List[Component] = ListField(EmbeddedDocumentField(Component))
     #
-    vars = ListField(EmbeddedDocumentField(AlarmClassVar))
+    vars: List[AlarmClassVar] = ListField(EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     subject_template = StringField()
     body_template = StringField()
@@ -437,6 +451,7 @@ class AlarmClass(Document):
     def get_config(cls, alarm_class: "AlarmClass") -> Dict[str, Any]:
         """Alarm Class configuration"""
         from noc.fm.models.dispositionrule import DispositionRule
+        from noc.fm.models.alarmrule import AlarmRule
 
         r = {
             "id": str(alarm_class.id),
@@ -449,12 +464,18 @@ class AlarmClass(Document):
             "user_clearable": alarm_class.user_clearable,
             "open_handlers": list(alarm_class.handlers),
             "dispositions": [],
+            "rules": [],
+            "vars": [av.get_config() for av in alarm_class.vars],
         }
         for rule in DispositionRule.objects.filter(alarm_disposition=alarm_class, is_active=True):
             cfg = DispositionRule.get_rule_config(rule)
             if "alarm_class" in cfg:
                 del cfg["alarm_class"]
             r["dispositions"].append(cfg)
+        for rule in AlarmRule.objects.filter(match__alarm_class=alarm_class):
+            r["rules"].append(AlarmRule.get_config(rule))
+        if alarm_class.clear_handlers:
+            r["clear_handlers"] = list(alarm_class.clear_handlers)
         return r
 
 
