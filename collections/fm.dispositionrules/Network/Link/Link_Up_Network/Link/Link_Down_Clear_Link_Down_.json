@@ -9,5 +9,6 @@
         "event_class_re": "Network | Link | Link Up"
     }],
     "default_action": "C",
-    "stop_processing": false
+    "stop_processing": false,
+    "update_oper_status": "U"
 }

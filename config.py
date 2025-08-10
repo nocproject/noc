@@ -827,6 +827,7 @@ class Config(BaseConfig):
         install_collection = BooleanParameter(default=False)
         max_threads = IntParameter(default=10)
         macdb_window = IntParameter(default=4 * 86400)
+        events_windows = SecondsParameter(default="30d")
         enable_remote_system_last_extract_info = BooleanParameter(default=False)
         heatmap_lon = StringParameter(default="108.567849")
         heatmap_lat = StringParameter(default="66.050063")

@@ -7,11 +7,13 @@
 
 # Python modules
 import logging
-import datetime
 from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
 from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
+
+# Third-party modules
+from pydantic import ValidationError
 
 # NOC modules
 from noc.core.fm.event import Event
@@ -22,8 +24,9 @@ from noc.core.matcher import build_matcher
 from noc.core.handler import get_handler
 from noc.fm.models.dispositionrule import DispositionRule
 from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.interactionlog import Interaction, InteractionLog
 from noc.services.classifier.eventconfig import EventConfig
+from noc.services.datastream.models.cfgevent import Rule
+from noc.models import get_model_id
 
 action_logger = logging.getLogger(__name__)
 
@@ -36,7 +39,25 @@ class Action:
     event_match: Optional[Callable] = None
     event: Tuple[Callable, ...] = None
     target: Tuple[Callable, ...] = None
-    resource: Dict[str, Callable] = None
+    resource: Dict[str, Tuple[Callable, ...]] = None
+    action: EventAction.LOG = EventAction.LOG
+
+    def run_actions(self, event: Event, target: Any, resources: List[Any]) -> Iterable[EventAction]:
+        """Run setting actions"""
+        # First Event Handler
+        for h in self.event:
+            yield h(event, target)
+        # Second - check object actions
+        for h in self.target:
+            yield h(target, event=event, ts=event.timestamp, **event.vars)
+        if not self.resource:
+            return
+        for r in resources:
+            mid = get_model_id(r)
+            if mid not in self.resource:
+                continue
+            for h in self.resource[mid]:
+                yield h(r, event=event, ts=event.timestamp, **event.vars)
 
 
 class ActionSet(object):
@@ -46,7 +67,8 @@ class ActionSet(object):
         self.logger = logger or action_logger
         self.actions: Dict[str, List[Action]] = {}
         self.add_handlers: int = 0
-        self.add_actions: int = 0
+        self.add_event_actions: int = 0
+        self.add_target_actions: int = 0
         self.add_notifications: int = 0
         self.default_resource_action = EventAction.LOG
 
@@ -55,7 +77,7 @@ class ActionSet(object):
         event_class: str,
         ctx: Dict[str, Any],
         e_vars: Dict[str, Any],
-    ) -> Iterable[Callable]:
+    ) -> Iterable[Action]:
         """"""
         if event_class not in self.actions:
             return
@@ -67,9 +89,7 @@ class ActionSet(object):
                 continue
             if a.event_match and not a.event_match(e_vars):
                 continue
-            yield from a.event or []
-            yield from a.target or []
-            yield from a.resource.values()
+            yield a
             if a.stop_processing:
                 break
 
@@ -79,7 +99,7 @@ class ActionSet(object):
         for d in data:
             actions += self.from_config(d)
         if rid not in self.actions:
-            self.add_actions += 1
+            self.add_event_actions += 1
         else:
             self.logger.info("[%s] Update event actions: %s", rid, actions)
         self.actions[rid] = actions
@@ -91,60 +111,38 @@ class ActionSet(object):
 
     def from_config(self, data: Dict[str, Any]) -> List[Action]:
         """Create actions"""
-
-        event_a = []
-        for h in data.get("handlers") or []:
+        try:
+            rule = Rule.model_validate(data)
+        except ValidationError as e:
+            self.logger.error("[%s] Failed load action rule: %s", data["name"], e)
+            return []
+        event_actions = []
+        for h in rule.handlers or []:
             try:
-                event_a += [partial(self.run_handler, handler=get_handler(h))]
+                event_actions += [partial(self.run_event_handler, handler=get_handler(h))]
             except ImportError:
                 self.logger.error("Failed to load handler '%s'. Ignoring", h)
             self.add_handlers += 1
-        target_a = []
-        action = EventAction.from_rule(data["action"])
-        if "notification_group" in data:
-            target_a += [
+        target_actions, resource_actions = [], defaultdict(list)
+        if rule.notification_group:
+            target_actions += [
                 partial(
                     self.send_notification,
-                    notification_group=str(data["notification_group"]),
+                    notification_group=str(rule.notification_group),
                 )
             ]
             self.add_notifications += 1
-        if data.get("object_actions") and "interaction_audit" in data["object_actions"]:
-            target_a += [
-                partial(
-                    self.interaction_audit,
-                    interaction=Interaction(data["object_actions"]["interaction_audit"]),
-                ),
-            ]
-            self.add_handlers += 1
-        if data.get("object_actions") and "run_discovery" in data["object_actions"]:
-            target_a += [
-                partial(
-                    self.run_discovery,
-                    interaction=Interaction(data["object_actions"].get("interaction_audit")),
-                ),
-            ]
-            self.add_handlers += 1
-        if action == EventAction.DISPOSITION:
-            target_a += [
-                partial(
-                    self.dispose_event, ignore_target=data.get("ignore_target_on_dispose", False)
-                )
-            ]
-        elif action == EventAction.DROP:
-            target_a += [self.drop_event]
-        elif action == EventAction.DROP_MX:
-            target_a += [self.drop_mx_event]
-        resource = {
-            "action": partial(self.run_resources_action, handler=partial(self.get_resource_action))
-        }
-        if "resource_oper_status" in data and data["resource_oper_status"] != "N":
-            resource["oper_status"] = partial(
-                self.run_resources_action,
-                handler=partial(
-                    self.set_resource_status, status=data["resource_oper_status"] == "U"
-                ),
-            )
+        if rule.target:
+            for a in rule.target.actions or []:
+                args = a.args or {}
+                h = a.action.from_config(a.key, **args)
+                if h:
+                    target_actions.append(h)
+        # Resource action
+        for r in rule.resources or []:
+            for a in r.actions:
+                args = a.args or {}
+                resource_actions[r.model].append(a.action.from_config(key=a.key, **args))
         return [
             Action(
                 name=data["name"],
@@ -152,10 +150,11 @@ class ActionSet(object):
                 event_match=(
                     build_matcher(data["vars_match_expr"]) if data.get("vars_match_expr") else None
                 ),
-                event=tuple(event_a),
-                target=tuple(target_a),
-                resource=resource,
+                event=tuple(event_actions),
+                target=tuple(target_actions),
+                resource={k: tuple(v) for k, v in resource_actions.items()},
                 stop_processing=data["stop_processing"],
+                action=rule.action,
             )
         ]
 
@@ -177,9 +176,15 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
-        categories=None,
     ) -> EventAction:
-        """Processed actions on Event"""
+        """
+        Processed actions on Event
+        Args:
+            event: Event instance
+            target: Object
+            resources: Resources resolved from event
+            config: EventConfig
+        """
         ctx = {
             "labels": frozenset(event.labels or []),
             "service_groups": frozenset(target.effective_service_groups or []) if target else [],
@@ -188,33 +193,28 @@ class ActionSet(object):
         action = None
         # Event and Target action
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
-            r = a(event, target, resources)
-            if r == EventAction.DROP:
-                return r
-            elif r and r != EventAction.LOG:
-                action = EventAction.DISPOSITION
+            try:
+                for r in a.run_actions(event, target, resources):
+                    if not r:
+                        continue
+                    elif r.is_drop:
+                        return r
+                    elif r.to_dispose:
+                        action = r
+            except Exception as e:
+                self.logger.error("[%s] Error when execute action: %s", event.id, str(e))
+            if a.action.is_drop:
+                return a.action
+        # Default resource action
+        for r in resources:
+            if get_model_id(r) == "inv.Interface":
+                action = self.get_resource_action(r, event=event)
         return action
 
     @staticmethod
-    def run_resources_action(
+    def run_event_handler(
         event: Event,
         managed_object: ManagedObject,
-        resources: List[Any],
-        handler: Callable,
-    ) -> EventAction:
-        """"""
-        action = EventAction.LOG
-        for res in resources:
-            r = handler(event, res)
-            if r and r == EventAction.DROP:
-                return r
-        return action
-
-    @staticmethod
-    def run_handler(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
         handler: Callable,
     ):
         """Run Event Handlers"""
@@ -224,11 +224,24 @@ class ActionSet(object):
             error_report()
 
     @staticmethod
-    def send_notification(
+    def run_resource_handler(
         event: Event,
+        resource: Any,
+        handler: Callable,
+        **kwargs,
+    ):
+        """Run Event Handlers"""
+        try:
+            handler(resource, event=event)
+        except Exception:
+            error_report()
+
+    @staticmethod
+    def send_notification(
         managed_object: ManagedObject,
-        resources: List[Any],
+        event: Event,
         notification_group: Optional[str] = None,
+        **kwargs,
     ):
         """Send Event Notification"""
         action_logger.debug("Sending status change notification")
@@ -241,102 +254,11 @@ class ActionSet(object):
             headers=headers,
         )
 
-    @staticmethod
-    def run_action(
-        event: Event,
-        managed_object: ManagedObject,
-        action: Optional[str] = None,
-    ):
-        """"""
-
-    @staticmethod
-    def run_discovery(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        interaction: Interaction,
-    ):
-        """Run Discovery"""
-        if (
-            interaction == Interaction.OP_STARTED
-            and managed_object.object_profile.box_discovery_on_system_start
-        ):
-            managed_object.run_discovery(
-                delta=managed_object.object_profile.box_discovery_system_start_delay
-            )
-        elif (
-            interaction == Interaction.OP_CONFIG_CHANGED
-            and managed_object.object_profile.box_discovery_on_config_changed
-        ):
-            managed_object.run_discovery(
-                delta=managed_object.object_profile.box_discovery_config_changed_delay
-            )
-
-    @staticmethod
-    def interaction_audit(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        interaction: Interaction,
-    ):
-        """Audit interaction"""
-        if interaction == Interaction.OP_COMMAND:
-            text = event.vars.get("command")
-        else:
-            text = interaction.config.text
-        InteractionLog(
-            timestamp=event.timestamp,
-            expire=event.timestamp + datetime.timedelta(seconds=interaction.config.ttl),
-            object=managed_object.id,
-            user=event.vars.get("user"),
-            op=interaction,
-            text=text,
-        ).save()
-
-    def send_workflow_event(self):
-        """"""
-
-    @staticmethod
-    def set_resource_status(event, resource, status: bool):
-        """"""
-        resource.set_oper_status(status=status, timestamp=event.timestamp)
-
-    @staticmethod
-    def drop_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-    ):
-        """"""
-        return EventAction.DROP
-
-    @staticmethod
-    def drop_mx_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-    ):
-        """"""
-        return EventAction.DROP_MX
-
-    @staticmethod
-    def dispose_event(
-        event: Event,
-        managed_object: ManagedObject,
-        resources: List[Any],
-        ignore_target: bool = False,
-    ):
-        """"""
-        if managed_object:
-            return EventAction.DISPOSITION
-        elif not managed_object and ignore_target:
-            return EventAction.DISPOSITION
-        return EventAction.LOG
-
     def get_resource_action(
         self,
-        event: Event,
         resource: Any,
+        event: Event,
+        **kwargs,
     ):
         """"""
         action = resource.profile.link_events
