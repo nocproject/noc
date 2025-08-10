@@ -27,6 +27,8 @@ from noc.core.clickhouse.connect import connection
 from noc.config import config
 from noc.core.translation import ugettext as _
 
+EVENTS_DEFAULT_WINDOW = config.web.events_windows
+
 
 class EventApplication(ExtApplication):
     """
@@ -104,10 +106,13 @@ class EventApplication(ExtApplication):
             )
         if from_query:
             from_query = datetime.datetime.fromisoformat(from_query)
-            r.append(f"ts >= '{from_query.isoformat()}'")
+            r += [f"ts >= '{from_query.isoformat()}'", f"date >= '{from_query.date().isoformat()}'"]
+        else:
+            from_query = datetime.datetime.now() - datetime.timedelta(seconds=EVENTS_DEFAULT_WINDOW)
+            r += [f"date >= '{from_query.date().isoformat()}'"]
         if to_query:
             to_query = datetime.datetime.fromisoformat(to_query)
-            r.append(f"ts <= '{to_query.isoformat()}'")
+            r += [f"ts <= '{to_query.isoformat()}'", f"date <= '{to_query.date().isoformat()}'"]
         return r
 
     @classmethod

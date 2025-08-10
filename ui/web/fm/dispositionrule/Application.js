@@ -422,6 +422,13 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
             {
+                name: 'reference_rx',
+                xtype: 'textfield',
+                fieldLabel: __('Group Reference Regex'),
+                uiStyle: 'large',
+                allowBlank: true
+            },
+            {
               name: "object_status",
               xtype: "combobox",
               fieldLabel: __("Object Avail"),

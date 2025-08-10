@@ -14,6 +14,7 @@ from noc.core.fm.event import Event
 from noc.core.matcher import build_matcher
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
+from noc.services.datastream.models.cfgalarm import DispositionRule
 
 
 @dataclass
@@ -32,6 +33,7 @@ class EventAlarmRule:
     combo_window: int = 0
     combo_count: int = 0
     combo_event_classes: List[str] = None
+    reference_lookup: bool = False
     stop_disposition: bool = False
 
     @property
@@ -39,32 +41,42 @@ class EventAlarmRule:
         return self.object_avail_condition is not None
 
     @classmethod
-    def from_config(cls, data, event_class: EventClass) -> "EventAlarmRule":
+    def from_config(
+        cls,
+        rule: DispositionRule,
+        alarm_class: AlarmClass,
+        event_class: Optional[EventClass] = None,
+    ) -> "EventAlarmRule":
         """"""
-        alarm_class = AlarmClass.get_by_name(data["alarm_class"])
         a_vars = {v.name for v in alarm_class.vars}
-        e_vars = {v.name for v in event_class.vars}
+        if event_class:
+            e_vars = {v.name for v in event_class.vars}
+            var_mapping = {v: v for v in a_vars.intersection(e_vars)}
+        else:
+            var_mapping = {v: v for v in a_vars}
         r = EventAlarmRule(
-            name=data["name"],
+            name=rule.name,
             alarm_class=alarm_class,
             event_class=event_class,
-            action=data["action"],
+            action=rule.action,
             unique=alarm_class.is_unique,
-            stop_disposition=data["stop_processing"],
+            stop_disposition=rule.stop_processing,
             combo_condition="none",
-            var_mapping={v: v for v in a_vars.intersection(e_vars)},
+            var_mapping=var_mapping,
         )
-        if "combo_condition" in data:
-            r.combo_condition = data["combo_condition"]["combo_condition"]
-            r.combo_window = data["combo_condition"]["combo_window"]
-            r.combo_count = data["combo_condition"]["combo_count"]
-            r.combo_event_classes = data["combo_condition"]["combo_event_classes"]
-        if data["vars_match_expr"]:
-            r.match_vars = build_matcher(data["vars_match_expr"])
-        if data["match_expr"]:
-            r.match = build_matcher(data["match_expr"])
-        if "object_avail_condition" in data:
-            r.object_avail_condition = data["object_avail_condition"]
+        if rule.reference_lookup:
+            r.reference_lookup = rule.reference_lookup
+        if rule.combo_condition:
+            r.combo_condition = rule.combo_condition.combo_condition
+            r.combo_window = rule.combo_condition.combo_window
+            r.combo_count = rule.combo_condition.combo_count
+            r.combo_event_classes = rule.combo_condition.combo_event_classes
+        if rule.vars_match_expr:
+            r.match_vars = build_matcher(rule.vars_match_expr)
+        if rule.match_expr:
+            r.match = build_matcher(rule.match_expr)
+        if rule.object_avail_condition is not None:
+            r.object_avail_condition = rule.object_avail_condition
         return r
 
     def is_match(self, ctx: Dict[str, Any]) -> bool:

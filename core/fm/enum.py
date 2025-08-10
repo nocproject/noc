@@ -88,15 +88,26 @@ class EventAction(enum.Enum):
     @classmethod
     def from_rule(cls, action: str) -> "EventAction":
         """Convert rule value to Action"""
-        if action == "raise" or action == "clear":
+        if action in ["raise", "clear", "R", "C"]:
             return EventAction.DISPOSITION
-        elif action == "ignore" or action == "log":
+        elif action in ["ignore", "log", "I"]:
             return EventAction.LOG
-        elif action == "drop":
+        elif action in ["drop", "D"]:
             return EventAction.DROP
-        elif action == "drop_mx":
+        elif action in ["drop_mx", "F"]:
             return EventAction.DROP_MX
         return EventAction.LOG
+
+    @property
+    def is_drop(self) -> bool:
+        if self == self.DROP or self == self.DROP_MX:
+            return True
+        return False
+
+    @property
+    def to_dispose(self) -> bool:
+        """Check event to disposition"""
+        return self == self.DISPOSITION
 
 
 class AlarmAction(enum.Enum):
