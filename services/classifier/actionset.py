@@ -12,6 +12,9 @@ from collections import defaultdict
 from functools import partial
 from typing import Dict, Tuple, Optional, Callable, List, Any, Iterable
 
+# Third-party modules
+from pydantic import ValidationError
+
 # NOC modules
 from noc.core.fm.event import Event
 from noc.core.fm.enum import EventAction, EventSeverity
@@ -46,7 +49,7 @@ class Action:
             yield h(event, target)
         # Second - check object actions
         for h in self.target:
-            yield h(target, event=event, ts=event.ts, **event.vars)
+            yield h(target, event=event, ts=event.timestamp, **event.vars)
         if not self.resource:
             return
         for r in resources:
@@ -54,7 +57,7 @@ class Action:
             if mid not in self.resource:
                 continue
             for h in self.resource[mid]:
-                yield h(r, event=event, ts=event.ts, **event.vars)
+                yield h(r, event=event, ts=event.timestamp, **event.vars)
 
 
 class ActionSet(object):
@@ -108,7 +111,11 @@ class ActionSet(object):
 
     def from_config(self, data: Dict[str, Any]) -> List[Action]:
         """Create actions"""
-        rule = Rule.model_validate(data)
+        try:
+            rule = Rule.model_validate(data)
+        except ValidationError as e:
+            self.logger.error("[%s] Failed load action rule: %s", data["name"], e)
+            return []
         event_actions = []
         for h in rule.handlers or []:
             try:

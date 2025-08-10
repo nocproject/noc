@@ -523,6 +523,19 @@ class DispositionRule(Document):
             )
         if object_actions:
             r["target"]["actions"] = object_actions
+        if rule.update_oper_status in ["U", "D"]:
+            r["resources"] = [
+                {
+                    "model": "inv.Interface",
+                    "actions": [
+                        {
+                            "action": ActionType.SET_OPER_STATE.value,
+                            "key": "",
+                            "args": {"status": rule.update_oper_status == "U"},
+                        },
+                    ],
+                },
+            ]
         if not rule.conditions:
             return r
         rule_conditions = []
