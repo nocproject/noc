@@ -1,16 +1,19 @@
 # ----------------------------------------------------------------------
 # datastream models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 # Third-party modules
 from pydantic import BaseModel
+
+# NOC modules
+from noc.core.models.cfgactions import ActionType
 
 
 class RemoteSystemItem(BaseModel):
@@ -38,3 +41,33 @@ class ProjectItem(BaseModel):
 class RemoteMapItem(BaseModel):
     remote_system: RemoteSystemItem
     remote_id: str
+
+
+class DisposeAction(BaseModel):
+    """
+    # Action
+    # Run command
+    # Run diagnostic
+    # Run discovery (all/config)
+    # Send workflow event
+    # Set Diagnostic -> UP/DOWN
+    # Audit
+    """
+
+    action: ActionType
+    key: str
+    # checks
+    args: Optional[Dict[str, Any]] = None
+
+
+class DisposeTargetObject(BaseModel):
+    model: str = "sa.ManagedObject"
+    actions: Optional[List[DisposeAction]] = None
+    is_agent: bool = False
+    # CPE, Agent
+    # audit
+
+
+class DisposeResource(BaseModel):
+    model: str
+    actions: Optional[List[DisposeAction]]
