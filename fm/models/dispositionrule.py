@@ -38,15 +38,16 @@ from noc.main.models.handler import Handler
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
+from noc.fm.models.alarmclass import AlarmClass
 from noc.sa.models.interactionlog import Interaction
+from noc.core.models.cfgactions import ActionType
+from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import tree, on_delete_check
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
-from noc.fm.models.alarmclass import AlarmClass
-
 
 id_lock = Lock()
 
@@ -102,6 +103,7 @@ class Match(EmbeddedDocument):
     ex_groups: List[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
     # severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
+    reference_rx = StringField()
     event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
     object_status: Optional[str] = StringField(
         choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")],
@@ -118,6 +120,8 @@ class Match(EmbeddedDocument):
             r["event_class_re"] = self.event_class_re
         if self.object_status == "D" or self.object_status == "U":
             r["object_status"] = self.object_status
+        if self.reference_rx:
+            r["reference_rx"] = self.reference_rx
         return r
 
     def clean(self):
@@ -143,6 +147,8 @@ class Match(EmbeddedDocument):
             r["remote_system"] = str(self.remote_system.name)
         if self.object_status == "D" or self.object_status == "U":
             r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
+        if self.reference_rx:
+            r["reference"] = {"$regex": self.reference_rx}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -436,18 +442,18 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class: Optional[EventClass] = None):
+    def get_actions(cls, event_class: Optional[EventClass] = None, event_config: bool = False):
         """"""
         r = []
         for rule in DispositionRule.objects.filter(
             conditions__event_class_re=event_class.name,
             is_active=True,
         ).order_by("preference"):
-            r.append(DispositionRule.get_rule_config(rule))
+            r.append(DispositionRule.get_rule_config(rule, event_config=event_config))
         return r
 
     @classmethod
-    def get_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
+    def get_rule_config(cls, rule: "DispositionRule", event_config: bool = False) -> Dict[str, Any]:
         """Generate DataStream Config from rule"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
             # Merge Rule ?
@@ -461,16 +467,18 @@ class DispositionRule(Document):
             # disposition_var_map
             "match_expr": {},
             "vars_match_expr": {},
-            "object_actions": {},
             "event_classes": [],
             "action": "ignore",
+            "target": {"model": "sa.ManagedObject"},
         }
+        object_actions = []
         if rule.alarm_disposition and rule.default_action in "RC":
-            r |= {
-                "ignore_target_on_dispose": rule.alarm_disposition.by_reference,
-                "alarm_class": rule.alarm_disposition.name,
-            }
-        if rule.default_action:
+            r["alarm_class"] = rule.alarm_disposition.name
+        if rule.default_action and event_config:
+            r["action"] = EventAction.from_rule(rule.default_action).value
+        elif event_config:
+            r["action"] = EventAction.LOG.value
+        elif rule.default_action:
             r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
                 rule.default_action
             ]
@@ -479,7 +487,7 @@ class DispositionRule(Document):
                 "notification_group": str(rule.notification_group.id),
                 "subject_template": rule.subject_template,
             }
-        if rule.combo_condition and rule.combo_event_classes:
+        if rule.combo_condition and rule.combo_event_classes and rule.combo_condition != "none":
             r["combo_condition"] = {
                 "combo_condition": rule.combo_condition,
                 "combo_window": rule.combo_window,
@@ -494,14 +502,40 @@ class DispositionRule(Document):
             for c in rule.vars_conditions or []:
                 r["vars_match_expr"] |= c.get_match_expr()
         if rule.object_actions and rule.object_actions.interaction_audit:
-            r["object_actions"]["interaction_audit"] = rule.object_actions.interaction_audit.value
-        if rule.object_actions and rule.object_actions.run_discovery:
-            r["object_actions"]["run_discovery"] = rule.object_actions.run_discovery
-        if rule.object_actions and rule.object_actions.update_avail_status != "N":
-            r["object_actions"]["update_avail_status"] = rule.object_actions.update_avail_status
-        if rule.update_oper_status != "N":
-            r["resource_oper_status"] = rule.update_oper_status
-            # enum_state
+            object_actions.append(
+                {
+                    "action": ActionType.AUDIT_COMMAND.value,
+                    "key": "",
+                    "args": {"audit": rule.object_actions.interaction_audit.value},
+                },
+            )
+            if rule.object_actions.run_discovery:
+                object_actions.append(
+                    {
+                        "action": ActionType.RUN_DISCOVERY.value,
+                        "key": "",
+                        "args": {"audit": rule.object_actions.interaction_audit.value},
+                    },
+                )
+        elif rule.object_actions and rule.object_actions.run_discovery:
+            object_actions.append(
+                {"action": ActionType.RUN_DISCOVERY.value, "key": ""},
+            )
+        if object_actions:
+            r["target"]["actions"] = object_actions
+        if rule.update_oper_status in ["U", "D"]:
+            r["resources"] = [
+                {
+                    "model": "inv.Interface",
+                    "actions": [
+                        {
+                            "action": ActionType.SET_OPER_STATE.value,
+                            "key": "",
+                            "args": {"status": rule.update_oper_status == "U"},
+                        },
+                    ],
+                },
+            ]
         if not rule.conditions:
             return r
         rule_conditions = []

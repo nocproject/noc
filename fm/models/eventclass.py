@@ -460,7 +460,7 @@ class EventClass(Document):
                     "resource_model": vv.type.resource_model,
                 }
             )
-        r["actions"] += DispositionRule.get_actions(event_class=event_class)
+        r["actions"] += DispositionRule.get_actions(event_class=event_class, event_config=True)
         return r
 
 

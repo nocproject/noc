@@ -13,6 +13,8 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.models.valuetype import ValueType
+from noc.core.fm.enum import EventAction
+from .utils import DisposeTargetObject, DisposeResource
 
 
 class TargetAction(BaseModel):
@@ -41,7 +43,7 @@ class Rule(BaseModel):
     is_active: bool
     preference: int
     event_classes: List[str]
-    action: str = "ignore"
+    action: EventAction = EventAction.LOG
     # Disposition
     alarm_class: Optional[str] = None
     ignore_target_on_dispose: bool = False
@@ -56,8 +58,8 @@ class Rule(BaseModel):
     notification_group: Optional[str] = None
     subject_template: Optional[str] = None
     # Target Actions
-    object_actions: Optional[TargetAction] = None
-    resource_oper_status: Optional[str] = None
+    target: Optional[DisposeTargetObject] = None
+    resources: Optional[List[DisposeResource]] = None
 
 
 class FilterConfig(BaseModel):
@@ -77,7 +79,7 @@ class CfgEvent(BaseModel):
     bi_id: str
     event_class: EventClass
     is_unique: bool = False
-    filters: Dict[str, FilterConfig] = None
+    filters: Optional[List[FilterConfig]] = None
     # vars
     vars: Optional[List[VarItem]] = None
     # subject:
