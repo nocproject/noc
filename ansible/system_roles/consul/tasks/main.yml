@@ -106,7 +106,7 @@
     monitoring_config:
       address: "consul:8500"
       token: "{{ consul_token }}"
-      datacentre: "{{ consul_datacenter }}"
+      datacenter: "{{ consul_datacenter }}"
   when:
     - consul_power == 'bootstrap'
     - has_svc_monitoring is defined
