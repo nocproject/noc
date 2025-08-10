@@ -103,6 +103,7 @@ class Match(EmbeddedDocument):
     ex_groups: List[ResourceGroup] = ListField(ReferenceField(ResourceGroup, required=True))
     # severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
     remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem, required=False)
+    reference_rx = StringField()
     event_classes: List[ObjectId] = ListField(ObjectIdField(required=True))
     object_status: Optional[str] = StringField(
         choices=[("A", "Any"), ("U", "To Up"), ("D", "To Down")],
@@ -119,6 +120,8 @@ class Match(EmbeddedDocument):
             r["event_class_re"] = self.event_class_re
         if self.object_status == "D" or self.object_status == "U":
             r["object_status"] = self.object_status
+        if self.reference_rx:
+            r["reference_rx"] = self.reference_rx
         return r
 
     def clean(self):
@@ -144,6 +147,8 @@ class Match(EmbeddedDocument):
             r["remote_system"] = str(self.remote_system.name)
         if self.object_status == "D" or self.object_status == "U":
             r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
+        if self.reference_rx:
+            r["reference"] = {"$regex": self.reference_rx}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:
@@ -482,7 +487,7 @@ class DispositionRule(Document):
                 "notification_group": str(rule.notification_group.id),
                 "subject_template": rule.subject_template,
             }
-        if rule.combo_condition and rule.combo_event_classes:
+        if rule.combo_condition and rule.combo_event_classes and rule.combo_condition != "none":
             r["combo_condition"] = {
                 "combo_condition": rule.combo_condition,
                 "combo_window": rule.combo_window,

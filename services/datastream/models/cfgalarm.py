@@ -12,13 +12,11 @@ from typing import Optional, List, Literal, Dict, Any
 from pydantic import BaseModel
 
 # NOC modules
-from noc.core.models.valuetype import ValueType
 from .utils import DisposeTargetObject, DisposeResource
 
 
 class VarItem(BaseModel):
     name: str
-    # type: ValueType
     required: bool = False
     default_labels: Optional[List[str]] = None
     default: Optional[str] = None
@@ -84,6 +82,7 @@ class DispositionRule(BaseModel):
     var_mapping: Optional[Dict[str, str]] = None
     combo_condition: Optional[ComboCondition] = None
     object_avail_condition: Optional[bool] = None
+    reference_lookup: bool = False
     # handlers
 
 

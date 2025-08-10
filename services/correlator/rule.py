@@ -33,6 +33,7 @@ class EventAlarmRule:
     combo_window: int = 0
     combo_count: int = 0
     combo_event_classes: List[str] = None
+    reference_lookup: bool = False
     stop_disposition: bool = False
 
     @property
@@ -63,6 +64,8 @@ class EventAlarmRule:
             combo_condition="none",
             var_mapping=var_mapping,
         )
+        if rule.reference_lookup:
+            r.reference_lookup = rule.reference_lookup
         if rule.combo_condition:
             r.combo_condition = rule.combo_condition.combo_condition
             r.combo_window = rule.combo_condition.combo_window

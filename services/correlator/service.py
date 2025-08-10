@@ -94,7 +94,8 @@ class CorrelatorService(FastAPIService):
         self.version = version.version
         self.rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.disposition_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
-        self.object_avail_rules = Dict[self, List[EventAlarmRule]]
+        self.object_avail_rules: Dict[bool, List[EventAlarmRule]] = {}
+        self.reference_lookup_rules: List[EventAlarmRule] = []
         self.back_rules: Dict[ObjectId, List[EventAlarmRule]] = {}
         self.triggers: Dict[ObjectId, List[Trigger]] = {}
         self.rca_forward = {}  # alarm_class -> [RCA condition, ..., RCA condititon]
@@ -188,6 +189,8 @@ class CorrelatorService(FastAPIService):
                     rule = EventAlarmRule.from_config(dr, ac)
                     ac_rules[ac.id] += [rule]
                     n_aor += 1
+                    if rule.reference_lookup:
+                        self.reference_lookup_rules.append(rule)
                     continue
                 for ec in EventClass.objects.filter(id__in=dr.event_classes):
                     rule = EventAlarmRule.from_config(dr, ac, ec)
@@ -218,6 +221,7 @@ class CorrelatorService(FastAPIService):
         self.logger.info("%d RCA Rules have been loaded", rca_count)
         self.rules = {k: tuple(v) for k, v in d_rules.items()}
         self.object_avail_rules = {k: tuple(v) for k, v in oa_rules.items()}
+        self.disposition_rules = {k: tuple(v) for k, v in ac_rules.items()}
         self.logger.info(
             "%d rules are loaded. %d combos. %d alarms. %d avail",
             n_rule,
@@ -980,6 +984,8 @@ class CorrelatorService(FastAPIService):
         """
         rules: List[EventAlarmRule] = []
         ctx = {"labels": [], "service_groups": []}
+        if reference:
+            ctx["reference"] = reference
         if labels:
             ctx["labels"] = frozenset(labels or [])
         if remote_system:
@@ -992,6 +998,8 @@ class CorrelatorService(FastAPIService):
                 rules += self.object_avail_rules[object_avail]
         if alarm_class and alarm_class.id in self.disposition_rules:
             rules += self.disposition_rules[alarm_class.id]
+        if not alarm_class and not event_class:
+            rules += self.reference_lookup_rules
         if not rules:
             self.logger.info("[%s] No disposition rules, skipping", reference)
         for rule in rules:
