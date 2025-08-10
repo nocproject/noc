@@ -640,10 +640,6 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         if subject:
             a.custom_subject = subject
-        # Calculate Effective AlarmClass
-        ac = a.effective_alarm_class()
-        # ?Refresh rules ?
-        a.rewrite_alarm_class(ac)
         # Save
         a.save()
         # if event:
