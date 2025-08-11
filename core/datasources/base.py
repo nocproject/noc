@@ -19,7 +19,22 @@ import polars as pl
 
 # NOC modules
 from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.models import get_model
+from noc.config import config
+
+
+@dataclass
+class ClickhouseColumn:
+    name: str
+    type: str
+    default_kind: Optional[str] = None  # DEFAULT, MATERIALIZED
+    default_expression: Optional[str] = None
+
+    def __hash__(self):
+        """"""
+        return hash(self.name)
+
 
 clean_map = {
     "str": lambda x: str(x),
@@ -42,6 +57,28 @@ class FieldType(enum.Enum):
     DATETIME = pl.Datetime
     LIST_STRING = pl.List(pl.Utf8)
 
+    @property
+    def clickhouse_db_type(self) -> str:
+        """Return clickhouse DB type"""
+        match self:
+            case self.INT | self.INT32:
+                return "Int32"
+            case self.UINT:
+                return "UInt32"
+            case self.UINT64:
+                return "UInt64"
+            case self.BOOL:
+                return "Bool"
+            case self.FLOAT:
+                return "Float32"
+            case self.LIST_STRING:
+                return "Array(LowCardinality(String))"
+        return "String"
+
+    def clean_clickhouse_value(self, value) -> Any:
+        """Convert value to clickhouse"""
+        return value
+
 
 @dataclass
 class FieldInfo(object):
@@ -57,6 +94,11 @@ class FieldInfo(object):
     is_virtual: bool = False  # Virtual Field not sending to output
     is_vector: bool = False  # Multiple column by requested one field
     is_diagnostic_state: Optional[DiagnosticState] = None  # Request Diagnostic State field
+
+    @property
+    def clickhouse_column(self) -> ClickhouseColumn:
+        """Generate clickhouse column"""
+        return ClickhouseColumn(name=self.name, type="String")
 
 
 @dataclass
@@ -120,6 +162,11 @@ class BaseDataSource(object):
     params: Optional[List[ParamInfo]] = None
     row_index: Union[str, Tuple[str, ...]] = "id"
 
+    @property
+    def clickhouse_mirror(self) -> bool:
+        """Allowed ClickHouse create table"""
+        return False
+
     @classmethod
     def join_fields(cls) -> List[str]:
         if not cls.row_index:
@@ -129,7 +176,7 @@ class BaseDataSource(object):
         return list(cls.row_index)
 
     @classmethod
-    def iter_ds_fields(cls):
+    def iter_ds_fields(cls) -> Iterable[FieldInfo]:
         for f in cls.fields:
             yield f
 
@@ -332,3 +379,167 @@ class BaseDataSource(object):
     @classmethod
     def clean_row_value(cls, value):
         return value
+
+    @classmethod
+    def iter_create_sql(cls) -> Iterable[ClickhouseColumn]:
+        """
+        Yield (field_name, field_type, materialized_expr, default_expr) tuples
+        :return:
+        """
+
+        yield ClickhouseColumn(name="date", type="Date")
+        yield ClickhouseColumn(name="ts", type="DateTime")
+        yield ClickhouseColumn(name="job_uuid", type="UUID")
+        yield ClickhouseColumn(name="report_ds", type="String")
+        yield ClickhouseColumn(name="labels", type="Array(LowCardinality(String))")
+        for f in cls.iter_ds_fields():
+            yield f.clickhouse_column
+
+    @classmethod
+    def get_create_sql(cls) -> str:
+        """
+        Get CREATE TABLE SQL statement
+        """
+        # Key Fields
+        r = [
+            "CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table(),
+            ",\n".join(
+                f"  {c.name} {c.type} {c.default_kind or ''} {'DEFAULT %s' % c.default_expression if c.default_expression else ''}"
+                for c in cls.iter_create_sql()
+            ),
+            f") ENGINE = MergeTree() ORDER BY (date, uuid)\n",
+            f"PARTITION BY toYYYYMM(date) PRIMARY KEY (date, uuid)",
+        ]
+        return "\n".join(r)
+
+    @classmethod
+    def get_create_distributed_sql(cls):
+        """
+        Get CREATE TABLE for Distributed engine
+        """
+        return (
+            f"CREATE TABLE IF NOT EXISTS {cls._get_distributed_db_table()} AS {cls._get_raw_db_table()} "
+            f"ENGINE = Distributed('{config.clickhouse.cluster}', '{config.clickhouse.db}', '{cls._get_raw_db_table()}')"
+        )
+
+    @classmethod
+    def get_create_view_sql(cls):
+        view = cls._get_db_table()
+        if config.clickhouse.cluster:
+            src = cls._get_distributed_db_table()
+        else:
+            src = cls._get_raw_db_table()
+        q = ["*"]
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT {', '.join(q)} FROM {src}"
+
+    @classmethod
+    def ensure_views(cls, connect=None, changed: bool = True) -> bool:
+        # Synchronize view
+        ch: "ClickhouseClient" = connect or connection()
+        table = cls._get_db_table()
+        if changed or not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            return True
+        return False
+
+    @staticmethod
+    def quote_name(name):
+        """Clickhouse-safe field names"""
+        if "." in name:
+            return "`%s`" % name
+        return name
+
+    @classmethod
+    def _get_db_table(cls):
+        return f"report_{cls.name}"
+
+    @classmethod
+    def _get_raw_db_table(cls):
+        return f"raw_report_{cls.name}"
+
+    @classmethod
+    def _get_distributed_db_table(cls):
+        return f"d_report_{cls.name}"
+
+    @classmethod
+    def ensure_columns(cls, connect: "ClickhouseClient", table_name: str) -> bool:
+        """
+        Create necessary table columns
+
+        :param connect: ClickHouse client
+        :param table_name: Database table name
+        :return: True, if any column has been altered
+        """
+        c = False  # Changed indicator
+        # Get existing columns
+        existing = {}
+        for name, c_type in connect.execute(
+            f"""
+            SELECT name, type
+            FROM system.columns
+            WHERE
+              database='{config.clickhouse.db}'
+              AND table='{table_name}'
+            """,
+        ):
+            existing[name] = c_type
+        # Check
+        after = None
+        for field in cls.iter_create_sql():
+            if field.name in existing:
+                # Check types
+                if existing[field.name] != field.type:
+                    print(
+                        f"[{table_name}|{field.name}] Warning! Type mismatch: "
+                        f"{existing[field.name]} <> {field.type}"
+                    )
+                    print(
+                        f"Set command manually: "
+                        f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
+                    )
+
+            else:
+                print(f"[{table_name}|{field.name}] Alter column")
+                query = f"ALTER TABLE `{table_name}` ADD COLUMN {cls.quote_name(field.name)} {field.type}"
+                if after:
+                    # None if add before first field
+                    query += f" AFTER {cls.quote_name(after)}"
+                else:
+                    query += " FIRST"
+                connect.execute(post=query)
+                c = True
+            after = field.name
+        return c
+
+    @classmethod
+    def ensure_table(cls, connect=None):
+        changed = False
+        ch: "ClickhouseClient" = connect or connection()
+        is_cluster = bool(config.clickhouse.cluster)
+        table = cls._get_db_table()
+        raw_table = cls._get_raw_db_table()
+        dist_table = cls._get_distributed_db_table()
+        # Ensure raw_* table
+        if ch.has_table(raw_table):
+            # raw_* table exists, check columns
+            print(f"[{table}] Check columns")
+            changed |= cls.ensure_columns(ch, raw_table)
+        else:
+            # Create new table
+            print(f"[{table}] Create new table")
+            ch.execute(post=cls.get_create_sql())
+            changed = True
+        # For cluster mode check d_* distributed table
+        if is_cluster:
+            print(f"[{table}] Check distributed table")
+            if ch.has_table(dist_table):
+                changed |= cls.ensure_columns(ch, dist_table)
+            else:
+                ch.execute(post=cls.get_create_distributed_sql())
+                changed = True
+        if not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            changed = True
+        return changed
