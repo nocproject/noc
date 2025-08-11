@@ -111,10 +111,18 @@ Ext.define("NOC.core.Application", {
       if(Ext.isFunction(me.noc.cmd.callback)){
         me.noc.cmd.callback();
       }
-      // Override close handler for sa.managedobject only!
-      if(me.appId === "sa.managedobject" && !Ext.isEmpty(me.noc.cmd.override)){
-        me.down("[xtype=managedobject.form]").getController().toMain = function(){
-          me.up().close();
+      // Override close handler for sa.managedobject and fm.alarm only!
+      if(["sa.managedobject", "fm.alarm"].includes(me.appId) &&
+        !Ext.isEmpty(me.noc.cmd.override)){
+        if(me.appId === "sa.managedobject"){
+          me.down("[xtype=managedobject.form]").getController().toMain = function(){
+            me.up().close();
+          }
+        }
+        if(me.appId === "fm.alarm"){
+          me.down("[xtype=fm.alarm.form]").getController().onClose = function(){
+            me.up().close();
+          }
         }
       }
       if(Ext.isFunction(handler)){

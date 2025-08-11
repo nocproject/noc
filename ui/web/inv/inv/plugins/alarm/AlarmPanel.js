@@ -74,6 +74,30 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
       ],
       columns: [
         {
+          xtype: "glyphactioncolumn",
+          width: 22,
+          sortable: false,
+          items: [
+            {
+              glyph: NOC.glyph.eye,
+              tooltip: __("Show alarm detail"),
+              handler: function(){
+                NOC.launch("fm.alarm", "history", {
+                  args: [arguments[5].id], // record
+                  "override": [
+                    {
+                      "onClose": function(){
+                        this.up().close();
+                      },
+                    },
+                  ],
+                });
+
+              },
+            },
+          ],
+        },
+        {
           xtype: "treecolumn",
           dataIndex: "title",
           text: __("Title"),
@@ -278,7 +302,6 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
       isFocused = document.hasFocus(), // check is user has minimized browser window
       isIntersecting = this.isIntersecting; // switch to other application tab
     if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
-      console.log("Polling task executed");
       this.alarmUpdate();
     }
   },
