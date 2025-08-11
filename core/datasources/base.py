@@ -8,6 +8,8 @@
 # Python modules
 import enum
 import datetime
+import uuid
+import orjson
 from time import perf_counter
 from dataclasses import dataclass
 from functools import partial
@@ -20,6 +22,7 @@ import polars as pl
 # NOC modules
 from noc.core.wf.diagnostic import DiagnosticState
 from noc.core.clickhouse.connect import ClickhouseClient, connection
+from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model
 from noc.config import config
 
@@ -71,6 +74,8 @@ class FieldType(enum.Enum):
                 return "Bool"
             case self.FLOAT:
                 return "Float32"
+            case self.DATETIME:
+                return "DateTime"
             case self.LIST_STRING:
                 return "Array(LowCardinality(String))"
         return "String"
@@ -98,7 +103,7 @@ class FieldInfo(object):
     @property
     def clickhouse_column(self) -> ClickhouseColumn:
         """Generate clickhouse column"""
-        return ClickhouseColumn(name=self.name, type="String")
+        return ClickhouseColumn(name=self.name, type=self.type.clickhouse_db_type)
 
 
 @dataclass
@@ -156,16 +161,17 @@ class BaseDataSource(object):
 
     IGNORED_PARAMS = {"administrative_domain", "user"}
     DEFAULT_INTERVAL = 2 * 86400
+    ENABLE_CH_MIRROR = False
 
     name: str
     fields: List[FieldInfo]
     params: Optional[List[ParamInfo]] = None
     row_index: Union[str, Tuple[str, ...]] = "id"
 
-    @property
-    def clickhouse_mirror(self) -> bool:
+    @classmethod
+    def clickhouse_mirror(cls) -> bool:
         """Allowed ClickHouse create table"""
-        return False
+        return cls.ENABLE_CH_MIRROR
 
     @classmethod
     def join_fields(cls) -> List[str]:
@@ -304,13 +310,22 @@ class BaseDataSource(object):
         return True
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
+    async def query(
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        mirror_clickhouse: bool = False,
+        report_uuid: Optional[uuid.UUID] = None,
+        *args,
+        **kwargs,
+    ) -> pl.DataFrame:
         """
         Method for query report data. Return pandas dataframe.
-        :param fields: list fields for filtered on query
-        :param args: arguments for report query
-        :param kwargs:
-        :return:
+        Args:
+            fields: list fields for filtered on query
+            mirror_clickhouse: Send data to clickhouse
+            report_uuid: Report UUID bild
+            args: arguments for report query
+            kwargs:
         """
         r = defaultdict(list)
         started = perf_counter()
@@ -339,8 +354,57 @@ class BaseDataSource(object):
                     print(f"OverflowError on column: {c.name}. Will be skipping")
                 except pl.exceptions.InvalidOperationError:
                     print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
-        return pl.DataFrame(series)
+        if not mirror_clickhouse:
+            return pl.DataFrame(series)
+        elif not cls.clickhouse_mirror():
+            print("Datasource mirroring not supported")
+            return pl.DataFrame(series)
+        df = pl.DataFrame(series)
+        await cls.publish_clickhouse(df, report_uuid=report_uuid)
+        return df
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
+
+    @classmethod
+    async def publish_clickhouse(
+        cls,
+        df: pl.DataFrame,
+        report_uuid: Optional[uuid.UUID] = None,
+        ts: Optional[datetime.datetime] = None,
+    ):
+        """Send DataFrame to clickhouse"""
+        ts = (ts or datetime.datetime.now()).replace(microsecond=0)
+        ch_row = {
+            "report_date": ts.date().isoformat(),
+            "report_ts": ts.isoformat(sep=" "),
+            "job_uuid": None,
+            "labels": [],
+            "report_ds": cls.name,
+        }
+        if report_uuid:
+            ch_row["report_uuid"] = str(report_uuid)
+        data = []
+        CHUNK = 1000
+        n_parts = len(config.clickhouse.cluster_topology.split(","))
+        async with MessageStreamClient() as client:
+            for row in df.iter_rows(named=True):
+                row |= ch_row
+                data.append(orjson.dumps(row))
+                if len(data) < CHUNK:
+                    continue
+                for part in range(0, n_parts):
+                    await client.publish(
+                        b"\n".join(data),
+                        stream=f"ch.{cls._get_db_table()}",
+                        partition=part,
+                    )
+                data = []
+        if data:
+            for part in range(0, n_parts):
+                await client.publish(
+                    b"\n".join(data),
+                    stream=f"ch.{cls._get_db_table()}",
+                    partition=part,
+                )
 
     @classmethod
     async def iter_row(
@@ -382,15 +446,13 @@ class BaseDataSource(object):
 
     @classmethod
     def iter_create_sql(cls) -> Iterable[ClickhouseColumn]:
-        """
-        Yield (field_name, field_type, materialized_expr, default_expr) tuples
-        :return:
-        """
+        """Yield (field_name, field_type, materialized_expr, default_expr) tuples"""
 
-        yield ClickhouseColumn(name="date", type="Date")
-        yield ClickhouseColumn(name="ts", type="DateTime")
-        yield ClickhouseColumn(name="job_uuid", type="UUID")
+        yield ClickhouseColumn(name="report_date", type="Date")
+        yield ClickhouseColumn(name="report_ts", type="DateTime")
         yield ClickhouseColumn(name="report_ds", type="String")
+        yield ClickhouseColumn(name="report_uuid", type="UUID")
+        yield ClickhouseColumn(name="job_uuid", type="UUID")
         yield ClickhouseColumn(name="labels", type="Array(LowCardinality(String))")
         for f in cls.iter_ds_fields():
             yield f.clickhouse_column
@@ -407,8 +469,8 @@ class BaseDataSource(object):
                 f"  {c.name} {c.type} {c.default_kind or ''} {'DEFAULT %s' % c.default_expression if c.default_expression else ''}"
                 for c in cls.iter_create_sql()
             ),
-            f") ENGINE = MergeTree() ORDER BY (date, uuid)\n",
-            f"PARTITION BY toYYYYMM(date) PRIMARY KEY (date, uuid)",
+            f") ENGINE = MergeTree() ORDER BY (date, job_uuid)\n",
+            f"PARTITION BY toYYYYMM(date) PRIMARY KEY (date, job_uuid)",
         ]
         return "\n".join(r)
 
@@ -494,11 +556,9 @@ class BaseDataSource(object):
                         f"[{table_name}|{field.name}] Warning! Type mismatch: "
                         f"{existing[field.name]} <> {field.type}"
                     )
-                    print(
-                        f"Set command manually: "
-                        f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
+                    connect.execute(
+                        post=f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
                     )
-
             else:
                 print(f"[{table_name}|{field.name}] Alter column")
                 query = f"ALTER TABLE `{table_name}` ADD COLUMN {cls.quote_name(field.name)} {field.type}"
