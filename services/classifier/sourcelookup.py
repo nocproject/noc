@@ -7,7 +7,7 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Dict, Tuple, Optional, List
+from typing import Dict, Tuple, Optional, Iterable
 
 # NOC modules
 from noc.core.fm.event import Target
@@ -46,6 +46,12 @@ class SourceConfig(object):
         """Check diff"""
         return cfg != self
 
+    def get_mappings(self) -> Iterable[str]:
+        """Getting mappings for source"""
+        if not self.mapping_refs:
+            return []
+        return self.mapping_refs
+
 
 class SourceLookup(object):
     def __init__(self):
@@ -69,10 +75,10 @@ class SourceLookup(object):
             return mo
         if target.remote_id and f"rs:{remote_system}:{target.remote_id}" in self.source_map:
             mo = self.source_map[f"rs:{remote_system}:{target.remote_id}"]
-        if not mo and f"name:{target.name}" in self.source_map:
-            mo = self.source_map[f"name:{target.name}"]
+        if not mo and f"name:{target.name.lower()}" in self.source_map:
+            mo = self.source_map[f"name:{target.name.lower()}"]
         if not mo and f"addr:{target.pool}:{target.address}" in self.source_map:
-            mo = self.source_map[f"name:{target.name}"]
+            mo = self.source_map[f"addr:{target.pool}:{target.address}"]
         if mo:
             return ManagedObject.get_by_id(int(mo))
 
@@ -91,10 +97,10 @@ class SourceLookup(object):
             return self.source_configs[target.id]
         if target.remote_id and f"rs:{remote_system}:{target.remote_id}" in self.source_map:
             sid = self.source_map[f"rs:{remote_system}:{target.remote_id}"]
-        if not sid and f"name:{target.name}" in self.source_map:
-            sid = self.source_map[f"name:{target.name}"]
+        if not sid and f"name:{target.name.lower()}" in self.source_map:
+            sid = self.source_map[f"name:{target.name.lower()}"]
         if not sid and f"addr:{target.pool}:{target.address}" in self.source_map:
-            sid = self.source_map[f"name:{target.name}"]
+            sid = self.source_map[f"addr:{target.pool}:{target.address}"]
         if sid in self.source_configs:
             return self.source_configs[sid]
 
@@ -108,7 +114,7 @@ class SourceLookup(object):
                 del self.source_map[m]
         return True
 
-    def update_mappings(self, sid, new: List[str], old: Optional[str] = None):
+    def update_mappings(self, sid, new: Iterable[str], old: Optional[Iterable[str]] = None):
         """"""
         # Delete Old Mappings
         for m in set(old or []) - set(new):
@@ -126,10 +132,10 @@ class SourceLookup(object):
             print(f"{data['id']}Error when processed source: {e}")
             return False
         if s.id not in self.source_configs:
-            self.update_mappings(s.id, s.mapping_refs or [])
+            self.update_mappings(s.id, s.get_mappings())
         else:
             if not self.source_configs[s.id].is_diff(s):
                 return False
-            self.update_mappings(s.id, s.mapping_refs or [], self.source_configs[s.id].mapping_refs)
+            self.update_mappings(s.id, s.get_mappings(), self.source_configs[s.id].get_mappings())
         self.source_configs[s.id] = s
         return True

@@ -376,7 +376,7 @@ class CfgTrapDataStream(DataStream):
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
         r |= {
             "addresses": list(addresses.values()),
-            "mapping_refs": [f"name:{name}"],
+            "mapping_refs": [f"name:{name.lower()}"],
         }
         for m in r["opaque_data"]["mappings"]:
             r["mapping_refs"].append(f"rs:{m['remote_system']['name']}:{m['remote_id']}")
