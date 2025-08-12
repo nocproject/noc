@@ -100,14 +100,14 @@ class EventAction(enum.Enum):
 
     @property
     def is_drop(self) -> bool:
-        if self == self.DROP or self == self.DROP_MX:
+        if self == EventAction.DROP or self == EventAction.DROP_MX:
             return True
         return False
 
     @property
     def to_dispose(self) -> bool:
         """Check event to disposition"""
-        return self == self.DISPOSITION
+        return self == EventAction.DISPOSITION
 
 
 class AlarmAction(enum.Enum):
