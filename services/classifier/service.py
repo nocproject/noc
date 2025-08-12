@@ -5,7 +5,6 @@
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-import datetime
 
 # Python modules
 import time
@@ -16,6 +15,7 @@ import re
 import socket
 import struct
 import asyncio
+import datetime
 from time import perf_counter
 from typing import Optional, Dict, List, Callable, Tuple, Any
 
