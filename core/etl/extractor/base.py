@@ -207,7 +207,7 @@ class BaseExtractor(object):
         cp = None
         if self._force_checkpoint:
             return self._force_checkpoint
-        if not hasattr(self.model, "checkpoint"):
+        if "checkpoint" not in self.model.model_fields:
             self.logger.info("Extractor not supported attribute checkpoint")
             return cp
         for item in data:
