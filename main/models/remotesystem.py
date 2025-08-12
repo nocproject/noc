@@ -261,7 +261,6 @@ class RemoteSystem(Document):
         self.extract_error = error
         if events_result and len(events_result) == 1:
             # For event extract, Save event only fields
-            print("Save extract result for event")
             RemoteSystem.objects.filter(id=self.id).update(
                 last_extract_event=self.last_extract_event,
                 extract_error=error,

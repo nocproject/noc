@@ -51,6 +51,8 @@ class ETLSyncJob(PeriodicJob):
         # Send report
         summary = defaultdict(dict)
         for d in details:
+            if not d.has_changed:
+                continue
             summary[d.loader].update(d.summary)
         if self.object.sync_notification != "A":
             return
