@@ -2233,8 +2233,10 @@ class ManagedObject(NOCModel):
     def get_full_fqdn(self):
         if not self.fqdn:
             return None
-        if self.fqdn.endswith(".") or not self.object_profile.fqdn_suffix:
+        if self.fqdn.endswith("."):
             return self.fqdn[:-1]
+        elif not self.object_profile.fqdn_suffix:
+            return self.fqdn
         return f"{self.fqdn}.{self.object_profile.fqdn_suffix}"
 
     def resolve_fqdn(self):
