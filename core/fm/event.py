@@ -138,6 +138,7 @@ class Event(BaseModel):
     labels: Optional[List[str]] = None  # Event labels
     message: Optional[str] = None  # Event message string
     vars: Optional[Dict[str, Any]] = None  # Event variables
+    start_ts: Optional[int] = None  # For cleared events - timestamp when create
 
     @property
     def timestamp(self):

@@ -15,6 +15,7 @@ import re
 import socket
 import struct
 import asyncio
+import datetime
 from time import perf_counter
 from typing import Optional, Dict, List, Callable, Tuple, Any
 
@@ -878,6 +879,8 @@ class ClassifierService(FastAPIService):
         }
         if event.target.address:
             data["ip"] = struct.unpack("!I", socket.inet_aton(event.target.address))[0]
+        if event.start_ts:
+            data["start_ts"] = datetime.datetime.fromtimestamp(event.start_ts)
         source = self.source_lookup.resolve_target(event.target, remote_system=event.remote_system)
         if source and source.services:
             data["services"] = source.services
