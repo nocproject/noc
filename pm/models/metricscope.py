@@ -305,6 +305,8 @@ class MetricScope(Document):
             r = ["date", "ts"]
             if view_columns:
                 r += ["labels"]
+            if self.enable_timedelta:
+                r += ["time_delta"]
             for f in self.key_fields:
                 r += [f"{f.field_name}"]
             for n, t, me, de in self.iter_metrics_fields():
