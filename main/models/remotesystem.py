@@ -160,6 +160,10 @@ class RemoteSystem(Document):
     # raise_alarm_if_failed = StringField(choices=[("D", "Disable"), ("A", "Alarm")], default="A")
     sync_lock = BooleanField(default=False)
     event_sync_interval = IntField(default=0)
+    event_sync_mode = StringField(
+        choices=[("I", "incremental"), ("S", "Snapshot")],
+        default="I",
+    )
     event_sync_lock = BooleanField(default=False)
     # TTL Settings
     # Usage statistics
@@ -169,6 +173,7 @@ class RemoteSystem(Document):
     last_load = DateTimeField()
     last_successful_load = DateTimeField()
     last_extract_event = DateTimeField()
+    last_successful_extract_event = DateTimeField()
     load_error = StringField()
     object_url_template = StringField()
     # Object id in BI
@@ -232,9 +237,9 @@ class RemoteSystem(Document):
         checkpoint: Optional[str] = None,
     ) -> List[StepResult]:
         extractors = extractors or self.get_extractors()
-        error, r = None, None
+        error, results = None, None
         try:
-            r = self.get_handler().extract(
+            results = self.get_handler().extract(
                 extractors, incremental=incremental, checkpoint=checkpoint
             )
         except PermissionError as e:
@@ -248,14 +253,30 @@ class RemoteSystem(Document):
         self.last_extract = datetime.datetime.now().replace(microsecond=0)
         if not error:
             self.last_successful_extract = self.last_extract
+        events_result = [r for r in results if r.loader == "fmevent"]
+        if events_result:
+            self.last_extract_event = self.last_extract
+            if not error:
+                self.last_successful_extract_event = self.last_extract
         self.extract_error = error
-        RemoteSystem.objects.filter(id=self.id).update(
-            last_extract=self.last_extract,
-            extract_error=error,
-            last_successful_extract=self.last_successful_extract,
-        )
+        if events_result and len(events_result) == 1:
+            # For event extract, Save event only fields
+            print("Save extract result for event")
+            RemoteSystem.objects.filter(id=self.id).update(
+                last_extract_event=self.last_extract_event,
+                extract_error=error,
+                last_successful_extract_event=self.last_successful_extract_event,
+            )
+        else:
+            RemoteSystem.objects.filter(id=self.id).update(
+                last_extract=self.last_extract,
+                last_extract_event=self.last_extract_event,
+                extract_error=error,
+                last_successful_extract=self.last_successful_extract,
+                last_successful_extract_event=self.last_successful_extract_event,
+            )
         # self.save()
-        return r
+        return results
 
     def load(
         self, extractors: Optional[List[str]] = None, quiet: bool = False
