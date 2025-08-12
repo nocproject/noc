@@ -15,6 +15,7 @@ from typing import Optional, List, Dict, Tuple
 from noc.core.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
+FM_EVENT_EXTRACTOR = "fmevent"
 
 
 @dataclass(frozen=True)
@@ -54,7 +55,7 @@ class BaseRemoteSystem(object):
         "subscriber",
         "serviceprofile",
         "service",
-        "fmevent",
+        FM_EVENT_EXTRACTOR,
         "admdiv",
         "street",
         "building",
@@ -91,6 +92,8 @@ class BaseRemoteSystem(object):
             xc = self.extractors[self.__module__][en](self)
             xc._force_checkpoint = checkpoint
             t0 = perf_counter()
+            if en == FM_EVENT_EXTRACTOR and not incremental:
+                incremental = self.remote_system.event_sync_mode == "I"
             xc.extract(incremental=incremental)
             r.append(
                 StepResult(
