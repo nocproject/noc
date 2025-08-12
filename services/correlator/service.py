@@ -176,7 +176,7 @@ class CorrelatorService(FastAPIService):
                 if v.component:
                     # Expression
                     self.alarm_class_vars[ac.id][v.name] = compile(
-                        f'{v.default[1:]} if "{v.component}" in components else None',
+                        f'{v.default} if "{v.component}" in components else None',
                         "<string>",
                         "eval",
                     )
