@@ -35,24 +35,27 @@ class FMEventLoader(BaseLoader):
         """
         if not e.data and not e.message:
             raise AttributeError("Unknown message data. Set data or message")
-        severity = EventSeverity(int(e.severity)) if e.severity else EventSeverity.INDETERMINATE
+        if e.is_cleared:
+            severity = EventSeverity.CLEARED
+        elif e.severity:
+            severity = EventSeverity(int(e.severity))
+        else:
+            severity = EventSeverity.INDETERMINATE
         event = Event(
             ts=e.ts,
             remote_id=e.id,
             remote_system=self.system.remote_system.name,
             target=e.object.get_target(),
-            type=MessageType(
-                severity=severity if not e.is_cleared else EventSeverity.CLEARED,
-                event_class=e.event_class,
-            ),
+            type=MessageType(severity=severity, event_class=e.event_class),
             data=[Var(name=d.name, value=d.value) for d in e.data],
             message=e.message,
             labels=e.labels,
+            start_ts=e.start_ts,
         )
         event.target.pool = e.object.pool or "default"
         return event
 
-    def load(self):
+    def load(self, return_wo_changes: bool = False):
         """
         Import new data
         """
