@@ -5,6 +5,7 @@
 # Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+import datetime
 
 # Python modules
 import time
@@ -878,6 +879,8 @@ class ClassifierService(FastAPIService):
         }
         if event.target.address:
             data["ip"] = struct.unpack("!I", socket.inet_aton(event.target.address))[0]
+        if event.start_ts:
+            data["start_ts"] = datetime.datetime.fromtimestamp(event.start_ts)
         source = self.source_lookup.resolve_target(event.target, remote_system=event.remote_system)
         if source and source.services:
             data["services"] = source.services
