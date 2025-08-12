@@ -185,6 +185,7 @@ class ZabbixEvent(BaseModel):
     opdata: str
     severity: ZabbixSeverity
     r_eventid: Optional[int] = None
+    r_clock: Optional[int] = None
     c_eventid: Optional[int] = None
     cause_eventid: Optional[int] = None
     correlationid: Optional[int] = None
@@ -313,7 +314,7 @@ class ZabbixHostExtractor(ZabbixExtractor):
                 id=str(host.host_id),
                 name=host.name,
                 profile="Generic.Host",
-                pool=self.pool,
+                pool="default",
                 segment=ETLMapping(value="ALL", scope="segment"),
                 administrative_domain=ETLMapping(value="default", scope="adm_domain"),
                 descriptrion=host.description,
@@ -365,18 +366,19 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             return datetime.datetime.fromtimestamp(int(oldest_event[0]["clock"]))
 
     def get_initial_from_ts(self) -> datetime.datetime:
-        if self.system.remote_system.last_extract_event:
-            time_from = self.system.remote_system.last_extract_event
-            self.logger.info("Extracting events: from %s", time_from)
+        if self.system.remote_system.last_successful_extract_event:
+            time_from = self.system.remote_system.last_successful_extract_event
+            self.logger.info("Initial TS from last_successful: from %s", time_from)
         else:
             time_from = self.get_next_event_ts()
-            self.logger.info("Extracting all events")
+            self.logger.info("Extracting all events from: %s", time_from)
         return time_from or datetime.datetime.now() - datetime.timedelta(days=1)
 
     def iter_events(self, start: Optional[datetime.datetime] = None) -> Iterable[ZabbixEvent]:
         params = {
-            "selectHosts": ["hostid", "host", "name"],
+            "selectHosts": ["hostid", "name"],
             # "selectRelatedObject": "extend",
+            "selectAlerts": ["sendto"],
             "selectTags": "extend",
             # "select_acknowledges": "extend",
             # "sortfield": ["clock"],
@@ -384,9 +386,10 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             "sortfield": ["clock", "eventid"],
             "sortorder": "DESC",
         }
+        r_events_start = {}
         time_step = datetime.timedelta(hours=2)
-        now = datetime.datetime.now()
-        from_ts = self.get_initial_from_ts()
+        now = datetime.datetime.now().replace(microsecond=0)
+        from_ts = start or self.get_initial_from_ts()
         self.logger.info("Extracting event from TS: %s", from_ts)
         while True:
             result = self.api.event.get(
@@ -396,16 +399,19 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             )
             # if not result:
             #    break
-            if from_ts + time_step > now:
+            if from_ts + time_step > now and not result:
                 break
             elif not result:
                 from_ts = self.get_next_event_ts(from_ts)
                 from_ts -= time_step
             else:
-                from_ts += time_step
+                from_ts += time_step + datetime.timedelta(seconds=1)
             host_ids, triggers_ids = set(), set()
             # Preprocessed
             for x in result:
+                r_event = int(x["r_eventid"])
+                if r_event:
+                    r_events_start[r_event] = int(x["clock"])
                 if "eventid" not in x:
                     continue
                 if x["object"] != "0":
@@ -428,6 +434,15 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
                     continue
                 if not row["hosts"]:
                     continue
+                if row["urls"]:
+                    del row["urls"]
+                if int(row["eventid"]) in r_events_start:
+                    row["r_clock"] = r_events_start.pop(int(row["eventid"]))
+                if row["alerts"]:
+                    row["tags"] += [
+                        {"tag": "alerts", "value": str(t)}
+                        for t in {a["sendto"] for a in row["alerts"]}
+                    ]
                 yield ZabbixEvent.model_validate(row)
 
     def update_event_items(self, ids: Iterable[int]):
@@ -456,26 +471,59 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
                 continue
             h_interface = h["interfaces"][0]
             i_type = ZabbixHostInterfaceType(int(h_interface["type"]))
+            hostname, *_ = h["name"].split(".", 1)
             self.targets[int(h["hostid"])] = RemoteObject(
                 address=h_interface["ip"],
-                name=h["name"],
+                name=hostname,
                 is_agent=i_type == ZabbixHostInterfaceType.AGENT,
                 remote_id=h["hostid"],
             )
 
-    @classmethod
-    def get_event_class(cls, e: ZabbixEvent, labels: List[str]) -> Optional[str]:
+    def get_event_class(self, e: ZabbixEvent, labels: List[str]) -> Optional[str]:
         """"""
-        if "ICMP::Unavailable" in labels:
+        name = e.name.strip() if e.name else ""
+        if "ICMP::Unavailable" in labels or name in {
+            "Unavailable by ICMP ping",
+            "ICMP Нет ответа на ping",
+        }:
             return "Zabbix | Host | Ping Failed"
-        elif "scope::availability" in labels and "component::system" in labels:
+        elif "scope::availability" in labels and name and "Zabbix agent is not available" in name:
             return "Zabbix | Agent | Not Available"
-        elif "scope::availability" in labels and "component::network" in labels:
+        elif (
+            "scope::availability" in labels
+            and "component::network" in labels
+            and "No SNMP data collection" in name
+        ):
             return "Zabbix | SNMP | Not Available"
+        elif name == "ICMP Высокое время ответа":
+            return "Zabbix | ICMP RTT | Too High"
         return None
 
+    def get_event_start_ts(self, event: ZabbixEvent) -> Optional[int]:
+        """Resolve Start TS for old_event"""
+        if not event.object_id:
+            return
+        for row in self.api.event.get(
+            objectids=event.object_id,
+            eventid_till=event.event_id,
+            limit=4,
+            sortorder="DESC",
+            sortfield=["eventid"],
+            output=["eventid", "clock", "r_eventid"],
+        ):
+            r_event = int(row["r_eventid"])
+            if not r_event:
+                continue
+            if r_event == int(event.event_id):
+                return int(row["clock"])
+
     def iter_data(self, checkpoint=None, **kwargs) -> Iterable[FMEventObject]:
-        for e in self.iter_events():
+        if checkpoint:
+            checkpoint = datetime.datetime.fromtimestamp(int(checkpoint)) + datetime.timedelta(
+                seconds=1
+            )
+        non_started_ids = set()
+        for e in self.iter_events(start=checkpoint):
             tid = str(e.object_id)
             item = self.items.get(e.object_id)
             if not item:
@@ -488,24 +536,37 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             data = [
                 # Var(name="value", value=r["value"]),
                 # Var(name="name", value=e.name),
-                Var(name="ack", value=str(e.acknowledged)),
                 Var(name="triggerid", value=str(tid)),
                 Var(name="opdata", value=e.opdata),
             ]
             if item and item.is_snmp_interface_item:
-                data += [Var(name="ifndex", value=str(item.ifindex))]
+                data += [Var(name="index", value=str(item.ifindex))]
             if e.host not in self.targets:
                 continue
-            labels = ["remote_system::zabbix"] + [f"{t.tag}::{t.value}" for t in e.tags]
+            labels = ["remote_system::zabbix"] + [f"{t.tag}::{t.value.strip()}" for t in e.tags]
+            severity = None
+            if e.severity in self.severity_map:
+                severity = self.severity_map[e.severity]
+            if e.value == 0 and not e.r_clock:
+                # Try resolve by query
+                self.logger.info(
+                    "[%s] Not found Start TS for closed event. Try Resolve", e.event_id
+                )
+                e.r_clock = self.get_event_start_ts(e)
+                if not e.r_clock:
+                    non_started_ids.add(e.event_id)
             yield FMEventObject(
                 ts=e.clock,
                 id=str(e.event_id),
                 object=self.targets[e.host],
-                severity=EventSeverity.INDETERMINATE if e.value != 0 else EventSeverity.CLEARED,
+                severity=severity,
                 event_class=self.get_event_class(e, labels),
-                is_cleared=e.value,
+                is_cleared=e.value == 0,
                 data=data,
-                message=e.name,
+                message=e.name.strip() if e.name else None,
                 labels=labels,
+                start_ts=e.r_clock,
+                checkpoint=str(e.clock),
             )
         self.api.logout()
+        print("Non started events:", len(non_started_ids))
