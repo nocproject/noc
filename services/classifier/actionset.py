@@ -205,6 +205,8 @@ class ActionSet(object):
                 self.logger.error("[%s] Error when execute action: %s", event.id, str(e))
             if a.action.is_drop:
                 return a.action
+            elif a.action.to_dispose:
+                action = a.action
         # Default resource action
         for r in resources:
             if get_model_id(r) == "inv.Interface":
