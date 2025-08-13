@@ -92,4 +92,5 @@ def ensure_report_ds_scopes(connect=None):
             continue
         logger.info("Ensure Report DataSources %s", ds.name)
         changed |= ds.ensure_table(connect=connect)
+        changed |= ds.ensure_views(connect=connect)
     return changed

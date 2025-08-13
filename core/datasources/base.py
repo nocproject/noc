@@ -8,6 +8,7 @@
 # Python modules
 import enum
 import datetime
+import operator
 import uuid
 import orjson
 from time import perf_counter
@@ -37,6 +38,17 @@ class ClickhouseColumn:
     def __hash__(self):
         """"""
         return hash(self.name)
+
+
+@dataclass
+class DSSnapshot:
+    """Datasource snapshot"""
+
+    name: str
+    report_ts: datetime.datetime
+    report_uuid: Optional[uuid.UUID] = None
+    job_uuid: Optional[uuid.UUID] = None
+    labels: Optional[List[str]] = None
 
 
 clean_map = {
@@ -85,6 +97,15 @@ class FieldType(enum.Enum):
         return value
 
 
+caps_dtype_map = {
+    "bool": FieldType.BOOL,
+    "str": FieldType.STRING,
+    "int": FieldType.UINT,
+    "float": FieldType.FLOAT,
+    "strlist": FieldType.LIST_STRING,
+}
+
+
 @dataclass
 class FieldInfo(object):
     """
@@ -114,7 +135,7 @@ class ParamInfo:
     type: str  # str, int, float, date, time
     required: bool = False
     allow_multi: bool = False
-    resolve_nester: bool = True
+    resolve_nested: bool = True
     display_label: Optional[str] = None
     description: Optional[str] = None
     default: Optional[Any] = None
@@ -123,7 +144,7 @@ class ParamInfo:
     def clean_value(self, value: Union[str, List[str]]):
         if not isinstance(value, list):
             value = [value]
-        if self.model and self.resolve_nester and self.allow_multi:
+        if self.model and self.resolve_nested and self.allow_multi:
             values = self.clean_nested_model(value)
         elif self.model:
             m = get_model(self.model)
@@ -310,6 +331,24 @@ class BaseDataSource(object):
         return True
 
     @classmethod
+    def get_series_from_data(cls, data: Dict[str, List[Any]], fields: Optional[Set[str]] = None):
+        """Getting dataframe from series columns data"""
+        series = []
+        for c in cls.iter_ds_fields():
+            if len(data[c.name]) and (
+                cls.is_out_field(c, fields) or (c.is_vector and c.name in data)
+            ):
+                try:
+                    series.append(pl.Series(c.name, data[c.name], dtype=c.type.value))
+                except TypeError:
+                    print(f"Type Error on column: {c.name}. Will be skipping")
+                except OverflowError:
+                    print(f"OverflowError on column: {c.name}. Will be skipping")
+                except pl.exceptions.InvalidOperationError:
+                    print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
+        return series
+
+    @classmethod
     async def query(
         cls,
         fields: Optional[Iterable[str]] = None,
@@ -343,17 +382,7 @@ class BaseDataSource(object):
                     if cls.is_out_field(c, fields)
                 ],
             )
-        series = []
-        for c in cls.iter_ds_fields():
-            if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r)):
-                try:
-                    series.append(pl.Series(c.name, r[c.name], dtype=c.type.value))
-                except TypeError:
-                    print(f"Type Error on column: {c.name}. Will be skipping")
-                except OverflowError:
-                    print(f"OverflowError on column: {c.name}. Will be skipping")
-                except pl.exceptions.InvalidOperationError:
-                    print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
+        series = cls.get_series_from_data(r, fields)
         if not mirror_clickhouse:
             return pl.DataFrame(series)
         elif not cls.clickhouse_mirror():
@@ -365,16 +394,74 @@ class BaseDataSource(object):
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
 
     @classmethod
+    def get_clickhouse_snapshots(cls, ttl: Optional[datetime.datetime] = None) -> List[DSSnapshot]:
+        """Return available snapshots for Datasource"""
+        if not cls.clickhouse_mirror():
+            return []
+        ch: "ClickhouseClient" = connection()
+        result = ch.execute(
+            f"SELECT distinct(report_ts, report_ds as name, report_uuid, job_uuid, labels) as ds FROM {cls._get_db_table()} FORMAT JSON",
+            return_raw=True,
+        )
+        r = []
+        for row in orjson.loads(result)["data"]:
+            ts, name, report_uuid, job_uuid, labels = row["ds"]
+            report_uuid = (
+                uuid.UUID(job_uuid)
+                if report_uuid != "00000000-0000-0000-0000-000000000000"
+                else None
+            )
+            job_uuid = (
+                uuid.UUID(job_uuid) if job_uuid != "00000000-0000-0000-0000-000000000000" else None
+            )
+            r.append(
+                DSSnapshot(
+                    name=name,
+                    report_ts=datetime.datetime.fromisoformat(ts),
+                    report_uuid=report_uuid,
+                    job_uuid=job_uuid,
+                    labels=labels,
+                )
+            )
+        return r
+
+    @classmethod
+    def get_latest_snapshot(cls, ttl: Optional[int] = None) -> Optional[DSSnapshot]:
+        """"""
+        snapshots = cls.get_clickhouse_snapshots(ttl)
+        if not snapshots:
+            return
+        r = sorted(snapshots, key=operator.attrgetter("report_ts"), reverse=True)
+        return r[0]
+
+    @classmethod
+    def from_clickhouse(cls, report_uuid: Optional[uuid.UUID] = None) -> Optional[pl.DataFrame]:
+        """Extract Datasource data from Clickhouse"""
+        ch: "ClickhouseClient" = connection()
+        snapshot = cls.get_latest_snapshot()
+        r = ch.execute(
+            f"SELECT * FROM {cls._get_db_table()} WHERE report_ts = %s FORMAT JSONColumns",
+            return_raw=True,
+            args=[snapshot.report_ts.isoformat()],
+        )
+        r = orjson.loads(r)
+        if not r:
+            return None
+        series = cls.get_series_from_data(r)
+        return pl.DataFrame(series)
+
+    @classmethod
     async def publish_clickhouse(
         cls,
         df: pl.DataFrame,
         report_uuid: Optional[uuid.UUID] = None,
+        job_uuid: Optional[uuid.UUID] = None,
         ts: Optional[datetime.datetime] = None,
     ):
         """Send DataFrame to clickhouse"""
         ts = (ts or datetime.datetime.now()).replace(microsecond=0)
         ch_row = {
-            "report_date": ts.date().isoformat(),
+            "date": ts.date().isoformat(),
             "report_ts": ts.isoformat(sep=" "),
             "job_uuid": None,
             "labels": [],
@@ -383,7 +470,7 @@ class BaseDataSource(object):
         if report_uuid:
             ch_row["report_uuid"] = str(report_uuid)
         data = []
-        CHUNK = 1000
+        CHUNK = 200
         n_parts = len(config.clickhouse.cluster_topology.split(","))
         async with MessageStreamClient() as client:
             for row in df.iter_rows(named=True):
@@ -448,7 +535,7 @@ class BaseDataSource(object):
     def iter_create_sql(cls) -> Iterable[ClickhouseColumn]:
         """Yield (field_name, field_type, materialized_expr, default_expr) tuples"""
 
-        yield ClickhouseColumn(name="report_date", type="Date")
+        yield ClickhouseColumn(name="date", type="Date")
         yield ClickhouseColumn(name="report_ts", type="DateTime")
         yield ClickhouseColumn(name="report_ds", type="String")
         yield ClickhouseColumn(name="report_uuid", type="UUID")
@@ -528,10 +615,11 @@ class BaseDataSource(object):
     def ensure_columns(cls, connect: "ClickhouseClient", table_name: str) -> bool:
         """
         Create necessary table columns
-
-        :param connect: ClickHouse client
-        :param table_name: Database table name
-        :return: True, if any column has been altered
+        Args:
+            connect: ClickHouse client
+            table_name: Database table name
+        Return:
+            True, if any column has been altered
         """
         c = False  # Changed indicator
         # Get existing columns
