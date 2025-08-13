@@ -222,9 +222,10 @@ class Collection(object):
                         raise ValueError("Error load %s: %s" % (fp, e))
                     if "uuid" not in jdata:
                         raise ValueError("Invalid JSON %s: No UUID" % fp)
-                    items[jdata["uuid"]] = self.Item(
-                        uuid=jdata["uuid"], path=fp, hash=item_hash(data), data=jdata
-                    )
+                    if jdata["uuid"] not in items:
+                        items[jdata["uuid"]] = self.Item(
+                            uuid=jdata["uuid"], path=fp, hash=item_hash(data), data=jdata
+                        )
         return items
 
     def get_fields(self, model: None):
