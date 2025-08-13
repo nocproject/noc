@@ -224,6 +224,7 @@ class AlarmRule(Document):
         ],
         default="continue",
     )
+    rule_apply_delay = IntField(min_value=0, default=0)
     #
     ttl_policy = StringField(
         choices=[
@@ -233,9 +234,10 @@ class AlarmRule(Document):
         ],
         default="D",
     )
-    clear_after_ttl = IntField(min_value=0, default=0)
+    clear_after_delay = IntField(min_value=0, default=0)
     # checks
     alarm_class = PlainReferenceField(AlarmClass, required=False)
+    #
     stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)
@@ -313,6 +315,8 @@ class AlarmRule(Document):
             r["job"] = EscalationProfile.get_config(rule.escalation_profile)
         if rule.max_severity:
             r["max_severity"] = rule.max_severity.severity
-        if rule.ttl_policy != "D" and rule.clear_after_ttl:
-            r |= {"ttl_policy": rule.ttl_policy, "clear_after_ttl": rule.clear_after_ttl}
+        if rule.rule_apply_delay:
+            r["rule_apply_delay"] = rule.rule_apply_delay
+        if rule.ttl_policy != "D" and rule.clear_after_delay:
+            r |= {"ttl_policy": rule.ttl_policy, "clear_after_delay": rule.clear_after_delay}
         return r
