@@ -458,11 +458,11 @@ class CorrelatorService(FastAPIService):
             job = rule.get_job(alarm)
             if job:
                 jobs.append(job)
-            if rule.clear_after_ttl:
+            if rule.clear_after_delay:
                 if rule.ttl_policy == "C":
-                    after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl)
+                    after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_delay)
                 else:
-                    after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_ttl)
+                    after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_delay)
                 alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
             else:
                 alarm.stop_watch(Effect.CLEAR_ALARM, key="")
