@@ -556,8 +556,8 @@ class BaseDataSource(object):
                 f"  {c.name} {c.type} {c.default_kind or ''} {'DEFAULT %s' % c.default_expression if c.default_expression else ''}"
                 for c in cls.iter_create_sql()
             ),
-            f") ENGINE = MergeTree() ORDER BY (date, job_uuid)\n",
-            f"PARTITION BY toYYYYMM(date) PRIMARY KEY (date, job_uuid)",
+            ") ENGINE = MergeTree() ORDER BY (date, job_uuid)\n",
+            "PARTITION BY toYYYYMM(date) PRIMARY KEY (date, job_uuid)",
         ]
         return "\n".join(r)
 
