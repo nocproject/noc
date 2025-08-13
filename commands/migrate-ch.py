@@ -8,7 +8,12 @@
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.core.clickhouse.connect import connection
-from noc.core.clickhouse.ensure import ensure_bi_models, ensure_pm_scopes, ensure_dictionary_models, ensure_report_ds_scopes
+from noc.core.clickhouse.ensure import (
+    ensure_bi_models,
+    ensure_pm_scopes,
+    ensure_dictionary_models,
+    ensure_report_ds_scopes,
+)
 from noc.core.mongo.connection import connect as mongo_connect
 from noc.config import config
 
