@@ -132,6 +132,8 @@ class AlarmRule(object):
             rule.clear_after_delay = config["clear_after_delay"]
         if "rule_apply_delay" in config:
             rule.rule_apply_delay = int(config["rule_apply_delay"])
+        if "rewrite_alarm_class" in config:
+            rule.rewrite_alarm_class = AlarmClass.get_by_id(config["rewrite_alarm_class"])
         return rule
 
     @classmethod
