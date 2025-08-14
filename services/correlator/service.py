@@ -800,7 +800,8 @@ class CorrelatorService(FastAPIService):
         )
         if not managed_object:
             self.logger.info(
-                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", event.id
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
+                event.id if event else DEFAULT_REFERENCE,
             )
             metrics["unknown_object"] += 1
             return
