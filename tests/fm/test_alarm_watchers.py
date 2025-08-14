@@ -14,7 +14,7 @@ import pytest
 # NOC modules
 from noc.aaa.models.user import User
 from noc.fm.models.alarmwatch import Effect
-from .utils import get_alarm_mock, get_tt_system_mock
+from .utils import get_alarm_mock, get_tt_system_mock, get_alarm_class_mock
 
 
 @pytest.fixture(scope="function")
@@ -30,6 +30,11 @@ def user():
 @pytest.fixture(scope="module")
 def tt_system():
     return get_tt_system_mock()
+
+
+@pytest.fixture(scope="function")
+def alarm_class():
+    return get_alarm_class_mock(name="System | Reboot")
 
 
 def test_watchers_options(alarm):
@@ -134,3 +139,13 @@ def test_alarm_after(alarm):
     # Remove After watch - clean wait_ts
     alarm.stop_watch(Effect.CLEAR_ALARM, key="")
     assert alarm.wait_ts is None
+
+
+def test_rewrite_alarm_class(alarm, alarm_class):
+    """
+    Test rewrite AlarmClass
+    """
+    assert alarm.alarm_class.allow_rewrite(alarm_class)
+    alarm.add_watch(Effect.REWRITE_ALARM_CLASS, key="", alarm_class=alarm_class)
+    alarm.touch_watch(dry_run=True)
+    assert alarm.alarm_class == alarm_class

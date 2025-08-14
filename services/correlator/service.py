@@ -429,7 +429,9 @@ class CorrelatorService(FastAPIService):
         for rule in self.alarm_rule_set.iter_rules(alarm):
             after_ts = None
             if rule.rule_apply_delay:
-                after_ts = alarm.timestamp + datetime.timedelta(seconds=rule.rule_apply_delay)
+                after_ts = (
+                    alarm.timestamp + datetime.timedelta(seconds=rule.rule_apply_delay)
+                ).replace(microsecond=0)
                 self.logger.info(
                     "[%s] Processed rule: %s, After: %s", alarm.id, rule.name, after_ts
                 )
@@ -459,7 +461,8 @@ class CorrelatorService(FastAPIService):
                     alarm_class=str(rule.rewrite_alarm_class.id),
                     after=after_ts,
                 )
-                alarm.refresh_alarm_class()
+                if not after_ts:
+                    alarm.refresh_alarm_class(dry_run=True)
             else:
                 alarm.stop_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
                 alarm.refresh_alarm_class()
