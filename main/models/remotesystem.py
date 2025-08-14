@@ -237,7 +237,7 @@ class RemoteSystem(Document):
         checkpoint: Optional[str] = None,
     ) -> List[StepResult]:
         extractors = extractors or self.get_extractors()
-        error, results = None, None
+        error, results = None, []
         try:
             results = self.get_handler().extract(
                 extractors, incremental=incremental, checkpoint=checkpoint
@@ -281,7 +281,7 @@ class RemoteSystem(Document):
         self, extractors: Optional[List[str]] = None, quiet: bool = False
     ) -> Optional[List[StepResult]]:
         extractors = extractors or self.get_extractors()
-        error, r = None, None
+        error, r = None, []
         try:
             r = self.get_handler().load(extractors)
         except Exception as e:
