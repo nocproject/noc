@@ -366,6 +366,13 @@ class Service(Document):
         """Check service in maintenance"""
         return False
 
+    def get_nested(self) -> List["Service"]:
+        """Returns list of nested services"""
+        r = [self]
+        for d in Service.objects.filter(parent=self):
+            r += d.get_nested()
+        return r
+
     def get_effective_managed_object(self) -> Optional[Any]:
         """Return ManagedObject to upper level"""
         path = self.get_path()
@@ -551,6 +558,13 @@ class Service(Document):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
+    def get_alarm_severity(self) -> int:
+        """Calculate Service alarm severity"""
+        default_map = {4: 5000, 3: 4000, 2: 3000}
+        if self.oper_status.value in default_map:
+            return default_map[self.oper_status.value]
+        return 0
+
     def register_alarm(self, old_status: Status):
         """
         Register Group alarm when changed Oper Status
@@ -559,31 +573,14 @@ class Service(Document):
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {
-                "$op": "disposition",
+                "$op": "ensure_group",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
-                "timestamp": self.oper_status_change.isoformat(),
+                "g_type": 3,
+                "name": self.label,
                 "alarm_class": SVC_AC,
-                "labels": list(self.labels),
-                "severity": {4: 5000, 3: 4000, 2: 3000}[self.oper_status.value],
-                "groups": [
-                    {"reference": f"{SVC_REF_PREFIX}:{svc.id}"}
-                    for svc in Service.objects.filter(parent=self.id)
-                ],
-                "subject": self.label,
-                "vars": {
-                    "title": self.description,
-                    "type": self.profile.name,
-                    "service": str(self.id),
-                    "to_status": self.oper_status.name,
-                    "from_status": old_status.name,
-                    "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
-                },
+                "labels": self.labels,
+                "alarms": [],
             }
-            caps = self.get_caps()
-            if caps and "Channel | Address" in caps:
-                msg["vars"]["address"] = caps["Channel | Address"]
-            if self.interface:
-                msg["vars"]["interface"] = self.interface.name
         elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",
@@ -762,7 +759,7 @@ class Service(Document):
             # Instances
             profiles = frozenset(profiles)
             for svc in ServiceInstance.objects.filter(instance_q).scalar("service"):
-                if svc.profile.id in profiles:
+                if svc.profile.id not in profiles:
                     continue
                 services.add(svc.id)
         # Alarm without affected instances

@@ -269,6 +269,9 @@ class AlarmStatusRule(EmbeddedDocument):
     # set_weight
     status = EnumField(Status, required=False)  # Default status by Severity
 
+    def __str__(self):
+        return f"{self.alarm_class_template or 'ANY'} (AF:{self.affected_instance})"
+
     def is_match(self, alarm) -> bool:
         """"""
         if self.min_severity and alarm.severity < self.min_severity.severity:
@@ -493,6 +496,8 @@ class ServiceProfile(Document):
         for r in self.alarm_status_rules:
             if r.is_match(aa):
                 return r
+        # if self.alarm_affected_policy == "B" or self.alarm_affected_policy == "I":
+        #    return AlarmStatusRule(affected_instance=True)
         return None
 
     def calculate_alarm_status(self, aa) -> Status:
