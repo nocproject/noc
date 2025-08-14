@@ -50,9 +50,11 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
     FloatParameter,
+    StringListParameter,
 )
 from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
+from noc.fm.models.activealarm import ActiveAlarm
 from .pbuilder import CrossingProposalsBuilder
 
 id_lock = threading.Lock()
@@ -864,3 +866,15 @@ class InvApplication(ExtApplication):
         )
         objs = list(objs)[start : start + limit]
         return {"status": True, "items": [{"path": path(Object.get_by_id(o["_id"]))} for o in objs]}
+
+    @view(
+        "^resource_status/$",
+        method=["POST"],
+        access="read",
+        api=True,
+        validate={"resources": StringListParameter()},
+    )
+    def api_resource_status(self, request, resources: List[str]):
+        # @todo: Limit access
+        alarmed = ActiveAlarm.get_resource_statuses(resources)
+        return {"resource_status": [{"resource": r, "alarm": alarmed[r]} for r in resources]}
