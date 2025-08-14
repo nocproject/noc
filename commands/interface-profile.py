@@ -29,7 +29,14 @@ class Command(BaseCommand):
         show_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
         # clean command
         reset_parser = subparsers.add_parser("reset", help="Reset interface profile")
+        reset_parser.add_argument(
+            "--reset-locked",
+            action="store_true",
+            default=False,
+            help="Reset interface profile on locked interface",
+        )
         reset_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
+        #
         # load command
         apply_parser = subparsers.add_parser("apply", help="Apply classification rules")
         apply_parser.add_argument(
@@ -38,17 +45,19 @@ class Command(BaseCommand):
             default=False,
             help="Set not matched profile to default",
         )
+        apply_parser.add_argument(
+            "--unlock-profile",
+            action="store_true",
+            default=False,
+            help="Set not matched profile to default",
+        )
         apply_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
 
     def handle(self, cmd, *args, **options):
         connect()
-        if "mos" in options:
-            moo = options["mos"]
-        else:
-            self.stdout.write("No ManagedObject for proccessed")
-            self.die("No ManagedObject for proccessed")
-            return False
-        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(moo, *args, **options)
+        if "mos" not in options:
+            options["mos"] = []
+        return getattr(self, "handle_%s" % cmd.replace("-", "_"))(*args, **options)
 
     @staticmethod
     def get_objects(exprs):
@@ -81,8 +90,11 @@ class Command(BaseCommand):
         el = ",".join(effective_labels or [])
         self.stdout.write(tpl % (i.name, i.status, d, status, el))
 
-    def handle_show(self, moo, *args, **options):
-        for o in self.get_objects(moo):
+    def handle_show(self, mos, *args, **options):
+        if not mos:
+            self.stdout.write("No ManagedObject for processed\n")
+            return
+        for o in self.get_objects(mos):
             self.stdout.write(
                 "%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name)
             )
@@ -94,8 +106,20 @@ class Command(BaseCommand):
             for i in ifaces:
                 self.show_interface(tps, i, i.profile.name if i.profile else "-", [])
 
-    def handle_reset(self, moo, *args, **kwargs):
-        for o in self.get_objects(moo):
+    def handle_reset(self, mos, *args, reset_locked: bool = False, **kwargs):
+        if reset_locked:
+            self.stdout.write("Reset Locked Profile on Interfaces\n")
+            for i in Interface.objects.filter(profile_locked=True):
+                if i.profile:
+                    self.stdout.write("    resetting profile on %s to default\n" % i.name)
+                    i.profile = InterfaceProfile.get_default_profile()
+                    i.profile_locked = False
+                    i.save()
+            return
+        elif not mos:
+            self.stdout.write("No ManagedObject for processed\n")
+            return
+        for o in self.get_objects(mos):
             self.stdout.write(
                 "%s (%s):\n" % (o.name, (o.platform.name if o.platform else None) or o.profile.name)
             )
@@ -103,14 +127,18 @@ class Command(BaseCommand):
                 if i.profile:
                     self.stdout.write("    resetting profile on %s to default\n" % i.name)
                     i.profile = InterfaceProfile.get_default_profile()
+                    i.profile_locked = False
                     i.save()
 
-    def handle_apply(self, moo, *args, **kwargs):
+    def handle_apply(self, mos, *args, **kwargs):
         # sol = config.get("interface_discovery", "get_interface_profile")
+        if not mos:
+            self.stdout.write("No ManagedObject for processed\n")
+            return
         default_profile = InterfaceProfile.get_default_profile()
         get_profile = InterfaceProfile.get_profiles_matcher()
         pcache = {}
-        for o in self.get_objects(moo):
+        for o in self.get_objects(mos):
             self.stdout.write(
                 "%s (%s):\n" % (o.name, o.platform.name if o.platform else o.profile.name)
             )
@@ -137,12 +165,16 @@ class Command(BaseCommand):
                             p = InterfaceProfile.get_by_id(pn)
                             pcache[pn] = p
                         i.profile = p
+                        if kwargs.get("unlock_profile"):
+                            i.profile_locked = False
                         i.save()
                         v = f"Set {p.name}"
                     else:
                         v = "Not matched"
                         if kwargs.get("reset_default") and i.profile != default_profile:
                             i.profile = default_profile
+                            if kwargs.get("unlock_profile"):
+                                i.profile_locked = False
                             i.save()
                             v = "Not matched. Reset to default"
                     self.show_interface(tps, i, v, el - oel)
