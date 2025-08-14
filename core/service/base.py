@@ -897,13 +897,16 @@ class BaseService(object):
         """
         msg = Router.get_message(data, message_type.value, headers, sharding_key)
         self.logger.debug("Send message: %s", msg)
-        if not config.message.embedded_router:
+        if not self.router and self.mx_partitions:
             self.publish(
                 value=msg.value,
                 stream=MX_STREAM,
                 partition=sharding_key % self.mx_partitions,
                 headers=msg.headers,
             )
+            return
+        elif not self.router and not self.mx_partitions:
+            self.logger.warning("Not MX service for forwarding message. Skipping...")
             return
         if store:
             self.mx_queue.put(msg)
