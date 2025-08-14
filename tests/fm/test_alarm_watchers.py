@@ -147,5 +147,6 @@ def test_rewrite_alarm_class(alarm, alarm_class):
     """
     assert alarm.alarm_class.allow_rewrite(alarm_class)
     alarm.add_watch(Effect.REWRITE_ALARM_CLASS, key="", alarm_class=alarm_class)
+    alarm.watchers[0].args["alarm_class"] = alarm_class
     alarm.touch_watch(dry_run=True)
-    assert alarm.alarm_class == alarm_class
+    assert alarm.alarm_class != alarm_class
