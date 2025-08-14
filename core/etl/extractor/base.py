@@ -52,6 +52,7 @@ class BaseExtractor(object):
     name: str
     PREFIX = config.path.etl_import
     REPORT_INTERVAL = 1000
+    DISABLE_INCREMENTAL_MERGE = False
     # Type of model
     model: Type[BaseModel]
     # List of rows to be used as constant data
@@ -327,7 +328,7 @@ class BaseExtractor(object):
         speed = n / dt
         self.logger.info("%d records extracted in %.2fs (%d records/s)", n, dt, speed)
         # Merge incremental data
-        if incremental:
+        if incremental and not self.DISABLE_INCREMENTAL_MERGE:
             # Prune removed items
             if removed and current:
                 current = [x for x in current if x.id not in removed]

@@ -335,6 +335,7 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
 
     name = "fmevent"
     model = FMEventObject
+    DISABLE_INCREMENTAL_MERGE = True
 
     severity_map: Dict[ZabbixSeverity, EventSeverity] = {
         ZabbixSeverity.NOT_CLASSIFIED: EventSeverity.INDETERMINATE,  # Ignored

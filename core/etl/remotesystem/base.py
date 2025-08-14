@@ -26,6 +26,16 @@ class StepResult:
     error: Optional[str] = None
     summary: Optional[Dict[str, int]] = None
 
+    @property
+    def has_changed(self) -> bool:
+        if not self.summary:
+            return False
+        changes = 0
+        for s, c in self.summary.items():
+            if s in {"add", "change", "delete"}:
+                changes += c
+        return bool(changes)
+
 
 class BaseRemoteSystem(object):
     extractors = {}
