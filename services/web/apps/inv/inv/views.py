@@ -216,7 +216,7 @@ class InvApplication(ExtApplication):
             resources = [f"o:{item['id']}" for item in r]
             resource_statuses = ActiveAlarm.get_resource_statuses(resources)
             for item in r:
-                r["is_alarm"] = resource_statuses[f"o:{item['id']}"]
+                item["is_alarm"] = resource_statuses[f"o:{item['id']}"]
         return r
 
     @view(
