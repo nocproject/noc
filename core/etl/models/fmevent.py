@@ -47,3 +47,5 @@ class FMEventObject(BaseModel):
     is_cleared: bool = False  # Set flag for cleared severity
     labels: Optional[List[str]] = None  # Event labels
     message: Optional[str] = None  # Event message string
+    start_ts: Optional[int] = None  # Event Start ts
+    checkpoint: Optional[str] = None
