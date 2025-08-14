@@ -427,7 +427,14 @@ class CorrelatorService(FastAPIService):
         """Apply alarm rules"""
         groups, jobs = {}, []
         for rule in self.alarm_rule_set.iter_rules(alarm):
-            self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
+            after_ts = None
+            if rule.rule_apply_delay:
+                after_ts = alarm.timestamp + datetime.timedelta(seconds=rule.rule_apply_delay)
+                self.logger.info(
+                    "[%s] Processed rule: %s, After: %s", alarm.id, rule.name, after_ts
+                )
+            else:
+                self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
             # Calculate Severity and to match
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
@@ -450,7 +457,7 @@ class CorrelatorService(FastAPIService):
                     Effect.REWRITE_ALARM_CLASS,
                     key=str(rule.id),
                     alarm_class=str(rule.rewrite_alarm_class.id),
-                    after=None,
+                    after=after_ts,
                 )
                 alarm.refresh_alarm_class()
             else:
