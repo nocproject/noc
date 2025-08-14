@@ -450,10 +450,11 @@ class CorrelatorService(FastAPIService):
                     Effect.REWRITE_ALARM_CLASS,
                     key=str(rule.id),
                     alarm_class=str(rule.rewrite_alarm_class.id),
+                    after=None,
                 )
                 alarm.refresh_alarm_class()
             else:
-                alarm.add_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
+                alarm.stop_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
                 alarm.refresh_alarm_class()
             job = rule.get_job(alarm)
             if job:

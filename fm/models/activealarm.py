@@ -777,7 +777,7 @@ class ActiveAlarm(Document):
         """Calculate effective AlarmClass"""
         ac = None
         for w in self.watchers:
-            if w.effect == Effect.REWRITE_ALARM_CLASS:
+            if w.effect == Effect.REWRITE_ALARM_CLASS and "alarm_class" in w.args:
                 ac = AlarmClass.get_by_id(w.args["alarm_class"])
                 break
         return ac or self.alarm_class
