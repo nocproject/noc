@@ -342,6 +342,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                 'A - Any alarm by Resource'),
                             store: [
                                 ["D", __("Disable")],
+                                ["B", __("By Object")],
                                 ["A", __("By Instance")],
                                 ["O", __("By Filter")]
                             ],
