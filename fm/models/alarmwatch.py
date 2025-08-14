@@ -89,7 +89,7 @@ class WatchItem(EmbeddedDocument):
             case Effect.ALARM_JOB:
                 alarm.refresh_job(is_clear, job_id=self.key)
             case Effect.REWRITE_ALARM_CLASS:
-                alarm.refresh_alarm_class()
+                alarm.refresh_alarm_class(dry_run=dry_run)
             case Effect.CLEAR_ALARM:
                 # To Last Action
                 if not is_clear:
