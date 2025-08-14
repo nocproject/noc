@@ -30,10 +30,17 @@ class Command(BaseCommand):
         # clean command
         reset_parser = subparsers.add_parser("reset", help="Reset interface profile")
         reset_parser.add_argument("mos", nargs=argparse.REMAINDER, help="List of object to showing")
+        #
         # load command
         apply_parser = subparsers.add_parser("apply", help="Apply classification rules")
         apply_parser.add_argument(
             "--reset-default",
+            action="store_true",
+            default=False,
+            help="Set not matched profile to default",
+        )
+        apply_parser.add_argument(
+            "--unlock-profile",
             action="store_true",
             default=False,
             help="Set not matched profile to default",
@@ -103,6 +110,7 @@ class Command(BaseCommand):
                 if i.profile:
                     self.stdout.write("    resetting profile on %s to default\n" % i.name)
                     i.profile = InterfaceProfile.get_default_profile()
+                    i.profile_locked = False
                     i.save()
 
     def handle_apply(self, moo, *args, **kwargs):
@@ -137,12 +145,16 @@ class Command(BaseCommand):
                             p = InterfaceProfile.get_by_id(pn)
                             pcache[pn] = p
                         i.profile = p
+                        if kwargs.get("unlock_profile"):
+                            i.profile_locked = False
                         i.save()
                         v = f"Set {p.name}"
                     else:
                         v = "Not matched"
                         if kwargs.get("reset_default") and i.profile != default_profile:
                             i.profile = default_profile
+                            if kwargs.get("unlock_profile"):
+                                i.profile_locked = False
                             i.save()
                             v = "Not matched. Reset to default"
                     self.show_interface(tps, i, v, el - oel)
