@@ -366,6 +366,15 @@ class Service(Document):
         """Check service in maintenance"""
         return False
 
+    def check_deployed(self) -> Optional[str]:
+        """Generate Workflow signal"""
+        statuses = {si.is_deployed for si in self.service_instances}
+        if True not in statuses:
+            return
+        elif False in statuses:
+            return "partial"
+        return "full"
+
     def get_nested(self) -> List["Service"]:
         """Returns list of nested services"""
         r = [self]
@@ -390,6 +399,7 @@ class Service(Document):
             self._refresh_managed_object()
             self.service_path = self.get_path()
             Service.objects.filter(id=self.id).update(service_path=self.service_path)
+        self.sync_instances()
         # Register Final Outage
         # Refresh Service Status
 
@@ -834,11 +844,11 @@ class Service(Document):
             return
         instances: List[ServiceInstanceConfig] = []
         for settings in self.profile.instance_settings:
-            cfg = ServiceInstanceConfig.get_config(settings.instance_type)
-            cfg = cfg.from_settings(settings.get_config(), self, settings.name)
-            if not cfg:
+            i_type = settings.get_instance_type()
+            cfgs = i_type.from_settings(settings.get_config(), self, settings.name)
+            if not cfgs:
                 continue
-            instances.append(cfg)
+            instances += cfgs
         logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
@@ -894,7 +904,7 @@ class Service(Document):
         if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        cfg = ServiceInstanceConfig.get_config(type)
+        cfg = ServiceInstanceConfig.get_type(type)
         cfg = cfg.from_config(name=name, fqdn=fqdn)
         if not cfg:
             logger.warning(

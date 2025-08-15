@@ -16,6 +16,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.inv.capability.LookupField",
+        "NOC.inv.resourcegroup.LookupField",
         "NOC.wf.workflow.LookupField",
         "NOC.fm.alarmseverity.LookupField"
     ],
@@ -499,30 +500,48 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                 {
                                     text: __("Allow Manual"),
                                     dataIndex: "allow_manual",
-                                    width: 100,
+                                    width: 70,
                                     editor: "checkbox",
                                     renderer: NOC.render.Bool
                                 },
                                 {
                                     text: __("Send Approve (To Res)"),
                                     dataIndex: "send_approve",
-                                    width: 100,
+                                    width: 70,
                                     editor: "checkbox",
                                     renderer: NOC.render.Bool
                                 },
                                 {
                                     text: __("Only One Instance"),
                                     dataIndex: "only_one_instance",
-                                    width: 100,
+                                    width: 70,
                                     editor: "checkbox",
                                     renderer: NOC.render.Bool
                                 },
                                 {
                                     text: __("Allow Register"),
                                     dataIndex: "allow_register",
-                                    width: 100,
+                                    width: 70,
                                     editor: "checkbox",
                                     renderer: NOC.render.Bool
+                                },
+                                {
+                                    text: __("Network"),
+                                    dataIndex: "network_type",
+                                    width: 70,
+                                    editor: {
+                                        xtype: "combobox",
+                                        store: [
+                                            ["A", "Access"],
+                                            ["N", "Network"],
+                                            ["E", "Enhanced"]
+                                        ]
+                                    },
+                                    renderer: NOC.render.Choices({
+                                        "A": "Access",
+                                        "N": "Network",
+                                        "E": "Enhanced"
+                                    })
                                 },
                                 {
                                     text: __("TTL"),
@@ -544,8 +563,17 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                     text: __("Ref. Source"),
                                     dataIndex: "refs_caps",
                                     renderer: NOC.render.Lookup("refs_caps"),
-                                    width: 250,
+                                    width: 200,
                                     editor: "inv.capability.LookupField"
+                                },
+                                {
+                                    text: __("Asset. Group"),
+                                    dataIndex: "asset_group",
+                                    renderer: NOC.render.Lookup("asset_group"),
+                                    width: 250,
+                                    editor: {
+                                        xtype: "inv.resourcegroup.LookupField"
+                                    }
                                 }
                             ]
                         }

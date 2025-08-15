@@ -38,6 +38,7 @@ from noc.core.models.serviceinstanceconfig import (
 from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_ipv4, is_fqdn
+from noc.core.model.decorator import on_save
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -62,6 +63,7 @@ class AddressItem(EmbeddedDocument):
         self.address_bin = IP.prefix(self.address).d
 
 
+@on_save
 class ServiceInstance(Document):
     """
     Service Instance.
@@ -165,6 +167,15 @@ class ServiceInstance(Document):
             return self.managed_object.object_profile.weight
         return 1
 
+    @property
+    def is_deployed(self) -> Optional[bool]:
+        """Generate workflow service signal"""
+        # deploy/deployed
+        # partial ? deployed
+        if self.resources:
+            return True
+        return False
+
     def __str__(self) -> str:
         name = self.name or self.service.label
         if self.type == InstanceType.ASSET:
@@ -174,6 +185,10 @@ class ServiceInstance(Document):
         elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
             return f"[{self.type}|{self.remote_id}] {name}"
         return f"[{self.type}] {name}"
+
+    def on_save(self):
+        if not hasattr(self, "_changed_fields") or "asset_refs" in self._changed_fields:
+            ServiceInstance.refresh_local_network_instances([self])
 
     @classmethod
     def ensure_instance(
@@ -575,3 +590,30 @@ class ServiceInstance(Document):
                 _, rid = rid.split(":")
                 r[rid] = row["service"]
         return r
+
+    @classmethod
+    def refresh_local_network_instances(cls, instances: Optional[List] = None):
+        """"""
+        from noc.inv.models.interface import Interface
+
+        ref_mac_instance: Dict[str, ServiceInstance] = {}
+        bulk = []
+        for si in ServiceInstance.objects.filter(
+            type=InstanceType.NETWORK_CHANNEL, asset_refs__exists=True, asset_refs__ne=[],
+        ):
+            for r in si.asset_refs or []:
+                ref, value = r.split("::", 1)
+                if ref == "mac":
+                    ref_mac_instance[value] = si
+        # Find Interfaces
+        for iface in Interface.objects.filter(mac__in=list(ref_mac_instance)):
+            if iface.mac not in ref_mac_instance:
+                continue
+            si = ref_mac_instance.pop(iface.mac)
+            si.update_resources([iface], source=InputSource.DISCOVERY, bulk=bulk)
+        for si in ref_mac_instance.values():
+            si.unseen(source=InputSource.DISCOVERY)
+        coll = ServiceInstance._get_collection()
+        logger.info("Updated Local Instances: %s", len(bulk))
+        if bulk:
+            coll.bulk_write(bulk)
