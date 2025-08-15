@@ -10,10 +10,11 @@ import operator
 import re
 from collections import defaultdict
 from threading import Lock
-from typing import Optional, Union, Tuple, List, Dict
+from typing import Optional, Union, Tuple, List, Dict, Type
 from functools import partial
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from pymongo import UpdateOne
 from mongoengine.document import Document, EmbeddedDocument
@@ -29,7 +30,6 @@ from mongoengine.fields import (
     EnumField,
 )
 from mongoengine.queryset.visitor import Q as m_q
-import cachetools
 
 # NOC modules
 from noc.inv.models.interfaceprofile import InterfaceProfile
@@ -41,11 +41,16 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.models.servicestatus import Status
-from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceTypeConfig
+from noc.core.models.serviceinstanceconfig import (
+    InstanceType,
+    ServiceInstanceConfig,
+    ServiceInstanceTypeConfig,
+)
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.caps.types import CapsConfig
 from noc.inv.models.capability import Capability
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
 
@@ -119,6 +124,14 @@ class InstanceSettings(EmbeddedDocument):
     )
     send_approve: bool = BooleanField(default=False)
     allow_register: bool = BooleanField(default=False)
+    asset_group: bool = PlainReferenceField(ResourceGroup, required=False)
+    network_type: str = StringField(
+        choices=[
+            ("A", "Access"),
+            ("N", "Network"),
+            ("E", "Enhanced"),
+        ]
+    )
     ttl: int = IntField(min_value=0, default=0)
     refs_caps: Capability = ReferenceField(Capability)
     name: str = StringField(required=False)
@@ -142,6 +155,9 @@ class InstanceSettings(EmbeddedDocument):
             ttl=self.ttl,
             refs_caps=self.refs_caps,
         )
+
+    def get_instance_type(self) -> Type["ServiceInstanceConfig"]:
+        return ServiceInstanceConfig.get_type(self.instance_type)
 
 
 class CalculatedStatusRule(EmbeddedDocument):
@@ -474,7 +490,10 @@ class ServiceProfile(Document):
         for s in self.instance_settings:
             if s.instance_type != i_type:
                 continue
-            if name and name == s.name:
+            if name and name.endswith("@") and not s.name:
+                cfg = s.get_config()
+                break
+            elif name and s.name and name.endswith(s.name):
                 cfg = s.get_config()
                 break
             elif not name and not s.name:
@@ -559,6 +578,11 @@ class ServiceProfile(Document):
                 queries[str(q)] = q
                 r[str(q)] += [pid]
         return [(queries[x] if x else x, r[x]) for x in r]
+
+    def iter_configured_instances(self) -> List["ServiceInstanceConfig"]:
+        """Get configuration"""
+        for settings in self.instance_settings:
+            yield settings.get_instance_type()
 
 
 def refresh_interface_profiles(sp_id, ip_id):
