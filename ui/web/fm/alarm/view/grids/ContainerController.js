@@ -111,6 +111,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     if(pressed){
       this.startPolling();
     } else{
+      this.getViewModel().set("icon", this.generateIcon(false));
       this.stopPolling();
     }
   },

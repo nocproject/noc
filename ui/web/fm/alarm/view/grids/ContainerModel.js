@@ -64,6 +64,9 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerModel", {
       // NOC.glyph.volume_up or NOC.glyph.volume_off
       return get("volume") ? "xf028" : "xf026";
     },
+    volumeIconText: function(get){
+      return __("Sound: ") + (get("volume") ? __("ON") : __("OFF"));
+    },
     autoReloadIcon: function(get){
       //  NOC.glyph.refresh or NOC.glyph.ban
       return get("autoReload") ? "xf021" : "xf05e";

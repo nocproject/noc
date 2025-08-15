@@ -15,6 +15,17 @@ Ext.define("NOC.inv.inv.Application", {
     "NOC.inv.inv.NavModel",
     "NOC.inv.inv.NavSearch",
   ],
+  pollingTaskId: undefined,
+  pollingInterval: 2000,
+  //
+  viewModel: {
+    data: {
+      autoReload: false,
+      autoReloadIcon: "xf05e", // NOC.glyph.ban
+      autoReloadText: __("Auto reload : OFF"),
+      icon: "<i class='fa fa-fw' style='width:16px;'></i>",
+    },
+  },
   naviTreeMessageStack: [],
   //
   initComponent: function(){
@@ -143,11 +154,11 @@ Ext.define("NOC.inv.inv.Application", {
       stickyNode: "sticky-node",
       zIndex: 100,
       rowHeight: 36, // for noc theme
-      maxStickyLevel: 1,    
+      maxStickyLevel: 1,
       bufferedRenderer: false,
       columns: [
         {
-          xtype: "treecolumn", // Это обязательная колонка для отображения дерева
+          xtype: "treecolumn", // This is a mandatory column to display a tree
           dataIndex: "name",
           flex: 1,
           cellTpl: [
@@ -162,7 +173,9 @@ Ext.define("NOC.inv.inv.Application", {
             '  <tpl if="checked !== null">',
             '    <input type="button" {ariaCellCheckboxAttr} class="{childCls} {checkboxCls} <tpl if= " checked" > {checkboxCls}-checked</tpl> "/>',
             "  </tpl>",
-            '  <tpl if="glyphCls"><i class="{glyphCls}" style="font - size: 16px"></i>',
+            '  <tpl if="this.isAlarmed(record)">',
+            '    <i class="fa fa-exclamation-triangle" style="font-size: 16px; color: {[NOC.colors.no]};"></i>',
+            '  <tpl elseif="glyphCls"><i class="{glyphCls}" style="font-size: 16px"></i>',
             '  <tpl else><div role="presentation" class="{childCls} {baseIconCls} {baseIconCls}-<tpl if="leaf">leaf<tpl else>parent</tpl> ',
             '     {iconCls}"<tpl if="icon">style="background - image: url({icon})"</tpl>></div></tpl>',
             '  <tpl if="href"><a href="{href}" role="link" target="{hrefTarget}" class="{textCls} {childCls}">{value}</a>',
@@ -170,34 +183,78 @@ Ext.define("NOC.inv.inv.Application", {
             "  </div>",
             '  <button class="cell-button" style="display: none;">...</button>',
             "</div>",
+            {
+              isAlarmed: function(record){
+                return record.get("is_alarm") && me.getViewModel().get("autoReload");
+              }, 
+            },
           ],
         },
       ],
       dockedItems: [{
-        xtype: "toolbar",
+        xtype: "container",
         dock: "top",
+        style: {
+          borderColor: "red",
+          borderStyle: "solid",
+        },
+        border: 3,
+        layout: {
+          type: "vbox",
+          align: "stretch",
+        },
         items: [
-          me.navReloadButton,
           {
-            xtype: "searchcombo",
-            width: 200,
-            listeners: {
-              scope: this,
-              invPathSelected: function(pathId){
-                this.showObject(pathId, false);
+            xtype: "toolbar",
+            items: [
+              me.navReloadButton,
+              {
+                text: __("Reload"),
+                iconAlign: "right",
+                enableToggle: true,
+                bind: {
+                  glyph: "{autoReloadIcon}",
+                  tooltip: "{autoReloadText}",
+                  pressed: "{autoReload}",
+                },
+                listeners: {
+                  scope: me,
+                  toggle: me.onAutoReloadToggle,
+                },
               },
-            },
+              "->",
+              {
+                glyph: NOC.glyph.plus,
+                tooltip: __("Add objects"),
+                itemId: "addObjectDock",
+                disabled: false,
+                scope: me,
+                handler: me.onAddObject,
+              },
+              {
+                xtype: "tbtext",
+                padding: "3 0 0 4",
+                bind: {
+                  html: "{icon}",
+                },
+              },
+            ],
           },
-          "->",
           {
-            glyph: NOC.glyph.plus,
-            tooltip: __("Add objects"),
-            itemId: "addObjectDock",
-            disabled: false,
-            scope: me,
-            handler: me.onAddObject,
+            xtype: "toolbar",
+            items: [
+              {
+                xtype: "searchcombo",
+                width: "100%",
+                listeners: {
+                  scope: this,
+                  invPathSelected: function(pathId){
+                    this.showObject(pathId, false);
+                  },
+                },
+              },
+            ],
           },
-
         ],
       }],
       listeners: {
@@ -391,6 +448,7 @@ Ext.define("NOC.inv.inv.Application", {
         me.restoreHistory(me.noc.cmd.args);
         return;
     }
+    this.subscribeToEvents();
   },
   //
   onReloadNav: function(){
@@ -1005,5 +1063,199 @@ Ext.define("NOC.inv.inv.Application", {
   hideNaviTreeMessage: function(messageId){
     this.maskNaviTree.hide(messageId);
     this.naviTreeMessageStack = this.naviTreeMessageStack.filter(item => item.id !== messageId);
+  },
+  //
+  onAutoReloadToggle: function(self){
+    this.getViewModel().set("autoReload", self.pressed);
+    this.autoReloadIcon(self.pressed);
+    this.autoReloadText(self.pressed);
+    if(this.getViewModel()){
+      this.getViewModel().set("icon", this.generateIcon(self.pressed, "circle", NOC.colors.yes, __("online")));
+    }
+    if(self.pressed){
+      this.startPolling();
+    } else{
+      this.stopPolling();
+    }
+  },
+  //
+  autoReloadIcon: function(isReloading){
+    //  NOC.glyph.refresh or NOC.glyph.ban
+    this.getViewModel().set("autoReloadIcon", isReloading ? "xf021" : "xf05e");
+  },
+  //
+  autoReloadText: function(isReloading){
+    this.getViewModel().set("autoReloadText", __("Auto reload : ") + (isReloading ? __("ON") : __("OFF")));
+  },
+  //
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='width:16px;'></i>";
+  },
+  //
+  startPolling: function(){
+    var me = this;
+    
+    if(this.observer){
+      this.stopPolling();
+    }
+    
+    this.observer = new IntersectionObserver(function(entries){
+      if(me.destroyed) return;
+      me.isIntersecting = entries[0].isIntersecting;
+      me.disableHandler(!entries[0].isIntersecting);
+    }, {
+      threshold: 0.1,
+    });
+    
+    if(this.getEl() && this.getEl().dom){
+      this.observer.observe(this.getEl().dom);
+    }
+    
+    if(Ext.isEmpty(this.pollingTaskId)){
+      this.pollingTaskId = Ext.TaskManager.start({
+        run: this.pollingTask,
+        interval: this.pollingInterval,
+        scope: this,
+      });
+    } else{
+      this.pollingTask();
+    }
+  },
+  //
+  stopPolling: function(){
+    if(this.pollingTaskId){
+      Ext.TaskManager.stop(this.pollingTaskId);
+      this.pollingTaskId = undefined;
+    }
+    if(this.observer && this.getEl() && this.getEl().dom){
+      this.observer.unobserve(this.getEl().dom);
+      this.observer.disconnect();
+      this.observer = null;
+    }
+    // this.store.getData().filterBy(function(item){return item.isVisible}).items.forEach(function(item){
+    //   item.set("is_alarm", false);
+    // });
+    // this.navTree.getView().refresh(); 
+  },
+  //
+  pollingTask: function(){
+    if(this.destroyed) return;
+    
+    let isVisible = !document.hidden, // check is user has switched to another tab browser
+      isFocused = document.hasFocus(), // check is user has minimized browser window
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
+      this.statusUpdate();
+    }
+  },
+  //
+  disableHandler: function(state){
+    if(this.destroyed) return;
+    
+    var isVisible = !document.hidden, // check is user has switched to another tab browser
+      isIntersecting = this.isIntersecting; // switch to other application tab
+    if(this.pollingTaskId && isIntersecting && isVisible){
+      this.setContainerDisabled(state);
+      this.pollingTask();
+    }
+  },
+  //
+  setContainerDisabled: function(state){
+    if(this.destroyed) return;
+    
+    let icon;
+    this.navTree.setDisabled(state);
+    if(state){
+      icon = this.generateIcon(true, "stop-circle-o", "grey", __("suspend"));
+    } else{
+      icon = this.generateIcon(true, "circle", NOC.colors.yes, __("online"));
+    }
+    if(this.getViewModel()){
+      this.getViewModel().set("icon", icon);
+    }
+  },
+  subscribeToEvents: function(){
+    this.handleWindowFocus = this.handleWindowFocus.bind(this);
+    this.handleWindowBlur = this.handleWindowBlur.bind(this);
+    window.addEventListener("focus", this.handleWindowFocus);
+    window.addEventListener("blur", this.handleWindowBlur);
+  },
+  
+  unsubscribeFromEvents: function(){
+    if(this.handleWindowFocus){
+      window.removeEventListener("focus", this.handleWindowFocus);
+    }
+    if(this.handleWindowBlur){
+      window.removeEventListener("blur", this.handleWindowBlur);
+    }
+  },
+  //
+  destroy: function(){
+    this.destroyed = true;
+    
+    this.unsubscribeFromEvents();
+    this.stopPolling();
+    this.setContainerDisabled(false);
+    
+    this.isRefreshing = false;
+    this.isUpdating = false;
+    
+    this.callParent();
+  },
+  //
+  handleWindowFocus: function(){
+    if(this.destroyed) return;
+    var me = this;
+    setTimeout(function(){
+      if(!me.destroyed){
+        me.disableHandler(false);
+      }
+    }, 100);
+  },
+  //
+  handleWindowBlur: function(){
+    if(this.destroyed) return;
+    this.disableHandler(true);
+  },
+  //
+  statusUpdate: function(){
+    if(this.destroyed || this.isUpdating) return;
+    this.isUpdating = true;
+    this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
+    console.log("Updating resource status");
+    Ext.Ajax.request({
+      url: "/inv/inv/resource_status/",
+      method: "POST",
+      jsonData: {
+        resources: Ext.Array.map(this.store.getData().filterBy(function(item){return item.isVisible}).items, function(item){return `o:${item.id}`}),
+      },
+      scope: this,
+      success: function(response){
+        if(this.destroyed) return;
+        let data = Ext.decode(response.responseText);
+        data.resource_status.forEach(element => {
+          const id = element.resource.slice(2),
+            record = this.store.getById(id);
+          if(!Ext.isEmpty(record)){
+            record.set("is_alarm", element.is_alarm);
+          }
+        });
+        this.navTree.getView().refresh();
+      },
+      failure: function(){
+        if(!this.destroyed){
+          NOC.error(__("Failed to update alarm"));
+        }
+      },
+      callback: function(){
+        if(!this.destroyed && this.getViewModel().get("autoReload")){
+          this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+          this.isUpdating = false;
+        }
+      },
+    });
   },
 });
