@@ -314,7 +314,14 @@ class BaseExtractor(object):
             row = self.clean(row)
             # Do not use get_model(self.clean(row)), to zip_longest broken row
             row = get_model(row)
-            if row.id in seen:
+            if (
+                self.system.remote_system.managed_object_loader_policy == "D"
+                and self.name == "managedobject"
+            ):
+                if not row.address:
+                    self.logger.error("ManagedObject without IP address row truncated: %r", row)
+                    continue
+            elif row.id in seen:
                 if not self.suppress_deduplication_log:
                     self.logger.error("Duplicated row truncated: %r", row)
                 continue

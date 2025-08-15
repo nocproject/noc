@@ -247,7 +247,9 @@ def get_mappings(self) -> Dict[str, str]:
     return r
 
 
-def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str] = None) -> bool:
+def update_remote_mappings(
+    self, mappings: Dict[Any, str], source: Optional[str] = None, dry_run: bool = False
+) -> bool:
     """
     Update managed Object mappings
     Source Priority, for mappings on different sources
@@ -309,7 +311,7 @@ def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str]
             )
         )
         changed |= True
-    if changed:
+    if changed and not self._created:
         logger.info("[%s] Saving mappings", self)
         self.save_remote_mappings(new_mappings)
     return changed
