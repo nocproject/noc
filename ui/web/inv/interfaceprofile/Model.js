@@ -164,6 +164,10 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "auto"
         },
         {
+            name: "caps",
+            type: "auto"
+        },
+        {
             name: "dynamic_classification_policy",
             type: "string",
             defaultValue: "R"

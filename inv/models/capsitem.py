@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CapsItem
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,15 +10,16 @@ from typing import Any, Dict, List, Optional
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, DynamicField, ReferenceField
+from mongoengine.fields import StringField, DynamicField, ReferenceField, BooleanField
 from pydantic import BaseModel
 
 # NOC modules
+from noc.core.caps.types import CapsConfig
 from .capability import Capability
 
 
 class CapsItem(EmbeddedDocument):
-    capability = ReferenceField(Capability)
+    capability: Capability = ReferenceField(Capability)
     value = DynamicField()
     # Source name like "caps", "interface", "manual"
     source = StringField()
@@ -86,3 +87,30 @@ class ModelCapsItem(BaseModel):
     def clean(self):
         if self.capability:
             self.value = self.capability.clean_value(self.value)
+
+
+class CapsSettings(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    # Required
+    capability: Capability = ReferenceField(Capability, required=True)
+    default_value = DynamicField()
+    allow_manual = BooleanField(default=False)
+    ref_scope = StringField(required=False)
+    # ref_remote_system
+
+    def __str__(self):
+        return f"{self.capability.name}: D:{self.default_value}; M: {self.allow_manual}"
+
+    def clean(self):
+        super().clean()
+        if self.default_value:
+            self.capability.clean_value(self.default_value)
+
+    def get_config(self) -> CapsConfig:
+        """"""
+        return CapsConfig(
+            default_value=self.default_value or None,
+            allow_manual=self.allow_manual,
+            ref_scope=self.ref_scope,
+        )
