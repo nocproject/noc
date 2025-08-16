@@ -321,6 +321,10 @@ class BaseExtractor(object):
                 if not row.address:
                     self.logger.error("ManagedObject without IP address row truncated: %r", row)
                     continue
+                elif row.address in seen:
+                    self.logger.error("Duplicated row truncated: %r", row)
+                    continue
+                seen.add(row.address)
             elif row.id in seen:
                 if not self.suppress_deduplication_log:
                     self.logger.error("Duplicated row truncated: %r", row)
