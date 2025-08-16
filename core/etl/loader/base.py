@@ -446,7 +446,7 @@ class BaseLoader(object):
         else:
             o.state = self.clean_wf_state(o.profile.workflow, state)
         if mappings is not None:
-            o.update_remote_mappings(mappings, source="etl")
+            o.update_remote_mappings(mappings, source="etl", dry_run=True)
         try:
             o.save()
         except self.integrity_exception as e:
