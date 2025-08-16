@@ -447,7 +447,7 @@ Ext.define("NOC.inv.inv.Application", {
     switch(me.getCmd()){
       case "history":
         me.restoreHistory(me.noc.cmd.args);
-        return;
+        break;
     }
     this.subscribeToEvents();
   },
