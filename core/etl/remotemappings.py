@@ -165,7 +165,7 @@ def save_document_mappings(self, mappings: List[RemoteMappingValue], dry_run: bo
         )
         for m in mappings
     ]
-    if dry_run:
+    if dry_run and not self._created:
         return
     self.update(mappings=self.mappings)
 
@@ -180,7 +180,7 @@ def save_model_mappings(self, mappings: List[RemoteMappingValue], dry_run: bool 
         }
         for m in mappings
     ]
-    if dry_run:
+    if dry_run and not self.id:
         return
     self.__class__.objects.filter(id=self.id).update(mappings=self.mappings)
     self.update_init()
@@ -311,7 +311,7 @@ def update_remote_mappings(
             )
         )
         changed |= True
-    if changed and not self._created:
+    if changed:
         logger.info("[%s] Saving mappings", self)
         self.save_remote_mappings(new_mappings)
     return changed

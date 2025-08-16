@@ -1275,7 +1275,7 @@ class ManagedObject(NOCModel):
         """
         card = f"Managed object {self.name} ({self.address or ''})"
         if self.address:
-            content: List[str] = [self.name, self.address]
+            content: List[str] = [self.name, self.address or ""]
         else:
             content: List[str] = [self.name]
         if self.trap_source_ip:
@@ -1284,9 +1284,9 @@ class ManagedObject(NOCModel):
         if platform:
             content += [platform.name]
             card += f" [{platform.name}]"
-        version = str(self.version)
+        version = self.version
         if version:
-            content += [version]
+            content += [str(version)]
             card += f" version {version}"
         if self.description:
             content += [self.description]
