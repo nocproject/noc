@@ -42,6 +42,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.matcher import build_matcher
+from noc.core.caps.types import CapsConfig
 from noc.inv.models.capsitem import CapsSettings
 from noc.wf.models.workflow import Workflow
 from noc.config import config
@@ -359,6 +360,13 @@ class InterfaceProfile(Document):
     @property
     def is_default(self):
         return self.name == self.DEFAULT_PROFILE_NAME
+
+    def get_caps_config(self) -> Dict[str, CapsConfig]:
+        """Local Capabilities Config (from Profile)"""
+        r = {}
+        for c in self.caps:
+            r[str(c.capability.id)] = c.get_config()
+        return r
 
     def allow_collected_metric(
         self,
