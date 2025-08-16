@@ -143,6 +143,7 @@ Ext.define("NOC.inv.inv.Application", {
     me.navTree = Ext.create("Ext.tree.Panel", {
       store: me.store,
       autoScroll: true,
+      animate: false,
       rootVisible: false,
       useArrows: true,
       region: "west",
@@ -564,7 +565,10 @@ Ext.define("NOC.inv.inv.Application", {
       node = rowModel.view.getNode(record),
       plugins = record.get("plugins");
     if(node){
-      node.querySelector("button").style.display = "block";
+      var btn = node.querySelector("button");
+      if(btn){
+        btn.style.display = "block";
+      }
     }
     me.maxPlugins = plugins.length;
     me.loadedPlugins = 0;
@@ -1076,6 +1080,10 @@ Ext.define("NOC.inv.inv.Application", {
       this.startPolling();
     } else{
       this.stopPolling();
+      this.store.getData().filterBy(function(item){return item.isVisible}).items.forEach(function(item){
+        item.set("is_alarm", false);
+      });
+      this.navTree.getView().refresh(); 
     }
   },
   //
@@ -1135,10 +1143,6 @@ Ext.define("NOC.inv.inv.Application", {
       this.observer.disconnect();
       this.observer = null;
     }
-    // this.store.getData().filterBy(function(item){return item.isVisible}).items.forEach(function(item){
-    //   item.set("is_alarm", false);
-    // });
-    // this.navTree.getView().refresh(); 
   },
   //
   pollingTask: function(){
@@ -1225,7 +1229,6 @@ Ext.define("NOC.inv.inv.Application", {
     if(this.destroyed || this.isUpdating) return;
     this.isUpdating = true;
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
-    console.log("Updating resource status");
     Ext.Ajax.request({
       url: "/inv/inv/resource_status/",
       method: "POST",
