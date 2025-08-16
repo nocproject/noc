@@ -165,7 +165,7 @@ def save_document_mappings(self, mappings: List[RemoteMappingValue], dry_run: bo
         )
         for m in mappings
     ]
-    if dry_run:
+    if dry_run and not self._created:
         return
     self.update(mappings=self.mappings)
 
@@ -180,7 +180,7 @@ def save_model_mappings(self, mappings: List[RemoteMappingValue], dry_run: bool 
         }
         for m in mappings
     ]
-    if dry_run:
+    if dry_run and not self.id:
         return
     self.__class__.objects.filter(id=self.id).update(mappings=self.mappings)
     self.update_init()
@@ -247,7 +247,9 @@ def get_mappings(self) -> Dict[str, str]:
     return r
 
 
-def update_remote_mappings(self, mappings: Dict[Any, str], source: Optional[str] = None) -> bool:
+def update_remote_mappings(
+    self, mappings: Dict[Any, str], source: Optional[str] = None, dry_run: bool = False
+) -> bool:
     """
     Update managed Object mappings
     Source Priority, for mappings on different sources
