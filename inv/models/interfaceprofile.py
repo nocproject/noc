@@ -10,7 +10,7 @@ import operator
 from threading import Lock, RLock
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, Dict, Union, Callable, Any, Tuple
+from typing import Optional, Dict, Union, Callable, Any, Tuple, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -21,6 +21,7 @@ from mongoengine.fields import (
     ReferenceField,
     ListField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     ObjectIdField,
     IntField,
 )
@@ -201,7 +202,7 @@ class InterfaceProfile(Document):
     #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
-    metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
+    metrics: List[InterfaceProfileMetrics] = EmbeddedDocumentListField(InterfaceProfileMetrics)
     # Alarm weight
     weight = IntField(default=0)
     # User network interface
@@ -235,7 +236,7 @@ class InterfaceProfile(Document):
         default="R",
     )
     #
-    match_rules = ListField(EmbeddedDocumentField(MatchRule))
+    match_rules = EmbeddedDocumentListField(MatchRule)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
