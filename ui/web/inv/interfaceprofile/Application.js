@@ -22,6 +22,7 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         "NOC.main.remotesystem.LookupField",
         "NOC.cm.interfacevalidationpolicy.LookupField",
         "NOC.inv.ifdescpatterns.LookupField",
+        "NOC.inv.capability.LookupField",
         "NOC.main.handler.LookupField",
         "NOC.wf.workflow.LookupField"
     ],
@@ -460,6 +461,34 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
                                 fieldLabel: __("Remote ID"),
                                 allowBlank: true,
                                 uiStyle: "medium"
+                            }
+                        ]
+                    },
+                    {
+                        name: "caps",
+                        xtype: "gridfield",
+                        fieldLabel: __("Capabilities"),
+                        allowBlank: true,
+                        columns: [
+                            {
+                                text: __("Name"),
+                                dataIndex: "capability",
+                                renderer: NOC.render.Lookup("capability"),
+                                width: 250,
+                                editor: "inv.capability.LookupField"
+                            },
+                            {
+                                text: __("Default Value"),
+                                dataIndex: "default_value",
+                                width: 150,
+                                editor: "textfield"
+                            },
+                            {
+                                text: __("Allow Manual"),
+                                dataIndex: "allow_manual",
+                                width: 150,
+                                editor: "checkbox",
+                                renderer: NOC.render.Bool
                             }
                         ]
                     },
