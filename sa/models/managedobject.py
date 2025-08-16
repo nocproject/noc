@@ -1026,6 +1026,23 @@ class ManagedObject(NOCModel):
         ).first()
 
     @classmethod
+    def get_by_mappings(cls, remote_mappings: List[Tuple[RemoteSystem, str]]) -> List["ManagedObject"]:
+        """
+        Resolve object by multiple mappings
+        Args:
+            remote_mappings: List mappings
+        """
+        q = Q()
+        for rs, rs_id in remote_mappings:
+            q |= Q(remote_system=str(rs.id), remote_id=rs_id)
+            q |= Q(
+                mappings__contains=[{"remote_id": rs_id, "remote_system": str(rs.id)}]
+            )
+        if not q:
+            return []
+        return list(ManagedObject.objects.filter(q))
+
+    @classmethod
     def get_by_l2_domains(cls, domains: Iterable[str]):
         """Getting object by L2 Domains"""
         q = Q(l2_domain__in=[str(x) for x in domains])
@@ -2996,6 +3013,10 @@ class ManagedObject(NOCModel):
             changed |= True
         if state:
             self.state = state
+        if self.remote_system:
+            # Not apply update on master system object
+            logger.info("Synced data with ETL created object not supported...")
+            return changed
         for field, value in data.items():
             if field == "description" and value:
                 value = value[:240]
