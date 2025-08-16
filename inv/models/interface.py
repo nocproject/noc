@@ -23,6 +23,7 @@ from mongoengine.fields import (
     DateTimeField,
     ObjectIdField,
     DictField,
+    EmbeddedDocumentListField,
 )
 from pymongo import ReadPreference
 

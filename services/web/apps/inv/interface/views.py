@@ -10,6 +10,7 @@ from mongoengine import Q
 
 # NOC modules
 from noc.services.web.base.decorators.state import state_handler
+from noc.services.web.base.decorators.caps import capabilities_handler
 from noc.services.web.base.extapplication import view
 from noc.services.web.base.extdocapplication import ExtDocApplication
 from noc.sa.models.managedobject import ManagedObject
@@ -29,6 +30,7 @@ from noc.config import config
 from noc.core.comp import smart_text
 
 
+@capabilities_handler
 @state_handler
 class InterfaceAppplication(ExtDocApplication):
     """
@@ -134,6 +136,10 @@ class InterfaceAppplication(ExtDocApplication):
             "service": str(o.service.id) if o.service else None,
             "service__label": str(o.service) if o.service else "",
             "row_class": self.get_style(o),
+            "caps": [
+                {"id": str(c.capability.id), "label": str(c)}
+                for c in o.iter_caps(include_default=True)
+            ],
             "subinterfaces": [self.get_subinterface(si) for si in o.subinterface_set],
         }
         link = self.get_link(o)
