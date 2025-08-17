@@ -543,6 +543,7 @@ class DiscoveryCheck(object):
         self,
         obj,
         values: Dict[str, Any],
+        caps: Optional[Dict[str, str]] = None,
         ignore_empty: List[str] = None,
         wait: bool = True,
         bulk: Optional[List[str]] = None,
@@ -550,16 +551,15 @@ class DiscoveryCheck(object):
     ):
         """
         Update fields if changed.
-        :param obj: Document instance
-        :type obj: Document
-        :param values: New values
-        :type values: dict
-        :param ignore_empty: List of fields which may be ignored if empty
-        :param wait: Wait for operation to complete. set write concern to 0 if False
-        :param bulk: Execute as the bulk op instead
-        :param update_effective_labels:
-        :returns: List of changed (key, value)
-        :rtype: list
+        Args:
+            obj: Document instance
+            values: New values
+            caps: Capabilities dict
+            ignore_empty: List of fields which may be ignored if empty
+            wait: Wait for operation to complete. set write concern to 0 if False
+            bulk: Execute as the bulk op instead
+            update_effective_labels:
+        Returns: List of changed (key, value)
         """
         changes = []
         ignore_empty = ignore_empty or []
@@ -586,6 +586,8 @@ class DiscoveryCheck(object):
             el = self.build_effective_labels(obj)
             if set(el) != set(getattr(obj, "effective_labels", [])):
                 changes += [("effective_labels", el)]
+        if caps:
+            obj.update_caps(caps, source="discovery", dry_run=True)  # scope Discovery Scope
         if changes:
             if bulk is not None:
                 op = {"$set": dict(changes)}

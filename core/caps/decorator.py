@@ -99,7 +99,7 @@ def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False):
         CapsItem(capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or "")
         for c in caps
     ]
-    if dry_run:
+    if dry_run or self._created:
         return
     self.update(caps=self.caps)
 
@@ -115,7 +115,7 @@ def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False):
         }
         for c in caps
     ]
-    if dry_run:
+    if dry_run or not self.id:
         return
     self.__class__.objects.filter(id=self.id).update(caps=self.caps)
     self.update_init()
