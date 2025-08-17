@@ -327,7 +327,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface.labels = [ll for ll in labels if Interface.can_set_label(ll)]
                 iface.extra_labels["sa"] = labels
             if caps:
-                iface.update_caps(caps, source="discovery")  # scope=self.system.name
+                iface.update_caps(caps, source="discovery", dry_run=True)  # scope=self.system.name
             iface.save()
             self.set_interface(name, iface)
         if mac:

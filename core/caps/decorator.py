@@ -91,7 +91,7 @@ def iter_document_caps(
         )
 
 
-def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False):
+def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
     """"""
     from noc.inv.models.capsitem import CapsItem
 
@@ -104,7 +104,7 @@ def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False):
     self.update(caps=self.caps)
 
 
-def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False):
+def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
     """"""
     self.caps = [
         {
@@ -214,7 +214,12 @@ def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
 
 
 def update_caps(
-    self, caps: Dict[str, Any], source: str, scope: Optional[str] = None, dry_run: bool = False
+    self,
+    caps: Dict[str, Any],
+    source: str,
+    scope: Optional[str] = None,
+    dry_run: bool = False,
+    bulk=None,
 ) -> Dict[str, Any]:
     """
     Update existing capabilities with a new ones.
@@ -227,6 +232,7 @@ def update_caps(
         source: Source name
         scope: Scope name
         dry_run: Not save changes
+        bulk: Changes aggregator
     """
     from noc.inv.models.capability import Capability
 

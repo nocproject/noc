@@ -586,8 +586,6 @@ class DiscoveryCheck(object):
             el = self.build_effective_labels(obj)
             if set(el) != set(getattr(obj, "effective_labels", [])):
                 changes += [("effective_labels", el)]
-        if caps:
-            obj.update_caps(caps, source="discovery", dry_run=True)  # scope Discovery Scope
         if changes:
             if bulk is not None:
                 op = {"$set": dict(changes)}
@@ -598,6 +596,8 @@ class DiscoveryCheck(object):
                 if not wait:
                     kwargs["write_concern"] = {"w": 0}
                 obj.save(**kwargs)
+        if caps:
+            obj.update_caps(caps, source="discovery", bulk=bulk)  # scope Discovery Scope
         return changes
 
     def log_changes(self, msg: str, changes: List[Tuple[str, Any]]):

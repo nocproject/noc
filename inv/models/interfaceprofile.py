@@ -20,7 +20,6 @@ from mongoengine.fields import (
     LongField,
     ReferenceField,
     ListField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
     ObjectIdField,
     IntField,
