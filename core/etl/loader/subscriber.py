@@ -24,11 +24,13 @@ class SubscriberLoader(BaseLoader):
 
     discard_deferred = True
 
-    def find_object(self, v):
+    def find_object(self, v, mappings=None, **kwargs):
+
         """
         Find object by remote system/remote id
-        :param v:
-        :return:
+        Args:
+            v:
+            mappings
         """
         if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
