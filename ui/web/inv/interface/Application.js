@@ -8,6 +8,7 @@ console.debug("Defining NOC.inv.interface.Application");
 
 Ext.define("NOC.inv.interface.Application", {
     extend: "NOC.core.ModelApplication",
+    reference: "invInterface",
     requires: [
         "NOC.core.label.LabelField",
         "NOC.core.StateField",
@@ -128,9 +129,17 @@ Ext.define("NOC.inv.interface.Application", {
                     dataIndex: "enabled_protocols"
                 },
                 {
+                    text: __("Caps"),
+                    dataIndex: "caps",
+                    renderer: function(value, meta, record){
+                        var app = this.up("[reference=invInterface]");
+                        return app.renderArrayValue(value, "label");
+                    },
+                },
+                {
                     text: __("Description"),
                     dataIndex: "description",
-                    flex: 1
+                    flex: 200
                 },
                 {
                     text: __("ifIndex"),
@@ -230,6 +239,12 @@ Ext.define("NOC.inv.interface.Application", {
             lookup: "inv.interface.type"
         }
     ],
+    renderArrayValue: function(value, label){
+      if(Ext.isEmpty(value)) return "..."
+      if(Ext.isArray(value)) return value.map(el => el[label]).join(", ");
+      return value[label];
+
+    },
     //
     onEdit: function(editor, e) {
         var me = this,

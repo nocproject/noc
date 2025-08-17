@@ -75,6 +75,11 @@ Ext.define("NOC.sa.managedobject.L1Store", {
             type: "auto"
         },
         {
+            name: "caps",
+            type: "auto",
+            persist: false,
+        },
+        {
             name: "row_class",
             type: "string"
         }

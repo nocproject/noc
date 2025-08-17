@@ -8,6 +8,7 @@ console.debug("Defining NOC.sa.managedobject.L1Panel");
 
 Ext.define("NOC.sa.managedobject.L1Panel", {
     extend: "Ext.panel.Panel",
+    reference: "saL1Panel",
     requires: [
         "NOC.core.StateField",
         "NOC.core.ComboBox",
@@ -128,6 +129,14 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
                             }
                         },
                         {
+                            text: __("Caps"),
+                            dataIndex: "caps",
+                            renderer: function(value, meta, record){
+                                var app = this.up("[reference=saL1Panel]");
+                                return app.renderArrayValue(value, "label");
+                            },
+                        },
+                        {
                             text: __("ifIndex"),
                             dataIndex: "ifindex",
                             hidden: true,
@@ -164,6 +173,12 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
             ]
         });
         me.callParent();
+    },
+    renderArrayValue: function(value, label){
+      if(Ext.isEmpty(value)) return "..."
+      if(Ext.isArray(value)) return value.map(el => el[label]).join(", ");
+      return value[label];
+
     },
     // Return Grid's row classes
     getRowClass: function(record, index, params, store) {
