@@ -25,7 +25,6 @@ class SubscriberLoader(BaseLoader):
     discard_deferred = True
 
     def find_object(self, v, mappings=None, **kwargs):
-
         """
         Find object by remote system/remote id
         Args:

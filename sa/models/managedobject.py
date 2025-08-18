@@ -1026,7 +1026,9 @@ class ManagedObject(NOCModel):
         ).first()
 
     @classmethod
-    def get_by_mappings(cls, remote_mappings: List[Tuple[RemoteSystem, str]]) -> List["ManagedObject"]:
+    def get_by_mappings(
+        cls, remote_mappings: List[Tuple[RemoteSystem, str]]
+    ) -> List["ManagedObject"]:
         """
         Resolve object by multiple mappings
         Args:
@@ -1035,9 +1037,7 @@ class ManagedObject(NOCModel):
         q = Q()
         for rs, rs_id in remote_mappings:
             q |= Q(remote_system=str(rs.id), remote_id=rs_id)
-            q |= Q(
-                mappings__contains=[{"remote_id": rs_id, "remote_system": str(rs.id)}]
-            )
+            q |= Q(mappings__contains=[{"remote_id": rs_id, "remote_system": str(rs.id)}])
         if not q:
             return []
         return list(ManagedObject.objects.filter(q))
