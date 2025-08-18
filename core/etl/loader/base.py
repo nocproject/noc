@@ -96,6 +96,8 @@ class BaseLoader(object):
     checkpoint_field = "checkpoint"
     # Post save fields (example - capabilities)
     post_save_fields: Optional[Set[str]] = None
+    # Remote mappings
+    remote_mappings_supported: bool = False
 
     REPORT_INTERVAL = 1000
 
@@ -392,11 +394,29 @@ class BaseLoader(object):
             if rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
 
-    def find_object(self, v: Dict[str, Any]) -> Optional[Any]:
+    def find_by_remote_mappings(
+        self,
+        remote_system: Optional[str] = None,
+        remote_id: Optional[str] = None,
+        mappings: Optional[Dict[Any, str]] = None,
+    ) -> List[Any]:
+        """Find objects by Remote Mappings"""
+        r = []
+        if remote_system and remote_id:
+            r.append((remote_system, remote_id))
+        if mappings:
+            for rs, rid in mappings.items() or []:
+                r.append((rs, rid))
+        return self.model.get_by_mappings(r)
+
+    def find_object(
+        self, v: Dict[str, Any], mappings: Optional[Dict[Any, str]] = None
+    ) -> Optional[Any]:
         """
         Find object by remote system/remote id
-        :param v:
-        :return:
+        Args:
+            v: Etl data dict
+            mappings: Remote mappings
         """
         self.logger.debug("Find object: %s", v)
         if not self.has_remote_system:
@@ -404,7 +424,20 @@ class BaseLoader(object):
         if not v.get("remote_system") or not v.get("remote_id"):
             self.logger.warning("RS or RID not found")
             return None
-        find_query = {"remote_system": v.get("remote_system"), "remote_id": v.get("remote_id")}
+        if self.remote_mappings_supported and mappings:
+            objects = self.find_by_remote_mappings(
+                remote_system=v.get("remote_system"),
+                remote_id=v.get("remote_id"),
+                mappings=mappings,
+            )
+            if not objects:
+                return None
+            elif len(objects) == 1:
+                return objects[0]
+            else:
+                find_query = {"id__in": [o.id for o in objects]}
+        else:
+            find_query = {"remote_system": v.get("remote_system"), "remote_id": v.get("remote_id")}
         try:
             return self.model.objects.get(**find_query)
         except self.model.MultipleObjectsReturned:
@@ -549,7 +582,7 @@ class BaseLoader(object):
             for fn in self.post_save_fields:
                 psf[fn] = v.pop(fn)
         mappings = v.pop("mappings", None)
-        o = self.find_object(v)
+        o = self.find_object(v, mappings=mappings)
         if o:
             self.c_change += 1
             # Lost&found object with same remote_id

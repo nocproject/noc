@@ -41,6 +41,7 @@ class ManagedObjectLoader(BaseLoader):
     label_enable_setting = "enable_managedobject"
     workflow_delete_event = "remove"
     workflow_state_sync = True
+    remote_mappings_supported = True
 
     model_mappings = {
         "segment": NetworkSegment,
