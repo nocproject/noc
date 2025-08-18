@@ -11,7 +11,6 @@ import re
 # NOC modules
 from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.inv.models.vendor import Vendor
 
 
 class Script(BaseScript):
@@ -95,7 +94,9 @@ class Script(BaseScript):
                 elif t in ["10Giga-FX-SFP"]:
                     part_no = "SFP+"
                 else:
-                    self.logger.info(f"{ifname} - Unknown port type '{t}'.")
+                    # xPON interfaces do not display the absence of a transceiver
+                    if not t in ['GPON', 'Giga-PON']:
+                        self.logger.info(f"{ifname} - Unknown port type '{t}'.")
             if not match:
                 # Some devices can not get transceiver info
                 continue
@@ -105,14 +106,9 @@ class Script(BaseScript):
                     # Try to make `vendor` and `part_no` from description
                     match1 = self.rx_descr.search(description)
                     if match1:
-                        tmp_vendor = match1.group("vendor").upper()
-                        # Lookup in `inv.vendors` collection
-                        found_vendor = Vendor.ensure_vendor(tmp_vendor)
-                        if found_vendor:
-                            vendor = found_vendor.code[0]
-                            part_no = match1.group("part_no")
-                        else:
-                            self.logger.info(f"{ifname} - Unknown vendor '{tmp_vendor}'.")
+                        vendor = match1.group("vendor").upper()
+                        part_no = match1.group("part_no")
+                        self.logger.info(f"{ifname} - Extract `vendor` and `part_no` from '{description}'.")
 
             if vendor not in ["OEM", "NO"]:
                 r += [
