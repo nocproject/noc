@@ -84,6 +84,7 @@ class CorrelatorService(FastAPIService):
     name = "correlator"
     pooled = True
     use_mongo = True
+    use_router = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     _reference_cache = cachetools.TTLCache(100, ttl=60)
