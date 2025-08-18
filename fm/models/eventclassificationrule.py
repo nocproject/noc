@@ -261,6 +261,7 @@ class EventClassificationRule(Document):
         for d in data:
             if d.get("snmp_raw"):
                 snmp_vars[d["name"]] = fm_unescape(d["value"])
+                r[d["name"]] = fm_unescape(d["value"])
             else:
                 r[d["name"]] = d["value"]
         if snmp_vars:

@@ -604,7 +604,7 @@ class ClassifierService(FastAPIService):
         for d in event.data:
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value
-            elif d.escaped:
+            if d.escaped or d.snmp_raw:
                 raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
             else:
                 raw_vars[d.name] = d.value
