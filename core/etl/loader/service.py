@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 # NOC modules
 from noc.inv.models.capability import Capability
@@ -54,7 +54,9 @@ class ServiceLoader(BaseLoader):
             instances=[Instance.model_validate(i).config for i in instances or []],
         )
 
-    def find_object(self, v: Dict[str, Any]):
+    def find_object(
+        self, v: Dict[str, Any], mappings: Optional[Dict[Any, str]] = None, **kwargs
+    ) -> Optional[Any]:
         """
         Find object by remote system/remote id
 
