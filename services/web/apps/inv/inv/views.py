@@ -883,4 +883,7 @@ class InvApplication(ExtApplication):
     def api_resource_status(self, request, resources: List[str]):
         # @todo: Limit access
         alarmed = ActiveAlarm.get_resource_statuses(resources)
-        return {"resource_status": [{"resource": r, "is_alarm": alarmed[r]} for r in resources]}
+        return self.render_json(
+            {"resource_status": [{"resource": r, "is_alarm": alarmed[r]} for r in resources]},
+            headers={"Retry-After": 3},
+        )
