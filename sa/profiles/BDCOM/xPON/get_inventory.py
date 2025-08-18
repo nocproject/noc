@@ -95,7 +95,7 @@ class Script(BaseScript):
                     part_no = "SFP+"
                 else:
                     # xPON interfaces do not display the absence of a transceiver
-                    if not t in ['GPON', 'Giga-PON']:
+                    if not t in ["GPON", "Giga-PON"]:
                         self.logger.info(f"{ifname} - Unknown port type '{t}'.")
             if not match:
                 # Some devices can not get transceiver info
@@ -108,7 +108,9 @@ class Script(BaseScript):
                     if match1:
                         vendor = match1.group("vendor").upper()
                         part_no = match1.group("part_no")
-                        self.logger.info(f"{ifname} - Extract `vendor` and `part_no` from '{description}'.")
+                        self.logger.info(
+                            f"{ifname} - Extract `vendor` and `part_no` from '{description}'."
+                        )
 
             if vendor not in ["OEM", "NO"]:
                 r += [
