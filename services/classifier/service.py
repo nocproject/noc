@@ -590,7 +590,8 @@ class ClassifierService(FastAPIService):
                 return True
         return False
 
-    def resolve_vars(self, event: Event) -> Dict[str, Any]:
+    @classmethod
+    def resolve_vars(cls, event: Event) -> Dict[str, Any]:
         """
         Resolve Event data list to vars
         Args:
@@ -603,8 +604,10 @@ class ClassifierService(FastAPIService):
         for d in event.data:
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value
+            if d.escaped or d.snmp_raw:
+                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING, errors="ignore")
             else:
-                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
+                raw_vars[d.name] = d.value
         # Resolve MIB variables for SNMP Traps
         if snmp_vars:
             for k, v in MIB.resolve_vars(
