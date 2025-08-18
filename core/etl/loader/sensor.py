@@ -29,11 +29,12 @@ class SensorLoader(BaseLoader):
         super().__init__(*args, **kwargs)
         self.clean_map["units"] = lambda x: MeasurementUnits.get_by_name(x) if x else None
 
-    def find_object(self, v):
+    def find_object(self, v, mappings=None, **kwargs):
         """
         Find object by remote system/remote id
-        :param v:
-        :return:
+        Args:
+            v:
+            mappings
         """
         r = super().find_object(v)
         if not r:
