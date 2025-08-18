@@ -84,6 +84,7 @@ class CorrelatorService(FastAPIService):
     name = "correlator"
     pooled = True
     use_mongo = True
+    use_router = True
     process_name = "noc-%(name).10s-%(pool).5s"
 
     _reference_cache = cachetools.TTLCache(100, ttl=60)
@@ -791,7 +792,8 @@ class CorrelatorService(FastAPIService):
         )
         if not managed_object:
             self.logger.info(
-                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring", event.id
+                "[%s|Unknown|Unknown] Referred to unknown managed object, ignoring",
+                event.id if event else rule,
             )
             metrics["unknown_object"] += 1
             return
