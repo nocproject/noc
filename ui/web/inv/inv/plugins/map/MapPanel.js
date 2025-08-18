@@ -400,7 +400,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       },
       success: function(response){
         if(this.destroyed) return;
-        let data = Ext.decode(response.responseText);
+        let data = Ext.decode(response.responseText),
+          interval = response.getResponseHeader("retry-after") || "5";
+        this.pollingTaskId.interval = interval * 1000;
         data.resource_status.forEach(item => {
           if(this.destroyed) return;
           let resourceData = resources[item.resource];
