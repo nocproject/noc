@@ -605,7 +605,7 @@ class ClassifierService(FastAPIService):
             if d.snmp_raw:
                 snmp_vars[d.name] = d.value
             if d.escaped or d.snmp_raw:
-                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING)
+                raw_vars[d.name] = fm_unescape(d.value).decode(DEFAULT_ENCODING, errors="ignore")
             else:
                 raw_vars[d.name] = d.value
         # Resolve MIB variables for SNMP Traps
