@@ -393,7 +393,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
     
     Ext.Ajax.request({
-      url: "/inv/inv/plugin/map/resource_status/",
+      url: "/inv/inv/resource_status/",
       method: "POST",
       jsonData: {
         resources: Object.keys(resources),
