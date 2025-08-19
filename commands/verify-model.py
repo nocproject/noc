@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Link management CLI interface
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -278,7 +278,7 @@ class Command(BaseCommand):
     def check_ct_sfp(self, c):
         self.check_direction(c, ["i", "o"])
         self.check_protocols(
-            c, ["TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G", "GPON"]
+            c, ["TransEth100M", "TransEth1G", "TransEth10G", "TransEth40G", "GEPON", "GPON"]
         )
 
     def check_ct_sfp_plus(self, c):
