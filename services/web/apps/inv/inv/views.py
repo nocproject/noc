@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,9 +50,11 @@ from noc.sa.interfaces.base import (
     DictListParameter,
     DictParameter,
     FloatParameter,
+    StringListParameter,
 )
 from noc.core.translation import ugettext as _
 from noc.core.text import alnum_key
+from noc.fm.models.activealarm import ActiveAlarm, HAS_FGALARMS
 from .pbuilder import CrossingProposalsBuilder
 
 id_lock = threading.Lock()
@@ -157,6 +159,7 @@ class InvApplication(ExtApplication):
                 "plugins": [],
                 "can_add": o.is_container,
                 "can_delete": str(o.model.uuid) not in self.UNDELETABLE,
+                "is_alarm": False,
             }
             plugins = []
             if o.is_container or o.has_children:
@@ -209,6 +212,11 @@ class InvApplication(ExtApplication):
             if icon_cls:
                 n["iconCls"] = icon_cls
             r.append(n)
+        if r and HAS_FGALARMS:
+            resources = [f"o:{item['id']}" for item in r]
+            resource_statuses = ActiveAlarm.get_resource_statuses(resources)
+            for item in r:
+                item["is_alarm"] = resource_statuses[f"o:{item['id']}"]
         return r
 
     @view(
@@ -864,3 +872,18 @@ class InvApplication(ExtApplication):
         )
         objs = list(objs)[start : start + limit]
         return {"status": True, "items": [{"path": path(Object.get_by_id(o["_id"]))} for o in objs]}
+
+    @view(
+        "^resource_status/$",
+        method=["POST"],
+        access="read",
+        api=True,
+        validate={"resources": StringListParameter()},
+    )
+    def api_resource_status(self, request, resources: List[str]):
+        # @todo: Limit access
+        alarmed = ActiveAlarm.get_resource_statuses(resources)
+        return self.render_json(
+            {"resource_status": [{"resource": r, "is_alarm": alarmed[r]} for r in resources]},
+            headers={"Retry-After": 3},
+        )

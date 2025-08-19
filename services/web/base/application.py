@@ -11,7 +11,8 @@ import os
 import datetime
 import functools
 from collections import OrderedDict
-from typing import TypeVar, Type, Optional
+from typing import TypeVar, Type, Optional, Dict, Any
+from http import HTTPStatus
 
 # Third-party modules
 from django.http import (
@@ -328,16 +329,29 @@ class Application(object, metaclass=ApplicationBase):
         """
         return HttpResponse(text, content_type=content_type)
 
-    @staticmethod
-    def render_json(obj, status=200):
+    @classmethod
+    def _set_headers(
+        cls, resp: HttpResponse, headers: Optional[Dict[str, Any]] = None
+    ) -> HttpResponse:
+        if headers:
+            for k, v in headers.items():
+                resp.headers[k] = v
+        return resp
+
+    @classmethod
+    def render_json(
+        cls, obj, status: int = HTTPStatus.OK.value, /, headers: Optional[Dict[str, Any]] = None
+    ) -> HttpResponse:
         """
         Create serialized JSON-encoded response
         """
-        return HttpResponse(
+        resp = HttpResponse(
             orjson.dumps(obj, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS),
             content_type="text/json",
             status=status,
         )
+        cls._set_headers(resp, headers)
+        return resp
 
     def render_success(self, request, subject=None, text=None):
         """

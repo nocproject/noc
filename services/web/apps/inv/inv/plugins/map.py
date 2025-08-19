@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from typing import List
-
 # NOC modules
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
@@ -16,14 +13,12 @@ from noc.config import config
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.object import Object, ObjectAttr
-from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.interfaces.base import (
     StringParameter,
     FloatParameter,
     BooleanParameter,
     DocumentParameter,
     UnicodeParameter,
-    StringListParameter,
 )
 from .base import InvPlugin
 
@@ -73,13 +68,6 @@ class MapPlugin(InvPlugin):
                 "x": FloatParameter(),
                 "y": FloatParameter(),
             },
-        )
-        self.add_view(
-            f"api_plugin_{self.name}_resource_status",
-            self.api_get_resource_status,
-            url=f"^plugin/{self.name}/resource_status/$",
-            method=["POST"],
-            validate={"resources": StringListParameter()},
         )
 
     def get_parent(self, o):
@@ -239,7 +227,3 @@ class MapPlugin(InvPlugin):
         )
         o.save()
         return {"id": str(o.id)}
-
-    def api_get_resource_status(self, request, resources: List[str]):
-        alarmed = ActiveAlarm.get_resource_statuses(resources)
-        return {"resource_status": [{"resource": r, "alarm": alarmed[r]} for r in resources]}
