@@ -29,5 +29,9 @@ Ext.define("NOC.inv.inv.NavModel", {
       name: "can_delete",
       type: "boolean",
     },
+    {
+      name: "is_alarm",
+      type: "boolean",
+    },
   ],
 });

@@ -393,25 +393,21 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     this.getViewModel().set("icon", this.generateIcon(true, "spinner", "grey", __("loading")));
     
     Ext.Ajax.request({
-      url: "/inv/inv/plugin/map/resource_status/",
+      url: "/inv/inv/resource_status/",
       method: "POST",
       jsonData: {
         resources: Object.keys(resources),
       },
       success: function(response){
         if(this.destroyed) return;
-        let data = Ext.decode(response.responseText);
+        let data = Ext.decode(response.responseText),
+          interval = response.getResponseHeader("retry-after") || "5";
+        if(!Ext.isEmpty(this.pollingTaskId)){ 
+          this.pollingTaskId.interval = interval * 1000;
+        }
         data.resource_status.forEach(item => {
           if(this.destroyed) return;
-          let resourceData = resources[item.resource];
-          if(Ext.isDefined(resourceData.leafletLayer)){
-            let iconName = item.alarm ? "alarm" : "up";
-            if(Ext.isFunction(resourceData.leafletLayer.setIcon)){
-              resourceData.leafletLayer.setIcon(
-                this.createStatusIcon(iconName, resourceData.leafletLayer),
-              );
-            }
-          }
+          this.setMarkerIcon(resources[item.resource], item.alarm ? "alarm" : "up");
         });
       },
       failure: function(){
@@ -575,7 +571,9 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
     if(self.pressed){
       this.startPolling();
     } else{
+      let resources = this.getVisibleResources();
       this.stopPolling();
+      Object.values(resources).forEach(resource => this.setMarkerIcon(resource, "up"));
     }
   },
   //
@@ -806,5 +804,11 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       ...marker.options?.icon?.options,
       html: iconHtml,
     });
+  },
+  setMarkerIcon: function(resource, status){
+    if(Ext.isDefined(resource.leafletLayer)
+          && Ext.isFunction(resource.leafletLayer.setIcon)){
+      resource.leafletLayer.setIcon(this.createStatusIcon(status, resource.leafletLayer));
+    }
   },
 });

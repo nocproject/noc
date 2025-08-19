@@ -110,9 +110,9 @@ Ext.define("NOC.fm.alarm.view.grids.Container", {
       },
     },
     {
-      tooltip: __("Toggle sound"),
       enableToggle: true,
       bind: {
+        tooltip: "{volumeIconText}",
         glyph: "{volumeIcon}",
         pressed: "{volume}",
       },
