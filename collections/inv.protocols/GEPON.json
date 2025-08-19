@@ -1,0 +1,10 @@
+{
+    "name": "GEPON",
+    "code": "GEPON",
+    "$collection": "inv.protocols",
+    "uuid": "3f32dfde-596f-4c1d-b5af-d2d286e1381e",
+    "description": null,
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}
