@@ -5,9 +5,6 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-# Python modules
-from typing import List
-
 # NOC modules
 from noc.gis.map import map
 from noc.gis.models.layer import Layer
