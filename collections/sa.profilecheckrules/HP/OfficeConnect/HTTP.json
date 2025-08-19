@@ -1,0 +1,13 @@
+{
+    "name": "HP | OfficeConnect | HTTP",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "c7e3c595-d106-4c34-9f2f-cf54b2c7eec3",
+    "description": "HPE OfficeConnect Switch",
+    "preference": 1000,
+    "method": "http_get",
+    "param": "/htdocs/login/login.lsp",
+    "match_method": "contains",
+    "value": "HPE OfficeConnect",
+    "action": "match",
+    "profile__name": "HP.OfficeConnect"
+}
