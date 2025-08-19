@@ -7,3 +7,4 @@
 * [HP.1905](1905.md)
 * [HP.ProCurve](ProCurve.md)
 * [HP.GbE2](GbE2.md)
+* [HP.OfficeConnect](OfficeConnect.md)
