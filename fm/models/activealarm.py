@@ -254,6 +254,13 @@ class ActiveAlarm(Document):
         """Getting severity policy for alarm"""
         return
 
+    @property
+    def clear_timestamp(self) -> Optional[datetime.datetime]:
+        """Return clear timestamp for Template Compat"""
+        if hasattr(self, "_clear_ts"):
+            return self._clear_ts
+        return None
+
     def clean(self):
         super().clean()
         if not self.last_update:
@@ -456,6 +463,7 @@ class ActiveAlarm(Document):
         )
         if HAS_FGALARMS:
             a.resource_path = self.resource_path
+        self._clear_ts = ts
         ct = self.alarm_class.get_control_time(self.reopens)
         if ct:
             a.control_time = datetime.datetime.now() + datetime.timedelta(seconds=ct)
@@ -536,12 +544,18 @@ class ActiveAlarm(Document):
             subject_tag: Custom subject tag for message
             is_clear: For clear_alarm message
         """
+        r = {}
         if template:
-            r = {
-                "subject": template.render_subject(alarm=self, managed_object=self.managed_object),
-                "body": template.render_body(alarm=self, managed_object=self.managed_object),
-            }
-        elif is_clear:
+            try:
+                r = {
+                    "subject": template.render_subject(
+                        alarm=self, managed_object=self.managed_object
+                    ),
+                    "body": template.render_body(alarm=self, managed_object=self.managed_object),
+                }
+            except Exception as e:
+                print(f"Error when render template: {e}")
+        if not r and is_clear:
             r = {"subject": f"[Alarm Cleared] {self.subject}", "body": "Alarm has been cleared"}
         else:
             r = {"subject": self.subject, "body": self.body}
