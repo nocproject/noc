@@ -150,7 +150,7 @@ CONNECTION_CHECKLIST = {
     "Transceiver | GBIC": {"directions": ["i", "o"], "protocols": ["TransEth100M", "TransEth1G"]},
     "Transceiver | SFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth100M", "TransEth1G", "GPON"],
+        "protocols": ["TransEth100M", "TransEth1G", "GEPON", "GPON"],
     },
     "Transceiver | SFP | Cisco": {
         "directions": ["i", "o"],
@@ -187,7 +187,7 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | QSFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth4G"],
+        "protocols": ["TransEth1G", "TransEth40G"],
     },
     "Transceiver | QSFP+": {
         "directions": ["i", "o"],
