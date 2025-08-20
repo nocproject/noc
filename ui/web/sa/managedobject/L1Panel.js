@@ -81,6 +81,18 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
               dataIndex: "lag",
             },
             {
+              text: __("Caps"),
+              dataIndex: "caps",
+              renderer: function(){
+                return "<a href='#' class='noc-clickable-cell' title='Click to change...'>...</a>";
+              },
+              onClick: me.onCapsClick,
+              // renderer: function(value){
+              // var app = this.up("[reference=saL1Panel]");
+              // return app.renderArrayValue(value, "label");
+              // },
+            },
+            {
               text: __("Link"),
               dataIndex: "link",
               renderer: function(value){
@@ -126,14 +138,6 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
               flex: 1,
               editor: {
                 xtype: "textfield",
-              },
-            },
-            {
-              text: __("Caps"),
-              dataIndex: "caps",
-              renderer: function(value){
-                var app = this.up("[reference=saL1Panel]");
-                return app.renderArrayValue(value, "label");
               },
             },
             {
@@ -239,6 +243,15 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
       ifName: record.get("name"),
       isLinked: !!record.get("link"),
       linkId: record.get("link") ? record.get("link").id : null,
+    });
+  },
+
+  onCapsClick: function(record){
+    Ext.create("NOC.sa.managedobject.CapsForm", {
+      title: Ext.String.format(__("Capabilities of") + " {0}", record.get("name")),
+      app: this.app,
+      rowId: record.get("id"),
+      dataCaps: record.get("caps"),
     });
   },
 
