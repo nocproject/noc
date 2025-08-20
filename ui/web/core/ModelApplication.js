@@ -938,7 +938,6 @@ Ext.define("NOC.core.ModelApplication", {
   editRecord: function(record){
     var me = this,
       r = {},
-      field,
       data;
     me.currentRecord = record;
     me.setNavTabTooltip({data: me.currentRecord.data});
@@ -949,8 +948,11 @@ Ext.define("NOC.core.ModelApplication", {
       if(v.indexOf("__") !== -1){
         return
       }
+      if(!Ext.isDefined(this.fields)){
+        return;
+      }
       // hack to get instance of .TreeCombo class
-      field = me.fields.filter(function(e){
+      let field = this.fields.filter(function(e){
         return v === e.name && Ext.String.endsWith(e.xtype, ".TreeCombo")
       });
       if(field.length === 1){
@@ -969,7 +971,7 @@ Ext.define("NOC.core.ModelApplication", {
           r[v] = data[v];
         }
       }
-    });
+    }, me);
     // Show edit form
     me.showForm();
     me.form.reset();
