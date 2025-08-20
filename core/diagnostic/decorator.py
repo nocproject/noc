@@ -6,14 +6,12 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import logging
-from typing import Optional, List, Dict, Any, Iterable
+from typing import List, Iterable
 
 # NOC modules
 from noc.models import is_document
-from .types import DiagnosticValue
-
-logger = logging.getLogger(__name__)
+from .types import DiagnosticValue, DiagnosticState
+from .hub import DiagnosticHub
 
 
 def iter_model_diagnostics(self) -> Iterable[DiagnosticValue]:
@@ -65,7 +63,7 @@ def diagnostic(cls):
         # MongoEngine model
         cls.iter_diagnostics = iter_document_diagnostics
         if not hasattr(cls, "save_diagnostics"):
-             cls.save_diagnostics = save_document_diagnostics
+            cls.save_diagnostics = save_document_diagnostics
         # if not hasattr(cls, "get_caps_config"):
         #     cls.get_caps_config = get_caps_config
 
@@ -78,3 +76,21 @@ def diagnostic(cls):
         #     cls.get_caps_config = get_caps_config
 
     return cls
+
+
+def change_state(diagnostic: str, state: str, oid: str, model_id: str = "sa.ManagedObject"):
+    """
+    Defer change state
+    Attrs:
+        diagnostic: Diagnostic Name
+        state: Diagnostic state
+        oid: Instance ID
+        model_id: Instance Model
+    """
+    from noc.models import get_model
+
+    model = get_model(model_id)
+    o = model.get_by_id(oid)
+    if not hasattr(model, "diagnostic"):
+        return
+    o.diagnostic.set_state(diagnostic, DiagnosticState(state))

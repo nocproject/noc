@@ -6,11 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import enum
 import datetime
 import logging
 import itertools
-from dataclasses import dataclass
 from collections import defaultdict
 from functools import partial
 from typing import Optional, List, Dict, Any, Iterable, Tuple, Set
@@ -25,15 +23,8 @@ from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.handler import get_handler
 from noc.config import config
 from noc.models import is_document
+from .types import DiagnosticConfig, DiagnosticState, CheckStatus
 
-
-EVENT_TRANSITION = {
-    "disable": {"unknown": "blocked", "enabled": "blocked", "failed": "blocked"},
-    "fail": {"unknown": "failed", "enabled": "failed"},
-    "ok": {"unknown": "enabled", "failed": "enabled"},
-    "allow": {"blocked": "unknown"},
-    "expire": {"enabled": "unknown", "failed": "unknown"},
-}
 
 # BuiltIn Diagnostics
 SA_DIAG = "SA"
@@ -56,7 +47,7 @@ FM_DIAGS = {SNMPTRAP_DIAG, SYSLOG_DIAG}
 #
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
 #
-DEFER_CHANGE_STATE = "noc.core.wf.diagnostic.change_state"
+DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 
 def json_default(obj):
@@ -67,134 +58,10 @@ def json_default(obj):
     raise TypeError
 
 
-class DiagnosticEvent(str, enum.Enum):
-    disable = "disable"
-    fail = "fail"
-    ok = "ok"
-    allow = "allow"
-    expire = "expire"
-
-    def get_state(self, state: "DiagnosticState") -> Optional["DiagnosticState"]:
-        if state.value not in EVENT_TRANSITION[self.value]:
-            return
-        return DiagnosticState(EVENT_TRANSITION[self.value][state.value])
-
-
-class DiagnosticState(str, enum.Enum):
-    unknown = "unknown"
-    blocked = "blocked"
-    enabled = "enabled"
-    failed = "failed"
-
-    def fire_event(self, event: str) -> "DiagnosticState":
-        return DiagnosticEvent(event).get_state(self)
-
-    @property
-    def is_blocked(self) -> bool:
-        return self.value == "blocked"
-
-    @property
-    def is_active(self) -> bool:
-        return self.value != "blocked" and self.value != "unknown"
-
-
-@dataclass(frozen=True)
-class CtxItem:
-    name: str
-    capabilities: Optional[str] = None
-    alias: Optional[str] = None
-    set_method: Optional[str] = None
-
-
-@dataclass(frozen=True)
-class DiagnosticConfig(object):
-    """
-    Attributes:
-        diagnostic: Name configured diagnostic
-        blocked: Block by config flag
-        default_state: Default DiagnosticState
-        checks: Configured diagnostic checks
-        diagnostic_handler: Diagnostic result handler
-        dependent: Dependency diagnostic
-        include_credentials: Add credential to check context
-        state_policy: Calculate State on checks. ANY - Any check has OK, ALL - ALL checks has OK
-        reason: Reason current state. For blocked state
-        run_policy: A - Always, M - manual, F - Unknown or Failed, D - Disable
-        run_order: S - Before all discovery, E - After all discovery
-        discovery_box: Run on Discovery Box
-        discovery_periodic: Run on Periodic Discovery
-        workflow_enabled_event: Send fire event when set enabled
-        workflow_event: Send fire event on Diagnostic in Unknown/Failed state
-        show_in_display: Show diagnostic on UI
-        display_description: Description for show User
-        display_order: Order on displayed list
-        alarm_class: Default AlarmClass for raise alarm
-    """
-
-    diagnostic: str
-    blocked: bool = False
-    default_state: DiagnosticState = DiagnosticState.unknown
-    # Check config
-    checks: Optional[List[Check]] = None
-    diagnostic_handler: Optional[str] = None
-    dependent: Optional[List[str]] = None
-    include_credentials: bool = False
-    allow_set_credentials: bool = False
-    diagnostic_ctx: Optional[List[CtxItem]] = None
-    # Calculate State on checks.
-    state_policy: str = "ANY"
-    reason: Optional[str] = None
-    # Discovery Config
-    run_policy: str = "A"
-    run_order: str = "S"
-    discovery_box: bool = False
-    discovery_periodic: bool = False
-    #
-    workflow_enabled_event: Optional[str] = None
-    workflow_event: Optional[str] = None
-    #
-    save_history: bool = False
-    # Display Config
-    show_in_display: bool = True
-    hide_enable: bool = False
-    display_description: Optional[str] = None
-    display_order: int = 0
-    # FM Config
-    alarm_class: Optional[str] = None
-    alarm_labels: Optional[List[str]] = None
-
-
 DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
     True: DiagnosticState("enabled"),
     False: DiagnosticState("failed"),
 }
-
-
-class CheckStatus(BaseModel):
-    """
-    Attributes:
-        name: Check name
-        status: Check execution result, True - OK, False - Fail
-        arg0: Check params
-        skipped: Check execution was skipped
-        error: Error description for Fail status
-    """
-
-    name: str
-    status: bool
-    arg0: Optional[str] = None
-    skipped: bool = False
-    error: Optional[str] = None
-
-    @classmethod
-    def from_result(cls, cr: CheckResult) -> "CheckStatus":
-        return CheckStatus(
-            name=cr.check,
-            status=cr.status,
-            skipped=cr.skipped,
-            error=cr.error.message if cr.error else None,
-            arg0=cr.arg0,
-        )
 
 
 class DiagnosticHandler:

@@ -8,22 +8,14 @@
 # Python modules
 import enum
 import datetime
-import logging
-import itertools
 from dataclasses import dataclass
-from collections import defaultdict
-from functools import partial
-from typing import Optional, List, Dict, Any, Iterable, Tuple, Set
+from typing import Optional, List
 
 # Third-party modules
-import orjson
 from pydantic import BaseModel, PrivateAttr
 
 # NOC modules
 from noc.core.checkers.base import Check, CheckResult, MetricValue
-from noc.core.handler import get_handler
-from noc.config import config
-from noc.models import is_document
 
 
 class DiagnosticState(str, enum.Enum):
@@ -34,6 +26,7 @@ class DiagnosticState(str, enum.Enum):
      * enabled - checks pass by policy
      * failed - checks not pass by policy
     """
+
     unknown = "unknown"
     blocked = "blocked"
     enabled = "enabled"
@@ -147,6 +140,7 @@ class DiagnosticValue(BaseModel):
     """
     Saved diagnostic state
     """
+
     diagnostic: str
     state: DiagnosticState = DiagnosticState("unknown")
     checks: Optional[List[CheckStatus]]
