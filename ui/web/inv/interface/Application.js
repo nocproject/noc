@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.interface application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2022 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.interface.Application");
@@ -27,20 +27,7 @@ Ext.define("NOC.inv.interface.Application", {
   search: true,
 
   initComponent: function(){
-    var me = this,
-      subInterfaceHeader = new Ext.XTemplate(
-        '<th class="' + Ext.baseCSSPrefix + 'grid-subtable-header">{.}</th>',
-      ),
-      subInterfaceCellStringValue = new Ext.XTemplate(
-        '<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell"><div class="'
-                + Ext.baseCSSPrefix + 'grid-cell-inner">{.}</div></td>'),
-      subInterfaceCellArrayValue = new Ext.XTemplate(
-        '<td class="' + Ext.baseCSSPrefix + 'grid-subtable-cell">',
-        '<tpl for=".">',
-        '<div class="' + Ext.baseCSSPrefix + 'grid-cell-inner">{.}</div>',
-        "</tpl>",
-        "</td>",
-      );
+    var me = this;
 
     Ext.apply(me, {
       columns: [
@@ -290,7 +277,7 @@ Ext.define("NOC.inv.interface.Application", {
     }
   },
   //
-  onLink: function(grid, rowIndex, colIndex){
+  onLink: function(grid, rowIndex){
     var me = this,
       r = me.store.getAt(rowIndex),
       link = r.get("link");
