@@ -47,13 +47,12 @@ from pymongo import ASCENDING
 from noc.core.model.base import NOCModel
 from noc.config import config
 from noc.core.diagnostic.types import DiagnosticValue, DiagnosticState, DiagnosticConfig
-from noc.core.diagnostic.decorator import diagnostic
+from noc.core.diagnostic.decorator import diagnostic, DEFER_CHANGE_STATE
 from noc.core.diagnostic.hub import (
     DIAGNOCSTIC_LABEL_SCOPE,
     SA_DIAG,
     ALARM_DIAG,
     FIRST_AVAIL,
-    DEFER_CHANGE_STATE,
     RESOLVER_DIAG,
     SNMP_DIAG,
     PROFILE_DIAG,

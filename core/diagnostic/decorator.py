@@ -13,13 +13,16 @@ from noc.models import is_document
 from .types import DiagnosticState, DiagnosticValue
 from .hub import DiagnosticHub, DiagnosticItem
 
+#
+DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
+
 
 def iter_model_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over Model Instance diagnostics"""
     if not display_order:
-        yield from self.diagnostics
+        yield from self.diagnostic
         return
-    for d in sorted(self.diagnostics, key=lambda x: x.config.display_order):
+    for d in sorted(self.diagnostic, key=lambda x: x.config.display_order):
         if not d.show_in_display:
             continue
         yield d
@@ -28,9 +31,9 @@ def iter_model_diagnostics(self, display_order: bool = False) -> Iterable[Diagno
 def iter_document_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over document Diagnostics"""
     if not display_order:
-        yield from self.diagnostics
+        yield from self.diagnostic
         return
-    for d in sorted(self.diagnostics, key=lambda x: x.config.display_order):
+    for d in sorted(self.diagnostic, key=lambda x: x.config.display_order):
         if not d.show_in_display:
             continue
         yield d
@@ -83,7 +86,7 @@ def diagnostic(cls):
 
     else:
         # Django model
-        cls.diagnostics = iter_model_diagnostics
+        cls.iter_diagnostics = iter_model_diagnostics
         if not hasattr(cls, "save_diagnostics"):
             cls.save_diagnostics = save_model_diagnostics
         # if not hasattr(cls, "get_caps_config"):
