@@ -42,6 +42,7 @@ class Command(BaseCommand):
         subparsers.add_parser("list-ds")
         query_ds_parser = subparsers.add_parser("query-ds")
         query_ds_parser.add_argument("--datasource", "-d", help="Datasource")
+        query_ds_parser.add_argument("--export", help="File export")
         query_ds_parser.add_argument("query", nargs=1, help="Datasource Query")
         query_ds_parser.add_argument(
             "arguments", nargs=argparse.REMAINDER, help="Arguments passed to script"
@@ -94,12 +95,14 @@ class Command(BaseCommand):
         for ds in loader:
             self.print(f"Datasource: {ds}")
 
-    def handle_query_ds(self, datasource, query, arguments, **kwargs):
+    def handle_query_ds(self, datasource, query, arguments, export: Optional[str] = None, **kwargs):
         args = self.get_report_args(arguments)
         ds = loader[datasource]
         self.print(f"Running DataSource with arguments: {args}")
         r = ds.query_sync(**args)
         self.print(r.sql(query[0]))
+        if export:
+            r.write_excel(export)
 
     rx_arg = re.compile(r"^(?P<name>[a-zA-Z][a-zA-Z0-9_]*)(?P<op>:?=@?)(?P<value>.*)$")
 
