@@ -7,7 +7,8 @@
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.wf.diagnostic import RESOLVER_DIAG, DiagnosticState
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.diagnostic.hub import RESOLVER_DIAG
 
 
 class ResolverCheck(DiscoveryCheck):

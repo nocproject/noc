@@ -7,7 +7,7 @@
 
 # NOC modules
 from noc.core.datastream.base import DataStream
-from noc.core.wf.diagnostic import SNMPTRAP_DIAG
+from noc.core.diagnostic.hub import SNMPTRAP_DIAG
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label

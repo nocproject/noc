@@ -50,6 +50,9 @@ SYSLOG_DIAG = "SYSLOG"
 SNMPTRAP_DIAG = "SNMPTRAP"
 FIRST_AVAIL = "FIRST_AVAIL"
 RESOLVER_DIAG = "ADDR_RESOLVER"
+# SA Diags
+SA_DIAGS = {SNMP_DIAG, PROFILE_DIAG, CLI_DIAG, HTTP_DIAG}
+FM_DIAGS = {SNMPTRAP_DIAG, SYSLOG_DIAG}
 #
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
 #
@@ -962,37 +965,3 @@ class DiagnosticHub(object):
 
     def sync_diagnostic_data(self):
         """Synchronize object data with diagnostic"""
-
-
-def diagnostic(cls):
-    """
-    Diagnostic decorator.
-     If model supported diagnostic (diagnostics field) add DiagnosticHub
-    :param cls:
-    :return:
-    """
-
-    def diagnostic(self) -> "DiagnosticHub":
-        diagnostics = getattr(self, "_diagnostics", None)
-        if diagnostics:
-            return diagnostics
-        self._diagnostics = DiagnosticHub(self)
-        return self._diagnostics
-
-    cls.diagnostic = property(diagnostic)
-    return cls
-
-
-def change_state(diagnostic: str, state: str, oid: str, model_id: str = "sa.ManagedObject"):
-    """
-    Defer change state
-    Attrs:
-        diagno
-    """
-    from noc.models import get_model
-
-    model = get_model(model_id)
-    o = model.get_by_id(oid)
-    if not hasattr(model, "diagnostic"):
-        return
-    o.diagnostic.set_state(diagnostic, DiagnosticState(state))

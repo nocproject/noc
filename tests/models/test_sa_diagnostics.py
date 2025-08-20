@@ -9,14 +9,14 @@
 from dataclasses import dataclass
 
 # NOC modules
-from noc.core.wf.diagnostic import (
+from noc.core.diagnostic.types import (
     DiagnosticConfig,
     DiagnosticState,
-    DiagnosticHub,
-    SNMP_DIAG,
     CheckResult,
     Check,
 )
+from noc.core.diagnostic.hub import DiagnosticHub, SNMP_DIAG
+
 
 
 @dataclass
