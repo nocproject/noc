@@ -41,7 +41,8 @@ from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.script.scheme import SSH, SNMPCredential, Protocol as CredProtocol
 from noc.core.wf.interaction import Interaction
-from noc.core.diagnostic.types import DiagnosticState, DiagnosticConfig
+from noc.core.checkers.base import Check
+from noc.core.diagnostic.types import DiagnosticState, DiagnosticConfig, CtxItem
 from noc.core.diagnostic.hub import (
     PROFILE_DIAG,
     SNMP_DIAG,
@@ -52,8 +53,6 @@ from noc.core.diagnostic.hub import (
     FIRST_AVAIL,
     RESOLVER_DIAG,
     DiagnosticHub,
-    Check,
-    CtxItem,
 )
 from noc.sa.interfaces.base import (
     DictListParameter,
