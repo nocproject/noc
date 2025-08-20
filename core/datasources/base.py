@@ -8,6 +8,9 @@
 # Python modules
 import enum
 import datetime
+import operator
+import uuid
+import orjson
 from time import perf_counter
 from dataclasses import dataclass
 from functools import partial
@@ -19,7 +22,34 @@ import polars as pl
 
 # NOC modules
 from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.clickhouse.connect import ClickhouseClient, connection
+from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model
+from noc.config import config
+
+
+@dataclass
+class ClickhouseColumn:
+    name: str
+    type: str
+    default_kind: Optional[str] = None  # DEFAULT, MATERIALIZED
+    default_expression: Optional[str] = None
+
+    def __hash__(self):
+        """"""
+        return hash(self.name)
+
+
+@dataclass
+class DSSnapshot:
+    """Datasource snapshot"""
+
+    name: str
+    report_ts: datetime.datetime
+    report_uuid: Optional[uuid.UUID] = None
+    job_uuid: Optional[uuid.UUID] = None
+    labels: Optional[List[str]] = None
+
 
 clean_map = {
     "str": lambda x: str(x),
@@ -42,6 +72,39 @@ class FieldType(enum.Enum):
     DATETIME = pl.Datetime
     LIST_STRING = pl.List(pl.Utf8)
 
+    @property
+    def clickhouse_db_type(self) -> str:
+        """Return clickhouse DB type"""
+        match self:
+            case self.INT | self.INT32:
+                return "Int32"
+            case self.UINT:
+                return "UInt32"
+            case self.UINT64:
+                return "UInt64"
+            case self.BOOL:
+                return "Bool"
+            case self.FLOAT:
+                return "Float32"
+            case self.DATETIME:
+                return "DateTime"
+            case self.LIST_STRING:
+                return "Array(LowCardinality(String))"
+        return "String"
+
+    def clean_clickhouse_value(self, value) -> Any:
+        """Convert value to clickhouse"""
+        return value
+
+
+caps_dtype_map = {
+    "bool": FieldType.BOOL,
+    "str": FieldType.STRING,
+    "int": FieldType.UINT,
+    "float": FieldType.FLOAT,
+    "strlist": FieldType.LIST_STRING,
+}
+
 
 @dataclass
 class FieldInfo(object):
@@ -58,6 +121,11 @@ class FieldInfo(object):
     is_vector: bool = False  # Multiple column by requested one field
     is_diagnostic_state: Optional[DiagnosticState] = None  # Request Diagnostic State field
 
+    @property
+    def clickhouse_column(self) -> ClickhouseColumn:
+        """Generate clickhouse column"""
+        return ClickhouseColumn(name=self.name, type=self.type.clickhouse_db_type)
+
 
 @dataclass
 class ParamInfo:
@@ -67,7 +135,7 @@ class ParamInfo:
     type: str  # str, int, float, date, time
     required: bool = False
     allow_multi: bool = False
-    resolve_nester: bool = True
+    resolve_nested: bool = True
     display_label: Optional[str] = None
     description: Optional[str] = None
     default: Optional[Any] = None
@@ -76,7 +144,7 @@ class ParamInfo:
     def clean_value(self, value: Union[str, List[str]]):
         if not isinstance(value, list):
             value = [value]
-        if self.model and self.resolve_nester and self.allow_multi:
+        if self.model and self.resolve_nested and self.allow_multi:
             values = self.clean_nested_model(value)
         elif self.model:
             m = get_model(self.model)
@@ -114,11 +182,17 @@ class BaseDataSource(object):
 
     IGNORED_PARAMS = {"administrative_domain", "user"}
     DEFAULT_INTERVAL = 2 * 86400
+    ENABLE_CH_MIRROR = False
 
     name: str
     fields: List[FieldInfo]
     params: Optional[List[ParamInfo]] = None
     row_index: Union[str, Tuple[str, ...]] = "id"
+
+    @classmethod
+    def clickhouse_mirror(cls) -> bool:
+        """Allowed ClickHouse create table"""
+        return cls.ENABLE_CH_MIRROR
 
     @classmethod
     def join_fields(cls) -> List[str]:
@@ -129,7 +203,7 @@ class BaseDataSource(object):
         return list(cls.row_index)
 
     @classmethod
-    def iter_ds_fields(cls):
+    def iter_ds_fields(cls) -> Iterable[FieldInfo]:
         for f in cls.fields:
             yield f
 
@@ -257,13 +331,40 @@ class BaseDataSource(object):
         return True
 
     @classmethod
-    async def query(cls, fields: Optional[Iterable[str]] = None, *args, **kwargs) -> pl.DataFrame:
+    def get_series_from_data(cls, data: Dict[str, List[Any]], fields: Optional[Set[str]] = None):
+        """Getting dataframe from series columns data"""
+        series = []
+        for c in cls.iter_ds_fields():
+            if len(data[c.name]) and (
+                cls.is_out_field(c, fields) or (c.is_vector and c.name in data)
+            ):
+                try:
+                    series.append(pl.Series(c.name, data[c.name], dtype=c.type.value))
+                except TypeError:
+                    print(f"Type Error on column: {c.name}. Will be skipping")
+                except OverflowError:
+                    print(f"OverflowError on column: {c.name}. Will be skipping")
+                except pl.exceptions.InvalidOperationError:
+                    print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
+        return series
+
+    @classmethod
+    async def query(
+        cls,
+        fields: Optional[Iterable[str]] = None,
+        mirror_clickhouse: bool = False,
+        report_uuid: Optional[uuid.UUID] = None,
+        *args,
+        **kwargs,
+    ) -> pl.DataFrame:
         """
         Method for query report data. Return pandas dataframe.
-        :param fields: list fields for filtered on query
-        :param args: arguments for report query
-        :param kwargs:
-        :return:
+        Args:
+            fields: list fields for filtered on query
+            mirror_clickhouse: Send data to clickhouse
+            report_uuid: Report UUID bild
+            args: arguments for report query
+            kwargs:
         """
         r = defaultdict(list)
         started = perf_counter()
@@ -281,19 +382,116 @@ class BaseDataSource(object):
                     if cls.is_out_field(c, fields)
                 ],
             )
-        series = []
-        for c in cls.iter_ds_fields():
-            if len(r[c.name]) and (cls.is_out_field(c, fields) or (c.is_vector and c.name in r)):
-                try:
-                    series.append(pl.Series(c.name, r[c.name], dtype=c.type.value))
-                except TypeError:
-                    print(f"Type Error on column: {c.name}. Will be skipping")
-                except OverflowError:
-                    print(f"OverflowError on column: {c.name}. Will be skipping")
-                except pl.exceptions.InvalidOperationError:
-                    print(f"Invalid Operation Cast on column: {c.name}. Will be skipping")
-        return pl.DataFrame(series)
+        series = cls.get_series_from_data(r, fields)
+        if not mirror_clickhouse:
+            return pl.DataFrame(series)
+        elif not cls.clickhouse_mirror():
+            print("Datasource mirroring not supported")
+            return pl.DataFrame(series)
+        df = pl.DataFrame(series)
+        await cls.publish_clickhouse(df, report_uuid=report_uuid)
+        return df
         # return pl.DataFrame(r, columns=[(c.name, c.type.value) for c in cls.fields])
+
+    @classmethod
+    def get_clickhouse_snapshots(cls, ttl: Optional[datetime.datetime] = None) -> List[DSSnapshot]:
+        """Return available snapshots for Datasource"""
+        if not cls.clickhouse_mirror():
+            return []
+        ch: "ClickhouseClient" = connection()
+        result = ch.execute(
+            f"SELECT distinct(report_ts, report_ds as name, report_uuid, job_uuid, labels) as ds FROM {cls._get_db_table()} FORMAT JSON",
+            return_raw=True,
+        )
+        r = []
+        for row in orjson.loads(result)["data"]:
+            ts, name, report_uuid, job_uuid, labels = row["ds"]
+            report_uuid = (
+                uuid.UUID(job_uuid)
+                if report_uuid != "00000000-0000-0000-0000-000000000000"
+                else None
+            )
+            job_uuid = (
+                uuid.UUID(job_uuid) if job_uuid != "00000000-0000-0000-0000-000000000000" else None
+            )
+            r.append(
+                DSSnapshot(
+                    name=name,
+                    report_ts=datetime.datetime.fromisoformat(ts),
+                    report_uuid=report_uuid,
+                    job_uuid=job_uuid,
+                    labels=labels,
+                )
+            )
+        return r
+
+    @classmethod
+    def get_latest_snapshot(cls, ttl: Optional[int] = None) -> Optional[DSSnapshot]:
+        """"""
+        snapshots = cls.get_clickhouse_snapshots(ttl)
+        if not snapshots:
+            return
+        r = sorted(snapshots, key=operator.attrgetter("report_ts"), reverse=True)
+        return r[0]
+
+    @classmethod
+    def from_clickhouse(cls, report_uuid: Optional[uuid.UUID] = None) -> Optional[pl.DataFrame]:
+        """Extract Datasource data from Clickhouse"""
+        ch: "ClickhouseClient" = connection()
+        snapshot = cls.get_latest_snapshot()
+        r = ch.execute(
+            f"SELECT * FROM {cls._get_db_table()} WHERE report_ts = %s FORMAT JSONColumns",
+            return_raw=True,
+            args=[snapshot.report_ts.isoformat()],
+        )
+        r = orjson.loads(r)
+        if not r:
+            return None
+        series = cls.get_series_from_data(r)
+        return pl.DataFrame(series)
+
+    @classmethod
+    async def publish_clickhouse(
+        cls,
+        df: pl.DataFrame,
+        report_uuid: Optional[uuid.UUID] = None,
+        job_uuid: Optional[uuid.UUID] = None,
+        ts: Optional[datetime.datetime] = None,
+    ):
+        """Send DataFrame to clickhouse"""
+        ts = (ts or datetime.datetime.now()).replace(microsecond=0)
+        ch_row = {
+            "date": ts.date().isoformat(),
+            "report_ts": ts.isoformat(sep=" "),
+            "job_uuid": None,
+            "labels": [],
+            "report_ds": cls.name,
+        }
+        if report_uuid:
+            ch_row["report_uuid"] = str(report_uuid)
+        data = []
+        CHUNK = 200
+        n_parts = len(config.clickhouse.cluster_topology.split(","))
+        async with MessageStreamClient() as client:
+            for row in df.iter_rows(named=True):
+                row |= ch_row
+                data.append(orjson.dumps(row))
+                if len(data) < CHUNK:
+                    continue
+                for part in range(0, n_parts):
+                    await client.publish(
+                        b"\n".join(data),
+                        stream=f"ch.{cls._get_db_table()}",
+                        partition=part,
+                    )
+                data = []
+        if data:
+            for part in range(0, n_parts):
+                await client.publish(
+                    b"\n".join(data),
+                    stream=f"ch.{cls._get_db_table()}",
+                    partition=part,
+                )
 
     @classmethod
     async def iter_row(
@@ -332,3 +530,164 @@ class BaseDataSource(object):
     @classmethod
     def clean_row_value(cls, value):
         return value
+
+    @classmethod
+    def iter_create_sql(cls) -> Iterable[ClickhouseColumn]:
+        """Yield (field_name, field_type, materialized_expr, default_expr) tuples"""
+
+        yield ClickhouseColumn(name="date", type="Date")
+        yield ClickhouseColumn(name="report_ts", type="DateTime")
+        yield ClickhouseColumn(name="report_ds", type="String")
+        yield ClickhouseColumn(name="report_uuid", type="UUID")
+        yield ClickhouseColumn(name="job_uuid", type="UUID")
+        yield ClickhouseColumn(name="labels", type="Array(LowCardinality(String))")
+        for f in cls.iter_ds_fields():
+            yield f.clickhouse_column
+
+    @classmethod
+    def get_create_sql(cls) -> str:
+        """
+        Get CREATE TABLE SQL statement
+        """
+        # Key Fields
+        r = [
+            "CREATE TABLE IF NOT EXISTS %s (" % cls._get_raw_db_table(),
+            ",\n".join(
+                f"  {c.name} {c.type} {c.default_kind or ''} {'DEFAULT %s' % c.default_expression if c.default_expression else ''}"
+                for c in cls.iter_create_sql()
+            ),
+            ") ENGINE = MergeTree() ORDER BY (date, job_uuid)\n",
+            "PARTITION BY toYYYYMM(date) PRIMARY KEY (date, job_uuid)",
+        ]
+        return "\n".join(r)
+
+    @classmethod
+    def get_create_distributed_sql(cls):
+        """
+        Get CREATE TABLE for Distributed engine
+        """
+        return (
+            f"CREATE TABLE IF NOT EXISTS {cls._get_distributed_db_table()} AS {cls._get_raw_db_table()} "
+            f"ENGINE = Distributed('{config.clickhouse.cluster}', '{config.clickhouse.db}', '{cls._get_raw_db_table()}')"
+        )
+
+    @classmethod
+    def get_create_view_sql(cls):
+        view = cls._get_db_table()
+        if config.clickhouse.cluster:
+            src = cls._get_distributed_db_table()
+        else:
+            src = cls._get_raw_db_table()
+        q = ["*"]
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT {', '.join(q)} FROM {src}"
+
+    @classmethod
+    def ensure_views(cls, connect=None, changed: bool = True) -> bool:
+        # Synchronize view
+        ch: "ClickhouseClient" = connect or connection()
+        table = cls._get_db_table()
+        if changed or not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            return True
+        return False
+
+    @staticmethod
+    def quote_name(name):
+        """Clickhouse-safe field names"""
+        if "." in name:
+            return "`%s`" % name
+        return name
+
+    @classmethod
+    def _get_db_table(cls):
+        return f"report_{cls.name}"
+
+    @classmethod
+    def _get_raw_db_table(cls):
+        return f"raw_report_{cls.name}"
+
+    @classmethod
+    def _get_distributed_db_table(cls):
+        return f"d_report_{cls.name}"
+
+    @classmethod
+    def ensure_columns(cls, connect: "ClickhouseClient", table_name: str) -> bool:
+        """
+        Create necessary table columns
+        Args:
+            connect: ClickHouse client
+            table_name: Database table name
+        Return:
+            True, if any column has been altered
+        """
+        c = False  # Changed indicator
+        # Get existing columns
+        existing = {}
+        for name, c_type in connect.execute(
+            f"""
+            SELECT name, type
+            FROM system.columns
+            WHERE
+              database='{config.clickhouse.db}'
+              AND table='{table_name}'
+            """,
+        ):
+            existing[name] = c_type
+        # Check
+        after = None
+        for field in cls.iter_create_sql():
+            if field.name in existing:
+                # Check types
+                if existing[field.name] != field.type:
+                    print(
+                        f"[{table_name}|{field.name}] Warning! Type mismatch: "
+                        f"{existing[field.name]} <> {field.type}"
+                    )
+                    connect.execute(
+                        post=f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
+                    )
+            else:
+                print(f"[{table_name}|{field.name}] Alter column")
+                query = f"ALTER TABLE `{table_name}` ADD COLUMN {cls.quote_name(field.name)} {field.type}"
+                if after:
+                    # None if add before first field
+                    query += f" AFTER {cls.quote_name(after)}"
+                else:
+                    query += " FIRST"
+                connect.execute(post=query)
+                c = True
+            after = field.name
+        return c
+
+    @classmethod
+    def ensure_table(cls, connect=None):
+        changed = False
+        ch: "ClickhouseClient" = connect or connection()
+        is_cluster = bool(config.clickhouse.cluster)
+        table = cls._get_db_table()
+        raw_table = cls._get_raw_db_table()
+        dist_table = cls._get_distributed_db_table()
+        # Ensure raw_* table
+        if ch.has_table(raw_table):
+            # raw_* table exists, check columns
+            print(f"[{table}] Check columns")
+            changed |= cls.ensure_columns(ch, raw_table)
+        else:
+            # Create new table
+            print(f"[{table}] Create new table")
+            ch.execute(post=cls.get_create_sql())
+            changed = True
+        # For cluster mode check d_* distributed table
+        if is_cluster:
+            print(f"[{table}] Check distributed table")
+            if ch.has_table(dist_table):
+                changed |= cls.ensure_columns(ch, dist_table)
+            else:
+                ch.execute(post=cls.get_create_distributed_sql())
+                changed = True
+        if not ch.has_table(table, is_view=True):
+            print(f"[{table}] Synchronize view")
+            ch.execute(post=cls.get_create_view_sql())
+            changed = True
+        return changed

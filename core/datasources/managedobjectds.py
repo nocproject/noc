@@ -16,7 +16,7 @@ from django.db.models.fields import BooleanField
 from pymongo.read_preferences import ReadPreference
 
 # NOC modules
-from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource
+from .base import FieldInfo, FieldType, ParamInfo, BaseDataSource, caps_dtype_map
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.authprofile import AuthProfile
 from noc.sa.models.profile import Profile
@@ -38,14 +38,6 @@ from noc.core.wf.diagnostic import (
     SYSLOG_DIAG,
     SNMPTRAP_DIAG,
 )
-
-caps_dtype_map = {
-    "bool": FieldType.BOOL,
-    "str": FieldType.STRING,
-    "int": FieldType.UINT,
-    "float": FieldType.FLOAT,
-    "strlist": FieldType.LIST_STRING,
-}
 
 
 def get_adm_path_level() -> int:
