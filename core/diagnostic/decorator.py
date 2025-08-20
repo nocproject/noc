@@ -10,16 +10,30 @@ from typing import List, Iterable
 
 # NOC modules
 from noc.models import is_document
-from .types import DiagnosticValue, DiagnosticState
-from .hub import DiagnosticHub
+from .types import DiagnosticState, DiagnosticValue
+from .hub import DiagnosticHub, DiagnosticItem
 
 
-def iter_model_diagnostics(self) -> Iterable[DiagnosticValue]:
+def iter_model_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over Model Instance diagnostics"""
+    if not display_order:
+        yield from self.diagnostics
+        return
+    for d in sorted(self.diagnostics, key=lambda x: x.config.display_order):
+        if not d.show_in_display:
+            continue
+        yield d
 
 
-def iter_document_diagnostics(self) -> Iterable[DiagnosticValue]:
+def iter_document_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over document Diagnostics"""
+    if not display_order:
+        yield from self.diagnostics
+        return
+    for d in sorted(self.diagnostics, key=lambda x: x.config.display_order):
+        if not d.show_in_display:
+            continue
+        yield d
 
 
 def save_document_diagnostics(self, diagnostics: List[DiagnosticValue], dry_run: bool = False):

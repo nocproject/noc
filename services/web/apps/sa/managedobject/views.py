@@ -281,28 +281,7 @@ class ManagedObjectApplication(ExtModelApplication):
             data[fn] = sg_to_list(data.get(fn) or [])
         data["is_managed"] = getattr(o, "is_managed", True)
         data["is_wiping"] = o.state.is_wiping
-        data["diagnostics"] = []
-        for d in sorted(o.diagnostic, key=lambda x: x.config.display_order):
-            if not d.show_in_display:
-                continue
-            data["diagnostics"].append(
-                {
-                    "name": d.diagnostic[:6],
-                    "description": d.config.display_description,
-                    "state": d.state.value,
-                    "state__label": d.state.value,
-                    "details": [
-                        {
-                            "name": c.name,
-                            "state": {True: "OK", False: "Error"}[c.status],
-                            "error": c.error,
-                        }
-                        for c in d.checks or []
-                        if not c.skipped
-                    ],
-                    "reason": d.reason or "",
-                }
-            )
+        data["diagnostics"] = [m.get_object_form(o) for m in o.iter_model_diagnostics(display_order=True)]
         if "mappings" in data or o.remote_system:
             data["mappings"] = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         return data

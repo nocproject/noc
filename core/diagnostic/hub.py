@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # @diagnostic decorator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -205,6 +205,25 @@ class DiagnosticItem(BaseModel):
         if changed:
             self.checks = checks
         return changed
+
+    def get_object_form(self) -> Dict[str, Any]:
+        """Displayed form"""
+        return {
+            "name": self.diagnostic[:6],
+            "description": self.config.display_description,
+            "state": self.state.value,
+            "state__label": self.state.value,
+            "details": [
+                {
+                    "name": c.name,
+                    "state": {True: "OK", False: "Error"}[c.status],
+                    "error": c.error,
+                }
+                for c in self.checks or []
+                if not c.skipped
+            ],
+            "reason": self.reason or "",
+        }
 
 
 class DiagnosticHub(object):

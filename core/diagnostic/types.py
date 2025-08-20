@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Diagnostic types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,10 +12,10 @@ from dataclasses import dataclass
 from typing import Optional, List
 
 # Third-party modules
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 
 # NOC modules
-from noc.core.checkers.base import Check, CheckResult, MetricValue
+from noc.core.checkers.base import Check, CheckResult
 
 
 class DiagnosticState(str, enum.Enum):
@@ -138,7 +138,7 @@ class CheckStatus(BaseModel):
 
 class DiagnosticValue(BaseModel):
     """
-    Saved diagnostic state
+    Saved diagnostic state for Model
     """
 
     diagnostic: str
