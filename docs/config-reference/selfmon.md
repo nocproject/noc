@@ -73,3 +73,40 @@ Selfmon service configuration
 | YAML Path      | `selfmon.fm_ttl`     |
 | Key-Value Path | `selfmon/fm_ttl`     |
 | Environment    | `NOC_SELFMON_FM_TTL` |
+
+## enable_liftbridge
+
+|                |                                 |
+| -------------- | ------------------------------- |
+| Default value  | `False`                         |
+| YAML Path      | `selfmon.enable_liftbridge`     |
+| Key-Value Path | `selfmon/enable_liftbridge`     |
+| Environment    | `NOC_SELFMON_ENABLE_LIFTBRIDGE` |
+
+## liftbridge_ttl
+
+|                |                              |
+| -------------- | ---------------------------- |
+| Default value  | `30`                         |
+| YAML Path      | `selfmon.liftbridge_ttl`     |
+| Key-Value Path | `selfmon/liftbridge_ttl`     |
+| Environment    | `NOC_SELFMON_LIFTBRIDGE_TTL` |
+
+## enable_kafka
+
+|                |                            |
+| -------------- | -------------------------- |
+| Default value  | `False`                    |
+| YAML Path      | `selfmon.enable_kafka`     |
+| Key-Value Path | `selfmon/enable_kafka`     |
+| Environment    | `NOC_SELFMON_ENABLE_KAFKA` |
+
+## kafka_ttl
+
+|                |                         |
+| -------------- | ----------------------- |
+| Default value  | `30`                    |
+| YAML Path      | `selfmon.kafka_ttl`     |
+| Key-Value Path | `selfmon/kafka_ttl`     |
+| Environment    | `NOC_SELFMON_KAFKA_TTL` |
+
