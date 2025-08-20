@@ -43,6 +43,17 @@ class MOMock:
         return True
 
 
+def get_alarm_class_mock(name):
+    AlarmClass.config = property(lambda x: None)
+    alarm_class = AlarmClass(
+        id=ObjectId(),
+        name=name,
+        subject_template="Alarm Subject",
+        body_template="Alarm Body",
+    )
+    return alarm_class
+
+
 def get_alarm_mock() -> "ActiveAlarm":
     AlarmClass.config = property(lambda x: None)
     alarm_class = AlarmClass(

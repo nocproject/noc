@@ -31,6 +31,7 @@ class Effect(enum.Enum):
     SEVERITY = "severity"
     STOP_CLEAR = "stop_clear"
     CLEAR_ALARM = "clear_alarm"
+    REWRITE_ALARM_CLASS = "rewrite_ac"
 
 
 class WatchItem(EmbeddedDocument):
@@ -87,6 +88,8 @@ class WatchItem(EmbeddedDocument):
                 h(**self.get_args(alarm, is_clear))
             case Effect.ALARM_JOB:
                 alarm.refresh_job(is_clear, job_id=self.key)
+            case Effect.REWRITE_ALARM_CLASS:
+                alarm.refresh_alarm_class(dry_run=dry_run)
             case Effect.CLEAR_ALARM:
                 # To Last Action
                 if not is_clear:
