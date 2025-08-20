@@ -84,7 +84,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
               text: __("Caps"),
               dataIndex: "caps",
               renderer: function(){
-                return "<a href='#' class='noc-clickable-cell' title='Click to change...'>...</a>";
+                return "<a href='javascript:void(0)' class='noc-clickable-cell' title='Click to change...'>...</a>";
               },
               onClick: me.onCapsClick,
               // renderer: function(value){
@@ -97,7 +97,7 @@ Ext.define("NOC.sa.managedobject.L1Panel", {
               dataIndex: "link",
               renderer: function(value){
                 var v = value ? value.label : "...";
-                return "<a href='#' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
+                return "<a href='javascript:void(0)' class='noc-clickable-cell' title='Click to change...'>" + v + "</a>";
               },
               onClick: me.onLinkClick,
             },
