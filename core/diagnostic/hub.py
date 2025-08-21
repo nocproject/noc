@@ -321,6 +321,9 @@ class DiagnosticHub(object):
         if name in self.__diagnostics:
             return self.__diagnostics[name]
 
+    def set_dry_run(self):
+        self.dry_run = True
+
     def __getitem__(self, name: str) -> "DiagnosticItem":
         v = self.get(name)
         if v is None:
@@ -470,7 +473,7 @@ class DiagnosticHub(object):
             self.set_state(d.diagnostic, DiagnosticState.enabled)
         self.sync_diagnostics()
 
-    def update_checks(self, checks: List[CheckResult]):
+    def update_checks(self, checks: List[CheckResult], dry_run: bool = False):
         """
         Update checks on diagnostic and calculate state
         * Map diagnostic -> checks
@@ -520,7 +523,7 @@ class DiagnosticHub(object):
             )
             changed = self[d].update_checks(c_checks)
             if changed:
-                self.sync_diagnostics()
+                self.sync_diagnostics(dry_run)
         if metrics and not self.dry_run:
             self.register_diagnostic_metrics(metrics)
 
@@ -560,8 +563,9 @@ class DiagnosticHub(object):
             self.logger.debug("Bulk mode. Sync blocked")
             self.bulk_changes += 1
             return
-        new_diags, changed_state, wf_events = [], set(), set()
-        changed = False
+        dry_run |= self.dry_run
+        new_diags, changed_states, wf_events = [], set(), set()
+        changed = []
         for di_new in self:
             d_name = di_new.diagnostic
             d_current = self.get_object_diagnostic_value(d_name)
@@ -578,8 +582,8 @@ class DiagnosticHub(object):
             # Compare state
             if d_current.state != di_new.state:
                 if d_current.state == DiagnosticState.failed or di_new.is_failed:
-                    changed_state.add(d_name)
-                changed |= True
+                    changed_states.add(d_name)
+                changed.append(d_name)
                 self.register_diagnostic_change(
                     d_name,
                     state=di_new.state,
@@ -592,16 +596,16 @@ class DiagnosticHub(object):
             # Save diagnostic with checks value (for update checks)
             elif d_current != di_new:
                 self.logger.debug("[%s] Diagnostic Same, next.", d_name)
-                changed |= True
+                changed.append(d_name)
             new_diags.append(di_new)
-        if changed and not dry_run:
-            self.logger.info("[%s] Save changed diagnostics: %s", self.__object.name)
+        if changed:
+            self.logger.info("[%s] Save changed diagnostics: %s", str(self.__object), changed)
             self.__object.save_diagnostics(new_diags, dry_run=dry_run)
         if wf_events:
             # Bulk update/Get effective event
             self.__object.fire_event(list(wf_events)[0])
-        if changed_state and self.sync_alarm:
-            self.sync_alarms(self.__object, new_diags)
+        if changed_states and self.sync_alarm:
+            self.sync_alarms(self.__object, new_diags, dry_run=dry_run)
 
     def sync_with_object(
         self,

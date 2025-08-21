@@ -16,10 +16,11 @@ from noc.core.diagnostic.types import (
     Check,
 )
 from noc.core.diagnostic.hub import DiagnosticHub, SNMP_DIAG
-
+from noc.core.diagnostic.decorator import diagnostic
 
 
 @dataclass
+@diagnostic
 class Object(object):
     id = 10
     diagnostics = {}
@@ -32,16 +33,16 @@ class Object(object):
     bi_id = 1_000_0000
 
     @property
-    def diagnostic(self) -> "DiagnosticHub":
-        diagnostics = getattr(self, "_diagnostics", None)
-        if diagnostics:
-            return diagnostics
-        self._diagnostics = DiagnosticHub(self, dry_run=True)
-        return self._diagnostics
-
-    @property
     def credentials(self):
         return None
+
+    def save_diagnostics(self, diagnostics, dry_run: bool = False):
+        """Update Model Instance diagnostics"""
+        self.diagnostics = {d.diagnostic: d.get_value().model_dump() for d in diagnostics}
+
+    def can_create_box_alarms(self):
+        """"""
+        return False
 
     def iter_diagnostic_configs(self):
         """
@@ -76,6 +77,7 @@ def test_set_state():
         "D2": {"diagnostic": "D2", "state": "failed", "reason": "1"},
         "Access": {"diagnostic": "Access", "state": "failed", "reason": "2"},
     }
+    o.diagnostic.set_dry_run()
     assert o.diagnostic.D2.state == DiagnosticState.failed
     o.diagnostic.set_state("D1", DiagnosticState.enabled)
     assert o.diagnostic.D1.state == DiagnosticState.enabled
@@ -101,6 +103,7 @@ def test_change_object_config_state():
         },
         "Access": {"diagnostic": "Access", "state": "failed", "reason": "2"},
     }
+    o.diagnostic.set_dry_run()
     assert o.diagnostic.SNMP.state == DiagnosticState.failed
     o.diagnostic.refresh_diagnostics()
     assert o.diagnostic.SNMP.state == DiagnosticState.failed
