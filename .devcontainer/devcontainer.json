@@ -22,7 +22,7 @@
 	"customizations": {
 		"vscode": {
 			"settings": {
-				"python.pythonPath": "/usr/local/bin/python",
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
 				"[python]": {
 					"editor.defaultFormatter": "ms-python.black-formatter",
 					"black-formatter.path": "/usr/local/bin/black",
@@ -30,10 +30,7 @@
 					"editor.codeActionsOnSave": {
 						"source.fixAll": true
 					},
-					"ruff.path": "/usr/local/bin/ruff",
-					"analysis.extraPaths": [
-						"/usr/local/lib/python3.11/site-packages/"
-					],
+					"ruff.path": "/usr/local/bin/ruff"
 				},
 				"[yaml]": {
 					"editor.defaultFormatter": "redhat.vscode-yaml",
