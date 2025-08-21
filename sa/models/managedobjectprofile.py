@@ -7,16 +7,13 @@
 
 # Python modules
 import operator
-import datetime
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Iterable, Any, Set
+from typing import Optional, List, Dict, Iterable, Set
 
 # Third-party modules
 import cachetools
-import orjson
-from django.db import connection as pg_connection
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -41,21 +38,18 @@ from noc.core.defer import call_later, defer
 from noc.core.topology.types import ShapeOverlayPosition, ShapeOverlayForm
 from noc.core.script.scheme import SSH, SNMPCredential, Protocol as CredProtocol
 from noc.core.wf.interaction import Interaction
-from noc.core.wf.diagnostic import (
+from noc.core.checkers.base import Check
+from noc.core.diagnostic.types import DiagnosticState, DiagnosticConfig, CtxItem
+from noc.core.diagnostic.hub import (
     PROFILE_DIAG,
     SNMP_DIAG,
     CLI_DIAG,
     HTTP_DIAG,
     SNMPTRAP_DIAG,
     SYSLOG_DIAG,
-    DIAGNOCSTIC_LABEL_SCOPE,
     FIRST_AVAIL,
     RESOLVER_DIAG,
-    DiagnosticState,
-    DiagnosticConfig,
     DiagnosticHub,
-    Check,
-    CtxItem,
 )
 from noc.sa.interfaces.base import (
     DictListParameter,
@@ -908,104 +902,30 @@ class ManagedObjectProfile(NOCModel):
                 "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
                 key=self.id,
                 profile_id=self.id,
+                box_alarm=self.box_discovery_alarm_policy == "D",
             )
+        if self.is_field_changed(["enable_rca_downlink_merge", "rca_downlink_merge_window"]):
+            if config.topo.enable_scheduler_task:
+                call_later("noc.core.topology.uplink.update_uplinks", 30)
+        cache.delete_many(
+            [f"managedobject-id-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
+            version=MANAGEDOBJECT_CACHE_VERSION,
+        )
         if access_changed:
             cache.delete_many(
                 [f"cred-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
                 version=CREDENTIAL_CACHE_VERSION,
             )
-        if self.is_field_changed(["enable_rca_downlink_merge", "rca_downlink_merge_window"]):
-            if config.topo.enable_scheduler_task:
-                call_later("noc.core.topology.uplink.update_uplinks", 30)
-        if self.is_field_changed(["level", "weight", "labels", "escalation_policy"]):
-            cache.delete_many(
-                [
-                    f"managedobject-id-{x}"
-                    for x in self.managedobject_set.values_list("id", flat=True)
-                ],
-                version=MANAGEDOBJECT_CACHE_VERSION,
-            )
-        cd = self.get_changed_diagnostics()
-        # box_changed
-        # self.diagnostic.reset_diagnostics([PROFILE_DIAG, SNMP_DIAG, CLI_DIAG])
-        # print("Diagnostic Changed", self.get_changed_diagnostics())
-        if not cd and self.is_field_changed(["level", "weight", "labels", "escalation_policy"]):
-            cache.delete_many(
-                [
-                    f"managedobject-id-{x}"
-                    for x in self.managedobject_set.values_list("id", flat=True)
-                ],
-                version=MANAGEDOBJECT_CACHE_VERSION,
-            )
-            return
-        now = datetime.datetime.now().replace(microsecond=0)
-        alarm_sync = False
-        for dc in self.iter_diagnostic_configs():
-            if dc.diagnostic not in cd:
-                continue
-            d_state = DiagnosticState.blocked if dc.blocked else DiagnosticState.unknown
-            diags = {
-                dc.diagnostic: {
-                    "diagnostic": dc.diagnostic,
-                    "state": d_state,
-                    "reason": "Blocked by Profile settings",
-                    "checks": [],
-                    "changed": now,
-                }
-            }
-            policy_field = "access_preference"
-            if dc.diagnostic in {SNMPTRAP_DIAG, SYSLOG_DIAG}:
-                policy_field = "event_processing_policy"
-            if dc.diagnostic in {CLI_DIAG, SNMP_DIAG, PROFILE_DIAG} and dc.blocked:
-                alarm_sync = True
-            # Update diagnostics
-            with pg_connection.cursor() as cursor:
-                cursor.execute(
-                    f"""
-                     UPDATE sa_managedobject
-                     SET diagnostics = diagnostics || %s::jsonb
-                     WHERE {policy_field} = %s and object_profile_id = %s""",
-                    [orjson.dumps(diags).decode("utf-8"), "P", self.id],
-                )
-            # change labels :f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"
-            r_labels = []
-            if d_state != DiagnosticState.blocked:
-                r_labels = [
-                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{DiagnosticState.blocked.value}"
-                ]
-            else:
-                # All state
-                r_labels = [
-                    f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{s.value}"
-                    for s in DiagnosticState
-                    if not s.is_blocked
-                ]
-            Label._change_model_labels(
-                "sa.ManagedObject",
-                add_labels=[f"{DIAGNOCSTIC_LABEL_SCOPE}::{dc.diagnostic}::{d_state}"],
-                remove_labels=r_labels,
-                instance_filters=[("object_profile_id", self.id), (policy_field, "P")],
-            )
-        cache.delete_many(
-            [f"managedobject-id-{x}" for x in self.managedobject_set.values_list("id", flat=True)],
-            version=MANAGEDOBJECT_CACHE_VERSION,
-        )
-        if self.box_discovery_alarm_policy != "D" and (alarm_sync or not self.enable_box_discovery):
-            # Sync alarm
-            defer(
-                "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
-                key=self.id,
-                profile_id=self.id,
-            )
 
-    def iter_diagnostic_configs(self, o=None) -> Iterable[DiagnosticConfig]:
+    def iter_diagnostic_configs(self, o) -> Iterable[DiagnosticConfig]:
         """
         Iterate over object diagnostics
-        :param o: ManagedObject
-        :return:
+        Args:
+            o: ManagedObject
         """
-        if o:
-            ac, cred = o.get_access_preference(), o.credentials.get_snmp_credential()
+        if not o or Interaction.ServiceActivation in o.interactions:
+            cred = o.credentials.get_snmp_credential()
+            # SNMP Diagnostic
             if isinstance(cred, SNMPCredential):
                 s_checks = [
                     Check(name="SNMPv1", address=o.address, credential=cred),
@@ -1013,24 +933,22 @@ class ManagedObjectProfile(NOCModel):
                 ]
             else:
                 s_checks = [Check(name="SNMPv3", address=o.address, credential=cred)]
-        else:
-            ac, s_checks = self.access_preference, []
-        if not o or Interaction.ServiceActivation in o.interactions:
-            # SNMP Diagnostic
+            enabled, reason = o.is_enabled_diagnostic(SNMP_DIAG)
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=s_checks,
                 diagnostic_handler="noc.core.script.diagnostic.SNMPSuggestsDiagnostic",
-                blocked=ac == "C",
+                blocked=not enabled,
                 run_policy="F",
                 run_order="S",
                 discovery_box=True,
                 allow_set_credentials=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::SNMP"],
-                reason="Blocked by AccessPreference" if ac == "C" else None,
+                reason=reason,
             )
+            enabled, reason = o.is_enabled_diagnostic(PROFILE_DIAG)
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
@@ -1043,36 +961,32 @@ class ManagedObjectProfile(NOCModel):
                 run_policy="A",
                 run_order="S",
                 discovery_box=True,
-                reason="Profile Discovery " if not self.enable_box_discovery_profile else None,
+                reason=reason,
             )
-            blocked = ac == "S"
             # CLI Diagnostic
-            if o:
-                blocked |= o.scheme not in {1, 2}
-                checks = [
-                    Check(
-                        name="TELNET",
-                        address=o.address,
-                        port=o.port,
-                        credential=o.credentials.get_cli_credential(
-                            protocol=CredProtocol.TELNET,
-                            raise_privilege=o.to_raise_privileges,
-                        ),
+            checks = [
+                Check(
+                    name="TELNET",
+                    address=o.address,
+                    port=o.port,
+                    credential=o.credentials.get_cli_credential(
+                        protocol=CredProtocol.TELNET,
+                        raise_privilege=o.to_raise_privileges,
                     ),
-                    Check(
-                        name="SSH",
-                        address=o.address,
-                        port=o.port,
-                        credential=o.credentials.get_cli_credential(
-                            protocol=CredProtocol.SSH,
-                            raise_privilege=o.to_raise_privileges,
-                        ),
+                ),
+                Check(
+                    name="SSH",
+                    address=o.address,
+                    port=o.port,
+                    credential=o.credentials.get_cli_credential(
+                        protocol=CredProtocol.SSH,
+                        raise_privilege=o.to_raise_privileges,
                     ),
-                ]
-                if o.scheme == SSH:
-                    checks.reverse()
-            else:
-                checks = []
+                ),
+            ]
+            if o.scheme == SSH:
+                checks.reverse()
+            enabled, reason = o.is_enabled_diagnostic(CLI_DIAG)
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
@@ -1083,11 +997,12 @@ class ManagedObjectProfile(NOCModel):
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="F",
                 run_order="S",
-                reason="Blocked by AccessPreference" if blocked else None,
+                reason=reason,
             )
+            enabled, reason = o.is_enabled_diagnostic(HTTP_DIAG)
             # HTTP Diagnostic
             yield DiagnosticConfig(
                 HTTP_DIAG,
@@ -1096,10 +1011,10 @@ class ManagedObjectProfile(NOCModel):
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
                 checks=[Check("HTTP"), Check("HTTPS")],
-                blocked=False,
+                blocked=not enabled,
                 run_policy="D",  # Not supported
                 run_order="S",
-                reason=None,
+                reason=reason,
             )
         # Access Diagnostic (Blocked - block SNMP & CLI Check ?
         yield DiagnosticConfig(
@@ -1120,46 +1035,33 @@ class ManagedObjectProfile(NOCModel):
             workflow_enabled_event="checked",
             reason="Disable Ping check" if not self.enable_ping else None,
         )
-        policy, reason = self.address_resolution_policy, ""
-        if o:
-            policy, reason = o.get_address_resolution_policy(), ""
-        if policy == "D":
-            reason = "Disabled by 'Resolution Policy Settings'"
+        enabled, reason = o.is_enabled_diagnostic(RESOLVER_DIAG)
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             RESOLVER_DIAG,
             display_description="Resolve Address by FQDN",
-            show_in_display=policy != "D",
-            blocked=policy == "D",
+            show_in_display=not enabled,
+            blocked=not enabled,
             run_policy="D",
             reason=reason,
         )
-        if not o or Interaction.Event in o.interactions:
-            fm_policy = o.get_event_processing_policy() if o else self.event_processing_policy
-            blocked, reason = False, ""
-            if fm_policy == "d":
-                blocked, reason = True, "Disable by Event Processing policy"
-            elif o and o.trap_source_type == "d":
-                blocked, reason = True, "Disable by source settings"
+        if Interaction.Event in o.interactions:
+            enabled, reason = o.is_enabled_diagnostic(SNMPTRAP_DIAG)
             # FM
             yield DiagnosticConfig(
                 # Reset if change IP/Policy change
                 SNMPTRAP_DIAG,
                 display_description="Received SNMP Trap from device",
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="D",
                 reason=reason,
             )
-            blocked, reason = False, ""
-            if fm_policy == "d":
-                blocked, reason = True, "Disable by Event Processing policy"
-            elif o and o.syslog_source_type == "d":
-                blocked, reason = True, "Disable by source settings"
+            enabled, reason = o.is_enabled_diagnostic(SYSLOG_DIAG)
             yield DiagnosticConfig(
                 # Reset if change IP/Policy change
                 SYSLOG_DIAG,
                 display_description="Received SYSLOG from device",
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="D",
                 reason=reason,
             )
@@ -1216,73 +1118,24 @@ class ManagedObjectProfile(NOCModel):
         return min(r) if r else self.metrics_default_interval
 
 
-@dataclass
-class GenericObject(object):
-    id: int
-    object_profile: int
-    diagnostics: Dict[str, Any]
-    effective_labels: List[str]
-    pool: str = "default"
-    access_preference = "S"
-
-    @property
-    def alarms_stream_and_partition(self):
-        return f"dispose.{self.pool}", 0
-
-    def iter_diagnostic_configs(self):
-        mop = ManagedObjectProfile.objects.get(id=int(self.object_profile))
-        yield from mop.iter_diagnostic_configs()
-
-
-def update_diagnostics_alarms(profile_id, **kwargs):
+def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
     """
     Update diagnostic statuses
     * if disable box - cleanup access alarms and reset diagnostic
     * if alarm_policy disabled - cleanup access alarms
     * if alarm_policy enabled - raise access alarms
-    :param profile_id:
-    :return:
+    Args:
+        profile_id:
+        box_alarm:
     """
     from noc.sa.models.managedobject import ManagedObject
 
-    for (
-        o_id,
-        pool_id,
-        fm_pool_id,
-        diagnostics,
-        enable_box_discovery,
-        box_alarm,
-        periodic_alarm,
-        el,
-    ) in (
-        ManagedObject.objects.filter(is_managed=True, object_profile=profile_id)
-        .filter(
-            d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
-            | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
-            | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
-        )
-        .values_list(
-            "id",
-            "pool",
-            "fm_pool",
-            "diagnostics",
-            "object_profile__enable_box_discovery",
-            "object_profile__box_discovery_alarm_policy",
-            "object_profile__periodic_discovery_alarm_policy",
-            "effective_labels",
-        )
+    for mo in ManagedObject.objects.filter(is_managed=True, object_profile=int(profile_id)).filter(
+        d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
+        | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
+        | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
     ):
-        fm_pool = fm_pool_id or pool_id
-        fm_pool = Pool.get_by_id(fm_pool)
-        o = GenericObject(
-            id=o_id,
-            object_profile=int(profile_id),
-            diagnostics=diagnostics,
-            pool=fm_pool.name,
-            effective_labels=list(el),
-        )
-        with DiagnosticHub(o, dry_run=False) as d:
-            d.sync_alarms(alarm_disable=box_alarm == "D" or not enable_box_discovery)
+        DiagnosticHub.sync_alarms(mo, list(mo.iter_diagnostics()), alarm_disable=box_alarm)
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

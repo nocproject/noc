@@ -14,7 +14,7 @@ from noc.fm.models.uptime import Uptime
 from noc.core.mx import send_message, MessageType
 from noc.config import config
 from noc.core.hash import hash_int
-from noc.core.wf.diagnostic import SNMP_DIAG
+from noc.core.diagnostic.hub import SNMP_DIAG
 
 
 class UptimeCheck(DiscoveryCheck):

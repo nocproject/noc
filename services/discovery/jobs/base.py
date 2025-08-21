@@ -51,7 +51,8 @@ from noc.core.cache.base import cache
 from noc.core.perf import metrics
 from noc.core.comp import smart_bytes
 from noc.core.wf.interaction import Interaction
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.diagnostic.hub import DiagnosticHub
 
 
 class MODiscoveryJob(PeriodicJob):

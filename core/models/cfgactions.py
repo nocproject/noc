@@ -12,7 +12,7 @@ from functools import partial
 from typing import Callable, Optional, Any, Dict
 
 # NOC Modules
-from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.diagnostic.types import DiagnosticState
 from noc.core.defer import call_later
 from noc.core.handler import get_handler
 from noc.core.models.cfginteractions import Interaction
