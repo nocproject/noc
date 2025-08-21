@@ -76,9 +76,10 @@ class AlarmRule(object):
     min_severity: Optional[int] = None
     max_severity: Optional[int] = None
     ttl_policy: str = "D"
-    clear_after_ttl: Optional[int] = 0
+    clear_after_delay: Optional[int] = None
     rewrite_alarm_class: Optional[AlarmClass] = None
     action: Optional[str] = None
+    rule_apply_delay: Optional[int] = None
     escalation_profile: Optional[EscalationProfile] = None
 
     def __init__(self, name, rid):
@@ -126,9 +127,13 @@ class AlarmRule(object):
             rule.min_severity = config["min_severity"]
         if "max_severity" in config:
             rule.max_severity = config["max_severity"]
-        if "ttl_policy" in config:
+        if "ttl_policy" in config and config.get("clear_after_delay"):
             rule.ttl_policy = config["ttl_policy"]
-            rule.clear_after_ttl = config["clear_after_ttl"]
+            rule.clear_after_delay = int(config["clear_after_delay"]) or None
+        if "rule_apply_delay" in config:
+            rule.rule_apply_delay = int(config["rule_apply_delay"]) or None
+        if "rewrite_alarm_class" in config:
+            rule.rewrite_alarm_class = AlarmClass.get_by_id(config["rewrite_alarm_class"])
         return rule
 
     @classmethod
