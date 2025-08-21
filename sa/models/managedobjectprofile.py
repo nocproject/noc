@@ -7,16 +7,13 @@
 
 # Python modules
 import operator
-import datetime
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Iterable, Any, Set
+from typing import Optional, List, Dict, Iterable, Set
 
 # Third-party modules
 import cachetools
-import orjson
-from django.db import connection as pg_connection
 from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
@@ -1121,24 +1118,6 @@ class ManagedObjectProfile(NOCModel):
         return min(r) if r else self.metrics_default_interval
 
 
-@dataclass
-class GenericObject(object):
-    id: int
-    object_profile: int
-    diagnostics: Dict[str, Any]
-    effective_labels: List[str]
-    pool: str = "default"
-    access_preference = "S"
-
-    @property
-    def alarms_stream_and_partition(self):
-        return f"dispose.{self.pool}", 0
-
-    def iter_diagnostic_configs(self):
-        mop = ManagedObjectProfile.objects.get(id=int(self.object_profile))
-        yield from mop.iter_diagnostic_configs()
-
-
 def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
     """
     Update diagnostic statuses
@@ -1147,6 +1126,7 @@ def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
     * if alarm_policy enabled - raise access alarms
     Args:
         profile_id:
+        box_alarm:
     """
     from noc.sa.models.managedobject import ManagedObject
 
@@ -1155,8 +1135,7 @@ def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
         | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
         | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
     ):
-        with DiagnosticHub(mo, dry_run=False) as d:
-            d.sync_alarms(alarm_disable=box_alarm)
+        DiagnosticHub.sync_alarms(mo, list(mo.iter_diagnostics()), alarm_disable=box_alarm)
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):

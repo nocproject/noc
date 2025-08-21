@@ -51,8 +51,6 @@ def save_document_diagnostics(
 
 def save_model_diagnostics(self, diagnostics: List[DiagnosticItem], dry_run: bool = False):
     """Update Model Instance diagnostics"""
-    from django.db import connection as pg_connection
-
     self.diagnostics = {d.diagnostic: d.get_value().model_dump() for d in diagnostics}
     if dry_run and not self.id:
         return
