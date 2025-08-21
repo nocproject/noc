@@ -17,6 +17,7 @@ from noc.core.mongo.connection import connect
 from noc.core.ioloop.util import run_sync
 from noc.core.clickhouse.loader import loader as bi_loader
 from noc.core.bi.dictionaries.loader import loader as bi_dict_loader
+from noc.core.datasources.loader import loader as report_ds_loader
 from noc.pm.models.metricscope import MetricScope
 from noc.main.models.pool import Pool
 
@@ -67,6 +68,11 @@ class Command(BaseCommand):
             bi_dict_model = bi_dict_loader[name]
             if bi_dict_model:
                 yield f"ch.{bi_dict_model._meta.db_table}"
+        # Datasource Reports
+        for name in report_ds_loader:
+            ds_report_model = report_ds_loader[name]
+            if ds_report_model.clickhouse_mirror():
+                yield f"ch.{ds_report_model._get_db_table()}"
 
     async def apply_stream_settings(self, slots: Optional[int] = None) -> bool:
         changed = False

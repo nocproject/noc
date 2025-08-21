@@ -76,3 +76,21 @@ def ensure_all_pm_scopes():
     ):
         c = connection(host=host, port=port, read_only=False)
         ensure_pm_scopes(c)
+
+
+def ensure_report_ds_scopes(connect=None):
+    from noc.core.datasources.loader import loader
+
+    logger.info("Ensuring Report BI")
+    changed = False
+    for ds in loader:
+        ds = loader[ds]
+        if not hasattr(ds, "name"):
+            continue
+        elif not ds.clickhouse_mirror():
+            logger.info("[%s] Clickhouse mirror not enabled. Skipping", ds.name)
+            continue
+        logger.info("Ensure Report DataSources %s", ds.name)
+        changed |= ds.ensure_table(connect=connect)
+        changed |= ds.ensure_views(connect=connect)
+    return changed
