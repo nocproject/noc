@@ -11,7 +11,7 @@ import logging
 import itertools
 from collections import defaultdict
 from functools import partial
-from typing import Optional, List, Dict, Any, Iterable, Tuple, Set
+from typing import Optional, List, Dict, Any, Iterable, Tuple, Set, Union
 
 # Third-party modules
 import orjson
@@ -105,7 +105,8 @@ class DiagnosticItem(BaseModel):
         super().__init__(**data)
         self._config = cfg
 
-    def __eq__(self, other: "DiagnosticItem") -> bool:
+    def __eq__(self, other: Union["DiagnosticItem", "DiagnosticValue"]) -> bool:
+        """Compare diagnostic by value"""
         if self.diagnostic != other.diagnostic:
             return False
         return (
@@ -138,9 +139,24 @@ class DiagnosticItem(BaseModel):
             return self.config.workflow_event
         return None
 
+    @property
+    def is_active(self) -> bool:
+        """
+        Check diagnostic has worked: Enabled or Failed state
+        """
+        if self.state == DiagnosticState.enabled or self.state == DiagnosticState.failed:
+            return True
+        return False
+
+    @property
+    def is_failed(self) -> bool:
+        return self.state == DiagnosticState.failed
+
     @classmethod
     def from_config(
-        cls, cfg: DiagnosticConfig, value: Optional[DiagnosticValue] = None,
+        cls,
+        cfg: DiagnosticConfig,
+        value: Optional[DiagnosticValue] = None,
     ) -> "DiagnosticItem":
         """Create item from config"""
         if cfg.blocked:
@@ -287,7 +303,7 @@ class DiagnosticHub(object):
     ):
         self.logger = logger or logging.getLogger(__name__)
         self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
-        self.__checks: Dict[str, Set[str]] = None
+        self.__checks: Optional[Dict[str, Set[str]]] = None
         self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
@@ -351,19 +367,16 @@ class DiagnosticHub(object):
         d = self.get(name)
         if d is None:
             return False
-        if d.state == DiagnosticState.enabled or d.state == DiagnosticState.failed:
-            return True
-        return False
+        return d.is_active
 
-    def get_object_diagnostic(self, name: str) -> Optional[DiagnosticItem]:
+    def get_object_diagnostic_value(self, name: str) -> Optional[DiagnosticValue]:
         """
         Get DiagnosticItem from Object
         Args:
             name: Diagnostic Name
         """
-        if name in self.__object.diagnostics:
-            return DiagnosticItem(**self.__object.diagnostics[name])
-        return DiagnosticItem(diagnostic=name)
+        values = self.__object.get_diagnostic_values()
+        return values.get(name)
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         for d in self:
@@ -551,7 +564,10 @@ class DiagnosticHub(object):
         changed = False
         for di_new in self:
             d_name = di_new.diagnostic
-            d_current = self.get_object_diagnostic(d_name)
+            d_current = self.get_object_diagnostic_value(d_name)
+            if not d_current:
+                new_diags.append(di_new)
+                continue
             if d_current == di_new and di_new.workflow_event:
                 self.logger.debug(
                     "[%s] Send Workflow Event: %s",
@@ -561,10 +577,7 @@ class DiagnosticHub(object):
                 wf_events.add(di_new.workflow_event)
             # Compare state
             if d_current.state != di_new.state:
-                if (
-                    d_current.state == DiagnosticState.failed
-                    or di_new.state == DiagnosticState.failed
-                ):
+                if d_current.state == DiagnosticState.failed or di_new.is_failed:
                     changed_state.add(d_name)
                 changed |= True
                 self.register_diagnostic_change(
@@ -587,74 +600,8 @@ class DiagnosticHub(object):
         if wf_events:
             # Bulk update/Get effective event
             self.__object.fire_event(list(wf_events)[0])
-        if changed_state:
-            self.__object.sync_diagnostic_alarms(changed_state)
-
-    def sync_diagnostics_old(self):
-        """
-        Sync diagnostics with object
-        * sync state
-        * register change
-        * sync alarms
-        * save database
-        * clear cache
-        """
-        if self.bulk_mode:
-            self.logger.debug("Bulk mode. Sync blocked")
-            self.bulk_changes += 1
-            return
-        changed_state = set()
-        updated = []
-        for d_new in self:
-            d_name = d_new.diagnostic
-            d_current = self.get_object_diagnostic(d_name)
-            # Diff
-            if d_new.workflow_event:
-                self.logger.debug(
-                    "[%s] Send Workflow Event: %s",
-                    d_name,
-                    d_new.workflow_event,
-                )
-                self.__object.fire_event(d_new.workflow_event)
-            if d_current == d_new:
-                self.logger.debug("[%s] Diagnostic Same, next.", d_name)
-                continue
-            self.logger.info("[%s] Update object diagnostic", d_name)
-            if d_current.state != d_new.state:
-                if (
-                    d_current.state == DiagnosticState.failed
-                    or d_new.state == DiagnosticState.failed
-                ):
-                    changed_state.add(d_name)
-                self.register_diagnostic_change(
-                    d_name,
-                    state=d_new.state,
-                    from_state=d_current.state,
-                    reason=d_new.reason,
-                    ts=d_new.changed,
-                )
-                if d_new.state == DiagnosticState.enabled and d_new.config.workflow_enabled_event:
-                    self.__object.fire_event(d_new.config.workflow_enabled_event)
-            self.__object.diagnostics[d_name] = d_new.model_dump()
-            updated += [d_new]
-        removed = set(self.__object.diagnostics) - set(self.__diagnostics)
-        if changed_state:
-            self.sync_alarms(list(changed_state))
-        if updated or removed:
-            self.__object.effective_labels = list(
-                sorted(
-                    [
-                        ll
-                        for ll in self.__object.effective_labels
-                        if not ll.startswith(DIAGNOCSTIC_LABEL_SCOPE)
-                    ]
-                    + [
-                        f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"
-                        for d in self.__diagnostics.values()
-                    ]
-                )
-            )
-            self.sync_with_object(updated, list(removed))
+        if changed_state and self.sync_alarm:
+            self.sync_alarms(self.__object, new_diags)
 
     def sync_with_object(
         self,
@@ -697,14 +644,23 @@ class DiagnosticHub(object):
             )
         self.__object._reset_caches(self.__object.id)
 
-    def sync_alarms(self, diagnostics: Optional[List[str]] = None, alarm_disable: bool = False):
+    @classmethod
+    def sync_alarms(
+        cls,
+        o: Any,
+        diagnostics: List[DiagnosticItem],
+        alarm_disable: bool = False,
+        dry_run: bool = False,
+    ):
         """
         Raise & clear Alarm for diagnostic. Only diagnostics with alarm_class set will be synced.
         If diagnostics param is set and alarm_class is not set - clear alarm
          For dependent - Group alarm base on diagnostic with alarm for depended
-        :param diagnostics: If set - sync only params diagnostic and depends
-        :param alarm_disable: Disable alarm by settings. Clear active alarm
-        :return:
+         Args:
+            o: object
+            diagnostics: If set - sync only params diagnostic and depends
+            alarm_disable: Disable alarm by settings. Clear active alarm
+            dry_run: Not send ensure event
         """
         from noc.core.service.loader import get_service
 
@@ -716,8 +672,8 @@ class DiagnosticHub(object):
         alarm_config: Dict[str, Dict[str, Any]] = {}  # diagnostic -> AlarmClass Map
         messages: List[Dict[str, Any]] = []  # Messages for send dispose
         processed = set()
-        diagnostics = set(diagnostics or [])
-        for d in self:
+        diagnostics = {d.diagnostic: d for d in diagnostics}
+        for d in diagnostics.values():
             d_name = d.diagnostic
             dc = d.config
             if not dc.alarm_class:
@@ -728,31 +684,20 @@ class DiagnosticHub(object):
             }
             if d_name in processed:
                 continue
-            if diagnostics and not dc.dependent and dc.diagnostic not in diagnostics:
-                # Skip non-changed diagnostics
-                continue
-            if diagnostics and dc.dependent and not diagnostics.intersection(set(dc.dependent)):
-                # Skip non-affected depended diagnostics
-                continue
             if dc.dependent:
                 groups[dc.diagnostic] = []
                 for d_name in dc.dependent:
-                    if d_name not in self:
+                    if d_name not in diagnostics:
                         continue
-                    dd = self[d_name]
-                    if (
-                        dd
-                        and dd.state == DiagnosticState.failed
-                        and self.sync_alarm
-                        and not alarm_disable
-                    ):
+                    dd = diagnostics[d_name]
+                    if dd and dd.is_failed and not alarm_disable:
                         groups[dc.diagnostic] += [{"diagnostic": d_name, "reason": dd.reason or ""}]
                     processed.add(d_name)
-            elif d and d.state == d.state.failed and self.sync_alarm and not alarm_disable:
+            elif d and d.state == d.state.failed and not alarm_disable:
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
-                    "reference": f"dc:{self.__object.id}:{d.diagnostic}",
-                    "managed_object": str(self.__object.id),
+                    "reference": f"dc:{o.id}:{d.diagnostic}",
+                    "managed_object": str(o.id),
                     "$op": "raise",
                     "alarm_class": dc.alarm_class,
                     "labels": dc.alarm_labels or [],
@@ -761,7 +706,7 @@ class DiagnosticHub(object):
             else:
                 alarms[dc.diagnostic] = {
                     "timestamp": now,
-                    "reference": f"dc:{self.__object.id}:{dc.diagnostic}",
+                    "reference": f"dc:{o.id}:{dc.diagnostic}",
                     "$op": "clear",
                 }
         # Group Alarm
@@ -769,13 +714,13 @@ class DiagnosticHub(object):
             messages += [
                 {
                     "$op": "ensure_group",
-                    "reference": f"dc:{d}:{self.__object.id}",
+                    "reference": f"dc:{d}:{o.id}",
                     "alarm_class": alarm_config[d]["alarm_class"],
                     "alarms": [
                         {
-                            "reference": f'dc:{dd["diagnostic"]}:{self.__object.id}',
+                            "reference": f'dc:{dd["diagnostic"]}:{o.id}',
                             "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
-                            "managed_object": str(self.__object.id),
+                            "managed_object": str(o.id),
                             "timestamp": now,
                             "labels": alarm_config[dd["diagnostic"]]["alarm_labels"],
                             "vars": {"reason": dd["reason"] or ""},
@@ -789,21 +734,22 @@ class DiagnosticHub(object):
             if d in processed:
                 continue
             messages += [alarms[d]]
-        if self.dry_run:
-            self.logger.info("Sync Diagnostic Alarm: %s", messages)
+        if dry_run:
+            # self.logger.info("Sync Diagnostic Alarm: %s", messages)
+            print(f"Sync Diagnostic Alarm: {messages}")
             return
         # Send Dispose
         svc = get_service()
         for msg in messages:
-            stream, partition = self.__object.alarms_stream_and_partition
+            stream, partition = o.alarms_stream_and_partition
             svc.publish(
                 orjson.dumps(msg),
                 stream=stream,
                 partition=partition,
             )
-            self.logger.debug(
-                "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
-            )
+            # self.logger.debug(
+            #    "Dispose: %s", orjson.dumps(msg, option=orjson.OPT_INDENT_2).decode("utf-8")
+            # )
 
     def register_diagnostic_change(
         self,
@@ -830,6 +776,7 @@ class DiagnosticHub(object):
         from noc.core.service.loader import get_service
         from noc.core.mx import DEFAULT_ENCODING, MessageType
 
+        from_state = from_state or DiagnosticState.unknown
         if self.dry_run:
             self.logger.info(
                 "[%s] Register change: %s -> %s",
