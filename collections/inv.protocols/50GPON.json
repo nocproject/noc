@@ -1,5 +1,5 @@
 {
-    "name": "50GPON",
+    "name": "50G-PON",
     "code": "50GPON",
     "$collection": "inv.protocols",
     "uuid": "e2562349-9896-4c8c-b099-cd152464f68c",

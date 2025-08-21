@@ -105,6 +105,29 @@ _CT_PROTOCOLS = {}
 # * direction - list of possible directions
 # * protocols - list of possible protocols. At least one protocol must be met
 CONNECTION_CHECKLIST = {
+    "Optical | SC": {
+        "directions": "s",
+        "protocols": [
+            "100BASEFX",
+            "100BASELX10",
+            "1000BASESX",
+            "1000BASELX",
+            "1000BASEEX",
+            "1000BASEZX",
+            "1000BASECWDM",
+            "1000BASELX10",
+            "10GBASESR",
+            "10GBASELR",
+            "10GBASEER",
+            "10GBASEZR",
+            "GEPON",
+            "GPON",
+            "XGPON",
+            "XGSPON",
+            "NGPON2",
+            "50GPON",
+        ],
+    },
     "Electrical | DB9": {
         "directions": "s",
         "protocols": [">RS232", ">DryContact", "<RS232", "<RS485-A", "<RS485-B"],
@@ -172,19 +195,21 @@ CONNECTION_CHECKLIST = {
             "TransEth10G",
             "OTU1",
             "OTU2",
+            "XGPON",
+            "XGSPON",
         ],
     },
     "Transceiver | SFP+ | Cisco": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP+ | Force10": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP+ | Juniper": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP28": {
         "directions": ["i", "o"],
@@ -196,7 +221,7 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | QSFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth40G"],
+        "protocols": ["TransEth1G", "TransEth40G", "NGPON2"],
     },
     "Transceiver | QSFP+": {
         "directions": ["i", "o"],
