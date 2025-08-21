@@ -122,6 +122,8 @@ CONNECTION_CHECKLIST = {
             "10GBASEZR",
             "GEPON",
             "GPON",
+            ">GPON",
+            "<GPON",
             "XGPON",
             "XGSPON",
             "NGPON2",
