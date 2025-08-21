@@ -13,8 +13,7 @@ from collections import defaultdict
 
 
 # Third-party modules
-from aiokafka import AIOKafkaClient, AIOKafkaConsumer
-from aiokafka.structs import TopicPartition
+from aiokafka import AIOKafkaClient, AIOKafkaConsumer, TopicPartition
 
 # NOC modules
 from .base import BaseCollector, Metric
@@ -68,6 +67,7 @@ class KafkaStreamCollector(BaseCollector):
     async def get_offsets(
         self, bootstrap_servers: List[str], partitions: List[TopicPartition]
     ) -> List[PartitionOffset]:
+        ch_cluster = config.clickhouse.cluster_topology.split(",")
         async with AIOKafkaConsumer(
             bootstrap_servers=bootstrap_servers,
             client_id=self.CLIENT_ID,
@@ -76,38 +76,36 @@ class KafkaStreamCollector(BaseCollector):
         ) as consumer:
             # Get last offsets for all partitions
             end_offsets = await consumer.end_offsets(partitions)
-            # Read cursor partitions
-            cursor_partitions = set()
-            for p in partitions:
-                if p.topic == "__consumer_offsets":
-                    p_end = end_offsets.get(p)
-                    if p_end:
-                        cursor_partitions.add(p)
-            # Read from all cursor positionts
-            offsets: DefaultDict[TopicPartition, Dict[str, int]] = defaultdict(dict)
-            if cursor_partitions:
-                consumer.assign(cursor_partitions)
-                # await consumer.seek_to_beginning(*cursor_partitions)
-                async for msg in consumer:
-                    if not msg.key or not msg.value:
-                        continue
-                    po = self.parse_cursor_key(msg.key)
-                    if not po:
-                        continue
-                    offset = self.parse_cursor_offset(msg.value)
-                    if offset is None:
-                        continue
-                    offsets[po.topic_partition][po.group] = offset
-                    cp = TopicPartition(topic=msg.topic, partition=msg.partition)
-                    if cp in cursor_partitions and msg.offset + 1 >= end_offsets[cp]:
-                        cursor_partitions.remove(cp)
-                        if not cursor_partitions:
-                            break
-            return [
-                PartitionOffset(topic_partition=p, end_offset=end_offsets[p], cursors=offsets[p])
-                for p in partitions
-                if not p.topic.startswith("__")
-            ]
+        # Fetch offsets
+        offsets: DefaultDict[TopicPartition, Dict[str, int]] = defaultdict(dict)
+        #
+        offset_groups: DefaultDict[str, List[TopicPartition]] = defaultdict(list)
+        for p in partitions:
+            if p.topic.startswith("ch."):
+                for replica in range(0, int(ch_cluster[p.partition])):
+                    offset_groups[f"chwriter-{replica}"].append(p)
+                continue
+            if "." in p.topic:
+                name = p.topic.split(".", 1)[0]
+            else:
+                name = p.topic
+            if name in self.TOPIC_CURSORS:
+                offset_groups[self.TOPIC_CURSORS[name]].append(p)
+        for g, parts in offset_groups.items():
+            async with AIOKafkaConsumer(
+                bootstrap_servers=bootstrap_servers,
+                group_id=g,
+                client_id=self.CLIENT_ID,
+                enable_auto_commit=False,
+            ) as consumer:
+                r = await consumer._coordinator.fetch_committed_offsets(parts)
+                for pp, offset in r.items():
+                    offsets[pp][g] = offset.offset
+        return [
+            PartitionOffset(topic_partition=p, end_offset=end_offsets[p], cursors=offsets[p])
+            for p in partitions
+            if not p.topic.startswith("__")
+        ]
 
     @staticmethod
     def parse_cursor_key(key: bytes) -> Optional[PartitionCursor]:
