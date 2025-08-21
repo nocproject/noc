@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Collection utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,13 +11,15 @@ import zlib
 import csv
 import shutil
 import hashlib
-import uuid
-from collections import namedtuple
+from uuid import UUID
 import sys
 import threading
 import operator
 from base64 import b85decode
 from typing import Tuple, Dict
+from pathlib import Path
+from typing import Iterable, Dict, Any, Set, Union
+from dataclasses import dataclass
 
 # Third-party modules
 import orjson
@@ -46,6 +48,24 @@ from django.db.utils import IntegrityError
 state_lock = threading.Lock()
 
 
+@dataclass
+class Item(object):
+    """
+    Object in collection.
+
+    Attributes:
+        uuid: Item's UUID
+        path: File path
+        hash: Item's hash
+        data: Data
+    """
+
+    uuid: str
+    path: Path
+    hash: str
+    data: Dict[str, Any]
+
+
 class Collection(object):
     PREFIX = "collections"
     CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
@@ -54,27 +74,26 @@ class Collection(object):
 
     _MODELS = {}
 
-    Item = namedtuple("Item", ["uuid", "path", "hash", "data"])
     _state_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __init__(self, name, stdout=None):
         self.name = name
         self._model = None
+        self._api_version = self.DEFAULT_API_VERSION
         self.ref_cache: Dict[Tuple[Document, str, str], Document] = {}
         self._name_field = None
         self.stdout = stdout or sys.stdout
         self.partial_errors = {}
 
-    def get_path(self):
-        paths = []
+    def iter_path(self) -> Iterable[Path]:
+        """Get directories containing collection items."""
         for cp in config.get_customized_paths(self.PREFIX, prefer_custom=True):
-            path = os.path.join(cp, self.name)
-            if os.path.exists(path):
-                paths += [path]
-        return paths
+            path = Path(cp, self.name)
+            if path.exists():
+                yield path
 
     @classmethod
-    def iter_collections(cls):
+    def iter_collections(cls) -> "Iterable[Collection]":
         from noc.models import COLLECTIONS, get_model
 
         for c in COLLECTIONS:
@@ -92,26 +111,28 @@ class Collection(object):
             if not self._MODELS:
                 list(self.iter_collections())
             self._model = self._MODELS[self.name]
+            if is_document(self._model):
+                self._api_version = self._model._meta.get(
+                    "json_api_version", self.DEFAULT_API_VERSION
+                )
         return self._model
 
     @property
-    def name_field(self):
-        if not self._name_field:
-            if hasattr(self.model, "name"):
-                self._name_field = "name"
-                return "name"
-            elif hasattr(self.model, "json_name"):
-                self._name_field = "json_name"
-                return "json_name"
-            else:
-                for spec in self.model._meta["index_specs"]:
-                    if spec.get("unique") and len(spec["fields"]) == 1:
-                        nf = spec["fields"][0][0]
-                        self._name_field = nf
-                        return nf
-                raise ValueError("Cannot find unique index")
-        else:
+    def name_field(self) -> str:
+        if self._name_field:
             return self._name_field
+        if hasattr(self.model, "name"):
+            self._name_field = "name"
+            return "name"
+        if hasattr(self.model, "json_name"):
+            self._name_field = "json_name"
+            return "json_name"
+        for spec in self.model._meta["index_specs"]:
+            if spec.get("unique") and len(spec["fields"]) == 1:
+                nf = spec["fields"][0][0]
+                self._name_field = nf
+                return nf
+        raise ValueError("Cannot find unique index")
 
     def get_state_collection(self):
         """
@@ -120,7 +141,7 @@ class Collection(object):
         """
         return get_db()[self.STATE_COLLECTION]
 
-    def get_state(self):
+    def get_state(self) -> Dict[str, str]:
         """
         Returns collection state as a dict of UUID -> hash
         :return:
@@ -130,18 +151,21 @@ class Collection(object):
         cs = coll.find_one({"_id": self.name})
         if cs:
             return orjson.loads(zlib.decompress(smart_bytes(cs["state"])))
+        return self.get_legacy_state()
+
+    def get_legacy_state(self) -> Dict[str, str]:
         # Fallback to legacy local
-        lpath = self.get_legacy_state_path()
+        path = self.get_legacy_state_path()
         state = {}
-        if os.path.exists(lpath):
-            with open(lpath) as f:
+        if path.exists():
+            with open(path) as f:
                 reader = csv.reader(f)
                 next(reader)  # Skip header
-                for name, r_uuid, path, r_hash in reader:
+                for _name, r_uuid, _path, r_hash in reader:
                     state[r_uuid] = r_hash
         return state
 
-    def save_state(self, state):
+    def save_state(self, state: Dict[str, str]) -> None:
         """
         Save collection state
         :param state:
@@ -154,13 +178,14 @@ class Collection(object):
             upsert=True,
         )
         # Remove legacy state
-        lpath = self.get_legacy_state_path()
-        if os.path.isfile(lpath):
-            shutil.move(lpath, lpath + ".bak")
+        path = self.get_legacy_state_path()
+        if path.exists():
+            bak = path.with_suffix(".bak")
+            shutil.move(str(path), str(bak))
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_state_cache"), lock=lambda _: state_lock)
-    def get_builtins(cls, name):
+    def get_builtins(cls, name: str) -> Set[str]:
         """
         Returns set of UUIDs for collection
         :param name:
@@ -168,67 +193,69 @@ class Collection(object):
         """
         return set(Collection(name).get_state())
 
-    def get_legacy_state_path(self):
+    def get_legacy_state_path(self) -> Path:
         """
         Return legacy CSV state file path
         :return:
         """
         parts = self.name.split(".")
-        return os.path.join("local", "collections", parts[0], "%s.csv" % parts[1])
+        return Path("local", "collections", parts[0], parts[1]).with_suffix(".csv")
 
     def get_changed_status(self):
         """
-        Return initially changed status
-        :return:
+        Return initially changed status.
         """
-        return os.path.isfile(self.get_legacy_state_path())
+        return self.get_legacy_state_path().exists()
 
-    def get_items(self):
+    def item_hash(self, x: str) -> str:
         """
-        Returns dict of UUID -> Collection.Item
-        containing new state
-        :return:
+        Calculate item hash.
+
+        Args:
+            x: data
+
+        Returns:
+            Calculated hash
         """
+        h = hashlib.sha256(x.encode()).hexdigest()
+        if self._api_version == self.DEFAULT_API_VERSION:
+            return h
+        return f"{self._api_version}:{h}"
 
-        def item_hash_default(x):
-            return hashlib.sha256(smart_bytes(x)).hexdigest()
-
-        def item_hash_tagged(x):
-            return "%s:%s" % (api_version, item_hash_default(x))
-
-        # Get current API version and select proper hashing function
-        # And build proper hashing function
-        if is_document(self.model):
-            api_version = self.model._meta.get("json_api_version", self.DEFAULT_API_VERSION)
-        else:
-            api_version = self.DEFAULT_API_VERSION
-        if api_version == self.DEFAULT_API_VERSION:
-            item_hash = item_hash_default
-        else:
-            item_hash = item_hash_tagged
-        #
+    def get_items(self) -> Dict[str, Item]:
+        """
+        Returns dict of UUID -> Item containing new state.
+        """
         items = {}
-        for p in self.get_path():
-            for root, dirs, files in os.walk(p):
-                for cf in files:
-                    if not cf.endswith(".json"):
-                        continue
-                    fp = os.path.join(root, cf)
-                    with open(fp) as f:
-                        data = f.read()
-                    try:
-                        jdata = orjson.loads(data)
-                    except ValueError as e:
-                        raise ValueError("Error load %s: %s" % (fp, e))
-                    if "uuid" not in jdata:
-                        raise ValueError("Invalid JSON %s: No UUID" % fp)
-                    if jdata["uuid"] not in items:
-                        items[jdata["uuid"]] = self.Item(
-                            uuid=jdata["uuid"], path=fp, hash=item_hash(data), data=jdata
-                        )
+        for p in self.iter_path():
+            for fp in p.rglob("*.json"):
+                if fp.name.startswith("."):
+                    continue
+                for item in self.iter_items_from_file(fp):
+                    if item.uuid not in items:
+                        items[item.uuid] = item
         return items
 
-    def get_fields(self, model: None):
+    def iter_items_from_file(self, path: Path) -> Iterable[Item]:
+        """
+        Iterate all items from file.
+        """
+        # Read file
+        with open(path) as f:
+            data = f.read()
+        # Decode json
+        try:
+            jdata = orjson.loads(data)
+        except ValueError as e:
+            msg = f"Error load {path}: {e}"
+            raise ValueError(msg)
+        # Read items
+        if "uuid" not in jdata:
+            msg = f"Invalid JSON {path}: No UUID"
+            raise ValueError(msg)
+        yield Item(uuid=jdata["uuid"], path=path, hash=self.item_hash(data), data=jdata)
+
+    def get_fields(self, model: Union[Document, NOCModelBase]):
         model = model or self.model
         if not isinstance(model, NOCModelBase):
             # Check Django Model
@@ -244,7 +271,7 @@ class Collection(object):
             if k.startswith("$"):
                 continue  # Ignore $name
             if k == "uuid":
-                r["uuid"] = uuid.UUID(v)
+                r["uuid"] = UUID(v)
                 continue
             # Dereference ref__name lookups
             if "__" in k:
@@ -439,7 +466,7 @@ class Collection(object):
         for d in self.model._get_collection().find(
             {"uuid": {"$type": "string"}}, {"_id": 1, "uuid": 1}
         ):
-            bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"uuid": uuid.UUID(d["uuid"])}})]
+            bulk += [UpdateOne({"_id": d["_id"]}, {"$set": {"uuid": UUID(d["uuid"])}})]
         if bulk:
             self.stdout.write("[%s] Fixing %d UUID\n" % (self.name, len(bulk)))
             self.model._get_collection().bulk_write(bulk)
