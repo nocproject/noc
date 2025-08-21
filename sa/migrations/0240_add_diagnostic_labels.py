@@ -13,8 +13,8 @@ from pymongo import InsertOne, UpdateOne
 
 # NOC modules
 from noc.core.migration.base import BaseMigration
-from noc.core.wf.diagnostic import (
-    DiagnosticState,
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.diagnostic.hub import (
     PROFILE_DIAG,
     SNMP_DIAG,
     CLI_DIAG,

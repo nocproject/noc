@@ -12,7 +12,7 @@ from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
-from noc.core.wf.diagnostic import SYSLOG_DIAG
+from noc.core.diagnostic.hub import SYSLOG_DIAG
 
 
 class CfgSyslogDataStream(DataStream):

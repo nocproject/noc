@@ -30,8 +30,8 @@ from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
 from noc.core.validators import is_objectid
-from noc.core.wf.diagnostic import (
-    DiagnosticState,
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.diagnostic.hub import (
     SNMP_DIAG,
     CLI_DIAG,
     PROFILE_DIAG,

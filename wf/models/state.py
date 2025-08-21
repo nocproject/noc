@@ -38,7 +38,8 @@ from noc.core.defer import defer
 from noc.core.hash import hash_int
 from noc.core.change.decorator import change
 from noc.core.wf.interaction import Interaction
-from noc.core.wf.diagnostic import DiagnosticConfig, DiagnosticState, SA_DIAG, ALARM_DIAG
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
+from noc.core.diagnostic.hub import SA_DIAG, ALARM_DIAG
 from noc.config import config
 from noc.models import get_model_id, get_model, is_document
 from noc.main.models.remotesystem import RemoteSystem

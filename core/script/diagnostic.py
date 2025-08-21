@@ -12,7 +12,7 @@ from typing import List, Iterable, Optional, Tuple, Dict, Any
 # NOC modules
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.core.checkers.base import Check, CheckResult
-from noc.core.wf.diagnostic import DiagnosticConfig, CheckStatus
+from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.sa.models.profile import GENERIC_PROFILE
 

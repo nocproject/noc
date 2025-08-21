@@ -11,7 +11,7 @@ from collections import namedtuple
 
 # NOC modules
 from noc.core.datastream.base import DataStream
-from noc.core.wf.diagnostic import SNMPTRAP_DIAG
+from noc.core.diagnostic.hub import SNMPTRAP_DIAG
 from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem

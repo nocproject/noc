@@ -21,7 +21,7 @@ from typing import Tuple, Union, Optional, Iterable, List, Dict, AsyncIterable, 
 import polars as pl
 
 # NOC modules
-from noc.core.wf.diagnostic import DiagnosticState
+from noc.core.diagnostic.types import DiagnosticState
 from noc.core.clickhouse.connect import ClickhouseClient, connection
 from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model

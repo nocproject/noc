@@ -14,7 +14,8 @@ from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.service.client import open_sync_rpc
 from noc.core.service.error import RPCError
-from noc.core.wf.diagnostic import DiagnosticState, DiagnosticHub
+from noc.core.diagnostic.types import DiagnosticState
+from noc.core.diagnostic.hub import DiagnosticHub
 from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
