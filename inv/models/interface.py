@@ -41,7 +41,7 @@ from noc.sa.models.service import Service
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.wf.decorator import workflow
-from noc.core.wf.diagnostic import DIAGNOCSTIC_LABEL_SCOPE
+from noc.core.diagnostic.hub import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
 from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile

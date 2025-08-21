@@ -31,7 +31,7 @@ import cachetools
 # NOC modules
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
-from noc.core.wf.diagnostic import DiagnosticConfig
+from noc.core.diagnostic.types import DiagnosticConfig
 from noc.core.checkers.base import Check
 from noc.fm.models.alarmclass import AlarmClass
 from noc.main.models.label import Label
