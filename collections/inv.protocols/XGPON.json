@@ -1,0 +1,10 @@
+{
+    "name": "XG-PON",
+    "code": "XGPON",
+    "$collection": "inv.protocols",
+    "uuid": "8b74a2c7-32f4-49c2-a9cd-fa9d742f98cc",
+    "description": "XG-PON - ITU-T G.987",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}
