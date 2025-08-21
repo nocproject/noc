@@ -427,7 +427,16 @@ class CorrelatorService(FastAPIService):
         """Apply alarm rules"""
         groups, jobs = {}, []
         for rule in self.alarm_rule_set.iter_rules(alarm):
-            self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
+            after_ts = None
+            if rule.rule_apply_delay:
+                after_ts = (
+                    alarm.timestamp + datetime.timedelta(seconds=rule.rule_apply_delay)
+                ).replace(microsecond=0)
+                self.logger.info(
+                    "[%s] Processed rule: %s, After: %s", alarm.id, rule.name, after_ts
+                )
+            else:
+                self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
             # Calculate Severity and to match
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
@@ -443,17 +452,28 @@ class CorrelatorService(FastAPIService):
                 )
             else:
                 alarm.stop_watch(Effect.STOP_CLEAR, key=str(rule.id))
-            if rule.rewrite_alarm_class:
-                # Alarm Rewrite Class ? Compat variables ?
-                ...
+            if rule.rewrite_alarm_class and rule.rewrite_alarm_class.allow_rewrite(
+                alarm.alarm_class
+            ):
+                alarm.add_watch(
+                    Effect.REWRITE_ALARM_CLASS,
+                    key=str(rule.id),
+                    alarm_class=str(rule.rewrite_alarm_class.id),
+                    after=after_ts,
+                )
+                if not after_ts:
+                    alarm.refresh_alarm_class(dry_run=True)
+            else:
+                alarm.stop_watch(Effect.REWRITE_ALARM_CLASS, key=str(rule.id))
+                alarm.refresh_alarm_class()
             job = rule.get_job(alarm)
             if job:
                 jobs.append(job)
-            if rule.clear_after_ttl:
+            if rule.clear_after_delay:
                 if rule.ttl_policy == "C":
-                    after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_ttl)
+                    after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_delay)
                 else:
-                    after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_ttl)
+                    after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_delay)
                 alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
             else:
                 alarm.stop_watch(Effect.CLEAR_ALARM, key="")
