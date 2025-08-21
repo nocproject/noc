@@ -130,7 +130,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                       uiStyle: "medium",
                     },
                     {
-                        name: "clear_after_ttl",
+                        name: "clear_after_delay",
                         xtype: "numberfield",
                         fieldLabel: __("Clear After (sec.)"),
                         allowBlank: true,
@@ -147,23 +147,42 @@ Ext.define("NOC.fm.alarmrule.Application", {
                     allowBlank: true
                 },
                 {
-                  name: "rule_action",
-                  xtype: "combobox",
-                  fieldLabel: __("Rule Action"),
-                  store: [
-                    ["continue", __("Continue")],
-                    ["drop", __("Drop Alarm")],
-                    ["rewrite", __("Rewrite")]
-                  ],
-                  value: "continue",
-                  uiStyle: "medium",
-                },
-                {
-                    name: "alarm_class",
-                    xtype: "fm.alarmclass.LookupField",
-                    fieldLabel: __("Alarm Class"),
-                    uiStyle: "large",
-                    allowBlank: true
+                  xtype: "fieldset",
+                  title: __("Action"),
+                  layout: "hbox",
+                  defaults: {
+                    labelAlign: "left",
+                    margin: 5,
+                  },
+                  items: [
+                    {
+                      name: "rule_action",
+                      xtype: "combobox",
+                      fieldLabel: __("Rule Action"),
+                      store: [
+                        ["continue", __("Continue")],
+                        ["drop", __("Drop Alarm")],
+                        ["rewrite", __("Rewrite")]
+                      ],
+                      value: "continue",
+                      uiStyle: "medium",
+                    },
+                    {
+                        name: "rule_apply_delay",
+                        xtype: "numberfield",
+                        fieldLabel: __("Apply After (sec.)"),
+                        allowBlank: true,
+                        min: 0,
+                        uiStyle: "small"
+                    },
+                    {
+                        name: "alarm_class",
+                        xtype: "fm.alarmclass.LookupField",
+                        fieldLabel: __("Alarm Class"),
+                        uiStyle: "large",
+                        allowBlank: true
+                    }
+                  ]
                 },
                 {
                     name: "groups",
