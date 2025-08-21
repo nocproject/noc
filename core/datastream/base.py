@@ -331,7 +331,7 @@ class DataStream(object):
             meta = cls.get_meta(data)
             meta_headers = cls.get_meta_headers(data)
             data = cls.clean_meta_fields(data)
-            cls.update_diagnostic_state(obj_id)
+            # cls.update_diagnostic_state(obj_id)
             return data, meta, meta_headers
         except KeyError as e:
             cls.update_diagnostic_state(obj_id, is_blocked=True, reason=str(e))
