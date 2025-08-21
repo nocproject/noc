@@ -936,13 +936,13 @@ class ManagedObjectProfile(NOCModel):
                 ]
             else:
                 s_checks = [Check(name="SNMPv3", address=o.address, credential=cred)]
-            blocked, reason = o.is_enabled_diagnostic(SNMP_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(SNMP_DIAG)
             yield DiagnosticConfig(
                 SNMP_DIAG,
                 display_description="Check Device response by SNMP request",
                 checks=s_checks,
                 diagnostic_handler="noc.core.script.diagnostic.SNMPSuggestsDiagnostic",
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="F",
                 run_order="S",
                 discovery_box=True,
@@ -951,7 +951,7 @@ class ManagedObjectProfile(NOCModel):
                 alarm_labels=["noc::access::method::SNMP"],
                 reason=reason,
             )
-            blocked, reason = o.is_enabled_diagnostic(PROFILE_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(PROFILE_DIAG)
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
@@ -989,7 +989,7 @@ class ManagedObjectProfile(NOCModel):
             ]
             if o.scheme == SSH:
                 checks.reverse()
-            blocked, reason = o.is_enabled_diagnostic(CLI_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(CLI_DIAG)
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
@@ -1000,12 +1000,12 @@ class ManagedObjectProfile(NOCModel):
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="F",
                 run_order="S",
                 reason=reason,
             )
-            blocked, reason = o.is_enabled_diagnostic(HTTP_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(HTTP_DIAG)
             # HTTP Diagnostic
             yield DiagnosticConfig(
                 HTTP_DIAG,
@@ -1014,7 +1014,7 @@ class ManagedObjectProfile(NOCModel):
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::HTTP"],
                 checks=[Check("HTTP"), Check("HTTPS")],
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="D",  # Not supported
                 run_order="S",
                 reason=reason,
@@ -1038,33 +1038,33 @@ class ManagedObjectProfile(NOCModel):
             workflow_enabled_event="checked",
             reason="Disable Ping check" if not self.enable_ping else None,
         )
-        blocked, reason = o.is_enabled_diagnostic(RESOLVER_DIAG)
+        enabled, reason = o.is_enabled_diagnostic(RESOLVER_DIAG)
         yield DiagnosticConfig(
             # Reset if change IP/Policy change
             RESOLVER_DIAG,
             display_description="Resolve Address by FQDN",
-            show_in_display=not blocked,
-            blocked=blocked,
+            show_in_display=not enabled,
+            blocked=not enabled,
             run_policy="D",
             reason=reason,
         )
         if Interaction.Event in o.interactions:
-            blocked, reason = o.is_enabled_diagnostic(SNMPTRAP_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(SNMPTRAP_DIAG)
             # FM
             yield DiagnosticConfig(
                 # Reset if change IP/Policy change
                 SNMPTRAP_DIAG,
                 display_description="Received SNMP Trap from device",
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="D",
                 reason=reason,
             )
-            blocked, reason = o.is_enabled_diagnostic(SYSLOG_DIAG)
+            enabled, reason = o.is_enabled_diagnostic(SYSLOG_DIAG)
             yield DiagnosticConfig(
                 # Reset if change IP/Policy change
                 SYSLOG_DIAG,
                 display_description="Received SYSLOG from device",
-                blocked=blocked,
+                blocked=not enabled,
                 run_policy="D",
                 reason=reason,
             )

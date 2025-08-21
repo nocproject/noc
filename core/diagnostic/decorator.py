@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable, Optional
+from typing import List, Iterable, Optional, Dict
 
 # NOC modules
 from noc.models import is_document
@@ -17,18 +17,19 @@ from .hub import DiagnosticHub, DiagnosticItem
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 
-def iter_model_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
-    """Iterate over Model Instance diagnostics"""
-    if not to_display:
-        yield from self.diagnostic
-        return
-    for d in sorted(self.diagnostic, key=lambda x: x.config.display_order):
-        if not d.show_in_display:
-            continue
-        yield d
+def get_model_diagnostic_values(self) -> Dict[str, DiagnosticValue]:
+    """"""
+    r = {}
+    for d_name in self.diagnostics:
+        r[d_name] = DiagnosticValue.model_validate(self.diagnostics[d_name])
+    return r
 
 
-def iter_document_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
+def get_document_diagnostic_values(self) -> Dict[str, DiagnosticValue]:
+    """"""
+
+
+def iter_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over document Diagnostics"""
     if not to_display:
         yield from self.diagnostic
@@ -74,17 +75,17 @@ def diagnostic(cls):
         return self._diagnostics
 
     cls.diagnostic = property(diagnostic)
+    cls.iter_diagnostics = iter_diagnostics
     if is_document(cls):
         # MongoEngine model
-        cls.iter_diagnostics = iter_document_diagnostics
+        cls.get_diagnostic_values = get_document_diagnostic_values
         if not hasattr(cls, "save_diagnostics"):
             cls.save_diagnostics = save_document_diagnostics
         # if not hasattr(cls, "get_caps_config"):
         #     cls.get_caps_config = get_caps_config
-
     else:
         # Django model
-        cls.iter_diagnostics = iter_model_diagnostics
+        cls.get_diagnostic_values = get_model_diagnostic_values
         if not hasattr(cls, "save_diagnostics"):
             cls.save_diagnostics = save_model_diagnostics
         # if not hasattr(cls, "get_caps_config"):

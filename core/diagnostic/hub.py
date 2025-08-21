@@ -101,9 +101,9 @@ class DiagnosticItem(BaseModel):
     _config: Optional[DiagnosticConfig] = PrivateAttr()
     _handler: Optional[DiagnosticHandler] = PrivateAttr()
 
-    def __init__(self, config: Optional[DiagnosticConfig] = None, **data):
+    def __init__(self, cfg: Optional[DiagnosticConfig] = None, **data):
         super().__init__(**data)
-        self._config = config
+        self._config = cfg
 
     def __eq__(self, other: "DiagnosticItem") -> bool:
         if self.diagnostic != other.diagnostic:
@@ -137,6 +137,26 @@ class DiagnosticItem(BaseModel):
         if self.state != DiagnosticState.enabled and self.state != DiagnosticState.blocked:
             return self.config.workflow_event
         return None
+
+    @classmethod
+    def from_config(
+        cls, cfg: DiagnosticConfig, value: Optional[DiagnosticValue] = None,
+    ) -> "DiagnosticItem":
+        """Create item from config"""
+        if cfg.blocked:
+            state = DiagnosticState.blocked
+        elif not value or value.state == DiagnosticState.blocked:
+            state = cfg.default_state
+        else:
+            state = value.state
+        return DiagnosticItem(
+            cfg=cfg,
+            diagnostic=cfg.diagnostic,
+            state=state,
+            checks=value.checks if value else None,
+            reason=cfg.reason or None,
+            changed=value.changed if value else None,
+        )
 
     def reset(self, reason="Reset by"):
         if self.config.blocked:
@@ -327,8 +347,6 @@ class DiagnosticHub(object):
     def has_active_diagnostic(self, name: str) -> bool:
         """
         Check diagnostic has worked: Enabled or Failed state
-        :param name:
-        :return:
         """
         d = self.get(name)
         if d is None:
@@ -354,22 +372,11 @@ class DiagnosticHub(object):
     def __load_diagnostics(self):
         """Loading Diagnostic from Object Config"""
         r = {}
-        if is_document(self.__object):
-            return
-        for dc in self.__object.iter_diagnostic_configs():
-            item = self.__object.diagnostics.get(dc.diagnostic) or {}
-            if not item:
-                item = {"diagnostic": dc.diagnostic, "state": dc.default_state.value}
-            r[dc.diagnostic] = DiagnosticItem(config=dc, **item)
-            if r[dc.diagnostic].state == DiagnosticState.blocked and not dc.blocked:
-                r[dc.diagnostic].state = dc.default_state
-            elif dc.blocked:
-                r[dc.diagnostic].state = DiagnosticState.blocked
-                if dc.reason:
-                    r[dc.diagnostic].reason = dc.reason
-            # item["config"] = dc
-            for dd in dc.dependent or []:
-                self.__depended[dd] = dc.diagnostic
+        values = self.__object.get_diagnostic_values()
+        for cfg in self.__object.iter_diagnostic_configs():
+            r[cfg.diagnostic] = DiagnosticItem.from_config(cfg, value=values.get(cfg.diagnostic))
+            for dd in cfg.dependent or []:
+                self.__depended[dd] = cfg.diagnostic
         self.__diagnostics = r
 
     def __load_checks(self):
