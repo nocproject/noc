@@ -283,7 +283,7 @@ class ManagedObjectApplication(ExtModelApplication):
         data["is_wiping"] = o.state.is_wiping
         data["diagnostics"] = []
         for d in sorted(o.diagnostic, key=lambda x: x.config.display_order):
-            if not d.config.show_in_display:
+            if not d.show_in_display:
                 continue
             data["diagnostics"].append(
                 {
