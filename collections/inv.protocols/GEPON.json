@@ -3,7 +3,7 @@
     "code": "GEPON",
     "$collection": "inv.protocols",
     "uuid": "3f32dfde-596f-4c1d-b5af-d2d286e1381e",
-    "description": null,
+    "description": "GE-PON - ITU-T G.983",
     "data": [],
     "connection_schema": "BD",
     "technology__name": "XPON"
