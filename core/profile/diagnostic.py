@@ -13,9 +13,9 @@ from typing import List, Iterable, Optional, Tuple, Union, Dict, Set, Any
 # NOC modules
 from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
-from noc.core.wf.diagnostic import HTTP_DIAG, HTTPS_DIAG
+from noc.core.diagnostic.hub import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
-from noc.core.wf.diagnostic import DiagnosticConfig, CheckStatus
+from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
 from noc.core.checkers.base import Check, CheckResult
 
 

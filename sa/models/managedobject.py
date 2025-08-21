@@ -46,15 +46,22 @@ from pymongo import ASCENDING
 # NOC modules
 from noc.core.model.base import NOCModel
 from noc.config import config
-from noc.core.wf.diagnostic import (
-    DiagnosticState,
-    DiagnosticConfig,
-    diagnostic,
+from noc.core.diagnostic.types import DiagnosticValue, DiagnosticState, DiagnosticConfig
+from noc.core.diagnostic.decorator import diagnostic, DEFER_CHANGE_STATE
+from noc.core.diagnostic.hub import (
     DIAGNOCSTIC_LABEL_SCOPE,
     SA_DIAG,
     ALARM_DIAG,
     FIRST_AVAIL,
-    DEFER_CHANGE_STATE,
+    RESOLVER_DIAG,
+    SNMP_DIAG,
+    PROFILE_DIAG,
+    CLI_DIAG,
+    HTTP_DIAG,
+    SNMPTRAP_DIAG,
+    SYSLOG_DIAG,
+    SA_DIAGS,
+    FM_DIAGS,
 )
 from noc.core.wf.interaction import Interaction
 from noc.core.mx import (
@@ -325,29 +332,7 @@ class MappingItem(BaseModel):
 MappingItems = RootModel[List[MappingItem]]
 
 
-class CheckStatus(BaseModel):
-    name: str
-    status: bool  # True - OK, False - Fail
-    arg0: Optional[str] = None
-    skipped: bool = False
-    error: Optional[str] = None  # Description if Fail
-
-
-class DiagnosticItem(BaseModel):
-    diagnostic: str
-    state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckStatus]]
-    # scope: Literal["access", "all", "discovery", "default"] = "default"
-    # policy: str = "ANY
-    reason: Optional[str] = None
-    changed: Optional[datetime.datetime] = None
-
-    def get_check_state(self):
-        # Any policy
-        return any(c.status for c in self.checks if not c.skipped)
-
-
-DiagnosticItems = RootModel[Dict[str, DiagnosticItem]]
+DiagnosticItems = RootModel[Dict[str, DiagnosticValue]]
 
 
 def default(obj):
@@ -631,11 +616,11 @@ class ManagedObject(NOCModel):
         default=list,
     )
     # Object id in remote system
-    remote_id = CharField(max_length=64, null=True, blank=True)
+    remote_id: str = CharField(max_length=64, null=True, blank=True)
     # Object id in BI
-    bi_id = BigIntegerField(unique=True)
+    bi_id: int = BigIntegerField(unique=True)
     # Object alarms can be escalated
-    escalation_policy = CharField(
+    escalation_policy: str = CharField(
         "Escalation Policy",
         max_length=1,
         choices=[
@@ -647,7 +632,7 @@ class ManagedObject(NOCModel):
         default="P",
     )
     # Discovery running policy
-    box_discovery_running_policy = CharField(
+    box_discovery_running_policy: str = CharField(
         "Box Running Policy",
         choices=[
             ("P", "From Profile"),
@@ -894,7 +879,7 @@ class ManagedObject(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
-    diagnostics: Dict[str, DiagnosticItem] = PydanticField(
+    diagnostics: Dict[str, DiagnosticValue] = PydanticField(
         "Diagnostic Items",
         schema=DiagnosticItems,
         blank=True,
@@ -1925,19 +1910,17 @@ class ManagedObject(NOCModel):
             self._profile = self.profile.get_profile()
         return self._profile
 
-    def get_interface(self, name):
+    def get_interface(self, name: str):
         from noc.inv.models.interface import Interface
 
         name = self.get_profile().convert_interface_name(name)
-        try:
-            return Interface.objects.get(managed_object=self.id, name=name)
-        except Interface.DoesNotExist:
-            pass
+        iface = Interface.objects.filter(managed_object=self.id, name=name).first()
+        if iface:
+            return iface
         for n in self.get_profile().get_interface_names(name):
-            try:
-                return Interface.objects.get(managed_object=self.id, name=n)
-            except Interface.DoesNotExist:
-                pass
+            iface = Interface.objects.filter(managed_object=self.id, name=n).first()
+            if iface:
+                return iface
         return None
 
     def get_linecard(self, ifname):
@@ -2706,6 +2689,36 @@ class ManagedObject(NOCModel):
             }
             r["administrative_domain"]["remote_id"] = self.administrative_domain.remote_id
         return r
+
+    def is_enabled_diagnostic(self, diag: str) -> Tuple[bool, Optional[str]]:
+        """Check diagnostic enabled/blocked by settings"""
+        if (
+            diag in SA_DIAGS or diag == SA_DIAG
+        ) and Interaction.ServiceActivation not in self.interactions:
+            return False, "Disable by Interaction SA by State"
+        elif diag in FM_DIAGS and Interaction.Event not in self.interactions:
+            return False, "Disable by Interaction FM by State"
+        elif diag == RESOLVER_DIAG and self.get_address_resolution_policy() == "D":
+            return False, "Disabled by 'Resolution Policy Settings'"
+        elif diag == PROFILE_DIAG and not self.object_profile.enable_box_discovery_profile:
+            return False, "Profile Discovery Disabled"
+        elif diag == FIRST_AVAIL and not self.object_profile.enable_ping:
+            return False, "On if ICMP available received"
+        ac = self.get_access_preference()
+        if ac == "C" and diag == SNMP_DIAG:
+            return False, "Blocked by AccessPreference"
+        elif ac == "S" and diag in {CLI_DIAG, HTTP_DIAG}:
+            return False, "Blocked by AccessPreference"
+        if diag == CLI_DIAG and self.scheme not in {1, 2}:
+            return False, "CLI not enabled in selected scheme"
+        fm_policy = self.get_event_processing_policy()
+        if fm_policy == "d" and diag in FM_DIAGS:
+            return False, "Disable by Event Processing policy"
+        elif diag == SNMPTRAP_DIAG and self.trap_source_type == "d":
+            return False, "Disable by source settings"
+        elif diag == SYSLOG_DIAG and self.syslog_source_type == "d":
+            return False, "Disable by source settings"
+        return True, None
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterate over object diagnostics"""

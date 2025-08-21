@@ -338,27 +338,7 @@ class ManagedObjectCard(BaseCard):
         for m in self.object.iter_remote_mappings():
             mappings.append(m.get_object_form(self.object))
         # Diagnostics
-        diagnostics = []
-        for d in sorted(self.object.diagnostic, key=lambda x: x.config.display_order):
-            if not d.config.show_in_display:
-                continue
-            diagnostics.append(
-                {
-                    "name": d.diagnostic[:6],
-                    "description": d.config.display_description,
-                    "state": d.state.value,
-                    "state__label": d.state.value,
-                    "details": [
-                        {
-                            "name": c.name,
-                            "state": {True: "OK", False: "Error"}[c.status],
-                            "error": c.error,
-                        }
-                        for c in d.checks or []
-                    ],
-                    "reason": d.reason or "",
-                }
-            )
+        diagnostics = [d.get_object_form() for d in self.object.iter_diagnostics(to_display=True)]
         mp = MetricProxy(managed_object=self.object.bi_id)
         r = {
             "id": self.object.id,
