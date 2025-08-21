@@ -281,7 +281,7 @@ class ManagedObjectApplication(ExtModelApplication):
             data[fn] = sg_to_list(data.get(fn) or [])
         data["is_managed"] = getattr(o, "is_managed", True)
         data["is_wiping"] = o.state.is_wiping
-        data["diagnostics"] = [m.get_object_form(o) for m in o.iter_model_diagnostics(display_order=True)]
+        data["diagnostics"] = [d.get_object_form() for d in o.iter_diagnostics(to_display=True)]
         if "mappings" in data or o.remote_system:
             data["mappings"] = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         return data

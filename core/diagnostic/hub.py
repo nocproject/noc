@@ -23,7 +23,7 @@ from noc.core.checkers.base import Check, CheckResult, MetricValue
 from noc.core.handler import get_handler
 from noc.config import config
 from noc.models import is_document
-from .types import DiagnosticConfig, DiagnosticState, CheckStatus
+from .types import DiagnosticConfig, DiagnosticState, CheckStatus, DiagnosticValue
 
 
 # BuiltIn Diagnostics
@@ -224,6 +224,16 @@ class DiagnosticItem(BaseModel):
             ],
             "reason": self.reason or "",
         }
+
+    def get_value(self) -> DiagnosticValue:
+        """"""
+        return DiagnosticValue(
+            diagnostic=self.diagnostic,
+            state=self.state,
+            checks=self.checks,
+            reason=self.reason or None,
+            changed=self.changed,
+        )
 
 
 class DiagnosticHub(object):
@@ -517,7 +527,63 @@ class DiagnosticHub(object):
                 self[d].reset(reason=reason)
         self.sync_diagnostics()
 
-    def sync_diagnostics(self):
+    def sync_diagnostics(self, dry_run: bool = False):
+        """
+        Sync diagnostics with object
+        * sync state
+        * register change
+        * sync alarms
+        * save database
+        * clear cache
+        """
+        if self.bulk_mode:
+            self.logger.debug("Bulk mode. Sync blocked")
+            self.bulk_changes += 1
+            return
+        new_diags, changed_state, wf_events = [], set(), set()
+        changed = False
+        for di_new in self:
+            d_name = di_new.diagnostic
+            d_current = self.get_object_diagnostic(d_name)
+            if d_current == di_new and di_new.workflow_event:
+                self.logger.debug(
+                    "[%s] Send Workflow Event: %s",
+                    d_name,
+                    di_new.workflow_event,
+                )
+                wf_events.add(di_new.workflow_event)
+            # Compare state
+            if d_current.state != di_new.state:
+                if (
+                    d_current.state == DiagnosticState.failed
+                    or di_new.state == DiagnosticState.failed
+                ):
+                    changed_state.add(d_name)
+                changed |= True
+                self.register_diagnostic_change(
+                    d_name,
+                    state=di_new.state,
+                    from_state=d_current.state,
+                    reason=di_new.reason,
+                    ts=di_new.changed,
+                )
+                if di_new.state == DiagnosticState.enabled and di_new.config.workflow_enabled_event:
+                    wf_events.add(di_new.config.workflow_enabled_event)
+            # Save diagnostic with checks value (for update checks)
+            elif d_current != di_new:
+                self.logger.debug("[%s] Diagnostic Same, next.", d_name)
+                changed |= True
+            new_diags.append(di_new)
+        if changed and not dry_run:
+            self.logger.info("[%s] Save changed diagnostics: %s", self.__object.name)
+            self.__object.save_diagnostics(new_diags, dry_run=dry_run)
+        if wf_events:
+            # Bulk update/Get effective event
+            self.__object.fire_event(list(wf_events)[0])
+        if changed_state:
+            self.__object.sync_diagnostic_alarms(changed_state)
+
+    def sync_diagnostics_old(self):
         """
         Sync diagnostics with object
         * sync state
@@ -746,13 +812,13 @@ class DiagnosticHub(object):
         1. Send data to BI Model
         2. Register MX Message
         3. Register object notification
-        :param diagnostic: - Diagnostic name
-        :param state: Current state
-        :param from_state: Previous State
-        :param data: Checked data
-        :param reason:
-        :param ts:
-        :return:
+        Attrs:
+            diagnostic: - Diagnostic name
+            state: Current state
+            from_state: Previous State
+            data: Checked data
+            reason:
+            ts:
         """
         from noc.core.service.loader import get_service
         from noc.core.mx import DEFAULT_ENCODING, MessageType

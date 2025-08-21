@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 
 # NOC modules
 from noc.models import is_document
@@ -17,9 +17,9 @@ from .hub import DiagnosticHub, DiagnosticItem
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 
-def iter_model_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
+def iter_model_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over Model Instance diagnostics"""
-    if not display_order:
+    if not to_display:
         yield from self.diagnostic
         return
     for d in sorted(self.diagnostic, key=lambda x: x.config.display_order):
@@ -28,9 +28,9 @@ def iter_model_diagnostics(self, display_order: bool = False) -> Iterable[Diagno
         yield d
 
 
-def iter_document_diagnostics(self, display_order: bool = False) -> Iterable[DiagnosticItem]:
+def iter_document_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
     """Iterate over document Diagnostics"""
-    if not display_order:
+    if not to_display:
         yield from self.diagnostic
         return
     for d in sorted(self.diagnostic, key=lambda x: x.config.display_order):
@@ -39,22 +39,20 @@ def iter_document_diagnostics(self, display_order: bool = False) -> Iterable[Dia
         yield d
 
 
-def save_document_diagnostics(self, diagnostics: List[DiagnosticValue], dry_run: bool = False):
+def save_document_diagnostics(
+    self,
+    diagnostics: List[DiagnosticValue],
+    resets: Optional[List[str]] = None,
+    dry_run: bool = False,
+):
     """"""
-    from noc.inv.models.capsitem import CapsItem
-
-    self.diagnostics = [
-        CapsItem(capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or "")
-        for c in diagnostics
-    ]
-    if dry_run and not self._created:
-        return
-    self.update(caps=self.caps)
 
 
-def save_model_diagnostics(self, diagnostics: List[DiagnosticValue], dry_run: bool = False):
-    """"""
-    self.diagnostics = [d for d in diagnostics]
+def save_model_diagnostics(self, diagnostics: List[DiagnosticItem], dry_run: bool = False):
+    """Update Model Instance diagnostics"""
+    from django.db import connection as pg_connection
+
+    self.diagnostics = {d.diagnostic: d.get_value().model_dump() for d in diagnostics}
     if dry_run and not self.id:
         return
     self.__class__.objects.filter(id=self.id).update(diagnostics=self.diagnostics)
