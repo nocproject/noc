@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Task Collector
+# Liftbridge Collector
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2020 The NOC Project
 # See LICENSE for details
