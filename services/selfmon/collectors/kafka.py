@@ -82,15 +82,10 @@ class KafkaStreamCollector(BaseCollector):
         offset_groups: DefaultDict[str, List[TopicPartition]] = defaultdict(list)
         for p in partitions:
             if p.topic.startswith("ch."):
-                for replica in range(0, int(ch_cluster[p.partition])):
-                    offset_groups[f"chwriter-{replica}"].append(p)
-                continue
-            if "." in p.topic:
-                name = p.topic.split(".", 1)[0]
+                offset_groups[f"ch"].append(p)
             else:
-                name = p.topic
-            if name in self.TOPIC_CURSORS:
-                offset_groups[self.TOPIC_CURSORS[name]].append(p)
+                offset_groups[p.topic].append(p)
+
         for g, parts in offset_groups.items():
             async with AIOKafkaConsumer(
                 bootstrap_servers=bootstrap_servers,
@@ -159,28 +154,25 @@ class KafkaStreamCollector(BaseCollector):
                 name, pool = topic.split(".", 1)
             else:
                 name, pool = topic, None
+
             # Cursor
             if is_clickhouse:
-                for replica in range(0, int(ch_cluster[partition])):
-                    cursor_id = f"chwriter-{replica}"
-                    yield self.metric(
-                        "stream_cursor_offset",
-                        name=topic,
-                        partition=partition,
-                        cursor_id=cursor_id,
-                        value=pd.cursors.get(cursor_id, 0),
-                    )
+                yield self.metric(
+                    "stream_cursor_offset",
+                    name=topic,
+                    partition=partition,
+                    cursor_id=None,
+                    value=pd.cursors.get("ch", 0),
+                )
             else:
-                cursor_name = self.TOPIC_CURSORS.get(name)
-                if cursor_name and cursor_name in pd.cursors:
-                    yield self.metric(
-                        "stream_cursor_offset",
-                        pool=pool,
-                        name=topic,
-                        partition=partition,
-                        cursor_id=self.TOPIC_CURSORS[name],
-                        value=pd.cursors[cursor_name],
-                    )
+                yield self.metric(
+                    "stream_cursor_offset",
+                    pool=pool,
+                    name=topic,
+                    partition=partition,
+                    cursor_id=self.TOPIC_CURSORS.get(name),
+                    value=pd.cursors.get(topic, 0),
+                )
             # Partition
             yield self.metric(
                 "stream_newest_offset",
