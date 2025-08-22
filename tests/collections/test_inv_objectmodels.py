@@ -105,31 +105,6 @@ _CT_PROTOCOLS = {}
 # * direction - list of possible directions
 # * protocols - list of possible protocols. At least one protocol must be met
 CONNECTION_CHECKLIST = {
-    "Optical | SC": {
-        "directions": "s",
-        "protocols": [
-            "100BASEFX",
-            "100BASELX10",
-            "1000BASESX",
-            "1000BASELX",
-            "1000BASEEX",
-            "1000BASEZX",
-            "1000BASECWDM",
-            "1000BASELX10",
-            "10GBASESR",
-            "10GBASELR",
-            "10GBASEER",
-            "10GBASEZR",
-            "GEPON",
-            "GPON",
-            ">GPON",
-            "<GPON",
-            "XGPON",
-            "XGSPON",
-            "NGPON2",
-            "50GPON",
-        ],
-    },
     "Electrical | DB9": {
         "directions": "s",
         "protocols": [">RS232", ">DryContact", "<RS232", "<RS485-A", "<RS485-B"],
