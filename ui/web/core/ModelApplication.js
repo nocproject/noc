@@ -98,6 +98,7 @@ Ext.define("NOC.core.ModelApplication", {
     //
     me.hasGroupEdit = me.checkGroupEdit();
     // Create GRID card
+    me.hasEditForm = me.fields?.length > 0;
     me.ITEM_GRID = me.registerItem(me.createGrid());
     // Create FORM card
     me.ITEM_FORM = me.registerItem(me.createForm());
@@ -323,7 +324,9 @@ Ext.define("NOC.core.ModelApplication", {
         },
         handler: me.onFavItem,
       },
-      {
+    ];
+    if(me.hasEditForm){
+      rowItems.push({
         glyph: NOC.glyph.edit,
         color: NOC.colors.edit,
         tooltip: __("Edit"),
@@ -337,9 +340,8 @@ Ext.define("NOC.core.ModelApplication", {
             record = me.store.getAt(rowIndex);
           me.onEditRecord(record);
         },
-      },
-    ];
-
+      });
+    }
     if(me.openDashboard){
       rowItems = rowItems.concat([
         {
