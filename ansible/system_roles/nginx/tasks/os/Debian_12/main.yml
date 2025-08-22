@@ -1,0 +1,48 @@
+---
+- name: Add Nginx apt repository key
+  get_url:
+    url: "{{ nginx_deb_gpgkey }}"
+    dest: /etc/apt/trusted.gpg.d/nginx.asc
+    mode: '0644'
+    force: true
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add Debian Nginx repo
+  apt_repository:
+    repo: "{{ nginx_deb_repo }}"
+    state: present
+    update_cache: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install Nginx
+  apt:
+    name: "nginx"
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+    state: present
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Enable Nginx system service
+  service:
+    name: "{{ nginx_system_service }}"
+    enabled: "True"
+    state: started
+  notify: reload nginx
+
+- name: Remove default.conf site
+  file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+  notify: reload nginx

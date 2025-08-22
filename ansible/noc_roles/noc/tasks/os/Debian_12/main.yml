@@ -1,0 +1,43 @@
+---
+- name: Install Debian 11 system packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  vars:
+    packages:
+      - python3-dev
+      - python3-venv
+      - python3-virtualenv
+      - git
+      - libjemalloc2
+      - gcc
+      - libpq-dev
+      - libffi7
+      - libffi-dev
+      - libmemcached11
+      - libmemcached-dev
+      - zlib1g-dev
+      - patch
+      - bzip2
+      - cmake
+      - libssl-dev
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Install supervisord init script
+  template:
+    src: "os/Debian/etc/init.d/noc.j2"
+    dest: "/etc/init.d/{{ noc_system_service }}"
+    mode: "a+rx"
+  when: "ansible_service_mgr != 'systemd'"
+
+- name: Install supervisord systemd service
+  template:
+    src: "{{ noc_system_service }}.service.j2"
+    dest: "/etc/systemd/system/{{ noc_system_service }}.service"
+  when: "ansible_service_mgr == 'systemd'"
+  notify: reload systemd
