@@ -816,7 +816,7 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def save_caps(self, caps: List[CapsValue], dry_run: bool = False):
+    def save_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
         """"""
         from noc.inv.models.capsitem import CapsItem
 
@@ -826,7 +826,7 @@ class Service(Document):
             )
             for c in caps
         ]
-        if dry_run:
+        if dry_run or self._created:
             return
         self.update(caps=self.caps)
         self.sync_instances()

@@ -134,6 +134,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     enabled_protocols=i.get("enabled_protocols", []),
                     ifindex=i.get("snmp_ifindex"),
                     labels=i.get("hints", []),
+                    caps=i.get("caps"),
                 )
                 icache[i["name"]] = iface
                 # Submit subinterfaces
@@ -275,6 +276,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         enabled_protocols: List[str] = None,
         ifindex: Optional[int] = None,
         labels: List[str] = None,
+        caps: Dict[str, str] = None,
     ):
         enabled_protocols = enabled_protocols or []
         iface = self.get_interface_by_name(name)
@@ -303,6 +305,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     "hints": labels or [],
                     "extra_labels": extra_labels,
                 },
+                caps=caps,
                 ignore_empty=ignore_empty,
                 update_effective_labels=False,
             )
@@ -323,6 +326,8 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             if labels:
                 iface.labels = [ll for ll in labels if Interface.can_set_label(ll)]
                 iface.extra_labels["sa"] = labels
+            if caps:
+                iface.update_caps(caps, source="discovery", dry_run=True)  # scope=self.system.name
             iface.save()
             self.set_interface(name, iface)
         if mac:
