@@ -64,14 +64,20 @@
                 },
                 {
                     "name": "attr_serialnumber",
-                    "title": "Serial Number",
+                    "title": "Serial / capabilities",
                     "format_type": "string"
                 },
                 {
-                    "name": "serial",
-                    "title": "Serial Number_M",
+                    "name": "serial_moattr",
+                    "title": "Serial / moattr",
+                    "format_type": "string"
+                },
+                {
+                    "name": "serial_odata",
+                    "title": "Serial / odata",
                     "format_type": "string"
                 }
+
             ],
             "title_template": ""
         }
