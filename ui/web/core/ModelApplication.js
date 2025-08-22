@@ -98,7 +98,7 @@ Ext.define("NOC.core.ModelApplication", {
     //
     me.hasGroupEdit = me.checkGroupEdit();
     // Create GRID card
-    me.hasEditForm = me.fields?.length > 0;
+    me.hasEditForm = Ext.isDefined(me.fields) && me.fields.length > 0;
     me.ITEM_GRID = me.registerItem(me.createGrid());
     // Create FORM card
     me.ITEM_FORM = me.registerItem(me.createForm());
