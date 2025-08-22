@@ -67,7 +67,6 @@ class KafkaStreamCollector(BaseCollector):
     async def get_offsets(
         self, bootstrap_servers: List[str], partitions: List[TopicPartition]
     ) -> List[PartitionOffset]:
-        ch_cluster = config.clickhouse.cluster_topology.split(",")
         async with AIOKafkaConsumer(
             bootstrap_servers=bootstrap_servers,
             client_id=self.CLIENT_ID,
@@ -143,7 +142,6 @@ class KafkaStreamCollector(BaseCollector):
 
     def iter_metrics(self) -> Iterable[Metric]:
         offsets = run_sync(self.collect)
-        ch_cluster = config.clickhouse.cluster_topology.split(",")
         for pd in offsets:
             topic = pd.topic_partition.topic
             partition = pd.topic_partition.partition
