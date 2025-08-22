@@ -82,7 +82,7 @@ class KafkaStreamCollector(BaseCollector):
         offset_groups: DefaultDict[str, List[TopicPartition]] = defaultdict(list)
         for p in partitions:
             if p.topic.startswith("ch."):
-                offset_groups[f"ch"].append(p)
+                offset_groups["ch"].append(p)
             else:
                 offset_groups[p.topic].append(p)
 
