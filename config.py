@@ -640,6 +640,8 @@ class Config(BaseConfig):
         fm_ttl = IntParameter(default=30)
         enable_liftbridge = BooleanParameter(default=False)
         liftbridge_ttl = IntParameter(default=30)
+        enable_kafka = BooleanParameter(default=False)
+        kafka_ttl = IntParameter(default=30)
 
     class sentry(ConfigSection):
         url = StringParameter(default="")

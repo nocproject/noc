@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# Invetory Collector
+# Inventory Collector
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2018 The NOC Project
 # See LICENSE for details

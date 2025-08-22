@@ -8,6 +8,7 @@
 # Python modules
 import logging
 import time
+from typing import Any, Tuple, Iterable
 
 # Third-party modules
 from django.db import connection
@@ -18,6 +19,8 @@ from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
 
 logger = logging.getLogger(__name__)
+
+Metric = Tuple[Tuple[Any], int]
 
 
 class BaseCollector(object):
@@ -63,7 +66,7 @@ class BaseCollector(object):
                 del metrics[m]
         self.logger.info("Done. %d metrics collected", n)
 
-    def iter_metrics(self):
+    def iter_metrics(self) -> Iterable[Metric]:
         raise NotImplementedError()
 
     def pg_execute(self, sql, args=None):
@@ -76,3 +79,7 @@ class BaseCollector(object):
         cursor = connection.cursor()
         cursor.execute(sql, args)
         return cursor.fetchall()
+
+    @staticmethod
+    def metric(metric: str, *, value: int, **kwargs: Any) -> Tuple[Tuple[Any], int]:
+        return ((metric,) + tuple((k, v) for k, v in kwargs.items() if v is not None), value)
