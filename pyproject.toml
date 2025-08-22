@@ -27,18 +27,18 @@ dynamic = ["version"]
 keywords = ["monitoring", "inventory", "fault management", "performance management", "ipam"]
 license = {file = "LICENSE.md"}
 name = "noc"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.readme]
 content-type = "text/markdown"
 file = "README.md"
 
 [project.urls]
-"Bug Tracker" = "https://github.com/gufolabs/gufo_snmp/issues"
-Changelog = "https://github.com/gufolabs/gufo_snmp/blob/master/CHANGELOG.md"
-Documentation = "https://docs.gufolabs.com/gufo_snmp/"
-Homepage = "https://github.com/gufolabs/gufo_snmp/"
-"Source Code" = "https://github.com/gufolabs/gufo_snmp/"
+"Bug Tracker" = "https://code.getnoc.com/noc/noc/-/issues"
+Changelog = "https://getnoc.com/release-policy/"
+Documentation = "https://getnoc.com/"
+Homepage = "https://getnoc.com/"
+"Source Code" = "https://code.getnoc.com/noc/noc/-/tree/master"
 
 [project.optional-dependencies]
 activator = ["ssh2-python==1.1.2.post1"]
