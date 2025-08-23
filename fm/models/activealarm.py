@@ -1284,9 +1284,14 @@ class ActiveAlarm(Document):
         """
         Generator yielding all affected managed objects
         """
-        seen = {self.managed_object}
-        yield self.managed_object
+        if self.managed_object:
+            seen = {self.managed_object}
+            yield self.managed_object
+        else:
+            seen = {}
         for a in self.iter_consequences():
+            if not a.managed_object:
+                continue
             if a.managed_object not in seen:
                 seen.add(a.managed_object)
                 yield a.managed_object

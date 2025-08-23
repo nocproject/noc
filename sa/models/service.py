@@ -589,6 +589,13 @@ class Service(Document):
                 "name": self.label,
                 "alarm_class": SVC_AC,
                 "labels": self.labels,
+                "vars": {
+                    "description": self.description,
+                    "type": self.profile.name,
+                    "service": str(self.id),
+                    "from_status": old_status.name,
+                    "to_status": self.oper_status.name,
+                },
                 "alarms": [],
             }
         elif self.oper_status <= Status.UP < old_status:
