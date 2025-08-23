@@ -453,6 +453,8 @@ class Service(Document):
         # Check state on is_productive
         # if not self.state.is_productive:
         #    return
+        if isinstance(status, str):
+            status = Status[status]
         if self.oper_status == status:
             logger.debug("[%s] Status is same. Skipping", self.id)
             return
@@ -779,6 +781,8 @@ class Service(Document):
                 if svc.profile.id not in profiles:
                     continue
                 services.add(svc.id)
+                if svc.service_path:
+                    services |= set(svc.service_path)
         # Alarm without affected instances
         if profile_rules:
             q |= m_q(profile__in=profile_rules)
@@ -790,8 +794,17 @@ class Service(Document):
             )
         #
         logger.debug("Requested services by query: %s", q)
-        if q:
-            services |= set(Service.objects.filter(q).scalar("id"))
+        if not q:
+            return list(services)
+        for (
+            sid,
+            path,
+        ) in Service.objects.filter(
+            q
+        ).scalar("id", "service_path"):
+            services.add(sid)
+            if path:
+                services |= set(path)
         return list(services)
 
     def unbind_interface(self):
