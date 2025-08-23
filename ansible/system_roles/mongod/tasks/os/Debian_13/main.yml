@@ -13,7 +13,7 @@
 
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/{{ mongod_version }} main"
+    repo: "{{ mongo_deb_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
@@ -65,7 +65,6 @@
     state: latest
     update_cache: "True"
     cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
-  when: mongo_repo_stat.changed
   vars:
     packages:
       - mongodb-org
@@ -75,6 +74,7 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+  when: mongo_repo_stat.changed
   tags:
     - requirements
 

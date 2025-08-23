@@ -13,7 +13,7 @@
 
 - name: Add MongoDB repository
   apt_repository:
-    repo: "deb http://repo.mongodb.org/apt/debian buster/mongodb-org/{{ mongod_version }} main"
+    repo: "{{ mongo_deb_repo }}"
     state: present
     update_cache: "True"
   register: mongo_repo_stat
