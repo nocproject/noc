@@ -386,6 +386,8 @@ class IGetInterfaces(BaseInterface):
                             "technology::radio",
                         ],
                     ),
+                    # Capabilities
+                    "caps": DictParameter(),
                     "subinterfaces": ListOfParameter(
                         element=DictParameter(
                             attrs={

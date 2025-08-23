@@ -52,6 +52,11 @@ Ext.define("NOC.inv.interface.Model", {
             type: "string"
         },
         {
+            name: "caps",
+            type: "auto",
+            persist: false,
+        },
+        {
             name: "ifindex",
             type: "number"
         }
