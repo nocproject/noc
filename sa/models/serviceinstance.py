@@ -167,15 +167,6 @@ class ServiceInstance(Document):
             return self.managed_object.object_profile.weight
         return 1
 
-    @property
-    def is_deployed(self) -> Optional[bool]:
-        """Generate workflow service signal"""
-        # deploy/deployed
-        # partial ? deployed
-        if self.resources:
-            return True
-        return False
-
     def __str__(self) -> str:
         name = self.name or self.service.label
         if self.type == InstanceType.ASSET:
@@ -599,7 +590,9 @@ class ServiceInstance(Document):
         ref_mac_instance: Dict[str, ServiceInstance] = {}
         bulk = []
         for si in ServiceInstance.objects.filter(
-            type=InstanceType.NETWORK_CHANNEL, asset_refs__exists=True, asset_refs__ne=[],
+            type=InstanceType.NETWORK_CHANNEL,
+            asset_refs__exists=True,
+            asset_refs__ne=[],
         ):
             for r in si.asset_refs or []:
                 ref, value = r.split("::", 1)

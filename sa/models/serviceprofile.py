@@ -128,7 +128,7 @@ class InstanceSettings(EmbeddedDocument):
     network_type: str = StringField(
         choices=[
             ("A", "Access"),
-            ("N", "Network"),
+            ("P", "Peer"),
             ("E", "Enhanced"),
         ]
     )

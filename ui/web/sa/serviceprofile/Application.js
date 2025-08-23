@@ -533,7 +533,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                                         xtype: "combobox",
                                         store: [
                                             ["A", "Access"],
-                                            ["N", "Network"],
+                                            ["P", "Peer"],
                                             ["E", "Enhanced"]
                                         ]
                                     },
