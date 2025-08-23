@@ -726,6 +726,10 @@ class ManagedObjectApplication(ExtModelApplication):
                 "project__label": smart_text(i.project) if i.project else None,
                 "state": str(i.state.id) if i.state else None,
                 "state__label": smart_text(i.state) if i.state else None,
+                "caps": [
+                    {"id": str(c.capability.id), "label": str(c)}
+                    for c in i.iter_caps(include_default=True)
+                ],
                 "row_class": get_style(i),
             }
             for i in Interface.objects.filter(managed_object=o.id, type="physical")

@@ -23,6 +23,7 @@ from mongoengine.fields import (
     DateTimeField,
     ObjectIdField,
     DictField,
+    EmbeddedDocumentListField,
 )
 from pymongo import ReadPreference
 
@@ -32,17 +33,19 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.mx import send_message, MessageType, MX_NOTIFICATION_GROUP_ID, MX_PROFILE_ID
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.interfaces.base import MACAddressParameter
-from noc.sa.interfaces.igetinterfaces import IGetInterfaces
-from noc.main.models.label import Label
-from noc.project.models.project import Project
-from noc.sa.models.service import Service
+from noc.core.caps.decorator import capabilities
 from noc.core.model.decorator import on_delete, on_delete_check
 from noc.core.change.decorator import change
 from noc.core.wf.decorator import workflow
 from noc.core.diagnostic.hub import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
+from noc.sa.models.managedobject import ManagedObject
+from noc.sa.interfaces.base import MACAddressParameter
+from noc.sa.interfaces.igetinterfaces import IGetInterfaces
+from noc.main.models.label import Label
+from noc.sa.models.service import Service
+from noc.project.models.project import Project
+from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.state import State
 from .interfaceprofile import InterfaceProfile
 from .coverage import Coverage
@@ -65,6 +68,7 @@ logger = logging.getLogger(__name__)
 @resourcegroup
 @Label.model
 @workflow
+@capabilities
 @on_delete_check(
     clean=[
         ("inv.Interface", "aggregated_interface"),
@@ -139,6 +143,8 @@ class Interface(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     extra_labels = DictField()
+    # Capabilities
+    caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
 
     PROFILE_LINK = "profile"
     _component_cache = cachetools.TTLCache(maxsize=2000, ttl=60)

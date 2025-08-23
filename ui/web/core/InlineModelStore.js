@@ -89,9 +89,7 @@ Ext.define("NOC.core.InlineModelStore", {
     config = Ext.Object.merge({
       params: Ext.Object.merge({}, me.filterParams),
     }, config);
-    // Override callback
-    // @todo: Call original callback
-    config = Ext.Object.merge(config, {
+    config = Ext.applyIf(config, {
       callback: function(records, operation, success){
         if(!success)
           NOC.error(__("Failed to fetch data!"));
