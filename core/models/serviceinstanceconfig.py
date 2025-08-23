@@ -9,7 +9,7 @@
 import enum
 from urllib.parse import urlparse
 from dataclasses import dataclass
-from typing import Optional, Any, List, ClassVar
+from typing import Optional, Any, List, ClassVar, Type
 
 # Third-party modules
 from mongoengine.queryset.visitor import Q
@@ -48,6 +48,7 @@ class ServiceInstanceTypeConfig:
     ttl: Optional[int] = None
     #
     refs_caps: Optional[Any] = None
+    asset_group: Optional[Any] = None
 
 
 @dataclass
@@ -60,7 +61,7 @@ class ServiceInstanceConfig:
 
     type: ClassVar[InstanceType]
     name: str
-    # managed_object: Optional[Any] = None ?
+    managed_object: Optional[Any] = None
     remote_id: Optional[str] = None
     nri_port: Optional[str] = None
     fqdn: Optional[str] = None
@@ -68,9 +69,8 @@ class ServiceInstanceConfig:
     port: int = 0
     asset_refs: List[str] = None
 
-    # type
     @classmethod
-    def get_config(cls, i_type: InstanceType) -> "ServiceInstanceConfig":
+    def get_type(cls, i_type: InstanceType) -> Type["ServiceInstanceConfig"]:
         """Return Config instance by type"""
         match i_type:
             case InstanceType.ASSET:
@@ -89,16 +89,9 @@ class ServiceInstanceConfig:
         settings: "ServiceInstanceTypeConfig",
         service,
         name: Optional[str] = None,
-    ) -> Optional["ServiceInstanceConfig"]:
+    ) -> List["ServiceInstanceConfig"]:
         """Create Config from settings"""
-        caps = service.get_caps()
-        if not settings.refs_caps or settings.refs_caps.name not in caps:
-            return
-        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
-        if not refs:
-            return
-        cfg = cls.from_config(name=name, asset_refs=refs)
-        return cfg
+        raise NotImplementedError()
 
     @classmethod
     def from_config(
@@ -130,11 +123,66 @@ class ServiceInstanceConfig:
 class NetworkHostInstance(ServiceInstanceConfig):
     type = InstanceType.ASSET
 
+    @classmethod
+    def from_group(cls, group) -> List["NetworkHostInstance"]:
+        from noc.inv.models.resourcegroup import ResourceGroup
+
+        r = []
+        for o in ResourceGroup.get_objects_from_expression(group, "sa.ManagedObject"):
+            r.append(cls.from_config(o.name, managed_object=o))
+        return r
+
+    @classmethod
+    def from_settings(
+        cls,
+        settings: "ServiceInstanceTypeConfig",
+        service,
+        name: Optional[str] = None,
+    ) -> List["NetworkHostInstance"]:
+        """Create Config from settings"""
+        if settings.asset_group and settings.asset_group.id in service.effective_client_groups:
+            return cls.from_group(settings.asset_group)
+        caps = service.get_caps()
+        if not settings.refs_caps or settings.refs_caps.name not in caps:
+            return []
+        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        if not refs:
+            return []
+        cfg = cls.from_config(name=name, asset_refs=refs)
+        return [cfg]
+
 
 class NetworkChannelInstance(ServiceInstanceConfig):
     """Describe Network port bind Service, defined by port name on Managed Object"""
 
     type = InstanceType.NETWORK_CHANNEL
+
+    @classmethod
+    def from_settings(
+        cls,
+        settings: "ServiceInstanceTypeConfig",
+        service,
+        name: Optional[str] = None,
+    ) -> List["ServiceInstanceConfig"]:
+        """Create Config from settings"""
+        caps = service.get_caps()
+        if not settings.refs_caps or settings.refs_caps.name not in caps:
+            return []
+        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        if not refs:
+            return []
+        if settings.only_one_instance:
+            cfg = cls.from_config(name=name, asset_refs=refs)
+            return [cfg]
+        r = []
+        for c in caps[settings.refs_caps.name]:
+            refs = settings.refs_caps.get_references(c)
+            if name:
+                cfg = cls.from_config(name=f"{c}@{name}", asset_refs=refs)
+            else:
+                cfg = cls.from_config(name=f"{c}@", asset_refs=refs)
+            r.append(cfg)
+        return r
 
 
 class ServiceEndPoint(ServiceInstanceConfig):
@@ -148,17 +196,17 @@ class ServiceEndPoint(ServiceInstanceConfig):
         settings: "ServiceInstanceTypeConfig",
         service,
         name: Optional[str] = None,
-    ) -> Optional["ServiceInstanceConfig"]:
+    ) -> List["ServiceInstanceConfig"]:
         """
         Create Config from settings
         """
         caps = service.get_caps()
         refs_caps = settings.refs_caps
         if not refs_caps or refs_caps.name not in caps or refs_caps.type != ValueType.HTTP_URL:
-            return
+            return []
         refs = refs_caps.get_references(caps[refs_caps.name])
         if not refs:
-            return
+            return []
         url = urlparse(refs[0].split("::")[1])
         host, *port = url.netloc.split(":")
         addressed, fqdn = None, None
@@ -175,8 +223,27 @@ class ServiceEndPoint(ServiceInstanceConfig):
             addresses=addressed,
             port=port,
         )
-        return cfg
+        return [cfg]
 
 
 class ConfigInstance(ServiceInstanceConfig):
     type = InstanceType.OTHER
+
+    @classmethod
+    def from_settings(
+        cls,
+        settings: "ServiceInstanceTypeConfig",
+        service,
+        name: Optional[str] = None,
+    ) -> List["ServiceInstanceConfig"]:
+        """Create Config from settings"""
+        caps = service.get_caps()
+        if not settings.refs_caps or settings.refs_caps.name not in caps:
+            return []
+        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        if not refs:
+            return []
+        cfg = cls.from_config(name=name, asset_refs=refs)
+        return [cfg]
+
+    # Handler ?
