@@ -366,6 +366,22 @@ class Service(Document):
         """Check service in maintenance"""
         return False
 
+    def check_deployed(self) -> Optional[str]:
+        """Generate Workflow signal"""
+        statuses = {si.is_deployed for si in self.service_instances}
+        if True not in statuses:
+            return
+        elif False in statuses:
+            return "partial"
+        return "full"
+
+    def get_nested(self) -> List["Service"]:
+        """Returns list of nested services"""
+        r = [self]
+        for d in Service.objects.filter(parent=self):
+            r += d.get_nested()
+        return r
+
     def get_effective_managed_object(self) -> Optional[Any]:
         """Return ManagedObject to upper level"""
         path = self.get_path()
@@ -383,6 +399,7 @@ class Service(Document):
             self._refresh_managed_object()
             self.service_path = self.get_path()
             Service.objects.filter(id=self.id).update(service_path=self.service_path)
+        self.sync_instances()
         # Register Final Outage
         # Refresh Service Status
 
@@ -436,6 +453,8 @@ class Service(Document):
         # Check state on is_productive
         # if not self.state.is_productive:
         #    return
+        if isinstance(status, str):
+            status = Status[status]
         if self.oper_status == status:
             logger.debug("[%s] Status is same. Skipping", self.id)
             return
@@ -551,6 +570,13 @@ class Service(Document):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
+    def get_alarm_severity(self) -> int:
+        """Calculate Service alarm severity"""
+        default_map = {4: 5000, 3: 4000, 2: 3000}
+        if self.oper_status.value in default_map:
+            return default_map[self.oper_status.value]
+        return 0
+
     def register_alarm(self, old_status: Status):
         """
         Register Group alarm when changed Oper Status
@@ -559,31 +585,21 @@ class Service(Document):
         # Raise alarm
         if self.oper_status > Status.UP >= old_status:
             msg = {
-                "$op": "disposition",
+                "$op": "ensure_group",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
-                "timestamp": self.oper_status_change.isoformat(),
+                "g_type": 3,
+                "name": self.label,
                 "alarm_class": SVC_AC,
-                "labels": list(self.labels),
-                "severity": {4: 5000, 3: 4000, 2: 3000}[self.oper_status.value],
-                "groups": [
-                    {"reference": f"{SVC_REF_PREFIX}:{svc.id}"}
-                    for svc in Service.objects.filter(parent=self.id)
-                ],
-                "subject": self.label,
+                "labels": self.labels,
                 "vars": {
-                    "title": self.description,
+                    "description": self.description,
                     "type": self.profile.name,
                     "service": str(self.id),
-                    "to_status": self.oper_status.name,
                     "from_status": old_status.name,
-                    "message": f"Service status changed from {old_status.name} to {self.oper_status.name}",
+                    "to_status": self.oper_status.name,
                 },
+                "alarms": [],
             }
-            caps = self.get_caps()
-            if caps and "Channel | Address" in caps:
-                msg["vars"]["address"] = caps["Channel | Address"]
-            if self.interface:
-                msg["vars"]["interface"] = self.interface.name
         elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",
@@ -762,9 +778,11 @@ class Service(Document):
             # Instances
             profiles = frozenset(profiles)
             for svc in ServiceInstance.objects.filter(instance_q).scalar("service"):
-                if svc.profile.id in profiles:
+                if svc.profile.id not in profiles:
                     continue
                 services.add(svc.id)
+                if svc.service_path:
+                    services |= set(svc.service_path)
         # Alarm without affected instances
         if profile_rules:
             q |= m_q(profile__in=profile_rules)
@@ -776,8 +794,17 @@ class Service(Document):
             )
         #
         logger.debug("Requested services by query: %s", q)
-        if q:
-            services |= set(Service.objects.filter(q).scalar("id"))
+        if not q:
+            return list(services)
+        for (
+            sid,
+            path,
+        ) in Service.objects.filter(
+            q
+        ).scalar("id", "service_path"):
+            services.add(sid)
+            if path:
+                services |= set(path)
         return list(services)
 
     def unbind_interface(self):
@@ -837,11 +864,11 @@ class Service(Document):
             return
         instances: List[ServiceInstanceConfig] = []
         for settings in self.profile.instance_settings:
-            cfg = ServiceInstanceConfig.get_config(settings.instance_type)
-            cfg = cfg.from_settings(settings.get_config(), self, settings.name)
-            if not cfg:
+            i_type = settings.get_instance_type()
+            cfgs = i_type.from_settings(settings.get_config(), self, settings.name)
+            if not cfgs:
                 continue
-            instances.append(cfg)
+            instances += cfgs
         logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
@@ -897,7 +924,7 @@ class Service(Document):
         if source == InputSource.DISCOVERY and not managed_object:
             # To Service Discovery ?
             raise AttributeError("managed_object required for Discovery source")
-        cfg = ServiceInstanceConfig.get_config(type)
+        cfg = ServiceInstanceConfig.get_type(type)
         cfg = cfg.from_config(name=name, fqdn=fqdn)
         if not cfg:
             logger.warning(
