@@ -11,6 +11,7 @@ from typing import Optional, Iterable, Dict, Any, List, Tuple, AsyncIterable
 
 # Third-party modules
 import polars as pl
+from django.db import connection
 from django.db.models.expressions import Case, When, Value
 from django.db.models.fields import BooleanField
 from pymongo.read_preferences import ReadPreference
@@ -23,6 +24,7 @@ from noc.sa.models.profile import Profile
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.capability import Capability
+from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.vendor import Vendor
@@ -118,6 +120,15 @@ class ManagedObjectDS(BaseDataSource):
             name="caps",
             description="Object Capabilities",
             is_virtual=True,
+        ),
+        # Serial Number fields
+        FieldInfo(
+            name="serial_moattr",
+            description="Serial Number from sa_managedobjectattribute",
+        ),
+        FieldInfo(
+            name="serial_odata",
+            description="Serial Number from Object.data",
         ),
         FieldInfo(
             name="chassis_macs",
@@ -390,6 +401,66 @@ class ManagedObjectDS(BaseDataSource):
                         return c["error"]
         return ""
 
+    @staticmethod
+    def get_mo_attrs() -> Dict[id, Tuple]:
+        """
+        Get data for keys listed in `attr_dict`, such as `Serial Number`
+        from Postgres database table `sa_managedobjectattribute`
+        """
+        BASE_QUERY = "select managed_object_id, %s from sa_managedobjectattribute"
+        KEY_SECTION = "case when key = '%s' then value else null end as %s"
+        attr_dict = {
+            "Serial Number": "serial_number",
+            "HW version": "hw_version",
+            "Boot PROM": "boot_prom",
+            "Patch Version": "patch_version",
+        }
+        key_section = ", ".join([KEY_SECTION % (k, v) for k, v in attr_dict.items()])
+        query = BASE_QUERY % key_section
+        cursor = connection.cursor()
+        cursor.execute(query)
+        res = {}
+        for mo_id, *r in cursor:
+            res[mo_id] = (r[0], r[1], r[2], r[3])
+        return res
+
+    @staticmethod
+    def get_odata_serials(mo_ids) -> Dict[id, str]:
+        """
+        Get serial numbers data from `data` field in `inv.Object` model
+        """
+        res = {}
+        for o in Object._get_collection().aggregate(
+            [
+                {
+                    "$match": {
+                        "data": {"$elemMatch": {"attr": "managed_object", "value": {"$in": mo_ids}}}
+                    }
+                },
+                {
+                    "$project": {
+                        "managed_object": {
+                            "$filter": {
+                                "input": "$data",
+                                "cond": {"$eq": ["$$this.attr", "managed_object"]},
+                            }
+                        },
+                        "serial": {
+                            "$filter": {
+                                "input": "$data",
+                                "cond": {"$eq": ["$$this.attr", "serial"]},
+                            }
+                        },
+                    }
+                },
+                {"$match": {"managed_object": {"$size": 1}, "serial": {"$size": 1}}},
+            ]
+        ):
+            mo_id = o["managed_object"][0]["value"]
+            serial = o["serial"][0]["value"]
+            res[mo_id] = serial
+        return res
+
     @classmethod
     async def iter_query(
         cls,
@@ -430,6 +501,8 @@ class ManagedObjectDS(BaseDataSource):
                 q_fields.append(f.name)
             elif f.name.startswith("RS") and f.internal_name:
                 q_maps[f.internal_name] = f.name
+            elif f.name in ("serial_moattr", "serial_odata"):
+                continue
             elif not fields or f.name in fields or f.name == "id":
                 q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
@@ -466,6 +539,12 @@ class ManagedObjectDS(BaseDataSource):
             }
         if not fields or "adm_path" in fields:
             adm_paths = cls.load_adm_path()
+        mo_attrs, odata_serials = {}, {}
+        if not fields or "serial_moattr" in fields:
+            mo_attrs = cls.get_mo_attrs()
+        if not fields or "serial_odata" in fields:
+            mo_ids = [x["id"] for x in mos.values("id")]
+            odata_serials = cls.get_odata_serials(mo_ids)
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]
@@ -561,6 +640,12 @@ class ManagedObjectDS(BaseDataSource):
                 )
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
+            if not fields or "serial_moattr" in fields:
+                attrs = mo_attrs.get(mo["id"], None)
+                serial = attrs[0] if attrs else None
+                yield num, "serial_moattr", serial
+            if not fields or "serial_odata" in fields:
+                yield num, "serial_odata", odata_serials.get(mo["id"], None)
             if not fields or "mappings" in fields:
                 async for c in cls.iter_mappings(
                     mo.pop("mappings", None) or [], requested_mappings=q_maps

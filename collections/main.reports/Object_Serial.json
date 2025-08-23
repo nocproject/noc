@@ -12,10 +12,6 @@
                 {
                     "datasource": "managedobjectds",
                     "json": null
-                },
-                {
-                    "datasource": "objectserialds",
-                    "json": null
                 }
             ]
         },
