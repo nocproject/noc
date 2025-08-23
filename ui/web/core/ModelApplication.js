@@ -98,6 +98,7 @@ Ext.define("NOC.core.ModelApplication", {
     //
     me.hasGroupEdit = me.checkGroupEdit();
     // Create GRID card
+    me.hasEditForm = Ext.isDefined(me.fields) && me.fields.length > 0;
     me.ITEM_GRID = me.registerItem(me.createGrid());
     // Create FORM card
     me.ITEM_FORM = me.registerItem(me.createForm());
@@ -323,7 +324,9 @@ Ext.define("NOC.core.ModelApplication", {
         },
         handler: me.onFavItem,
       },
-      {
+    ];
+    if(me.hasEditForm){
+      rowItems.push({
         glyph: NOC.glyph.edit,
         color: NOC.colors.edit,
         tooltip: __("Edit"),
@@ -337,9 +340,8 @@ Ext.define("NOC.core.ModelApplication", {
             record = me.store.getAt(rowIndex);
           me.onEditRecord(record);
         },
-      },
-    ];
-
+      });
+    }
     if(me.openDashboard){
       rowItems = rowItems.concat([
         {
@@ -938,7 +940,6 @@ Ext.define("NOC.core.ModelApplication", {
   editRecord: function(record){
     var me = this,
       r = {},
-      field,
       data;
     me.currentRecord = record;
     me.setNavTabTooltip({data: me.currentRecord.data});
@@ -949,8 +950,11 @@ Ext.define("NOC.core.ModelApplication", {
       if(v.indexOf("__") !== -1){
         return
       }
+      if(!Ext.isDefined(this.fields)){
+        return;
+      }
       // hack to get instance of .TreeCombo class
-      field = me.fields.filter(function(e){
+      let field = this.fields.filter(function(e){
         return v === e.name && Ext.String.endsWith(e.xtype, ".TreeCombo")
       });
       if(field.length === 1){
@@ -969,7 +973,7 @@ Ext.define("NOC.core.ModelApplication", {
           r[v] = data[v];
         }
       }
-    });
+    }, me);
     // Show edit form
     me.showForm();
     me.form.reset();

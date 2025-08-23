@@ -10,7 +10,7 @@ import operator
 from threading import Lock, RLock
 from dataclasses import dataclass
 from functools import partial
-from typing import Optional, Dict, Union, Callable, Any, Tuple
+from typing import Optional, Dict, Union, Callable, Any, Tuple, List
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -20,7 +20,7 @@ from mongoengine.fields import (
     LongField,
     ReferenceField,
     ListField,
-    EmbeddedDocumentField,
+    EmbeddedDocumentListField,
     ObjectIdField,
     IntField,
 )
@@ -41,6 +41,8 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check, on_init
 from noc.core.matcher import build_matcher
+from noc.core.caps.types import CapsConfig
+from noc.inv.models.capsitem import CapsSettings
 from noc.wf.models.workflow import Workflow
 from noc.config import config
 from .ifdescpatterns import IfDescPatterns
@@ -200,7 +202,7 @@ class InterfaceProfile(Document):
     #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
-    metrics = ListField(EmbeddedDocumentField(InterfaceProfileMetrics))
+    metrics: List[InterfaceProfileMetrics] = EmbeddedDocumentListField(InterfaceProfileMetrics)
     # Alarm weight
     weight = IntField(default=0)
     # User network interface
@@ -226,13 +228,15 @@ class InterfaceProfile(Document):
         ],
         default="D",
     )
+    # Capabilities
+    caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("R", "By Rule"), ("D", "Disable")],
         default="R",
     )
     #
-    match_rules = ListField(EmbeddedDocumentField(MatchRule))
+    match_rules = EmbeddedDocumentListField(MatchRule)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -355,6 +359,13 @@ class InterfaceProfile(Document):
     @property
     def is_default(self):
         return self.name == self.DEFAULT_PROFILE_NAME
+
+    def get_caps_config(self) -> Dict[str, CapsConfig]:
+        """Local Capabilities Config (from Profile)"""
+        r = {}
+        for c in self.caps:
+            r[str(c.capability.id)] = c.get_config()
+        return r
 
     def allow_collected_metric(
         self,
