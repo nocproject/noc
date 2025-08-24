@@ -133,6 +133,7 @@ class ServiceApplication(ExtDocApplication):
         if isinstance(o, Service):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
+        data["diagnostics"] = [d.get_object_form() for d in o.iter_diagnostics(to_display=True)]
         return data
 
     @staticmethod
