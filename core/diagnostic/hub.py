@@ -195,7 +195,12 @@ class DiagnosticItem(BaseModel):
                 raise AttributeError(str(e))
         return self._handler
 
-    def iter_checks(self, logger=None, **kwargs) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(
+        self,
+        logger=None,
+        matcher_ctx: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
         if not self.config.diagnostic_handler and not self.config.checks:
             return
@@ -400,22 +405,13 @@ class DiagnosticHub(object):
         for d in self.__diagnostics:
             list(self.iter_checks(d))
 
-    def iter_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(self, name: str) -> Iterable[Tuple[Check, ...]]:
         if self.__checks is None:
             self.__checks = defaultdict(set)
-        di = self[d]
-        ctx = {
-            "labels": self.__object.effective_labels,
-            "address": self.__object.address,
-            "groups": self.__object.effective_service_groups,
-        }
-        if self.__object.auth_profile:
-            ctx["suggests_cli"] = self.__object.auth_profile.enable_suggest
-            ctx["suggests_snmp"] = self.__object.auth_profile.enable_suggest
-        if self.__object.profile:
-            ctx["profile"] = self.__object.profile.name
-        if di.config.include_credentials and self.__object.credentials:
-            ctx["cred"] = self.__object.credentials.get_snmp_credential()
+        di = self[name]
+        ctx = self.__object.get_check_ctx(
+            include_credentials=di.config.include_credentials,
+        )
         for ci in di.config.diagnostic_ctx or []:
             if ci.name in self.__data:
                 ctx[ci.alias or ci.name] = self.__data[ci.name]
@@ -794,11 +790,12 @@ class DiagnosticHub(object):
         if isinstance(ts, str):
             ts = datetime.datetime.fromisoformat(ts)
         now = ts or datetime.datetime.now()
+        mo = self.__object.get_effective_managed_object()
         # Send Data
         dd = {
             "date": now.date().isoformat(),
             "ts": now.replace(microsecond=0).isoformat(sep=" "),
-            "managed_object": self.__object.bi_id,
+            "managed_object": mo.bi_id if mo else None,
             "diagnostic_name": diagnostic,
             "state": state,
             "from_state": from_state,
@@ -819,7 +816,7 @@ class DiagnosticHub(object):
                         "state": state,
                         "from_state": from_state,
                         "reason": reason,
-                        "managed_object": self.__object.get_message_context(),
+                        "managed_object": mo.get_message_context() if mo else None,
                     },
                     MessageType.DIAGNOSTIC_CHANGE,
                     self.__object.get_mx_message_headers(),

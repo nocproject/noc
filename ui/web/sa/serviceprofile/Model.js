@@ -93,6 +93,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "auto"
         },
         {
+            name: "diagnostic_status",
+            type: "auto"
+        },
+        {
             name: "status_transfer_policy",
             type: "string",
             defaultValue: "S"

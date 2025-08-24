@@ -431,6 +431,51 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     ]
                 },
                 {
+                    name: "diagnostic_status",
+                    fieldLabel: __("Diagnostics Config"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    //width: 350,
+                    columns: [
+                      {
+                          text: __("Diagnostic"),
+                          dataIndex: "diagnostic",
+                          width: 100,
+                          editor: "textfield",
+                          allowBlank: true
+                      },
+                      {
+                          text: __("From Instance"),
+                          dataIndex: "from_instance",
+                          width: 70,
+                          editor: "checkbox",
+                          renderer: NOC.render.Bool
+                      },
+                      {
+                          text: __("Failed Status"),
+                          dataIndex: "failed_status",
+                          width: 100,
+                          editor: {
+                              xtype: "combobox",
+                              store: [
+                                  [0, "UNKNOWN"],
+                                  [1, "UP"],
+                                  [2, "SLIGHTLY_DEGRADED"],
+                                  [3, "DEGRADED"],
+                                  [4, "DOWN"]
+                              ]
+                          },
+                          renderer: NOC.render.Choices({
+                              0: "UNKNOWN",
+                              1: "UP",
+                              2: "SLIGHTLY_DEGRADED",
+                              3: "DEGRADED",
+                              4: "DOWN"
+                          })
+                      }
+                    ]
+                },
+                {
                     xtype: "fieldset",
                     title: __("Instance Policy"),
                     items: [

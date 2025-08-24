@@ -43,8 +43,10 @@ class DiagnosticState(str, enum.Enum):
 
 @dataclass(frozen=True)
 class CtxItem:
+    """"""
+
     name: str
-    capabilities: Optional[str] = None
+    capability: Optional[str] = None
     alias: Optional[str] = None
     set_method: Optional[str] = None
 

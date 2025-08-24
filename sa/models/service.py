@@ -61,6 +61,7 @@ from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
+from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
 from noc.config import config
@@ -961,7 +962,20 @@ class Service(Document):
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterable diagnostic Config"""
-        yield DiagnosticConfig(diagnostic="WEB", blocked=False)
+        yield from self.profile.iter_diagnostic_configs(self)
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        """"""
+        return {
+            "name": self.label,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.effective_service_groups),
+        }
+
+    def get_checkers_ctx(self) -> Dict[str, Any]:
+        """"""
+        return self.get_matcher_ctx()
 
 
 def refresh_service_status(svc_ids: List[str]):

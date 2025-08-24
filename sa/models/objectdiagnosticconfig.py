@@ -34,6 +34,7 @@ from noc.core.prettyjson import to_json
 from noc.core.diagnostic.types import DiagnosticConfig
 from noc.core.checkers.base import Check
 from noc.fm.models.alarmclass import AlarmClass
+from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
 
 id_lock = Lock()
@@ -60,19 +61,22 @@ class Match(EmbeddedDocument):
 class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
     script = StringField(required=False)
-    address = StringField(required=False)
-    arg0 = StringField()
+    # Check Context
+    # address = StringField(required=False)
+    args = ListField(StringField(required=True))
+    from_caps = ReferenceField(Capability)
+    include_credential: bool = BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.check}:{self.arg0}"
+        if self.include_credential:
+            return f"{self.check}:creds;{self.args}"
+        return f"{self.check}:{self.args}"
 
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {"check": self.check}
-        if self.arg0:
-            r["arg0"] = self.arg0
-        if self.address:
-            r["address"] = self.address
+        if self.args:
+            r["args"] = self.args
         if self.script:
             r["script"] = self.script
         return r
@@ -118,6 +122,7 @@ class ObjectDiagnosticConfig(Document):
     bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _active_diagnostic_cache = cachetools.TTLCache(maxsize=10, ttl=600)
 
@@ -133,6 +138,11 @@ class ObjectDiagnosticConfig(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["ObjectDiagnosticConfig"]:
         return ObjectDiagnosticConfig.objects.filter(bi_id=bi_id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
+    def get_by_name(cls, name: str) -> Optional["ObjectDiagnosticConfig"]:
+        return ObjectDiagnosticConfig.objects.filter(name=name).first()
 
     @classmethod
     @cachetools.cachedmethod(
@@ -223,8 +233,6 @@ class ObjectDiagnosticConfig(Document):
         Iter over Diagnostic Config for object
         First - diagnostic with checks only
         Second - Diagnostic with Dependency
-        :param object:
-        :return:
         """
         deferred = list()
         for odc in cls.get_active_diagnostics():
