@@ -48,6 +48,8 @@ from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription
 from noc.core.caps.decorator import capabilities
 from noc.core.caps.types import CapsValue
 from noc.core.etl.remotemappings import mappings
+from noc.core.diagnostic.types import DiagnosticConfig
+from noc.core.diagnostic.decorator import diagnostic
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -58,6 +60,7 @@ from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
 from noc.config import config
@@ -148,6 +151,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @resourcegroup
 @on_init
 @change
+@diagnostic
 @workflow
 @capabilities
 @mappings
@@ -247,6 +251,7 @@ class Service(Document):
     cpe_group = StringField()
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
+    diagnostics: List[DiagnosticItem] = EmbeddedDocumentListField(DiagnosticItem)
     #
     static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
@@ -953,6 +958,9 @@ class Service(Document):
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
         if service:
             return Service.get_by_id(service)
+
+    def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
+        """Iterable diagnostic Config"""
 
 
 def refresh_service_status(svc_ids: List[str]):

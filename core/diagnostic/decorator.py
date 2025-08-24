@@ -10,6 +10,7 @@ from typing import List, Iterable, Optional, Dict
 
 # NOC modules
 from noc.models import is_document
+from noc.sa.models.diagnosticitem import DiagnosticItem
 from .types import DiagnosticState, DiagnosticValue
 from .hub import DiagnosticHub, DiagnosticItem
 
@@ -27,6 +28,10 @@ def get_model_diagnostic_values(self) -> Dict[str, DiagnosticValue]:
 
 def get_document_diagnostic_values(self) -> Dict[str, DiagnosticValue]:
     """"""
+    r = {}
+    for di in self.diagnostics:
+        r[di.diagnostic] = di.get_value()
+    return r
 
 
 def iter_diagnostics(self, to_display: bool = False) -> Iterable[DiagnosticItem]:
@@ -47,6 +52,11 @@ def save_document_diagnostics(
     dry_run: bool = False,
 ):
     """"""
+    self.diagnostics = {DiagnosticItem.from_value(d) for d in diagnostics}
+    if dry_run or self._created:
+        return
+    self.update(caps=self.caps)
+    # self._reset_caches(self.id, credential=True)
 
 
 def save_model_diagnostics(self, diagnostics: List[DiagnosticItem], dry_run: bool = False):
@@ -72,6 +82,8 @@ def diagnostic(cls):
         self._diagnostics = DiagnosticHub(self)
         return self._diagnostics
 
+    if not hasattr(cls, "diagnostics"):
+        return
     cls.diagnostic = property(diagnostic)
     cls.iter_diagnostics = iter_diagnostics
     if is_document(cls):
