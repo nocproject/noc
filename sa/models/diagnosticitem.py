@@ -11,7 +11,14 @@ from typing import Dict, List, Optional
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, EnumField, DateTimeField, BooleanField, DictField
+from mongoengine.fields import (
+    StringField,
+    EnumField,
+    DateTimeField,
+    BooleanField,
+    DictField,
+    EmbeddedDocumentListField,
+)
 
 # NOC modules
 from noc.core.diagnostic.types import DiagnosticState, DiagnosticValue, CheckStatus
@@ -56,7 +63,7 @@ class DiagnosticItem(EmbeddedDocument):
 
     diagnostic = StringField(required=True)
     state: DiagnosticState = EnumField(DiagnosticState, default=DiagnosticState("unknown"))
-    checks: Optional[List[CheckItem]] = None
+    checks: Optional[List[CheckItem]] = EmbeddedDocumentListField(CheckItem)
     reason: Optional[str] = StringField(required=False)
     changed: Optional[datetime.datetime] = DateTimeField(required=False)
 
@@ -68,7 +75,7 @@ class DiagnosticItem(EmbeddedDocument):
         return DiagnosticValue(
             diagnostic=self.diagnostic,
             state=self.state,
-            checks=[c.to_status() for c in self.checks],
+            checks=[c.to_status() for c in self.checks or []],
             reason=self.reason or None,
             changed=self.changed,
         )
@@ -79,7 +86,7 @@ class DiagnosticItem(EmbeddedDocument):
         return DiagnosticItem(
             diagnostic=value.diagnostic,
             state=value.state,
-            checks=[CheckItem.from_status(c) for c in value.checks],
+            checks=[CheckItem.from_status(c) for c in value.checks or []],
             reason=value.reason or None,
             changed=value.changed,
         )

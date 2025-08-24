@@ -10,7 +10,7 @@ from typing import List, Iterable, Optional, Dict
 
 # NOC modules
 from noc.models import is_document
-from noc.sa.models.diagnosticitem import DiagnosticItem
+from noc.sa.models.diagnosticitem import DiagnosticItem as DiagnosticItemDoc
 from .types import DiagnosticState, DiagnosticValue
 from .hub import DiagnosticHub, DiagnosticItem
 
@@ -52,7 +52,7 @@ def save_document_diagnostics(
     dry_run: bool = False,
 ):
     """"""
-    self.diagnostics = {DiagnosticItem.from_value(d) for d in diagnostics}
+    self.diagnostics = [DiagnosticItemDoc.from_value(d) for d in diagnostics]
     if dry_run or self._created:
         return
     self.update(caps=self.caps)

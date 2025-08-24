@@ -571,6 +571,7 @@ class DiagnosticHub(object):
             d_current = self.get_object_diagnostic_value(d_name)
             if not d_current:
                 new_diags.append(di_new)
+                changed.append(d_name)
                 continue
             if d_current == di_new and di_new.workflow_event:
                 self.logger.debug(

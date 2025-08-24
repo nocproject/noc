@@ -961,6 +961,7 @@ class Service(Document):
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterable diagnostic Config"""
+        yield DiagnosticConfig(diagnostic="WEB", blocked=False)
 
 
 def refresh_service_status(svc_ids: List[str]):
