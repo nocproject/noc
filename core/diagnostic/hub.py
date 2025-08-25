@@ -198,7 +198,6 @@ class DiagnosticItem(BaseModel):
     def iter_checks(
         self,
         logger=None,
-        matcher_ctx: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
@@ -415,6 +414,8 @@ class DiagnosticHub(object):
         for ci in di.config.diagnostic_ctx or []:
             if ci.name in self.__data:
                 ctx[ci.alias or ci.name] = self.__data[ci.name]
+            elif ci.value:
+                ctx[ci.alias or ci.name] = ci.value
         for checks in di.iter_checks(**ctx, logger=self.logger):
             for c in itertools.chain(checks):
                 self.__checks[c.key].add(di.diagnostic)

@@ -19,6 +19,7 @@ from noc.core.threadpool import ThreadPoolExecutor
 T = TypeVar("T")
 
 TCP_CHECK = "TCP"
+FAIL_CHECK = "FAIL"
 CHECKS = []
 
 

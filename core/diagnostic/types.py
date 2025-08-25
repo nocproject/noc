@@ -46,14 +46,18 @@ class CtxItem:
     """"""
 
     name: str
+    value: Optional[str] = None
     capability: Optional[str] = None
     alias: Optional[str] = None
     set_method: Optional[str] = None
 
     @classmethod
-    def from_string(cls, ctx: str) -> "CtxItem":
+    def from_string(cls, value: str) -> "CtxItem":
         """"""
-        name, *v = ctx.split(":")
+        name, *v = value.split(":")
+        if v:
+            # Dynamic gen
+            return CtxItem(name=name, value=v[0])
         return CtxItem(name=name)
 
 

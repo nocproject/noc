@@ -14,6 +14,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         "NOC.sa.serviceprofile.LookupField",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.main.handler.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.inv.capability.LookupField",
         "NOC.inv.resourcegroup.LookupField",
@@ -452,10 +453,22 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                           renderer: NOC.render.Bool
                       },
                       {
-                        xtype: "stringlistfield",
-                        name: "ctx",
+                        editor: "stringlistfield",
+                        dataIndex: "ctx",
                         width: 400,
-                        fieldLabel: __("Context"),
+                        text: __("Context"),
+                      },
+                      {
+                        text: __("Handler"),
+                        dataIndex: "handler",
+                        renderer: NOC.render.Lookup("handler"),
+                        width: 250,
+                        editor: {
+                          xtype: "main.handler.LookupField",
+                          query: {
+                            "allow_diagnostics_checks": true,
+                          }
+                        },
                       },
                       {
                           text: __("Failed Status"),
