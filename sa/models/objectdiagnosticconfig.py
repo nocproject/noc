@@ -31,7 +31,7 @@ import cachetools
 # NOC modules
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
-from noc.core.diagnostic.types import DiagnosticConfig
+from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
 from noc.core.checkers.base import Check
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
@@ -62,21 +62,23 @@ class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
     script = StringField(required=False)
     # Check Context
-    # address = StringField(required=False)
-    args = ListField(StringField(required=True))
-    from_caps = ReferenceField(Capability)
+    address_source = StringField(choices=[
+        ("D", "Disable"), ("O", "From Object"), ("C", "From Caps"), ("M", "Context"),
+    ])
+    ctx = ListField(StringField(required=True))
+    address_caps = ReferenceField(Capability)
     include_credential: bool = BooleanField(default=True)
 
     def __str__(self):
         if self.include_credential:
-            return f"{self.check}:creds;{self.args}"
-        return f"{self.check}:{self.args}"
+            return f"{self.check}:creds;{self.ctx}"
+        return f"{self.check}:{self.ctx}"
 
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {"check": self.check}
-        if self.args:
-            r["args"] = self.args
+        if self.ctx:
+            r["ctx"] = self.ctx
         if self.script:
             r["script"] = self.script
         return r
@@ -209,12 +211,16 @@ class ObjectDiagnosticConfig(Document):
 
     @property
     def d_config(self) -> "DiagnosticConfig":
+        checks, d_ctx = [], []
+        for c in self.checks:
+            if c.ctx:
+                d_ctx.append(CtxItem.from_string(c.ctx))
+            checks.append(Check(name=c.check, script=c.script))
         return DiagnosticConfig(
             diagnostic=self.name,
-            checks=[
-                Check(name=c.check, args={"arg0": c.arg0}, script=c.script) for c in self.checks
-            ],
+            checks=checks,
             dependent=self.diagnostics,
+            diagnostic_ctx=d_ctx,
             state_policy=self.state_policy,
             run_policy=self.run_policy,
             run_order=self.run_order,

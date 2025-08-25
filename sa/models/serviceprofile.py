@@ -49,7 +49,8 @@ from noc.core.models.serviceinstanceconfig import (
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.caps.types import CapsConfig
-from noc.core.diagnostic.types import DiagnosticConfig
+from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
+from noc.main.models.handler import Handler
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.wf.models.workflow import Workflow
@@ -67,11 +68,22 @@ class DiagnosticSettings(EmbeddedDocument):
     show_in_display = BooleanField(default=True)
     state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
     # check_handler
+    handler: "Handler" = ReferenceField(Handler, required=False)
     instance_checks = BooleanField(default=False)
+    ctx: str = ListField(StringField(required=True))
     #
     # caps_ctx
     # For instance ?
     failed_status = EnumField(Status, required=False)
+
+    def clean(self):
+        super().clean()
+        if self.handler and not self.handler.allow_diagnostics_checks:
+            raise ValueError("Only Diagnostic Checks handler allowed")
+        # Validate Ctx
+        if self.ctx:
+            for c in self.ctx:
+                CtxItem.from_string(c)
 
 
 class CapsSettings(EmbeddedDocument):

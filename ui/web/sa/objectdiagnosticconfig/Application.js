@@ -132,8 +132,14 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
               renderer: NOC.render.Lookup("check"),
             },
             {
-              text: __("Argument"),
-              dataIndex: "arg0",
+              xtype: "stringlistfield",
+              name: "ctx",
+              width: 400,
+              fieldLabel: __("Context"),
+            },
+            {
+              text: __("Address"),
+              dataIndex: "address",
               editor: "textfield",
               width: 150,
             },

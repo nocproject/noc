@@ -50,6 +50,12 @@ class CtxItem:
     alias: Optional[str] = None
     set_method: Optional[str] = None
 
+    @classmethod
+    def from_string(cls, ctx: str) -> "CtxItem":
+        """"""
+        name, *v = ctx.split(":")
+        return CtxItem(name=name)
+
 
 @dataclass(frozen=True)
 class DiagnosticConfig(object):

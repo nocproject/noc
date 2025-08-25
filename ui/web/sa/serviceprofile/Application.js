@@ -452,6 +452,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                           renderer: NOC.render.Bool
                       },
                       {
+                        xtype: "stringlistfield",
+                        name: "ctx",
+                        width: 400,
+                        fieldLabel: __("Context"),
+                      },
+                      {
                           text: __("Failed Status"),
                           dataIndex: "failed_status",
                           width: 100,
