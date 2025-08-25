@@ -376,12 +376,13 @@ class DiagnosticHub(object):
             for dd in cfg.dependent or []:
                 self.__depended[dd] = cfg.diagnostic
             if cfg.is_local_status:
-                locals.append(cfg.name)
+                locals.append(cfg)
         self.__diagnostics = r
-        for d_name in locals:
-            h = self[d_name].get_handler(self.logger)
-            c_state, c_reason, c_data, c_checks = h.get_check_status()
-            self.set_state(d_name, c_state, reason=c_reason, data=c_data)
+        for cfg in locals:
+            h = self[cfg.diagnostic].get_handler(self.logger)
+            ctx = self.get_check_env(self.__object, cfg)
+            c_state, c_reason, c_data, c_checks = h.get_check_status(**ctx)
+            self.set_state(cfg.diagnostic, c_state, reason=c_reason, data=c_data)
 
     def __load_checks(self):
         """Loading all diagnostic checks"""
@@ -390,12 +391,13 @@ class DiagnosticHub(object):
 
     @classmethod
     def get_check_env(
-        cls, obj, cfg: DiagnosticConfig, checks_data: Dict[str, Any]
+        cls, obj, cfg: DiagnosticConfig, checks_data: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Getting checks environment context"""
         ctx = obj.get_check_ctx(
             include_credentials=cfg.include_credentials,
         )
+        checks_data = checks_data or {}
         for ci in cfg.diagnostic_ctx or []:
             if ci.name in checks_data:
                 ctx[ci.alias or ci.name] = checks_data[ci.name]
@@ -589,7 +591,9 @@ class DiagnosticHub(object):
                 changed.append(d_name)
             new_diags.append(di_new)
         if changed:
-            self.logger.info("[%s] Save changed diagnostics: %s", str(self.__object), changed)
+            self.logger.info(
+                "[%s] Save changed diagnostics: %s (DR: %s)", str(self.__object), changed, dry_run
+            )
             self.__object.save_diagnostics(new_diags, dry_run=dry_run)
         if wf_events:
             # Bulk update/Get effective event

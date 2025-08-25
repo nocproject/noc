@@ -55,7 +55,7 @@ def save_document_diagnostics(
     self.diagnostics = [DiagnosticItemDoc.from_value(d) for d in diagnostics]
     if dry_run or self._created:
         return
-    self.update(caps=self.caps)
+    self.update(diagnostics=self.diagnostics)
     # self._reset_caches(self.id, credential=True)
 
 

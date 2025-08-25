@@ -24,7 +24,7 @@ class DiagnosticHandler:
 
     def get_check_status(
         self,
-        checks: Optional[List[CheckResult]] = None,
+        **kwargs,
     ) -> Tuple[DiagnosticState, Optional[str], Dict[str, Any], List[CheckStatus]]:
         """Local checks for L Policy Diagnostic Discovery"""
 
