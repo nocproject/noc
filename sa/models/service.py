@@ -48,7 +48,7 @@ from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription
 from noc.core.caps.decorator import capabilities
 from noc.core.caps.types import CapsValue
 from noc.core.etl.remotemappings import mappings
-from noc.core.diagnostic.types import DiagnosticConfig
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
@@ -61,7 +61,6 @@ from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
-from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
 from noc.config import config
@@ -713,9 +712,22 @@ class Service(Document):
         # Calculate affected status
         return self.calculate_status(r)
 
+    def get_diagnostics_status(self) -> Status:
+        if not self.profile.diagnostic_status:
+            return Status.UNKNOWN
+        values = self.get_diagnostic_values()
+        for d in self.profile.diagnostic_status:
+            if (
+                d.failed_status
+                and d.diagnostic in values
+                and values[d.diagnostic].state == DiagnosticState.failed
+            ):
+                return d.failed_status
+        return Status.UNKNOWN
+
     def get_direct_status(self) -> Status:
         """Getting oper_status from Alarm and Diagnostics"""
-        return self.get_alarm_status()
+        return max(self.get_alarm_status(), self.get_diagnostics_status())
 
     def get_calculate_status_function(self) -> str:
         """"""
