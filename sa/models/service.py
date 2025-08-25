@@ -971,6 +971,8 @@ class Service(Document):
             "description": self.description,
             "labels": list(self.effective_labels),
             "service_groups": list(self.effective_service_groups),
+            "caps": self.get_caps(),
+            "mappings": self.get_mappings(),
         }
 
     def get_checkers_ctx(self) -> Dict[str, Any]:

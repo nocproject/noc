@@ -63,7 +63,7 @@ id_lock = Lock()
 class DiagnosticSettings(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
-    diagnostic: StringField(required=True)
+    diagnostic: str = StringField(required=True)
     # from_instance_checks
     show_in_display = BooleanField(default=True)
     state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
@@ -72,7 +72,6 @@ class DiagnosticSettings(EmbeddedDocument):
     instance_checks = BooleanField(default=False)
     ctx: str = ListField(StringField(required=True))
     #
-    # caps_ctx
     # For instance ?
     failed_status = EnumField(Status, required=False)
 
@@ -84,6 +83,15 @@ class DiagnosticSettings(EmbeddedDocument):
         if self.ctx:
             for c in self.ctx:
                 CtxItem.from_string(c)
+
+    def get_config(self, checks=None) -> DiagnosticConfig:
+        return DiagnosticConfig(
+            diagnostic=self.diagnostic,
+            show_in_display=self.show_in_display,
+            state_policy=self.state_policy,
+            diagnostic_handler=self.handler.handler if self.handler else None,
+            diagnostic_ctx=[CtxItem.from_string(c) for c in self.ctx or []],
+        )
 
 
 class CapsSettings(EmbeddedDocument):
@@ -618,7 +626,7 @@ class ServiceProfile(Document):
     def iter_diagnostic_configs(self, svc) -> Iterable[DiagnosticConfig]:
         """Iterate over configured diagnostic"""
         for s in self.diagnostic_status or []:
-            yield s.diagnostic.d_config
+            yield s.get_config()
 
 
 def refresh_interface_profiles(sp_id, ip_id):

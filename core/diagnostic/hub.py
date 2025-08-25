@@ -73,19 +73,28 @@ class DiagnosticHandler:
         self.config = config
         self.logger = logger
 
-    def iter_checks(
-        self,
-        address: str,
-        labels: Optional[List[str]] = None,
-        groups: Optional[List[str]] = None,
-        **kwargs,
-    ) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(self, **kwargs) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
 
     def get_result(
         self, checks: List[CheckResult]
     ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
         """Getting Diagnostic result"""
+        state = None
+        data = {}
+        for c in checks:
+            c = CheckStatus.from_result(c)
+            if c.skipped:
+                continue
+            if not c.status and self.config.state_policy == "ALL":
+                state = False
+                break
+            if c.status and self.config.state_policy == "ANY":
+                state = True
+                break
+        if self.config.state_policy == "ANY" and checks and state is None:
+            state = False
+        return state, None, data, []
 
 
 class DiagnosticItem(BaseModel):

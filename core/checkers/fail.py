@@ -39,4 +39,5 @@ class FailChecker(BaseChecker):
                     port=c.port,
                     status=False,
                     args=c.args,
+                    error=c.args.get("error"),
                 )
