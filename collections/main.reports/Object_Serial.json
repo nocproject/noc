@@ -20,7 +20,7 @@
             "orientation": "H",
             "parent": "Root",
             "queries": [{
-                "ds_query": "select * from Root"
+                "ds_query": "select name, address, vendor, model, attr_hwversion, sw_version, coalesce(serial_odata, serial_moattr) as serial from Root"
             }]
         }
     ],
@@ -59,21 +59,10 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "attr_serialnumber",
-                    "title": "Serial / capabilities",
-                    "format_type": "string"
-                },
-                {
-                    "name": "serial_moattr",
-                    "title": "Serial / moattr",
-                    "format_type": "string"
-                },
-                {
-                    "name": "serial_odata",
-                    "title": "Serial / odata",
+                    "name": "serial",
+                    "title": "Serial Number",
                     "format_type": "string"
                 }
-
             ],
             "title_template": ""
         }
