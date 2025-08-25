@@ -76,6 +76,27 @@
         },
         "parameters.resource_group": {
             "ru": "По Группе устройств (Селектор)"
+        },
+        "columns.name": {
+            "ru": "Управляемый объект"
+        },
+        "columns.address": {
+            "ru": "IP-адрес"
+        },
+        "columns.vendor": {
+            "ru": "Производитель"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.attr_hwversion": {
+            "ru": "Версия прошивки"
+        },
+        "columns.sw_version": {
+            "ru": "Версия ПО"
+        },
+        "columns.serial": {
+            "ru": "Серийный номер"
         }
     },
     "parameters": [
