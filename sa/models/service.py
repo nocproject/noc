@@ -964,7 +964,7 @@ class Service(Document):
         """Iterable diagnostic Config"""
         yield from self.profile.iter_diagnostic_configs(self)
 
-    def get_matcher_ctx(self) -> Dict[str, Any]:
+    def get_check_ctx(self, include_credentials=False, **kwargs) -> Dict[str, Any]:
         """"""
         return {
             "name": self.label,
@@ -974,10 +974,6 @@ class Service(Document):
             "caps": self.get_caps(),
             "mappings": self.get_mappings(),
         }
-
-    def get_checkers_ctx(self) -> Dict[str, Any]:
-        """"""
-        return self.get_matcher_ctx()
 
 
 def refresh_service_status(svc_ids: List[str]):

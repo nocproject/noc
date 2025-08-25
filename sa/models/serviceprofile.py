@@ -91,6 +91,7 @@ class DiagnosticSettings(EmbeddedDocument):
             state_policy=self.state_policy,
             diagnostic_handler=self.handler.handler if self.handler else None,
             diagnostic_ctx=[CtxItem.from_string(c) for c in self.ctx or []],
+            check_discovery_policy="L",
         )
 
 

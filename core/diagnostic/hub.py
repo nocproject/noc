@@ -24,6 +24,7 @@ from noc.core.handler import get_handler
 from noc.config import config
 from noc.models import is_document
 from .types import DiagnosticConfig, DiagnosticState, CheckStatus, DiagnosticValue
+from .handler import DiagnosticHandler
 
 
 # BuiltIn Diagnostics
@@ -62,39 +63,6 @@ DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
     True: DiagnosticState("enabled"),
     False: DiagnosticState("failed"),
 }
-
-
-class DiagnosticHandler:
-    """
-    Run diagnostic by config and check status
-    """
-
-    def __init__(self, config: DiagnosticConfig, logger=None):
-        self.config = config
-        self.logger = logger
-
-    def iter_checks(self, **kwargs) -> Iterable[Tuple[Check, ...]]:
-        """Iterate over checks"""
-
-    def get_result(
-        self, checks: List[CheckResult]
-    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
-        """Getting Diagnostic result"""
-        state = None
-        data = {}
-        for c in checks:
-            c = CheckStatus.from_result(c)
-            if c.skipped:
-                continue
-            if not c.status and self.config.state_policy == "ALL":
-                state = False
-                break
-            if c.status and self.config.state_policy == "ANY":
-                state = True
-                break
-        if self.config.state_policy == "ANY" and checks and state is None:
-            state = False
-        return state, None, data, []
 
 
 class DiagnosticItem(BaseModel):
@@ -402,29 +370,44 @@ class DiagnosticHub(object):
         """Loading Diagnostic from Object Config"""
         r = {}
         values = self.__object.get_diagnostic_values()
+        locals = []
         for cfg in self.__object.iter_diagnostic_configs():
             r[cfg.diagnostic] = DiagnosticItem.from_config(cfg, value=values.get(cfg.diagnostic))
             for dd in cfg.dependent or []:
                 self.__depended[dd] = cfg.diagnostic
+            if cfg.is_local_status:
+                locals.append(cfg.name)
         self.__diagnostics = r
+        for d_name in locals:
+            h = self[d_name].get_handler(self.logger)
+            c_state, c_reason, c_data, c_checks = h.get_check_status()
+            self.set_state(d_name, c_state, reason=c_reason, data=c_data)
 
     def __load_checks(self):
         """Loading all diagnostic checks"""
         for d in self.__diagnostics:
             list(self.iter_checks(d))
 
+    @classmethod
+    def get_check_env(
+        cls, obj, cfg: DiagnosticConfig, checks_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Getting checks environment context"""
+        ctx = obj.get_check_ctx(
+            include_credentials=cfg.include_credentials,
+        )
+        for ci in cfg.diagnostic_ctx or []:
+            if ci.name in checks_data:
+                ctx[ci.alias or ci.name] = checks_data[ci.name]
+            elif ci.value:
+                ctx[ci.alias or ci.name] = ci.value
+        return ctx
+
     def iter_checks(self, name: str) -> Iterable[Tuple[Check, ...]]:
         if self.__checks is None:
             self.__checks = defaultdict(set)
         di = self[name]
-        ctx = self.__object.get_check_ctx(
-            include_credentials=di.config.include_credentials,
-        )
-        for ci in di.config.diagnostic_ctx or []:
-            if ci.name in self.__data:
-                ctx[ci.alias or ci.name] = self.__data[ci.name]
-            elif ci.value:
-                ctx[ci.alias or ci.name] = ci.value
+        ctx = self.get_check_env(self.__object, di.config, self.__data)
         for checks in di.iter_checks(**ctx, logger=self.logger):
             for c in itertools.chain(checks):
                 self.__checks[c.key].add(di.diagnostic)
