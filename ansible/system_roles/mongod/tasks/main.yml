@@ -30,6 +30,18 @@
     owner: "{{ mongo_user }}"
     mode: "0644"
   notify: restart mongod
+  when: mongod_version is version('7.0', '<')
+  tags:
+    - config
+
+- name: Setting mongod config
+  template:
+    src: mongod.conf_7+.j2
+    dest: "{{ mongo_conf }}"
+    owner: "{{ mongo_user }}"
+    mode: "0644"
+  notify: restart mongod
+  when: mongod_version is version('7.0', '>=')
   tags:
     - config
 

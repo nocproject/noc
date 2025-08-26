@@ -1,0 +1,39 @@
+# mongod.conf
+
+
+storage:
+  dbPath: {{ mongo_db_path }}
+  wiredTiger:
+    engineConfig:
+      directoryForIndexes: true
+
+systemLog:
+  verbosity: 0
+{% if mongod_logging_destination == "syslog" %}
+  destination: syslog
+{% else %}
+  destination: file
+  logAppend: true
+  path: {{ mongo_log_path }}
+{% endif %}
+
+net:
+  port: 27017
+
+  bindIp: 127.0.0.1,{{ mongo_listen_addr }}
+
+processManagement:
+  fork: {{ mongo_fork | lower }}
+  pidFilePath: {{ mongo_pid }}
+
+security:
+  keyFile: {{ mongo_dir }}/mongo.key
+  clusterAuthMode: keyFile
+  authorization: enabled
+
+replication:
+  replSetName: {{ mongod_rs }}
+
+#operationProfiling:
+
+#sharding:
