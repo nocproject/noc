@@ -1,0 +1,92 @@
+---
+# Generate CA only on first host
+- name: Ensure CA key and cert are generated (on first node only)
+  openssl_certificate_authority:
+    path: /tmp/mongodb-ca
+    privatekey_passphrase: ""
+    force: false
+  when: "mongod_power == 'bootstrap'"
+  register: ca_result
+  no_log: true
+
+- name: Fetch CA cert to controller
+  fetch:
+    src: /tmp/mongodb-ca/cacert.pem
+    dest: "{{ playbook_dir }}/files/mongodb/ca.crt"
+    flat: yes
+  when: "mongod_power == 'bootstrap'"
+
+- name: Set cert_dir
+  set_fact:
+    cert_dir: "/etc/ssl/mongodb"
+    ca_cert: "/etc/ssl/mongodb/ca.crt"
+    mongod_cert: "/etc/ssl/mongodb/mongod.pem"
+
+- name: Create certificate directory on ALL nodes
+  file:
+    path: "{{ cert_dir }}"
+    state: directory
+    owner: mongodb
+    group: mongodb
+    mode: '0700'
+
+- name: Generate server private key
+  openssl_privatekey:
+    path: "/tmp/{{ inventory_hostname }}.key"
+    size: 4096
+    type: RSA
+    force: false
+
+- name: Generate server CSR with SANs
+  openssl_csr:
+    path: "/tmp/{{ inventory_hostname }}.csr"
+    privatekey_path: "/tmp/{{ inventory_hostname }}.key"
+    common_name: "{{ inventory_hostname }}"
+    subject_alt_name: |
+      DNS:{{ inventory_hostname }},DNS:localhost,IP:{{ ansible_host }}
+    force: false
+
+- name: Sign server cert with CA
+  openssl_certificate:
+    path: "/tmp/{{ inventory_hostname }}.crt"
+    csr_path: "/tmp/{{ inventory_hostname }}.csr"
+    provider: ownca
+    ownca_path: "{{ playbook_dir }}/files/mongodb/ca.crt"
+    ownca_privatekey_path: "/tmp/mongodb-ca/private/mongodb-ca.key"
+    subject_alt_name: |
+      DNS:{{ inventory_hostname }},DNS:localhost,IP:{{ ansible_host }}
+    force: false
+  delegate_to: "{{ groups['svc-mongod-exec'] | first }}"
+
+- name: Combine server cert and key into PEM
+  shell: |
+    cat /tmp/{{ inventory_hostname }}.crt /tmp/{{ inventory_hostname }}.key > /tmp/{{ inventory_hostname }}.pem
+  args:
+    creates: "/tmp/{{ inventory_hostname }}.pem"
+
+- name: Copy CA cert to node
+  copy:
+    src: "{{ playbook_dir }}/files/mongodb/ca.crt"
+    dest: "{{ ca_cert }}"
+    owner: mongodb
+    group: mongodb
+    mode: '0600'
+
+- name: Copy server PEM to node
+  copy:
+    src: "/tmp/{{ inventory_hostname }}.pem"
+    dest: "{{ mongod_cert }}"
+    owner: mongodb
+    group: mongodb
+    mode: '0600'
+
+- name: Clean up temp files
+  file:
+    path: "/tmp/{{ item }}"
+    state: absent
+  loop:
+    - "{{ inventory_hostname }}.key"
+    - "{{ inventory_hostname }}.csr"
+    - "{{ inventory_hostname }}.crt"
+    - "{{ inventory_hostname }}.pem"
+  ignore_errors: yes

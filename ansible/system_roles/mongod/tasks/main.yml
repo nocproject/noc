@@ -109,22 +109,37 @@
   when:
     - "mongod_power == 'arbiter'"
 
-- name: include master settings
-  include_tasks: "master.yml"
-  when: "mongod_power == 'bootstrap'"
-  tags:
-    - rs_init
+- block:
 
-- name: rs_reinit
-  include_tasks: "rs_update.yml"
-  args:
-    apply:
-      delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
-  when:
-    - "mongod_power != 'bootstrap'"
-    - mongo_master_init_done is defined
-  tags:
-    - rs_init
+    - name: include master settings
+      include_tasks: "master.yml"
+      when: "mongod_power == 'bootstrap'"
+      tags:
+        - rs_init
+
+    - name: rs_reinit
+      include_tasks: "rs_update.yml"
+      args:
+        apply:
+          delegate_to: "{{ groups['svc-mongo-primary'][0] }}"
+      when:
+        - "mongod_power != 'bootstrap'"
+        - mongo_master_init_done is defined
+      tags:
+        - rs_init
+
+  when: mongod_version is version('7.0', '<')
+
+- block:
+
+    - name: include master settings
+      include_tasks: "master_7+.yml"
+      when: "mongod_power == 'bootstrap'"
+      tags:
+        - rs_init
+
+      ## TODO Slave inits
+  when: mongod_version is version('7.0', '>=')    
 
 - name: place mongod consul check
   import_role:
