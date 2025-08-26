@@ -407,6 +407,13 @@ class Service(Document):
         self.sync_instances()
         # Register Final Outage
         # Refresh Service Status
+        if (
+            not hasattr(self, "_changed_fields")
+            or "profile" in self._changed_fields
+            or "caps" in self._changed_fields
+        ):
+            self.diagnostic.refresh_diagnostics()
+            self.refresh_status()
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -605,6 +612,10 @@ class Service(Document):
                 },
                 "alarms": [],
             }
+            iface = self.interface
+            if iface:
+                msg["vars"]["interface"] = str(iface.name)
+                # msg["managed_object"] = str(iface.managed_object.id)
         elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",

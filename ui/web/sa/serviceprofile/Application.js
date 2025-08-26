@@ -446,8 +446,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                           allowBlank: true
                       },
                       {
-                          text: __("From Instance"),
-                          dataIndex: "from_instance",
+                          text: __("By Instance"),
+                          dataIndex: "instance_checks",
                           width: 70,
                           editor: "checkbox",
                           renderer: NOC.render.Bool

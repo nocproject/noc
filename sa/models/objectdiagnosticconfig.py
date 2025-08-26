@@ -62,9 +62,14 @@ class DiagnosticCheck(EmbeddedDocument):
     check = StringField(required=True)
     script = StringField(required=False)
     # Check Context
-    address_source = StringField(choices=[
-        ("D", "Disable"), ("O", "From Object"), ("C", "From Caps"), ("M", "Context"),
-    ])
+    address_source = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("O", "From Object"),
+            ("C", "From Caps"),
+            ("M", "Context"),
+        ]
+    )
     ctx = ListField(StringField(required=True))
     address_caps = ReferenceField(Capability)
     include_credential: bool = BooleanField(default=True)
