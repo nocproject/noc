@@ -46,7 +46,7 @@
 
 - name: Set mongod defaults
   template:
-    src: "os/Debian_11/etc/default/mongod.j2"
+    src: "os/Debian_13/etc/default/mongod.j2"
     dest: "/etc/default/mongod"
   notify: restart mongod
   tags:

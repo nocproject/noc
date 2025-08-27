@@ -1,8 +1,7 @@
 ---
 mongod_logging_destination: "syslog"
-mongo_path: /usr/bin/mongo
-mongosh_path: /usr/bin/mongosh
 mongod_version: "4.4"
+mongo_path: "{% if mongod_version is version('6.0', '<') %}/usr/bin/mongo{% else %}/usr/bin/mongosh{% endif %}"
 noc_mongo_admin_user: "root"
 mongod_db: "noc"
 mongod_password: "noc"

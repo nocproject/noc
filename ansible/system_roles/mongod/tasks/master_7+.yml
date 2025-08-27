@@ -2,7 +2,7 @@
 
 - name: Check if MongoDB replica set is initiated
   command: >
-    {{ mongosh_path }} --host {{ mongo_listen_addr }}
+    {{ mongo_path }} --host {{ mongo_listen_addr }}
     --port {{ mongo_port | default(27017) }}
     --eval "try { db.hello().setName ? 'INITIATED' : 'NOT_INIT' } catch(e) { 'CONNECTION_ERROR' }"
     --quiet
@@ -27,7 +27,7 @@
 
 - block:
     - name: Initial replica set configuration
-      command: "{{ mongosh_path }} {{ mongo_dir }}/rsinit.js"
+      command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
 
     - name: Create admin user configuration script
       template:
@@ -42,7 +42,7 @@
         seconds: 5
 
     - name: Create admin user
-      command: "{{ mongosh_path }} admin {{ mongo_dir }}/admininit.js"
+      command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
   when: rs_status is changed
 
 - name: Create database user configuration script
@@ -55,13 +55,13 @@
     - config
 
 - name: Create database user
-  command: "{{ mongosh_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"  # noqa 204
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"  # noqa 204
   when: user_status is changed
   tags:
     - skip_ansible_lint
 
 - name: Update replica set configuration
-  command: "{{ mongosh_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' admin {{ mongo_dir }}/rsinit.js"
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' admin {{ mongo_dir }}/rsinit.js"
   when:
     - rs_conf_status is changed
     - rs_status is changed
