@@ -1,4 +1,5 @@
-# mongod.conf
+# mongod.conf for MongoDB 7 and later
+# See https://docs.mongodb.com/manual/reference/configuration-options/
 
 storage:
   dbPath: {{ mongo_db_path }}
@@ -22,7 +23,6 @@ net:
 
 processManagement:
   fork: {{ mongo_fork | lower }}
-  pidFilePath: {{ mongo_pid }}
 
 security:
   keyFile: {{ mongo_dir }}/mongo.key
@@ -31,7 +31,3 @@ security:
 
 replication:
   replSetName: {{ mongod_rs }}
-
-#operationProfiling:
-
-#sharding:

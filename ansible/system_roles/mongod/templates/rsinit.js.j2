@@ -34,7 +34,11 @@
     });
 {% endfor %}
 
-    status = rs.status();
+    try {
+      status = rs.status();
+    } catch (e) {
+      status = { ok: 0 };
+    }	
     if(status.ok) {
         // Already exists
         memberData = {};

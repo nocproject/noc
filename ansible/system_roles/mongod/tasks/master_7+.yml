@@ -1,11 +1,19 @@
 ---
-- name: Check replica set is initialized
-  command: "{{ mongosh_path }} --host {{ mongod_rs }}/{{ mongo_listen_addr }} --eval 1"
+
+- name: Check if MongoDB replica set is initiated
+  command: >
+    {{ mongosh_path }} --host {{ mongo_listen_addr }}
+    --port {{ mongo_port | default(27017) }}
+    --eval "try { db.hello().setName ? 'INITIATED' : 'NOT_INIT' } catch(e) { 'CONNECTION_ERROR' }"
+    --quiet
   register: rs_status
-  changed_when:
-    - "'No primary detected for set' in rs_status.stdout or 'Unable to reach primary for set' in rs_status.stdout or 'RSM host selection timeout' in rs_status.stdout"
-    - "'connect failed to replica set' in rs_status.stdout"
-  failed_when: "False"
+  failed_when: false
+  changed_when: >
+    "'NOT_INIT' in rs_status.stdout or
+     'CONNECTION_ERROR' in rs_status.stdout"
+  environment:
+    MONGO_NODE_TLS_VERIFY: 'false'
+    MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
   tags:
     - config
 
@@ -34,7 +42,7 @@
         seconds: 5
 
     - name: Create admin user
-      command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
+      command: "{{ mongosh_path }} admin {{ mongo_dir }}/admininit.js"
   when: rs_status is changed
 
 - name: Create database user configuration script
