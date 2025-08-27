@@ -37,9 +37,20 @@
       tags:
         - config
 
-    - name: sleep while mongodb electing primary
-      pause:
-        seconds: 5
+    - name: Wait for MongoDB to elect PRIMARY
+      command: >
+        {{ mongo_path }} "127.0.0.1:{{ mongo_port | default(27017) }}"
+        --eval "const status = rs.status(); status.myState === 1 ? 'PRIMARY' : 'WAITING'"
+        --quiet --norc
+      register: mongo_rs_status
+      environment:
+        MONGO_NODE_TLS_VERIFY: 'false'
+        MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
+      until: "'PRIMARY' in mongo_rs_status.stdout"
+      retries: 30
+      delay: 2
+      timeout: 60
+      changed_when: false
 
     - name: Create admin user
       command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
