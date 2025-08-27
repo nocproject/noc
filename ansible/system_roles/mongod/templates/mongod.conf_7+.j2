@@ -1,6 +1,5 @@
 # mongod.conf
 
-
 storage:
   dbPath: {{ mongo_db_path }}
   wiredTiger:
@@ -19,7 +18,6 @@ systemLog:
 
 net:
   port: 27017
-
   bindIp: 127.0.0.1,{{ mongo_listen_addr }}
 
 processManagement:

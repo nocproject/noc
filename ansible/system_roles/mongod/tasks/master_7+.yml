@@ -19,7 +19,7 @@
 
 - block:
     - name: Initial replica set configuration
-      command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
+      command: "{{ mongosh_path }} {{ mongo_dir }}/rsinit.js"
 
     - name: Create admin user configuration script
       template:
