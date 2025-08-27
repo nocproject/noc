@@ -1,5 +1,5 @@
 ---
-- name: Install Debian 11 system packages
+- name: Install Debian 13 system packages
   apt:
     name: "{{ packages }}"
     update_cache: "True"
@@ -13,7 +13,6 @@
       - libjemalloc2
       - gcc
       - libpq-dev
-      - libffi7
       - libffi-dev
       - libmemcached11
       - libmemcached-dev
