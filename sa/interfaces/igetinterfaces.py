@@ -387,7 +387,7 @@ class IGetInterfaces(BaseInterface):
                         ],
                     ),
                     # Capabilities
-                    "caps": DictParameter(),
+                    "caps": DictParameter(required=False),
                     "subinterfaces": ListOfParameter(
                         element=DictParameter(
                             attrs={
