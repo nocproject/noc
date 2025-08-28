@@ -55,7 +55,6 @@
       until: "'PRIMARY' in mongo_rs_status.stdout"
       retries: 30
       delay: 2
-      timeout: 60
       changed_when: false
 
     - name: Create admin user
