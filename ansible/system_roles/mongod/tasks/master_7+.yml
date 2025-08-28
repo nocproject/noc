@@ -38,20 +38,16 @@
         - config
 
     - name: Wait for MongoDB to elect PRIMARY
-      command: "{{ mongo_path }}"
+      command: >
+        {{ mongo_path }} 127.0.0.1:{{ mongo_port | default(27017) }}
+        --eval "try { const status = rs.status(); status.myState === 1 ? 'PRIMARY' : 'WAITING'; } catch(e) { 'ERROR: ' + e.message; }"
+        --quiet --norc
       args:
         chdir: /tmp
-        argv:
-          - "{{ mongo_path }}"
-          - "127.0.0.1:{{ mongo_port | default(27017) }}"
-          - "--eval"
-          - "try { const status = rs.status(); status.myState === 1 ? 'PRIMARY' : 'WAITING'; } catch(e) { 'ERROR: ' + e.message; }"
-          - "--quiet"
-          - "--norc"
+      register: mongo_rs_status
       environment:
         MONGO_NODE_TLS_VERIFY: 'false'
         MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
-      register: mongo_rs_status
       until: "'PRIMARY' in mongo_rs_status.stdout"
       retries: 30
       delay: 2
