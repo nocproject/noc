@@ -102,7 +102,7 @@ class Script(BaseScript):
                 continue
             vendor = match.group("vendor").upper()
             if vendor in ["OEM", "NO"]:
-                if description:
+                if description and description != "Any-Reset-Preamble":
                     # Try to make `vendor` and `part_no` from description
                     match1 = self.rx_descr.search(description)
                     if match1:
