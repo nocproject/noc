@@ -19,7 +19,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         "NOC.inv.capability.LookupField",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.wf.workflow.LookupField",
-        "NOC.fm.alarmseverity.LookupField"
+        "NOC.fm.alarmseverity.LookupField",
+        "NOC.fm.alarmclass.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
@@ -642,6 +643,37 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                             ]
                         }
                     ]
+                },
+                {
+                  xtype: "fieldset",
+                  title: __("Action"),
+                  layout: "hbox",
+                  defaults: {
+                    labelAlign: "left",
+                    margin: 5,
+                  },
+                  items: [
+                    {
+                      name: "raise_status_alarm_policy",
+                      xtype: "combobox",
+                      fieldLabel: __("Status Alarm Policy"),
+                      store: [
+                        ["D", __("Disable")],
+                        ["R", __("Group")],
+                        ["A", __("Direct Alarm")]
+                      ],
+                      value: "R",
+                      uiStyle: "medium",
+                    },
+                    {
+                        name: "raise_alarm_class",
+                        xtype: "fm.alarmclass.LookupField",
+                        fieldLabel: __("Alarm Class"),
+                        uiStyle: "large",
+                        allowBlank: true
+                    },
+
+                  ]
                 },
                 {
                     xtype: "fieldset",

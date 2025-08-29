@@ -55,7 +55,7 @@ from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
-
+from noc.fm.models.alarmclass import AlarmClass
 
 id_lock = Lock()
 
@@ -426,11 +426,14 @@ class ServiceProfile(Document):
     raise_status_alarm_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("R", "Root Only"),
-            ("O", "Always"),
+            ("R", "Group"),
+            ("A", "Direct"),
         ],
         default="R",
     )
+    alarm_subject_template: Optional[str] = StringField(required=False)
+    raise_alarm_class = ReferenceField(AlarmClass)
+    include_root_group = BooleanField(default=False)
     # Instance Resources
     # Default Config
     instance_policy = StringField(

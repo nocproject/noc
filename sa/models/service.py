@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -589,13 +589,11 @@ class Service(Document):
             return default_map[self.oper_status.value]
         return 0
 
-    def register_alarm(self, old_status: Status):
-        """
-        Register Group alarm when changed Oper Status
-        old_status: Previous status
-        """
-        # Raise alarm
-        if self.oper_status > Status.UP >= old_status:
+    def get_alarm_msg(self, old_status):
+        """"""
+        iface = self.interface
+        if self.profile.raise_status_alarm_policy == "R":
+            # Group
             msg = {
                 "$op": "ensure_group",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
@@ -612,10 +610,42 @@ class Service(Document):
                 },
                 "alarms": [],
             }
-            iface = self.interface
             if iface:
                 msg["vars"]["interface"] = str(iface.name)
-                # msg["managed_object"] = str(iface.managed_object.id)
+            return msg
+        elif self.profile.raise_status_alarm_policy == "A" and self.profile.raise_alarm_class:
+            # Disposition
+            msg = {
+                "$op": "disposition",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "name": self.label,
+                "alarm_class": self.profile.raise_alarm_class,
+                "labels": self.labels,
+                "vars": {
+                    "description": self.description,
+                    "type": self.profile.name,
+                    "service": str(self.id),
+                    "from_status": old_status.name,
+                    "to_status": self.oper_status.name,
+                },
+                "groups": [{"reference": f"{SVC_REF_PREFIX}:{self.id}"}],
+            }
+            if iface:
+                msg["vars"]["interface"] = str(iface.name)
+                msg["managed_object"] = str(iface.managed_object.id)
+            return msg
+        return
+
+    def register_alarm(self, old_status: Status):
+        """
+        Register Group alarm when changed Oper Status
+        old_status: Previous status
+        """
+        # Raise alarm
+        if self.oper_status > Status.UP >= old_status:
+            msg = self.get_alarm_msg(old_status)
+            if not msg:
+                return
         elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",
@@ -626,7 +656,6 @@ class Service(Document):
         else:
             return
         svc = get_service()
-
         stream, partition = self.alarms_stream_and_partition
         logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
@@ -886,6 +915,8 @@ class Service(Document):
             return
         self.update(caps=self.caps)
         self.sync_instances()
+        self.diagnostic.refresh_diagnostics()
+        self.refresh_status()
 
     def sync_instances(self):
         """Synchronize Config-base instance"""
