@@ -7,6 +7,7 @@
 
 # Third-party modules
 import pyproj
+from pyproj import Transformer
 import geojson
 
 # NOC modules
@@ -24,7 +25,8 @@ class Map(object):
         self.srid_map = {}
         # Database projection
         self.proj = {}
-        self.db_proj = self.get_proj("EPSG:4326")
+        self.db_srid = "EPSG:4326"
+        self.db_proj = self.get_proj(self.db_srid)
         self.proj["EPSG:900913"] = self.get_proj("EPSG:3857")
 
     def get_proj(self, srid):
@@ -68,9 +70,9 @@ class Map(object):
         return layer.default_zoom
 
     def get_bbox(self, x0: float, y0: float, x1: float, y1: float, srid: str):
-        src_proj = self.get_proj(srid)
-        cx0, cy0 = pyproj.transform(src_proj, self.db_proj, x0, y0)
-        cx1, cy1 = pyproj.transform(src_proj, self.db_proj, x1, y1)
+        transformer = Transformer.from_crs(srid, self.db_srid)
+        cx0, cy0 = transformer.transform(x0, y0)
+        cx1, cy1 = transformer.transform(x1, y1)
         return get_bbox(cx0, cx1, cy0, cy1)
 
     def get_layer_objects(self, layer: str, x0: float, y0: float, x1: float, y1: float, srid: str):
