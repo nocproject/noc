@@ -8,9 +8,10 @@
     --quiet
   register: rs_status
   failed_when: false
-  changed_when: >
-    "'NOT_INIT' in rs_status.stdout or
-     'CONNECTION_ERROR' in rs_status.stdout"
+  changed_when: >-
+    ("NOT_INIT" in (rs_status.stdout | default('')))
+    or
+    ("CONNECTION_ERROR" in (rs_status.stdout | default('')))
   environment:
     MONGO_NODE_TLS_VERIFY: 'false'
     MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
