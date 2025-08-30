@@ -37,7 +37,8 @@ from noc.core.models.serviceinstanceconfig import (
 )
 from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
-from noc.core.validators import is_ipv4
+from noc.core.validators import is_ipv4, is_fqdn
+from noc.core.model.decorator import on_save
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -62,6 +63,7 @@ class AddressItem(EmbeddedDocument):
         self.address_bin = IP.prefix(self.address).d
 
 
+@on_save
 class ServiceInstance(Document):
     """
     Service Instance.
@@ -174,6 +176,10 @@ class ServiceInstance(Document):
         elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
             return f"[{self.type}|{self.remote_id}] {name}"
         return f"[{self.type}] {name}"
+
+    def on_save(self):
+        if not hasattr(self, "_changed_fields") or "asset_refs" in self._changed_fields:
+            ServiceInstance.refresh_local_network_instances([self])
 
     @classmethod
     def ensure_instance(
@@ -324,19 +330,21 @@ class ServiceInstance(Document):
                 continue
             yield si
 
-    def is_match_alarm(self, alarm: ActiveAlarm) -> bool:
+    def is_match_alarm(
+        self,
+        alarm: ActiveAlarm,
+        include_object: bool = False,
+    ) -> bool:
         """Check alarm applying to instance"""
-        if self.resources and alarm.is_link_alarm and alarm.components.interface:
-            return alarm.components.interface.as_resource() in self.resources
-        elif self.managed_object and self.managed_object.id == alarm.managed_object.id:
-            return True
-        elif not self.address:
+        if include_object and alarm.managed_object and self.managed_object != alarm.managed_object:
             return False
-        elif "address" in alarm.vars and alarm.vars["address"] == self.address:
+        resources = alarm.components.get_resources()
+        if resources and frozenset(resources).intersection(self.resources):
             return True
-        elif "peer" in alarm.vars and alarm.vars["peer"] == self.address:
+        addresses = self.get_alarm_addresses(alarm)
+        if addresses and frozenset(self.address).intersection(addresses):
             return True
-        return False
+        return True
 
     @classmethod
     def get_alarm_reference(cls, alarm: "ActiveAlarm") -> List[str]:
@@ -344,7 +352,7 @@ class ServiceInstance(Document):
         r = []
         if "mac" in alarm.vars:
             r += [ValueType.MAC_ADDRESS.clean_reference(alarm.vars["mac"])]
-        elif "url" in alarm.vars:
+        elif "url" in alarm.vars and not is_fqdn(alarm.vars["url"]):
             r += [ValueType.HTTP_URL.clean_reference(alarm.vars["url"])]
         return r
 
@@ -377,8 +385,11 @@ class ServiceInstance(Document):
             refs = cls.get_alarm_reference(alarm=alarm)
             if refs:
                 q |= Q(asset_refs__in=refs)
-        except ValueError:
-            logger.error("[%s] Error converted reference for alarm", alarm.id)
+        except ValueError as e:
+            logger.error("[%s] Error converted reference for alarm: %s", alarm.id, str(e))
+        # FQDN
+        if "url" in alarm.vars and is_fqdn(alarm.vars["url"]):
+            q |= Q(fqdn=alarm.vars["url"])
         # Addresses
         addresses = cls.get_alarm_addresses(alarm)
         if addresses:
@@ -570,3 +581,32 @@ class ServiceInstance(Document):
                 _, rid = rid.split(":")
                 r[rid] = row["service"]
         return r
+
+    @classmethod
+    def refresh_local_network_instances(cls, instances: Optional[List] = None):
+        """"""
+        from noc.inv.models.interface import Interface
+
+        ref_mac_instance: Dict[str, ServiceInstance] = {}
+        bulk = []
+        for si in ServiceInstance.objects.filter(
+            type=InstanceType.NETWORK_CHANNEL,
+            asset_refs__exists=True,
+            asset_refs__ne=[],
+        ):
+            for r in si.asset_refs or []:
+                ref, value = r.split("::", 1)
+                if ref == "mac":
+                    ref_mac_instance[value] = si
+        # Find Interfaces
+        for iface in Interface.objects.filter(mac__in=list(ref_mac_instance)):
+            if iface.mac not in ref_mac_instance:
+                continue
+            si = ref_mac_instance.pop(iface.mac)
+            si.update_resources([iface], source=InputSource.DISCOVERY, bulk=bulk)
+        for si in ref_mac_instance.values():
+            si.unseen(source=InputSource.DISCOVERY)
+        coll = ServiceInstance._get_collection()
+        logger.info("Updated Local Instances: %s", len(bulk))
+        if bulk:
+            coll.bulk_write(bulk)

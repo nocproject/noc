@@ -32,7 +32,7 @@ class Instance(_BaseModel):
 
     @property
     def config(self) -> ServiceInstanceConfig:
-        cfg = ServiceInstanceConfig.get_config(self.type)
+        cfg = ServiceInstanceConfig.get_type(self.type)
         return cfg.from_config(
             i_type=self.type,
             name=self.name,
