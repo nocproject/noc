@@ -4,5 +4,5 @@
     "$collection": "wf.workflows",
     "is_active": true,
     "description": "Sensor default workflow",
-    "allowed_models": ["inv.Sensor"]
+    "allowed_models": ["inv.Sensor", "inv.CPE"]
 }
