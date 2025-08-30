@@ -94,7 +94,7 @@ class CPEProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     workflow = PlainReferenceField(
-        Workflow, default=partial(Workflow.get_default_workflow, "inv.SensorProfile")
+        Workflow, default=partial(Workflow.get_default_workflow, "inv.CPE")
     )
     style = ForeignKeyField(Style)
     # Stencils

@@ -136,9 +136,9 @@ class CPE(Document):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
     def __str__(self):
-        if self.label:
-            return f"{self.label} ({self.state.name})"
-        return f"{self.id}:{self.controllers} ({self.state.name})"
+        if not self.state:
+            return f"{self.label or self.id} ({self.controllers})"
+        return f"{self.label or self.id} ({self.controllers}) - ({self.state.name})"
 
     def __repr__(self):
         return str(self.controller)
@@ -347,12 +347,8 @@ class CPE(Document):
 
     @classmethod
     def get_metric_config(cls, cpe: "CPE"):
-        """
-        Return MetricConfig for Metrics service
-        :param cpe:
-        :return:
-        """
-        if not cpe.state.is_productive:
+        """Return MetricConfig for Metrics service"""
+        if not cpe.state or not cpe.state.is_productive:
             return {}
         labels = []
         for ll in cpe.effective_labels:
