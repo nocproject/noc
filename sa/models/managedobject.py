@@ -3141,6 +3141,38 @@ class ManagedObject(NOCModel):
         self.save()
         return True
 
+    def get_matcher_ctx(self):
+        """"""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.effective_service_groups),
+        }
+
+    def get_effective_managed_object(self) -> Optional[Any]:
+        """Return ManagedObject to upper level"""
+        return self
+
+    def get_check_ctx(self, include_credentials: bool = False):
+        """"""
+        # Mappings, Caps
+        ctx = {
+            "labels": self.effective_labels,
+            "address": self.address,
+            "groups": self.effective_service_groups,
+        }
+        if self.port:
+            ctx["port"] = (self.port,)
+        if self.auth_profile:
+            ctx["suggests_cli"] = self.auth_profile.enable_suggest
+            ctx["suggests_snmp"] = self.auth_profile.enable_suggest
+        if self.profile:
+            ctx["profile"] = self.profile.name
+        if include_credentials and self.credentials:
+            ctx["cred"] = self.credentials.get_snmp_credential()
+        return ctx
+
 
 @on_save
 class ManagedObjectAttribute(NOCModel):

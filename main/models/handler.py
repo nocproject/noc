@@ -68,6 +68,9 @@ class Handler(Document):
     allow_match_rule = BooleanField()
     allow_fm_alarmgrouprule = BooleanField()
     allow_tech_domain = BooleanField()
+    allow_diagnostics_checks = BooleanField()
+    allow_event = BooleanField()
+    allow_resource = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 

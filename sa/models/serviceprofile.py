@@ -10,7 +10,7 @@ import operator
 import re
 from collections import defaultdict
 from threading import Lock
-from typing import Optional, Union, Tuple, List, Dict, Type
+from typing import Optional, Union, Tuple, List, Dict, Type, Iterable
 from functools import partial
 
 # Third-party modules
@@ -49,13 +49,52 @@ from noc.core.models.serviceinstanceconfig import (
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.caps.types import CapsConfig
+from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
+from noc.main.models.handler import Handler
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
-
+from noc.fm.models.alarmclass import AlarmClass
 
 id_lock = Lock()
+
+
+class DiagnosticSettings(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    diagnostic: str = StringField(required=True)
+    # from_instance_checks
+    show_in_display = BooleanField(default=True)
+    state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
+    # check_handler
+    handler: "Handler" = ReferenceField(Handler, required=False)
+    instance_checks = BooleanField(default=False)
+    ctx: str = ListField(StringField(required=True))
+    #
+    alarm_class: Optional["AlarmClass"] = ReferenceField(AlarmClass, required=False)
+    alarm_subject: str = StringField(max_length=256, required=False)
+    # For instance ?
+    failed_status = EnumField(Status, required=False)
+
+    def clean(self):
+        super().clean()
+        if self.handler and not self.handler.allow_diagnostics_checks:
+            raise ValueError("Only Diagnostic Checks handler allowed")
+        # Validate Ctx
+        if self.ctx:
+            for c in self.ctx:
+                CtxItem.from_string(c)
+
+    def get_config(self, checks=None) -> DiagnosticConfig:
+        return DiagnosticConfig(
+            diagnostic=self.diagnostic,
+            show_in_display=self.show_in_display,
+            state_policy=self.state_policy,
+            diagnostic_handler=self.handler.handler if self.handler else None,
+            diagnostic_ctx=[CtxItem.from_string(c) for c in self.ctx or []],
+            check_discovery_policy="L",
+        )
 
 
 class CapsSettings(EmbeddedDocument):
@@ -137,6 +176,7 @@ class InstanceSettings(EmbeddedDocument):
     name: str = StringField(required=False)
     # Weight for calculate Alarm
     weight: int = IntField(default=0)
+    checks: List[str] = ListField(StringField())
     # Update Instance Status from resource
     # update_status = BooleanField(default=False)
 
@@ -388,11 +428,14 @@ class ServiceProfile(Document):
     raise_status_alarm_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("R", "Root Only"),
-            ("O", "Always"),
+            ("R", "Group"),
+            ("A", "Direct"),
         ],
         default="R",
     )
+    alarm_subject_template: Optional[str] = StringField(required=False)
+    raise_alarm_class = ReferenceField(AlarmClass)
+    include_root_group = BooleanField(default=False)
     # Instance Resources
     # Default Config
     instance_policy = StringField(
@@ -417,6 +460,8 @@ class ServiceProfile(Document):
         ],
         default="d",
     )
+    # Diagnostics status
+    diagnostic_status: List[DiagnosticSettings] = EmbeddedDocumentListField(DiagnosticSettings)
     # Capabilities
     caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
     # Integration with external NRI and TT systems
@@ -583,6 +628,11 @@ class ServiceProfile(Document):
         """Get configuration"""
         for settings in self.instance_settings:
             yield settings.get_instance_type()
+
+    def iter_diagnostic_configs(self, svc) -> Iterable[DiagnosticConfig]:
+        """Iterate over configured diagnostic"""
+        for s in self.diagnostic_status or []:
+            yield s.get_config()
 
 
 def refresh_interface_profiles(sp_id, ip_id):

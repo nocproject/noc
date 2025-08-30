@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # sa.ManagedObject diagnostics tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -43,6 +43,14 @@ class Object(object):
     def can_create_box_alarms(self):
         """"""
         return False
+
+    def get_check_ctx(self, **kwargs):
+        ctx = {
+            "labels": self.effective_labels,
+            "address": self.address,
+            "groups": self.effective_service_groups,
+        }
+        return ctx
 
     def iter_diagnostic_configs(self):
         """
