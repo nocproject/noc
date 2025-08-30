@@ -72,6 +72,8 @@ class DiagnosticSettings(EmbeddedDocument):
     instance_checks = BooleanField(default=False)
     ctx: str = ListField(StringField(required=True))
     #
+    alarm_class: Optional["AlarmClass"] = ReferenceField(AlarmClass, required=False)
+    alarm_subject: str = StringField(max_length=256, required=False)
     # For instance ?
     failed_status = EnumField(Status, required=False)
 

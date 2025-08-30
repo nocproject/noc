@@ -492,6 +492,21 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                               3: "DEGRADED",
                               4: "DOWN"
                           })
+                      },
+                      {
+                        dataIndex: "alarm_class",
+                        editor: "fm.alarmclass.LookupField",
+                        renderer: NOC.render.Lookup("alarm_class"),
+                        text: __("Alarm Class"),
+                        width: 200,
+                        allowBlank: true
+                      },
+                      {
+                          text: __("Alarm Subject"),
+                          dataIndex: "alarm_subject",
+                          width: 100,
+                          editor: "textfield",
+                          allowBlank: true
                       }
                     ]
                 },
@@ -669,7 +684,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                         name: "raise_alarm_class",
                         xtype: "fm.alarmclass.LookupField",
                         fieldLabel: __("Alarm Class"),
-                        uiStyle: "large",
+                        uiStyle: "medium",
                         allowBlank: true
                     },
 
