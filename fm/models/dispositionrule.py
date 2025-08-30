@@ -125,16 +125,14 @@ class Match(EmbeddedDocument):
         return r
 
     def clean(self):
-        ec = self.event_class_re.strip()
+        ec = (self.event_class_re or "").strip()
         if not ec:
             self.event_classes = []
         elif EventClass.get_by_name(ec):
             ec = EventClass.get_by_name(ec)
             self.event_classes = [ec.id]
         else:
-            self.event_classes = [
-                ec.id for ec in EventClass.objects.filter(name=re.compile(ec))
-            ]
+            self.event_classes = [ec.id for ec in EventClass.objects.filter(name=re.compile(ec))]
         super().clean()
 
     def get_match_expr(self) -> Dict[str, Any]:
