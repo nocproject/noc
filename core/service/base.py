@@ -658,8 +658,8 @@ class BaseService(object):
                         server=self.name,
                         service="on_message",
                         sample=sample,
-                        parent=span_id,
-                        context=span_ctx,
+                        parent=span_id.decode() if span_id else None,
+                        context=span_ctx.decode() if span_ctx else None,
                         in_label=msg.offset,
                         headers=msg.headers,
                     ) as span:

@@ -1242,9 +1242,14 @@ class ActiveAlarm(Document):
         """
         Generator yielding all affected managed objects
         """
-        seen = {self.managed_object}
-        yield self.managed_object
+        if self.managed_object:
+            seen = {self.managed_object}
+            yield self.managed_object
+        else:
+            seen = {}
         for a in self.iter_consequences():
+            if not a.managed_object:
+                continue
             if a.managed_object not in seen:
                 seen.add(a.managed_object)
                 yield a.managed_object
@@ -1321,12 +1326,15 @@ class ActiveAlarm(Document):
             affected_objects = [self.managed_object]
         else:
             affected_objects = []
+        service = None
+        if self.group_type == GroupType.SERVICE and "service" in self.components:
+            service = self.components.service
         return {
             "alarm": self,
             # "leader": self.alarm,
             "services": self.affected_services,
             "group": None,
-            "service": None,
+            "service": service,
             "managed_object": self.managed_object,
             "affected_objects": affected_objects,
             "total_objects": summary_to_list(self.total_objects, ManagedObjectProfile),

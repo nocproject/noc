@@ -1262,7 +1262,7 @@ class CorrelatorService(FastAPIService):
                 vars=a_vars,
                 reference=req.reference,
                 labels=req.labels or [],
-                group_type=GroupType.GROUP,
+                group_type=req.g_type,
                 subject=req.name,
             )
         if req.g_type == GroupType.SERVICE and not req.alarms:
