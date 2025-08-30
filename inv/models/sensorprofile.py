@@ -64,7 +64,7 @@ class SensorProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     workflow = PlainReferenceField(
-        Workflow, default=partial(Workflow.get_default_workflow, "inv.SensorProfile")
+        Workflow, default=partial(Workflow.get_default_workflow, "inv.Sensor")
     )
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
