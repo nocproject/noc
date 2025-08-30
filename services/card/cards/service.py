@@ -66,11 +66,19 @@ class ServiceCard(BaseCard):
 
         # Build warnings
         # Build result
+        # Mappings
+        mappings = []
+        for m in self.object.iter_remote_mappings():
+            mappings.append(m.get_object_form(self.object))
+        # Diagnostics
+        diagnostics = [d.get_object_form() for d in self.object.iter_diagnostics(to_display=True)]
         r = {
             "id": self.object.id,
             "service": self.object,
             "current_duration": now - self.object.state_changed,
             "services": services,
+            "diagnostics": diagnostics,
+            "mappings": mappings,
             "interface": interface,
             "managed_object": managed_object,
             "managed_object_status": managed_obect_status,

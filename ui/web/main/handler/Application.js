@@ -203,6 +203,43 @@ Ext.define("NOC.main.handler.Application", {
             },
           ],
         },
+        {
+          xtype: "fieldset",
+          title: __("Diagnostic"),
+          layout: "vbox",
+          defaults: {
+            labelAlign: "top",
+            padding: 4,
+          },
+          items: [
+            {
+              name: "allow_diagnostics_checks",
+              xtype: "checkbox",
+              boxLabel: __("Allow Diagnostics Check"),
+            },
+          ],
+        },
+        {
+          xtype: "fieldset",
+          title: __("Event Handlers"),
+          layout: "vbox",
+          defaults: {
+            labelAlign: "top",
+            padding: 4,
+          },
+          items: [
+            {
+              name: "allow_event",
+              xtype: "checkbox",
+              boxLabel: __("Allow Event"),
+            },
+            {
+              name: "allow_resource",
+              xtype: "checkbox",
+              boxLabel: __("Allow Resource"),
+            },
+          ],
+        },
       ],
       formToolbar: [
         {

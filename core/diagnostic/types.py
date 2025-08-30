@@ -43,10 +43,22 @@ class DiagnosticState(str, enum.Enum):
 
 @dataclass(frozen=True)
 class CtxItem:
+    """"""
+
     name: str
-    capabilities: Optional[str] = None
+    value: Optional[str] = None
+    capability: Optional[str] = None
     alias: Optional[str] = None
     set_method: Optional[str] = None
+
+    @classmethod
+    def from_string(cls, value: str) -> "CtxItem":
+        """"""
+        name, *v = value.split(":")
+        if v:
+            # Dynamic gen
+            return CtxItem(name=name, value=v[0])
+        return CtxItem(name=name)
 
 
 @dataclass(frozen=True)
@@ -63,6 +75,7 @@ class DiagnosticConfig(object):
         include_credentials: Add credential to check context
         state_policy: Calculate State on checks. ANY - Any check has OK, ALL - ALL checks has OK
         reason: Reason current state. For blocked state
+        check_discovery_policy: D - Disable, R - Discovery Running, L - Local Handler, A - Agent Active, P - Agent Passive
         run_policy: A - Always, M - manual, F - Unknown or Failed, D - Disable
         run_order: S - Before all discovery, E - After all discovery
         discovery_box: Run on Discovery Box
@@ -89,6 +102,7 @@ class DiagnosticConfig(object):
     state_policy: str = "ANY"
     reason: Optional[str] = None
     # Discovery Config
+    check_discovery_policy: str = "R"
     run_policy: str = "A"
     run_order: str = "S"
     discovery_box: bool = False
@@ -106,6 +120,11 @@ class DiagnosticConfig(object):
     # FM Config
     alarm_class: Optional[str] = None
     alarm_labels: Optional[List[str]] = None
+
+    @property
+    def is_local_status(self):
+        """Check if Local Calculate status"""
+        return self.check_discovery_policy == "L"
 
 
 class CheckStatus(BaseModel):

@@ -88,6 +88,22 @@ Ext.define("NOC.main.handler.Model", {
         {
             name: "allow_match_rule",
             type: "boolean"
-        }
+        },
+        {
+            name: "allow_tech_domain",
+            type: "boolean"
+        },
+        {
+            name: "allow_diagnostics_checks",
+            type: "boolean"
+        },
+        {
+            name: "allow_event",
+            type: "boolean"
+        },
+        {
+            name: "allow_resource",
+            type: "boolean"
+        },
     ]
 });

@@ -24,6 +24,7 @@ from noc.core.handler import get_handler
 from noc.config import config
 from noc.models import is_document
 from .types import DiagnosticConfig, DiagnosticState, CheckStatus, DiagnosticValue
+from .handler import DiagnosticHandler
 
 
 # BuiltIn Diagnostics
@@ -62,30 +63,6 @@ DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
     True: DiagnosticState("enabled"),
     False: DiagnosticState("failed"),
 }
-
-
-class DiagnosticHandler:
-    """
-    Run diagnostic by config and check status
-    """
-
-    def __init__(self, config: DiagnosticConfig, logger=None):
-        self.config = config
-        self.logger = logger
-
-    def iter_checks(
-        self,
-        address: str,
-        labels: Optional[List[str]] = None,
-        groups: Optional[List[str]] = None,
-        **kwargs,
-    ) -> Iterable[Tuple[Check, ...]]:
-        """Iterate over checks"""
-
-    def get_result(
-        self, checks: List[CheckResult]
-    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
-        """Getting Diagnostic result"""
 
 
 class DiagnosticItem(BaseModel):
@@ -195,7 +172,11 @@ class DiagnosticItem(BaseModel):
                 raise AttributeError(str(e))
         return self._handler
 
-    def iter_checks(self, logger=None, **kwargs) -> Iterable[Tuple[Check, ...]]:
+    def iter_checks(
+        self,
+        logger=None,
+        **kwargs,
+    ) -> Iterable[Tuple[Check, ...]]:
         """Iterate over checks"""
         if not self.config.diagnostic_handler and not self.config.checks:
             return
@@ -389,36 +370,46 @@ class DiagnosticHub(object):
         """Loading Diagnostic from Object Config"""
         r = {}
         values = self.__object.get_diagnostic_values()
+        locals = []
         for cfg in self.__object.iter_diagnostic_configs():
             r[cfg.diagnostic] = DiagnosticItem.from_config(cfg, value=values.get(cfg.diagnostic))
             for dd in cfg.dependent or []:
                 self.__depended[dd] = cfg.diagnostic
+            if cfg.is_local_status:
+                locals.append(cfg)
         self.__diagnostics = r
+        for cfg in locals:
+            h = self[cfg.diagnostic].get_handler(self.logger)
+            ctx = self.get_check_env(self.__object, cfg)
+            c_state, c_reason, c_data, c_checks = h.get_check_status(**ctx)
+            self.set_state(cfg.diagnostic, c_state, reason=c_reason, data=c_data)
 
     def __load_checks(self):
         """Loading all diagnostic checks"""
         for d in self.__diagnostics:
             list(self.iter_checks(d))
 
-    def iter_checks(self, d: str) -> Iterable[Tuple[Check, ...]]:
+    @classmethod
+    def get_check_env(
+        cls, obj, cfg: DiagnosticConfig, checks_data: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        """Getting checks environment context"""
+        ctx = obj.get_check_ctx(
+            include_credentials=cfg.include_credentials,
+        )
+        checks_data = checks_data or {}
+        for ci in cfg.diagnostic_ctx or []:
+            if ci.name in checks_data:
+                ctx[ci.alias or ci.name] = checks_data[ci.name]
+            elif ci.value:
+                ctx[ci.alias or ci.name] = ci.value
+        return ctx
+
+    def iter_checks(self, name: str) -> Iterable[Tuple[Check, ...]]:
         if self.__checks is None:
             self.__checks = defaultdict(set)
-        di = self[d]
-        ctx = {
-            "labels": self.__object.effective_labels,
-            "address": self.__object.address,
-            "groups": self.__object.effective_service_groups,
-        }
-        if self.__object.auth_profile:
-            ctx["suggests_cli"] = self.__object.auth_profile.enable_suggest
-            ctx["suggests_snmp"] = self.__object.auth_profile.enable_suggest
-        if self.__object.profile:
-            ctx["profile"] = self.__object.profile.name
-        if di.config.include_credentials and self.__object.credentials:
-            ctx["cred"] = self.__object.credentials.get_snmp_credential()
-        for ci in di.config.diagnostic_ctx or []:
-            if ci.name in self.__data:
-                ctx[ci.alias or ci.name] = self.__data[ci.name]
+        di = self[name]
+        ctx = self.get_check_env(self.__object, di.config, self.__data)
         for checks in di.iter_checks(**ctx, logger=self.logger):
             for c in itertools.chain(checks):
                 self.__checks[c.key].add(di.diagnostic)
@@ -571,6 +562,7 @@ class DiagnosticHub(object):
             d_current = self.get_object_diagnostic_value(d_name)
             if not d_current:
                 new_diags.append(di_new)
+                changed.append(d_name)
                 continue
             if d_current == di_new and di_new.workflow_event:
                 self.logger.debug(
@@ -599,7 +591,9 @@ class DiagnosticHub(object):
                 changed.append(d_name)
             new_diags.append(di_new)
         if changed:
-            self.logger.info("[%s] Save changed diagnostics: %s", str(self.__object), changed)
+            self.logger.info(
+                "[%s] Save changed diagnostics: %s (DR: %s)", str(self.__object), changed, dry_run
+            )
             self.__object.save_diagnostics(new_diags, dry_run=dry_run)
         if wf_events:
             # Bulk update/Get effective event
@@ -793,11 +787,12 @@ class DiagnosticHub(object):
         if isinstance(ts, str):
             ts = datetime.datetime.fromisoformat(ts)
         now = ts or datetime.datetime.now()
+        mo = self.__object.get_effective_managed_object()
         # Send Data
         dd = {
             "date": now.date().isoformat(),
             "ts": now.replace(microsecond=0).isoformat(sep=" "),
-            "managed_object": self.__object.bi_id,
+            "managed_object": mo.bi_id if mo else None,
             "diagnostic_name": diagnostic,
             "state": state,
             "from_state": from_state,
@@ -818,7 +813,7 @@ class DiagnosticHub(object):
                         "state": state,
                         "from_state": from_state,
                         "reason": reason,
-                        "managed_object": self.__object.get_message_context(),
+                        "managed_object": mo.get_message_context() if mo else None,
                     },
                     MessageType.DIAGNOSTIC_CHANGE,
                     self.__object.get_mx_message_headers(),
