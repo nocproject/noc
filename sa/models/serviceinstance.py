@@ -39,6 +39,7 @@ from noc.core.models.inputsources import InputSource
 from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_ipv4, is_fqdn
 from noc.core.model.decorator import on_save
+from noc.core.checkers.base import Check
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
@@ -610,3 +611,13 @@ class ServiceInstance(Document):
         logger.info("Updated Local Instances: %s", len(bulk))
         if bulk:
             coll.bulk_write(bulk)
+
+    def get_checks(self) -> List[Check]:
+        """Getting check for instance. For multiple - applied Any? policy"""
+        # Update instance status
+        if not self.config.checks:
+            return []
+        r = []
+        for name in self.config.checks:
+            r.append(Check(name=name, address=self.address, port=self.port))
+        return r

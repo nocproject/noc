@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -48,6 +48,8 @@ from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription
 from noc.core.caps.decorator import capabilities
 from noc.core.caps.types import CapsValue
 from noc.core.etl.remotemappings import mappings
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
+from noc.core.diagnostic.decorator import diagnostic
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -58,6 +60,7 @@ from noc.sla.models.slaprobe import SLAProbe
 from noc.wf.models.state import State
 from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.pm.models.agent import Agent
 from noc.config import config
@@ -148,6 +151,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @resourcegroup
 @on_init
 @change
+@diagnostic
 @workflow
 @capabilities
 @mappings
@@ -247,6 +251,7 @@ class Service(Document):
     cpe_group = StringField()
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
+    diagnostics: List[DiagnosticItem] = EmbeddedDocumentListField(DiagnosticItem)
     #
     static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
@@ -402,6 +407,13 @@ class Service(Document):
         self.sync_instances()
         # Register Final Outage
         # Refresh Service Status
+        if (
+            not hasattr(self, "_changed_fields")
+            or "profile" in self._changed_fields
+            or "caps" in self._changed_fields
+        ):
+            self.diagnostic.refresh_diagnostics()
+            self.refresh_status()
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -577,13 +589,11 @@ class Service(Document):
             return default_map[self.oper_status.value]
         return 0
 
-    def register_alarm(self, old_status: Status):
-        """
-        Register Group alarm when changed Oper Status
-        old_status: Previous status
-        """
-        # Raise alarm
-        if self.oper_status > Status.UP >= old_status:
+    def get_alarm_msg(self, old_status):
+        """"""
+        iface = self.interface
+        if self.profile.raise_status_alarm_policy == "R":
+            # Group
             msg = {
                 "$op": "ensure_group",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
@@ -600,6 +610,42 @@ class Service(Document):
                 },
                 "alarms": [],
             }
+            if iface:
+                msg["vars"]["interface"] = str(iface.name)
+            return msg
+        elif self.profile.raise_status_alarm_policy == "A" and self.profile.raise_alarm_class:
+            # Disposition
+            msg = {
+                "$op": "disposition",
+                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "name": self.label,
+                "alarm_class": self.profile.raise_alarm_class,
+                "labels": self.labels,
+                "vars": {
+                    "description": self.description,
+                    "type": self.profile.name,
+                    "service": str(self.id),
+                    "from_status": old_status.name,
+                    "to_status": self.oper_status.name,
+                },
+                "groups": [{"reference": f"{SVC_REF_PREFIX}:{self.id}"}],
+            }
+            if iface:
+                msg["vars"]["interface"] = str(iface.name)
+                msg["managed_object"] = str(iface.managed_object.id)
+            return msg
+        return
+
+    def register_alarm(self, old_status: Status):
+        """
+        Register Group alarm when changed Oper Status
+        old_status: Previous status
+        """
+        # Raise alarm
+        if self.oper_status > Status.UP >= old_status:
+            msg = self.get_alarm_msg(old_status)
+            if not msg:
+                return
         elif self.oper_status <= Status.UP < old_status:
             msg = {
                 "$op": "clear",
@@ -610,7 +656,6 @@ class Service(Document):
         else:
             return
         svc = get_service()
-
         stream, partition = self.alarms_stream_and_partition
         logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
@@ -707,9 +752,22 @@ class Service(Document):
         # Calculate affected status
         return self.calculate_status(r)
 
+    def get_diagnostics_status(self) -> Status:
+        if not self.profile.diagnostic_status:
+            return Status.UNKNOWN
+        values = self.get_diagnostic_values()
+        for d in self.profile.diagnostic_status:
+            if (
+                d.failed_status
+                and d.diagnostic in values
+                and values[d.diagnostic].state == DiagnosticState.failed
+            ):
+                return d.failed_status
+        return Status.UNKNOWN
+
     def get_direct_status(self) -> Status:
         """Getting oper_status from Alarm and Diagnostics"""
-        return self.get_alarm_status()
+        return max(self.get_alarm_status(), self.get_diagnostics_status())
 
     def get_calculate_status_function(self) -> str:
         """"""
@@ -857,6 +915,8 @@ class Service(Document):
             return
         self.update(caps=self.caps)
         self.sync_instances()
+        self.diagnostic.refresh_diagnostics()
+        self.refresh_status()
 
     def sync_instances(self):
         """Synchronize Config-base instance"""
@@ -953,6 +1013,21 @@ class Service(Document):
     def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
         if service:
             return Service.get_by_id(service)
+
+    def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
+        """Iterable diagnostic Config"""
+        yield from self.profile.iter_diagnostic_configs(self)
+
+    def get_check_ctx(self, include_credentials=False, **kwargs) -> Dict[str, Any]:
+        """"""
+        return {
+            "name": self.label,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.effective_service_groups),
+            "caps": self.get_caps(),
+            "mappings": self.get_mappings(),
+        }
 
 
 def refresh_service_status(svc_ids: List[str]):
