@@ -93,6 +93,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             type: "auto"
         },
         {
+            name: "diagnostic_status",
+            type: "auto"
+        },
+        {
             name: "status_transfer_policy",
             type: "string",
             defaultValue: "S"
@@ -128,6 +132,24 @@ Ext.define("NOC.sa.serviceprofile.Model", {
             name: "status_change_notification",
             type: "string",
             defaultValue: "d"
+        },
+        {
+            name: "raise_status_alarm_policy",
+            type: "string",
+            defaultValue: "R"
+        },
+        {
+            name: "raise_alarm_class",
+            type: "string"
+        },
+        {
+            name: "raise_alarm_class__label",
+            type: "string",
+            persist: false
+        },
+        {
+            name: "alarm_subject_template",
+            type: "string"
         }
     ]
 });
