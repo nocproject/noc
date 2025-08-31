@@ -14,11 +14,13 @@ Ext.define("NOC.sa.serviceprofile.Application", {
         "NOC.sa.serviceprofile.LookupField",
         "NOC.main.ref.glyph.LookupField",
         "NOC.main.remotesystem.LookupField",
+        "NOC.main.handler.LookupField",
         "NOC.inv.interfaceprofile.LookupField",
         "NOC.inv.capability.LookupField",
         "NOC.inv.resourcegroup.LookupField",
         "NOC.wf.workflow.LookupField",
-        "NOC.fm.alarmseverity.LookupField"
+        "NOC.fm.alarmseverity.LookupField",
+        "NOC.fm.alarmclass.LookupField"
     ],
     model: "NOC.sa.serviceprofile.Model",
     search: true,
@@ -431,6 +433,84 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     ]
                 },
                 {
+                    name: "diagnostic_status",
+                    fieldLabel: __("Diagnostics Config"),
+                    xtype: "gridfield",
+                    allowBlank: true,
+                    //width: 350,
+                    columns: [
+                      {
+                          text: __("Diagnostic"),
+                          dataIndex: "diagnostic",
+                          width: 100,
+                          editor: "textfield",
+                          allowBlank: true
+                      },
+                      {
+                          text: __("By Instance"),
+                          dataIndex: "instance_checks",
+                          width: 70,
+                          editor: "checkbox",
+                          renderer: NOC.render.Bool
+                      },
+                      {
+                        editor: "stringlistfield",
+                        dataIndex: "ctx",
+                        width: 400,
+                        text: __("Context"),
+                      },
+                      {
+                        text: __("Handler"),
+                        dataIndex: "handler",
+                        renderer: NOC.render.Lookup("handler"),
+                        width: 250,
+                        editor: {
+                          xtype: "main.handler.LookupField",
+                          query: {
+                            "allow_diagnostics_checks": true,
+                          }
+                        },
+                      },
+                      {
+                          text: __("Failed Status"),
+                          dataIndex: "failed_status",
+                          width: 100,
+                          editor: {
+                              xtype: "combobox",
+                              store: [
+                                  [0, "UNKNOWN"],
+                                  [1, "UP"],
+                                  [2, "SLIGHTLY_DEGRADED"],
+                                  [3, "DEGRADED"],
+                                  [4, "DOWN"]
+                              ]
+                          },
+                          renderer: NOC.render.Choices({
+                              0: "UNKNOWN",
+                              1: "UP",
+                              2: "SLIGHTLY_DEGRADED",
+                              3: "DEGRADED",
+                              4: "DOWN"
+                          })
+                      },
+                      {
+                        dataIndex: "alarm_class",
+                        editor: "fm.alarmclass.LookupField",
+                        renderer: NOC.render.Lookup("alarm_class"),
+                        text: __("Alarm Class"),
+                        width: 200,
+                        allowBlank: true
+                      },
+                      {
+                          text: __("Alarm Subject"),
+                          dataIndex: "alarm_subject",
+                          width: 100,
+                          editor: "textfield",
+                          allowBlank: true
+                      }
+                    ]
+                },
+                {
                     xtype: "fieldset",
                     title: __("Instance Policy"),
                     items: [
@@ -578,6 +658,37 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                             ]
                         }
                     ]
+                },
+                {
+                  xtype: "fieldset",
+                  title: __("Action"),
+                  layout: "hbox",
+                  defaults: {
+                    labelAlign: "left",
+                    margin: 5,
+                  },
+                  items: [
+                    {
+                      name: "raise_status_alarm_policy",
+                      xtype: "combobox",
+                      fieldLabel: __("Status Alarm Policy"),
+                      store: [
+                        ["D", __("Disable")],
+                        ["R", __("Group")],
+                        ["A", __("Direct Alarm")]
+                      ],
+                      value: "R",
+                      uiStyle: "medium",
+                    },
+                    {
+                        name: "raise_alarm_class",
+                        xtype: "fm.alarmclass.LookupField",
+                        fieldLabel: __("Alarm Class"),
+                        uiStyle: "medium",
+                        allowBlank: true
+                    },
+
+                  ]
                 },
                 {
                     xtype: "fieldset",
