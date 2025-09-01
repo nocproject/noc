@@ -21,13 +21,13 @@ class Script(BaseScript):
     always_prefer = "S"
 
     rx_version = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE "
         r"Software,\s)?(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
         r"Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_snmp_ver = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
         r"Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
