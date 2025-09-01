@@ -1,12 +1,11 @@
 # ---------------------------------------------------------------------
 # Map
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Third-party modules
-import pyproj
 from pyproj import Transformer
 import geojson
 
@@ -24,19 +23,7 @@ class Map(object):
         self.layers = {}
         self.srid_map = {}
         # Database projection
-        self.proj = {}
         self.db_srid = "EPSG:4326"
-        self.db_proj = self.get_proj(self.db_srid)
-        self.proj["EPSG:900913"] = self.get_proj("EPSG:3857")
-
-    def get_proj(self, srid):
-        if isinstance(srid, pyproj.Proj):
-            return srid
-        ss = self.proj.get(srid)
-        if not ss:
-            ss = pyproj.Proj(srid)
-            self.proj[srid] = ss
-        return ss
 
     def get_db_point(self, x, y, srid=None):
         """
@@ -46,9 +33,9 @@ class Map(object):
         :param srid:
         :return:
         """
-        src_srid = self.get_proj(srid) if srid else self.db_proj
+        srid = srid or self.db_srid
         pd = geojson.Point(coordinates=[x, y])
-        return self.transform(pd, src_srid, self.db_proj)
+        return self.transform(pd, srid, self.db_srid)
 
     def get_layer(self, name):
         if name in self.layers:
@@ -59,7 +46,8 @@ class Map(object):
             return self.layers[name]
         raise Exception("Layer not found: %s" % name)
 
-    def get_default_zoom(self, layer: str, object=None):
+    @staticmethod
+    def get_default_zoom(layer: str, object=None):
         layer = Layer.objects.filter(code=layer).first()
         if not layer:
             return None
@@ -89,7 +77,7 @@ class Map(object):
         features = [
             geojson.Feature(
                 id=str(d["_id"]),
-                geometry=self.transform(d["point"], self.db_proj, srid),
+                geometry=self.transform(d["point"], self.db_srid, srid),
                 properties={
                     "object": str(d["_id"]),
                     "label": d.get("name", ""),
@@ -114,20 +102,19 @@ class Map(object):
             ).values_list("id")
         return self._conduit_layers_ids
 
-    def transform(self, data, src_srid, dst_srid):
-        src = self.get_proj(src_srid)
-        dst = self.get_proj(dst_srid)
-        if src == dst:
+    @staticmethod
+    def transform(data, src_srid: str, dst_srid: str):
+        if src_srid == dst_srid:
             return data
+        transformer = Transformer.from_crs(src_srid, dst_srid)
         if data["type"] == "Point":
-            x, y = data["coordinates"]
-            data["coordinates"] = pyproj.transform(src, dst, x, y)
+            data["coordinates"] = transformer.transform(*data["coordinates"])
         elif data["type"] == "LineString":
-            data["coordinates"] = [pyproj.transform(src, dst, x, y) for x, y in data["coordinates"]]
+            data["coordinates"] = [transformer.transform(x, y) for x, y in data["coordinates"]]
         return data
 
     def get_connection_layer(
-        self, layer: "Layer", x0: float, y0: float, x1: float, y1: float, srid: str
+        self, layer: Layer, x0: float, y0: float, x1: float, y1: float, srid: str
     ):
         """
         Build line connections
@@ -139,7 +126,7 @@ class Map(object):
         features = [
             geojson.Feature(
                 id="-".join(str(c["object"]) for c in d["connection"]),
-                geometry=self.transform(d["line"], self.db_proj, srid),
+                geometry=self.transform(d["line"], self.db_srid, srid),
             )
             for d in ObjectConnection._get_collection().find(
                 {
@@ -164,7 +151,7 @@ class Map(object):
         if isinstance(point, tuple):
             point = geojson.Point(coordinates=[point[0], point[1]])
             if len(point) == 3:
-                point = self.transform(point, point[2], self.db_proj)
+                point = self.transform(point, point[2], self.db_srid)
         q = {"point__near": point}
         if isinstance(layers, list):
             q["layer__in"] = layers
@@ -181,7 +168,7 @@ class Map(object):
         if isinstance(point, tuple):
             point = geojson.Point(coordinates=[point[0], point[1]])
             if len(point) == 3:
-                point = self.transform(point, point[2], self.db_proj)
+                point = self.transform(point, point[2], self.db_srid)
         o = self.find_nearest(point, layers)
         if o:
             return o, distance(point, o.point)
