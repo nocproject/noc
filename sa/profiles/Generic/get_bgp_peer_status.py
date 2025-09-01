@@ -52,4 +52,4 @@ class Script(BaseScript):
             elif key == "status":
                 v = BGPState(v)
             r[peer][key] = v
-        return list(r.values())
+        return [x for x in r.values() if "status" in x]
