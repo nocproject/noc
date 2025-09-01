@@ -1,11 +1,13 @@
 # ---------------------------------------------------------------------
 # HP.Aruba.get_capabilities
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
 import re
+from typing import Optional
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
