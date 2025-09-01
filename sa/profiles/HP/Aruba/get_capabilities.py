@@ -7,7 +7,6 @@
 
 # Python modules
 import re
-from typing import Optional
 
 # NOC modules
 from noc.sa.profiles.Generic.get_capabilities import Script as BaseScript
