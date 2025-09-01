@@ -38,11 +38,12 @@ class Script(BaseScript):
             max_retries=self.get_getnext_retires(),
             bulk=self.get_bulk(),
         ):
-            pid_iface_map[int(oid.split(".")[-1])] = v
+            pid_iface_map[v] = int(oid.split(".")[-1])
         for i in self.scripts.get_interface_properties(enable_ifindex=True):
-            if i["ifindex"] not in pid_iface_map:
-                self.logger.warning("[%s] Not PID iface mapping: %s", i["interface"], r)
-                continue
+            if i["ifindex"] in pid_iface_map:
+                # self.logger.warning("[%s] Not PID iface mapping: %s", i["interface"], r)
+                # continue
+                r[pid_iface_map[i["ifindex"]]] = i["interface"]
             r[i["ifindex"]] = i["interface"]
         return r
 
@@ -95,6 +96,9 @@ class Script(BaseScript):
                     "Invalid vlan number %s, for MAC: %s, Port: %s", vlan_id, mac, mac_port[r_oid]
                 )
                 continue
+            elif not status:
+                self.logger.warning("[%s] Unknown status: %s", mac_port[r_oid], status)
+                status = 3
             r += [
                 {
                     "interfaces": [mac_port[r_oid]],

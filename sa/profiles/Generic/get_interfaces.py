@@ -142,7 +142,7 @@ class Script(BaseScript):
             ]
         ):
             if att_pc and att_pc != int(ifindex):
-                if sel_pc > 0:
+                if sel_pc and sel_pc > 0:
                     r[int(ifindex)] = int(att_pc)
         return r
 
@@ -195,8 +195,14 @@ class Script(BaseScript):
             if a_type != "4":
                 # 16, 20 - IPv6 address
                 continue
-            # address = oid.split(mib["IP-MIB::ipAddressIfIndex"])[-1].strip(".")
-            r[ifindex] += ip_mask[address]
+            elif address not in ip_mask:
+                self.logger.error(
+                    "Unknown IP address in 'IP-MIB::ipAddressPrefix' table: %s",
+                    address,
+                )
+            else:
+                # address = oid.split(mib["IP-MIB::ipAddressIfIndex"])[-1].strip(".")
+                r[ifindex] += ip_mask[address]
         return r
 
     def get_mpls_vpn_mappings(self) -> Tuple[Dict[str, Dict[str, Any]], Dict[str, str]]:
@@ -336,8 +342,11 @@ class Script(BaseScript):
             if ifindex in portchannels:
                 iface["aggregated_interface"] = ifaces[portchannels[ifindex]]["name"]
                 iface["enabled_protocols"] = ["LACP"]
+            hints = self.get_hints(iface["name"], iface["type"])
+            if hints:
+                iface["hints"] = hints
             interfaces[iface["name"]] = iface
-        # Proccessed subinterfaces
+        # Processed subinterfaces
         for ifindex, sub in subifaces.items():
             ifname, num = sub["name"].split(".", 1)
             if ifname not in interfaces:
@@ -418,6 +427,9 @@ class Script(BaseScript):
 
     def clean_iftype(self, ifname: str, ifindex: Optional[int] = None) -> str:
         return self.profile.get_interface_type(ifname)
+
+    def get_hints(self, ifname: str, iftype: str) -> List[str]:
+        return []
 
     def clean_mac(self, mac: str):
         if is_mac(mac) and not self.is_ignored_mac(MAC(mac)):
