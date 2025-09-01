@@ -47,6 +47,11 @@ forms:
       options:
         - "3.10"
         - "3.11"
+    closed_gap_url:
+      label: URL for installation in closed gap
+      default: ""
+      description: Write URL with NOC packages
+      type: str
 
 services:
   noc:
