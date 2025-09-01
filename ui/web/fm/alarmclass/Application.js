@@ -143,8 +143,9 @@ Ext.define("NOC.fm.alarmclass.Application", {
                   fieldLabel: __("Labels"),
                   allowBlank: true,
                   uiStyle: "medium",
+                  filterProtected: false,
                   query: {
-                    "allow_models": ["fm.Alarm"],
+                    "allow_models": ["fm.ActiveAlarm"],
                   },
                 },
                 {
