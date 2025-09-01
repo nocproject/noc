@@ -161,11 +161,6 @@ class Script(BaseScript):
                     },
                     {
                         "interface": "optical",
-                        "attr": "rx_wavelength",
-                        "value": nm,
-                    },
-                    {
-                        "interface": "optical",
                         "attr": "bidi",
                         "value": False,
                     },
@@ -185,6 +180,21 @@ class Script(BaseScript):
                         "value": ll,
                     },
                 ]
+                if t in ["GPON", "Giga-PON"]:
+                    if nm == 1490:
+                        nm_rx = 1310
+                    elif nm == 1577:
+                        nm_rx = 1270
+                    else:
+                        nm_rx = 0
+                    if nm_rx != 0:
+                        data += [
+                            {
+                                "interface": "optical",
+                                "attr": "rx_wavelength",
+                                "value": nm_rx,
+                            }
+                        ]
                 p = part_no
                 part_no = "NoName | Transceiver | "
                 if p == "SFP-LX-SM":
