@@ -181,13 +181,13 @@ class Script(BaseScript):
                     },
                 ]
                 if t in ["GPON", "Giga-PON"]:
-                    if nm == 1490:
-                        nm_rx = 1310
-                    elif nm == 1577:
-                        nm_rx = 1270
+                    if nm == "1490":
+                        nm_rx = "1310"
+                    elif nm == "1577":
+                        nm_rx = "1270"
                     else:
-                        nm_rx = 0
-                    if nm_rx != 0:
+                        nm_rx = "0"
+                    if nm_rx != "0":
                         data += [
                             {
                                 "interface": "optical",
