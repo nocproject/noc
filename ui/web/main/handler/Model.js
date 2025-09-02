@@ -105,5 +105,9 @@ Ext.define("NOC.main.handler.Model", {
             name: "allow_resource",
             type: "boolean"
         },
+        {
+            name: "allow_alarm",
+            type: "boolean"
+        }
     ]
 });
