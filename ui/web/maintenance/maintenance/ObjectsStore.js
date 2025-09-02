@@ -26,6 +26,7 @@ Ext.define("NOC.maintenance.maintenance.ObjectsStore", {
     ],
     proxy: {
         type: "rest",
+        url: "none",
         pageParam: "__page",
         startParam: "__start",
         limitParam: "__limit",
