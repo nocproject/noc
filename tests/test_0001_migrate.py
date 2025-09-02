@@ -107,7 +107,8 @@ def test_database_migrations(database):
     # runner = MigrationRunner()
     # MigrationRunner()
     # runner.migrate()
-    assert 1 == 1
+    a = 1
+    assert 1 == a
 
 
 def test_migration_history():
