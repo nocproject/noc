@@ -104,7 +104,8 @@ def test_database_migrations(database):
     :param database:
     :return:
     """
-    runner = MigrationRunner()
+    # runner = MigrationRunner()
+    MigrationRunner()
     # runner.migrate()
 
 
