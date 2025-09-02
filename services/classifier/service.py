@@ -510,7 +510,7 @@ class ClassifierService(FastAPIService):
             "$op": "disposition",
             "reference": "",
             "timestamp": event.timestamp.isoformat(),
-            "event": {"event_class": event.type.event_class, "event_id": str(event.id)},
+            "event": {"event_class": event.type.event_class, "id": str(event.id)},
             "labels": list(event.labels),
             "vars": event.vars,
         }
