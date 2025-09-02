@@ -106,7 +106,7 @@ Ext.define("NOC.main.handler.Model", {
             type: "boolean"
         },
         {
-            name: "allow_alarm",
+            name: "allow_fm_alarm",
             type: "boolean"
         }
     ]

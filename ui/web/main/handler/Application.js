@@ -239,7 +239,7 @@ Ext.define("NOC.main.handler.Application", {
               boxLabel: __("Allow Resource"),
             },
             {
-              name: "allow_alarm",
+              name: "allow_fm_alarm",
               xtype: "checkbox",
               boxLabel: __("Allow Alarm"),
             }
