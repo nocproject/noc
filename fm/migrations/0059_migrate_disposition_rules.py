@@ -52,6 +52,7 @@ class Migration(BaseMigration):
                 disposition_names.append(d["name"])
                 if name in names:
                     continue
+                da = {"raise": "R", "clear": "C", "ignore": "I", "drop": "I"}.get(d["action"], "I")
                 r = {
                     "name": name,
                     "uuid": uuid.uuid4(),
@@ -60,7 +61,7 @@ class Migration(BaseMigration):
                     "combo_window": d.get("combo_window") or 0,
                     "combo_count": d.get("combo_count") or 0,
                     "alarm_disposition": d.get("alarm_class"),
-                    "default_action": {"raise": "R", "clear": "C", "ignore": "I"}[d["action"]],
+                    "default_action": da,
                     "conditions": [{"event_class_re": ec["name"]}],
                     "bi_id": bson.Int64(bi_hash(bson.ObjectId())),
                 }
