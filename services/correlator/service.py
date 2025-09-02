@@ -477,6 +477,7 @@ class CorrelatorService(FastAPIService):
                 alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
             else:
                 alarm.stop_watch(Effect.CLEAR_ALARM, key="")
+            rule.apply_actions(alarm)
         return groups, jobs
 
     async def run_alarm_jobs(self, alarm: ActiveAlarm, jobs: List[AlarmActionRequest]):

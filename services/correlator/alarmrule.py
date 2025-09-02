@@ -16,11 +16,12 @@ from jinja2 import Template
 from noc.core.matcher import build_matcher
 from noc.core.fm.request import ActionConfig, AlarmActionRequest, AllowedAction
 from noc.core.span import get_current_span
-from noc.core.fm.enum import GroupType
+from noc.core.fm.enum import GroupType, AlarmAction
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.escalationprofile import EscalationProfile
+from noc.fm.models.alarmwatch import Effect
 
 
 DEFAULT_GROUP_CLASS = "Group"
@@ -178,7 +179,7 @@ class AlarmRule(object):
                 g_type=GroupType.RULE,
             )
 
-    def get_job(self, alarm) -> Optional["AlarmActionRequest"]:
+    def get_job(self, alarm: ActiveAlarm) -> Optional["AlarmActionRequest"]:
         if not self.job_config:
             return None
         cfg = self.job_config
@@ -196,6 +197,15 @@ class AlarmRule(object):
             ctx=alarm.escalation_ctx,
         )
         return req
+
+    def apply_actions(self, alarm: ActiveAlarm):
+        for a in self.actions:
+            if a.action == AlarmAction.HANDLER:
+                alarm.add_watch(Effect.HANDLER, key=a.key, once=True)
+            elif a.action == AlarmAction.NOTIFY:
+                alarm.add_watch(
+                    Effect.NOTIFICATION_GROUP, key=a.key, template=a.template,
+                )
 
 
 class AlarmRuleSet(object):
