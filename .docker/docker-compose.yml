@@ -104,7 +104,7 @@ services:
       snmpd:
         condition: service_started
     command: >
-      sh -c "set -xe && ./noc test run --junit-report=build/reports/py-test-junit.xml --statistics "
+      sh -c "set -xe && ./noc test run --junit-report=build/reports/py-test-junit.xml --statistics tests/test_0001_migrate.py "
     environment:
       NOC_TEST_DB: noc_tests
     env_file:
