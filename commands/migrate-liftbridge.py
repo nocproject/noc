@@ -71,7 +71,7 @@ class Command(BaseCommand):
         # Datasource Reports
         for name in report_ds_loader:
             ds_report_model = report_ds_loader[name]
-            if ds_report_model.clickhouse_mirror():
+            if ds_report_model and ds_report_model.clickhouse_mirror():
                 yield f"ch.{ds_report_model._get_db_table()}"
 
     async def apply_stream_settings(self, slots: Optional[int] = None) -> bool:
