@@ -50,6 +50,7 @@ def connect():
         try:
             logger.info("Connecting to MongoDB %s", ca)
             connect_args = config.mongo_connection_args
+            connect_args["uuidRepresentation"] = "standard"
             mongo_connect(**connect_args)
             _connected = True
             break
