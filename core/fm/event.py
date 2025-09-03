@@ -151,6 +151,10 @@ class Event(BaseModel):
     def timestamp(self):
         return datetime.datetime.fromtimestamp(self.ts)
 
+    @property
+    def event_class(self) -> Optional[str]:
+        return self.type.event_class
+
     @staticmethod
     def resolve_managed_object_target(bi_id) -> Tuple[str, str]:
         """
