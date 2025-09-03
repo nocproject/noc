@@ -633,7 +633,7 @@ class Config(BaseConfig):
         caller_timeout = SecondsParameter(default="1M")
         calling_service = StringParameter(default="script")
 
-    secret_key = StringParameter(default="12345")
+    secret_key = SecretParameter(default="12345", path=SECRETS_BASE / "secret-key")
 
     class selfmon(ConfigSection):
         enable_managedobject = BooleanParameter(default=True)
