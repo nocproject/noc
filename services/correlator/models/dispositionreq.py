@@ -22,9 +22,9 @@ class GroupItem(BaseModel):
 
 
 class Event(BaseModel):
-    event_id: Optional[str] = None
+    id: Optional[str] = None
     event_class: Optional[str] = None
-    event_severity: Optional[EventSeverity] = None
+    severity: Optional[EventSeverity] = None
 
 
 class DispositionRequest(BaseModel):

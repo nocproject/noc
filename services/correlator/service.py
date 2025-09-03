@@ -1110,14 +1110,19 @@ class CorrelatorService(FastAPIService):
                     managed_object=managed_object,
                 )
             try:
-                if (rule.action == "clear" and rule.combo_condition == "none") or (
-                    req.event and req.event.event_severity == EventSeverity.CLEARED
-                ):
+                if rule.action == "clear" and rule.combo_condition == "none":
                     await self.clear_alarm_from_rule(
                         rule,
                         managed_object=managed_object,
                         r_vars=r_vars,
                         timestamp=ts,
+                    )
+                elif req.event and req.event.severity == EventSeverity.CLEARED:
+                    await self.clear_by_reference(
+                        reference,
+                        message=f"Cleared by disposition rule '{rule.name}'",
+                        ts=ts,
+                        event=req.event,
                     )
                 elif rule.action == "raise" and rule.combo_condition == "none":
                     await self.raise_alarm(
@@ -1414,7 +1419,7 @@ class CorrelatorService(FastAPIService):
                 event.id,
                 alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
                 alarm.managed_object.address if alarm.managed_object else reference,
-                event.type.event_class,
+                event.event_class,
                 alarm.alarm_class.name,
                 alarm.id,
             )
