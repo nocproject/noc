@@ -240,6 +240,7 @@ class AlarmJob(object):
             if ll.status != ActionStatus.SKIP:
                 return True
         return False
+
     def get_next_ts(self) -> Optional[datetime.datetime]:
         """
         Calculate next run ts. When set delay or Temp Error

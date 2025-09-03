@@ -204,7 +204,9 @@ class AlarmRule(object):
                 alarm.add_watch(Effect.HANDLER, key=a.key, once=True)
             elif a.action == AlarmAction.NOTIFY:
                 alarm.add_watch(
-                    Effect.NOTIFICATION_GROUP, key=a.key, template=a.template,
+                    Effect.NOTIFICATION_GROUP,
+                    key=a.key,
+                    template=a.template,
                 )
 
 
