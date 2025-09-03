@@ -1106,6 +1106,7 @@ class Config(BaseConfig):
                 from noc.core.mongo.monitor import MongoCommandSpan
 
                 self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
+            self._mongo_connection_args["uuidRepresentation"] = "standard"
         return self._mongo_connection_args
 
     def setup_logging(self, loglevel=None):
