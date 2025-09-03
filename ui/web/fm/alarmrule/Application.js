@@ -313,7 +313,7 @@ Ext.define("NOC.fm.alarmrule.Application", {
                             editor: {
                                 xtype: "main.handler.LookupField",
                                 query: {
-                                    "allow_fm_alarmgroup": true
+                                    "allow_fm_alarm": true
                                 }
                             },
                             renderer: NOC.render.Lookup("handler"),

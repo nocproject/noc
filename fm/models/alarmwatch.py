@@ -85,7 +85,7 @@ class WatchItem(EmbeddedDocument):
                 )
             case Effect.HANDLER:
                 h = get_handler(self.key)
-                h(**self.get_args(alarm, is_clear))
+                h(**self.get_args(alarm, is_clear), dry_run=dry_run)
             case Effect.ALARM_JOB:
                 alarm.refresh_job(is_clear, job_id=self.key)
             case Effect.REWRITE_ALARM_CLASS:
