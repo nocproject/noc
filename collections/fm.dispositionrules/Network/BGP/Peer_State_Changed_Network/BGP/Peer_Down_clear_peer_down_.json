@@ -12,7 +12,7 @@
     "stop_processing": false,
     "vars_conditions": [
         {
-            "field": "clear_peer_down",
+            "field": "to_state",
             "op": "eq",
             "value": "ESTABLISHED"
         }
