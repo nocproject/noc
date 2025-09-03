@@ -22,7 +22,7 @@ def database(request):
     """
     # Create databases
     _create_pg_db()
-    # _create_mongo_db()
+    _create_mongo_db()
     _create_clickhouse_db()
     # Return control to the test
     yield
