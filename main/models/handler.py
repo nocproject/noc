@@ -66,7 +66,7 @@ class Handler(Document):
     allow_ifdesc = BooleanField()
     allow_mx_transmutation = BooleanField()
     allow_match_rule = BooleanField()
-    allow_fm_alarmgrouprule = BooleanField()
+    allow_fm_alarm = BooleanField()
     allow_tech_domain = BooleanField()
     allow_diagnostics_checks = BooleanField()
     allow_event = BooleanField()
@@ -98,7 +98,11 @@ class Handler(Document):
             "allow_ifdesc": self.allow_ifdesc,
             "allow_mx_transmutation": self.allow_mx_transmutation,
             "allow_match_rule": self.allow_match_rule,
-            "allow_fm_alarmgrouprule": self.allow_fm_alarmgrouprule,
+            "allow_fm_alarm": self.allow_fm_alarm,
+            "allow_tech_domain": self.allow_tech_domain,
+            "allow_diagnostics_checks": self.allow_diagnostics_checks,
+            "allow_event": self.allow_event,
+            "allow_resource": self.allow_resource,
         }
         return r
 
@@ -124,7 +128,7 @@ class Handler(Document):
                 "allow_ifdesc",
                 "allow_mx_transmutation",
                 "allow_match_rule",
-                "allow_fm_alarmgrouprule",
+                "allow_fm_alarm",
             ],
         )
 
