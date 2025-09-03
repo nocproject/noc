@@ -736,17 +736,25 @@ class ActiveAlarm(Document):
             self.watchers = r
             self.wait_ts = self.get_wait_ts()
 
-    def touch_watch(self, is_clear: bool = False, dry_run: bool = False):
+    def touch_watch(
+        self,
+        is_clear: bool = False,
+        is_update: bool = False,
+        dry_run: bool = False,
+    ):
         """
         Processed watchers
         Args:
             is_clear: Flag for alarm_clear procedure
+            is_update: Flag for refresh_alarm procedure
             dry_run: For tests run
         """
         now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
         for w in self.watchers:
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
+                continue
+            if w.once and is_update:
                 continue
             if w.immediate:
                 # If Immediate, not run (used for save run only)

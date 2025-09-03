@@ -416,7 +416,7 @@ class CorrelatorService(FastAPIService):
             alarm.severity = e_severity
             alarm.last_update = datetime.datetime.now().replace(microsecond=0)
         alarm.save()
-        alarm.touch_watch()
+        alarm.touch_watch(is_update=True)
 
     async def apply_rules(
         self,
@@ -684,6 +684,7 @@ class CorrelatorService(FastAPIService):
         await self.update_groups_summary(a.groups)
         # Watch for escalations, when necessary
         # Apply actions
+        a.touch_watch()
         if jobs:
             await self.run_alarm_jobs(a, jobs)
         if config.correlator.auto_escalation and not a.root:
