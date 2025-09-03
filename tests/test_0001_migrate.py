@@ -104,11 +104,8 @@ def test_database_migrations(database):
     :param database:
     :return:
     """
-    # runner = MigrationRunner()
-    # MigrationRunner()
-    # runner.migrate()
-    a = 1
-    assert 1 == a
+    runner = MigrationRunner()
+    runner.migrate()
 
 
 def test_migration_history():

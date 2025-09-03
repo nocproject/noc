@@ -28,7 +28,7 @@ def database(request):
     yield
     # Cleanup databases
     _drop_pg_db()
-    # _drop_mongo_db()
+    _drop_mongo_db()
     _drop_clickhouse_db()
 
 
