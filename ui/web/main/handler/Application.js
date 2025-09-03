@@ -221,7 +221,7 @@ Ext.define("NOC.main.handler.Application", {
         },
         {
           xtype: "fieldset",
-          title: __("Event Handlers"),
+          title: __("FM Handlers"),
           layout: "vbox",
           defaults: {
             labelAlign: "top",
@@ -238,6 +238,11 @@ Ext.define("NOC.main.handler.Application", {
               xtype: "checkbox",
               boxLabel: __("Allow Resource"),
             },
+            {
+              name: "allow_fm_alarm",
+              xtype: "checkbox",
+              boxLabel: __("Allow Alarm"),
+            }
           ],
         },
       ],
