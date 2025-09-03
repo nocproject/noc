@@ -647,13 +647,18 @@ class ActiveAlarm(Document):
             timestamp: Clear Timestamp
         """
         from noc.core.service.loader import get_service
+        from noc.main.models.pool import Pool
 
         #
-        fm_pool = self.managed_object.get_effective_fm_pool()
+        if self.managed_object:
+            fm_pool = self.managed_object.get_effective_fm_pool()
+            partition = int(self.managed_object.id)
+        else:
+            fm_pool = Pool.get_default_fm_pool()
+            partition = 0
         stream = f"dispose.{fm_pool.name}"
         service = get_service()
         num_partitions = asyncio.run(service.get_stream_partitions(stream))
-        partition = int(self.managed_object.id) % num_partitions
         service.publish(
             orjson.dumps(
                 {
@@ -665,7 +670,7 @@ class ActiveAlarm(Document):
                 }
             ),
             stream=stream,
-            partition=partition,
+            partition=partition % num_partitions,
         )
 
     def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
@@ -731,17 +736,25 @@ class ActiveAlarm(Document):
             self.watchers = r
             self.wait_ts = self.get_wait_ts()
 
-    def touch_watch(self, is_clear: bool = False, dry_run: bool = False):
+    def touch_watch(
+        self,
+        is_clear: bool = False,
+        is_update: bool = False,
+        dry_run: bool = False,
+    ):
         """
         Processed watchers
         Args:
             is_clear: Flag for alarm_clear procedure
+            is_update: Flag for refresh_alarm procedure
             dry_run: For tests run
         """
         now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
         for w in self.watchers:
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
+                continue
+            if w.once and is_update:
                 continue
             if w.immediate:
                 # If Immediate, not run (used for save run only)

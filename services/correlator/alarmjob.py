@@ -216,7 +216,9 @@ class AlarmJob(object):
                 # Set Stop job status
                 break
         # alarm_log = runner.get_bulk()
-        if to_save_state:
+        if to_save_state and self.has_state():
+            # Check waiting
+            # state_policy: always, waiting only, not_save
             self.save_state()
         # Update after_at and key
         if is_end:
@@ -231,6 +233,13 @@ class AlarmJob(object):
 
     def check_end(self) -> bool:
         return self.leader_item.status == ItemStatus.REMOVED or self.alarm.status == "C"
+
+    def has_state(self):
+        """Check log for state logs"""
+        for ll in self.actions:
+            if ll.status != ActionStatus.SKIP:
+                return True
+        return False
 
     def get_next_ts(self) -> Optional[datetime.datetime]:
         """
