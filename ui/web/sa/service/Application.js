@@ -134,6 +134,33 @@ Ext.define("NOC.sa.service.Application", {
       ],
       fields: [
         {
+          name: "diagnostics",
+          fieldLabel: __("Diag"),
+          xtype: "statusfield",
+          allowBlank: true,
+        },
+        {
+          name: "mappings",
+          xtype: "displayfield",
+          fieldLabel: __("Mappings"),
+          allowBlank: true,
+          renderer: function(values){
+            if(Ext.isEmpty(values)){
+              return "-";
+            }
+            var isArray = Array.isArray(values),
+              v = isArray ? values : [values];
+            return v.map(function(value){
+              var mappingString = value.remote_system__label + ": " + value.remote_id; 
+              if(Ext.isEmpty(value.url)){
+                return mappingString + NOC.clipboardIcon(value.remote_id);
+              }
+              return "<a href='" + value.url + "' target='_blank'>" + mappingString + "</a>"
+                         + NOC.clipboardIcon(value.remote_id);
+            }).join("<br/>");
+          },
+        },
+        {
           name: "profile",
           xtype: "sa.serviceprofile.LookupField",
           fieldLabel: __("Profile"),
