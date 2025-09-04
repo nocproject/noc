@@ -33,6 +33,7 @@ Ext.define("NOC.sa.service.Application", {
   helpId: "reference-service",
 
   initComponent: function(){
+    let labelWidth = 125;
     this.instancesPanel = Ext.create("NOC.sa.service.InstancesPanel");
     this.subscriptionPanel = Ext.create("NOC.core.SubscriptionPanel");
     this.ITEM_INSTANCES = this.registerItem(this.instancesPanel);
@@ -135,48 +136,71 @@ Ext.define("NOC.sa.service.Application", {
       ],
       fields: [
         {
-          name: "diagnostics",
-          fieldLabel: __("Diag"),
-          xtype: "statusfield",
-          allowBlank: true,
-        },
-        {
-          name: "mappings",
-          xtype: "displayfield",
-          fieldLabel: __("Mappings"),
-          allowBlank: true,
-          renderer: function(values){
-            if(Ext.isEmpty(values)){
-              return "-";
-            }
-            var isArray = Array.isArray(values),
-              v = isArray ? values : [values];
-            return v.map(function(value){
-              var mappingString = value.remote_system__label + ": " + value.remote_id; 
-              if(Ext.isEmpty(value.url)){
-                return mappingString + NOC.clipboardIcon(value.remote_id);
-              }
-              return "<a href='" + value.url + "' target='_blank'>" + mappingString + "</a>"
-                         + NOC.clipboardIcon(value.remote_id);
-            }).join("<br/>");
+          xtype: "container",
+          layout: {
+            type: "hbox",
+            pack: "end",
           },
+          items: [
+            {
+              xtype: "container",
+              layout: {
+                type: "vbox",
+              },
+              items: [
+                {
+                  name: "diagnostics",
+                  fieldLabel: __("Diag"),
+                  labelWidth: labelWidth,
+                  xtype: "statusfield",
+                  allowBlank: true,
+                },
+                {
+                  name: "mappings",
+                  xtype: "displayfield",
+                  fieldLabel: __("Mappings"),
+                  labelWidth: labelWidth,
+                  allowBlank: true,
+                  renderer: function(values){
+                    if(Ext.isEmpty(values)){
+                      return "-";
+                    }
+                    var isArray = Array.isArray(values),
+                      v = isArray ? values : [values];
+                    return v.map(function(value){
+                      var mappingString = value.remote_system__label + ": " + value.remote_id;
+                      if(Ext.isEmpty(value.url)){
+                        return mappingString + NOC.clipboardIcon(value.remote_id);
+                      }
+                      return "<a href='" + value.url + "' target='_blank'>" + mappingString + "</a>"
+                        + NOC.clipboardIcon(value.remote_id);
+                    }).join("<br/>");
+                  },
+              
+                },
+              ],
+            },
+          ],
         },
         {
           name: "profile",
           xtype: "sa.serviceprofile.LookupField",
           fieldLabel: __("Profile"),
+          labelWidth: labelWidth,
           allowBlank: false,
         },
         {
           name: "state",
           xtype: "statefield",
           fieldLabel: __("State"),
+          labelWidth: labelWidth,
           allowBlank: true,
         },
         {
           name: "name_template",
           xtype: "textfield",
           fieldLabel: __("Name Template"),
+          labelWidth: labelWidth,
           allowBlank: true,
           uiStyle: "large",
         },
@@ -184,12 +208,14 @@ Ext.define("NOC.sa.service.Application", {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
+          labelWidth: labelWidth,
           allowBlank: true,
         },
         {
           name: "labels",
           xtype: "labelfield",
           fieldLabel: __("Labels"),
+          labelWidth: 200,
           query: {
             "allow_models": ["sa.Service"],
           },
