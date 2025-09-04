@@ -72,7 +72,6 @@ class ChangeTracker(object):
         datastreams: Optional[List[Tuple[str, str]]] = None,
         audit: bool = False,
         caps: Optional[List[str]] = None,
-        from_state: Optional[Any] = None,
     ) -> None:
         """
         Register datastream change

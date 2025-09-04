@@ -26,8 +26,6 @@ class ChangeItem(object):
     item_id: str
     changed_fields: Optional[List[ChangeField]] = field(default=None, compare=False)
     changed_caps: Optional[List[str]] = field(default=None, compare=False)
-    to_state: Optional[int] = None  # Workflow Changed
-    to_state_label: Optional[str] = None
     # groups
     # labels
     ts: Optional[float] = field(default=None, compare=False)
@@ -79,3 +77,10 @@ class ChangeItem(object):
         from noc.models import get_object
 
         return get_object(self.model_id, self.item_id)
+
+    def is_change_field(self, name: str) -> bool:
+        """Check field is changed"""
+        for f in self.changed_fields:
+            if f.field == name:
+                return True
+        return False

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Interface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 import datetime
 import logging
 import operator
+import re
 from typing import Optional, Iterable, List, Union, Dict, Any
 
 # Third-party modules
@@ -25,6 +26,7 @@ from mongoengine.fields import (
     DictField,
     EmbeddedDocumentListField,
 )
+from mongoengine.queryset.visitor import Q
 from pymongo import ReadPreference
 
 # NOC Modules
@@ -39,6 +41,7 @@ from noc.core.change.decorator import change
 from noc.core.wf.decorator import workflow
 from noc.core.diagnostic.hub import DIAGNOCSTIC_LABEL_SCOPE
 from noc.core.bi.decorator import bi_hash
+from noc.core.validators import is_ipv4, is_mac
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
@@ -511,6 +514,34 @@ class Interface(Document):
         if self.aggregated_interface:
             return self.aggregated_interface
         return self
+
+    @classmethod
+    def get_search_Q(cls, query):
+        """
+        Filters type:
+        #1 IP address regexp - if .* in query
+        #2 Name regexp - if "+*[]()" in query
+        #3 IPv4 query - if query is valid IPv4 address
+        #4 IPv4 prefix - if query is valid prefix from /16 to /32 (192.168.0.0/16, 192.168.0.0/g, 192.168.0.0/-1)
+        #5 Discovery ID query - Find on MAC Discovery ID
+        :param query: Query from __query request field
+        :return: Django Q filter (Use it: ManagedObject.objects.filter(q))
+        """
+        from noc.inv.models.subinterface import SubInterface
+
+        query = query.strip()
+        if not query:
+            return None
+        elif is_mac(query):
+            return Q(mac=query)
+        elif is_ipv4(query):
+            # Exact match on IP address
+            ids = list(
+                SubInterface.objects.filter(ipv4_addresses=re.compile(query)).scalar("interface")
+            )
+            if ids:
+                return Q(id__in=ids)
+        return Q(description__contains=query)
 
     def get_profile(self) -> InterfaceProfile:
         if self.profile:

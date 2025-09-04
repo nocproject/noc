@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.interface application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ from noc.core.comp import smart_text
 
 @capabilities_handler
 @state_handler
-class InterfaceAppplication(ExtDocApplication):
+class InterfaceApplication(ExtDocApplication):
     """
     inv.interface application
     """
@@ -60,7 +60,11 @@ class InterfaceAppplication(ExtDocApplication):
     }
 
     def get_Q(self, request, query):
-        return super().get_Q(request, query)
+        q = super().get_Q(request, query)
+        sq = Interface.get_search_Q(query)
+        if sq:
+            q |= sq
+        return q
 
     @staticmethod
     def get_style(i: Interface):
