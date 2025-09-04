@@ -10,8 +10,11 @@ import logging
 from typing import Optional, List, Dict, Any, Iterable
 
 # NOC modules
-from noc.models import is_document
+from noc.models import is_document, get_model_id
 from noc.core.models.inputsources import InputSource
+from noc.core.change.policy import change_tracker
+from noc.core.change.decorator import get_datastreams
+from noc.core.change.model import ChangeField
 from .types import CapsValue, CapsConfig
 
 logger = logging.getLogger(__name__)
@@ -91,7 +94,13 @@ def iter_document_caps(
         )
 
 
-def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
+def save_document_caps(
+    self,
+    caps: List[CapsValue],
+    dry_run: bool = False,
+    bulk=None,
+    changed_fields: Optional[List[ChangeField]] = None,
+):
     """"""
     from noc.inv.models.capsitem import CapsItem
 
@@ -101,10 +110,25 @@ def save_document_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=
     ]
     if dry_run or self._created:
         return
+    # Register changes
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=changed_fields,
+        audit=True,
+        caps=[cf.field for cf in changed_fields or []],
+    )
     self.update(caps=self.caps)
 
 
-def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
+def save_model_caps(
+    self,
+    caps: List[CapsValue],
+    dry_run: bool = False,
+    bulk=None,
+    changed_fields: Optional[List[ChangeField]] = None,
+):
     """"""
     self.caps = [
         {
@@ -117,6 +141,15 @@ def save_model_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=Non
     ]
     if dry_run or not self.id:
         return
+    # Register changes
+    change_tracker.register(
+        "update",
+        get_model_id(self),
+        str(self.id),
+        fields=changed_fields,
+        audit=True,
+        caps=[cf.field for cf in changed_fields or []],
+    )
     self.__class__.objects.filter(id=self.id).update(caps=self.caps)
     self.update_init()
     self._reset_caches(self.id, credential=True)
@@ -162,7 +195,7 @@ def set_caps(
     value = caps.clean_value(value)
     source = InputSource(source)
     scope = scope or ""
-    changed, is_new = False, True
+    changed, is_new, changed_fields = False, True, []
     for item in self.iter_caps():
         if item.capability == caps:
             # Set found scope
@@ -172,6 +205,8 @@ def set_caps(
                 new_caps.append(item.set_value(value))
                 changed |= True
                 logger.info("Change capability value: %s -> %s", item, value)
+                # Register changes
+                changed_fields = [ChangeField(field=item.name, old=str(item.value), new=str(value))]
                 continue
         new_caps += [item]
     if is_new:
@@ -184,9 +219,10 @@ def set_caps(
             )
         ]
         changed |= True
+        changed_fields = [ChangeField(field=caps.name, old=None, new=str(value))]
         logger.info("Adding capability: %s", new_caps[-1])
     if changed:
-        self.save_caps(new_caps)
+        self.save_caps(new_caps, changed_fields=changed_fields)
 
 
 def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
@@ -197,20 +233,22 @@ def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
         caps: Caps Name
         scope: Scope name
     """
-    new_caps = []
+    new_caps, changed_fields = [], []
     changed = False
     for item in self.iter_caps():
         if scope and scope == item.scope:
             changed |= True
             logger.info("Removing capability by scope: %s", scope)
+            changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]
             continue
         if caps and caps == item.name:
             changed |= True
             logger.info("Removing capability by name: %s", caps)
+            changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]
             continue
         new_caps.append(item)
     if changed:
-        self.save_caps(new_caps)
+        self.save_caps(new_caps, changed_fields=changed_fields)
 
 
 def update_caps(
@@ -242,6 +280,7 @@ def update_caps(
     new_caps: List[CapsValue] = []
     seen = set()
     changed = False
+    changed_fields = []
     for ci in self.iter_caps():
         seen.add(ci.name)
         if scope and scope != ci.scope:
@@ -270,6 +309,13 @@ def update_caps(
                     ci.value,
                     caps[ci.name],
                 )
+                changed_fields.append(
+                    ChangeField(
+                        field=ci.name,
+                        old=str(ci.value),
+                        new=str(value),
+                    )
+                )
                 ci = ci.set_value(caps[ci.name])
                 changed |= True
             else:
@@ -282,6 +328,13 @@ def update_caps(
         elif ci.name not in caps and scope == ci.scope:
             logger.info("[%s] Removing capability %s", o_label, ci)
             changed |= True
+            changed_fields.append(
+                ChangeField(
+                    field=ci.name,
+                    old=str(ci.value),
+                    new=None,
+                )
+            )
             continue
         new_caps += [ci]
     # Add new capabilities
@@ -301,10 +354,17 @@ def update_caps(
             )
         )
         changed |= True
+        changed_fields.append(
+            ChangeField(
+                field=c.name,
+                old=None,
+                new=str(value),
+            )
+        )
 
-    if changed:
+    if changed_fields:
         logger.info("[%s] Saving changes", o_label)
-        self.save_caps(new_caps, dry_run=dry_run)
+        self.save_caps(new_caps, dry_run=dry_run, changed_fields=changed_fields)
     # get_caps
     caps = {}
     for ci in new_caps:

@@ -13,7 +13,7 @@ from dataclasses import dataclass, field, replace
 @dataclass(frozen=True)
 class ChangeField(object):
     field: str  # FieldName
-    new: Any  # New Value
+    new: Optional[Any]  # New Value
     new_label: Optional[str] = None
     old: Optional[Any] = None  # Old Value
     old_label: Optional[str] = None
@@ -25,7 +25,7 @@ class ChangeItem(object):
     model_id: str
     item_id: str
     changed_fields: Optional[List[ChangeField]] = field(default=None, compare=False)
-    changed_caps: Optional[List[str]] = None
+    changed_caps: Optional[List[str]] = field(default=None, compare=False)
     to_state: Optional[int] = None  # Workflow Changed
     to_state_label: Optional[str] = None
     # groups

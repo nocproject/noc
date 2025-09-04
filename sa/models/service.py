@@ -39,7 +39,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check, on_init, tree
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
-from noc.core.change.decorator import change
+from noc.core.change.decorator import change, change_tracker
 from noc.core.service.loader import get_service
 from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
@@ -901,7 +901,9 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def save_caps(self, caps: List[CapsValue], dry_run: bool = False, bulk=None):
+    def save_caps(
+        self, caps: List[CapsValue], dry_run: bool = False, bulk=None, changed_fields=None, **kwargs
+    ):
         """"""
         from noc.inv.models.capsitem import CapsItem
 
@@ -913,6 +915,15 @@ class Service(Document):
         ]
         if dry_run or self._created:
             return
+        # Register changes
+        change_tracker.register(
+            "update",
+            "sa.Service",
+            str(self.id),
+            fields=changed_fields,
+            audit=True,
+            caps=[cf.field for cf in changed_fields or []],
+        )
         self.update(caps=self.caps)
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()

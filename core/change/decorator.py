@@ -12,6 +12,7 @@ from functools import partial
 
 # NOC modules
 from noc.models import is_document, get_model_id
+from noc.core.model.decorator import _on_init_handler
 from .policy import change_tracker
 from .model import ChangeField
 
@@ -48,27 +49,25 @@ def change(model=None, *, audit=True):
 def _track_document(model):
     """
     Setup document change tracking
-    :param model:
-    :return:
     """
     from mongoengine import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_document_change, sender=model)
     signals.post_delete.connect(_on_document_delete, sender=model)
+    signals.post_init.connect(_on_init_handler, sender=model)
 
 
 def _track_model(model):
     """
     Setup model change tracking
-    :param model:
-    :return:
     """
     from django.db.models import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_model_change, sender=model)
     signals.post_delete.connect(_on_model_delete, sender=model)
+    signals.post_init.connect(_on_init_handler, sender=model)
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):

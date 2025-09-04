@@ -84,7 +84,7 @@ class ChangeTracker(object):
             datastreams: List of changed datastream
             audit: Send Changes to Audit Log
             caps: Changed Capabilities list
-            from_state: 
+            from_state:
         """
         from noc.core.middleware.tls import get_user
 
