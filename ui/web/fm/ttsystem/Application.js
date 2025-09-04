@@ -9,7 +9,8 @@ console.debug("Defining NOC.fm.ttsystem.Application");
 Ext.define("NOC.fm.ttsystem.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.fm.ttsystem.Model"
+        "NOC.fm.ttsystem.Model",
+        "NOC.main.remotesystem.LookupField"
     ],
     model: "NOC.fm.ttsystem.Model",
     initComponent: function() {
@@ -146,6 +147,37 @@ Ext.define("NOC.fm.ttsystem.Application", {
                     allowBlank: true,
                     min: 0,
                     uiStyle: "small"
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system",
+                            xtype: "main.remotesystem.LookupField",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "textfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "displayfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
                 }
             ]
         });

@@ -133,13 +133,23 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
+        if tt_system.promote_items == "D":
+            return r
         if self.alarm.group_type == GroupType.SERVICE:
             svc = self.alarm.components.service
+            tt_id = tt_system.get_object_tt_id(svc)
+            if not tt_id:
+                self.logger.info("[%s] TT ID not found. Not appended to items.", )
+                return r
             return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
         if not self.alarm.affected_services:
             return r
         for svc in Service.objects.filter(id__in=self.alarm.affected_services):
-            r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
+            tt_id = tt_system.get_object_tt_id(svc)
+            if not tt_id:
+                self.logger.info("[%s] TT ID not found. Not appended to items.", )
+                continue
+            r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_id))
         return r
 
     def get_action_context(self) -> List[TTActionContext]:
