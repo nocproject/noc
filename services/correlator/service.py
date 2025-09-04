@@ -1269,6 +1269,7 @@ class CorrelatorService(FastAPIService):
                 vars=a_vars,
                 reference=req.reference,
                 labels=req.labels or [],
+                severity=req.severity,
                 group_type=req.g_type,
                 subject=req.name,
             )

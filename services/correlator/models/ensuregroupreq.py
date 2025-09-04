@@ -33,6 +33,7 @@ class EnsureGroupRequest(BaseModel):
     g_type: GroupType = GroupType.GROUP
     name: Optional[str] = None
     alarm_class: Optional[str] = None
+    severity: Optional[int] = None
     labels: Optional[List[str]] = None
     vars: Optional[Dict[str, Any]] = None
     alarms: List[AlarmItem]

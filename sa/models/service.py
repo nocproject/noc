@@ -600,6 +600,7 @@ class Service(Document):
                 "g_type": 3,
                 "name": self.label,
                 "alarm_class": SVC_AC,
+                "severity": self.get_alarm_severity(),
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,
@@ -619,7 +620,8 @@ class Service(Document):
                 "$op": "disposition",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "name": self.label,
-                "alarm_class": self.profile.raise_alarm_class,
+                "alarm_class": self.profile.raise_alarm_class.name,
+                "severity": self.get_alarm_severity(),
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,

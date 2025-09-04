@@ -1309,6 +1309,12 @@ class ActiveAlarm(Document):
                 seen.add(a.managed_object)
                 yield a.managed_object
 
+    def iter_affected_by_groups(self):
+        """Iter objects affected by groups"""
+        for aa in self.iter_grouped():
+            for o in aa.iter_affected():
+                yield o
+
     def iter_escalated(self):
         """
         Generator yielding all escalated consequences
@@ -1375,7 +1381,9 @@ class ActiveAlarm(Document):
             affected_subscribers = []
             affected_services = []
         # Include affected
-        if include_affected:
+        if include_affected and self.group_type != GroupType.NEVER:
+            affected_objects = sorted(self.iter_affected_by_groups(), key=operator.attrgetter("name"))
+        elif include_affected:
             affected_objects = sorted(self.iter_affected(), key=operator.attrgetter("name"))
         elif self.managed_object:
             affected_objects = [self.managed_object]
@@ -1387,11 +1395,11 @@ class ActiveAlarm(Document):
         return {
             "alarm": self,
             # "leader": self.alarm,
-            "services": self.affected_services,
-            "group": None,
+            # "services": self.affected_services,
             "service": service,
             "managed_object": self.managed_object,
             "affected_objects": affected_objects,
+            "affecting_alarms": [],
             "total_objects": summary_to_list(self.total_objects, ManagedObjectProfile),
             "total_subscribers": summary_to_list(self.total_subscribers, SubscriberProfile),
             "total_services": summary_to_list(self.total_services, ServiceProfile),

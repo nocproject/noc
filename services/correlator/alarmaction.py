@@ -21,7 +21,7 @@ from noc.core.tt.types import (
     TTActionContext,
 )
 from noc.core.tt.base import TTSystemCtx, TTAction
-from noc.core.fm.enum import AlarmAction, ActionStatus
+from noc.core.fm.enum import AlarmAction, ActionStatus, GroupType
 from noc.core.fm.request import AllowedAction, ActionConfig
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
@@ -133,15 +133,12 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
-        if "service" in self.alarm.components:
+        if self.alarm.group_type == GroupType.SERVICE:
             svc = self.alarm.components.service
             return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
-        if not self.services:
+        if not self.alarm.affected_services:
             return r
-        # (
-        #             list(Service.objects.filter(id__in=services)) if services else []
-        #         )
-        for svc in self.services:
+        for svc in Service.objects.filter(id__in=self.alarm.affected_services):
             r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
         return r
 
