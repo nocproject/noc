@@ -10,6 +10,7 @@ Ext.define("NOC.sa.service.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.StateField",
+    "NOC.core.status.StatusField",
     "NOC.core.InlineGrid",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
