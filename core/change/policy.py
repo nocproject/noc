@@ -91,6 +91,7 @@ class ChangeTracker(object):
         if not CHANGE_HANDLERS:
             self.load_receivers()
         user = get_user() or ""
+        print("CF", fields, caps, from_state)
         self.get_policy().register(
             item=ChangeItem(
                 op=op,

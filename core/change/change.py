@@ -89,10 +89,10 @@ def on_change(
             changed_fields_old = set(changed_fields)
         else:
             changed_fields_old = {cf["field"]: cf["old"] for cf in changed_fields or []}
-        # Proccess BI Dictionary
+        # Process BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
-        # Proccess Sensors
+        # Process Sensors
         if model_id == "inv.ObjectModel" and (
             "sensors" in changed_fields_old or not changed_fields_old
         ):

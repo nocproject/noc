@@ -36,6 +36,7 @@ from noc.main.models.label import Label
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.wf.decorator import workflow
 from noc.core.bi.decorator import bi_sync
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_save, on_delete_check
 
 id_lock = Lock()
@@ -47,6 +48,7 @@ FULL_VLAN_RANGE = set(range(1, 4096))
 @Label.model
 @bi_sync
 @workflow
+@change
 @on_save
 @on_delete_check(check=[("ip.Prefix", "vlan")])
 class VLAN(Document):

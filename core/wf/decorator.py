@@ -66,7 +66,16 @@ def document_set_state(
     """
     # Direct update arguments
     set_op = {"state": state.id}
-    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
+    if self.state:
+        cf = ChangeField(
+            field="state",
+            old=str(self.state.id),
+            old_label=str(self.state),
+            new=str(state.id),
+            new_label=str(self.state),
+        )
+    else:
+        cf = ChangeField(field="state", old=None, new=str(state.id), new_label=str(self.state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -169,8 +178,16 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     # Direct update arguments
     logger.debug("[%s] Set state: %s", self.name, state)
     set_op = {"state": str(state.id)}
-    from_state = self.state
-    cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
+    if self.state:
+        cf = ChangeField(
+            field="state",
+            old=str(self.state.id),
+            old_label=str(self.state),
+            new=str(state.id),
+            new_label=str(self.state),
+        )
+    else:
+        cf = ChangeField(field="state", old=None, new=str(state.id), new_label=str(self.state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
     self.state = state
@@ -240,7 +257,6 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
             audit=True,
-            from_state=from_state,
         )
 
 
