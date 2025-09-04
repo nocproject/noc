@@ -10,13 +10,13 @@ import contextlib
 import time
 from contextvars import ContextVar
 from collections import defaultdict
-from typing import Optional, Tuple, List, Dict, Literal, Set
+from typing import Optional, Tuple, List, Dict, Literal, Set, Any
 from abc import ABCMeta, abstractmethod
 
 # NOC modules
 from noc.core.defer import defer
 from noc.core.hash import hash_int
-from .model import ChangeItem
+from .model import ChangeItem, ChangeField
 
 CHANGE_HANDLER = "noc.core.change.change.on_change"
 DS_APPLY_HANDLER = "noc.core.change.change.apply_datastream"
@@ -68,19 +68,23 @@ class ChangeTracker(object):
         op: Literal["create", "update", "delete"],
         model: str,
         id: str,
-        fields: Optional[List] = None,
+        fields: Optional[List[ChangeField]] = None,
         datastreams: Optional[List[Tuple[str, str]]] = None,
         audit: bool = False,
+        caps: Optional[List[str]] = None,
+        from_state: Optional[Any] = None,
     ) -> None:
         """
         Register datastream change
-        :param op: Operation, either create, update or delete
-        :param model: Model id
-        :param id: Item id
-        :param fields: List of changed fields
-        :param datastreams: List of changed datastream
-        :param audit: Send Changes to Audit Log
-        :return:
+        Args:
+            op: Operation, either create, update or delete
+            model: Model id
+            id: Item id
+            fields: List of changed fields
+            datastreams: List of changed datastream
+            audit: Send Changes to Audit Log
+            caps: Changed Capabilities list
+            from_state: 
         """
         from noc.core.middleware.tls import get_user
 
@@ -95,6 +99,7 @@ class ChangeTracker(object):
                 ts=time.time(),
                 user=str(user),
                 changed_fields=fields,
+                changed_caps=caps or None,
             ),
             audit=audit and user,
         )

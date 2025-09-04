@@ -75,8 +75,6 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
     def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
-        :param field_name:
-        :return:
         """
         ov, key = None, None
         if hasattr(document, "initial_data"):
@@ -153,20 +151,24 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
     def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
-        :param field_name:
-        :return:
         """
         ov = instance.initial_data[field_name]
+        ov_label = None
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
+        if hasattr(ov, "name"):
+            ov_label = ov.name
         nv = getattr(instance, field_name)
+        nv_label = None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
+        if hasattr(ov, "name"):
+            ov_label = ov.name
         if field_name == "effective_labels" and nv and ov and set(nv).difference(set(ov)):
             return None
         elif str(ov or None) == str(nv or None):
             return None
-        return ChangeField(field=field_name, old=ov, new=nv)
+        return ChangeField(field=field_name, old=ov, old_label=ov_label, new=nv, new_label=nv_label)
 
     changed_fields: List[ChangeField] = []
     # Check for instance proxying

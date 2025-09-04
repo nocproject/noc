@@ -57,12 +57,12 @@ def document_set_state(
     * Perform database update
     * Invalidate caches
     * Call State on_enter_handlers
-    :param self:
-    :param state:
-    :param state_changed:
-    :param bulk:
-    :param create: Set if assign default state
-    :return:
+    Args:
+        self:
+        state:
+        state_changed:
+        bulk:
+        create: Set if assign default state
     """
     # Direct update arguments
     set_op = {"state": state.id}
@@ -159,16 +159,17 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     * Perform database update
     * Invalidate caches
     * Call State on_enter_handlers
-    :param self:
-    :param state:
-    :param state_changed:
-    :param bulk:
-    :param create: Set if assign default state
-    :return:
+    Args:
+        self:
+        state:
+        state_changed:
+        bulk:
+        create: Set if assign default state
     """
     # Direct update arguments
     logger.debug("[%s] Set state: %s", self.name, state)
     set_op = {"state": str(state.id)}
+    from_state = self.state
     cf = ChangeField(field="state", old=str(self.state.id) if self.state else None, new=str(state))
     prev_labels = self.state.labels if self.state else []
     # Set state field
@@ -239,6 +240,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
             audit=True,
+            from_state=from_state,
         )
 
 

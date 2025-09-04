@@ -14,8 +14,9 @@ from dataclasses import dataclass, field, replace
 class ChangeField(object):
     field: str  # FieldName
     new: Any  # New Value
+    new_label: Optional[str] = None
     old: Optional[Any] = None  # Old Value
-    # user: Optional[Any] = None  # Changed User
+    old_label: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -24,6 +25,11 @@ class ChangeItem(object):
     model_id: str
     item_id: str
     changed_fields: Optional[List[ChangeField]] = field(default=None, compare=False)
+    changed_caps: Optional[List[str]] = None
+    to_state: Optional[int] = None  # Workflow Changed
+    to_state_label: Optional[str] = None
+    # groups
+    # labels
     ts: Optional[float] = field(default=None, compare=False)
     user: Optional[str] = field(default=None, compare=False)
 
@@ -43,11 +49,10 @@ class ChangeItem(object):
 
     def change(self, op: str, changed_fields: List[ChangeField], timestamp: Optional[float] = None):
         """
-
-        :param op:
-        :param changed_fields:
-        :param timestamp:
-        :return:
+        Args:
+            op:
+            changed_fields:
+            timestamp:
         """
         # Series of change
         if op == "delete":
