@@ -66,7 +66,8 @@ class StringParameter(BaseParameter):
 
 class SecretParameter(BaseParameter):
     def __init__(self, default=None, help=None, path: Optional[Path] = None):
-        if not default and path and path.exists():
+        if path and path.exists():
+            # Read defaults from file
             with open(path) as fp:
                 data = fp.read().strip()
                 if data:
