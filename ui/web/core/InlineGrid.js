@@ -10,11 +10,6 @@ Ext.define("NOC.core.InlineGrid", {
   selType: "rowmodel",
   readOnly: false,
   disabledTooltip: __("This grid is currently disabled. Fill all required fields and press 'Apply' button to enable it."),
-  bbar: {
-    xtype: "pagingtoolbar",
-    dock: "bottom",
-    displayInfo: true,
-  },
   defaultListenerScope: true,
   plugins: [
     {
@@ -47,7 +42,7 @@ Ext.define("NOC.core.InlineGrid", {
   initComponent: function(){
     var me = this;
     this.columns = me.columns;
-    this.bbar.store = this.store = me.store;
+    this.store = me.store;
     me.on({
       afterrender: "setupDisabledTooltip",
       disable: "onDisable",
