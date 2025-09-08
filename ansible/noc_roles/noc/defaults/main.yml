@@ -26,7 +26,13 @@ py_version:
   py3.11: "3.11.5"
 
 py_rel_name: "{{ py_version['py' ~ noc_py3_ver] }}"
-noc_python_url: "https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz"
+noc_python_url: >-
+  {% if noc_closed_gap %}
+    {{ noc_closed_gap_url }}/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz
+  {% else %}
+    https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz
+  {% endif %}
+
 noc_python_openssl_url: "https://cdn.getnoc.com/noc/repo/RedHat/7/openssl.tar.gz"
 
 noc_sclo_yum_repo: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/"

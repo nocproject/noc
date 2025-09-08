@@ -18,6 +18,7 @@
     https_proxy: "{{ http_proxy }}"
     NOC_CONFIG: "{{ config_order }}"
     PYTHONPATH: "{{ noc_root | dirname }}"
+    NOC_PATH_CDN_URL: "{{ noc_closed_gap_url }}"
   tags:
     - requirements
 
