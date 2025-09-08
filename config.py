@@ -12,6 +12,7 @@ import socket
 import sys
 from functools import partial
 from urllib.parse import quote as urllib_quote
+from pathlib import Path
 
 # Third-party modules
 import cachetools
@@ -33,6 +34,8 @@ from noc.core.config.params import (
     UUIDParameter,
     TimeZoneParameter,
 )
+
+SECRETS_BASE = Path("/", "run", "secrets")
 
 
 class Config(BaseConfig):
@@ -156,10 +159,10 @@ class Config(BaseConfig):
             default="noc_dict", help="Database for store Dictionary Table"
         )
         rw_user = StringParameter(default="default")
-        rw_password = SecretParameter()
+        rw_password = SecretParameter(path=SECRETS_BASE / "clickhouse-rw-password")
         ro_addresses = ServiceParameter(service="clickhouse", wait=True)
         ro_user = StringParameter(default="readonly")
-        ro_password = SecretParameter()
+        ro_password = SecretParameter(path=SECRETS_BASE / "clickhouse-ro-password")
         request_timeout = SecondsParameter(default="1h")
         connect_timeout = SecondsParameter(default="10s")
         default_merge_tree_granularity = IntParameter(default=8192)
@@ -203,7 +206,7 @@ class Config(BaseConfig):
         allow_overwrite = BooleanParameter(default=True)
 
     class consul(ConfigSection):
-        token = SecretParameter()
+        token = SecretParameter(path=SECRETS_BASE / "consul-token")
         connect_timeout = SecondsParameter(default="5s")
         request_timeout = SecondsParameter(default="1h")
         near_retry_timeout = IntParameter(default=1)
@@ -313,8 +316,8 @@ class Config(BaseConfig):
 
     class geocoding(ConfigSection):
         order = StringParameter(default="yandex,google")
-        yandex_apikey = SecretParameter(default="")
-        google_key = SecretParameter(default="")
+        yandex_apikey = SecretParameter(default="", path=SECRETS_BASE / "geocoding-yandex-apikey")
+        google_key = SecretParameter(default="", path=SECRETS_BASE / "geocoding-google-key")
         google_language = StringParameter(default="en")
         negative_ttl = SecondsParameter(default="7d", help="Period then saving bad result")
         ui_geocoder = StringParameter(default="")
@@ -378,7 +381,7 @@ class Config(BaseConfig):
     class kafkasender(ConfigSection):
         bootstrap_servers = StringParameter()
         username = StringParameter()
-        password = SecretParameter()
+        password = SecretParameter(path=SECRETS_BASE / "kafkasender-password")
         sasl_mechanism = StringParameter(
             choices=["PLAIN", "GSSAPI", "SCRAM-SHA-256", "SCRAM-SHA-512"], default="PLAIN"
         )
@@ -462,7 +465,7 @@ class Config(BaseConfig):
         helo_hostname = StringParameter(default="noc")
         from_address = StringParameter(default="noc@example.com")
         smtp_user = StringParameter()
-        smtp_password = SecretParameter()
+        smtp_password = SecretParameter(path=SECRETS_BASE / "mailsender-smtp-password")
 
     class metricscollector(ConfigSection):
         ds_limit = IntParameter(default=1000)
@@ -496,7 +499,7 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = SecretParameter()
+        password = SecretParameter(path=SECRETS_BASE / "mongo-password")
         rs = StringParameter()
         retries = IntParameter(default=20)
         timeout = SecondsParameter(default="3s")
@@ -546,7 +549,7 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="postgres", wait=True, near=True, full_result=False)
         db = StringParameter(default="noc")
         user = StringParameter()
-        password = SecretParameter()
+        password = SecretParameter(path=SECRETS_BASE / "pg-password")
         connect_timeout = IntParameter(default=5)
 
     class ping(ConfigSection):
@@ -576,7 +579,7 @@ class Config(BaseConfig):
         addresses = ServiceParameter(service="redpanda", wait=False, near=True, full_result=False)
         bootstrap_servers = StringParameter()
         username = StringParameter()
-        password = SecretParameter()
+        password = SecretParameter(path=SECRETS_BASE / "kafka-password")
         sasl_mechanism = StringParameter(
             choices=["PLAIN", "GSSAPI", "SCRAM-SHA-256", "SCRAM-SHA-512"], default="PLAIN"
         )
@@ -630,7 +633,7 @@ class Config(BaseConfig):
         caller_timeout = SecondsParameter(default="1M")
         calling_service = StringParameter(default="script")
 
-    secret_key = StringParameter(default="12345")
+    secret_key = SecretParameter(default="12345", path=SECRETS_BASE / "secret-key")
 
     class selfmon(ConfigSection):
         enable_managedobject = BooleanParameter(default=True)
@@ -787,7 +790,7 @@ class Config(BaseConfig):
         )
 
     class tgsender(ConfigSection):
-        token = SecretParameter()
+        token = SecretParameter(path=SECRETS_BASE / "tgsender-token")
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
         proxy_address = StringParameter()

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Config parameters
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,8 @@
 import itertools
 import logging
 import pytz
+from pathlib import Path
+from typing import Optional
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4, is_uuid
@@ -63,7 +65,13 @@ class StringParameter(BaseParameter):
 
 
 class SecretParameter(BaseParameter):
-    def __init__(self, default=None, help=None, choices=None):
+    def __init__(self, default=None, help=None, path: Optional[Path] = None):
+        if path and path.exists():
+            # Read defaults from file
+            with open(path) as fp:
+                data = fp.read().strip()
+                if data:
+                    default = data
         super().__init__(default=default, help=help)
 
     def clean(self, v):
