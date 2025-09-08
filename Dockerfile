@@ -1,5 +1,5 @@
 # Basic Python image
-FROM python:3.11-slim-bookworm AS python
+FROM python:3.12-slim-trixie AS python
 
 # Base layer containing system packages and requirements
 FROM python AS code
