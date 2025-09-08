@@ -44,7 +44,7 @@ check labels:
 
 py-lint:
   stage: Lint
-  image: python:3.11-bullseye
+  image: python:3.12-slim-trixie
   script:
     - set -x
     # Install python dependencies
@@ -217,7 +217,7 @@ py:test:
 build:Docs:
   stage: Build
   environment: docs
-  image: python:3.11-bullseye
+  image: python:3.12-slim-trixie
   script:
     - set -e -x
     - pip3 install -r .requirements/docs.txt
