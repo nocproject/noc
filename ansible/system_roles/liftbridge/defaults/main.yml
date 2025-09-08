@@ -29,8 +29,21 @@ liftbridge_isr_count: 1
 
 ## Package
 liftbridge_version: "1.9.0"
-liftbridge_tar_gz_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz"
-liftbridge_checksum_file_url: "https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/checksums.txt"
+
+liftbridge_tar_gz_url: >-
+  {% if noc_closed_gap %}
+    {{ noc_closed_gap_url }}/repo/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz
+  {% else %}
+    https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz
+  {% endif %}
+
+liftbridge_checksum_file_url: >-
+  {% if noc_closed_gap %}
+    {{ noc_closed_gap_url }}/repo/liftbridge_{{ liftbridge_version }}_checksums.txt
+  {% else %}
+    https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/checksums.txt
+  {% endif %}
+
 liftbridge_temp_file_checksum: "{{ tower_dist_dir }}/{{ liftbridge_version }}.checksums.txt"
 liftbridge_temp_file: "{{ tower_dist_dir }}/{{ liftbridge_pkg }}"
 liftbridge_temp_unarchive: "/tmp/liftbridge/{{ liftbridge_version }}"

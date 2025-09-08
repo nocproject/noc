@@ -16,6 +16,8 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
 
 - name: Add Grafana repository

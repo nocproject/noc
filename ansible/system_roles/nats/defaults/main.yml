@@ -21,8 +21,20 @@ nats_config_path: "{{ etc_prefix }}/nats"
 ## Package
 
 nats_version: "2.1.8"
-nats_zip_url: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/{{ nats_pkg }}"
-nats_checksum_file_url: "https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/SHA256SUMS"
+nats_zip_url: >-
+  {% if noc_closed_gap %}
+    {{ noc_closed_gap_url }}/repo/{{ nats_pkg }}
+  {% else %}
+    https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/{{ nats_pkg }}
+  {% endif %}
+
+nats_checksum_file_url: >-
+  {% if noc_closed_gap %}
+    {{ noc_closed_gap_url }}/repo/nats-server-v{{ nats_version }}-SHA256SUMS
+  {% else %}
+    https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/SHA256SUMS
+  {% endif %}
+
 nats_temp_file_checksum: "{{ tower_dist_dir }}/{{ nats_version }}.SHA256SUMS"
 nats_temp_file: "{{ tower_dist_dir }}/{{ nats_pkg }}"
 nats_temp_unarchive: "/tmp/nats/{{ nats_version }}"

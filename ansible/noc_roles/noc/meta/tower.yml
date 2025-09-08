@@ -47,8 +47,22 @@ forms:
       options:
         - "3.10"
         - "3.11"
+    closed_gap:
+      label: "Is CLosed gap?"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
     closed_gap_url:
       label: URL for installation in closed gap
+      default: ""
+      description: Write URL with NOC packages
+      type: str
+    pip_index_url:
+      label: pip index URL for installation in closed gap
+      default: ""
+      description: Write URL with Python packages
+      type: str
+    pip_trusted_host:
+      label: trusted host for pip
       default: ""
       description: Write URL with NOC packages
       type: str
