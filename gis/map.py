@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Dict, Tuple
+
 # Third-party modules
 from pyproj import Transformer
 import geojson
@@ -24,6 +27,16 @@ class Map(object):
         self.srid_map = {}
         # Database projection
         self.db_srid = "EPSG:4326"
+        # Cache for transformers
+        self.transformers: Dict[Tuple[str, str], Transformer] = {}
+
+    def get_transformer(self, src_srid, dst_srid):
+        srids = src_srid, dst_srid
+        tr = self.transformers.get(srids)
+        if not tr:
+            tr = Transformer.from_crs(src_srid, dst_srid)
+            self.transformers[srids] = tr
+        return tr
 
     def get_db_point(self, x, y, srid=None):
         """
@@ -58,7 +71,7 @@ class Map(object):
         return layer.default_zoom
 
     def get_bbox(self, x0: float, y0: float, x1: float, y1: float, srid: str):
-        transformer = Transformer.from_crs(srid, self.db_srid)
+        transformer = self.get_transformer(srid, self.db_srid)
         cx0, cy0 = transformer.transform(x0, y0)
         cx1, cy1 = transformer.transform(x1, y1)
         return get_bbox(cx0, cx1, cy0, cy1)
@@ -102,11 +115,10 @@ class Map(object):
             ).values_list("id")
         return self._conduit_layers_ids
 
-    @staticmethod
-    def transform(data, src_srid: str, dst_srid: str):
+    def transform(self, data, src_srid: str, dst_srid: str):
         if src_srid == dst_srid:
             return data
-        transformer = Transformer.from_crs(src_srid, dst_srid)
+        transformer = self.get_transformer(src_srid, dst_srid)
         if data["type"] == "Point":
             data["coordinates"] = transformer.transform(*data["coordinates"])
         elif data["type"] == "LineString":
