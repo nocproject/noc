@@ -407,7 +407,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
         }
         data.resource_status.forEach(item => {
           if(this.destroyed) return;
-          this.setMarkerIcon(resources[item.resource], item.alarm ? "alarm" : "up");
+          this.setMarkerIcon(resources[item.resource], item.is_alarm ? "alarm" : "up");
         });
       },
       failure: function(){
