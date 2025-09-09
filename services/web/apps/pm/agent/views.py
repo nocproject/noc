@@ -28,5 +28,5 @@ class AgentApplication(ExtDocApplication):
         from noc.services.zeroconf.util import get_config
 
         agent = self.get_object_or_404(Agent, id=id)
-        cfg = get_config(agent).dict(by_alias=True)
+        cfg = get_config(agent).model_dump(by_alias=True)
         return to_json(cfg, order=["$type", "$version", "config", "collectors"])

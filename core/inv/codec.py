@@ -243,9 +243,9 @@ def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultI
     """
 
     def create_connection(c1: PointItem, c2: PointItem) -> None:
-        c1 = c1.dict()
+        c1 = c1.model_dump()
         c1["object"] = o_map[c1["object"]]
-        c2 = c2.dict()
+        c2 = c2.model_dump()
         c2["object"] = o_map[c2["object"]]
         ObjectConnection(
             connection=[
@@ -269,16 +269,16 @@ def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultI
     for o in data.objects:
         parent = o_map[o.parent] if o.parent else container
         o_connections = (
-            [ObjectConnectionData(**oci.dict()) for oci in o.connections] if o.connections else None
+            [ObjectConnectionData(**oci.model_dump()) for oci in o.connections] if o.connections else None
         )
-        o_cross = [Crossing(**ci.dict()) for ci in o.cross] if o.cross else None
+        o_cross = [Crossing(**ci.model_dump()) for ci in o.cross] if o.cross else None
         obj = Object(
             name=o.name,
             model=ObjectModel.get_by_name(o.model.name),
             parent=parent,
             parent_connection=o.parent_connection,
             mode=o.mode,
-            data=[ObjectAttr(**odi.dict()) for odi in o.data],
+            data=[ObjectAttr(**odi.model_dump()) for odi in o.data],
             connections=o_connections,
             additional_connections=o.additional_connections,
             cross=o_cross,
