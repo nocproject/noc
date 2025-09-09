@@ -269,7 +269,9 @@ def decode(container: Optional[Object], data: InvData) -> (Result, DecodeResultI
     for o in data.objects:
         parent = o_map[o.parent] if o.parent else container
         o_connections = (
-            [ObjectConnectionData(**oci.model_dump()) for oci in o.connections] if o.connections else None
+            [ObjectConnectionData(**oci.model_dump()) for oci in o.connections]
+            if o.connections
+            else None
         )
         o_cross = [Crossing(**ci.model_dump()) for ci in o.cross] if o.cross else None
         obj = Object(
