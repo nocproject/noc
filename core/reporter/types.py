@@ -78,7 +78,7 @@ class BandCondition(BaseModel):
 ReportBand = ForwardRef("ReportBand")
 
 
-class ReportBand(BaseModel):
+class ReportBand(BaseModel):  # noqa: F811
     name: str
     queries: Optional[List[ReportQuery]] = None
     source: Optional[str] = None
