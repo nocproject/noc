@@ -10,18 +10,18 @@ consul_template_architecture: "{{ consul_template_architecture_map[ansible_archi
 consul_template_os: "{{ ansible_system|lower }}"
 consul_template_pkg: "consul-template_{{ consul_template_version }}_{{ consul_template_os }}_{{ consul_template_architecture }}.zip"
 consul_template_zip_url: >-
-  {% if noc_closed_gap %}
+  {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/consul-template_0.25.1_linux_amd64.zip
-  {% else %}
+  {%- else -%}
     https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/{{ consul_template_pkg }}
-  {% endif %}
+  {%- endif -%}
 
 consul_template_checksum_file_url: >-
-  {% if noc_closed_gap %}
+  {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/consul-template_0.25.1_SHA256SUMS
-  {% else %}
+  {%- else -%}
     https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_SHA256SUMS
-  {% endif %}
+  {%- endif -%}
 
 consul_template_temp_file: "{{ tower_dist_dir }}/{{ consul_template_pkg }}"
 consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"

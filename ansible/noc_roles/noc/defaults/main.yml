@@ -27,11 +27,11 @@ py_version:
 
 py_rel_name: "{{ py_version['py' ~ noc_py3_ver] }}"
 noc_python_url: >-
-  {% if noc_closed_gap %}
+  {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz
-  {% else %}
+  {%- else -%}
     https://cdn.getnoc.com/noc/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz
-  {% endif %}
+  {%- endif -%}
 
 noc_python_openssl_url: "https://cdn.getnoc.com/noc/repo/RedHat/7/openssl.tar.gz"
 
