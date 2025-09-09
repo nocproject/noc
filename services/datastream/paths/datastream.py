@@ -187,7 +187,7 @@ class DatastreamAPI(object):
             ds_format: Optional[str] = Query(None, alias="format"),
             ds_from: Optional[str] = Query(None, alias="from"),
             ds_filter_policy: Optional[str] = Query(
-                None, alias="filter_policy", regex=r"^(default|delete|keep|move)$"
+                None, alias="filter_policy", pattern=r"^(default|delete|keep|move)$"
             ),
             block: Optional[int] = None,
         ):
