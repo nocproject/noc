@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Alarm node
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -118,7 +118,6 @@ class AlarmNode(BaseCDAGNode):
             "managed_object": self.config.managed_object,
             "alarm_class": self.config.alarm_class,
             "labels": list(self.config.labels or []),
-            # x is numpy.float64 type, ?
             "vars": {
                 "ovalue": round(float(x), 3),
                 "tvalue": self.config.activation_level,
