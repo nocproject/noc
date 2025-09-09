@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Report Engine Base Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from io import BytesIO
 from zipfile import ZipFile, ZIP_DEFLATED
 from tempfile import TemporaryFile
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Any, ForwardRef
+from typing import Dict, List, Optional, Any
 
 # Third-party modules
 from pydantic import BaseModel, ConfigDict
@@ -75,10 +75,10 @@ class BandCondition(BaseModel):
         return f"{self.param} == {self.value}"
 
 
-ReportBand = ForwardRef("ReportBand")
+# ReportBand = ForwardRef("ReportBand")
 
 
-class ReportBand(BaseModel):  # noqa: F811
+class ReportBand(BaseModel):
     name: str
     queries: Optional[List[ReportQuery]] = None
     source: Optional[str] = None
