@@ -41,7 +41,9 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when: not consul_own_install
+  when: 
+    - not consul_own_install
+    - not noc_closed_gap
   tags:
     - repo
 
@@ -53,7 +55,9 @@
   environment:
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
-  when: not consul_own_install
+  when: 
+    - not consul_own_install
+    - not noc_closed_gap
   tags:
     - repo
 

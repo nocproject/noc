@@ -69,7 +69,9 @@
     enabled: "True"
     gpgcheck: "True"
     gpgkey: https://rpm.releases.hashicorp.com/gpg
-  when: not consul_own_install
+  when: 
+    - not consul_own_install
+    - not noc_closed_gap
 
 - name: Install Consul
   yum:
