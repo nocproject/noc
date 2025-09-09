@@ -95,7 +95,6 @@ ignore = [
   "PLR1714", # Consider merging multiple comparisons: `f1 not in (f0, f2)`. Use a `set` if the elements are hashable.
   "PLR1730", # Replace `if` statement with `width = max(width, max_column_data_length[c])`
   "PLR1704", # Redefining argument with the local name `name`
-  "PLR1711", # Useless `return` statement at end of function  # "F811", # Redefinition of unused `ReportBand` from line 66
 ]
 # Enable
 select = [
@@ -129,6 +128,7 @@ unfixable = [
   "F401",
   "F841", # unused-variable
   "F811", # Redefinition of unused `ReportBand` from line 66
+  "PLR1711", # Useless `return` statement at end of function  # "F811", # Redefinition of unused `ReportBand` from line 66
 ]
 
 [tool.ruff.lint.flake8-quotes]
