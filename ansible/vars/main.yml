@@ -26,3 +26,12 @@ grafana_ini: "{{ etc_prefix }}/grafana/grafana.ini"
 postgres_user: postgres
 
 fake_shell: /bin/false
+
+noc_closed_gap: "{{ lookup('env','TOWER_CLOSED_GAP') or False | bool }}"
+noc_closed_gap_url: "{{ lookup('env','TOWER_CLOSED_GAP_URL') or '' }}"
+noc_pip_index_url: "{{ lookup('env','TOWER_PIP_INDEX_URL') or '' }}"
+noc_pip_trusted_host: "{{ lookup('env','TOWER_PIP_TRUSTED_HOST') or '' }}"
+
+# Override clickhouse repo URL
+# clickhouse_yum_repo: ""
+# clickhouse_deb_repo: ""
