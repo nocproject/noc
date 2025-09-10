@@ -27,10 +27,10 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   // ViewModel for this panel
   viewModel: {
     data: {
-      autoReload: false,
-      autoReloadIcon: "xf05e", // NOC.glyph.ban
-      autoReloadText: __("Auto reload : OFF"),
-      icon: "<i class='fa fa-fw' style='width:16px;'></i>",
+      autoReload: true,
+      autoReloadIcon: "xf021", // NOC.glyph.refresh
+      autoReloadText: __("Auto reload : ON"),
+      icon: `<i class='fa fa-circle' style='color:${NOC.colors.yes};width:16px;' data-qtip='${__("online")}'></i>`,
     },
   },
   // Zoom levels according to
