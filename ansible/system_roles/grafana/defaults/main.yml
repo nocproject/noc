@@ -20,3 +20,5 @@ grafana_rpm_repo: "https://packages.grafana.com/oss/rpm"
 grafana_rpm_gpgkey: "https://packages.grafana.com/gpg.key"
 grafana_deb_repo: "deb https://packages.grafana.com/oss/deb stable main"
 grafana_deb_gpgkey: "https://packages.grafana.com/gpg.key"
+
+grafana_plugins_repo: "{% if (tower_closed_gap_url) %} {{ tower_closed_gap_url}}/gf_plugins {% else %} '' {% endif %}"
