@@ -26,17 +26,3 @@ grafana_ini: "{{ etc_prefix }}/grafana/grafana.ini"
 postgres_user: postgres
 
 fake_shell: /bin/false
-
-#consul_template_zip_url: "{% if noc_closed_gap %}{{ noc_closed_gap_url }}/repo/consul-template_0.25.1_linux_amd64.zip{% else %}{{consul_template_zip_url}}{% endif %}"
-#consul_template_checksum_file_url: "{{ noc_closed_gap_url }}/repo/consul-template_0.25.1_SHA256SUMS"
-
-# clickhouse_yum_repo: "https://repository.rt.ru/repository/rpm-packages.clickhouse.com/stable/"
-# goss_download_url: "{{ noc_closed_gap_url }}/repo/v{{ goss_version }}_goss-linux-amd64"
-
-# nats_zip_url: "{{ noc_closed_gap_url }}/repo/{{ nats_pkg }}"
-# nats_checksum_file_url: "{{ noc_closed_gap_url }}/repo/nats-server-v{{ nats_version }}-SHA256SUMS"
-
-# liftbridge_tar_gz_url: "{{ noc_closed_gap_url }}/repo/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz"
-# liftbridge_checksum_file_url: "{{ noc_closed_gap_url }}/repo/liftbridge_{{ liftbridge_version }}_checksums.txt"
-
-# noc_python_url: "{{ noc_closed_gap_url }}/repo/{{ ansible_os_family }}/{{ ansible_distribution_major_version }}/python{{ py_rel_name }}.tar.gz"
