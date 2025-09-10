@@ -139,10 +139,14 @@ Ext.application({
         document.title = setup.brand + "|" + setup.installation_name;
         // Add favicon
         if(setup.favicon_mime){
-          var link = document.createElement("link");
+          let oldFavicon = document.getElementById("default-favicon"),
+            link = document.createElement("link");
+          if(oldFavicon){
+            oldFavicon.parentNode.removeChild(oldFavicon);
+          }
           link.rel = "icon";
           link.type = setup.favicon_mime;
-          link.href = setup.favicon_url;
+          link.href = setup.favicon_url + "?v=" + Date.now();
           document.head.appendChild(link);
         }
         this.app = Ext.create("NOC.main.desktop.Application", {
