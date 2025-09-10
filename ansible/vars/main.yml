@@ -32,6 +32,4 @@ noc_closed_gap_url: "{{ lookup('env','TOWER_CLOSED_GAP_URL') or '' }}"
 noc_pip_index_url: "{{ lookup('env','TOWER_PIP_INDEX_URL') or '' }}"
 noc_pip_trusted_host: "{{ lookup('env','TOWER_PIP_TRUSTED_HOST') or '' }}"
 
-# Override clickhouse repo URL
-# clickhouse_yum_repo: ""
-# clickhouse_deb_repo: ""
+tower_clickhouse_repo: "{{ lookup('env','TOWER_CLICKHOUSE_REPO') or '' }}"
