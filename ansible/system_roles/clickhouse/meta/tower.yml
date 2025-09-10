@@ -56,14 +56,6 @@ forms:
       label: "Expose metrics in Prometheus format"
       type: bool
       default: True  # yamllint disable-line rule:truthy
-    yum_repo:
-      default: "https://packages.clickhouse.com/rpm/stable/"
-      label: "YUM repo"
-      type: str
-    deb_repo:
-      default: "deb https://packages.clickhouse.com/deb stable main"
-      label: "DEB repo"
-      type: str
 
 services:
   clickhouse:
