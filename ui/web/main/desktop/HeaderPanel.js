@@ -66,6 +66,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         },
         "-",
         me.fullscreenMenu,
+        "-",
         {
           text: __("User profile ..."),
           glyph: NOC.glyph.cog,
