@@ -74,7 +74,7 @@ class CDAG(object):
             ns = node.get_state()
             if ns is None:
                 continue
-            r[node_id] = ns.dict()
+            r[node_id] = ns.model_dump()
         return r
 
     def merge(self, other: "CDAG", prefix: Optional[str] = "") -> "CDAG":
