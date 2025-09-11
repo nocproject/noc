@@ -213,12 +213,10 @@ Ext.define("NOC.main.desktop.Application", {
       me.headerPanel.show();
       me.navPanel.show();
       me.workplacePanel.setCollapsed();
-      me.exitFullscreen();
     } else{
       me.headerPanel.hide();
       me.navPanel.hide();
       me.workplacePanel.setExpanded();
-      me.requestFullscreen();
     }
   },
   // Show user profile panel
@@ -366,16 +364,6 @@ Ext.define("NOC.main.desktop.Application", {
     NOC.restartReason = reason;
     window.location.reload();
   },
-  // Request full-screen mode
-  requestFullscreen: function(){
-    var element = document.documentElement;
-    element.requestFullscreen({navigationUI: "hide"});
-  },
-  exitFullscreen: function(){
-    if(document.fullscreenElement){
-      document
-        .exitFullscreen();
-    } },
   //
   toggleNav: function(){
     var me = this;

@@ -43,6 +43,14 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
       text: __("Show remote sync time"),
       margin: "0 5",
     });
+    // Fullscreen toggle
+    me.fullscreenMenu = Ext.create("Ext.menu.Item", {
+      text: __("Enter Full Screen"),
+      scale: "small",
+      glyph: NOC.glyph.expand,
+      handler: me.onFullscreenToggle,
+      scope: me,
+    });
     // User menu
     me.userMenuButton = Ext.create("Ext.button.Button", {
       text: __("Anonymous"),
@@ -57,6 +65,7 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
           handler: me.app.onAbout,
         },
         "-",
+        me.fullscreenMenu,
         {
           text: __("User profile ..."),
           glyph: NOC.glyph.cog,
@@ -217,6 +226,17 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
     } else{
       var tabIndex = me.workplacePanel.items.indexOf(homeTab);
       me.workplacePanel.setActiveTab(tabIndex);
+    }
+  },
+  // Toggle full-screen mode
+  onFullscreenToggle: function(){
+    if(document.fullscreenElement){
+      this.fullscreenMenu.setText(__("Enter Full Screen")); 
+      document.exitFullscreen(); 
+    } else{
+      let element = document.documentElement;
+      element.requestFullscreen({navigationUI: "hide"});
+      this.fullscreenMenu.setText(__("Exit Full Screen"));
     }
   },
 });
