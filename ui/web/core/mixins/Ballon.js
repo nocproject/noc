@@ -38,7 +38,7 @@ Ext.define("NOC.core.mixins.Ballon", {
                       
         tooltipConfig = {
           itemId: itemId,
-          title: (result.n_alarms > 0) ? "<i class='fa fa-exclamation-triangle' style='color:#e67e22;padding-right: 8px;'></i>" + result.title : result.title,
+          title: (result.n_alarms > 0) ? "<i class='fa fa-exclamation-triangle' style='color:#f39c12;padding-right: 8px;'></i>" + result.title : result.title,
           padding: "4 0",
           html: tooltipHtml,
           closeAction: "destroy",
