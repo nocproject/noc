@@ -126,7 +126,7 @@ class BaseCDAGNodeMetaclass(type):
             n.state_cls_slot = type(
                 f"{n.state_cls.__name__}_Slot",
                 (),
-                {"__slots__": state_slots, "dict": l_vars["dict"]},
+                {"__slots__": state_slots, "dict": l_vars["dict"], "model_dump": l_vars["dict"]},
             )
         #
         return n
