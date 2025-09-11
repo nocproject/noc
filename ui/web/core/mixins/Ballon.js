@@ -24,13 +24,13 @@ Ext.define("NOC.core.mixins.Ballon", {
               return `<span>${item.label}</span>`
             }
             return `<span style='cursor: pointer;text-decoration: underline;'`
-                    + `data-item-id="${item.id}"`
-                    + `>${item.label}</span>`
+              + `data-item-id="${item.id}"`
+              + `>${item.label}</span>`
           }).join(" > "),
           tooltipHtml = `
                       ${path}
                       <div style='padding: 4px 0;'><em>${result.description}</em></div>
-                    `
+                    `;
 
         Ext.ComponentQuery.query("tooltip#" + itemId).forEach(function(tooltip){
           tooltip.destroy();
@@ -38,7 +38,7 @@ Ext.define("NOC.core.mixins.Ballon", {
                       
         tooltipConfig = {
           itemId: itemId,
-          title: result.title,
+          title: (result.n_alarms > 0) ? "<i class='fa fa-exclamation-triangle' style='color:#f39c12;padding-right: 8px;'></i>" + result.title : result.title,
           padding: "4 0",
           html: tooltipHtml,
           closeAction: "destroy",
