@@ -96,6 +96,7 @@ class Info(object):
     description: str | None = None
     path: list[PathItem] | None = None
     buttons: list[Button] | None = None
+    n_alarms: Optional[int] = 5
 
     def to_json(self) -> dict[str, Any]:
         """Convert Info to JSON-serializable dict."""
@@ -108,6 +109,8 @@ class Info(object):
             r["path"] = [x.to_json() for x in self.path]
         if self.buttons:
             r["buttons"] = [x.to_json() for x in self.buttons]
+        if self.n_alarms:
+            r["n_alarms"] = self.n_alarms
         return r
 
 
