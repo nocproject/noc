@@ -206,7 +206,7 @@ def set_caps(
                 changed |= True
                 logger.info("Change capability value: %s -> %s", item, value)
                 # Register changes
-                changed_fields = [ChangeField(field=item.name, old=str(item.value), new=str(value))]
+                changed_fields = [ChangeField(field=item.name, old=item.value, new=value)]
                 continue
         new_caps += [item]
     if is_new:
@@ -219,7 +219,7 @@ def set_caps(
             )
         ]
         changed |= True
-        changed_fields = [ChangeField(field=caps.name, old=None, new=str(value))]
+        changed_fields = [ChangeField(field=caps.name, old=None, new=value)]
         logger.info("Adding capability: %s", new_caps[-1])
     if changed:
         self.save_caps(new_caps, changed_fields=changed_fields)
@@ -312,8 +312,8 @@ def update_caps(
                 changed_fields.append(
                     ChangeField(
                         field=ci.name,
-                        old=str(ci.value),
-                        new=str(value),
+                        old=ci.value,
+                        new=value,
                     )
                 )
                 ci = ci.set_value(caps[ci.name])
@@ -331,7 +331,7 @@ def update_caps(
             changed_fields.append(
                 ChangeField(
                     field=ci.name,
-                    old=str(ci.value),
+                    old=ci.value,
                     new=None,
                 )
             )
@@ -358,11 +358,11 @@ def update_caps(
             ChangeField(
                 field=c.name,
                 old=None,
-                new=str(value),
+                new=value,
             )
         )
 
-    if changed_fields:
+    if changed or changed_fields:
         logger.info("[%s] Saving changes", o_label)
         self.save_caps(new_caps, dry_run=dry_run, changed_fields=changed_fields)
     # get_caps

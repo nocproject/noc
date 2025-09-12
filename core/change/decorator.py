@@ -104,7 +104,11 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         if str(ov or None) == str(nv or None):
             return None
         return ChangeField(
-            field=field_name, old=ov, old_label=ov_label, new=nv, new_label=nv_label,
+            field=field_name,
+            old=ov,
+            old_label=ov_label,
+            new=nv,
+            new_label=nv_label,
         )
 
     model_id = get_model_id(document)
@@ -168,7 +172,11 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         elif str(ov or None) == str(nv or None):
             return None
         return ChangeField(
-            field=field_name, old=ov, old_label=ov_label, new=nv, new_label=nv_label,
+            field=field_name,
+            old=ov,
+            old_label=ov_label,
+            new=nv,
+            new_label=nv_label,
         )
 
     changed_fields: List[ChangeField] = []

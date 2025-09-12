@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Any, Literal, List
+from typing import Optional, Any, Literal, List, Dict
 from dataclasses import dataclass, field, replace
 
 
@@ -30,6 +30,18 @@ class ChangeItem(object):
     # labels
     ts: Optional[float] = field(default=None, compare=False)
     user: Optional[str] = field(default=None, compare=False)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "ChangeItem":
+        return ChangeItem(
+            op=data["op"],
+            model_id=data["model_id"],
+            item_id=data["item_id"],
+            changed_fields=[ChangeField(**cf) for cf in data.get("changed_fields") or []],
+            changed_caps=data.get("changed_caps"),
+            user=data.get("user"),
+            ts=float(data["ts"]) if data.get("ts") else None,
+        )
 
     @staticmethod
     def merge_fields(
@@ -84,3 +96,10 @@ class ChangeItem(object):
             if f.field == name:
                 return True
         return False
+
+    def get_field(self, name: str) -> Optional[ChangeField]:
+        """Getting changed fields"""
+        for f in self.changed_fields:
+            if f.field == name:
+                return f
+        return None
