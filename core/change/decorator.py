@@ -12,6 +12,7 @@ from functools import partial
 
 # NOC modules
 from noc.models import is_document, get_model_id
+from noc.core.model.decorator import _on_init_handler
 from .policy import change_tracker
 from .model import ChangeField
 
@@ -48,41 +49,38 @@ def change(model=None, *, audit=True):
 def _track_document(model):
     """
     Setup document change tracking
-    :param model:
-    :return:
     """
     from mongoengine import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_document_change, sender=model)
     signals.post_delete.connect(_on_document_delete, sender=model)
+    signals.post_init.connect(_on_init_handler, sender=model)
 
 
 def _track_model(model):
     """
     Setup model change tracking
-    :param model:
-    :return:
     """
     from django.db.models import signals
 
     logger.debug("[%s] Tracking changes", get_model_id(model))
     signals.post_save.connect(_on_model_change, sender=model)
     signals.post_delete.connect(_on_model_delete, sender=model)
+    signals.post_init.connect(_on_init_handler, sender=model)
 
 
 def _on_document_change(sender, document, created=False, *args, **kwargs):
     def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
-        :param field_name:
-        :return:
         """
-        ov, key = None, None
+        ov, key, ov_label = None, None, None
         if hasattr(document, "initial_data"):
             ov = document.initial_data[field_name]
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
+            ov_label = str(ov)
         elif hasattr(ov, "_instance"):
             # Embedded field
             ov = [str(x) for x in ov]
@@ -91,9 +89,10 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             field_name, key = field_name.split(".", 1)
         elif ov:
             ov = str(ov)
-        nv = getattr(document, field_name)
+        nv, nv_label = getattr(document, field_name), None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
+            nv_label = str(ov)
         elif hasattr(nv, "_instance"):
             # Embedded field
             nv = [str(x) for x in nv]
@@ -104,7 +103,13 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             nv = str(nv)
         if str(ov or None) == str(nv or None):
             return None
-        return ChangeField(field=field_name, old=ov, new=nv)
+        return ChangeField(
+            field=field_name,
+            old=ov,
+            old_label=ov_label,
+            new=nv,
+            new_label=nv_label,
+        )
 
     model_id = get_model_id(document)
     op = "create" if created else "update"
@@ -153,20 +158,26 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
     def get_changed(field_name: str) -> Optional[ChangeField]:
         """
         Return changed field with new and old value
-        :param field_name:
-        :return:
         """
-        ov = instance.initial_data[field_name]
+        ov, ov_label = instance.initial_data[field_name], None
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
-        nv = getattr(instance, field_name)
+            ov_label = str(ov)
+        nv, nv_label = getattr(instance, field_name), None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
+            nv_label = str(nv)
         if field_name == "effective_labels" and nv and ov and set(nv).difference(set(ov)):
             return None
         elif str(ov or None) == str(nv or None):
             return None
-        return ChangeField(field=field_name, old=ov, new=nv)
+        return ChangeField(
+            field=field_name,
+            old=ov,
+            old_label=ov_label,
+            new=nv,
+            new_label=nv_label,
+        )
 
     changed_fields: List[ChangeField] = []
     # Check for instance proxying
