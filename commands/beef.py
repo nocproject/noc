@@ -222,7 +222,6 @@ class Command(BaseCommand):
                 r += [f"-------- Packet #{n}", f"{beef._cli_decoder(reply)!r}"]
         # Dump output
         self.stdout.write("\n".join(r) + "\n")
-        return
 
     def handle_export(self, storage, path, export_path=None, *args, **options):
         """
@@ -314,7 +313,6 @@ class Command(BaseCommand):
                     ]
             # Dump output
             self.stdout.write("\n".join(r) + "\n")
-        return
 
     def handle_run(
         self,

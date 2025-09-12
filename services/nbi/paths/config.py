@@ -65,7 +65,7 @@ class ConfigAPI(NBIAPI):
     async def handler_config_revision(
         self,
         object_id: int,
-        revision: str = Path(..., regex="^[0-9a-f]{24}$"),
+        revision: str = Path(..., pattern="^[0-9a-f]{24}$"),
         access_header: str = Header(..., alias=API_ACCESS_HEADER),
     ):
         return self._handler(access_header, object_id, revision)

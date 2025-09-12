@@ -19,9 +19,6 @@ from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
 from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
-from noc.core.service.client import open_sync_rpc
-from noc.core.service.error import RPCError
-from noc.core.translation import ugettext as _
 from noc.core.feature import active_features
 
 
@@ -251,23 +248,6 @@ class DesktopApplication(ExtApplication):
         except KeyError:
             return self.response_not_found()
         return menu["app"].get_launch_info(request)
-
-    @view(method=["POST"], url="^change_credentials/$", access=PermitLogged(), api=True)
-    def api_change_credentials(self, request):
-        """
-        Change user's credentials if allowed by current backend
-        """
-        credentials = {str(k): v for k, v in request.POST.items()}
-        credentials["user"] = request.user.username
-        client = open_sync_rpc("login", calling_service="web")
-        try:
-            r = client.change_credentials(credentials)
-        except RPCError as e:
-            return self.render_json({"status": False, "error": str(e)})
-        if r:
-            return self.render_json({"status": True})
-        else:
-            return self.render_json({"status": False, "error": _("Failed to change credentials")})
 
     @view(method=["GET"], url="^state/", access=PermitLogged(), api=True)
     def api_get_state(self, request):

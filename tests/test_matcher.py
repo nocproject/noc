@@ -78,6 +78,25 @@ def test_regex(raw, config, expected):
             True,
         ),
         ({"platform": "S25N", "vendor": "Force10"}, {"platform": {"$in": ["S50N", "S50P"]}}, False),
+        ({"version": "12.2(50)SE"}, {"version": {"$in": ["12.2(48)SE", "12.5(48)SE"]}}, False),
+        (
+            {"version": "12.2(50)SE"},
+            {"version": {"$in": ["12.2(48)SE", "12.5(48)SE", "12.2(50)SE"]}},
+            True,
+        ),
+        (
+            {
+                "version": "12.2(50)SE",
+                "caps": {
+                    "DB | Interfaces": 58,
+                    "SNMP": True,
+                    "SNMP | v1": False,
+                    "HP | ProCurve | CLI | Old": True,
+                },
+            },
+            {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}},
+            True,
+        ),
     ],
 )
 def test_in(raw, config, expected):
@@ -141,34 +160,6 @@ def test_lt(raw, config, expected):
     ],
 )
 def test_lte(raw, config, expected):
-    assert match(raw, config) is expected
-
-
-@pytest.mark.parametrize(
-    "raw,config,expected",
-    [
-        ({"version": "12.2(50)SE"}, {"version": {"$in": ["12.2(48)SE", "12.5(48)SE"]}}, False),
-        (
-            {"version": "12.2(50)SE"},
-            {"version": {"$in": ["12.2(48)SE", "12.5(48)SE", "12.2(50)SE"]}},
-            True,
-        ),
-        (
-            {
-                "version": "12.2(50)SE",
-                "caps": {
-                    "DB | Interfaces": 58,
-                    "SNMP": True,
-                    "SNMP | v1": False,
-                    "HP | ProCurve | CLI | Old": True,
-                },
-            },
-            {"caps": {"$in": ["HP | ProCurve | CLI | Old"]}},
-            True,
-        ),
-    ],
-)
-def test_in(raw, config, expected):
     assert match(raw, config) is expected
 
 

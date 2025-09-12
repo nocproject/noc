@@ -7,10 +7,9 @@
 
 # Python modules
 from builtins import str
-from typing import Optional, List, Dict, Any  # noqa
+from typing import Optional, List, Dict, Any
 import os
 import re
-from typing import Any
 
 # Third-party modules
 from django.http import HttpResponse

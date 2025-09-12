@@ -14,7 +14,6 @@ from uuid import UUID
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
 from noc.inv.models.object import Object
 from noc.inv.models.endpoint import Endpoint
-from noc.core.runner.job import JobRequest
 
 # Cards
 ADM_10 = UUID("60392e07-aab2-4d9f-a304-17b09b27675f")

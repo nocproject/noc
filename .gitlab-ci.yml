@@ -44,7 +44,7 @@ check labels:
 
 py-lint:
   stage: Lint
-  image: python:3.11-bullseye
+  image: python:3.12-slim-trixie
   script:
     - set -x
     # Install python dependencies
@@ -217,7 +217,7 @@ py:test:
 build:Docs:
   stage: Build
   environment: docs
-  image: python:3.11-bullseye
+  image: python:3.12-slim-trixie
   script:
     - set -e -x
     - pip3 install -r .requirements/docs.txt
@@ -276,28 +276,6 @@ build:Master Image:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $BUILD_MASTER == "true"'
   tags:
     - shell
-
-#Build web section
-build:web:
-  stage: Build
-  image: node:12
-  script:
-    - cd scripts/build/web
-    - npm install
-    - node src/index.js
-  tags:
-    - docker
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "ui/web/**/*.js"
-      - "ui/web/**/*.css"
-      - "scripts/build/web/**/*"
-  artifacts:
-    paths:
-      - dist/ui/pkg/web
-      - dist/ui/pkg/web.debug
 
 .build_rust:
   image: rust:1.63

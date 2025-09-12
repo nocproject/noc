@@ -34,4 +34,3 @@ class MongoMarshaller(BaseMarshaller):
         node = Node(None)
         for tokens in data["config"]:
             node.insert(tokens)
-        return None
