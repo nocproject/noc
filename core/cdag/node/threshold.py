@@ -203,7 +203,7 @@ class ThresholdNode(BaseCDAGNode):
             return
         if threshold:
             self.clear_alarm(threshold)
-            self.state[threshold].active = False
+            self.state.thresholds[threshold].active = False
         for th, state in self.state.thresholds.items():
             if not state.active:
                 continue
