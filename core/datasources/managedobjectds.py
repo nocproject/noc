@@ -543,7 +543,7 @@ class ManagedObjectDS(BaseDataSource):
         if not fields or "serial_moattr" in fields:
             mo_attrs = cls.get_mo_attrs()
         if not fields or "serial_odata" in fields:
-            mo_ids = [x["id"] for x in mos.values("id")]
+            mo_ids = list(mos.values_list("id", flat=True))
             odata_serials = cls.get_odata_serials(mo_ids)
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
