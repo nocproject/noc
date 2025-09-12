@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Change handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import datetime
 import time
 import uuid
 from logging import getLogger
-from typing import Optional, List, Set, DefaultDict, Tuple, Dict
+from typing import Optional, List, Set, DefaultDict, Tuple, Dict, Any
 from collections import defaultdict
 
 # Third-party modules
@@ -25,7 +25,7 @@ from noc.config import config
 logger = getLogger(__name__)
 
 
-def audit_change(changes: List[ChangeItem]) -> None:
+def audit_change(changes: List[Dict[str, Any]]) -> None:
     """Processed Audit changes"""
 
     svc = get_service()
@@ -89,10 +89,10 @@ def on_change(
             changed_fields_old = set(changed_fields)
         else:
             changed_fields_old = {cf["field"]: cf["old"] for cf in changed_fields or []}
-        # Proccess BI Dictionary
+        # Process BI Dictionary
         if item:
             bi_dict_changes[model_id].add((item, ts))
-        # Proccess Sensors
+        # Process Sensors
         if model_id == "inv.ObjectModel" and (
             "sensors" in changed_fields_old or not changed_fields_old
         ):
@@ -119,7 +119,7 @@ def apply_datastream(ds_changes: Optional[Dict[str, Set[str]]] = None) -> None:
         ds.bulk_update(sorted(items))
 
 
-def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
+def apply_ch_dictionary(changes: List[Dict[str, Any]]) -> None:
     """Apply Clickhouse BI Dictionary"""
     from noc.core.bi.dictionaries.loader import loader
     from noc.core.clickhouse.model import DictionaryModel
@@ -129,7 +129,7 @@ def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
     n_parts = len(config.clickhouse.cluster_topology.split(","))
     bi_dict_changes = defaultdict(set)
     for item in changes:
-        item = ChangeItem(**item)
+        item = ChangeItem.from_dict(item)
         o = item.instance
         if not o:
             logger.error("[%s|%s] Missed item. Skipping", item.model_id, item.item_id)
@@ -157,7 +157,7 @@ def apply_ch_dictionary(changes: List[ChangeItem]) -> None:
             )
 
 
-def apply_sync_sensors(changes: List[ChangeItem]) -> None:
+def apply_sync_sensors(changes: List[Dict[str, Any]]) -> None:
     """Apply sync sensor if ObjectModel changed"""
     from noc.inv.models.object import Object
     from noc.inv.models.sensor import sync_object
@@ -165,7 +165,7 @@ def apply_sync_sensors(changes: List[ChangeItem]) -> None:
     affected_models = set()
     affected_ids = set()
     for item in changes:
-        item = ChangeItem(**item)
+        item = ChangeItem.from_dict(**item)
         fields = {cf["field"] for cf in item.changed_fields or []}
         if item.model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
             affected_models.add(item.item_id)

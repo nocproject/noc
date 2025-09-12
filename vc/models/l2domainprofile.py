@@ -32,6 +32,7 @@ from noc.wf.models.workflow import Workflow
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 from noc.inv.models.resourcepool import ResourcePool
 from .vlanfilter import VLANFilter
 from .vlantemplate import VLANTemplate
@@ -51,6 +52,7 @@ class PoolItem(EmbeddedDocument):
 
 @Label.model
 @bi_sync
+@change
 @on_delete_check(check=[("vc.L2Domain", "profile")])
 class L2DomainProfile(Document):
     meta = {
