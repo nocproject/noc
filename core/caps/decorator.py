@@ -13,7 +13,6 @@ from typing import Optional, List, Dict, Any, Iterable
 from noc.models import is_document, get_model_id
 from noc.core.models.inputsources import InputSource
 from noc.core.change.policy import change_tracker
-from noc.core.change.decorator import get_datastreams
 from noc.core.change.model import ChangeField
 from .types import CapsValue, CapsConfig
 

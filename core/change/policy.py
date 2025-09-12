@@ -10,7 +10,7 @@ import contextlib
 import time
 from contextvars import ContextVar
 from collections import defaultdict
-from typing import Optional, Tuple, List, Dict, Literal, Set, Any
+from typing import Optional, Tuple, List, Dict, Literal, Set
 from abc import ABCMeta, abstractmethod
 
 # NOC modules
@@ -83,14 +83,12 @@ class ChangeTracker(object):
             datastreams: List of changed datastream
             audit: Send Changes to Audit Log
             caps: Changed Capabilities list
-            from_state:
         """
         from noc.core.middleware.tls import get_user
 
         if not CHANGE_HANDLERS:
             self.load_receivers()
         user = get_user() or ""
-        print("CF", fields, caps, from_state)
         self.get_policy().register(
             item=ChangeItem(
                 op=op,
