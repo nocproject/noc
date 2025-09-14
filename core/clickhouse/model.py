@@ -19,6 +19,7 @@ from noc.sa.models.managedobject import ManagedObject
 from .fields import BaseField, MaterializedField, AggregatedField
 from .engines import ReplacingMergeTree, AggregatingMergeTree
 from .connect import ClickhouseClient, connection
+from .error import ClickhouseError
 
 __all__ = ["Model", "NestedModel", "DictionaryModel", "ViewModel"]
 
@@ -250,11 +251,14 @@ class Model(object, metaclass=ModelBase):
                         f"[{table_name}|{field_name}] Warning! Type mismatch: "
                         f"{existing[field_name]} <> {c_type}"
                     )
-                    print(
-                        f"Set command manually: "
-                        f"ALTER TABLE {table_name} MODIFY COLUMN {field_name} {c_type}"
-                    )
-
+                    query = f"ALTER TABLE {table_name} MODIFY COLUMN {field_name} {c_type}"
+                    if not config.clickhouse.enable_auto_migrate:
+                        print(f"Set command manually: {query}")
+                        continue
+                    try:
+                        connect.execute(query)
+                    except ClickhouseError as e:
+                        print(f"Error when alter Column type: {e};\n Run it Manually: '{query}'")
             else:
                 print(f"[{table_name}|{field_name}] Alter column")
                 query = (

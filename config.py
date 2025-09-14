@@ -183,6 +183,10 @@ class Config(BaseConfig):
         # 3:2,2 - first shard has 2 replicas an weight 3,
         #   second shard has 2 replicas and weight 1
         cluster_topology = StringParameter(default="1")
+        #
+        enable_auto_migrate = BooleanParameter(
+            default=True, help="Run migrate when type mismatch (slowed deploy on large table)",
+        )
         # Magic Number
         enable_default_value = BooleanParameter(
             default=False, help="Setting default value for Clickhouse metric Column"
