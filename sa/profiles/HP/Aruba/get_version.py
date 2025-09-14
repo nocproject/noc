@@ -26,18 +26,30 @@ class Script(BaseScript):
 
     def execute_cli(self):
         v = self.cli("show system", cached=True)
-        r = parse_kv(self.parse_kv_map, v)
-        return {
+        v = parse_kv(self.parse_kv_map, v)
+        r = {
             "vendor": "Aruba",
-            "platform": r["product_name"],
-            "version": r["version"],
+            "platform": v["product_name"],
+            "version": v["version"],
+            "attributes": {},
         }
+        if "serial" in v:
+            r["attributes"]["Serial Number"] = v["serial"]
+        return r
 
     def execute_snmp(self, **kwargs):
         v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         v = v.split()
-        return {
+        r = {
             "vendor": "Aruba",
             "platform": " ".join(v[1:-1]),
             "version": v[-1],
+            "attributes": {},
         }
+        serial = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
+        if v:
+            r["attributes"]["Serial Number"] = serial
+        hw = self.snmp.get(mib["ENTITY-MIB::entPhysicalHardwareRev", 1])
+        if hw:
+            r["attributes"]["HW version"] = hw
+        return r

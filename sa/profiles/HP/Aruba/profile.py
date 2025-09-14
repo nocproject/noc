@@ -21,7 +21,9 @@ class Profile(BaseProfile):
     pattern_username = rb"Username: ?"
     pattern_unprivileged_prompt = rb"^(?P<hostname>\S+[^#])\s*>\s*"
     pattern_prompt = rb"^(?P<hostname>\S+[^#])\s*?(?:\(config[^\)]*\))?#"
-    pattern_syntax_error = rb"(% Ambiguous command.|Cannot execute command.)"
+    pattern_syntax_error = (
+        rb"(% Ambiguous command\.|Cannot execute command\.|unknown command\.|syntax error[\.,])"
+    )
     command_disable_pager = "no page"
     command_super = b"enable"
     pattern_more = [
