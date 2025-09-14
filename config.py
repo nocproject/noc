@@ -185,7 +185,8 @@ class Config(BaseConfig):
         cluster_topology = StringParameter(default="1")
         #
         enable_auto_migrate = BooleanParameter(
-            default=True, help="Run migrate when type mismatch (slowed deploy on large table)",
+            default=True,
+            help="Run migrate when type mismatch (slowed deploy on large table)",
         )
         # Magic Number
         enable_default_value = BooleanParameter(
