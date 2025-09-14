@@ -18,6 +18,7 @@ from noc.main.models.remotesystem import RemoteSystem
 class MockManagedObject(object):
     name = "mock"
     _is_document = True
+    _created = True
 
     def __init__(self, mappings=None):
         self.mappings = mappings or []
