@@ -157,6 +157,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               text: __("Source"),
               dataIndex: "source",
               width: 150,
+              sortable: false,
               editor: {
                 xtype: "combobox",
                 store: [
@@ -171,6 +172,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               text: __("Remote System"),
               dataIndex: "remote_system",
               width: 200,
+              sortable: false,
               editor: {
                 xtype: "main.remotesystem.LookupField",
               },
@@ -182,6 +184,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               editor: "checkbox",
               renderer: NOC.render.Bool,
               width: 50,
+              sortable: false,
             },
             {
               text: __("Required"),
@@ -189,11 +192,13 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               editor: "checkbox",
               renderer: NOC.render.Bool,
               width: 50,
+              sortable: false,
             },
             {
               text: __("Sync Policy"),
               dataIndex: "sync_policy",
               width: 150,
+              sortable: false,
               editor: {
                 xtype: "combobox",
                 store: [
@@ -206,6 +211,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               text: __("Remove Policy"),
               dataIndex: "remove_policy",
               width: 150,
+              sortable: false,
               editor: {
                 xtype: "combobox",
                 store: [
