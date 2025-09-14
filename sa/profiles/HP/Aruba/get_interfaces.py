@@ -18,13 +18,14 @@ from noc.core.text import ranges_to_list
 class Script(BaseScript):
     name = "HP.Aruba.get_interfaces"
     interface = IGetInterfaces
+    always_prefer = "C"
 
     rx_interface_splitter = re.compile(
         r"(Aggregate|Interface)\s+(?P<name>\S+) is (?P<oper>up|down)\s*(\(Administratively (?P<admin>up|down)\))?",
         re.MULTILINE,
     )
     rx_mac = re.compile(r"MAC Address: (?P<mac>\S+)")
-    rx_description = re.compile(r"Description:\s*(?P<description>.+)?")
+    rx_description = re.compile(r"Description:(?P<description>.*)$", re.MULTILINE)
     rx_mtu = re.compile(r"MTU\s+(?P<mtu>\d+)")
     rx_aggregated = re.compile(r"Aggregated-interfaces\s+:\s+(?P<port>\S+)")
     rx_access_vlan = re.compile(r"Access VLAN:\s+(?P<access_vlan>\d+)")
@@ -99,8 +100,10 @@ class Script(BaseScript):
                 "subinterfaces": [],
             }
             d_match = self.rx_description.search(ll)
-            if d_match and not d_match.group("description").startswith("Hardware"):
-                iface["description"] = d_match.group("description")
+            if d_match:
+                d = d_match.group("description").strip()
+                if not d.startswith("Hardware") and not d.startswith("Persona"):
+                    iface["description"] = d
             if "mtu" in r:
                 iface["mtu"] = r["mtu"]
             if r.get("vlan_mode") == "access" and "access_vlan" in r:
