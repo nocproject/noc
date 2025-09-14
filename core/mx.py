@@ -207,7 +207,7 @@ def send_notification(
         raise ValueError("Unknown notification method: %s" % notification_method)
     msg_headers = {
         MX_MESSAGE_TYPE: MessageType.NOTIFICATION.value.encode(),
-        MX_NOTIFICATION_CHANNEL: NOTIFICATION_METHODS[notification_method],
+        MX_NOTIFICATION_METHOD: notification_method.encode(),
         MX_TO: to.encode(DEFAULT_ENCODING),
     }
     svc = get_service()
