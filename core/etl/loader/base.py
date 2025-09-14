@@ -999,6 +999,11 @@ class BaseLoader(object):
                 ls = line.get_current_state()
             ms = self.iter_jsonl(ls, data_model=line.data_model)
             m_data[f] = set(row.id for row in ms)
+        if (
+            self.system.remote_system.managed_object_loader_policy == "D"
+            and self.name == "managedobject"
+        ):
+            unique_fields.remove("name")
         r_data = defaultdict(dict)  # remote_system -> field_name -> set of mapped ids
         # Process data
         n_errors = 0
