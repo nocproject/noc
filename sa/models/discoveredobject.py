@@ -482,6 +482,8 @@ class DiscoveredObject(Document):
         if not o.is_dirty or rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
             return
+        elif not o.rule and getattr(o, "_created"):
+            return
         if dry_run:
             logger.debug(
                 "[%s|%s] Debug object: %s/%s/%s/%s", pool.name, address, sources, data, labels, rule
@@ -911,6 +913,7 @@ class DiscoveredObject(Document):
                     data=data,
                     last_update=last_update,
                     is_delete=is_delete,
+                    event=event,
                 )
             ]
             self.set_dirty("Add New Data")
