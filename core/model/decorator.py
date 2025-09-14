@@ -127,7 +127,8 @@ def _on_init_handler(sender, instance=None, *args, **kwargs):
     if not instance:
         # If mongo document instance
         instance = kwargs.get("document")
-    instance.initial_data = _get_field_snapshot(sender, instance)
+    if not hasattr(instance, "initial_data"):
+        instance.initial_data = _get_field_snapshot(sender, instance)
 
 
 def on_init(cls):
