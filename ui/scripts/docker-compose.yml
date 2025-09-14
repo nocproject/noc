@@ -1,0 +1,11 @@
+services:
+  nginx:
+    image: nginx
+    container_name: dev_container
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../dist:/usr/share/nginx/html
+    extra_hosts:
+      - "sovadev:${HOST_IP}"    

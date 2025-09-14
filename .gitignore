@@ -47,3 +47,7 @@ docs/src/en/platforms/
 scripts/build/web/node_modules
 README.creole
 pyvenv.cfg
+
+ui/node_modules
+ui/dist
+ui/scripts/.env
