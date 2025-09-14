@@ -21,6 +21,7 @@ from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.uptime import Uptime
 from noc.fm.models.outage import Outage
 from noc.core.perf import metrics
+from noc.core.pm.utils import is_nan
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.clickhouse.connect import connection
@@ -184,6 +185,8 @@ class ObjectCard(BaseCard):
         for mo_bi_id, iface, ts, load_in, load_out, errors_in, errors_out in ch.execute(post=SQL):
             mo = bi_map.get(mo_bi_id)
             if mo:
+                if is_nan(load_in, load_out, errors_in, errors_out):
+                    continue
                 mtable += [[mo, iface, ts, load_in, load_out]]
                 metric_map[mo]["interface"][iface] = {
                     "load_in": int(load_in),

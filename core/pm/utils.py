@@ -21,8 +21,19 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.validators import is_float
 
 
+def is_nan(*v: str) -> bool:
+    """
+    Compare value with \\N
+    :param:
+        v: Metric Value from CH
+    :return:
+        True if \\N, else False
+    """
+    return any(x == "\\N" for x in v)
+
+
 def get_objects_metrics(
-    managed_objects: Union[Iterable, int]
+    managed_objects: Union[Iterable, int],
 ) -> Tuple[
     Dict["ManagedObject", Dict[str, Dict[str, int]]], Dict["ManagedObject", datetime.datetime]
 ]:
@@ -200,7 +211,7 @@ def get_interface_metrics(
 
 
 def get_dict_interface_metrics(
-    managed_objects: Union[Iterable["ManagedObject"], "ManagedObject"]
+    managed_objects: Union[Iterable["ManagedObject"], "ManagedObject"],
 ) -> Dict[str, Dict[str, Union[str, Dict[str, str]]]]:
     """
     Get field_name and name from metric_type for interface.
