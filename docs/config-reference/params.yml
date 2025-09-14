@@ -299,6 +299,9 @@ params:
   datastream.enable_resourcegroup: {}
   datastream.enable_resourcegroup_wait:
     default: 'True'
+  datastream.enable_service: {}
+  datastream.enable_service_wait:
+    default: 'True'
   datastream.enable_vrf: {}
   datastream.enable_vrf_wait:
     default: 'True'
@@ -307,6 +310,7 @@ params:
     default: '30'
   datastream.prefix_ttl: {}
   datastream.resourcegroup_ttl: {}
+  datastream.service_ttl: {}
   datastream.vrf_ttl: {}
   dcs.resolution_timeout:
     default: '300'
@@ -391,7 +395,6 @@ params:
   gis.enable_google_roadmap: {}
   gis.enable_google_sat: {}
   gis.enable_google_terrain: {}
-  gis.enable_metric_scopes: {}
   gis.enable_osm:
     default: 'True'
   gis.enable_tile1: {}
@@ -530,6 +533,8 @@ params:
     default: '%(asctime)s [%(name)s] %(message)s'
   logging.log_api_calls: {}
   logging.log_sql_statements: {}
+  login.failed_attempts_cooldown: {}
+  login.failed_attempts_window: {}
   login.idle_timeout:
     default: '604800'
   login.jwt_algorithm:
@@ -542,6 +547,7 @@ params:
     default: noc_jwt
   login.language:
     default: en
+  login.max_failed_attempts: {}
   login.max_inactivity: {}
   login.methods:
     default: local
@@ -874,6 +880,7 @@ params:
     default: '12345'
   selfmon.enable_fm: {}
   selfmon.enable_inventory: {}
+  selfmon.enable_kafka: {}
   selfmon.enable_liftbridge: {}
   selfmon.enable_managedobject:
     default: 'True'
@@ -881,6 +888,8 @@ params:
   selfmon.fm_ttl:
     default: '30'
   selfmon.inventory_ttl:
+    default: '30'
+  selfmon.kafka_ttl:
     default: '30'
   selfmon.liftbridge_ttl:
     default: '30'
@@ -906,6 +915,14 @@ params:
     default: 'True'
   syslogcollector.listen:
     default: 0.0.0.0:514
+  syslogcollector.storm_min_severity:
+    default: '3'
+  syslogcollector.storm_record_ttl:
+    default: '10'
+  syslogcollector.storm_round_duration:
+    default: '60'
+  syslogcollector.storm_threshold_reduction:
+    default: '0.9'
   tests.beef_paths: {}
   tests.events_paths: {}
   tests.fixtures_paths:
@@ -967,6 +984,8 @@ params:
     default: '1000'
   web.enable_remote_system_last_extract_info: {}
   web.enable_report_history: {}
+  web.events_windows:
+    default: '2592000'
   web.heatmap_lat:
     default: '66.050063'
   web.heatmap_lon:
