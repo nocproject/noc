@@ -19,6 +19,7 @@ from bson import ObjectId
 
 # NOC services
 from noc.core.service.loader import get_service
+from noc.config import config
 
 
 @dataclass
@@ -217,8 +218,11 @@ def iter_discovered_object(
     from noc.inv.models.resourcegroup import ResourceGroup
 
     ch = connection()
+    if not from_ts:
+        from_ts = datetime.datetime.now() - datetime.timedelta(
+            seconds=config.network_scan.purgatorium_ttl
+        )
     r = ch.execute(PURGATORIUM_SQL, return_raw=True, args=[from_ts.date().isoformat()])
-
     for num, row in enumerate(r.splitlines(), start=1):
         row = orjson.loads(row)
         data = defaultdict(dict)
@@ -266,4 +270,6 @@ def iter_discovered_object(
         )
         checks = tuple(ProtocolCheckResult(**orjson.loads(c)) for c in row["all_checks"])
         last_ts = datetime.datetime.fromisoformat(row["last_ts"]).replace(microsecond=0)
+        if ip_address and ip_address != row["address"]:
+            continue
         yield row["pool"], row["address"], list(set(row["sources"])), p_data, checks, last_ts
