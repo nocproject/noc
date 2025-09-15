@@ -43,6 +43,7 @@ export class VendorBuilder extends BaseBuilder{
       outputDir: this.options.buildDir,
       outputFileName: this.options.esbuildOptions.entryNames!,
       theme: this.options.theme,
+      language: this.options.language,
     });
     this.options.esbuildOptions = {
       ...this.getBaseBuildOptions(),
@@ -78,7 +79,7 @@ ${imports}
 export const vendors = {
   modules: [${vendors.map(v => `"${v}"`).join(", ")}],
 };`;
-    const outputPath = path.resolve(process.cwd(), this.options.entryPoint!);
+    const outputPath = path.resolve(process.cwd(), this.options.entryPoint![0]);
     await fs.outputFile(outputPath, vendorContent);
 
     return outputPath;

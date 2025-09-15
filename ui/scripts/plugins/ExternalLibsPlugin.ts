@@ -1,7 +1,7 @@
 import type {Plugin} from "esbuild";
 import * as fs from "fs";
 import * as path from "path";
-import type {Theme} from "../builders/BaseBuilder.ts";
+import type {Language, Theme} from "../builders/BaseBuilder.ts";
 
 interface ExternalLibsPluginOptions {
   debug: boolean;
@@ -9,6 +9,7 @@ interface ExternalLibsPluginOptions {
   outputDir: string;
   outputFileName: string;
   theme: Theme;
+  language: Language;
 }
 
 export class ExternalLibsPlugin{
@@ -40,13 +41,13 @@ export class ExternalLibsPlugin{
   
   private async generateExternalLibsFile(): Promise<void>{
     try{
-      const libraryFiles = [
+      const libraryFilesDev = [
         // Base libs and ExtJS
         {name: "web/js/jsloader.js", format: "iife"},
         {name: `pkg/extjs/ext-all${this.options.isDev ? "-debug" : ""}.js`, format: "native"},
         {name: `pkg/extjs/classic/theme-${this.options.theme}/theme-${this.options.theme}.js`, format: "iife"},
         {name: "pkg/extjs/packages/charts/classic/charts.js", format: "iife"},
-        {name: "web/locale/en/ext-locale-en.js", format: "iife"},
+        {name: `web/locale/${this.options.language}/ext-locale-${this.options.language}.js`, format: "iife"},
         {name: "pkg/jquery/jquery.min.js", format: "iife"},
         
         // CodeMirror and addons
@@ -95,7 +96,7 @@ export class ExternalLibsPlugin{
       combinedLibraries += "// Generated: " + new Date().toISOString() + "\n\n";
       // combinedLibraries += "(function() {\n";
       
-      for(const libPath of libraryFiles){
+      for(const libPath of libraryFilesDev){
         try{
           const filePath = path.join(projectRoot, libPath.name);
           

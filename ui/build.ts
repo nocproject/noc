@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import * as path from "path";
-import type {BuilderOptions, Theme} from "./scripts/builders/BaseBuilder.ts";
+import type {BuilderOptions, Language, Theme} from "./scripts/builders/BaseBuilder.ts";
 import {BaseBuilder} from "./scripts/builders/BaseBuilder.ts";
 import {DevBuilder} from "./scripts/builders/DevBuilder.ts";
 import {ProdBuilder} from "./scripts/builders/ProdBuilder.ts";
@@ -19,28 +19,40 @@ const mode = process.argv[2] as ModeType;
 
 let theme: Theme;
 if(process.argv[3]){
+  if(!["gray", "noc"].includes(process.argv[3])){
+    throw new Error('Theme must be either "gray" or "noc"');
+  }
   theme = process.argv[3] as Theme;
 } else{
   theme = (packageJson.config?.defaultTheme || "noc") as Theme;
   console.log(`Using default theme from package.json: ${theme}`);
 }
 
-if(!["gray", "noc"].includes(theme)){
-  throw new Error('Theme must be either "gray" or "noc"');
+let language: Language;
+if(process.argv[4]){
+  if(!["en", "ru", "pt_BR"].includes(process.argv[4])){
+    throw new Error('Language must be either "en", "ru" or "pt_BR"');
+  }
+  language = process.argv[4] as Language;
+} else{
+  language = (packageJson.config?.defaultLanguage || "en") as Language;
+  console.log(`Using default language from package.json: ${language}`);
 }
 
 const isDev = ["dev", "vendor-dev"].includes(mode);
 
 const commonOptions: BuilderOptions = {
   buildDir: "dist",
-  entryPoint: "web/main/desktop/app.js",
+  filePatterns: ["app", "theme"], // files to clean in buildDir
+  entryPoint: ["web/main/desktop/app.js"],
   cacheDir: ".cache",
   theme: theme,
+  language: language,
   pluginDebug: false,
   isDev,
   htmlTemplate: `scripts/index-template.html`,
   assetsDir: "assets",
-  cssEntryPoints: ["scripts/app.css"],
+  cssEntryPoints: ["scripts/app-dev.css"],
   aliases: {
     "@cssPkg": "./pkg",
     "@cssWeb": "./web/css",
@@ -113,14 +125,26 @@ switch(mode){
     });
     break;
   case "prod":
-    builder = new ProdBuilder(commonOptions);
+    builder = new ProdBuilder({
+      ...commonOptions,
+      entryPoint: [
+        ...commonOptions.entryPoint,
+        "web/translations/ru.json",
+        "web/translations/pt_BR.json",
+      ],
+      cssEntryPoints: [
+        "scripts/app-prod.css",
+        "scripts/theme-noc.css",
+        "scripts/theme-gray.css",
+      ],
+    });
     break;
   case "vendor":
   case "vendor-dev": {
     delete commonOptions.cssEntryPoints;
     builder = new VendorBuilder({
       ...commonOptions,
-      entryPoint: `${commonOptions.cacheDir}/vendor.js`,
+      entryPoint: [`${commonOptions.cacheDir}/vendor.js`],
       esbuildOptions: {
         ...commonOptions.esbuildOptions,
         entryNames: "external-libs.js",

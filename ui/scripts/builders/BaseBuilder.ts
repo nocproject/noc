@@ -2,7 +2,7 @@ import type * as astring from "astring";
 import type * as esbuild from "esbuild";
 import type * as espree from "espree";
 import fs from "fs-extra";
-import path from "path";
+import * as path from "path";
 import {NocLoaderPlugin} from "../plugins/NocLoaderPlugin.ts";
 import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
 // import {ApplicationLoaderPlugin} from "../plugins/ApplicationLoaderPlugin.ts";
@@ -14,10 +14,12 @@ import {LoggerPlugin} from "../plugins/LoggerPlugin.ts";
 import type {MethodReplacement} from "../visitors/MethodReplaceVisitor.ts";
 
 export type Theme = "gray" | "noc";
+export type Language = "en" | "ru" | "pt_BR";
 
 export interface BuilderOptions {
   buildDir: string;
-  entryPoint: string;
+  entryPoint: string[];
+  filePatterns: string[];
   pluginDebug: boolean;
   htmlTemplate?: string;
   libDir?: string;
@@ -32,6 +34,7 @@ export interface BuilderOptions {
   cssOutdir?: string;
   aliases?: Record<string, string>;
   theme: Theme;
+  language: Language;
 }
 
 export abstract class BaseBuilder{
@@ -45,8 +48,8 @@ export abstract class BaseBuilder{
 
   // this method shares ProdBuilder and DevBuilder classes 
   protected async clearBuildDir(): Promise<void>{
-    const entryBasename = path.basename(this.options.entryPoint, path.extname(this.options.entryPoint));
-    const filePattern = new RegExp(`^${entryBasename}*`);
+    const filePatterns = this.options.filePatterns.join("|");
+    const filePattern = new RegExp(`^(${filePatterns})*`);
     
     await fs.emptyDir(this.options.cacheDir!);
     console.log(`Cleaned ${this.options.cacheDir} directory`);
@@ -132,8 +135,10 @@ export abstract class BaseBuilder{
         mode: "create",
         patternForReplace: {
           "app-": [".js", ".css"],
+          "theme-": [".js", ".css"],
         },
         theme: this.options.theme,
+        language: this.options.language,
       });
       plugins.push(htmlPlugin.getPlugin());
     }
@@ -148,7 +153,7 @@ export abstract class BaseBuilder{
     
     return {
       entryPoints: [
-        this.options.entryPoint,
+        ...this.options.entryPoint,
         ...(this.options.cssEntryPoints || []),
       ],
       outdir: this.options.buildDir,

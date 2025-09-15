@@ -26,7 +26,6 @@ tar -czf "$TMP_DIR/$ARCHIVE_NAME" \
     scripts/ \
     build.ts \
     build-bundle.ts \
-    eslint.config.js \
     jest.config.js \
     package-lock.json \
     package.json \
