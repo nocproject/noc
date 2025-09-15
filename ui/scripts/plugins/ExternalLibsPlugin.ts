@@ -26,28 +26,19 @@ export class ExternalLibsPlugin{
         build.onStart(async() => {
           await this.generateExternalLibsFile();
         });
-        
-        build.onLoad({filter: /desktop[/\\]app\.js$/}, async(args) => {
-          const sourceContent = fs.readFileSync(args.path, "utf-8");
-          
-          return {
-            contents: sourceContent,
-            loader: "js",
-          };
-        });
       },
     };
   }
   
   private async generateExternalLibsFile(): Promise<void>{
     try{
-      const libraryFilesDev = [
+      const projectRoot = path.resolve(process.cwd());
+      const outputFile = path.join(projectRoot, this.options.outputFileName);
+      let libraryFiles = [
         // Base libs and ExtJS
         {name: "web/js/jsloader.js", format: "iife"},
         {name: `pkg/extjs/ext-all${this.options.isDev ? "-debug" : ""}.js`, format: "native"},
-        {name: `pkg/extjs/classic/theme-${this.options.theme}/theme-${this.options.theme}.js`, format: "iife"},
         {name: "pkg/extjs/packages/charts/classic/charts.js", format: "iife"},
-        {name: `web/locale/${this.options.language}/ext-locale-${this.options.language}.js`, format: "iife"},
         {name: "pkg/jquery/jquery.min.js", format: "iife"},
         
         // CodeMirror and addons
@@ -87,16 +78,19 @@ export class ExternalLibsPlugin{
         {name: "web/js/override.js", format: "native"},
       ];
       
-      const projectRoot = path.resolve(process.cwd());
-      const outputFile = path.join(projectRoot, this.options.outputDir, this.options.outputFileName);
-      
       this.log(`Generating external libraries file: ${outputFile}`);
       
       let combinedLibraries = "// Combined external libraries for NOC\n";
       combinedLibraries += "// Generated: " + new Date().toISOString() + "\n\n";
       // combinedLibraries += "(function() {\n";
-      
-      for(const libPath of libraryFilesDev){
+      if(this.options.isDev){
+        libraryFiles = [
+          ...libraryFiles,
+          {name: `pkg/extjs/classic/theme-${this.options.theme}/theme-${this.options.theme}.js`, format: "iife"},
+          {name: `web/locale/${this.options.language}/ext-locale-${this.options.language}.js`, format: "iife"},
+        ];
+      } 
+      for(const libPath of libraryFiles){
         try{
           const filePath = path.join(projectRoot, libPath.name);
           

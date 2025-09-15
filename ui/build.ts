@@ -129,8 +129,8 @@ switch(mode){
       ...commonOptions,
       entryPoint: [
         ...commonOptions.entryPoint,
-        "web/translations/ru.json",
-        "web/translations/pt_BR.json",
+        "pkg/extjs/classic/theme-gray/theme-gray.js",
+        "pkg/extjs/classic/theme-noc/theme-noc.js",
       ],
       cssEntryPoints: [
         "scripts/app-prod.css",

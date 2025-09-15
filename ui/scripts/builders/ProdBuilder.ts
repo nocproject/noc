@@ -1,4 +1,5 @@
 import * as esbuild from "esbuild";
+import {LanguagePlugin} from "../plugins/LanguagePlugin.ts";
 import {BaseBuilder} from "./BaseBuilder.ts";
 
 export class ProdBuilder extends BaseBuilder{
@@ -27,6 +28,24 @@ export class ProdBuilder extends BaseBuilder{
   }
 
   private async build(): Promise<void>{
-    await esbuild.build(this.getBaseBuildOptions());
+    const buildOptions = this.getBaseBuildOptions();
+    await esbuild.build({
+      ...buildOptions,
+      entryPoints: [
+        ...(Array.isArray(buildOptions.entryPoints) ? buildOptions.entryPoints : []),
+        "web/locale/en/ext-locale-en.js",
+        "web/locale/ru/ext-locale-ru.js",
+        "web/locale/pt_BR/ext-locale-pt_BR.js",
+      ],
+
+      plugins: [
+        ...(buildOptions.plugins || []),
+        new LanguagePlugin({
+          debug: this.options.pluginDebug,
+          isDev: false,
+          outputDir: this.options.buildDir,
+        }).getPlugin(),
+      ],
+    });
   }
 }

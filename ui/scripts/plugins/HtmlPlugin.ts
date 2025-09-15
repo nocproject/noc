@@ -47,7 +47,10 @@ export class HtmlPlugin{
           if(!result.metafile) return;
 
           try{
-            await this.updateHtml(result.metafile.outputs);
+            if(this.options.isDev){
+              console.log("Dev build completed. Updating HTML...");
+              await this.HTML_forDev(result.metafile.outputs);
+            }
           } catch(error){
             console.error("Error updating HTML:", error);
           }
@@ -56,7 +59,7 @@ export class HtmlPlugin{
     };
   }
 
-  private async updateHtml(
+  private async HTML_forDev(
     outputs: Record<string, MetafileOutput>,
   ): Promise<void>{
     const toReplaceFiles = Object.keys(outputs).map(file => file.replace(this.options.buildDir + "/", ""))

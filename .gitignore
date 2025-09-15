@@ -48,6 +48,7 @@ scripts/build/web/node_modules
 README.creole
 pyvenv.cfg
 
+ui/.cache
 ui/node_modules
 ui/dist
 ui/scripts/.env
