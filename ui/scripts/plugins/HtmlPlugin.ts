@@ -29,6 +29,7 @@ interface HtmlPluginOptions {
   mode: HtmlPluginMode;
   theme: Theme;
   language: Language;
+  languages: Language[];
   patternForReplace: Record<string, string[]>;
 }
 

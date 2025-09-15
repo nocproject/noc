@@ -44,6 +44,7 @@ export class ProdBuilder extends BaseBuilder{
           debug: this.options.pluginDebug,
           isDev: false,
           outputDir: this.options.buildDir,
+          languages: this.options.languages, 
         }).getPlugin(),
       ],
     });

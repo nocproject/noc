@@ -8,6 +8,7 @@ interface LanguagePluginOptions {
   debug: boolean;
   isDev: boolean;
   outputDir: string;
+  languages: Language[];
   language?: Language;
 }
 
@@ -31,10 +32,7 @@ export class LanguagePlugin{
   private async generateLanguageFiles(): Promise<void>{
     try{
       const languagesDir = "web/translations";
-      const languages = [
-        "ru",
-        "pt_BR",
-      ];
+      const languages = this.options.languages;
       const projectRoot = path.resolve(process.cwd());
       
       this.log(`Minify translate files for : ${languages.join(",")}`);

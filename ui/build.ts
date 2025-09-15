@@ -48,6 +48,7 @@ const commonOptions: BuilderOptions = {
   cacheDir: ".cache",
   theme: theme,
   language: language,
+  languages: ["en", "ru", "pt_BR"],
   pluginDebug: false,
   isDev,
   htmlTemplate: `scripts/index-template.html`,

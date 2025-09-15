@@ -35,6 +35,7 @@ export interface BuilderOptions {
   aliases?: Record<string, string>;
   theme: Theme;
   language: Language;
+  languages: Language[];
 }
 
 export abstract class BaseBuilder{
@@ -139,6 +140,7 @@ export abstract class BaseBuilder{
         },
         theme: this.options.theme,
         language: this.options.language,
+        languages: this.options.languages,
       });
       plugins.push(htmlPlugin.getPlugin());
     }
