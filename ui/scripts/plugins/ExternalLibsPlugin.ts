@@ -33,7 +33,7 @@ export class ExternalLibsPlugin{
   private async generateExternalLibsFile(): Promise<void>{
     try{
       const projectRoot = path.resolve(process.cwd());
-      const outputFile = path.join(projectRoot, this.options.outputFileName);
+      const outputFile = path.join(projectRoot, this.options.outputDir, this.options.outputFileName);
       let libraryFiles = [
         // Base libs and ExtJS
         {name: "web/js/jsloader.js", format: "iife"},
