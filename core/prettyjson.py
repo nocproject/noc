@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import uuid
+from bson.binary import Binary
 from functools import reduce
 
 # NOC modules
@@ -34,8 +34,8 @@ class PrettyJSON(object):
             return indent("%d" % o, i)
         elif isinstance(o, float):
             return indent(str(o), i)
-        elif isinstance(o, uuid.UUID):
-            return indent('"%s"' % o, i)
+        elif isinstance(o, Binary) and o.subtype in (3, 4):  # uuid field
+            return indent('"%s"' % o.as_uuid(o.subtype), i)
         elif isinstance(o, list):
             if len(o) == 0:
                 return indent("[]", i)
