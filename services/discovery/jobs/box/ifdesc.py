@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ifdesc check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -173,11 +173,11 @@ class IfDescCheck(TopologyDiscoveryCheck):
     ) -> Tuple[Optional[ManagedObject], Optional[str]]:
         def get_nearest_object(objects: List[ManagedObject]) -> Optional[ManagedObject]:
             # Prefer same pool
-            left = [x for x in objects if x.pool.id == lmo.pool.id]
+            left = [x for x in objects if x.is_managed and x.pool.id == lmo.pool.id]
             if len(left) == 1:
                 return left[0]
             # Prefer same segment
-            left = [x for x in objects if x.segment.id == lmo.segment.id]
+            left = [x for x in objects if x.is_managed and x.segment.id == lmo.segment.id]
             if len(left) == 1:
                 return left[0]
             return None
