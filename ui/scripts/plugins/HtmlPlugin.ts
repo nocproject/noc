@@ -1,6 +1,7 @@
 import type {BuildResult, Plugin} from "esbuild";
 import * as esbuild from "esbuild";
 import fs from "fs-extra";
+import * as path from "path";
 import type {Language, Theme} from "../builders/BaseBuilder.ts";
 
 type MetafileOutput = {
@@ -28,6 +29,7 @@ interface HtmlPluginOptions {
   isDev: boolean;
   mode: HtmlPluginMode;
   theme: Theme;
+  themes: Theme[];
   language: Language;
   languages: Language[];
   patternForReplace: Record<string, string[]>;
@@ -51,6 +53,8 @@ export class HtmlPlugin{
             if(this.options.isDev){
               console.log("Dev build completed. Updating HTML...");
               await this.HTML_forDev(result.metafile.outputs);
+            } else{ 
+              await this.createHtmlFiles(result.metafile.outputs);
             }
           } catch(error){
             console.error("Error updating HTML:", error);
@@ -58,6 +62,41 @@ export class HtmlPlugin{
         });
       },
     };
+  }
+  private async createHtmlFiles(
+    outputs: Record<string, MetafileOutput>,
+  ): Promise<void>{
+    const filesname = this.options.templatePath.replace(/.html$/, "-prod.html");
+    const patternForReplace = {
+      "app-prod": [".css"],
+      "app": [".js"],
+      "ext-locale": [".js"],
+      "theme": [".js", ".css"],
+    };
+    const toReplaceFiles = Object.keys(outputs).map(file => file.replace(this.options.buildDir + "/", ""))
+      .filter((file) => {
+        for(const [pattern, exts] of Object.entries(patternForReplace)){
+          if(file.startsWith(pattern) && exts.some(ext => file.endsWith(ext))){
+            return true;
+          }
+        }
+        return false; 
+      });
+    let html = await fs.readFile(filesname, "utf8");
+    for(const language of this.options.languages){
+      for(const theme of this.options.themes){
+        const outputFile = `${this.options.buildDir}/index.${theme}.${language}.html`;
+        const listFiles = toReplaceFiles.filter((file) => {
+          return file.startsWith("app") || file.includes(theme) || file.includes(language);
+        });
+        html = this.addThemeAttribute(html, theme);
+        html = this.setLanguage(html, language);
+        for(const file of listFiles){
+          html =this.replaceHtmlAttributes(html, file.split("-")[0] + "-", path.extname(file), listFiles);
+        }
+        await fs.writeFile(outputFile, html);
+      }
+    }
   }
 
   private async HTML_forDev(
@@ -116,6 +155,10 @@ export class HtmlPlugin{
   }
 
   private setLanguage(html: string, language: Language): string{
+    let jsonFile = `/ui/web/translations/${language}.json`;
+    if(!this.options.isDev){
+      jsonFile = this.searchJsonFile(language);
+    }
     return html.replace(/<html[^>]*lang=["'][^"']*["'][^>]*>/i, (match) => {
       if(match.includes("lang=")){
         return match.replace(/lang=["'][^"']*["']/i, `lang="${language}"`);
@@ -123,6 +166,19 @@ export class HtmlPlugin{
         return match.replace("<html", `<html lang="${language}"`);
       }
     })
-      .replace(/<link[^>]*rel=["']gettext["'][^>]*>/i, `<link rel="gettext" href="/ui/web/translations/${language}.json" lang="${language}">`);
+      .replace(/<link[^>]*rel=["']gettext["'][^>]*>/i, `<link rel="gettext" href="${jsonFile}" lang="${language}">`);
+  }
+
+  private searchJsonFile(language: Language): string{
+    if(language === "en"){
+      return "/ui/web/translations/en.json"; // default
+    }
+    const files = fs.readdirSync(this.options.buildDir);
+    const pattern = new RegExp(`^${language}-[a-f0-9]{8}\\.json$`);
+    const matchedFile = files.find(file => pattern.test(file));
+    if(!matchedFile){
+      throw new Error(`Translation file for language "${language}" not found in ${this.options.buildDir}`);
+    }
+    return `/${matchedFile}`;
   }
 }

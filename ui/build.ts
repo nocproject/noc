@@ -47,6 +47,7 @@ const commonOptions: BuilderOptions = {
   entryPoint: ["web/main/desktop/app.js"],
   cacheDir: ".cache",
   theme: theme,
+  themes: ["gray", "noc"],
   language: language,
   languages: ["en", "ru", "pt_BR"],
   pluginDebug: false,

@@ -34,6 +34,7 @@ export interface BuilderOptions {
   cssOutdir?: string;
   aliases?: Record<string, string>;
   theme: Theme;
+  themes: Theme[];
   language: Language;
   languages: Language[];
 }
@@ -139,6 +140,7 @@ export abstract class BaseBuilder{
           "theme-": [".js", ".css"],
         },
         theme: this.options.theme,
+        themes: this.options.themes,
         language: this.options.language,
         languages: this.options.languages,
       });
