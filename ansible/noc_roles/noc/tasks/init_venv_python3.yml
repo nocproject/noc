@@ -284,6 +284,20 @@
   tags:
     - requirements
 
+- name: Install -sentry- python packages
+  pip:
+    chdir: "{{ noc_root }}"
+    requirements: ./.requirements/sentry.txt
+    virtualenv: "{{ noc_root }}"
+    extra_args: "--upgrade"
+  environment:
+    http_proxy: "{{ http_proxy }}"
+    https_proxy: "{{ http_proxy }}"
+  when:
+    - noc_install_sentry
+  tags:
+    - requirements
+
 - name: Install -memcached- python packages
   pip:
     chdir: "{{ noc_root }}"

@@ -47,6 +47,11 @@ forms:
       options:
         - "3.10"
         - "3.11"
+    install_sentry:
+      label: Install sentry
+      default: False
+      type: bool
+      description: Do you want to install sentry-sdk?
 
 services:
   noc:
