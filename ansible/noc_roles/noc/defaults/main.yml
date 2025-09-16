@@ -31,3 +31,5 @@ noc_python_openssl_url: "https://cdn.getnoc.com/noc/repo/RedHat/7/openssl.tar.gz
 
 noc_sclo_yum_repo: "http://mirror.centos.org/centos/7/sclo/x86_64/rh/"
 noc_sclo_yum_repo_gpgkey: "https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo"
+
+noc_install_sentry: false
