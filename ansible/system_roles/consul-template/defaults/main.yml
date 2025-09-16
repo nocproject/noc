@@ -9,6 +9,8 @@ consul_template_architecture_map:
 consul_template_architecture: "{{ consul_template_architecture_map[ansible_architecture] }}"
 consul_template_os: "{{ ansible_system|lower }}"
 consul_template_pkg: "consul-template_{{ consul_template_version }}_{{ consul_template_os }}_{{ consul_template_architecture }}.zip"
+
+# yamllint disable rule:indentation
 consul_template_zip_url: >-
   {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/consul-template_0.25.1_linux_amd64.zip
@@ -22,6 +24,7 @@ consul_template_checksum_file_url: >-
   {%- else -%}
     https://releases.hashicorp.com/consul-template/{{ consul_template_version }}/consul-template_{{ consul_template_version }}_SHA256SUMS
   {%- endif -%}
+# yamllint enable rule:indentation
 
 consul_template_temp_file: "{{ tower_dist_dir }}/{{ consul_template_pkg }}"
 consul_template_temp_unarchive: "/tmp/consul-template/{{ consul_template_version }}"

@@ -22,6 +22,7 @@ clickhouse_ro_password: noc
 clickhouse_ro_grafana_password: noc
 clickhouse_user: noc
 
+# yamllint disable rule:indentation
 clickhouse_yum_repo: >-
   {%- if tower_clickhouse_repo -%}
     {{tower_clickhouse_repo}}
@@ -29,9 +30,10 @@ clickhouse_yum_repo: >-
     "https://packages.clickhouse.com/rpm/stable/"
   {%- endif -%}
 
-clickhouse_deb_repo:  >-
+clickhouse_deb_repo: >-
   {%- if tower_clickhouse_repo -%}
     {{tower_clickhouse_repo}}
   {%- else -%}
     "deb https://packages.clickhouse.com/deb stable main"
   {%- endif -%}
+# yamllint enable rule:indentation

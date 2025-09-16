@@ -21,6 +21,8 @@ nats_config_path: "{{ etc_prefix }}/nats"
 ## Package
 
 nats_version: "2.1.8"
+
+# yamllint disable rule:indentation
 nats_zip_url: >-
   {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/{{ nats_pkg }}
@@ -34,6 +36,7 @@ nats_checksum_file_url: >-
   {%- else -%}
     https://github.com/nats-io/nats-server/releases/download/v{{ nats_version }}/SHA256SUMS
   {%- endif -%}
+# yamllint enable rule:indentation
 
 nats_temp_file_checksum: "{{ tower_dist_dir }}/{{ nats_version }}.SHA256SUMS"
 nats_temp_file: "{{ tower_dist_dir }}/{{ nats_pkg }}"

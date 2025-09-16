@@ -1,11 +1,14 @@
 ---
 goss_version: 0.3.22
+
+# yamllint disable rule:indentation
 goss_download_url: >-
   {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/v{{ goss_version }}_goss-linux-amd64
   {%- else -%}
     https://github.com/goss-org/goss/releases/download/v{{ goss_version }}/goss-linux-amd64
   {%- endif -%}
+# yamllint enable rule:indentation
 
 goss_temp_file: "{{ tower_dist_dir }}/goss-linux-amd64"
 goss_path: "/opt/goss_v{{ goss_version }}"

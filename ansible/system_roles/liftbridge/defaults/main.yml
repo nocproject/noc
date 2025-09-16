@@ -30,6 +30,7 @@ liftbridge_isr_count: 1
 ## Package
 liftbridge_version: "1.9.0"
 
+# yamllint disable rule:indentation
 liftbridge_tar_gz_url: >-
   {%- if noc_closed_gap -%}
     {{ noc_closed_gap_url }}/repo/liftbridge_{{ liftbridge_version }}_linux_amd64.tar.gz
@@ -43,6 +44,7 @@ liftbridge_checksum_file_url: >-
   {%- else -%}
     https://github.com/liftbridge-io/liftbridge/releases/download/v{{ liftbridge_version }}/checksums.txt
   {%- endif -%}
+# yamllint enable rule:indentation
 
 liftbridge_temp_file_checksum: "{{ tower_dist_dir }}/{{ liftbridge_version }}.checksums.txt"
 liftbridge_temp_file: "{{ tower_dist_dir }}/{{ liftbridge_pkg }}"

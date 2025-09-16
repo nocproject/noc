@@ -72,7 +72,7 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
-  when: 
+  when:
     - not consul_own_install
     - not noc_closed_gap
 
