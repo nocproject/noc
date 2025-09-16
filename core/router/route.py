@@ -31,7 +31,7 @@ from noc.core.matcher import build_matcher
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
-    MX_NOTIFICATION_CHANNEL,
+    MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION,
     MX_NOTIFICATION_GROUP_ID,
     MX_LABELS,
@@ -291,7 +291,7 @@ class DefaultNotificationRoute(Route):
     def is_match(self, msg: Message, message_type: bytes) -> bool:
         if message_type == self.MX_METRIC or message_type != MX_NOTIFICATION:
             return False
-        elif MX_NOTIFICATION_CHANNEL in msg.headers:
+        elif MX_NOTIFICATION_METHOD in msg.headers:
             return True
         return MX_NOTIFICATION_GROUP_ID in msg.headers
 
@@ -301,7 +301,4 @@ class DefaultNotificationRoute(Route):
     def iter_action(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        if MX_NOTIFICATION_CHANNEL in msg.headers:
-            # Check available channel for sender
-            yield msg.headers[MX_NOTIFICATION_CHANNEL].decode(DEFAULT_ENCODING), {}, msg.value
         yield from self.na.iter_action(msg, message_type)
