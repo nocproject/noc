@@ -49,7 +49,7 @@ forms:
         - "3.11"
     install_sentry:
       label: Install sentry
-      default: False
+      default: false
       type: bool
       description: Do you want to install sentry-sdk?
 
