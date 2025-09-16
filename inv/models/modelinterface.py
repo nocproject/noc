@@ -165,7 +165,7 @@ class ModelInterface(Document):
             "{",
             '    "name": "%s",' % q(self.name),
             '    "$collection": "%s",' % self._meta["json_collection"],
-            '    "uuid": "%s",' % str(self.uuid),
+            '    "uuid": "%s",' % self.uuid.as_uuid(self.uuid.subtype),
             '    "description": "%s",' % q(self.description),
             '    "attrs": [',
             ",\n".join(ar),

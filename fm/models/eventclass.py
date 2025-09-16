@@ -333,7 +333,7 @@ class EventClass(Document):
         r = ["{"]
         r += ['    "name": "%s",' % q(c.name)]
         r += ['    "$collection": "%s",' % self._meta["json_collection"]]
-        r += ['    "uuid": "%s",' % c.uuid]
+        r += ['    "uuid": "%s",' % c.uuid.as_uuid(c.uuid.subtype)]
         if c.description:
             r += ['    "description": "%s",' % q(c.description)]
         r += ['    "action": "%s",' % q(c.action)]
