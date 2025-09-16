@@ -27,13 +27,13 @@ clickhouse_yum_repo: >-
   {%- if tower_clickhouse_repo -%}
     {{tower_clickhouse_repo}}
   {%- else -%}
-    "https://packages.clickhouse.com/rpm/stable/"
+    https://packages.clickhouse.com/rpm/stable/
   {%- endif -%}
 
 clickhouse_deb_repo: >-
   {%- if tower_clickhouse_repo -%}
     {{tower_clickhouse_repo}}
   {%- else -%}
-    "deb https://packages.clickhouse.com/deb stable main"
+    deb https://packages.clickhouse.com/deb stable main
   {%- endif -%}
 # yamllint enable rule:indentation
