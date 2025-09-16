@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from bson.binary import Binary
 import os
 from threading import Lock
 import operator
@@ -161,11 +162,14 @@ class ModelInterface(Document):
             r += ['            "is_const": %s' % q(a.is_const)]
             r += ["        }"]
             ar += ["\n".join(r)]
+        uuid = self.uuid
+        if isinstance(uuid, Binary):
+            uuid = uuid.as_uuid(uuid.subtype)
         r = [
             "{",
             '    "name": "%s",' % q(self.name),
             '    "$collection": "%s",' % self._meta["json_collection"],
-            '    "uuid": "%s",' % self.uuid.as_uuid(self.uuid.subtype),
+            '    "uuid": "%s",' % uuid,
             '    "description": "%s",' % q(self.description),
             '    "attrs": [',
             ",\n".join(ar),

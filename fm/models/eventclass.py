@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+from bson.binary import Binary
 import re
 import os
 from threading import Lock
@@ -330,10 +331,13 @@ class EventClass(Document):
 
     def to_json(self) -> str:
         c = self
+        uuid = c.uuid
+        if isinstance(uuid, Binary):
+            uuid = uuid.as_uuid(uuid.subtype)
         r = ["{"]
         r += ['    "name": "%s",' % q(c.name)]
         r += ['    "$collection": "%s",' % self._meta["json_collection"]]
-        r += ['    "uuid": "%s",' % c.uuid.as_uuid(c.uuid.subtype)]
+        r += ['    "uuid": "%s",' % uuid]
         if c.description:
             r += ['    "description": "%s",' % q(c.description)]
         r += ['    "action": "%s",' % q(c.action)]

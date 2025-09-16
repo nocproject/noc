@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+from bson.binary import Binary
 import datetime
 from base64 import b85encode
 
@@ -179,4 +180,7 @@ class Dashboard(Document):
         )
 
     def get_json_path(self) -> str:
-        return "%s.json" % self.uuid.as_uuid(self.uuid.subtype)
+        uuid = self.uuid
+        if isinstance(uuid, Binary):
+            uuid = uuid.as_uuid(uuid.subtype)
+        return "%s.json" % uuid
