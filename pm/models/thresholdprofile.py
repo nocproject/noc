@@ -184,7 +184,7 @@ class ThresholdProfile(Document):
             {
                 "name": self.name,
                 "$collection": self._meta["json_collection"],
-                "uuid": str(self.uuid),
+                "uuid": self.uuid,
                 "description": self.description,
                 "umbrella_filter_handler__handler": self.umbrella_filter_handler.handler,
                 "window_type": self.window_type,

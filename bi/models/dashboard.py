@@ -168,7 +168,7 @@ class Dashboard(Document):
             {
                 "title": self.title,
                 "$collection": self._meta["json_collection"],
-                "uuid": str(self.uuid),
+                "uuid": self.uuid,
                 "description": self.description,
                 "format": self.format,
                 "config": smart_text(b85encode(self.config)),
@@ -179,4 +179,4 @@ class Dashboard(Document):
         )
 
     def get_json_path(self) -> str:
-        return "%s.json" % self.uuid
+        return "%s.json" % self.uuid.as_uuid(self.uuid.subtype)

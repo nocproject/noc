@@ -103,7 +103,7 @@ class Quiz(Document):
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "uuid": str(self.uuid),
+            "uuid": self.uuid,
             "description": self.description,
             "revision": self.revision,
             "disclaimer": self.disclaimer,

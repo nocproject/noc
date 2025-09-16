@@ -98,7 +98,7 @@ class Layer(Document):
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "code": self.code,
-            "uuid": str(self.uuid),
+            "uuid": self.uuid,
             "min_zoom": self.min_zoom,
             "max_zoom": self.max_zoom,
             "default_zoom": self.default_zoom,

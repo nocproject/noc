@@ -53,7 +53,7 @@ class Font(Document):
         r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "uuid": str(self.uuid),
+            "uuid": self.uuid,
             "font_family": self.font_family,
         }
         if self.description:

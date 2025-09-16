@@ -62,7 +62,7 @@ class Glyph(Document):
         return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
-            "uuid": str(self.uuid),
+            "uuid": self.uuid,
             "font__name": self.font.name,
             "code": self.code,
         }
