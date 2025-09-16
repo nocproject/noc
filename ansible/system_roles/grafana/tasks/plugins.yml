@@ -5,7 +5,7 @@
     version: "{{ item.version }}"
     state: present
     grafana_plugins_dir: "{{ grafana_plugins_dir }}"
-    grafana_repo: "{{ grafana_plugins_repo }}"
+    grafana_repo: "{{ grafana_plugins_repo | default(omit) }}"
   with_items:
     - name: simpod-json-datasource
       version: "{{ grafana_version_simpod_json_datasource }}"
