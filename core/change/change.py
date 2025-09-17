@@ -165,11 +165,14 @@ def apply_sync_sensors(changes: List[Dict[str, Any]]) -> None:
     affected_models = set()
     affected_ids = set()
     for item in changes:
-        item = ChangeItem.from_dict(**item)
-        fields = {cf["field"] for cf in item.changed_fields or []}
-        if item.model_id == "inv.ObjectModel" and ("sensors" in fields or not fields):
+        item = ChangeItem.from_dict(item)
+        if item.model_id == "inv.ObjectModel" and (
+            not item.changed_fields or item.is_change_field("sensors")
+        ):
             affected_models.add(item.item_id)
-        elif item.model_id == "inv.Object" and ("data" in fields or not fields):
+        elif item.model_id == "inv.Object" and (
+            not item.changed_fields or item.is_change_field("data")
+        ):
             # @todo ManagedObject address change
             affected_ids.add(item.item_id)
 
