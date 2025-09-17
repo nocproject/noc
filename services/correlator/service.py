@@ -1456,7 +1456,7 @@ class CorrelatorService(FastAPIService):
                 "op": action,
                 "managed_object": managed_object.bi_id if managed_object else 0,
                 "target_reference": e.target.reference,
-                "target": e.target.model_dump(exclude={"is_agent"}),
+                "target": e.target.model_dump(exclude={"is_agent"}, exclude_none=True),
                 "event_class": event_class.bi_id,
                 "alarm_class": a.alarm_class.bi_id if a else None,
                 "reopens": a.reopens if a else 0,
