@@ -1,0 +1,13 @@
+{
+    "name": "HP | Aruba | Switches HTTPS",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "a99d7e72-e601-415d-b02f-7701731ea019",
+    "description": null,
+    "preference": 100,
+    "method": "https_get",
+    "param": ":443/",
+    "match_method": "contains",
+    "value": "Hewlett Packard Enterprise Development LP",
+    "action": "match",
+    "profile__name": "HP.Aruba"
+}
