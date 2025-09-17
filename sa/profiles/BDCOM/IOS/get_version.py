@@ -25,6 +25,7 @@ class Script(BaseScript):
         "347": "S2210PB",
         "455": "S3900-48M6X",
         "458": "S2928EF",
+        "423": "S2528-C",
     }
 
     def execute(self):
