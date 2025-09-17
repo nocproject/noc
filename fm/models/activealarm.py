@@ -515,7 +515,7 @@ class ActiveAlarm(Document):
                 print(f"Error when render template: {e}")
         if not r and is_clear:
             r = {"subject": f"[Alarm Cleared] {self.subject}", "body": "Alarm has been cleared"}
-        else:
+        elif not r:
             r = {"subject": self.subject, "body": self.body}
         if subject_tag:
             r["subject"] = f"[{subject_tag}] {r['subject']}"
