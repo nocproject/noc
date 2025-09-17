@@ -1,0 +1,13 @@
+{
+    "name": "HP | Aruba | Switches sysObjectID",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "7c19f9da-68dc-44a8-87aa-bf41ac514177",
+    "description": null,
+    "preference": 100,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysObjectID.0",
+    "match_method": "contains",
+    "value": "1.3.6.1.4.1.47196.4.1.1.1",
+    "action": "match",
+    "profile__name": "HP.Aruba"
+}
