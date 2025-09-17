@@ -41,6 +41,8 @@ id_lock = Lock()
 
 
 class Match(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
 
@@ -59,6 +61,8 @@ class Match(EmbeddedDocument):
 
 
 class DiagnosticCheck(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     check = StringField(required=True)
     script = StringField(required=False)
     # Check Context
