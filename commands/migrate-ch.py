@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CH database schema migration tool
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,18 +22,25 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--host", dest="host", help="ClickHouse address")
         parser.add_argument("--port", dest="port", type=int, help="ClickHouse port")
+        parser.add_argument(
+            "--force-type",
+            dest="allow_type",
+            action="store_true",
+            default=False,
+            help="Allow migrate column when type mismatch",
+        )
 
-    def handle(self, host=None, port=None, *args, **options):
+    def handle(self, host=None, port=None, allow_type=False, *args, **options):
         self.host = host or None
         self.port = port or None
         self.connect()
         mongo_connect()
         self.ensure_db()
         self.create_dictionaries_db()
-        changed = ensure_pm_scopes(connect=self.connect)
-        changed |= ensure_bi_models(connect=self.connect)
-        changed |= ensure_dictionary_models(connect=self.connect)
-        changed |= ensure_report_ds_scopes(connect=self.connect)
+        changed = ensure_pm_scopes(connect=self.connect, allow_type=allow_type)
+        changed |= ensure_bi_models(connect=self.connect, allow_type=allow_type)
+        changed |= ensure_dictionary_models(connect=self.connect, allow_type=allow_type)
+        changed |= ensure_report_ds_scopes(connect=self.connect, allow_type=allow_type)
         if changed:
             self.print("CHANGED")
         else:

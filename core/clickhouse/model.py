@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Clickhouse models
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -218,13 +218,17 @@ class Model(object, metaclass=ModelBase):
         }
 
     @classmethod
-    def ensure_columns(cls, connect: "ClickhouseClient", table_name: str) -> bool:
+    def ensure_columns(
+        cls, connect: "ClickhouseClient", table_name: str, allow_type: bool = False
+    ) -> bool:
         """
         Create necessary table columns
-
-        :param connect: ClickHouse client
-        :param table_name: Database table name
-        :return: True, if any column has been altered
+        Args:
+            connect: ClickHouse client
+            table_name: Database table name
+            allow_type: Allow migrate column type
+        Return:
+            True, if any column has been altered
         """
         c = False  # Changed indicator
         # Get existing columns
@@ -252,7 +256,7 @@ class Model(object, metaclass=ModelBase):
                         f"{existing[field_name]} <> {c_type}"
                     )
                     query = f"ALTER TABLE {table_name} MODIFY COLUMN {field_name} {c_type}"
-                    if not config.clickhouse.enable_auto_migrate:
+                    if not allow_type:
                         print(f"Set command manually: {query}")
                         continue
                     try:
@@ -300,11 +304,14 @@ class Model(object, metaclass=ModelBase):
         return not bool(r)
 
     @classmethod
-    def ensure_table(cls, connect=None) -> bool:
+    def ensure_table(cls, connect=None, allow_type: bool = False):
         """
         Check table is exists
-        :param connect:
-        :return: True, if table has been altered, False otherwise
+        Args:
+            connect:
+            allow_type:
+        Returns:
+            True, if table has been altered, False otherwise
         """
         if not cls._meta.run_migrate:
             return False
@@ -334,7 +341,7 @@ class Model(object, metaclass=ModelBase):
         if ch.has_table(raw_table):
             # raw_* table exists, check columns
             print(f"[{table}] Check columns")
-            changed |= cls.ensure_columns(ch, raw_table)
+            changed |= cls.ensure_columns(ch, raw_table, allow_type=allow_type)
         else:
             # Create new table
             print(f"[{table}] Create new table")
