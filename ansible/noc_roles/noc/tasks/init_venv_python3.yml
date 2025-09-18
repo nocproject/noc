@@ -202,168 +202,102 @@
   tags:
     - requirements
 
-- name: Install -activator- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/activator.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Build required python dependencies
+  set_fact:
+    python_deps: ["node", "supervisor"]
+  tags:
+    - requirements
+
+- name: Add -activator- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['activator'] }}"
   when:
     - "'svc-activator-exec' in groups and inventory_hostname in groups['svc-activator-exec']"
   tags:
     - requirements
 
-- name: Install -classifier- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/classifier.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -classifier- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['classifier'] }}"
   when:
     - "'svc-classifier-exec' in groups and inventory_hostname in groups['svc-classifier-exec']"
   tags:
     - requirements
 
-- name: Install -login- python packages 1
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/login-ldap.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -login- python packages 1
+  set_fact:
+    python_deps: "{{ python_deps + ['login-ldap'] }}"
   when:
     - login_methods is defined and 'ldap' in login_methods
   tags:
     - requirements
 
-- name: Install -login- python packages 2
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/login-radius.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -login- python packages 2
+  set_fact:
+    python_deps: "{{ python_deps + ['login-radius'] }}"
   when:
     - login_methods is defined and 'radius' in login_methods
   tags:
     - requirements
 
-- name: Install -supervisor- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/supervisor.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  tags:
-    - requirements
-
-- name: Install -prod-tools- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/prod-tools.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -prod-tools- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['prod-tools'] }}"
   when:
     - noc_env_type == "prod"
   tags:
     - requirements
 
-- name: Install -memcached- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/cache-memcached.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -memcached- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['cache-memcached'] }}"
   when:
     - "'svc-memcached-exec' in groups and groups['svc-memcached-exec']|length>0 "
   tags:
     - requirements
 
-- name: Install -redis- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/cache-redis.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -redis- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['cache-redis'] }}"
   when:
     - "'svc-redis-exec' in groups and groups['svc-redis-exec']|length>0"
   tags:
     - requirements
 
-- name: Install -kafka- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/sender-kafka.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -kafka- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['sender-kafka'] }}"
   when:
     - "'svc-kafkasender-exec' in groups and inventory_hostname in groups['svc-kafkasender-exec']"
   tags:
     - requirements
 
-- name: Install -ping- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/ping.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
+- name: Add -ping- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['ping'] }}"
   when:
     - "'svc-ping-exec' in groups and inventory_hostname in groups['svc-ping-exec']"
   tags:
     - requirements
 
-- name: Install -node- python packages
+- name: Add -bh- python packages
+  set_fact:
+    python_deps: "{{ python_deps + ['bh'] }}"
+  when:
+    - "'svc-bh-exec' in groups and inventory_hostname in groups['svc-bh-exec']"
+  tags:
+    - requirements
+
+- name: Install python packages
   pip:
     chdir: "{{ noc_root }}"
-    requirements: ./.requirements/node.txt
+    name: ".[{{ python_deps | join(',') }}]"
     virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
+    extra_args: "--upgrade -e"
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
-  tags:
-    - requirements
-
-- name: Install -bh- python packages
-  pip:
-    chdir: "{{ noc_root }}"
-    requirements: ./.requirements/bh.txt
-    virtualenv: "{{ noc_root }}"
-    extra_args: "--upgrade"
-  environment:
-    http_proxy: "{{ http_proxy }}"
-    https_proxy: "{{ http_proxy }}"
-  when:
-    - "'svc-bh-exec' in groups and inventory_hostname in groups['svc-bh-exec']"
   tags:
     - requirements
 

@@ -39,7 +39,7 @@ lint_ansible:
     - molecule --version
     - ansible-playbook --version
     - rm -rf noc
-    - cd ansible/ && molecule test -s $SCENARIO_NAME
+    - cd ansible/ && molecule --debug test -s $SCENARIO_NAME
   cache:
     key: "$CI_JOB_NAME-$CI_COMMIT_REF_NAME"
     paths:
