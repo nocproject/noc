@@ -7,7 +7,6 @@
 
 # Python modules
 import progressbar
-import datetime
 import time
 
 # NOC modules
