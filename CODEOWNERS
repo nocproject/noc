@@ -19,7 +19,7 @@
 /tests/ @dv
 
 # Dependencies
-/.requirements/ @dv @aversant @EKbfh
+pyproject.toml @dv @aversant @EKbfh
 
 # Ansible Deploy
 /ansible/ @EKbfh
