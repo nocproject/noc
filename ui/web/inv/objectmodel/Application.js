@@ -54,6 +54,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
   initComponent: function(){
     var me = this;
 
+    me.emptyValue = "__empty";
     // JSON Panel
     me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
       app: me,
@@ -68,6 +69,44 @@ Ext.define("NOC.inv.objectmodel.Application", {
       template: new Ext.XTemplate(
         '<div class="noc-tp">\n    <h1>Possible connections for model {name}</h1>\n    <table border="1">\n        <tpl foreach="connections">\n            <tr>\n                <td>\n                    <tpl foreach="names">\n                        <b>{name}</b><br/><i>({description})</i><br/>\n                    </tpl>\n                </td>\n                <td>{direction}</td>\n                <td>\n                    <table>\n                        <tpl foreach="connections">\n                            <tr>\n                                <td>\n                                    <b>{name}</b><br/></i>({description})</i>\n                                </td>\n                                <td><b>{model}</b><br/>({model_description})</td>\n                            </tr>\n                        </tpl>\n                    </table>\n                </td>\n            </tr>\n        </tpl>\n    </table>\n    <h1>Internal crossing for {name}</h1>\n    <!--{grid crossing}-->\n</div>',
       ),
+    });
+    //
+    me.crossModeCombo = Ext.create("Ext.form.ComboBox", {
+      fieldLabel: __("Mode"),
+      labelWidth: 55,
+      store: {
+        fields: ["text", "value"],
+        data: [],
+      },
+      editable: false,
+      displayField: "text",
+      valueField: "value",
+      queryMode: "local",
+      listeners: {
+        scope: me,
+        change: function(combo, newValue){
+          let crossGrid = combo.up("[appId=inv.objectmodel]").down("[name=cross]");
+          if(crossGrid && crossGrid.store){
+            crossGrid.store.clearFilter(true);
+            crossGrid.store.filter(function(record){
+              let modes = record.get("modes") || [];
+              if(newValue !== this.emptyValue){
+                return modes.indexOf(newValue) !== -1;
+              } else{
+                return modes.length === 0;;
+              }
+            });
+          }
+        },
+      },
+    });
+    //
+    me.viewDiagramBtn = Ext.create("Ext.button.Button", {
+      glyph: NOC.glyph.eye,
+      tooltip: __("View connection diagram"),
+      enableToggle: true,
+      scope: me,
+      toggleHandler: me.diagramToggleHandler,
     });
     me.ITEM_TEST = me.registerItem(me.testPanel);
     //
@@ -259,12 +298,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
             allow_models: ["inv.ObjectModel"],
           },
         },
-        // {
-        //     name: "data",
-        //     xtype: "modeldatafield",
-        //     fieldLabel: __("Model Data"),
-        //     labelAlign: "top"
-        // },
         {
           name: "data",
           fieldLabel: __("Data"),
@@ -479,25 +512,25 @@ Ext.define("NOC.inv.objectmodel.Application", {
           },
         },
         {
-          xtype: "container",
-          layout: {
-            type: "hbox",
-            align: "stretch",
-          },
+          xtype: "panel",
+          layout: "border",
           itemId: "crossContainer",
+          height: 400,
+          scrollable: true,
+          bodyStyle: "background: transparent;", 
           items: [
             {
               xtype: "gridfield",
               name: "cross",
               fieldLabel: __("Cross"),
               allowBlank: true,
-              flex: 1,
-              layout: "fit",
+              region: "center",
+              toolbar: [me.crossModeCombo, me.viewDiagramBtn],
               columns: [
                 {
                   text: __("Input"),
                   dataIndex: "input",
-                  width: 150,
+                  forceFit: true,
                   editor: {
                     xtype: "combobox",
                     valueField: "id",
@@ -509,13 +542,13 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                   text: __("Input Discriminator"),
                   dataIndex: "input_discriminator",
-                  width: 200,
+                  forceFit: true,
                   editor: "textfield",
                 },
                 {
                   text: __("Output"),
                   dataIndex: "output",
-                  width: 150,
+                  forceFit: true,
                   editor: {
                     xtype: "combobox",
                     valueField: "id",
@@ -527,20 +560,14 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 {
                   text: __("Output Discriminator"),
                   dataIndex: "output_discriminator",
-                  width: 200,
+                  forceFit: true,
                   editor: "textfield",
                 },
                 {
                   text: __("Gain (dB)"),
                   dataIndex: "gain_db",
                   editor: "textfield",
-                  width: 100,
-                },
-                {
-                  text: __("Modes"),
-                  dataIndex: "modes",
-                  editor: "tagsfield",
-                  flex: 1,
+                  forceFit: true,
                 },
               ],
               onBeforeEdit: function(editor, context){
@@ -557,16 +584,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 context.cancel = context.record.get("is_persist");
               },
               onCellEdit: function(editor, context){
-                var me = this,
-                  app = this.up("[appId=inv.objectmodel]"),
-                  diagram = me.up("container").down("#diagram"),
-                  ed = context.grid.columns[context.colIdx].getEditor(),
-                  data = app.getFormData(),
-                  padding = (diagram.config.padding || 0) * 2,
-                  diagramSize = [
-                    diagram.getWidth() - padding,
-                    diagram.getHeight() - padding,
-                  ],
+                let ed = context.grid.columns[context.colIdx].getEditor(),
                   field = context.grid.columns[context.colIdx].field;
 
                 if(ed.rawValue){
@@ -574,12 +592,6 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 }
                 if(field.xtype === "labelfield"){
                   context.value = field.valueCollection.items;
-                }
-                if(
-                  !Ext.isEmpty(context.record.get("input")) &&
-                  !Ext.isEmpty(context.record.get("output"))
-                ){
-                  diagram.drawDiagram(data, diagramSize);
                 }
               },
               onSelect: function(grid, record, index){
@@ -594,30 +606,63 @@ Ext.define("NOC.inv.objectmodel.Application", {
                 }
                 me.up().down("[itemId=diagram]").selectConnection(record);
               },
+              setValue: function(v){
+                const defaultValue = {text: __("Default"), value: me.emptyValue};
+                if(v === undefined || v === ""){
+                  v = [];
+                } else{
+                  v = v || [];
+                }
+                let selectedValue,
+                  modes = new Set(v.flatMap(obj => (!Ext.isEmpty(obj.modes) && obj.modes.length) > 0 ? obj.modes : [me.emptyValue])),
+                  dataForStore = Array.from(modes).map(m => (m === me.emptyValue ? defaultValue : {text: m, value: m}));
+                if(dataForStore.length === 0){
+                  dataForStore = [defaultValue];
+                }
+                dataForStore.sort((a, b) => {
+                  if(a.text === defaultValue.text) return -1;
+                  if(b.text === defaultValue.text) return 1;
+                  return a.text.localeCompare(b.text);
+                });
+
+                if(dataForStore.length > 1 && dataForStore[0].value === me.emptyValue){
+                  selectedValue = dataForStore[1].value;
+                } else if(dataForStore.length > 1 && dataForStore[0].value !== me.emptyValue){
+                  selectedValue = dataForStore[0].value;
+                } else if(dataForStore.length === 1){
+                  selectedValue = dataForStore[0].value;
+                }
+
+                me.crossModeCombo.getStore().loadData(dataForStore);
+                me.crossModeCombo.setValue(selectedValue);
+                this.store.loadData(v);
+                Ext.defer(() => {
+                  me.drawDiagram(me.down("[name=cross]").grid);
+                }, 100);
+                return this.mixins.field.setValue.call(this, v);
+              },
+              listeners: {
+                afterrender: function(panel){
+                  let grid = panel.grid;
+                  grid.store.on("datachanged", () => {
+                    let rowCount = grid.store.getCount();
+                    if(rowCount > 0){
+                      me.drawDiagram(grid);
+                    }
+                  });
+                },
+              },
             },
             {
               xtype: "inv.crossdiagram",
               itemId: "diagram",
-              flex: 1,
-              layout: "fit",
+              region: "east",
+              width: "45%",
+              split: true,
+              resizable: true,
               border: false,
               padding: 20,
-              listeners: {
-                resize: function(panel){
-                  var app = panel.up("[appId=inv.objectmodel]"),
-                    padding = (panel.config.padding || 0) * 2,
-                    data = app.getFormData();
-
-                  if(!Ext.isEmpty(data.cross)){
-                    panel.drawDiagram(data, [
-                      panel.getWidth() - padding,
-                      panel.getHeight() - padding,
-                    ]);
-                  } else{
-                    panel.getSurface().destroy();
-                  }
-                },
-              },
+              hidden: true,
             },
           ],
         },
@@ -815,5 +860,52 @@ Ext.define("NOC.inv.objectmodel.Application", {
         NOC.error(__("Failed to get data"));
       },
     });
+  },
+  adjustGridHeight: function(grid){
+    var view = grid.getView(),
+      store = grid.store,
+      recordCount = store.getCount();
+
+    if(recordCount > 0){
+      let firstRow = view.getRow(0),
+        rowHeight = firstRow ? Ext.fly(firstRow).getHeight() : 25,
+        headerHeight = grid.headerCt.getHeight(),
+        toolbarHeight = grid.getDockedItems('toolbar[dock="top"]')[0]
+          ? grid.getDockedItems('toolbar[dock="top"]')[0].getHeight()
+          : 0,
+        maxHeight = 200,
+        scrollbarHeight = 30,
+        calculatedHeight = headerHeight + toolbarHeight + (recordCount * rowHeight) + 2 + scrollbarHeight;
+      
+      grid.up("#crossContainer").setHeight(Math.max(calculatedHeight, maxHeight));
+      grid.up("#crossContainer").updateLayout();
+      return Math.max(calculatedHeight, maxHeight);
+    }
+  },
+  drawDiagram: function(grid){
+    let height = this.adjustGridHeight(grid),
+      field = this.down("[itemId=diagram]"),
+      // crossGrid = this.down("[name=cross]"),
+      padding = (field.config.padding || 0) * 2,
+      data = this.getFormData().cross;
+
+    if(!Ext.isEmpty(data)){
+      field.drawDiagram({cross: data}, [
+        field.getWidth() - padding,
+        height - padding,
+      ]);
+    } else{
+      field.getSurface().destroy();
+    }
+  },
+  diagramToggleHandler: function(btn, pressed){
+    let diagram = btn.up("#crossContainer").down("#diagram"),
+      crossGrid = btn.up("#crossContainer").down("[name=cross]");
+    if(pressed){
+      diagram.show();
+      this.drawDiagram(crossGrid.grid);
+    } else{
+      diagram.hide();
+    }
   },
 });
