@@ -1,0 +1,9 @@
+{
+    "name": "DVB",
+    "$collection": "inv.technologies",
+    "uuid": "b5faad1b-05ba-455e-9066-f3c971ab6e4c",
+    "description": "Digital Video Broadcasting",
+    "single_service": false,
+    "single_client": false,
+    "allow_children": false
+}
