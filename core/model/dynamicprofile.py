@@ -110,8 +110,10 @@ def dynamic_profile(
         else:
             changed_fields = getattr(instance, "changed_fields", None) or []
         if (
-            not changed_fields and getattr(instance, "changed_fields", None)
-        ) or "match_rules" in changed_fields:
+            (not changed_fields and getattr(instance, "changed_fields", None))
+            or "match_rules" in changed_fields
+            or "dynamic_classification_policy" in changed_fields
+        ):
             user = get_user()
             call_later(
                 "noc.core.model.dynamicprofile.update_profiles",
@@ -169,7 +171,6 @@ def update_profiles(
             profile_model_id,
             user,
         )
-        set_user(user)
     else:
         logger.info(
             "[%s] Running update Profile for Match Rules",
@@ -184,7 +185,7 @@ def update_profiles(
         profile = profile_model.get_by_id(profile_id)
         oos = instance_model.objects.filter(profile.get_instance_affected_query(include_match=True))
     processed, changed = 0, 0
-    with change_tracker.bulk_changes():
+    with change_tracker.bulk_changes(user=user):
         # Same Profile, Groups, Labels filter
         for o in oos:
             processed += 1
