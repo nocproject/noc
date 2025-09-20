@@ -461,7 +461,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                             name: "labels",
                                             xtype: "labelfield",
                                             fieldLabel: __("Match Labels"),
-                                            allowBlank: false,
+                                            allowBlank: true,
                                             isTree: true,
                                             filterProtected: false,
                                             pickerPosition: "down",
