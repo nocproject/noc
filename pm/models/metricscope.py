@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MetricScope model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -28,6 +28,7 @@ from noc.config import config
 from noc.core.model.decorator import on_save
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.core.clickhouse.error import ClickhouseError
 from noc.main.models.label import Label
 
 id_lock = Lock()
@@ -325,7 +326,7 @@ class MetricScope(Document):
     def _get_distributed_db_table(self):
         return f"d_{self.table_name}"
 
-    def ensure_table(self, connect=None):
+    def ensure_table(self, connect=None, allow_type: bool = False):
         """
         Ensure table is exists
         :return: True, if table has been changed
@@ -382,8 +383,16 @@ class MetricScope(Document):
                 after = f
                 if f in existing and existing[f].type != t:
                     print(f"Warning! Type mismatch for column {f}: {existing[f]} <> {t}")
-                    # print(f"Set command manually: ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
-                    ch.execute(f"ALTER TABLE {table_name} MODIFY COLUMN {f} {t}")
+                    query = f"ALTER TABLE {table_name} MODIFY COLUMN {f} {t}"
+                    if not allow_type:
+                        print(
+                            f"Set command manually: {query} OR run './noc migrate-ch --with-type",
+                        )
+                        continue
+                    try:
+                        ch.execute(query)
+                    except ClickhouseError as e:
+                        print(f"Error when alter Column type: {e};\n Run it Manually: '{query}'")
             # Check default value
             for f, t, me, de in self.iter_metrics_fields():
                 if f in existing and (existing[f].default_expression or "") != str(de).strip(
