@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_oam_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2015 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ class Script(BaseScript):
     rx_port = re.compile(r"^(?P<port>\S+)", re.MULTILINE)
     rx_mac = re.compile(r"\s+MAC Address\s+:\s+(?P<mac>\S+)", re.IGNORECASE | re.MULTILINE)
 
-    def execute(self, **kwargs):
+    def execute_cli(self, **kwargs):
         r = []
         try:
             v = self.cli("show ethernet_oam ports status")

@@ -10,9 +10,8 @@ import re
 import datetime
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
-from noc.sa.profiles.DLink.DxS.profile import get_platform
 
 
 class Script(BaseScript):
@@ -40,16 +39,16 @@ class Script(BaseScript):
     )
     rx_media_type = re.compile(
         r"^\s((?P<unit>\d+):)?(?P<port>\d+)\s+(\(F\))?\s+(?:SFP LC|\-)\s+"
-        r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s+\n"
-        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+(?P<mfg_date>\d+)\s+\n"
+        r"(?P<vendor>.+?)/\s+(?P<part_no>.+?)/\s+(?P<serial>.+?)/\s*\n"
+        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S+)?\s+(?P<mfg_date>\d+)\s*\n"
         r"\s+Compatibility: Single Mode \(SM\),"
         r"(?P<mbd>\d+)Mbd, (?P<nm>\d+)nm\n",
         re.MULTILINE,
     )
     rx_media_type1210 = re.compile(
         r"^(?P<port>\d+)\s+\(F\)\s+SFP \- (?:LC|SC|Copper pigtail)\s*"
-        r"(?P<vendor>\S+)\s+(?P<part_no>\S+)\s+(?P<serial>\S+)\s+\n"
-        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S*)?\s+(?P<mfg_date>\d+)\s+\n"
+        r"(?P<vendor>\S+)\s+(?P<part_no>\S+)\s+(?P<serial>\S+)\s*\n"
+        r"\s+\S+\s*:\S+\s*:\S+\s+(?P<revision>\S*)?\s+(?P<mfg_date>\d+)\s*\n"
         r"\s+Compatibility:\s+(?:Single Mode|Unallocated|),\s+"
         r"(?P<mbd>\d+)\s*Mbd,\s+(?P<nm>\d+)\s*nm\n",
         re.MULTILINE,
@@ -125,14 +124,16 @@ class Script(BaseScript):
         r = []
         stacks = []
         s = self.scripts.get_switch()
-        match = self.rx_dev.search(s)
-        revision = match.group("revision")
-        part_no = get_platform(match.group("part_no"), revision)
-        p = {"type": "CHASSIS", "vendor": "DLINK", "part_no": [part_no], "revision": revision}
-        ser = self.rx_ser.search(s)
-        if ser and ser.group("serial") != "System" and ser.group("serial") != "Power":
-            p["serial"] = ser.group("serial")
-        p["description"] = self.rx_des.search(s).group("descr")
+        v = self.scripts.get_version()
+        part_no = v["platform"]
+        p = {"type": "CHASSIS", "vendor": "DLINK", "part_no": [part_no]}
+        if "Chassis | HW Version" in v["caps"]:
+            p["revision"] = v["caps"]["Chassis | HW Version"]
+        if "Chassis | Serial Number" in v["caps"]:
+            p["serial"] = v["caps"]["Chassis | Serial Number"]
+        match = self.rx_des.search(s)
+        if match:
+            p["description"] = match.group("descr")
         if self.is_stack:
             s = self.cli("show stack_device")
             for match in self.rx_stack.finditer(s):
