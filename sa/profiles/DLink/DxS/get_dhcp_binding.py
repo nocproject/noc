@@ -1,16 +1,18 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_dhcp_binding
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2011 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
-
-from noc.core.script.base import BaseScript
-from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
+# Python modules
 import re
 import datetime
 import time
+
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetdhcpbinding import IGetDHCPBinding
 
 
 class Script(BaseScript):
@@ -21,7 +23,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE,
     )
 
-    def execute(self):
+    def execute_cli(self):
         try:
             data = self.cli("show dhcp_binding")
         except self.CLISyntaxError:
