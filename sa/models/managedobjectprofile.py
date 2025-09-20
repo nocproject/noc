@@ -10,7 +10,7 @@ import operator
 from threading import Lock
 from functools import partial
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Iterable, Set
+from typing import Optional, List, Dict, Iterable, Set, Any, Tuple, Callable
 
 # Third-party modules
 import cachetools
@@ -51,6 +51,7 @@ from noc.core.diagnostic.hub import (
     RESOLVER_DIAG,
     DiagnosticHub,
 )
+from noc.core.matcher import build_matcher
 from noc.sa.interfaces.base import (
     DictListParameter,
     ObjectIdParameter,
@@ -65,6 +66,7 @@ from noc.main.models.template import Template
 from noc.core.change.decorator import change
 from noc.cm.models.objectvalidationpolicy import ObjectValidationPolicy
 from noc.inv.models.ifdescpatterns import IfDescPatterns
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.main.models.glyph import Glyph
 from noc.pm.models.metrictype import MetricType
 from noc.vc.models.vlanfilter import VLANFilter
@@ -98,18 +100,28 @@ MetricConfigItems = RootModel[List[ModelMetricConfigItem]]
 class MatchRule(BaseModel):
     dynamic_order: int = 0
     labels: List[str] = []
-    handler: Optional[str]
+    resource_groups: List[str] = []
 
-    @field_validator("handler")
-    def handler_must_handler(cls, v):  # pylint: disable=no-self-argument
+    @field_validator("resource_groups")
+    def groups_must_groups(cls, v):  # pylint: disable=no-self-argument
         if not v:
-            return v
-        h = Handler.objects.filter(id=v).first()
-        if not h:
-            raise ValueError(f"[{h}] Handler not found")
-        elif not h.allow_match_rule:
-            raise ValueError(f"[{h}] Handler must be set Allow Match Rule")
-        return str(h.id)
+            return []
+        rgs = list(ResourceGroup.objects.filter(id__in=v))
+        if not rgs:
+            raise ValueError(f"[{rgs}] Groups")
+        return [str(o.id) for o in rgs]
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": [x for x in self.resource_groups]}
+        # if self.name_patter:
+        #     r["name"] = {"$regex": self.name_patter}
+        # if self.description_patter:
+        #     r["description"] = {"$regex": self.description_patter}
+        return r
 
 
 MatchRules = RootModel[List[Optional[MatchRule]]]
@@ -1116,6 +1128,34 @@ class ManagedObjectProfile(NOCModel):
     def get_metric_discovery_interval(self) -> int:
         r = [m.get("interval") or self.metrics_default_interval for m in self.metrics]
         return min(r) if r else self.metrics_default_interval
+
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for mr in self.match_rules:
+            mr = MatchRule.model_validate(mr)
+            expr.append(mr.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = {}
+        for mop_id, rules in ManagedObjectProfile.objects.filter(
+            dynamic_classification_policy="R",
+        ).values_list("id", "match_rules"):
+            for mr in rules:
+                mr = MatchRule.model_validate(mr)
+                r[(str(mop_id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
+        return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
 
 
 def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):

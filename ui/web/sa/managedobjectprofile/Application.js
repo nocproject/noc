@@ -33,6 +33,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
     "NOC.main.ref.soform.LookupField",
     "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
+    "NOC.core.tagfield.Tagfield",
     "Ext.ux.form.MultiIntervalField",
     "Ext.ux.form.GridField",
     "NOC.wf.workflow.LookupField",
@@ -471,14 +472,12 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                       },
                     },
                     {
-                      name: "handler",
-                      xtype: "main.handler.LookupField",
-                      fieldLabel: __("Match Handler"),
+                      xtype: "core.tagfield",
+                      url: "/inv/resourcegroup/lookup/",
+                      fieldLabel: __("Object Groups"),
+                      name: "resource_groups",
                       allowBlank: true,
-                      uiStyle: "medium",
-                      query: {
-                        "allow_match_rule": true,
-                      },
+                      uiStyle: "extra"
                     },
                   ],
                 },
@@ -495,7 +494,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                         "Warning! Device profile (SA Profile) should support worked in selected mode"),
                   fieldLabel: __("Access Preference"),
                   labelWidth: 220,
-                  allowBlank: false,
+                  allowBlank: true,
                   uiStyle: "medium",
                   store: [
                     ["S", __("SNMP Only")],
@@ -774,7 +773,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                     ["D", __("Disable")],
                   ],
                   value: "E",
-                  allowBlank: false,
+                  allowBlank: true,
                   uiStyle: "medium",
                   listeners: {
                     render: me.addTooltip,
