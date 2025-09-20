@@ -15,7 +15,7 @@ from noc.models import get_model, get_model_id, is_document
 from noc.core.matcher import build_matcher
 from noc.core.defer import call_later
 from noc.core.change.policy import change_tracker
-from noc.core.middleware.tls import get_user, set_user
+from noc.core.middleware.tls import get_user
 
 logger = logging.getLogger()
 
