@@ -7,11 +7,15 @@
 
 # Python modules
 import logging
-from typing import Callable
+from functools import partial
+from typing import Callable, Optional
 
 # NOC modules
-from noc.models import get_model, is_document
+from noc.models import get_model, get_model_id, is_document
 from noc.core.matcher import build_matcher
+from noc.core.defer import call_later
+from noc.core.change.policy import change_tracker
+from noc.core.middleware.tls import get_user, set_user
 
 logger = logging.getLogger()
 
@@ -72,19 +76,17 @@ def dynamic_profile(
             kwargs:
         """
         profile_model = get_model(profile_model_id)
-        if not hasattr(profile_model, "match_rules"):
+        if not hasattr(profile_model, "get_effective_profile"):
             # Dynamic classification not supported
-            return NotImplementedError("Method 'match_rules' required")
+            return NotImplementedError("Method 'get_effective_profile' required")
         instance = instance or document
+        # Set to Manual if set profile, Default Profile
         policy = getattr(instance, "get_dynamic_classification_policy", None)
         if policy and policy() == "D":
             # Dynamic classification not enabled
             return
-        ctx = instance.get_matcher_ctx()
-        for profile_id, match in profile_model.get_profiles_matcher():
-            if match(ctx):
-                break
-        else:
+        profile_id = profile_model.get_effective_profile(instance)
+        if not profile_id:
             logger.info("[%s] Nothing profile for match", instance.name)
             return
         profile_field = profile_field or "profile"
@@ -92,6 +94,34 @@ def dynamic_profile(
         if profile_id and profile.id != profile_id:
             profile = profile_model.get_by_id(profile_id)
             setattr(instance, profile_field, profile)
+
+    def on_profile_post_save(
+        sender,
+        instance=None,
+        document=None,
+        instance_model_id=None,
+        profile_field=profile_field,
+        *args,
+        **kwargs,
+    ):
+        instance = instance or document
+        if document:
+            changed_fields = getattr(document, "_changed_fields", None) or []
+        else:
+            changed_fields = getattr(instance, "changed_fields", None) or []
+        if (
+            not changed_fields and getattr(instance, "changed_fields", None)
+        ) or "match_rules" in changed_fields:
+            user = get_user()
+            call_later(
+                "noc.core.model.dynamicprofile.update_profiles",
+                delay=60,
+                instance_model_id=instance_model_id,
+                profile_model_id=get_model_id(instance),
+                profile_field=profile_field,
+                profile_id=str(instance.id),
+                user=str(user) if user else None,
+            )
 
     def inner(m_cls):
         # Install profile set handlers
@@ -103,14 +133,83 @@ def dynamic_profile(
             if sync_profile:
                 # Profile set handlers
                 mongo_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
+                mongo_signals.post_save.connect(
+                    partial(on_profile_post_save, instance_model_id=get_model_id(m_cls)),
+                    sender=get_model(profile_model_id),
+                    weak=False,
+                )
         else:
             from django.db.models import signals as django_signals
 
             if sync_profile:
                 # Profile set handlers
                 django_signals.pre_save.connect(on_pre_save, sender=m_cls, weak=False)
-
+                django_signals.post_save.connect(
+                    partial(on_profile_post_save, instance_model_id=get_model_id(m_cls)),
+                    sender=get_model(profile_model_id),
+                    weak=False,
+                )
         # Install Profile Labels expose
         return m_cls
 
     return inner
+
+
+def update_profiles(
+    instance_model_id,
+    profile_model_id,
+    profile_field: str = "profile",
+    profile_id: Optional[str] = None,
+    user: Optional[str] = None,
+):
+    """Update profile"""
+    if user:
+        logger.info(
+            "[%s] Running update Profile for Match Rules (by user '%s')",
+            profile_model_id,
+            user,
+        )
+        set_user(user)
+    else:
+        logger.info(
+            "[%s] Running update Profile for Match Rules",
+            profile_id,
+        )
+    profile_model = get_model(profile_model_id)
+    classifier = profile_model.get_profiles_matcher()
+    instance_model = get_model(instance_model_id)
+    oos = instance_model.objects.filter()
+    if profile_id:
+        # iter_affected_instances
+        profile = profile_model.get_by_id(profile_id)
+        oos = instance_model.objects.filter(profile.get_instance_affected_query(include_match=True))
+    processed, changed = 0, 0
+    with change_tracker.bulk_changes():
+        # Same Profile, Groups, Labels filter
+        for o in oos:
+            processed += 1
+            ctx = o.get_matcher_ctx()
+            for p_id, match in classifier:
+                if match(ctx):
+                    break
+            else:
+                logger.debug("[%s] Nothing profile for match", o.name)
+                continue
+            profile = getattr(o, profile_field)
+            if str(p_id) != str(profile.id):
+                profile = profile_model.get_by_id(p_id)
+                if not profile:
+                    logger.error(
+                        "[%s] Invalid profile with id '%s'. Skipping",
+                        o.name,
+                        p_id,
+                    )
+                    return
+                elif profile != o.profile:
+                    logger.info("[%s] Object has been classified as '%s'", o.name, profile.name)
+                    setattr(o, profile_field, profile)
+                    o.save()
+                    changed += 1
+    logger.info(
+        "[%s] End update Profile. Processed: %s/Changed: %s", profile_id, processed, changed
+    )

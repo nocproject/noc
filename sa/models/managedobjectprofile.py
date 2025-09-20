@@ -18,7 +18,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.query_utils import Q as d_Q
-from pydantic import BaseModel, RootModel, field_validator
+from pydantic import BaseModel, RootModel, field_validator, model_validator
 
 # NOC modules
 from noc.core.translation import ugettext as _
@@ -52,6 +52,7 @@ from noc.core.diagnostic.hub import (
     DiagnosticHub,
 )
 from noc.core.matcher import build_matcher
+from noc.core.change.model import ChangeField
 from noc.sa.interfaces.base import (
     DictListParameter,
     ObjectIdParameter,
@@ -106,10 +107,26 @@ class MatchRule(BaseModel):
     def groups_must_groups(cls, v):  # pylint: disable=no-self-argument
         if not v:
             return []
-        rgs = list(ResourceGroup.objects.filter(id__in=v))
-        if not rgs:
-            raise ValueError(f"[{rgs}] Groups")
-        return [str(o.id) for o in rgs]
+        for g in v:
+            rg = ResourceGroup.get_by_id(g)
+            if not rg:
+                raise ValueError("Unknown Group with id: %s" % g)
+        return v
+
+    @model_validator(mode="after")
+    def check_any_conditions(self):
+        if not self.labels and not self.resource_groups:
+            raise ValueError("One of condition must be set")
+        return self
+
+    def get_q(self):
+        """Return instance queryset"""
+        q = d_Q()
+        if self.labels:
+            q &= d_Q(effective_labels__contains=self.labels)
+        if self.resource_groups:
+            q &= d_Q(effective_service_groups__contains=self.resource_groups)
+        return q
 
     def get_match_expr(self) -> Dict[str, Any]:
         r = {}
@@ -1156,6 +1173,31 @@ class ManagedObjectProfile(NOCModel):
                 mr = MatchRule.model_validate(mr)
                 r[(str(mop_id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
         return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
+
+    @classmethod
+    def get_effective_profile(cls, o) -> Optional["str"]:
+        policy = getattr(o, "get_dynamic_classification_policy", None)
+        if policy and policy() == "D":
+            # Dynamic classification not enabled
+            return
+        ctx = o.get_matcher_ctx()
+        for profile_id, match in cls.get_profiles_matcher():
+            if match(ctx):
+                return profile_id
+        return None
+
+    def get_instance_affected_query(
+        self,
+        changes: Optional[List[ChangeField]] = None,
+        include_match: bool = False,
+    ) -> d_Q:
+        """Return queryset for instance"""
+        q = d_Q(object_profile=self.id)
+        if include_match and self.match_rules:
+            for mr in self.match_rules:
+                mr = MatchRule.model_validate(mr)
+                q |= mr.get_q()
+        return q
 
 
 def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
