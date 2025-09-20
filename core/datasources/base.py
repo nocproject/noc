@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DataSource Base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,6 +23,7 @@ import polars as pl
 # NOC modules
 from noc.core.diagnostic.types import DiagnosticState
 from noc.core.clickhouse.connect import ClickhouseClient, connection
+from noc.core.clickhouse.error import ClickhouseError
 from noc.core.msgstream.client import MessageStreamClient
 from noc.models import get_model
 from noc.config import config
@@ -644,9 +645,11 @@ class BaseDataSource(object):
                         f"[{table_name}|{field.name}] Warning! Type mismatch: "
                         f"{existing[field.name]} <> {field.type}"
                     )
-                    connect.execute(
-                        post=f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
-                    )
+                    query = f"ALTER TABLE {table_name} MODIFY COLUMN {field.name} {field.type}"
+                    try:
+                        connect.execute(post=query)
+                    except ClickhouseError as e:
+                        print(f"Error when alter Column type: {e};\n Run it Manually: '{query}'")
             else:
                 print(f"[{table_name}|{field.name}] Alter column")
                 query = f"ALTER TABLE `{table_name}` ADD COLUMN {cls.quote_name(field.name)} {field.type}"
