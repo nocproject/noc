@@ -10,6 +10,7 @@ import logging
 import os
 import socket
 import sys
+import inspect
 from functools import partial
 from urllib.parse import quote as urllib_quote
 from pathlib import Path
@@ -19,6 +20,7 @@ import cachetools
 
 # NOC modules
 from noc.core.config.base import BaseConfig, ConfigSection
+from noc.core.config.stream import StreamConfigSection, StreamItem
 from noc.core.config.params import (
     StringParameter,
     MapParameter,
@@ -673,98 +675,54 @@ class Config(BaseConfig):
         max_message_size = IntParameter(default=921600, help="Max message size for GRPC client")
         client_class = StringParameter(default="noc.core.msgstream.liftbridge.LiftBridgeClient")
 
-        class events(ConfigSection):
-            retention_max_age = SecondsParameter(
-                default="24h",
-                help="FM events stream retention interval. If 0 use Liftbrdige setting value",
-            )
-            retention_max_bytes = BytesParameter(
-                default=0,
-                help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
-            )
-            segment_max_age = SecondsParameter(
-                default="1h",
-                help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
-            )
-            segment_max_bytes = BytesParameter(
-                default=0,
-                help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
-            )
-            auto_pause_time = SecondsParameter(
-                default=0, help="FM events stream pause time. If 0 use Liftbrdige setting value"
-            )
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        class events(StreamConfigSection):
+            slot = StringParameter(default="classifier")
+            sharded = BooleanParameter(default=True)
 
-        class dispose(ConfigSection):
-            retention_max_age = SecondsParameter(
-                default="24h",
-                help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
-            )
-            retention_max_bytes = BytesParameter(
-                default=0,
-                help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
-            )
-            segment_max_age = SecondsParameter(
-                default="1h",
-                help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
-            )
-            segment_max_bytes = BytesParameter(
-                default=0,
-                help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
-            )
-            auto_pause_time = SecondsParameter(
-                default=0, help="FM alarms stream pause time. If 0 use Liftbrdige setting value"
-            )
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+        class dispose(StreamConfigSection):
+            slot = StringParameter(default="correlator")
+            sharded = BooleanParameter(default=True)
 
-        class message(ConfigSection):
+        class message(StreamConfigSection):
+            slot = StringParameter(default="mx")
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
-        class ch(ConfigSection):
+        class revokedtokens(StreamConfigSection):
+            partitions = IntParameter(default=1, min=0)
+
+        class ch(StreamConfigSection):
+            sharded = BooleanParameter(default=True)
             retention_max_age = SecondsParameter(default="1h")
             retention_max_bytes = BytesParameter(default="100M")
             segment_max_age = SecondsParameter(default="30M")
             segment_max_bytes = BytesParameter(default="50M")
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
             replication_factor = IntParameter(
-                default=1, help="Replicaton factor for clickhouse streams"
+                default=1, min=0, help="Replication factor for clickhouse streams"
             )
 
-        class kafkasender(ConfigSection):
+        class kafkasender(StreamConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
-        class metrics(ConfigSection):
+        class tgsender(StreamConfigSection):
+            pass
+
+        class mailsender(StreamConfigSection):
+            pass
+
+        class metrics(StreamConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
-            auto_pause_disable_if_subscribers = BooleanParameter(default=False)
+            replication_factor = IntParameter(
+                default=1, min=0, help="Replication factor for metric streams"
+            )
 
-        class jobs(ConfigSection):
-            retention_max_age = SecondsParameter(default="24h")
-            retention_max_bytes = BytesParameter(default=0)
-            segment_max_age = SecondsParameter(default="1h")
-            segment_max_bytes = BytesParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
+        class jobs(StreamConfigSection):
+            slot = StringParameter(default="worker")
 
-        class submit(ConfigSection):
-            retention_max_age = SecondsParameter(default="24h")
-            retention_max_bytes = BytesParameter(default=0)
-            segment_max_age = SecondsParameter(default="1h")
-            segment_max_bytes = BytesParameter(default=0)
-            auto_pause_time = SecondsParameter(default=0)
+        class submit(StreamConfigSection):
+            partitions = IntParameter(default=1, min=0)
 
     class syslogcollector(ConfigSection):
         listen = StringParameter(default="0.0.0.0:514")
@@ -1209,6 +1167,39 @@ class Config(BaseConfig):
 
         dcs = get_dcs()
         return run_sync(partial(dcs.get_slot_limit, slot_name))
+
+    def iter_message_streams(self):
+        """Iter over Message Stream Name"""
+        for name, p in self.msgstream.__dict__.items():
+            if name.startswith("_") or not p:
+                continue
+            if inspect.isclass(p) and issubclass(p, StreamConfigSection):
+                yield name
+
+    def get_stream(self, name) -> StreamItem:
+        """Getting stream config"""
+        cfg_name, *shard = name.split(".", 1)
+        shard = shard[0] if shard else None
+        cfg = getattr(self.msgstream, cfg_name, None)
+        if not cfg:
+            raise ValueError(f"[{name}] Unknown stream")
+        if cfg.sharded and not shard:
+            raise ValueError(f"[{name}] Shard name required for sharded stream")
+        # Slot-based streams
+        slot = cfg.slot or name
+        if shard:
+            slot = f"{slot}-{shard}"
+        if cfg_name == "ch":
+            partitions = len(self.clickhouse.cluster_topology.split(","))
+        else:
+            partitions = cfg.partitions or self.get_slot_limits(slot)
+        return StreamItem(
+            name=name,
+            shard=shard,
+            slot=slot,
+            partitions=partitions,
+            config=cfg.get_config(),
+        )
 
 
 config = Config()
