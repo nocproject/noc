@@ -7,11 +7,13 @@
 
 # Python modules
 import progressbar
+import time
 
 # NOC modules
 from noc.inv.models.link import Link
+from noc.sa.models.managedobject import ManagedObject
 
-BATCH_SIZE = 10000
+BATCH_SIZE = 100
 
 
 def iter_ids_batch():
@@ -33,12 +35,17 @@ def iter_ids_batch():
         #     break
         match = {"_id": {"$gt": d[-1]}}
 
+        time.sleep(1)
+
 
 def fix():
     max_value = Link.objects.filter().count()
     for link in progressbar.progressbar(iter_ids_batch(), max_value=max_value):
         # for link in Link.objects.filter(id__in=ids).timeout(False):
         try:
-            link.save()
+            link.update_topology()
+            ManagedObject.update_links(link.linked_objects)
         except AssertionError:
             print("Assertion Error, check link with id: %s" % link.id)
+        except Exception as e:
+            print("Exception : |%s|%s|" % (e, link.id))
