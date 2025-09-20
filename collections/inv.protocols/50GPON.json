@@ -1,0 +1,10 @@
+{
+    "name": "50G-PON",
+    "code": "50GPON",
+    "$collection": "inv.protocols",
+    "uuid": "e2562349-9896-4c8c-b099-cd152464f68c",
+    "description": "50G-PON - ITU-T G.9804.3",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}
