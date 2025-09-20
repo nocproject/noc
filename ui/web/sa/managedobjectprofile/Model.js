@@ -410,7 +410,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "access_preference",
-            type: "string"
+            type: "string",
+            defaultValue: "CS"
         },
         {
             name: "enable_periodic_discovery",
@@ -420,6 +421,7 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         {
             name: "periodic_discovery_interval",
             type: "integer",
+            defaultValue: 300
         },
         {
             name: "periodic_discovery_running_policy",
@@ -628,7 +630,8 @@ Ext.define("NOC.sa.managedobjectprofile.Model", {
         },
         {
             name: "event_processing_policy",
-            type: "string"
+            type: "string",
+            defaultValue: "E"
         },
         {
             name: "address_profile_interface",
