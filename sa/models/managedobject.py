@@ -147,6 +147,7 @@ from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
 from noc.core.etl.remotemappings import mappings
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -396,9 +397,7 @@ class ManagedObjectManager(Manager):
 
 
 @full_text_search
-@Label.dynamic_classification(
-    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
-)
+@dynamic_profile(profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile")
 @bi_sync
 @on_init
 @on_save
