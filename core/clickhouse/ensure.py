@@ -16,9 +16,10 @@ from ..bi.dictionaries.loader import loader as bi_dictionary_loader
 logger = logging.getLogger(__name__)
 
 
-def ensure_bi_models(connect=None):
+def ensure_bi_models(connect=None, allow_type: bool = False):
     logger.info("Ensuring BI models:")
     # Ensure fields
+    allow_type |= config.clickhouse.enable_migrate_type
     changed = False
     for name in loader:
         model = loader[name]
@@ -31,9 +32,10 @@ def ensure_bi_models(connect=None):
     return changed
 
 
-def ensure_dictionary_models(connect=None):
+def ensure_dictionary_models(connect=None, allow_type: bool = False):
     logger.info("Ensuring Dictionaries:")
     # Ensure fields
+    allow_type |= config.clickhouse.enable_migrate_type
     changed = False
     for name in bi_dictionary_loader:
         model = bi_dictionary_loader[name]
@@ -50,14 +52,15 @@ def ensure_dictionary_models(connect=None):
     return changed
 
 
-def ensure_pm_scopes(connect=None):
+def ensure_pm_scopes(connect=None, allow_type: bool = False):
     from noc.pm.models.metricscope import MetricScope
 
     logger.info("Ensuring PM scopes")
+    allow_type |= config.clickhouse.enable_migrate_type
     changed = False
     for s in MetricScope.objects.all():
         logger.info("Ensure scope %s" % s.table_name)
-        changed |= s.ensure_table(connect=connect)
+        changed |= s.ensure_table(connect=connect, allow_type=allow_type)
     return changed
 
 
@@ -78,10 +81,11 @@ def ensure_all_pm_scopes():
         ensure_pm_scopes(c)
 
 
-def ensure_report_ds_scopes(connect=None):
+def ensure_report_ds_scopes(connect=None, allow_type: bool = False):
     from noc.core.datasources.loader import loader
 
     logger.info("Ensuring Report BI")
+    allow_type |= config.clickhouse.enable_migrate_type
     changed = False
     for ds in loader:
         ds = loader[ds]
