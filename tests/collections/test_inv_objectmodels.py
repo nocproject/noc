@@ -172,19 +172,21 @@ CONNECTION_CHECKLIST = {
             "TransEth10G",
             "OTU1",
             "OTU2",
+            "XGPON",
+            "XGSPON",
         ],
     },
     "Transceiver | SFP+ | Cisco": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP+ | Force10": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP+ | Juniper": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth10G"],
+        "protocols": ["TransEth1G", "TransEth10G", "XGPON", "XGSPON"],
     },
     "Transceiver | SFP28": {
         "directions": ["i", "o"],
@@ -196,7 +198,7 @@ CONNECTION_CHECKLIST = {
     },
     "Transceiver | QSFP": {
         "directions": ["i", "o"],
-        "protocols": ["TransEth1G", "TransEth40G"],
+        "protocols": ["TransEth1G", "TransEth40G", "NGPON2"],
     },
     "Transceiver | QSFP+": {
         "directions": ["i", "o"],

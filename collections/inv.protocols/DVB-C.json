@@ -1,0 +1,10 @@
+{
+    "name": "DVB-C",
+    "code": "DVBC",
+    "$collection": "inv.protocols",
+    "uuid": "e8ad0f81-1705-41c0-95b8-8136f1ba47f0",
+    "description": "Digital Video Broadcasting - Cable",
+    "data": [],
+    "connection_schema": "U",
+    "technology__name": "DVB"
+}

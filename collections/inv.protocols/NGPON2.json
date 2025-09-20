@@ -1,0 +1,10 @@
+{
+    "name": "NG-PON2",
+    "code": "NGPON2",
+    "$collection": "inv.protocols",
+    "uuid": "4bd68dfb-84f1-4646-9db5-d8ff96857ba8",
+    "description": "NG-PON2 - ITU-T G.989",
+    "data": [],
+    "connection_schema": "BD",
+    "technology__name": "XPON"
+}
