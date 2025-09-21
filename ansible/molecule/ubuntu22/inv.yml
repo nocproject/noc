@@ -97,6 +97,7 @@ all:
           has_svc_pgbouncer: true
           has_svc_ping: true
           has_svc_postgres: true
+          has_svc_runner: true
           has_svc_sae: true
           has_svc_scheduler: true
           has_svc_syslogcollector: true
@@ -850,6 +851,27 @@ all:
                   stopwaitsecs: 2
               name: worker
               pool: null
+            - config:
+                backup_power: 1
+                loglevel: info
+                power: 2
+              config_order: yaml:///opt/noc/etc/tower.yml,yaml:///opt/noc/etc/settings.yml,env:///NOC
+              environment:
+                category: internal
+                depends:
+                  - noc
+                level: global
+                supervisord:
+                  command: ./services/runner/service.py
+                  oom_score_adj: 100
+                  priority: 50
+                  process_name: '%(program_name)s-%(process_num)02d'
+                  startretries: 999
+                  stdout_logfile_backups: 3
+                  stdout_logfile_maxbytes: 10MB
+                  stopwaitsecs: 2
+              name: runner
+              pool: null              
           noc_user: noc
           noc_version: microservices
           noc_web_host: noc-node-ubuntu22
