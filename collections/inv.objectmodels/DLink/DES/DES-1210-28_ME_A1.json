@@ -1,9 +1,9 @@
 {
-    "name": "DLink | DES | DES-3200-28/C1",
+    "name": "DLink | DES | DES-1210-28/ME/A1",
     "$collection": "inv.objectmodels",
-    "uuid": "644f91eb-5fb8-4a5d-b79c-c63b614ba624",
+    "uuid": "8d2d416c-2c2a-422a-bf09-6fb165d05eba",
     "vendor__code": "DLINK",
-    "description": "DES-3200-28/C1 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 ports 100/1000 SFP, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DES-1210-28/ME/A1  L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP, 2 ports 100/1000 SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -542,12 +542,11 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
-            "group": "0",
             "protocols": [{
                 "direction": ">",
                 "protocol__code": "RS232"
             }],
-            "type__name": "Electrical | RJ45"
+            "type__name": "Electrical | DB9"
         },
         {
             "name": "power",
@@ -577,7 +576,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["DES-3200-28/C1", "DES-3200-28/ME/C1"]
+            "value": ["DES-1210-28/A1", "DES-1210-28/ME/A1"]
         },
         {
             "attr": "units",

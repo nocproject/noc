@@ -1,10 +1,10 @@
 {
-    "name": "DLink | DES | DES-3200-10/C1",
+    "name": "DLink | DGS | DGS-3000-10L",
     "$collection": "inv.objectmodels",
-    "uuid": "34960d08-719b-4fc9-a2ae-6e9dd0a59a1e",
+    "uuid": "829651bf-231a-4f37-ac09-f57cc659e338",
     "vendor__code": "DLINK",
-    "description": "DES-3200-10/C1 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 combo 10/100/1000BASE-T/ 100/1000 SFP, 1 100/1000 SFP",
-    "connection_rule__name": "Generic | Switch SFP",
+    "description": "DGS-3000-10L L2 Managed Switch witch 8 ports 10/100/1000BASE-T, 2 1000 SFP",
+    "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [
         "noc::inv::chassis",
@@ -28,6 +28,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -45,6 +49,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -62,6 +70,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -79,6 +91,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -96,6 +112,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -113,6 +133,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -130,6 +154,10 @@
                 {
                     "direction": "*",
                     "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
                 }
             ],
             "type__name": "Electrical | RJ45"
@@ -139,24 +167,6 @@
             "description": "8",
             "direction": "s",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "9",
-            "description": "9",
-            "direction": "s",
-            "gender": "f",
-            "group": "9",
             "protocols": [
                 {
                     "direction": "*",
@@ -178,12 +188,7 @@
             "description": "Fiber port 9",
             "direction": "i",
             "gender": "f",
-            "group": "9",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
@@ -196,12 +201,7 @@
             "description": "Fiber port 10",
             "direction": "i",
             "gender": "f",
-            "group": "10",
             "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
                 {
                     "direction": "*",
                     "protocol__code": "TransEth1G"
@@ -214,6 +214,7 @@
             "description": "Console port",
             "direction": "s",
             "gender": "f",
+            "group": "0",
             "protocols": [{
                 "direction": ">",
                 "protocol__code": "RS232"
@@ -221,10 +222,11 @@
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "power",
+            "name": "IPWR",
             "description": "Power outlet",
             "direction": "s",
             "gender": "m",
+            "group": "0",
             "protocols": [
                 {
                     "direction": ">",
@@ -247,7 +249,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["DES-3200-10/C1"]
+            "value": ["DGS-3000-10L"]
         },
         {
             "attr": "units",
