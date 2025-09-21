@@ -871,7 +871,7 @@ all:
                   stdout_logfile_maxbytes: 10MB
                   stopwaitsecs: 2
               name: runner
-              pool: null              
+              pool: null
           noc_user: noc
           noc_version: microservices
           noc_web_host: noc-node-ubuntu22
