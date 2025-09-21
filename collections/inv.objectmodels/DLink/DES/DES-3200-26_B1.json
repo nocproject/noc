@@ -1,9 +1,9 @@
 {
-    "name": "DLink | DES | DES-3200-28/C1",
+    "name": "DLink | DES | DES-3200-26/B1",
     "$collection": "inv.objectmodels",
-    "uuid": "644f91eb-5fb8-4a5d-b79c-c63b614ba624",
+    "uuid": "922a02ac-69e0-4db6-b660-18fdecccd579",
     "vendor__code": "DLINK",
-    "description": "DES-3200-28/C1 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 ports 100/1000 SFP, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "description": "DES-3200-26/B1 xStack L2 Managed Switch witch 24 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -504,40 +504,6 @@
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "sfp27",
-            "description": "Fiber port 27",
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
-            "type__name": "Transceiver | SFP"
-        },
-        {
-            "name": "sfp28",
-            "description": "Fiber port 28",
-            "direction": "i",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
-            "type__name": "Transceiver | SFP"
-        },
-        {
             "name": "console",
             "description": "Console port",
             "direction": "s",
@@ -577,7 +543,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["DES-3200-28/C1", "DES-3200-28/ME/C1"]
+            "value": ["DES-3200-26/B1"]
         },
         {
             "attr": "units",
