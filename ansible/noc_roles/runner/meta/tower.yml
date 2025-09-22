@@ -1,0 +1,47 @@
+---
+forms:
+  runner:
+    description: >
+      <strong>Service type</strong>: Internal <br/>
+      <strong>Short description</strong>: Runner service <br/>
+      <strong>Long description</strong>: Launch and supervise tasks for deploy config<br/>
+      <strong>Scale Recommendations</strong>: At least two per installation. <br/>
+      <strong>docs</strong>: <a href=https://docs.getnoc.com/services-reference/runner/ target=_blank>Runner</a><br/>
+      <strong>Placement constraint</strong>: On node with nginx<br/>
+    power:
+      default: 2
+      label: "Instances"
+      type: int
+      max: 8
+      min: 0
+    loglevel:
+      default: info
+      label: Loglevel
+      type: list
+      options:
+        - disabled
+        - debug
+        - info
+        - warning
+        - error
+        - critical
+    max_running:
+      default: 10
+      label: "Amount of concurrent tasks"
+      type: int
+
+services:
+  runner:
+    level: global
+    category: internal
+    supervisord:
+      command: "./services/runner/service.py"
+      process_name: "%(program_name)s-%(process_num)02d"
+      oom_score_adj: 100
+      priority: 110
+      startretries: 999
+      stopwaitsecs: 3
+      stdout_logfile_maxbytes: 10MB
+      stdout_logfile_backups: 3
+    depends:
+      - noc
