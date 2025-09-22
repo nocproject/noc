@@ -133,7 +133,7 @@ class Command(BaseCommand):
         outfile = f"{filepath.name}.unknown"
         outfile = Path(output_dir, outfile)
         with open(outfile, "wb") as f:
-            f.write(bytes(unknown_messages, 'utf-8'))
+            f.write(bytes(unknown_messages, "utf-8"))
 
         cls_percent = round((cls_cnt / msg_cnt) * 100, 1) if msg_cnt else "--"
         msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
