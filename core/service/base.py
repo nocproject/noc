@@ -362,6 +362,18 @@ class BaseService(object):
         self.logger.warning("SIGTERM caught, Stopping")
         self.stop()
 
+    @staticmethod
+    def get_port(port: str) -> int:
+        """Getting effective port"""
+        # Callable
+        port, *right_port = port.split("-")
+        port = int(port)
+        if right_port:
+            port = random.choice(range(port, int(right_port[0])))
+        if config.instance:
+            port += config.instance
+        return port
+
     def get_service_address(self) -> Tuple[str, int]:
         """
         Returns an (address, port) for HTTP service listener
@@ -370,15 +382,13 @@ class BaseService(object):
             return self.address, self.port
         if config.listen:
             addr, port = config.listen.split(":")
-            port_tracker = config.instance
+            port = self.get_port(port)
         else:
             addr, port = "auto", 0
-            port_tracker = 0
         if addr == "auto":
             addr = config.node
             self.logger.info("Autodetecting address: auto -> %s", addr)
         addr = config.node
-        port = int(port) + port_tracker
         return addr, port
 
     async def init_api(self):
