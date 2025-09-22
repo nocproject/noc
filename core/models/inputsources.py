@@ -33,6 +33,7 @@ class InputSource(enum.Enum):
     MANUAL = "manual"
     CONFIG = "config"  # profile
     #
+    TEMPLATE = "template"
     UNKNOWN = "unknown"
 
     @classmethod
