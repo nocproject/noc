@@ -11,6 +11,7 @@ Ext.define("NOC.inv.cpeprofile.Application", {
   requires: [
     "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
+    "NOC.core.tagfield.Tagfield",
     "NOC.main.handler.LookupField",
     "NOC.inv.cpeprofile.Model",
     "NOC.main.pool.LookupField",
@@ -245,14 +246,14 @@ Ext.define("NOC.inv.cpeprofile.Application", {
           xtype: "listform",
           fieldLabel: __("Match Rules"),
           items: [
-              {
-                name: "dynamic_order",
-                xtype: "numberfield",
-                fieldLabel: __("Dynamic Order"),
-                allowBlank: true,
-                defaultValue: 0,
-                uiStyle: "small"
-              },
+            {
+              name: "dynamic_order",
+              xtype: "numberfield",
+              fieldLabel: __("Dynamic Order"),
+              allowBlank: true,
+              defaultValue: 0,
+              uiStyle: "small"
+            },
             {
               name: "labels",
               xtype: "labelfield",
@@ -265,18 +266,31 @@ Ext.define("NOC.inv.cpeprofile.Application", {
               query: {
                 "allow_matched": true
               }
-              },
+            },
             {
-              name: "handler",
-              xtype: "main.handler.LookupField",
-              fieldLabel: __("Match Handler"),
+              xtype: "core.tagfield",
+              url: "/inv/resourcegroup/lookup/",
+              fieldLabel: __("Object Groups"),
+              name: "resource_groups",
               allowBlank: true,
-              uiStyle: "medium",
-              query: {
-                "allow_match_rule": true
+              uiStyle: "extra"
+            },
+            {
+              text: __("CPE Type"),
+              dataIndex: "type",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                    ["ap", "Access Point"],
+                    ["dsl", "DSL"],
+                    ["ont", "ONT (PON)"],
+                    ["docsis", "DOCSIS"],
+                    ["other", "Other"]
+                ]
               }
-            }
-            ]
+            },
+          ]
         }
       ]
     });
