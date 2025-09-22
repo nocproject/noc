@@ -192,7 +192,10 @@ def set_caps(
     if not caps:
         return
     value = caps.clean_value(value)
-    source = InputSource(source)
+    try:
+        source = InputSource(source)
+    except ValueError:
+        source = InputSource.UNKNOWN
     scope = scope or ""
     changed, is_new, changed_fields = False, True, []
     for item in self.iter_caps():
@@ -274,7 +277,10 @@ def update_caps(
     from noc.inv.models.capability import Capability
 
     o_label = f"{scope or ''}|{self}|{source}"
-    source = InputSource(source)
+    try:
+        source = InputSource(source)
+    except ValueError:
+        source = InputSource.UNKNOWN
     # Update existing capabilities
     new_caps: List[CapsValue] = []
     seen = set()

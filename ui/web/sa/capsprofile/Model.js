@@ -140,6 +140,10 @@ Ext.define("NOC.sa.capsprofile.Model", {
             name: "ospfv3_policy",
             type: "string",
             defaultValue: "T"
+        },
+        {
+            name: "caps",
+            type: "auto"
         }
     ]
 });
