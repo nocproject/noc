@@ -2621,7 +2621,7 @@ class ManagedObject(NOCModel):
     def get_caps_config(self) -> Dict[str, CapsConfig]:
         """Local Capabilities Config (from Profile)"""
         r = {}
-        for c in self.object_profile.caps_profile:
+        for c in self.object_profile.caps_profile.caps or []:
             r[str(c.capability.id)] = c.get_config()
         return r
 
