@@ -1083,21 +1083,10 @@ class ManagedObjectApplication(ExtModelApplication):
         if not o.caps:
             return []
         r = []
-        for c in o.caps:
-            capability = Capability.get_by_id(c["capability"])
-            r += [
-                {
-                    "capability": capability.name,
-                    "id": str(capability.id),
-                    "object": str(o.id),
-                    "description": capability.description,
-                    "type": capability.type.value,
-                    "value": c["value"],
-                    "source": c["source"],
-                    "scope": c.get("scope", ""),
-                    "editor": capability.get_editor(),
-                }
-            ]
+        for c in o.iter_caps(include_default=True):
+            caps = c.get_form()
+            caps["object"] = str(o.id)
+            r.append(caps)
         return sorted(r, key=lambda x: x["capability"])
 
     @view(url=r"(?P<id>\d+)/actions/(?P<action>\S+)/$", method=["POST"], access="action", api=True)
