@@ -69,7 +69,6 @@ class ChangeTracker(object):
         from noc.core.middleware.tls import get_user
 
         user = get_user() or c_user.get()
-        print("Changes get user: %s", user)
         if user:
             return str(user)
         return ""
@@ -98,7 +97,6 @@ class ChangeTracker(object):
         if not CHANGE_HANDLERS:
             self.load_receivers()
         user = self.get_user()
-        print("Register Changes", model, id, audit)
         self.get_policy().register(
             item=ChangeItem(
                 op=op,
