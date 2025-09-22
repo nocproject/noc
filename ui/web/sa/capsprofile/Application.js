@@ -9,7 +9,8 @@ console.debug("Defining NOC.sa.capsprofile.Application");
 Ext.define("NOC.sa.capsprofile.Application", {
     extend: "NOC.core.ModelApplication",
     requires: [
-        "NOC.sa.capsprofile.Model"
+        "NOC.sa.capsprofile.Model",
+        "NOC.inv.capability.LookupField"
     ],
     model: "NOC.sa.capsprofile.Model",
     search: true,
@@ -279,6 +280,34 @@ Ext.define("NOC.sa.capsprofile.Application", {
                             bind: {
                                 disabled: "{!enableL3.checked}"
                             }
+                        }
+                    ]
+                },
+                {
+                    name: "caps",
+                    xtype: "gridfield",
+                    fieldLabel: __("Capabilities"),
+                    allowBlank: true,
+                    columns: [
+                        {
+                            text: __("Name"),
+                            dataIndex: "capability",
+                            renderer: NOC.render.Lookup("capability"),
+                            width: 250,
+                            editor: "inv.capability.LookupField"
+                        },
+                        {
+                            text: __("Default Value"),
+                            dataIndex: "default_value",
+                            width: 150,
+                            editor: "textfield"
+                        },
+                        {
+                            text: __("Allow Manual"),
+                            dataIndex: "allow_manual",
+                            width: 150,
+                            editor: "checkbox",
+                            renderer: NOC.render.Bool
                         }
                     ]
                 }
