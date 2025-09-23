@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CPE check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ class CPECheck(DiscoveryCheck):
     def handler(self):
         self.logger.info("Checking CPEs")
         result = self.object.scripts.get_cpe()
+        get_interface_profile = CPEProfile.get_profiles_matcher()
         processed = set()
         bulk = []
         for r in result:
@@ -79,8 +80,22 @@ class CPECheck(DiscoveryCheck):
             # Sync Address
             if cpe.address != r.get("ip"):
                 cpe.address = r.get("ip")
-            cpe.save()
             # Profile classification
+            p_id = CPEProfile.get_effective_profile(cpe)
+            if not p_id:
+                self.logger.debug("[%s] Nothing profile for match", cpe.label)
+                # Set default ?
+            elif p_id != str(cpe.profile.id):
+                profile = CPEProfile.get_by_id(p_id)
+                if not profile:
+                    self.logger.error(
+                        "[%s] Invalid interface profile '%s'. Skipping",
+                        cpe.label,
+                        p_id,
+                    )
+                else:
+                    cpe.profile = profile
+            cpe.save()
             # Sync ManagedObject
             if cpe.profile.sync_managedobject:
                 self.submit_managed_object(cpe)
@@ -144,13 +159,13 @@ class CPECheck(DiscoveryCheck):
         mo = ManagedObject(
             name=name,
             pool=cpe.profile.object_pool or self.object.pool,
-            profile=Profile.get_by_id(Profile.get_generic_profile_id()),
+            profile=Profile.get_default_profile(),
             object_profile=cpe.profile.object_profile or self.object.object_profile,
             administrative_domain=self.object.administrative_domain,
             scheme=cpe.controller.managed_object.scheme,
             segment=cpe.controller.managed_object.segment,
             auth_profile=None,
-            address=cpe.address or "0.0.0.0",
+            address=cpe.address or None,
             controller=cpe.controller.managed_object,
             cpe_id=str(cpe.id),
             bi_id=cpe.bi_id,
