@@ -71,7 +71,7 @@ def test_connection_direction(model: ObjectModel) -> None:
             continue
         if c.direction and "directions" in checklist:
             if c.direction not in checklist["directions"]:
-                valid_directions = ", ".join("'%s'" % x for x in directions)
+                valid_directions = ", ".join("'%s'" % x for x in checklist["directions"])
                 fail.append(
                     f"{c.name}: Invalid direction '{c.direction}' (Must be in {valid_directions})"
                 )
