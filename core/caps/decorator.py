@@ -35,13 +35,17 @@ def iter_model_caps(
         cs = ci.get("scope", "")
         if scope and scope != cs:
             continue
-        source = ci.get("source", "manual")
+        try:
+            source = InputSource(ci.get("source", "manual"))
+        except ValueError:
+            caps_logger.info("[%s] Unknown InputSource '%s'. Skipping...", c.name, ci.get("source"))
+            continue
         value = ci.get("value")
         value = c.clean_value(value)
         yield CapsValue(
             capability=c,
             value=value,
-            source=InputSource(source),
+            source=source,
             scope=cs,
             config=configs.pop(str(c.id), CapsConfig()),
         )
