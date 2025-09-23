@@ -252,13 +252,14 @@ Ext.define("NOC.inv.cpeprofile.Application", {
               fieldLabel: __("Dynamic Order"),
               allowBlank: true,
               defaultValue: 0,
+              minValue: 0,
               uiStyle: "small"
             },
             {
               name: "labels",
               xtype: "labelfield",
               fieldLabel: __("Match Labels"),
-              allowBlank: false,
+              allowBlank: true,
               isTree: true,
               filterProtected: false,
               pickerPosition: "down",
@@ -276,20 +277,20 @@ Ext.define("NOC.inv.cpeprofile.Application", {
               uiStyle: "extra"
             },
             {
-              text: __("CPE Type"),
-              dataIndex: "type",
-              width: 100,
-              editor: {
-                xtype: "combobox",
-                store: [
-                    ["ap", "Access Point"],
-                    ["dsl", "DSL"],
-                    ["ont", "ONT (PON)"],
-                    ["docsis", "DOCSIS"],
-                    ["other", "Other"]
-                ]
-              }
-            },
+              name: "type",
+              xtype: "combobox",
+              fieldLabel: __("CPE Type"),
+              allowBlank: true,
+              labelWidth: 200,
+              store: [
+                  ["ap", "Access Point"],
+                  ["dsl", "DSL"],
+                  ["ont", "ONT (PON)"],
+                  ["docsis", "DOCSIS"],
+                  ["other", "Other"]
+              ],
+              uiStyle: "medium"
+            }
           ]
         }
       ]

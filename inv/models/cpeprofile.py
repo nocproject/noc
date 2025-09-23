@@ -60,7 +60,7 @@ class MetricConfig(object):
 
 
 class MatchRule(EmbeddedDocument):
-    dynamic_order = IntField(default=0)
+    dynamic_order = IntField(default=0, min_value=0)
     labels = ListField(StringField())
     resource_groups = ListField(ObjectIdField())
     type = StringField(choices=[(x, x) for x in CPE_TYPES], required=False)
@@ -236,9 +236,10 @@ class CPEProfile(Document):
         ):
             return
         mos = set()
-        for mo, bi_id in CPE.objects.filter(profile=self).scalar("controller", "bi_id"):
-            if mo and (not changed_fields or "metrics_default_interval" in changed_fields):
-                mos.add(mo.bi_id)
+        for controllers, bi_id in CPE.objects.filter(profile=self).scalar("controllers", "bi_id"):
+            if controllers and (not changed_fields or "metrics_default_interval" in changed_fields):
+                # Check Active?
+                mos.add(controllers[0].managed_object.bi_id)
             if not changed_fields or "metrics" in changed_fields or "labels" in changed_fields:
                 yield "cfgmetricsources", f"inv.CPE::{bi_id}"
         for bi_id in mos:

@@ -44,7 +44,6 @@ class CPECheck(DiscoveryCheck):
     def handler(self):
         self.logger.info("Checking CPEs")
         result = self.object.scripts.get_cpe()
-        get_interface_profile = CPEProfile.get_profiles_matcher()
         processed = set()
         bulk = []
         for r in result:
