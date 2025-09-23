@@ -183,7 +183,7 @@ class HTTP(object):
         if self.session_started:
             self.shutdown_session()
 
-    def _process_cookies(self, headers: Dict[str, bytes]):
+    def _process_cookies(self, headers: Dict[str, bytes], allow_multiple_header: bool = False):
         """
         Process and store cookies from response headers
         :param headers:
@@ -197,6 +197,10 @@ class HTTP(object):
         if not self.cookies:
             self.cookies = SimpleCookie()
         # self.cookies.load(cdata)
+        if allow_multiple_header:
+            for k, v in headers.items():
+                if k.lower() == "set-cookie":
+                    self.cookies.load(v.decode())
         if "," not in cdata:
             self.cookies.load(cdata)
             return
@@ -230,7 +234,9 @@ class HTTP(object):
             headers = {}
         if self.cookies:
             headers["Cookie"] = (
-                self.cookies.output(header="", sep=";").lstrip().encode(DEFAULT_ENCODING)
+                self.cookies.output(header="", sep=";", attrs="value")
+                .lstrip()
+                .encode(DEFAULT_ENCODING)
             )
         return headers
 
