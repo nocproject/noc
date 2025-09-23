@@ -23,7 +23,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -36,7 +36,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -49,7 +49,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -62,7 +62,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -75,7 +75,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -88,7 +88,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -101,7 +101,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
@@ -114,7 +114,7 @@
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "EPON"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
