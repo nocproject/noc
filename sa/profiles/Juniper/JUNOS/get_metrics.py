@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS.get_metrics
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2023 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -14,6 +14,7 @@ from noc.sa.profiles.Generic.get_metrics import (
     Script as GetMetricsScript,
     metrics,
     ProfileMetricConfig,
+    MetricConfig,
 )
 from noc.core.models.cfgmetrics import MetricCollectorConfig
 from .oidrules.slot import SlotRule
@@ -64,21 +65,21 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", 4),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | Out | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | Out | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.egress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | Jitter | In | Avg": ProfileMetricConfig(
             metric="SLA | Jitter | In | Avg",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcAverage", RPMMeasurement.ingress.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         #
         "SLA | RTT | Min": ProfileMetricConfig(
@@ -86,14 +87,14 @@ class Script(GetMetricsScript):
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
         "SLA | RTT | Max": ProfileMetricConfig(
             metric="SLA | RTT | Max",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMax", RPMMeasurement.roundTripTime.value),
             sla_types=["udp-jitter", "icmp-echo"],
             scale=1,
-            units="m,s",
+            units="u,s",
         ),
     }
 
@@ -130,6 +131,10 @@ class Script(GetMetricsScript):
     @metrics(
         [
             "Interface | CBQOS | Drops | Out | Delta",
+            "Interface | CBQOS | Octets | In",
+            "Interface | CBQOS | Octets | In | Delta",
+            "Interface | CBQOS | Packets | In",
+            "Interface | CBQOS | Packets | In | Delta",
             "Interface | CBQOS | Octets | Out",
             "Interface | CBQOS | Octets | Out | Delta",
             "Interface | CBQOS | Packets | Out",
@@ -139,13 +144,25 @@ class Script(GetMetricsScript):
         has_capability="Juniper | OID | jnxCosIfqStatsTable",
         access="S",  # CLI version
     )
-    def get_interface_cbqos_metrics_snmp(self, metrics):
-        ifaces = {m.ifindex: m for m in metrics if m.ifindex}
-        for ifindex in ifaces:
-            for index, out_packets, out_octets, discards in self.snmp.get_tables(
+    def get_interface_cbqos_metrics_snmp(self, metrics: List[MetricConfig]):
+        ifaces = {str(m.ifindex): m for m in metrics if m.ifindex}
+        for (
+            ifindex,
+            mc,
+        ) in ifaces.items():
+            for (
+                index,
+                in_packets,
+                out_packets,
+                in_octets,
+                out_octets,
+                discards,
+            ) in self.snmp.get_tables(
                 [
+                    mib["JUNIPER-COS-MIB::jnxCosIfqQedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedPkts", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTxedBytes", ifindex],
+                    mib["JUNIPER-COS-MIB::jnxCosIfqQedBytes", ifindex],
                     mib["JUNIPER-COS-MIB::jnxCosIfqTailDropPkts", ifindex],
                 ]
             ):
@@ -155,27 +172,29 @@ class Script(GetMetricsScript):
                 traffic_class = "".join([chr(int(x)) for x in index.split(".")[1:]])
                 ts = self.get_ts()
                 for metric, value in [
-                    ("Interface | CBQOS | Drops | Out | Delta", discards),
                     ("Interface | CBQOS | Octets | Out | Delta", out_octets),
                     ("Interface | CBQOS | Octets | Out", out_octets),
+                    ("Interface | CBQOS | Octets | In | Delta", in_octets),
+                    ("Interface | CBQOS | Octets | In", in_octets),
                     ("Interface | CBQOS | Packets | Out | Delta", out_packets),
                     ("Interface | CBQOS | Packets | Out", out_packets),
+                    ("Interface | CBQOS | Packets | In | Delta", in_packets),
+                    ("Interface | CBQOS | Packets | In", in_packets),
                 ]:
                     if not value:
                         continue
                     scale = 1
-                    sc = ifaces[ifindex]
                     self.set_metric(
-                        id=(metric, sc.labels),
+                        id=(metric, mc.labels),
                         metric=metric,
                         value=float(value),
                         ts=ts,
-                        labels=sc.labels + [f"noc::traffic_class::{traffic_class}"],
+                        labels=mc.labels + [f"noc::traffic_class::{traffic_class}"],
                         multi=True,
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,
                         units="byte" if "Octets" in metric else "pkt",
-                        service=sc.service,
+                        service=mc.service,
                     )
 
     def collect_sla_metrics(self, metrics):
@@ -249,6 +268,7 @@ class Script(GetMetricsScript):
                 type="gauge",
                 scale=mc.scale,
                 units=mc.units,
+                service=probe.service,
             )
 
     def get_dict_dhcp_pool_name_IP(self):
