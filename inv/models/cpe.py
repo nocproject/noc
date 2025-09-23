@@ -10,7 +10,7 @@ import operator
 import datetime
 import logging
 from threading import Lock
-from typing import Optional, Iterable, List, Any, Union
+from typing import Optional, Iterable, List, Any, Union, Dict
 
 # Third-party modules
 import bson
@@ -39,6 +39,7 @@ from noc.core.model.decorator import on_delete_check
 from noc.core.topology.types import ShapeOverlay, TopologyNode
 from noc.core.caps.decorator import capabilities
 from noc.core.stencil import Stencil
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.main.models.label import Label
 from noc.main.models.textindex import full_text_search
 from noc.sa.models.managedobject import ManagedObject
@@ -75,11 +76,12 @@ class ControllerItem(EmbeddedDocument):
 
 
 @full_text_search
-@Label.model
+@dynamic_profile(profile_model_id="inv.CPEProfile")
 @change
 @bi_sync
 @capabilities
 @workflow
+@Label.model
 @on_delete_check(clean=[("sa.ManagedObject", "cpe_id")])
 class CPE(Document):
     meta = {
@@ -376,6 +378,13 @@ class CPE(Document):
     def get_cpe_interface(self):
         return self.controller.get_interface()
 
+    def get_dynamic_classification_policy(self):
+        """"""
+        # if self.dynamic_classification_policy == "P":
+        #     return self.object_profile.dynamic_classification_policy
+        # return self.dynamic_classification_policy
+        return self.profile.dynamic_classification_policy
+
     def set_oper_status(
         self,
         status: bool,
@@ -487,3 +496,14 @@ class CPE(Document):
                 "caps": self.get_caps(),
             },
         )
+
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        r = {
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": [],
+            "type": self.type,
+        }
+        if self.controller:
+            r["service_groups"] = self.controller.managed_object.effective_service_groups
+        return r
