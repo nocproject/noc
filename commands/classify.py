@@ -98,17 +98,19 @@ class Command(BaseCommand):
         for event in events:
             raw_vars = {"profile": event.type.profile, "message": event.message}
             rule, r_vars = ruleset.find_rule(event, raw_vars)
-            message = event.model_dump()["message"]
             if not rule.name.startswith("Unknown |"):  # EventClass
                 cls_cnt += 1
-                out_record = {
-                    "message": message,
-                    "event_class__name": rule.event_class_name,
-                    "vars": r_vars,
-                }
-                out_data += [out_record]
             else:
+                message = event.model_dump()["message"]
                 unknown_messages += f"{message}\n"
+            out_record = {
+                "event": event.model_dump(
+                    exclude_none=True, exclude_unset=True, exclude_defaults=True
+                ),
+                "event_class__name": rule.event_class_name,
+                "vars": r_vars,
+            }
+            out_data += [out_record]
             msg_cnt += 1
         time_delta = time.perf_counter() - time_start
         out = {
@@ -130,10 +132,11 @@ class Command(BaseCommand):
         with open(outfile, "wb") as f:
             f.write(orjson.dumps(out, option=orjson.OPT_INDENT_2))
 
-        outfile = f"{filepath.name}.unknown"
-        outfile = Path(output_dir, outfile)
-        with open(outfile, "wb") as f:
-            f.write(bytes(unknown_messages, "utf-8"))
+        if unknown_messages != "":
+            outfile = f"{filepath.name}.unknown"
+            outfile = Path(output_dir, outfile)
+            with open(outfile, "wb") as f:
+                f.write(bytes(unknown_messages, "utf-8"))
 
         cls_percent = round((cls_cnt / msg_cnt) * 100, 1) if msg_cnt else "--"
         msg_sec = round(msg_cnt / time_delta) if time_delta else "--"
