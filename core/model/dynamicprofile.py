@@ -110,7 +110,7 @@ def dynamic_profile(
         else:
             changed_fields = getattr(instance, "changed_fields", None) or []
         if (
-            (not changed_fields and getattr(instance, "changed_fields", None))
+            not changed_fields
             or "match_rules" in changed_fields
             or "dynamic_classification_policy" in changed_fields
         ):
@@ -165,6 +165,16 @@ def update_profiles(
     user: Optional[str] = None,
 ):
     """Update profile"""
+
+    def get_label(oo):
+        if hasattr(oo, "name"):
+            label = oo.name
+        elif hasattr(oo, "label"):
+            label = oo.label
+        else:
+            label = str(oo)
+        return label
+
     if user:
         logger.info(
             "[%s] Running update Profile for Match Rules (by user '%s')",
@@ -188,26 +198,30 @@ def update_profiles(
     with change_tracker.bulk_changes(user=user):
         # Same Profile, Groups, Labels filter
         for o in oos:
+            ll = get_label(o)
             processed += 1
             ctx = o.get_matcher_ctx()
             for p_id, match in classifier:
                 if match(ctx):
                     break
             else:
-                logger.debug("[%s] Nothing profile for match", o.name)
+                logger.debug("[%s|%s] Nothing profile for match", o.id, ll)
                 continue
             profile = getattr(o, profile_field)
             if str(p_id) != str(profile.id):
                 profile = profile_model.get_by_id(p_id)
                 if not profile:
                     logger.error(
-                        "[%s] Invalid profile with id '%s'. Skipping",
-                        o.name,
+                        "[%s|%s] Invalid profile with id '%s'. Skipping",
+                        o.id,
+                        ll,
                         p_id,
                     )
                     return
                 elif profile != o.profile:
-                    logger.info("[%s] Object has been classified as '%s'", o.name, profile.name)
+                    logger.info(
+                        "[%s|%s] Object has been classified as '%s'", o.id, ll, profile.name
+                    )
                     setattr(o, profile_field, profile)
                     o.save()
                     changed += 1
