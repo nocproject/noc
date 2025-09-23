@@ -1,8 +1,7 @@
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # Python modules
 import re
@@ -43,11 +42,19 @@ class Script(BaseScript):
             platform = self.snmp.get(
                 mib["JUNIPER-VIRTUALCHASSIS-MIB::jnxVirtualChassisMemberModel", 0]
             )
-        return {
+        r = {
             "vendor": "Juniper",
             "platform": platform,
             "version": version,
+            "attributes": {},
         }
+        serial = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
+        if v:
+            r["attributes"]["Serial Number"] = serial
+        hw = self.snmp.get(mib["ENTITY-MIB::entPhysicalHardwareRev", 1])
+        if hw:
+            r["attributes"]["HW version"] = hw
+        return r
 
     def execute_cli(self):
         v = self.cli("show version")

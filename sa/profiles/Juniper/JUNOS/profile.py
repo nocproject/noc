@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Juniper.JUNOS profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -50,10 +50,10 @@ class Profile(BaseProfile):
     config_applicators = ["IfaceTypeJunosApplicator"]
 
     matchers = {
-        "is_has_lldp": {"platform": {"$regex": "ex|mx|qfx|acx|srx"}},
-        "is_switch": {"platform": {"$regex": "ex|qfx"}},
+        "is_has_lldp": {"platform": {"$regex": r"ex|mx|qfx|acx|srx"}},
+        "is_switch": {"platform": {"$regex": r"ex|qfx"}},
         "is_olive": {"platform": {"$regex": "olive"}},
-        "is_work_em": {"platform": {"$regex": "vrr|csrx"}},
+        "is_work_em": {"platform": {"$regex": "vrr|csrx|qfx"}},
         "is_gte_16": {"version": {"$gte": "16"}},
         "is_srx_6xx": {"platform": {"$regex": r"srx6.\d+"}},
         "is_cli_help_supported": {"caps": {"$in": ["Juniper | CLI | Help"]}},
