@@ -119,15 +119,15 @@ def setup_asyncio() -> None:
 
     if _setup_completed:
         return
-    logger.info("Setting up asyncio event loop policy")
+    logger.debug("Setting up asyncio event loop policy")
     if USE_UVLOOP:
-        logger.info("Setting up uvloop event loop")
+        logger.debug("Setting up uvloop event loop")
         asyncio.set_event_loop_policy(NOCEventUVLoopPolicy())
     elif config.features.use_uvloop:
         logger.info("uvloop is not installed, using default event loop")
         asyncio.set_event_loop_policy(NOCEventLoopPolicy())
     else:
-        logger.info("Setting up default event loop")
+        logger.debug("Setting up default event loop")
         asyncio.set_event_loop_policy(NOCEventLoopPolicy())
     _setup_completed = True
 

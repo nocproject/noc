@@ -491,7 +491,7 @@ class ConsulDCS(DCSBase):
         :param critical:
         :return: address:port
         """
-        self.logger.info("Resolve near service %s", name)
+        self.logger.debug("Resolve near service %s", name)
         index = 0
         while True:
             try:
@@ -527,7 +527,7 @@ class ConsulDCS(DCSBase):
                 ]
                 if not full_result:
                     break
-            self.logger.info("Resolved near service %s to %s", name, r)
+            self.logger.debug("Resolved near service %s to %s", name, r)
             if critical:
                 self.clear_faulty_status()
             return r
