@@ -53,6 +53,8 @@ EVENT_QUERY = f"""
 """
 
 IGNORED_OIDS = {"RFC1213-MIB::sysUpTime.0", "SNMPv2-MIB::sysUpTime.0"}
+DEFAULT_TARGET_NAME = "stub"
+DEFAULT_TARGET_ADDRESS = DEFAULT_TARGET_NAME
 
 
 class Target(BaseModel):
@@ -85,6 +87,10 @@ class Target(BaseModel):
         if not self.id:
             return bi_hash((self.pool, self.address))
         return bi_hash(self.id)
+
+    @classmethod
+    def default(cls) -> "Target":
+        return Target(address=DEFAULT_TARGET_NAME, name=DEFAULT_TARGET_ADDRESS)
 
 
 class MessageType(BaseModel):
