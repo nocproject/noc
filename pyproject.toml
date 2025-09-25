@@ -72,7 +72,7 @@ lint = [
   "types-orjson==3.6.2",
   "types-cachetools==5.5.0.20240820",
 ]
-login-ldap = ["ldap3==2.9.1"]
+login-ldap = ["ldap3==2.10.2.rc2"]
 login-pam = ["python-pam==1.8.4"]
 login-radius = ["pyrad==2.4"]
 node = [
