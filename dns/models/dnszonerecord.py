@@ -53,11 +53,8 @@ class DNSZoneRecord(NOCModel):
         )
 
     @classmethod
-    def get_by_id(cls, id: int) -> Optional["DNSZoneRecord"]:
-        dnszonerecord = DNSZoneRecord.objects.filter(id=id)[:1]
-        if dnszonerecord:
-            return dnszonerecord[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["DNSZoneRecord"]:
+        return DNSZoneRecord.objects.filter(id=oid).first()
 
     def get_changed_instance(self):
         return self.zone

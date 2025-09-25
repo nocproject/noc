@@ -151,19 +151,13 @@ class VRF(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["VRF"]:
-        vrf = VRF.objects.filter(id=id)[:1]
-        if vrf:
-            return vrf[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["VRF"]:
+        return VRF.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_vpn_id_cache"), lock=lambda _: id_lock)
-    def get_by_vpn_id(cls, vpn_id):
-        vrf = VRF.objects.filter(vpn_id=vpn_id)[:1]
-        if vrf:
-            return vrf[0]
-        return None
+    def get_by_vpn_id(cls, vpn_id: str) -> Optional["VRF"]:
+        return VRF.objects.filter(vpn_id=vpn_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_vrf:

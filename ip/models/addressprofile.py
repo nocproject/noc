@@ -89,7 +89,7 @@ class AddressProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name: str) -> Optional["AddressProfile"]:
         return AddressProfile.objects.filter(name=name).first()
 
     @classmethod
