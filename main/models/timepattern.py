@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # TimePattern database model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -56,12 +56,8 @@ class TimePattern(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["TimePattern"]:
-        p = TimePattern.objects.filter(id=id)[:1]
-        if p:
-            return p[0]
-        else:
-            return None
+    def get_by_id(cls, oid: int) -> Optional["TimePattern"]:
+        return TimePattern.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)

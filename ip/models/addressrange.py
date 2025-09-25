@@ -96,11 +96,8 @@ class AddressRange(NOCModel):
         )
 
     @classmethod
-    def get_by_id(cls, id: int) -> Optional["AddressRange"]:
-        addressrange = AddressRange.objects.filter(id=id)[:1]
-        if addressrange:
-            return addressrange[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["AddressRange"]:
+        return AddressRange.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

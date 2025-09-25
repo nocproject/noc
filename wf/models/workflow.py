@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Workflow model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -142,7 +142,7 @@ class Workflow(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["Workflow"]:
+    def get_by_name(cls, name: str) -> Optional["Workflow"]:
         return Workflow.objects.filter(name=name).first()
 
     @classmethod
