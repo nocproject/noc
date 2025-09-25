@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ExtStorage model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ class ExtStorage(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name: str) -> Optional["ExtStorage"]:
         return ExtStorage.objects.filter(name=name).first()
 
     def open_fs(self):

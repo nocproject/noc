@@ -53,19 +53,13 @@ class Permission(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["Permission"]:
-        p = Permission.objects.filter(id=id)[:1]
-        if p:
-            return p[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["Permission"]:
+        return Permission.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
-        p = Permission.objects.filter(name=name)[:1]
-        if p:
-            return p[0]
-        return None
+    def get_by_name(cls, name: str) -> Optional["Permission"]:
+        return Permission.objects.filter(name=name).first()
 
     def get_implied_permissions(self):
         if not self.implied:
