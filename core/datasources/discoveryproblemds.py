@@ -167,7 +167,6 @@ class DiscoveryProblemDS(BaseDataSource):
             for discovery in coll.with_options(
                 read_preference=ReadPreference.SECONDARY_PREFERRED
             ).aggregate(cls.get_pipeline(mo_ids, match)):
-
                 for method in [
                     x for x in discovery["job"][0]["problems"] if x not in exclude_method
                 ]:
@@ -176,8 +175,10 @@ class DiscoveryProblemDS(BaseDataSource):
                         continue
                     row_num += 1
                     yield row_num, "managed_object_id", discovery["key"]
-                    yield row_num, "last_success_discovery", (
-                        discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else ""
+                    yield (
+                        row_num,
+                        "last_success_discovery",
+                        (discovery["st"].strftime("%d.%m.%Y %H:%M") if "st" in discovery else ""),
                     )
                     yield row_num, "discovery", method
                     yield row_num, "error", cls.clean_problem(p)

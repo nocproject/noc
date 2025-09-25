@@ -25,7 +25,6 @@ class SubscriberProfile(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "SubscriberProfileModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

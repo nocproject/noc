@@ -11,7 +11,6 @@ from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 
 
 class Script(BaseScript):
-
     name = "TPLink.T2600G.get_interfaces"
     interface = IGetInterfaces
 

@@ -133,9 +133,7 @@ class AS(NOCModel):
         if self.header_remarks:
             s += ["remarks: %s" % x for x in self.header_remarks.split("\n")]
         # Find AS peers
-        pg = (
-            {}
-        )  # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
+        pg = {}  # Peer Group -> AS -> peering_point -> [(import, export, localpref, import_med, export_med, remark)]
         for peer in self.peer_set.filter():
             if not peer.state.is_production:
                 continue

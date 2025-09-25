@@ -16,7 +16,6 @@ class Migration(BaseMigration):
     depends_on = [("main", "0004_language")]
 
     def migrate(self):
-
         # Model "KBCategory"
         self.db.create_table(
             "kb_kbcategory",

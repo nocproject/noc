@@ -477,8 +477,10 @@ class ManagedObjectDS(BaseDataSource):
             if "links" in mo:
                 yield num, "link_count", len(mo["links"])
             if "profile" in mo:
-                yield num, "profile", (
-                    Profile.get_by_id(mo["profile"]).name if mo["profile"] else None
+                yield (
+                    num,
+                    "profile",
+                    (Profile.get_by_id(mo["profile"]).name if mo["profile"] else None),
                 )
             if "pool" in mo:
                 yield num, "pool", Pool.get_by_id(mo["pool"]).name if mo["pool"] else None
@@ -487,8 +489,10 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "model", Platform.get_by_id(platform).name if platform else None
             if "version" in mo:
                 sw_version = mo["version"]
-                yield num, "sw_version", (
-                    Firmware.get_by_id(sw_version).version if sw_version else None
+                yield (
+                    num,
+                    "sw_version",
+                    (Firmware.get_by_id(sw_version).version if sw_version else None),
                 )
             if "vendor" in mo:
                 yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
@@ -501,16 +505,24 @@ class ManagedObjectDS(BaseDataSource):
             if "avail_status" in mo:
                 yield num, "avail", {None: "--", True: "yes", False: "no"}[mo["avail_status"]]
             if "auth_profile" in mo:
-                yield num, "auth_profile", (
-                    AuthProfile.get_by_id(mo["auth_profile"]).name if mo["auth_profile"] else None
+                yield (
+                    num,
+                    "auth_profile",
+                    (
+                        AuthProfile.get_by_id(mo["auth_profile"]).name
+                        if mo["auth_profile"]
+                        else None
+                    ),
                 )
             if "administrative_domain__name" in mo:
                 yield num, "administrativedomain", mo["administrative_domain__name"]
             if "object_profile__name" in mo:
                 yield num, "object_profile", mo["object_profile__name"]
             if "project" in mo:
-                yield num, "project", (
-                    Project.get_by_id(mo["project"]).name if mo["project"] else None
+                yield (
+                    num,
+                    "project",
+                    (Project.get_by_id(mo["project"]).name if mo["project"] else None),
                 )
             if "labels" in mo:
                 yield num, "object_labels", mo["labels"]
@@ -537,11 +549,15 @@ class ManagedObjectDS(BaseDataSource):
             if "recv_snmptrap" in mo:
                 yield num, "recv_snmptrap", mo["recv_snmptrap"]
             if "diagnostics" in mo:
-                yield num, "trouble_detail", cls.get_diagnostic_trouble(
-                    mo["diagnostics"],
-                    mo["trouble_snmp"],
-                    mo["trouble_profile"],
-                    mo["trouble_cli"],
+                yield (
+                    num,
+                    "trouble_detail",
+                    cls.get_diagnostic_trouble(
+                        mo["diagnostics"],
+                        mo["trouble_snmp"],
+                        mo["trouble_profile"],
+                        mo["trouble_cli"],
+                    ),
                 )
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]

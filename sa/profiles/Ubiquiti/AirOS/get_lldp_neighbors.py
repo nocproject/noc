@@ -42,13 +42,15 @@ class Script(BaseScript):
         return result
 
     def execute_snmp(self):
-
-        result, neighbors = {
-            "local_interface": "ath0",
-            "local_interface_id": self.snmp.get(
-                "1.2.840.10036.2.1.1.1.5", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
-            ),
-        }, []
+        result, neighbors = (
+            {
+                "local_interface": "ath0",
+                "local_interface_id": self.snmp.get(
+                    "1.2.840.10036.2.1.1.1.5", display_hints={"1.2.840.10036.2.1.1.1.5": render_mac}
+                ),
+            },
+            [],
+        )
 
         macs = self.get_lldp_data(self.OID_CHILDREN_INDEX_MAP.get("mac"), is_mac=True)
         names = self.get_lldp_data(self.OID_CHILDREN_INDEX_MAP.get("name"))

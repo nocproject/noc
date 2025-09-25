@@ -18,7 +18,6 @@ from django.db.models import CharField
 
 
 class Migration(BaseMigration):
-
     TAG_MODELS = [
         ("sa_managedobject", "managedobject"),
         ("sa_managedobjectprofile", "managedobjectprofile"),

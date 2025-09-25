@@ -16,7 +16,6 @@ class Script(BaseScript):
     rx_line = re.compile(r"Interface = \S+, Ifindex = (?P<index>\d+)")
 
     def execute(self, interface):
-
         # Try SNMP first
         if self.has_snmp():
             try:

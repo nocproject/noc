@@ -49,7 +49,6 @@ class Script(BaseScript):
             pass
 
     def execute_cli(self):
-
         v = self.cli("show version | exclude Temp", cached=True)
         match1 = self.rx_pla.search(v)
         match2 = self.rx_ver.search(v)

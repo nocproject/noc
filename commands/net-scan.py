@@ -69,21 +69,35 @@ class Command(BaseCommand):
         parser.add_argument(
             "--jobs", action="store", type=int, default=100, dest="jobs", help="Concurrent jobs"
         )
-        parser.add_argument(
-            "--dry-run", dest="dry_run", action="store_true", help="Test only. Do not save records"
-        ),
-        parser.add_argument(
-            "--print-out", dest="print_out", action="store_true", help="Printing result to output"
-        ),
-        parser.add_argument(
-            "--print-file", dest="print_file", help="Printing result to file output"
-        ),
-        parser.add_argument(
-            "--ip-scan",
-            dest="ip_scan",
-            action="store_true",
-            help="Address wit prefixes enabled IP Scan",
-        ),
+        (
+            parser.add_argument(
+                "--dry-run",
+                dest="dry_run",
+                action="store_true",
+                help="Test only. Do not save records",
+            ),
+        )
+        (
+            parser.add_argument(
+                "--print-out",
+                dest="print_out",
+                action="store_true",
+                help="Printing result to output",
+            ),
+        )
+        (
+            parser.add_argument(
+                "--print-file", dest="print_file", help="Printing result to file output"
+            ),
+        )
+        (
+            parser.add_argument(
+                "--ip-scan",
+                dest="ip_scan",
+                action="store_true",
+                help="Address wit prefixes enabled IP Scan",
+            ),
+        )
         parser.add_argument("--ports", action="store", type=str, help="Check TCP ports")
         parser.add_argument("--rule", action="store", type=str, help="Check Rule. Set rule name")
         parser.add_argument(

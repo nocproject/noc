@@ -116,7 +116,6 @@ class ReportMetricsDetailApplication(ExtApplication):
         enable_autowidth=False,
         **kwargs,
     ):
-
         map_table = {
             "load_interfaces": r"/Interface\s\|\sLoad\s\|\s[In|Out]/",
             "load_cpu": r"/[CPU|Memory]\s\|\sUsage/",

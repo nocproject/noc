@@ -34,7 +34,6 @@ class ReportFilterApplication(SimpleReport):
     form = ReportForm
 
     def get_data(self, request, resource_group=None):
-
         qs = ManagedObject.objects
         if not request.user.is_superuser:
             qs = ManagedObject.objects.filter(

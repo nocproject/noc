@@ -11,7 +11,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         coll = self.mongo_db["noc.objects"]
         coll.update_many({"container": {"$exists": True}}, {"$rename": {"container": "parent"}})

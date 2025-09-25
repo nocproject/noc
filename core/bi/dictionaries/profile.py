@@ -23,7 +23,6 @@ class Profile(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "ProfileModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

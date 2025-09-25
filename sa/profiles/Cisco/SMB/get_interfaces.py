@@ -27,7 +27,6 @@ class Script(BaseScript):
     )
 
     def execute_cli(self):
-
         reply = [{"forwarding_instance": "default", "type": "ip", "interfaces": []}]
         interfaces = []
 

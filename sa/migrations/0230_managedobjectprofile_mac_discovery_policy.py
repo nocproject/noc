@@ -17,7 +17,7 @@ class Migration(BaseMigration):
     def migrate(self):
         interface_profile_mac = [
             i
-            for i, in self.db.execute(
+            for (i,) in self.db.execute(
                 "SELECT id FROM sa_managedobjectprofile WHERE mac_collect_interface_profile = True"
             )
         ]

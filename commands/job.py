@@ -61,22 +61,26 @@ class Command(BaseCommand):
         return Scheduler(scheduler)
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--scheduler",
-            "-s",
-            dest="scheduler",
-            default=Scheduler("scheduler").get_collection(),
-            type=self.scheduler,
-            help="Select scheduler. For sharded use SCHEDULER_NAME.SHARD_NAME",
-        ),
-        parser.add_argument(
-            "--format",
-            "-f",
-            dest="store",
-            # action="format",
-            choices=["json", "csv"],
-            help="Set output format",
-        ),
+        (
+            parser.add_argument(
+                "--scheduler",
+                "-s",
+                dest="scheduler",
+                default=Scheduler("scheduler").get_collection(),
+                type=self.scheduler,
+                help="Select scheduler. For sharded use SCHEDULER_NAME.SHARD_NAME",
+            ),
+        )
+        (
+            parser.add_argument(
+                "--format",
+                "-f",
+                dest="store",
+                # action="format",
+                choices=["json", "csv"],
+                help="Set output format",
+            ),
+        )
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         # load command
         list_parser = subparsers.add_parser("list")

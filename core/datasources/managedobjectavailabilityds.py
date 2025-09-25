@@ -125,9 +125,10 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
             oid = m_biid_map.get(int(row["managed_object"]), None)
             if not oid:
                 continue
-            min_start, max_stop = datetime.datetime.fromisoformat(
-                row["min_start"]
-            ), datetime.datetime.fromisoformat(row["max_stop"])
+            min_start, max_stop = (
+                datetime.datetime.fromisoformat(row["min_start"]),
+                datetime.datetime.fromisoformat(row["max_stop"]),
+            )
             duration = int(row["duration_u"])
             if min_start < start_date:
                 duration -= (start_date - min_start).total_seconds()

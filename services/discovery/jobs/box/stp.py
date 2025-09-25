@@ -78,8 +78,7 @@ class STPCheck(TopologyDiscoveryCheck):
             self.logger.error("Cannot get neighbors from candidate %s: %s", ro.name, e)
             self.set_problem(
                 # path=list(candidates[remote_object])[0][0],
-                message="Cannot get neighbors from candidate %s: %s"
-                % (ro.name, e)
+                message="Cannot get neighbors from candidate %s: %s" % (ro.name, e)
             )
             return dmap
         for i in result["instances"]:

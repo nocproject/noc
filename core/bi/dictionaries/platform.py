@@ -29,7 +29,6 @@ class Platform(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "PlatformModel"):
-
         return {
             "id": str(item.id),
             "name": ch_escape(item.name),

@@ -154,9 +154,7 @@ class Script(BaseScript):
                 "??": "learning",
                 "5": "forwarding",
                 "_": "unknown",
-            }[
-                v[instance_id, port_id]
-            ]  # @todo: refine states
+            }[v[instance_id, port_id]]  # @todo: refine states
         # Port role
         v = self.mib_walk("hpicfBridgeMSTPortRole")
         for instance_id, port_id in v:
@@ -170,9 +168,7 @@ class Script(BaseScript):
                 "_": "master",
                 "__": "nonstp",
                 "!!": "unknown",
-            }[
-                v[instance_id, port_id]
-            ]  # @todo: refine roles
+            }[v[instance_id, port_id]]  # @todo: refine roles
         # Designated bridge
         v = self.mib_walk("hpicfBridgeMSTPortDesignatedBridge")
         for instance_id, port_id in v:

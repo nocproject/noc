@@ -40,7 +40,6 @@ class Script(GetMetricsScript):
 
     @metrics(["CPU | Usage"], volatile=False, access="S")  # SNMP version
     def get_cpu_usage(self, metrics):
-
         # 1.3.6.1.4.1.41112.1.4.8.3 for SNMP, but OID not working on devices
         # model "M2 Titanium"
         result = self.snmp.get("1.3.6.1.4.1.41112.1.4.8.3")
@@ -49,7 +48,6 @@ class Script(GetMetricsScript):
 
     @metrics(["Environment | Temperature"], volatile=False, access="S")  # SNMP version
     def get_temperature(self, metrics):
-
         # 1.3.6.1.4.1.41112.1.4.8.4.0 for SNMP, but OID not working on devices
         # model "M2 Titanium"
         value = self.snmp.get("1.3.6.1.4.1.41112.1.4.8.4.0")
