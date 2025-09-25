@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MetricType model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -216,7 +216,7 @@ class MetricType(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["MetricType"]:
+    def get_by_name(cls, name: str) -> Optional["MetricType"]:
         return MetricType.objects.filter(name=name).first()
 
     @classmethod

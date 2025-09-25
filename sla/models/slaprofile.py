@@ -113,7 +113,7 @@ class SLAProfile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["SLAProfile"]:
+    def get_by_name(cls, name: str) -> Optional["SLAProfile"]:
         try:
             return SLAProfile.objects.get(name=name)
         except SLAProfile.DoesNotExist:

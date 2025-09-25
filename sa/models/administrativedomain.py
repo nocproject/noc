@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # AdministrativeDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -99,19 +99,13 @@ class AdministrativeDomain(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["AdministrativeDomain"]:
-        ad = AdministrativeDomain.objects.filter(id=id)[:1]
-        if ad:
-            return ad[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["AdministrativeDomain"]:
+        return AdministrativeDomain.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["AdministrativeDomain"]:
-        ad = AdministrativeDomain.objects.filter(bi_id=bi_id)[:1]
-        if ad:
-            return ad[0]
-        return None
+        return AdministrativeDomain.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_administrativedomain:

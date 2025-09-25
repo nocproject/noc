@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Project models
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -92,8 +92,5 @@ class Project(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda x: id_lock)
-    def get_by_id(cls, id: int) -> Optional["Project"]:
-        p = Project.objects.filter(id=id)[:1]
-        if p:
-            return p[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["Project"]:
+        return Project.objects.filter(id=oid).first()

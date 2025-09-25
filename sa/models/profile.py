@@ -76,7 +76,7 @@ class Profile(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
+    def get_by_name(cls, name: str) -> Optional["Profile"]:
         return Profile.objects.filter(name=name).first()
 
     def to_json(self) -> str:
