@@ -51,7 +51,6 @@ class Script(GetMetricsScript):
 
     @metrics(["Memory | Total", "Memory | Usage"], volatile=False, access="S")  # SNMP version
     def get_memory_metrics(self, metrics):
-
         memory_total, memory_usage, *_ = (
             data for _, data in self.snmp.getnext("1.3.6.1.4.1.10002.1.1.1.1")
         )
@@ -82,7 +81,6 @@ class Script(GetMetricsScript):
         access="S",
     )  # SNMP version
     def get_cpu_metrics(self, metrics):
-
         index_map = {1: "1", 2: "5"}
         for index in index_map.keys():
             value = self.snmp.get(f"1.3.6.1.4.1.10002.1.1.1.4.2.1.3.{index}")
@@ -110,7 +108,6 @@ class Script(GetMetricsScript):
         access="S",
     )  # SNMP version
     def get_radio_metrics(self, metrics):
-
         oid_index_map = {
             "Radio | Frequency": 6,
             "Radio | Bandwidth": 8,

@@ -64,9 +64,9 @@ class AssetCheck(DiscoveryCheck):
                 List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
-        self.sensors: Dict[Tuple[Optional[Object], str] : Dict[str, Any]] = (
-            {}
-        )  # object, sensor -> sensor data
+        self.sensors: Dict[
+            Tuple[Optional[Object], str] : Dict[str, Any]
+        ] = {}  # object, sensor -> sensor data
         # Upper object, lower object
         self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(

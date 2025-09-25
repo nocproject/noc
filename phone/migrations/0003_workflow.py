@@ -26,10 +26,12 @@ class Migration(BaseMigration):
         }
         db = self.mongo_db
         db["noc.phonerangeprofiles"].update_many(
-            {}, {"$set": {"workflow": bson.ObjectId("5a1d078e1bb627000151a17d")}}  # Default
+            {},
+            {"$set": {"workflow": bson.ObjectId("5a1d078e1bb627000151a17d")}},  # Default
         )
         db["noc.phoneranges"].update_many(
-            {}, {"$set": {"state": bson.ObjectId("5a1d07b41bb627000151a18b")}}  # Ready
+            {},
+            {"$set": {"state": bson.ObjectId("5a1d07b41bb627000151a18b")}},  # Ready
         )
         db["noc.phonenumberprofiles"].update_many(
             {},

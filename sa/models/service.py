@@ -857,9 +857,7 @@ class Service(Document):
         for (
             sid,
             path,
-        ) in Service.objects.filter(
-            q
-        ).scalar("id", "service_path"):
+        ) in Service.objects.filter(q).scalar("id", "service_path"):
             services.add(sid)
             if path:
                 services |= set(path)

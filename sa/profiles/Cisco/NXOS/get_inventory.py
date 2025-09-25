@@ -95,7 +95,6 @@ class Script(BaseScript):
                     objects[-1]["type"] == "GEM"
                     and objects[-1]["part_no"][0] not in self.gem_w_o_sfp
                 ):
-
                     # Get number of last chassis
                     for c in objects:
                         if c["type"] == "CHASSIS":

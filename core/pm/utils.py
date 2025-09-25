@@ -588,7 +588,7 @@ class MetricProxy:
 
 
 def get_objects_metrics(
-    managed_objects: Union[Iterable, int]
+    managed_objects: Union[Iterable, int],
 ) -> Tuple[Dict[Any, Dict[str, Dict[str, int]]], Dict[Any, datetime.datetime]]:
     """
     Attrs:

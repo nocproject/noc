@@ -208,17 +208,21 @@ class BaseController(object):
                         yield ep, end, r_constraints
                     else:
                         # Whole object
-                        yield Endpoint(object=obj, name=""), Endpoint(
-                            object=end.object, name=""
-                        ), r_constraints
+                        yield (
+                            Endpoint(object=obj, name=""),
+                            Endpoint(object=end.object, name=""),
+                            r_constraints,
+                        )
                         return
             elif self.adhoc_endpoints:
                 yield ep, end, fwd_constraints
             else:
                 # Whole object
-                yield Endpoint(object=obj, name=""), Endpoint(
-                    object=end.object, name=""
-                ), fwd_constraints
+                yield (
+                    Endpoint(object=obj, name=""),
+                    Endpoint(object=end.object, name=""),
+                    fwd_constraints,
+                )
                 return
 
     def get_peer(self, ep: Endpoint) -> Endpoint | None:

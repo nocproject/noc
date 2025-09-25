@@ -16,7 +16,6 @@ class Script(BaseScript):
     cache = True
 
     def execute_snmp(self):
-
         mac = self.snmp.get("1.3.6.1.3.55.1.2.2.0")
 
         return [

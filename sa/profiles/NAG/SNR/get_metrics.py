@@ -153,7 +153,6 @@ class Script(GetMetricsScript):
     )  # SNMP version
     def get_poe_metrics(self, metrics):
         for metric in metrics:
-
             poe_oid = {
                 name: f"{self.BASE_POE_OID}.{metric_index}"
                 for name, metric_index in self.POE_METRICS_INDEX

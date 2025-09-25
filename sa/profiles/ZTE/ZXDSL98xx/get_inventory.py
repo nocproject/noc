@@ -116,7 +116,6 @@ class Script(BaseScript):
             if "SCC" in p["cfgtype"]:
                 subs = self.cli("show sub-card")
                 for line in subs.splitlines():
-
                     match = self.rx_subcard.search(line)
                     if match:
                         sub = {

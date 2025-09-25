@@ -124,8 +124,9 @@ class ResourceItem(BaseModel):
             elif data[d.name].remote_system not in systems_priority:
                 data[d.name] = d
                 continue
-            i1, i2 = systems_priority.index(d.remote_system), systems_priority.index(
-                data[d.name].remote_system
+            i1, i2 = (
+                systems_priority.index(d.remote_system),
+                systems_priority.index(data[d.name].remote_system),
             )
             if i1 > i2:
                 data[d.name] = d

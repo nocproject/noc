@@ -68,11 +68,13 @@ class Script(GetMetricsScript):
         access="S",
     )  # SNMP version
     def get_radio_metrics(self, metrics):
-
-        oid_index_map, base_oid = {
-            "Radio | Frequency": 7,
-            "Radio | Bandwidth": 9,
-        }, "1.3.6.1.4.1.41752.3.5.1.2.1.1"
+        oid_index_map, base_oid = (
+            {
+                "Radio | Frequency": 7,
+                "Radio | Bandwidth": 9,
+            },
+            "1.3.6.1.4.1.41752.3.5.1.2.1.1",
+        )
 
         iface = self.snmp.get(f"{base_oid}.4.8")
         for key, value in oid_index_map.items():

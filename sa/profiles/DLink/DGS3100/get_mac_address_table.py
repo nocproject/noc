@@ -27,7 +27,6 @@ class Script(BaseScript):
     )
 
     def execute_cli(self, interface=None, vlan=None, mac=None, **kwargs):
-
         # Fallback to CLI
         cmd = "show fdb"
         if mac is not None:

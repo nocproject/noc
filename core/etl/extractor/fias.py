@@ -292,7 +292,14 @@ class StreetExtractor(BaseExtractor):
         for r in streets:
             parent = self.get_parent(cities, r.PARENTGUID)
             if parent and parent.OKTMO in self.parent_admdiv_data:
-                yield r.AOGUID, parent.OKTMO, r.FORMALNAME.rstrip(), r.SHORTNAME.rstrip(), r.STARTDATE, r.ENDDATE
+                yield (
+                    r.AOGUID,
+                    parent.OKTMO,
+                    r.FORMALNAME.rstrip(),
+                    r.SHORTNAME.rstrip(),
+                    r.STARTDATE,
+                    r.ENDDATE,
+                )
         cities.close()
         streets.close()
 

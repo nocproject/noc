@@ -62,9 +62,15 @@ def parse_ttl(ttl):
 
 def main():
     parser = OptionParser()
-    parser.add_option(
-        "--public", dest="public", action="store_true", default=False, help="Create public paste"
-    ),
+    (
+        parser.add_option(
+            "--public",
+            dest="public",
+            action="store_true",
+            default=False,
+            help="Create public paste",
+        ),
+    )
     parser.add_option(
         "-s", "--subject", dest="subject", action="store", help="Create paste subject"
     )

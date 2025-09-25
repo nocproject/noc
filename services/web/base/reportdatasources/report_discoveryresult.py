@@ -135,6 +135,9 @@ class ReportDiscoveryResult(BaseReportColumn):
         dresult.__new__.__defaults__ = ("",) * len(dresult._fields)
         for x in val:
             r = x["job"][0].get("problems")
-            yield int(x["key"]), dresult(
-                **{xx: r[xx].get("", str(r[xx]) if self.safe_output else r[xx]) for xx in r}
+            yield (
+                int(x["key"]),
+                dresult(
+                    **{xx: r[xx].get("", str(r[xx]) if self.safe_output else r[xx]) for xx in r}
+                ),
             )

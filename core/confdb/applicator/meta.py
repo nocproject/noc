@@ -143,10 +143,38 @@ class MetaApplicator(BaseApplicator):
                     n = str(n)
                     yield "interfaces", iface.name, "meta", "link", n, "object", "id", str(ro.id)
                     yield "interfaces", iface.name, "meta", "link", n, "object", "name", ro.name
-                    yield "interfaces", iface.name, "meta", "link", n, "object", "profile", "id", str(
-                        ro.object_profile.id
+                    yield (
+                        "interfaces",
+                        iface.name,
+                        "meta",
+                        "link",
+                        n,
+                        "object",
+                        "profile",
+                        "id",
+                        str(ro.object_profile.id),
                     )
-                    yield "interfaces", iface.name, "meta", "link", n, "object", "profile", "name", ro.object_profile.name
-                    yield "interfaces", iface.name, "meta", "link", n, "object", "profile", "level", ro.object_profile.level
+                    yield (
+                        "interfaces",
+                        iface.name,
+                        "meta",
+                        "link",
+                        n,
+                        "object",
+                        "profile",
+                        "name",
+                        ro.object_profile.name,
+                    )
+                    yield (
+                        "interfaces",
+                        iface.name,
+                        "meta",
+                        "link",
+                        n,
+                        "object",
+                        "profile",
+                        "level",
+                        ro.object_profile.level,
+                    )
                     for ri in sorted(links[iface.name][ro]):
                         yield "interfaces", iface.name, "meta", "link", n, "interface", ri

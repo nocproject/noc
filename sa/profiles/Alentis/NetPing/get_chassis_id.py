@@ -21,7 +21,6 @@ class Script(BaseScript):
     SNMP_GET_OIDS = {"SNMP": [mib["IF-MIB::ifPhysAddress", 1]]}
 
     def execute_cli(self, **kwargs):
-
         # Fallback to HTTP
         data = self.profile.var_data(self, "/setup_get.cgi")
         mac = data["mac"]
