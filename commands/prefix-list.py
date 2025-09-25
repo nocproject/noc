@@ -16,17 +16,21 @@ class Command(BaseCommand):
     help = "CLI Prefix-list builder"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--output",
-            "-o",
-            dest="output",
-            action="store",
-            default="/dev/stdout",
-            help="Write output to file",
-        ),
-        parser.add_argument(
-            "--profile", "-p", dest="profile", action="store", help="Device profile"
-        ),
+        (
+            parser.add_argument(
+                "--output",
+                "-o",
+                dest="output",
+                action="store",
+                default="/dev/stdout",
+                help="Write output to file",
+            ),
+        )
+        (
+            parser.add_argument(
+                "--profile", "-p", dest="profile", action="store", help="Device profile"
+            ),
+        )
         parser.add_argument(
             "--name", "-n", dest="name", action="store", default="pl", help="prefix-list name"
         )

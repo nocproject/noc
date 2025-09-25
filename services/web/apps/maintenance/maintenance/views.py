@@ -52,7 +52,6 @@ class MaintenanceApplication(ExtDocApplication):
             if sq:
                 obj = ManagedObject.objects.filter(sq)
             else:
-
                 obj = ManagedObject.objects.filter(
                     name__contains=query, affected_maintenances__isnull=False
                 )

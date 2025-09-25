@@ -223,7 +223,12 @@ class MetricScope(Document):
             yield "time_delta", "UInt16", "", ""
         for label in self.labels:
             if label.store_column:
-                yield label.store_column, "LowCardinality(String)", f"MATERIALIZED splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1]", ""
+                yield (
+                    label.store_column,
+                    "LowCardinality(String)",
+                    f"MATERIALIZED splitByString('::', arrayFirst(x -> startsWith(x, '{label.label_prefix}'), labels))[-1]",
+                    "",
+                )
         yield from self.iter_metrics_fields()
 
     def get_create_sql(self):
@@ -257,17 +262,12 @@ class MetricScope(Document):
         Get CREATE TABLE for Distributed engine
         :return:
         """
-        return (
-            "CREATE TABLE IF NOT EXISTS %s "
-            "AS %s "
-            "ENGINE = Distributed(%s, %s, %s)"
-            % (
-                self._get_distributed_db_table(),
-                self._get_raw_db_table(),
-                config.clickhouse.cluster,
-                config.clickhouse.db,
-                self._get_raw_db_table(),
-            )
+        return "CREATE TABLE IF NOT EXISTS %s " "AS %s " "ENGINE = Distributed(%s, %s, %s)" % (
+            self._get_distributed_db_table(),
+            self._get_raw_db_table(),
+            config.clickhouse.cluster,
+            config.clickhouse.db,
+            self._get_raw_db_table(),
         )
 
     def get_create_view_sql(self):

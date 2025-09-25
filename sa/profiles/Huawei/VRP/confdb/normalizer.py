@@ -18,7 +18,6 @@ rx_vlan_if = re.compile(r"Vlan(?:if|If|)(\d+)")
 
 
 class VRPNormalizer(BaseNormalizer):
-
     SYNTAX = [
         DEF(
             "interfaces",

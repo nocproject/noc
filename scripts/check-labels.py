@@ -184,11 +184,12 @@ class TestSuite(object):
                 return
             kind = [x for x in self.labels if x.startswith("kind::")]
             for label in kind:
-                assert (
-                    label == "kind::bug"
-                ), "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'" % (
-                    self.BACKPORT,
-                    label,
+                assert label == "kind::bug", (
+                    "'%s' cannot be used with '%s'.\n Use only with 'kind::bug'"
+                    % (
+                        self.BACKPORT,
+                        label,
+                    )
                 )
 
     def check_required_scoped_labels(self):

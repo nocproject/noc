@@ -126,23 +126,37 @@ class DiscoverySummaryDS(BaseDataSource):
             yield row_num, "pool", r["pool"]
             yield row_num, "profile", mop.name
             yield row_num, "discovered_managed_object_box", r["discovered_managed_object_box"]
-            yield row_num, "discovered_managed_object_periodic", r[
-                "discovered_managed_object_periodic"
-            ]
-            yield row_num, "discovered_managed_object_metrics", r[
-                "discovered_managed_object_metrics"
-            ]
+            yield (
+                row_num,
+                "discovered_managed_object_periodic",
+                r["discovered_managed_object_periodic"],
+            )
+            yield (
+                row_num,
+                "discovered_managed_object_metrics",
+                r["discovered_managed_object_metrics"],
+            )
             yield row_num, "discovered_managed_object_all", r["discovered_managed_object_all"]
             yield row_num, "discovered_interface", r["discovered_links"]
             yield row_num, "discovered_links", r["discovered_links"]
             yield row_num, "discovered_metrics", r["discovered_metrics"]
-            yield row_num, "discovered_managed_object_box_per_second", (
-                (float(mos_count) / mop.box_discovery_interval) if mop.enable_box_discovery else 0
+            yield (
+                row_num,
+                "discovered_managed_object_box_per_second",
+                (
+                    (float(mos_count) / mop.box_discovery_interval)
+                    if mop.enable_box_discovery
+                    else 0
+                ),
             )
-            yield row_num, "discovered_managed_object_periodic_per_second", (
-                (float(mos_count) / mop.periodic_discovery_interval)
-                if mop.enable_periodic_discovery
-                else 0
+            yield (
+                row_num,
+                "discovered_managed_object_periodic_per_second",
+                (
+                    (float(mos_count) / mop.periodic_discovery_interval)
+                    if mop.enable_periodic_discovery
+                    else 0
+                ),
             )
         # OP without objects
         for op in ManagedObjectProfile.objects.filter().exclude(id__in=processed):

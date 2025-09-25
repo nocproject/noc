@@ -419,9 +419,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                 raise Exception("Invalid lookup operation: %s" % o)
         # Combine expressions into single lambda
         return reduce(
-            lambda x, y: lambda self, v, x=x, y=y: (
-                x(self, v) and y(self, v)
-            ),  # pylint: disable=undefined-variable
+            lambda x, y: lambda self, v, x=x, y=y: (x(self, v) and y(self, v)),  # pylint: disable=undefined-variable
             c,
             lambda self, x: True,
         )

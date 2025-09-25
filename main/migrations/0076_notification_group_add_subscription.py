@@ -20,7 +20,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     def create_subscription(self):
         # Mock Models
         NotificationGroup = self.db.mock_model(

@@ -24,7 +24,6 @@ class Script(BaseScript):
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)$", re.MULTILINE)
 
     def execute_cli(self, **kwargs):
-
         # Fallback to CLI
         match = self.rx_mac.search(self.cli("show system", cached=True))
         mac = match.group("mac")

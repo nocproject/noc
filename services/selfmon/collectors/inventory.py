@@ -16,7 +16,6 @@ class InventoryObjectCollector(BaseCollector):
     name = "inventory"
 
     def iter_metrics(self):
-
         # @todo by POOL / Adm Domain
         yield ("inventory_iface_count",), Interface.objects.filter().count()
         yield ("inventory_iface_physical_count",), Interface.objects.filter(type="physical").count()

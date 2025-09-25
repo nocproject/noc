@@ -23,7 +23,6 @@ class Vendor(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "VendorModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

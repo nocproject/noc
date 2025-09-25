@@ -31,7 +31,6 @@ class Script(BaseScript):
     )
 
     def execute_cli(self, interface=None):
-
         interfaces = []
         # Ethernet ports
         ifaces = list(

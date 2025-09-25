@@ -15,7 +15,6 @@ MONGO_CHUNK = 200
 
 
 class Migration(BaseMigration):
-
     @staticmethod
     def get_patterns(patterns):
         r, source, profile, message_rx = [], None, None, None

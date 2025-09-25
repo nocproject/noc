@@ -16,7 +16,6 @@ from noc.core.text import parse_table
 
 
 class Script(BaseScript):
-
     name = "Eltex.MES5448.get_interfaces"
     interface = IGetInterfaces
 

@@ -66,42 +66,66 @@ class TaskObjectCollector(BaseCollector):
             stale_count = sc.count_documents(stale_q)
 
             yield (
-                "task_pool_total",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), sc.estimated_document_count()
+                (
+                    "task_pool_total",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                sc.estimated_document_count(),
+            )
             yield (
-                "task_exception_count",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), sc.count_documents(exp_q)
+                (
+                    "task_exception_count",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                sc.count_documents(exp_q),
+            )
             yield (
-                "task_running_count",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), sc.count_documents({Job.ATTR_STATUS: Job.S_RUN})
+                (
+                    "task_running_count",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                sc.count_documents({Job.ATTR_STATUS: Job.S_RUN}),
+            )
             yield (
-                "task_late_count",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), late_count
+                (
+                    "task_late_count",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                late_count,
+            )
             yield (
-                "task_lag_seconds",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), lag
+                (
+                    "task_lag_seconds",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                lag,
+            )
             yield (
-                "task_box_time_avg_seconds",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), (ldur[0]["avg"] if ldur and ldur[0]["avg"] is not None else 0)
+                (
+                    "task_box_time_avg_seconds",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                (ldur[0]["avg"] if ldur and ldur[0]["avg"] is not None else 0),
+            )
             yield (
-                "task_periodic_time_avg_seconds",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), (ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0)
+                (
+                    "task_periodic_time_avg_seconds",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                (ldur[1]["avg"] if len(ldur) > 1 and ldur[0]["avg"] is not None else 0),
+            )
             yield (
-                "task_stale_count",
-                ("scheduler_name", data["name"]),
-                ("pool", data.get("shard", "")),
-            ), stale_count
+                (
+                    "task_stale_count",
+                    ("scheduler_name", data["name"]),
+                    ("pool", data.get("shard", "")),
+                ),
+                stale_count,
+            )

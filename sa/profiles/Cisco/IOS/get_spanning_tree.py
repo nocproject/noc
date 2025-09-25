@@ -54,9 +54,7 @@ class Script(BaseScript):
                             "fwd": "forwarding",
                             "lis": "listen",
                             "lbk": "loopback",
-                        }[
-                            R[3].lower()
-                        ],  # @todo: refine states
+                        }[R[3].lower()],  # @todo: refine states
                     }
                 else:
                     settings = R[-1]
@@ -72,9 +70,7 @@ class Script(BaseScript):
                             "mstr": "master",
                             "????": "nonstp",
                             "_": "unknown",
-                        }[
-                            R[1].lower()
-                        ],  # @todo: refine roles
+                        }[R[1].lower()],  # @todo: refine roles
                         "state": {
                             "dis": "disabled",
                             "blk": "discarding",
@@ -84,9 +80,7 @@ class Script(BaseScript):
                             "fwd": "forwarding",
                             "lis": "listen",
                             "lbk": "loopback",
-                        }[
-                            R[2].lower()
-                        ],  # @todo: refine states
+                        }[R[2].lower()],  # @todo: refine states
                     }
         return ports
 

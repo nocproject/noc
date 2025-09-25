@@ -27,7 +27,6 @@ class Script(BaseScript):
     )
 
     def execute(self):
-
         version = None
         codename = ""
         distr = ""

@@ -11,7 +11,6 @@ from noc.core.mib import mib
 
 
 class SlotRule(OIDRule):
-
     name = "slot"
 
     def iter_oids(self, script, metric):
@@ -38,7 +37,6 @@ class SlotRule(OIDRule):
 
         for i in r:
             if self.is_complex:
-
                 labels = (
                     ["noc::chassis::0", "noc::slot::0", f"noc::module::{i}"]
                     if "CPU" in metric.metric

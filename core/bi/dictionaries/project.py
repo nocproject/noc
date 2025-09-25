@@ -23,7 +23,6 @@ class Project(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "ProjectModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

@@ -24,7 +24,6 @@ class InterfaceProfile(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "InterfaceProfileModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

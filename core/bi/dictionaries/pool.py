@@ -23,7 +23,6 @@ class Pool(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "PoolModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

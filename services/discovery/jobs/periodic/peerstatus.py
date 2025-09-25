@@ -22,7 +22,6 @@ class PeerStatusCheck(DiscoveryCheck):
     required_script = "get_bgp_peer_status"
 
     def handler(self):
-
         has_bgp_peers = self.has_capability("DB | BGP Peers")
         if not has_bgp_peers:
             self.logger.info("No BGP Peer discovered. Skipping BGP peer status check")

@@ -31,13 +31,13 @@ NAWS = 0x1F
 AO = 0xF5
 AYT = 0xF6
 
-B_IAC = b"\xFF"
-B_SB = b"\xFA"
-B_SE = b"\xF0"
+B_IAC = b"\xff"
+B_SB = b"\xfa"
+B_SE = b"\xf0"
 B_IAC2 = B_IAC + B_IAC
 B_IAC_SB = B_IAC + B_SB
 B_IAC_SE = B_IAC + B_SE
-B_NAWS = b"\x1F"
+B_NAWS = b"\x1f"
 
 B_OPT_TTYPE_IS = b"\x18\x00"
 B_OPT_WS = b"\x1f"

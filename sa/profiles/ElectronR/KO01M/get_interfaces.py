@@ -15,7 +15,6 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     def execute_snmp(self):
-
         return [
             {
                 "interfaces": [

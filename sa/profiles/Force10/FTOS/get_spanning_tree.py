@@ -74,9 +74,7 @@ class Script(BaseScript):
                         "blk": "discarding",
                         "??": "learning",
                         "fwd": "forwarding",
-                    }[
-                        state.lower()
-                    ],  # @todo: refine states
+                    }[state.lower()],  # @todo: refine states
                     "priority": priority,
                     "designated_bridge_id": desg_bridge_id,
                     "designated_bridge_priority": desg_bridge_priority,
@@ -105,9 +103,7 @@ class Script(BaseScript):
                     "???": "master",
                     "????": "nonstp",
                     "_": "unknown",
-                }[
-                    role.lower()
-                ]  # @todo: refine roles
+                }[role.lower()]  # @todo: refine roles
                 i["point_to_point"] = "P2P" in link_type.upper()
                 i["edge"] = True if edge.lower().startswith("y") else False
             # Append instance to result

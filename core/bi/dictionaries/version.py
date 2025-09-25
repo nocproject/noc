@@ -26,7 +26,6 @@ class Version(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "Firmware"):
-
         return {
             "id": str(item.id),
             "name": ch_escape(item.version),

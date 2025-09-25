@@ -33,11 +33,17 @@ class Command(BaseCommand):
     help = "Import MoinMoin wiki into NOC KB"
 
     def add_arguments(self, parser):
-        parser.add_argument("-e", "--encoding", dest="encoding", default="utf-8", help="Encoding"),
-        parser.add_argument(
-            "-l", "--language", dest="language", default="English", help="Wiki Language"
-        ),
-        parser.add_argument("-t", "--tags", dest="tags", help="Tags"),
+        (
+            parser.add_argument(
+                "-e", "--encoding", dest="encoding", default="utf-8", help="Encoding"
+            ),
+        )
+        (
+            parser.add_argument(
+                "-l", "--language", dest="language", default="English", help="Wiki Language"
+            ),
+        )
+        (parser.add_argument("-t", "--tags", dest="tags", help="Tags"),)
         parser.add_argument("args", nargs=argparse.REMAINDER, help="List of convert pages")
 
     def handle(self, *args, **options):

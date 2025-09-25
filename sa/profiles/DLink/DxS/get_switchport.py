@@ -15,7 +15,6 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     def execute(self):
-
         ports = self.profile.get_ports(self)
         vlans = self.profile.get_vlans(self)
         interfaces = []

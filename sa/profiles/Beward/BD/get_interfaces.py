@@ -16,7 +16,6 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     def execute(self):
-
         res = self.http.get(
             "/cgi-bin/admin/param.cgi?action=list", json=False, cached=True, use_basic=True
         )

@@ -53,7 +53,6 @@ class Script(BaseScript):
     )
 
     def execute(self):
-
         # Get portchannels
         portchannel_members = {}
         portchannel_interface = []
