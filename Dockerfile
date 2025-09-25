@@ -49,8 +49,8 @@ RUN \
     snmp \
     vim \
     git \
-    nodejs \
-    npm \
+    && (curl -fsSL https://deb.nodesource.com/setup_22.x | bash -)\
+    && apt-get install -y --no-install-recommends nodejs\
     && pip install --upgrade pip\
     && pip install -e .[dev,docs,lint,test]\
     && npm install -g eslint@8\
@@ -76,8 +76,8 @@ RUN \
     snmp \
     vim \
     git \
-    nodejs \
-    npm \
+    && (curl -fsSL https://deb.nodesource.com/setup_22.x | bash -)\
+    && apt-get install -y --no-install-recommends nodejs\
     && pip3 install --upgrade pip \
     && (cd /tmp/ && pip install -e .[bh,activator,classifier,cache-redis,dev,docs,lint,node,test,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]) \
     && npm install -g eslint@8\
@@ -90,5 +90,5 @@ FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
 
-COPY --from=code /usr/local/lib/python3.11/site-packages/django /usr/lib/python3.11/site-packages/django
+COPY --from=code /usr/local/lib/python3.12/site-packages/django /usr/lib/python3.1/site-packages/django
 COPY --from=code /opt/noc/ui /opt/noc/ui
