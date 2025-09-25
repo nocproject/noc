@@ -49,8 +49,9 @@ class ProtocolApplication(ExtDocApplication):
         discriminators = data.pop("discriminators", None)
         if not discriminators:
             return super().clean(data)
-        interface, attr = data.pop("discriminator_interface", None), data.pop(
-            "discriminator_attr", None
+        interface, attr = (
+            data.pop("discriminator_interface", None),
+            data.pop("discriminator_attr", None),
         )
         mi = ModelInterface.get_by_id(interface)
         attr = mi.get_attr(attr)

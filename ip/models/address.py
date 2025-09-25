@@ -165,10 +165,13 @@ class Address(NOCModel):
         if config.datastream.enable_dnszone:
             from noc.dns.models.dnszone import DNSZone
 
-            fqdn_changed, address_changed = [self.fqdn, changed_fields.get("fqdn")], [
-                self.address,
-                changed_fields.get("address"),
-            ]
+            fqdn_changed, address_changed = (
+                [self.fqdn, changed_fields.get("fqdn")],
+                [
+                    self.address,
+                    changed_fields.get("address"),
+                ],
+            )
             for fqdn in fqdn_changed:
                 if not fqdn:
                     continue

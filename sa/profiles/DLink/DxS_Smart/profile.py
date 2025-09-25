@@ -178,7 +178,6 @@ class Profile(BaseProfile):
                             break
                         k = k + 1
             else:
-
                 ports += [i]
             prev_port = i["port"]
         return ports

@@ -16,7 +16,6 @@ class Script(BaseScript):
     requires = []
 
     def execute_snmp(self, interfaces=None):
-
         return [
             {
                 "interface": "eth0",

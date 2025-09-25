@@ -330,10 +330,13 @@ class CPE(Document):
             if not metrics:
                 logger.debug("CPE metrics are not configured. Skipping")
                 continue
-            labels, hints = [f"noc::chassis::{cpe.global_id}"], [
-                f"cpe_type::{cpe.type}",
-                f"local_id::{cpe.controller.local_id}",
-            ]
+            labels, hints = (
+                [f"noc::chassis::{cpe.global_id}"],
+                [
+                    f"cpe_type::{cpe.type}",
+                    f"local_id::{cpe.controller.local_id}",
+                ],
+            )
             if cpe.controller.interface:
                 iface = cpe.get_cpe_interface()
                 if iface and iface.ifindex:

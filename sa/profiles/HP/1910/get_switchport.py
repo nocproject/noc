@@ -32,7 +32,6 @@ class Script(BaseScript):
     rx_vlan_stack = re.compile(r"^(?P<interface>\S+)\s+(?P<role>\S+)\s*$", re.IGNORECASE)  # TO DO
 
     def execute(self):
-
         # Get portchannels
         portchannel_members = []
         portchannels = self.scripts.get_portchannel()
@@ -55,7 +54,6 @@ class Script(BaseScript):
         # Try snmp first
         if self.has_snmp():
             try:
-
                 # Get interafces status
                 interface_status = {}
                 for s in self.scripts.get_interface_status():

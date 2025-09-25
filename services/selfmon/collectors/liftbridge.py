@@ -62,11 +62,14 @@ class LiftbridgeStreamCollector(BaseCollector):
                 functools.partial(self.fetch_cursor, stream, partition, f"chwriter-{replica}")
             )
             yield (
-                "stream_cursor_offset",
-                ("name", stream),
-                ("partition", partition),
-                ("cursor_id", f"chwriter-{replica}"),
-            ), cursor
+                (
+                    "stream_cursor_offset",
+                    ("name", stream),
+                    ("partition", partition),
+                    ("cursor_id", f"chwriter-{replica}"),
+                ),
+                cursor,
+            )
 
     def iter_metrics(self):
         meta: Metadata = run_sync(self.get_meta)
@@ -90,19 +93,25 @@ class LiftbridgeStreamCollector(BaseCollector):
                     )
                     if pool:
                         yield (
-                            "stream_cursor_offset",
-                            ("name", stream.name),
-                            ("partition", p),
-                            ("cursor_id", self.CURSOR_STREAM[name]),
-                            ("pool", pool),
-                        ), cursor
+                            (
+                                "stream_cursor_offset",
+                                ("name", stream.name),
+                                ("partition", p),
+                                ("cursor_id", self.CURSOR_STREAM[name]),
+                                ("pool", pool),
+                            ),
+                            cursor,
+                        )
                     else:
                         yield (
-                            "stream_cursor_offset",
-                            ("name", stream.name),
-                            ("partition", p),
-                            ("cursor_id", self.CURSOR_STREAM[name]),
-                        ), cursor
+                            (
+                                "stream_cursor_offset",
+                                ("name", stream.name),
+                                ("partition", p),
+                                ("cursor_id", self.CURSOR_STREAM[name]),
+                            ),
+                            cursor,
+                        )
 
                 try:
                     p_meta: PartitionMetadata = run_sync(
@@ -119,25 +128,37 @@ class LiftbridgeStreamCollector(BaseCollector):
                     continue
                 if pool:
                     yield (
-                        "stream_newest_offset",
-                        ("name", stream.name),
-                        ("partition", p),
-                        ("pool", pool),
-                    ), p_meta.newest_offset
+                        (
+                            "stream_newest_offset",
+                            ("name", stream.name),
+                            ("partition", p),
+                            ("pool", pool),
+                        ),
+                        p_meta.newest_offset,
+                    )
                     yield (
-                        "stream_high_watermark",
-                        ("name", stream.name),
-                        ("partition", p),
-                        ("pool", pool),
-                    ), p_meta.high_watermark
+                        (
+                            "stream_high_watermark",
+                            ("name", stream.name),
+                            ("partition", p),
+                            ("pool", pool),
+                        ),
+                        p_meta.high_watermark,
+                    )
                 else:
                     yield (
-                        "stream_newest_offset",
-                        ("name", stream.name),
-                        ("partition", p),
-                    ), p_meta.newest_offset
+                        (
+                            "stream_newest_offset",
+                            ("name", stream.name),
+                            ("partition", p),
+                        ),
+                        p_meta.newest_offset,
+                    )
                     yield (
-                        "stream_high_watermark",
-                        ("name", stream.name),
-                        ("partition", p),
-                    ), p_meta.high_watermark
+                        (
+                            "stream_high_watermark",
+                            ("name", stream.name),
+                            ("partition", p),
+                        ),
+                        p_meta.high_watermark,
+                    )

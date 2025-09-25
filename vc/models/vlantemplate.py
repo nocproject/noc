@@ -96,9 +96,12 @@ class VLANTemplate(Document):
         """
         for vi in self.vlans:
             for vlan in ranges_to_list(vi.vlan):
-                yield int(vlan), Template(vi.name).render(
-                    {"vlan": int(vlan)}
-                ), vi.description, vi.profile
+                yield (
+                    int(vlan),
+                    Template(vi.name).render({"vlan": int(vlan)}),
+                    vi.description,
+                    vi.profile,
+                )
 
     def allocate_template(self, l2_domain: str):
         """

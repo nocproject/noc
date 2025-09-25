@@ -27,26 +27,36 @@ class Command(BaseCommand):
     LAYOUT = ["neato", "cicro", "sfdp", "dot", "twopi"]
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "--afi", dest="afi", action="store", default="4", help="AFI (ipv4/ipv6)"
-        ),
-        parser.add_argument("--vrf", dest="vrf", action="store", help="VRF Name/RD"),
-        parser.add_argument(
-            "-o", "--out", dest="output", action="store", help="Save output to file"
-        ),
-        parser.add_argument(
-            "--core", dest="core", action="store_true", help="Reduce to network core"
-        ),
-        parser.add_argument(
-            "--layout",
-            dest="layout",
-            action="store",
-            default="sfdp",
-            help="Use layout engine: %s" % ", ".join(self.LAYOUT),
-        ),
-        parser.add_argument(
-            "--exclude", dest="exclude", action="append", help="Exclude prefix from map"
-        ),
+        (
+            parser.add_argument(
+                "--afi", dest="afi", action="store", default="4", help="AFI (ipv4/ipv6)"
+            ),
+        )
+        (parser.add_argument("--vrf", dest="vrf", action="store", help="VRF Name/RD"),)
+        (
+            parser.add_argument(
+                "-o", "--out", dest="output", action="store", help="Save output to file"
+            ),
+        )
+        (
+            parser.add_argument(
+                "--core", dest="core", action="store_true", help="Reduce to network core"
+            ),
+        )
+        (
+            parser.add_argument(
+                "--layout",
+                dest="layout",
+                action="store",
+                default="sfdp",
+                help="Use layout engine: %s" % ", ".join(self.LAYOUT),
+            ),
+        )
+        (
+            parser.add_argument(
+                "--exclude", dest="exclude", action="append", help="Exclude prefix from map"
+            ),
+        )
 
     SI = namedtuple("SI", ["object", "interface", "fi", "ip", "prefix"])
     IPv4 = "4"

@@ -72,10 +72,10 @@ class Command(BaseCommand):
         subparsers.add_parser("reclassify")
         subparsers.add_parser("export")
         inject_event = subparsers.add_parser("inject-event")
-        inject_event.add_argument("--syslog"),
-        inject_event.add_argument("-o", "--object", dest="objects"),
-        inject_event.add_argument("--remote-system", dest="remote_system"),
-        inject_event.add_argument("-p", "--paths", nargs=argparse.REMAINDER),
+        (inject_event.add_argument("--syslog"),)
+        (inject_event.add_argument("-o", "--object", dest="objects"),)
+        (inject_event.add_argument("--remote-system", dest="remote_system"),)
+        (inject_event.add_argument("-p", "--paths", nargs=argparse.REMAINDER),)
         inject_event.add_argument("args", nargs=argparse.REMAINDER)
         test_rule = subparsers.add_parser("test-rule")
         test_rule.add_argument(
@@ -206,8 +206,8 @@ class Command(BaseCommand):
                 self.print(
                     f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class_name}': {e_vars}"
                 )
-                assert rule.event_class_id == str(
-                    event_class_rule.event_class.id
+                assert (
+                    rule.event_class_id == str(event_class_rule.event_class.id)
                 ), f"Mismatched event class '{rule.event_class_name}' vs '{event_class_rule.event_class.name}'"
                 var_ctx = {"message": event.message}
                 var_ctx |= v

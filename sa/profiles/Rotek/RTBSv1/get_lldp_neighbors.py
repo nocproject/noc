@@ -36,12 +36,15 @@ class Script(BaseScript):
         if ports is None:
             ports = {}
 
-        description_map, ports_description = {
-            "TxBytes": "3",
-            "RxBytes": "4",
-            "Signal Level": "5",
-            "Noise Level": "6",
-        }, []
+        description_map, ports_description = (
+            {
+                "TxBytes": "3",
+                "RxBytes": "4",
+                "Signal Level": "5",
+                "Noise Level": "6",
+            },
+            [],
+        )
 
         for device_index in ports.keys():
             result = []
@@ -89,13 +92,16 @@ class Script(BaseScript):
 
     def execute_snmp(self):
         ent_oid = self.profile.get_ent_oid(self)
-        result, neighbors = {
-            "local_interface": "ath0",
-            "local_interface_id": self.snmp.get(
-                f"{ent_oid}.3.10.1.2.1.1.1.6",
-                display_hints={f"{ent_oid}.3.10.1.2.1.1.1.6": render_mac},
-            ),
-        }, []
+        result, neighbors = (
+            {
+                "local_interface": "ath0",
+                "local_interface_id": self.snmp.get(
+                    f"{ent_oid}.3.10.1.2.1.1.1.6",
+                    display_hints={f"{ent_oid}.3.10.1.2.1.1.1.6": render_mac},
+                ),
+            },
+            [],
+        )
 
         macs, ports, ports_description = self.get_remote_devices_info()
 

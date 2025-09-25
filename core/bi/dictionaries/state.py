@@ -26,7 +26,6 @@ class State(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "StateModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

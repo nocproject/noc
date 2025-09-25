@@ -50,9 +50,7 @@ class Script(BaseScript):
                         "????": "nonstp",
                         "-": "unknown",
                         "_": "unknown",
-                    }[
-                        R[5].lower()
-                    ],  # @todo: refine roles
+                    }[R[5].lower()],  # @todo: refine roles
                     "state": {
                         "dsbl": "disabled",
                         "dis": "disabled",
@@ -67,9 +65,7 @@ class Script(BaseScript):
                         "_": "unknown",
                         "-": "unknown",
                         "lbk": "loopback",
-                    }[
-                        R[4].lower()
-                    ],  # @todo: refine states
+                    }[R[4].lower()],  # @todo: refine states
                 }
         return ports
 
