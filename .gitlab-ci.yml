@@ -49,7 +49,7 @@ py-lint:
     - set -x
     # Install python dependencies
     - pip install --upgrade pip
-    - pip install -e .[lint]
+    - pip install -r .requirements/lint.txt
     # Create directory for reports
     - mkdir -p build/reports
     # Check formatting
