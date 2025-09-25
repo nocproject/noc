@@ -45,11 +45,8 @@ class DNSServer(NOCModel):
         return self.name
 
     @classmethod
-    def get_by_id(cls, id: int) -> Optional["DNSServer"]:
-        dnsserver = DNSServer.objects.filter(id=id)[:1]
-        if dnsserver:
-            return dnsserver[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["DNSServer"]:
+        return DNSServer.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

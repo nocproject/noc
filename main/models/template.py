@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Template model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -123,12 +123,12 @@ class Template(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["Template"]:
-        return Template.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["Template"]:
+        return Template.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["Template"]:
+    def get_by_name(cls, name: str) -> Optional["Template"]:
         return Template.objects.filter(name=name).first()
 
     @classmethod

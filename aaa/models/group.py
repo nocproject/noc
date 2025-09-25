@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Group model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -46,5 +46,5 @@ class Group(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["Group"]:
-        return Group.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["Group"]:
+        return Group.objects.filter(id=oid).first()

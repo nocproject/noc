@@ -84,21 +84,13 @@ class DNSZoneProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["DNSZoneProfile"]:
-        mo = DNSZoneProfile.objects.filter(id=id)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+    def get_by_id(cls, oid: int) -> Optional["DNSZoneProfile"]:
+        return DNSZoneProfile.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name):
-        mo = DNSZoneProfile.objects.filter(name=name)[:1]
-        if mo:
-            return mo[0]
-        else:
-            return None
+    def get_by_name(cls, name: str) -> Optional["DNSZoneProfile"]:
+        return DNSZoneProfile.objects.filter(name=name).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if not config.datastream.enable_dnszone:

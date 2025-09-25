@@ -42,11 +42,8 @@ class TimePatternTerm(NOCModel):
         return "%s: %s" % (self.time_pattern.name, self.term)
 
     @classmethod
-    def get_by_id(cls, id: int) -> Optional["TimePatternTerm"]:
-        tpt = TimePatternTerm.objects.filter(id=id)[:1]
-        if tpt:
-            return tpt[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["TimePatternTerm"]:
+        return TimePatternTerm.objects.filter(id=oid).first()
 
     @classmethod
     def check_syntax(cls, term):

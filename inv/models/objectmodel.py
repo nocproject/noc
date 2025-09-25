@@ -444,7 +444,7 @@ class ObjectModel(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["ObjectModel"]:
+    def get_by_name(cls, name: str) -> Optional["ObjectModel"]:
         return ObjectModel.objects.filter(name=name).first()
 
     @classmethod

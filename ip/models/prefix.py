@@ -198,8 +198,8 @@ class Prefix(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["Prefix"]:
-        return Prefix.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["Prefix"]:
+        return Prefix.objects.filter(id=oid).first()
 
     @classmethod
     def get_by_resource_pool(cls, pool: ResourcePool) -> List["Prefix"]:
