@@ -279,14 +279,17 @@ class EventClassificationRule(Document):
             if p.key_re == "^profile$" or p.key_re == "profile":
                 mt.profile = p.value_re.strip("^$").replace("\\", "")
         for tc in self.test_cases:
-            yield Event(
-                ts=ts + 1,
-                target=Target(address="10.10.10.10", name="test", id="10"),
-                data=[],
-                type=mt,
-                message=tc.message,
-                labels=tc.input_labels if tc.input_labels else None,
-            ), self.resolve_vars(tc.raw_vars)
+            yield (
+                Event(
+                    ts=ts + 1,
+                    target=Target(address="10.10.10.10", name="test", id="10"),
+                    data=[],
+                    type=mt,
+                    message=tc.message,
+                    labels=tc.input_labels if tc.input_labels else None,
+                ),
+                self.resolve_vars(tc.raw_vars),
+            )
 
     @classmethod
     def get_rule_config(cls, rule: "EventClassificationRule"):

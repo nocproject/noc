@@ -17,7 +17,6 @@ from noc.core.migration.base import BaseMigration
 
 class Migration(BaseMigration):
     def migrate(self):
-
         db = self.mongo_db
         ac_map = {}
         processed = set()

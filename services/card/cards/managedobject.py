@@ -54,7 +54,6 @@ class ManagedObjectCard(BaseCard):
 
     # get data function
     def get_data(self):
-
         def sortdict(dct):
             kys = sorted(dct.keys())
             res = {}

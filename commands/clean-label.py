@@ -28,10 +28,12 @@ class Command(BaseCommand):
     help = "Cleaning label"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "label",
-            help="label name",
-        ),
+        (
+            parser.add_argument(
+                "label",
+                help="label name",
+            ),
+        )
 
     def is_document(self, klass):
         """

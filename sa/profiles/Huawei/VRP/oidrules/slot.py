@@ -37,15 +37,27 @@ class SlotRule(OIDRule):
             if not gen:
                 continue
             if "CPU" not in metric.metric:
-                yield gen, self.type, self.scale, self.units, (
-                    "noc::chassis::0",
-                    "noc::slot::0",
-                    f"noc::module::{i}",
+                yield (
+                    gen,
+                    self.type,
+                    self.scale,
+                    self.units,
+                    (
+                        "noc::chassis::0",
+                        "noc::slot::0",
+                        f"noc::module::{i}",
+                    ),
                 )
             else:
-                yield gen, self.type, self.scale, self.units, (
-                    "noc::chassis::0",
-                    f"noc::slot::{i}",
-                    "noc::module::0",
-                    f"noc::cpu::CPU Slot {i}",
+                yield (
+                    gen,
+                    self.type,
+                    self.scale,
+                    self.units,
+                    (
+                        "noc::chassis::0",
+                        f"noc::slot::{i}",
+                        "noc::module::0",
+                        f"noc::cpu::CPU Slot {i}",
+                    ),
                 )

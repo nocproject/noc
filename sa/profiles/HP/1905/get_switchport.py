@@ -18,7 +18,6 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     def execute(self):
-
         # Get portchannels
         portchannel_members = []
         try:

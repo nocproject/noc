@@ -426,7 +426,7 @@ class CustomField(NOCModel):
             ORDER BY \"%(col)s\""""
             % {"col": self.db_column, "table": self.table}
         )
-        return [(x, x) for x, in c.fetchall()]
+        return [(x, x) for (x,) in c.fetchall()]
 
     @classmethod
     def table_search_Q(cls, table, query):

@@ -16,7 +16,6 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     def execute(self):
-
         data = self.profile.var_data(self, "/setup_get.cgi")
         ip = data["ip"].encode("UTF8")
         mask = IPv4.netmask_to_len(data["mask"].encode("UTF8"))

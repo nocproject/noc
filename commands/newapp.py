@@ -30,10 +30,12 @@ class Command(BaseCommand):
     help = "Create application skeleton"
 
     def add_arguments(self, parser):
-        parser.add_argument("--model", "-m", dest="model", help="List configs"),
-        parser.add_argument(
-            "--report", "-r", dest="report", choices=["simple"], help="Create Report"
-        ),
+        (parser.add_argument("--model", "-m", dest="model", help="List configs"),)
+        (
+            parser.add_argument(
+                "--report", "-r", dest="report", choices=["simple"], help="Create Report"
+            ),
+        )
         parser.add_argument("args", nargs=argparse.REMAINDER, help="List of generate App")
 
     rx_empty = re.compile("^ +\n", re.MULTILINE)

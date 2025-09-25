@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     def execute(self):
         try:
-            self.cli("\x1A")
+            self.cli("\x1a")
             return {"result": True, "message": ""}
         except NOCError as e:
             return {"result": False, "message": f"Error: {e.default_msg} ({e!r})"}

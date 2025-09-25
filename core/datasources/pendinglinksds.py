@@ -217,7 +217,9 @@ class PendingLinksDS(BaseDataSource):
                 yield row_num, "remote_object", problems[mo_id][iface]["remote_id"]
                 yield row_num, "detail", problems[mo_id][iface]["detail"]
                 yield row_num, "remote_hostname", problems[mo_id][iface].get("remote_hostname")
-                yield row_num, "remote_description", cls.clean_description(
-                    problems[mo_id][iface].get("remote_description")
+                yield (
+                    row_num,
+                    "remote_description",
+                    cls.clean_description(problems[mo_id][iface].get("remote_description")),
                 )
                 yield row_num, "remote_chassis", problems[mo_id][iface].get("remote_chassis")

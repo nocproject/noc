@@ -16,7 +16,6 @@ senders = ["mailsender", "tgsender", "icqsender"]
 
 class Migration(BaseMigration):
     def migrate(self):
-
         mr_coll = self.mongo_db["messageroutes"]
         for sender in senders:
             mx_id = bson.ObjectId()

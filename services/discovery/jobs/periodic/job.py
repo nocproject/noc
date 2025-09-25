@@ -91,13 +91,10 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
             name="cpestatus",
         ):
             CPEStatusCheck(self).run()
-        if (
-            self.object.object_profile.enable_periodic_discovery_peerstatus
-            and self.is_run_interval(
-                self.get_discovery_interval("peerstatus"),
-                runs,
-                name="peerstatus",
-            )
+        if self.object.object_profile.enable_periodic_discovery_peerstatus and self.is_run_interval(
+            self.get_discovery_interval("peerstatus"),
+            runs,
+            name="peerstatus",
         ):
             PeerStatusCheck(self).run()
         if self.object.object_profile.enable_metrics:

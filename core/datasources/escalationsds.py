@@ -60,8 +60,10 @@ class EscalationsDS(BaseDataSource):
                     continue
                 row_num += 1
                 yield row_num, "timestamp", d["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
-                yield row_num, "escalation_timestamp", d["escalation_ts"].strftime(
-                    "%Y-%m-%d %H:%M:%S"
+                yield (
+                    row_num,
+                    "escalation_timestamp",
+                    d["escalation_ts"].strftime("%Y-%m-%d %H:%M:%S"),
                 )
                 yield row_num, "managed_object", mo.name.split("#", 1)[0]
                 yield row_num, "address", mo.address
