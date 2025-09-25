@@ -28,9 +28,16 @@ class Command(BaseCommand):
     help = "Upload bundled MIBs"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "-f", "--force", dest="force", action="store_true", default=False, help="Force reload"
-        ),
+        (
+            parser.add_argument(
+                "-f",
+                "--force",
+                dest="force",
+                action="store_true",
+                default=False,
+                help="Force reload",
+            ),
+        )
         parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
 
     rx_last_updated = re.compile(r"\"last_updated\":\s*\"([^\"]+)\"", re.MULTILINE)

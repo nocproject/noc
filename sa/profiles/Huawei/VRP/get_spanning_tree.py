@@ -52,9 +52,7 @@ class Script(BaseScript):
                     "mast": "master",
                     "????": "nonstp",
                     "_": "unknown",
-                }[
-                    R[2].lower()
-                ],  # @todo: refine roles
+                }[R[2].lower()],  # @todo: refine roles
                 "state": {
                     "dis": "disabled",
                     "discarding": "discarding",
@@ -64,9 +62,7 @@ class Script(BaseScript):
                     "forwarding": "forwarding",
                     "listening": "listen",
                     "lbk": "loopback",
-                }[
-                    R[3].lower()
-                ],  # @todo: refine states
+                }[R[3].lower()],  # @todo: refine states
             }
         return ports
 

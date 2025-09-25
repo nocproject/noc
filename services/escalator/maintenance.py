@@ -51,9 +51,7 @@ def start_maintenance(maintenance_id):
     ]
     SQL = """SELECT id, name, tt_system_id
         FROM sa_managedobject
-        WHERE affected_maintenances @> '{"%s": {}}';""" % str(
-        maintenance_id
-    )
+        WHERE affected_maintenances @> '{"%s": {}}';""" % str(maintenance_id)
     for mo in ManagedObject.objects.raw(SQL):
         logger.info("[%s] Appending object %s to TT", maintenance_id, mo)
         e_ctx_items.append(ECtxItem(id=mo.id, tt_id=mo.tt_system_id))

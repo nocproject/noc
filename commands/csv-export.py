@@ -24,14 +24,16 @@ class Command(BaseCommand):
     help = "Export model to CSV"
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            "-t",
-            "--template",
-            dest="template",
-            action="store_true",
-            default=False,
-            help="dump only header row",
-        ),
+        (
+            parser.add_argument(
+                "-t",
+                "--template",
+                dest="template",
+                action="store_true",
+                default=False,
+                help="dump only header row",
+            ),
+        )
         parser.add_argument("args", nargs=argparse.REMAINDER, help="List of extractor names")
 
     def _usage(self):

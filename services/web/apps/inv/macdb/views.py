@@ -92,7 +92,6 @@ class MACApplication(ExtApplication):
         offset: Optional[int] = None,
         limit: Optional[int] = None,
     ):
-
         limit = limit or 50
 
         sql = [

@@ -61,7 +61,6 @@ class Action:
 
 
 class ActionSet(object):
-
     def __init__(self, logger=None):
         # EventClass
         self.logger = logger or action_logger

@@ -9,6 +9,7 @@
 Test:
 - NX-3408-DC
 """
+
 from noc.core.profile.base import BaseProfile
 
 

@@ -42,14 +42,16 @@ class Script(BaseScript):
         return macs, ports
 
     def execute_snmp(self):
-
-        result, neighbors = {
-            "local_interface": self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.4.8"),
-            "local_interface_id": self.snmp.get(
-                "1.3.6.1.4.1.41752.3.5.1.2.1.1.5.8",
-                display_hints={"1.3.6.1.4.1.41752.3.5.1.2.1.1.5.8": render_mac},
-            ),
-        }, []
+        result, neighbors = (
+            {
+                "local_interface": self.snmp.get("1.3.6.1.4.1.41752.3.5.1.2.1.1.4.8"),
+                "local_interface_id": self.snmp.get(
+                    "1.3.6.1.4.1.41752.3.5.1.2.1.1.5.8",
+                    display_hints={"1.3.6.1.4.1.41752.3.5.1.2.1.1.5.8": render_mac},
+                ),
+            },
+            [],
+        )
 
         macs, ports = self.get_remote_devices_info()
 

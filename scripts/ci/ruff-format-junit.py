@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # ----------------------------------------------------------------------
-# Convert black output to junit xml
+# Convert ruff format output to junit xml
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ import argparse
 import sys
 from dataclasses import dataclass
 import os
-from typing import Iterable, Optional
+from typing import Iterable, Optional, List
 from xml.sax.saxutils import escape
 
 
@@ -22,18 +22,20 @@ class Item(object):
 
 
 def iter_problems(tee: bool = False) -> Iterable[Item]:
-    section = []
+    section: List[str] = []
+    current_file: Optional[str] = None
     for line in sys.stdin:
         if tee:
             sys.stdout.write(line)
-        if line.startswith("+++"):
+        if line.startswith("--- "):
+            if current_file:
+                yield Item(path=current_file, text="".join(section))
+            current_file = line[4:].strip()
             section = []
-            continue
-        if line.startswith("would reformat "):
-            yield Item(path=line[15:].strip(), text="".join(section))
-            section = []
-            continue
-        section.append(line)
+        elif not line.startswith("+++ "):
+            section.append(line)
+    if current_file:
+        yield Item(path=current_file, text="".join(section))
 
 
 def process(out: Optional[str] = None, tee: bool = False) -> int:

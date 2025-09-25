@@ -48,8 +48,9 @@ class FMObjectCollector(BaseCollector):
         last_event = db.noc.events.active.find_one(sort=[("timestamp", -1)])
         if last_event:
             # yield ("events_active_first_ts", ), time.mktime(last_event["timestamp"].timetuple())
-            yield ("fm_events_active_last_lag_seconds",), self.calc_lag(
-                time.mktime(last_event["timestamp"].timetuple()), now
+            yield (
+                ("fm_events_active_last_lag_seconds",),
+                self.calc_lag(time.mktime(last_event["timestamp"].timetuple()), now),
             )
         yield ("fm_alarms_active_total",), db.noc.alarms.active.estimated_document_count()
         yield ("fm_alarms_archived_total",), db.noc.alarms.archived.estimated_document_count()
@@ -58,8 +59,9 @@ class FMObjectCollector(BaseCollector):
         )
         if last_alarm:
             # yield ("alarms_active_last_ts", ), time.mktime(last_alarm["timestamp"].timetuple())
-            yield ("fm_alarms_active_last_lag_seconds",), self.calc_lag(
-                time.mktime(last_alarm["timestamp"].timetuple()), now
+            yield (
+                ("fm_alarms_active_last_lag_seconds",),
+                self.calc_lag(time.mktime(last_alarm["timestamp"].timetuple()), now),
             )
         alarms_rooted = set()
         alarms_nroored = set()
@@ -90,42 +92,60 @@ class FMObjectCollector(BaseCollector):
                 ("other", alarms_other),
             ]:
                 yield (
-                    "fm_alarms_active_pool_count",
-                    ("pool", pool_name),
-                    ("ac_group", ac_group),
-                ), len(pool_mos.intersection(alarms_all).intersection(ids))
+                    (
+                        "fm_alarms_active_pool_count",
+                        ("pool", pool_name),
+                        ("ac_group", ac_group),
+                    ),
+                    len(pool_mos.intersection(alarms_all).intersection(ids)),
+                )
                 yield (
-                    "fm_alarms_active_withroot_pool_count",
-                    ("pool", pool_name),
-                    ("ac_group", ac_group),
-                ), len(pool_mos.intersection(alarms_rooted).intersection(ids))
+                    (
+                        "fm_alarms_active_withroot_pool_count",
+                        ("pool", pool_name),
+                        ("ac_group", ac_group),
+                    ),
+                    len(pool_mos.intersection(alarms_rooted).intersection(ids)),
+                )
                 yield (
-                    "fm_alarms_active_withoutroot_pool_count",
-                    ("pool", pool_name),
-                    ("ac_group", ac_group),
-                ), len(pool_mos.intersection(alarms_nroored).intersection(ids))
+                    (
+                        "fm_alarms_active_withoutroot_pool_count",
+                        ("pool", pool_name),
+                        ("ac_group", ac_group),
+                    ),
+                    len(pool_mos.intersection(alarms_nroored).intersection(ids)),
+                )
         yield ("errors", ("type", "fm_alarms_active_broken")), broken_alarms
 
         for shard in set(TTSystem.objects.filter(is_active=True).values_list("shard_name")):
-            yield ("fm_escalation_pool_count", ("shard", shard)), db[
-                "noc.schedules.escalator.%s" % shard
-            ].estimated_document_count()
-            yield ("fm_escalation_queue_open_pool_count", ("shard", shard)), db[
-                "noc.schedules.escalator.%s" % shard
-            ].count_documents({"key": "noc.services.escalator.escalation.escalate"})
-            yield ("fm_escalation_queue_close_pool_count", ("shard", shard)), db[
-                "noc.schedules.escalator.%s" % shard
-            ].count_documents({"key": "noc.services.escalator.escalation.notify_close"})
+            yield (
+                ("fm_escalation_pool_count", ("shard", shard)),
+                db["noc.schedules.escalator.%s" % shard].estimated_document_count(),
+            )
+            yield (
+                ("fm_escalation_queue_open_pool_count", ("shard", shard)),
+                db["noc.schedules.escalator.%s" % shard].count_documents(
+                    {"key": "noc.services.escalator.escalation.escalate"}
+                ),
+            )
+            yield (
+                ("fm_escalation_queue_close_pool_count", ("shard", shard)),
+                db["noc.schedules.escalator.%s" % shard].count_documents(
+                    {"key": "noc.services.escalator.escalation.notify_close"}
+                ),
+            )
             first_escalation = db["noc.schedules.escalator.%s" % shard].find_one(sort=[("ts", -1)])
             if first_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
-                yield ("fm_escalation_first_lag_seconds", ("shard", shard)), self.calc_lag(
-                    time.mktime(first_escalation["ts"].timetuple()), now
+                yield (
+                    ("fm_escalation_first_lag_seconds", ("shard", shard)),
+                    self.calc_lag(time.mktime(first_escalation["ts"].timetuple()), now),
                 )
 
             last_escalation = db["noc.schedules.escalator.%s" % shard].find_one(sort=[("ts", 1)])
             if last_escalation:
                 # yield ("escalation_last_ts", ("shard", shard)), time.mktime(last_escalation["ts"].timetuple())
-                yield ("fm_escalation_lag_seconds", ("shard", shard)), now - time.mktime(
-                    last_escalation["ts"].timetuple()
+                yield (
+                    ("fm_escalation_lag_seconds", ("shard", shard)),
+                    now - time.mktime(last_escalation["ts"].timetuple()),
                 )

@@ -14,7 +14,6 @@ from noc.core.validators import is_ipv4, is_ipv6
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         self.db.execute("ALTER TABLE sa_managedobject ALTER address DROP NOT NULL")
         # drop index

@@ -171,7 +171,6 @@ class VRFNode(Node):
 
 
 class PrefixNode(Node):
-
     show_vrf = False
 
     def __init__(self, app, prefix):
@@ -239,7 +238,6 @@ class PrefixNode(Node):
 
 
 class GPrefixNode(PrefixNode):
-
     show_vrf = True
 
     def __init__(self, app, prefix, vrfs):

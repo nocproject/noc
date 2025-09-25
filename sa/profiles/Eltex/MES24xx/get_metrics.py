@@ -25,7 +25,6 @@ class Script(GetMetricsScript):
     )
     def get_ifspeed(self, metrics):
         for iface in metrics:
-
             ifindex = iface.ifindex
             ilabels = iface.labels
 

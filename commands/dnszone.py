@@ -35,37 +35,59 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd")
         #
         import_parser = subparsers.add_parser("import")
-        import_parser.add_argument(
-            "--dry-run", dest="dry_run", action="store_true", help="Test only. Do not save records"
-        ),
-        import_parser.add_argument(
-            "-c", "--clean", dest="clean", action="store_true", help="Clean up zone before store"
-        ),
-        import_parser.add_argument(
-            "--zone-profile", dest="zone_profile", action="store", help="Set Zone Profile"
-        ),
-        import_parser.add_argument(
-            "--address-profile", dest="address_profile", action="store", help="Set Address Profile"
-        ),
-        import_parser.add_argument(
-            "-f",
-            "--force",
-            dest="force",
-            action="store_true",
-            help="Forcefully update FQDN for A records",
-        ),
+        (
+            import_parser.add_argument(
+                "--dry-run",
+                dest="dry_run",
+                action="store_true",
+                help="Test only. Do not save records",
+            ),
+        )
+        (
+            import_parser.add_argument(
+                "-c",
+                "--clean",
+                dest="clean",
+                action="store_true",
+                help="Clean up zone before store",
+            ),
+        )
+        (
+            import_parser.add_argument(
+                "--zone-profile", dest="zone_profile", action="store", help="Set Zone Profile"
+            ),
+        )
+        (
+            import_parser.add_argument(
+                "--address-profile",
+                dest="address_profile",
+                action="store",
+                help="Set Address Profile",
+            ),
+        )
+        (
+            import_parser.add_argument(
+                "-f",
+                "--force",
+                dest="force",
+                action="store_true",
+                help="Forcefully update FQDN for A records",
+            ),
+        )
         import_parser.add_argument("paths", nargs=argparse.REMAINDER, help="Path to zone files")
         import_parser.add_argument(
             "--axfr",
             action="store_true",
             help="Upload list of allocated IP addresses from existing DNS servers via AXFR request",
         )
-        import_parser.add_argument(
-            "--nameserver",
-            dest="nameserver",
-            action="store",
-            help="Name server IP address. NS must have zone transfer enabled for NOC host",
-        ),
+        (
+            import_parser.add_argument(
+                "--nameserver",
+                dest="nameserver",
+                action="store",
+                help="Name server IP address. NS must have zone transfer enabled for NOC host",
+            ),
+        )
         import_parser.add_argument(
             "--transfer-zone",
             dest="transfer_zone",

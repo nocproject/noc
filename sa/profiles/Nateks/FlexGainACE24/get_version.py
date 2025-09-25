@@ -32,11 +32,10 @@ class Script(BaseScript):
     rx_ver1 = re.compile(
         r".*HwVersion         : (?P<hwversion>[^ ,]+)\n"
         r"^CPLDVersion       : (?P<cpldversion>[^ ,]+)\n"
-        r".*CPSwVersion       : (?P<version>[^ ,]+) .*\n"
+        r".*CPSwVersion       : (?P<version>[^ ,]+) .*\n",
         # r"^CPSwVersion\(Build\): (?P<cpsversion>[^ ,]+) \[ .*\n"
         # r".*CPSwVersion.*(?P<cpsversion>[^ ,]+) .*\n"
         # r".*DPSwVersion       : WDDI (?P<dpsversion>[^ ,]+)\n"
-        ,
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 

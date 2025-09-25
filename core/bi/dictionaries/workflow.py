@@ -24,7 +24,6 @@ class Workflow(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "WorkflowModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

@@ -26,7 +26,10 @@ DAY_PATTERNS = [
     ),
     (
         RC(r"^(\d{2})\.(\d{2})-(\d{2})\.(\d{2})$"),
-        lambda from_day, from_month, to_day, to_month: "('%s%s' <= ('%%02d%%02d' %% (T.month, T.day)) <= '%s%s')"
+        lambda from_day,
+        from_month,
+        to_day,
+        to_month: "('%s%s' <= ('%%02d%%02d' %% (T.month, T.day)) <= '%s%s')"
         % (from_month, from_day, to_month, to_day),
     ),
     (
@@ -36,7 +39,12 @@ DAY_PATTERNS = [
     ),
     (
         RC(r"^(\d{2})\.(\d{2})\.(\d{4})-(\d{2})\.(\d{2})\.(\d{4})$"),
-        lambda from_day, from_month, from_year, to_day, to_month, to_year: "('%s%s%s' <= ('%%04d%%02d%%02d' %% (T.year, T.month, T.day)) <= '%s%s%s')"
+        lambda from_day,
+        from_month,
+        from_year,
+        to_day,
+        to_month,
+        to_year: "('%s%s%s' <= ('%%04d%%02d%%02d' %% (T.year, T.month, T.day)) <= '%s%s%s')"
         % (from_year, from_month, from_day, to_year, to_month, to_day),
     ),
     (

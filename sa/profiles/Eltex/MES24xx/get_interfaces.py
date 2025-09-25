@@ -16,7 +16,6 @@ from noc.core.validators import is_vlan
 
 
 class Script(BaseScript):
-
     name = "Eltex.MES24xx.get_interfaces"
     interface = IGetInterfaces
 

@@ -190,7 +190,6 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
         filter_ignore_iface=True,
         **kwargs,
     ):
-
         rn = re.compile(
             r"'remote_chassis_id': u'(?P<rem_ch_id>\S+)'.+'remote_system_name': u'(?P<rem_s_name>\S+)'",
             re.IGNORECASE,

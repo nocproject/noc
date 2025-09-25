@@ -23,9 +23,9 @@ logger = logging.getLogger(__name__)
 
 class PatternSet(object):
     def __init__(self):
-        self.i_patterns: Dict[str, List[Tuple[str, str]]] = (
-            {}
-        )  # (profile, chain) -> [rule, ..., rule]
+        self.i_patterns: Dict[
+            str, List[Tuple[str, str]]
+        ] = {}  # (profile, chain) -> [rule, ..., rule]
         self.add_patterns = 0
 
     def load(self):

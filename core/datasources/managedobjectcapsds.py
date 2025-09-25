@@ -66,8 +66,9 @@ class ManagedObjectCapsDS(BaseDataSource):
         for cid, (f_name, f_default) in requested_caps.items():
             yield f_name, caps.get(cid, f_default)
         if include_all:
-            yield "all_caps", ";".join(
-                Capability.get_by_id(c).name for c in caps if Capability.get_by_id(c)
+            yield (
+                "all_caps",
+                ";".join(Capability.get_by_id(c).name for c in caps if Capability.get_by_id(c)),
             )
 
     @staticmethod

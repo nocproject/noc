@@ -38,7 +38,6 @@ from noc.config import config
 
 
 def get_column_width(name):
-
     excel_column_format = {
         "ID": 6,
         "OBJECT_NAME": 38,
