@@ -155,25 +155,22 @@ class AuthLDAPDomain(Document):
     def get_user_search_filter(self):
         if self.user_search_filter:
             return self.user_search_filter
-        else:
-            return self.DEFAULT_USER_SEARCH_FILTER[self.type]
+        return self.DEFAULT_USER_SEARCH_FILTER[self.type]
 
     def get_group_search_filter(self):
         if self.group_search_filter:
             return self.group_search_filter
-        else:
-            return self.DEFAULT_GROUP_SEARCH_FILTER[self.type]
+        return self.DEFAULT_GROUP_SEARCH_FILTER[self.type]
 
     def clean_username(self, username):
         if self.convert_username == "0":
             return username
-        elif self.convert_username == "l":
+        if self.convert_username == "l":
             return username.lower()
-        elif self.convert_username == "u":
+        if self.convert_username == "u":
             return username.upper()
-        else:
-            # Preserve existing behavior
-            return username.lower()
+        # Preserve existing behavior
+        return username.lower()
 
     def get_attr_mappings(self):
         return self.DEFAULT_ATTR_MAPPING[self.type]

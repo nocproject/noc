@@ -48,7 +48,7 @@ class ReportConfigApplication(ExtDocApplication):
                     r["root_orientation"] = b.get("orientation")
                     r["root_queries"] = b.get("queries") or []
                     continue
-                elif b["parent"] == "Root":
+                if b["parent"] == "Root":
                     b.pop("parent")
                 bands += [b]
             r["bands"] = bands
@@ -111,7 +111,7 @@ class ReportConfigApplication(ExtDocApplication):
                 q_name, fn = "", field_name
             if q_name not in columns:
                 continue
-            elif fn not in columns[q_name] and fn not in {"all", "*"}:
+            if fn not in columns[q_name] and fn not in {"all", "*"}:
                 continue
             title = (
                 report.get_localization(f"columns.{fn}", lang=pref_lang) or field.get("title") or fn

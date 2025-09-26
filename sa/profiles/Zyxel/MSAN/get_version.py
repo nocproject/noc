@@ -86,8 +86,7 @@ class Script(BaseScript):
                         r["attributes"] = {}
                     r["attributes"]["Serial Number"] = match.group("serial").strip()
                 return r
-            else:
-                raise self.NotSupportedError()
+            raise self.NotSupportedError()
         r = {
             "vendor": "ZyXEL",
             "platform": platform,

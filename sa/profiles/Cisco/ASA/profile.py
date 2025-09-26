@@ -30,7 +30,7 @@ class Profile(BaseProfile):
         il = interface.lower()
         if il.startswith("mgmt"):
             return "Mg " + interface[4:]
-        elif il in ["inside", "outside", "identity"]:
+        if il in ["inside", "outside", "identity"]:
             return il
         return self.convert_interface_name_cisco(interface)
 

@@ -181,7 +181,7 @@ class Platform(Document):
             return platform
         # Try to create
         if len(name) > MAX_PLATFORM_LENGTH:
-            return
+            return None
         labels = labels or []
         pu = uuid.uuid4()
         d = Platform._get_collection().find_one_and_update(
@@ -229,8 +229,7 @@ class Platform(Document):
             deadline += [self.end_of_xsupport]
         if deadline:
             return datetime.date.today() > max(deadline)
-        else:
-            return False
+        return False
 
     def merge_platform(self, alias):
         """

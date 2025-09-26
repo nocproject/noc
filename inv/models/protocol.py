@@ -90,7 +90,7 @@ class ProtocolVariant(object):
     def code(self) -> str:
         if not self.discriminator and self.direction == "*":
             return self.protocol.code
-        elif not self.discriminator:
+        if not self.discriminator:
             return f"{self.direction}{self.protocol.code}"
         return f"{self.direction}::{self.protocol.code}::{self.discriminator}"
 
@@ -121,7 +121,7 @@ class ProtocolVariant(object):
         # Detect Protocol Code
         if len(vd_code) > 1:
             raise ValueError("Unknown variant format: %s" % code)
-        elif vd_code:
+        if vd_code:
             vd_code = vd_code[0]
         protocol = Protocol.get_by_code(p_code)
         if not protocol and "-" in p_code:

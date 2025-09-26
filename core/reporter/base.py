@@ -178,7 +178,7 @@ class ReportEngine(object):
             value = params.get(name)
             if not value and p.required:
                 raise ValueError(f"Required parameter {name} not found")
-            elif not value and p.default_value:
+            if not value and p.default_value:
                 value = p.default_value
             elif not value:
                 continue
@@ -192,7 +192,7 @@ class ReportEngine(object):
         logger.info("[%s] Request datasource fields for band", band.name)
         if not template.bands_format and not fields:
             return {}
-        elif fields:
+        if fields:
             fields = set(fields)
         else:
             fields = set()
@@ -247,7 +247,7 @@ class ReportEngine(object):
                 band.add_dataset(d, name=b.name if not num else None)
             if band.name == ROOT_BAND:
                 continue
-            elif b.parent == ROOT_BAND or not b.parent:
+            if b.parent == ROOT_BAND or not b.parent:
                 root.add_child(band)
                 continue
             r = root.find_band_recursively(b.parent)
@@ -335,7 +335,7 @@ class ReportEngine(object):
             # Joined is not supported
             logger.warning("[%s] Joined field '%s' not available", ds.name, joined_field)
             return None, []
-        elif joined_field and fields:
+        if joined_field and fields:
             fields += [joined_field]
             # Check not row_index
         elif not joined_field and fields:

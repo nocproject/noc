@@ -324,9 +324,9 @@ class ManagedObjectDS(BaseDataSource):
         """
         if caps.type == "str":
             return ""
-        elif caps.type == "int":
+        if caps.type == "int":
             return 0
-        elif caps.type == "float":
+        if caps.type == "float":
             return 0.0
         return False
 

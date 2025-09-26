@@ -176,7 +176,7 @@ class ThresholdNode(BaseCDAGNode):
     def is_active(self, threshold: Optional[str] = None) -> bool:
         if threshold and threshold in self.state.thresholds:
             return self.state.thresholds[threshold].active
-        elif threshold:
+        if threshold:
             return False
         return any(t.active for t in self.state.thresholds.values())
 
@@ -225,5 +225,4 @@ class ThresholdNode(BaseCDAGNode):
         if not hasattr(self, "state_cls"):
             return None
         state = state or {}
-        c_state = self.state_cls(**state)
-        return c_state
+        return self.state_cls(**state)

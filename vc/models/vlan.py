@@ -116,7 +116,7 @@ class VLAN(Document):
     @classmethod
     def get_component(cls, managed_object, vlan=None, **kwargs) -> Optional["VLAN"]:
         if not vlan:
-            return
+            return None
         domain = managed_object.get_effective_l2_domain()
         if domain:
             return VLAN.get_by_vlan_num(domain, vlan=int(vlan)).first()
@@ -157,7 +157,7 @@ class VLAN(Document):
         vlans -= set(occupied_vlans)
         if strategy == "L":
             return sorted(vlans, reverse=True)[:limit]
-        elif strategy == "F":
+        if strategy == "F":
             return sorted(vlans)[:limit]
         return random.choices(list(vlans), k=limit)
 

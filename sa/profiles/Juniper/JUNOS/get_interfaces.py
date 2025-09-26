@@ -76,7 +76,7 @@ class Script(BaseScript):
     def clean_iftype(self, ifname: str, ifindex=None) -> str:
         if self.is_srx_6xx and ifname.startswith("reth"):
             return "physical"
-        elif self.is_work_em and ifname.startswith("em"):
+        if self.is_work_em and ifname.startswith("em"):
             return "physical"
         return self.profile.get_interface_type(ifname)
 

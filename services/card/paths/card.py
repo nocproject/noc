@@ -88,8 +88,7 @@ class CardAPI(BaseAPI):
 
     def get_current_user(self, name):
         with ErrorReport():
-            user = self.get_user_by_name(name)
-        return user
+            return self.get_user_by_name(name)
 
     def get_card_template(self):
         if not self.CARD_TEMPLATE:
@@ -199,20 +198,19 @@ class CardAPI(BaseAPI):
         if is_ajax:
             od = orjson.dumps(data, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_NON_STR_KEYS)
             return Response(content=od, media_type="application/json", headers=headers)
-        else:
-            refresh = request.query_params.get("refresh")
-            if refresh:
-                headers["Refresh"] = str(refresh)
-            content = self.get_card_template().render(
-                {
-                    "card_data": data,
-                    "card_title": str(card.object),
-                    "hashed": self.hashed,
-                    "card_js": card.card_js,
-                    "card_css": card.card_css,
-                }
-            )
-            return Response(content=content, media_type="text/html", headers=headers)
+        refresh = request.query_params.get("refresh")
+        if refresh:
+            headers["Refresh"] = str(refresh)
+        content = self.get_card_template().render(
+            {
+                "card_data": data,
+                "card_title": str(card.object),
+                "hashed": self.hashed,
+                "card_js": card.card_js,
+                "card_css": card.card_css,
+            }
+        )
+        return Response(content=content, media_type="text/html", headers=headers)
 
     def handler_card_search(
         self, scope: str, query: str, remote_user: Optional[str] = Header(None, alias="Remote-User")

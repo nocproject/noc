@@ -81,8 +81,7 @@ class Command(BaseCommand):
         d = coll.find_one({"_id": name})
         if d:
             return d["last_extract"]
-        else:
-            return None
+        return None
 
     def set_last_extract(self, name, ts):
         coll = get_db()["noc.bi_timestamps"]

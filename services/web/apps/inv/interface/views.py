@@ -99,7 +99,7 @@ class InterfaceApplication(ExtDocApplication):
         return {"id": str(link.id), "label": label}
 
     def get_subinterface(self, si: SubInterface):
-        r = {
+        return {
             "name": si.name,
             "description": si.description,
             "untagged_vlan": si.untagged_vlan,
@@ -116,7 +116,6 @@ class InterfaceApplication(ExtDocApplication):
             "service": str(si.service.id) if si.service else None,
             "service__label": str(si.service) if si.service else None,
         }
-        return r
 
     def instance_to_dict(self, o: Interface, fields=None, nocustom=False):
         r = {
@@ -259,8 +258,7 @@ class InterfaceApplication(ExtDocApplication):
             if len(interfaces) == 2:
                 interfaces[0].link_ptp(interfaces[1])
                 return {"status": True}
-            else:
-                raise ValueError("Invalid interfaces length")
+            raise ValueError("Invalid interfaces length")
         return {"status": False}
 
     @view(url=r"^unlink/(?P<iface_id>[0-9a-f]{24})/$", method=["POST"], access="link", api=True)
@@ -279,8 +277,7 @@ class InterfaceApplication(ExtDocApplication):
         def get_label(i):
             if i.description:
                 return "%s (%s)" % (i.name, i.description)
-            else:
-                return i.name
+            return i.name
 
         o = self.get_object_or_404(ManagedObject, id=int(object_id))
         r = [

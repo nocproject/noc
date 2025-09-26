@@ -34,8 +34,7 @@ class Script(BaseScript):
         # XXX: Sometime snmpwalk return only loX interfaces
         if len(r) > 10:
             return r
-        else:
-            return []
+        return []
 
     def execute_cli(self, interface=None):
         r = []

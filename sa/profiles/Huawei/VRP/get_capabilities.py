@@ -120,8 +120,7 @@ class Script(BaseScript):
 
     @false_on_snmp_error
     def get_ip_sla_probes_snmp(self):
-        r = self.snmp.count(mib["NQA-MIB::nqaAdminCtrlStatus"])
-        return r
+        return self.snmp.count(mib["NQA-MIB::nqaAdminCtrlStatus"])
 
     @false_on_cli_error
     def has_stack(self):
@@ -179,8 +178,7 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("display lacp statistics eth-trunk")
-        return r
+        return self.cli("display lacp statistics eth-trunk")
 
     def execute_platform_cli(self, caps):
         if self.has_ndp_cli():

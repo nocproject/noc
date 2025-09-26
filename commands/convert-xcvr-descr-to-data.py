@@ -152,9 +152,7 @@ class Command(BaseCommand):
         name_parts = [s.strip().replace(" ", "_") for s in name_parts]
         name_parts[-1] += ".json"
 
-        file_name = os.path.join(output_dir, *name_parts)
-
-        return file_name
+        return os.path.join(output_dir, *name_parts)
 
     def save_obj_json(self, o_dir: str, o: ObjectModel) -> None:
         """
@@ -337,7 +335,7 @@ class Command(BaseCommand):
             if ttype10g:
                 distance = ttype10g_distance_map.get(ttype10g, 0)
 
-        res = Dict2Class(
+        return Dict2Class(
             {
                 "tx": tx,
                 "rx": rx,
@@ -350,8 +348,6 @@ class Command(BaseCommand):
                 "ttype10g": ttype10g,
             }
         )
-
-        return res
 
     def print_debug(self, rec) -> None:
         if rec.connector:
@@ -380,8 +376,7 @@ class Command(BaseCommand):
         description = description.lower()
         description = description.replace("(", "")
         description = description.replace(")", "")
-        description = description.replace(",", "")
-        return description
+        return description.replace(",", "")
 
     def is_list_contain_attr(self, list_, attr) -> bool:
         for o in list_:

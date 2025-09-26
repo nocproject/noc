@@ -55,9 +55,8 @@ class Script(BaseScript):
         @todo scripts.get_portchannel
         :return:
         """
-        r = self.cli("show linkagg")
+        return self.cli("show linkagg")
         # r = self.scripts.get_portchannel()
-        return r
 
     def execute_platform_cli(self, caps):
         s = self.has_stack()

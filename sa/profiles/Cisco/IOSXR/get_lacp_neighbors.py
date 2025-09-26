@@ -43,7 +43,7 @@ class Script(BaseScript):
             for l in block.splitlines():
                 if not l:
                     continue
-                elif re.match(self.pattern_split_1, l) or re.match(self.pattern_split_2, l):
+                if re.match(self.pattern_split_1, l) or re.match(self.pattern_split_2, l):
                     continue
                 l_l = l.split()
                 if table:

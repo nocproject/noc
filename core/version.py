@@ -158,10 +158,10 @@ class Version(object):
             except OSError:
                 pass
             return "Unknown Linux"
-        elif o == "freebsd":
+        if o == "freebsd":
             u = os.uname()
             return "%s %s" % (u[0], u[2])
-        elif o == "darwin":
+        if o == "darwin":
             # OS X
             return "Mac OS X %s" % platform.mac_ver()[0]
         return None

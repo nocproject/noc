@@ -49,7 +49,7 @@ class VersionCheck(DiscoveryCheck):
             else:
                 self.job.set_fatal_error()
             return
-        elif platform is None and len(result["platform"]) > MAX_PLATFORM_LENGTH:
+        if platform is None and len(result["platform"]) > MAX_PLATFORM_LENGTH:
             self.logger.error(
                 "Platform name length over %s. Check 'get_version' script",
                 MAX_PLATFORM_LENGTH,

@@ -77,21 +77,20 @@ class Script(BaseScript):
                         i["subinterfaces"] += [sub]
                         break
                 continue
+            match = self.rx_vlan.search(block)
+            if match:
+                vlan_ids = match.group("vlan")
+                if vlan_ids == 0:
+                    continue
+                sub["vlan_ids"] = [vlan_ids]
             else:
-                match = self.rx_vlan.search(block)
+                # Add vlan to `svi` interface
+                match = self.rx_vlan3.search(iface["name"])
                 if match:
                     vlan_ids = match.group("vlan")
                     if vlan_ids == 0:
                         continue
                     sub["vlan_ids"] = [vlan_ids]
-                else:
-                    # Add vlan to `svi` interface
-                    match = self.rx_vlan3.search(iface["name"])
-                    if match:
-                        vlan_ids = match.group("vlan")
-                        if vlan_ids == 0:
-                            continue
-                        sub["vlan_ids"] = [vlan_ids]
             iface["subinterfaces"] += [sub]
             ifaces += [iface]
         # collect interfaces ipv4 addresses

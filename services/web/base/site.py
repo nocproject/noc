@@ -165,8 +165,7 @@ class Site(object):
                 """
                 if s.endswith("[]"):
                     return s[:-2]
-                else:
-                    return s
+                return s
 
             try:
                 v = view_map[request.method]

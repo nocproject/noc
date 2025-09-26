@@ -58,20 +58,16 @@ class Script(BaseScript):
     }
 
     def get_portchannels(self):
-        r = {}
-        return r
+        return {}
 
     def get_ospfint(self):
-        ospfs = []
-        return ospfs
+        return []
 
     def get_ripint(self):
-        rip = []
-        return rip
+        return []
 
     def get_bgpint(self):
-        bgp = []
-        return bgp
+        return []
 
     def execute_cli(self):
         # TODO

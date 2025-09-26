@@ -35,5 +35,4 @@ class Script(BaseScript):
             else:
                 platform = "DSLAM"
             return {"vendor": "Eltex", "platform": platform, "version": version}
-        else:
-            return {"vendor": "Eltex", "platform": "MXA24", "version": "mxa24"}
+        return {"vendor": "Eltex", "platform": "MXA24", "version": "mxa24"}

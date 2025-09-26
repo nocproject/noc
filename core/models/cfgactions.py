@@ -86,9 +86,9 @@ class ActionType(enum.Enum):
         """Callable for execute action"""
         match self:
             case self.ACTION_COMMAND:
-                return
+                return None
             case self.AUDIT_COMMAND:
-                return
+                return None
             case self.RUN_DISCOVERY:
                 return partial(self.run_discovery, **kwargs)
             case self.FIRE_WF_EVENT:
@@ -149,7 +149,7 @@ class ActionType(enum.Enum):
             audit = Interaction(int(audit))
         if audit == Interaction.OP_REBOOT and not obj.object_profile.box_discovery_on_system_start:
             return
-        elif audit == Interaction.OP_REBOOT:
+        if audit == Interaction.OP_REBOOT:
             delay = obj.object_profile.box_discovery_system_start_delay
         elif (
             audit == Interaction.OP_CONFIG_CHANGED

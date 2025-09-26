@@ -125,7 +125,7 @@ class MessageRoute(Document):
             raise ValidationError({"action": "For type 'metric' Notification is not allowed"})
         if self.action == "stream" and not self.stream:
             raise ValidationError({"stream": "For 'stream' action Stream must be set"})
-        elif self.action == "notification" and not self.notification_group:
+        if self.action == "notification" and not self.notification_group:
             raise ValidationError(
                 {"notification_group": "For 'notification' action NotificationGroup must be set"}
             )

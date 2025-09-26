@@ -322,7 +322,7 @@ class Script(BaseScript):
             measur = "Celsius"
             descr = ""
 
-        sensor = {
+        return {
             "name": f"{chassis_id}|{env_name}",
             "status": env_status,
             "description": f"{descr}{env_name} on Unit_{chassis_id}",
@@ -335,7 +335,6 @@ class Script(BaseScript):
             ],
             "snmp_oid": status_oid,
         }
-        return sensor
 
     def get_sens_date(self, sens_oid):
         slotid = sens_oid[len(mib["JUNIPER-MIB::jnxFruType"]) + 1 :]
@@ -358,7 +357,7 @@ class Script(BaseScript):
                 )
                 if env_status_num == 2:  # empty
                     continue
-                elif env_status_num in (3, 4, 5, 6):
+                if env_status_num in (3, 4, 5, 6):
                     env_status = True
                 else:
                     env_status = False
@@ -536,7 +535,7 @@ class Script(BaseScript):
             objects.append({"num_in_inv": num_in_inv, "obj": obj})
 
         objects.extend(transc)
-        objects_sort = [
+        return [
             ob["obj"]
             for ob in sorted(
                 objects,
@@ -550,4 +549,3 @@ class Script(BaseScript):
                 ),
             )
         ]
-        return objects_sort

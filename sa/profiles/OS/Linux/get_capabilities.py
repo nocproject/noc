@@ -23,8 +23,7 @@ class Script(BaseScript):
 
         if r1 or r2:
             return True
-        else:
-            return False
+        return False
 
     @false_on_cli_error
     def has_cdp_cli(self):
@@ -39,5 +38,4 @@ class Script(BaseScript):
 
         if r1 or r2:
             return True
-        else:
-            return False
+        return False

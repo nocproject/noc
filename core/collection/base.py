@@ -260,8 +260,7 @@ class Collection(object):
             # Check Django Model
             return model._fields
         ls_field = model._meta.local_fields
-        dc_field = {field.name: field.__class__ for field in ls_field}
-        return dc_field
+        return {field.name: field.__class__ for field in ls_field}
 
     def dereference(self, d, model=None):
         r = {}
@@ -347,49 +346,48 @@ class Collection(object):
             set_attrs(o, d)
             o.save()
             return True
-        else:
-            self.stdout.write(
-                "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
-            )
-            o = self.model()
-            set_attrs(o, d)
-            try:
-                o.save()
-                return True
-            except (NotUniqueError, IntegrityError):
-                if is_document(self.model):
-                    union_meta = self.model._meta
-                else:
-                    union_meta = self.model._json_collection
-                # Possible local alternative with different uuid
-                if not union_meta.get("json_unique_fields"):
-                    self.stdout.write("Not json_unique_fields on object\n")
-                    raise
-                # Try to find conflicting item
-                for k in union_meta["json_unique_fields"]:
-                    if not isinstance(k, tuple):
-                        k = (k,)
-                    qs = {}
-                    for fk in k:
-                        if isinstance(d[fk], list):
-                            qs["%s__in" % fk] = d[fk]
-                        else:
-                            qs[fk] = d[fk]
-                    o = self.model.objects.filter(**qs).first()
-                    if o:
-                        self.stdout.write(
-                            "[%s|%s] Changing local uuid %s (%s)\n"
-                            % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
-                        )
-                        o.uuid = data["uuid"]
-                        if is_document(self.model):
-                            o.save(clean=bool(o.uuid))
-                        else:
-                            o.save()
-                        # Try again
-                        return self.update_item(data)
-                    self.stdout.write("Not find object by query: %s\n" % qs)
+        self.stdout.write(
+            "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
+        )
+        o = self.model()
+        set_attrs(o, d)
+        try:
+            o.save()
+            return True
+        except (NotUniqueError, IntegrityError):
+            if is_document(self.model):
+                union_meta = self.model._meta
+            else:
+                union_meta = self.model._json_collection
+            # Possible local alternative with different uuid
+            if not union_meta.get("json_unique_fields"):
+                self.stdout.write("Not json_unique_fields on object\n")
                 raise
+            # Try to find conflicting item
+            for k in union_meta["json_unique_fields"]:
+                if not isinstance(k, tuple):
+                    k = (k,)
+                qs = {}
+                for fk in k:
+                    if isinstance(d[fk], list):
+                        qs["%s__in" % fk] = d[fk]
+                    else:
+                        qs[fk] = d[fk]
+                o = self.model.objects.filter(**qs).first()
+                if o:
+                    self.stdout.write(
+                        "[%s|%s] Changing local uuid %s (%s)\n"
+                        % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
+                    )
+                    o.uuid = data["uuid"]
+                    if is_document(self.model):
+                        o.save(clean=bool(o.uuid))
+                    else:
+                        o.save()
+                    # Try again
+                    return self.update_item(data)
+                self.stdout.write("Not find object by query: %s\n" % qs)
+            raise
 
     def delete_item(self, uuid):
         o = self.model.objects.filter(uuid=uuid).first()

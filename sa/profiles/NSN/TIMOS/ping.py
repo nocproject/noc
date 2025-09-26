@@ -45,9 +45,7 @@ class Script(BaseScript):
         match = self.rx_result.search(v)
         if match:
             return match.groupdict()
-        else:
-            match = self.rx_result1.search(v)
-            if match:
-                return match.groupdict()
-            else:
-                raise self.NotSupportedError()
+        match = self.rx_result1.search(v)
+        if match:
+            return match.groupdict()
+        raise self.NotSupportedError()

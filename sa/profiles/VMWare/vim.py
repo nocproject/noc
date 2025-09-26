@@ -112,8 +112,7 @@ class VIM(object):
         vm_view.Destroy()
         if vms:
             return vms[0]
-        else:
-            raise VIMError("Host %s Not found" % name)
+        raise VIMError("Host %s Not found" % name)
 
     @staticmethod
     def has_internet_adapter(item) -> bool:

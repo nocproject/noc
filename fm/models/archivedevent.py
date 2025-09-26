@@ -71,5 +71,4 @@ class ArchivedEvent(Document):
 
     @property
     def body(self):
-        s = Jinja2Template(self.event_class.body_template).render(self.get_template_vars())
-        return s
+        return Jinja2Template(self.event_class.body_template).render(self.get_template_vars())

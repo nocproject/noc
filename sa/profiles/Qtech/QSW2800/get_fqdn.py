@@ -25,5 +25,4 @@ class Script(BaseScript):
         # Getting pattern prompt
         v = self.get_cli_stream()
         pattern = smart_text(v.patterns["prompt"].pattern)
-        fqdn = pattern.split("(?")[0][1:].replace("\\", "")
-        return fqdn
+        return pattern.split("(?")[0][1:].replace("\\", "")

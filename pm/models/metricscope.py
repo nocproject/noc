@@ -162,7 +162,7 @@ class MetricScope(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -172,7 +172,6 @@ class MetricScope(Document):
             "labels": [p.to_json() for p in self.labels],
             "enable_timedelta": self.enable_timedelta,
         }
-        return r
 
     def to_json(self) -> str:
         return to_json(

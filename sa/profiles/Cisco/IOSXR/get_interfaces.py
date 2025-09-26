@@ -69,7 +69,7 @@ class Script(BaseScript):
                 if is_bundle:
                     ifaces[current]["members"] = []
                 continue
-            elif not current:
+            if not current:
                 continue
             line = line.strip()
             # Process description
@@ -192,14 +192,11 @@ class Script(BaseScript):
         m = {}
         if self.has_snmp():
             return self.scripts.get_ifindexes()
-        else:
-            s = self.cli("show snmp interface")
-            for l in s.splitlines():
-                match = self.rx_ifindex.match(l)
-                if match:
-                    if match.group("name").startswith("ControlEthernet"):
-                        continue
-                    m[self.profile.convert_interface_name(match.group("name"))] = match.group(
-                        "ifindex"
-                    )
+        s = self.cli("show snmp interface")
+        for l in s.splitlines():
+            match = self.rx_ifindex.match(l)
+            if match:
+                if match.group("name").startswith("ControlEthernet"):
+                    continue
+                m[self.profile.convert_interface_name(match.group("name"))] = match.group("ifindex")
         return m

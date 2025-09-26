@@ -427,7 +427,7 @@ class MetricAction(Document):
             if dkey_input:
                 nodes["dump"].inputs += [dkey_input]
         if not nodes:
-            return
+            return None
         return GraphConfig(nodes=list(nodes.values()))
 
     def iter_changed_datastream(self, changed_fields=None):

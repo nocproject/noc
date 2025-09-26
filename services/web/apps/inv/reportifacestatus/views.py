@@ -49,9 +49,9 @@ def get_column_width(name):
     }
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
-    elif name.startswith("ADM_PATH"):
+    if name.startswith("ADM_PATH"):
         return excel_column_format["ADMIN_DOMAIN"]
-    elif name in excel_column_format:
+    if name in excel_column_format:
         return excel_column_format[name]
     return 15
 
@@ -86,12 +86,11 @@ class ReportInterfaceStatus(object):
             "foreignField": "interface",
             "as": "subs",
         }
-        result = (
+        return (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .aggregate([{"$match": match}, {"$lookup": lookup}])
         )
-        return result
 
     def __getitem__(self, item):
         return self.out.get(item, [])
@@ -135,8 +134,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
                 if speed >= t:
                     if speed // t * t == speed:
                         return "%d%s" % (speed // t, n)
-                    else:
-                        return "%.2f%s" % (float(speed) / t, n)
+                    return "%.2f%s" % (float(speed) / t, n)
             return str(speed)
 
         def row(row):
@@ -145,12 +143,11 @@ class ReportInterfaceStatusApplication(ExtApplication):
                     return ""
                 if isinstance(v, str):
                     return smart_text(v)
-                elif isinstance(v, datetime.datetime):
+                if isinstance(v, datetime.datetime):
                     return v.strftime("%Y-%m-%d %H:%M:%S")
-                elif not isinstance(v, str):
+                if not isinstance(v, str):
                     return str(v)
-                else:
-                    return v
+                return v
 
             return [qe(x) for x in row]
 
@@ -281,7 +278,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             writer = csv.writer(response, dialect="excel", delimiter=";")
             writer.writerows(r)
             return response
-        elif o_format == "csv_zip":
+        if o_format == "csv_zip":
             response = BytesIO()
             f = TextIOWrapper(TemporaryFile(mode="w+b"), encoding="utf-8")
             writer = csv.writer(f, dialect="excel", delimiter=";", quotechar='"')
@@ -295,7 +292,7 @@ class ReportInterfaceStatusApplication(ExtApplication):
             response = HttpResponse(response.getvalue(), content_type="application/zip")
             response["Content-Disposition"] = 'attachment; filename="%s.csv.zip"' % filename
             return response
-        elif o_format == "xlsx":
+        if o_format == "xlsx":
             response = BytesIO()
             wb = xlsxwriter.Workbook(response)
             cf1 = wb.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})

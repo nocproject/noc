@@ -233,7 +233,7 @@ class OduDiscriminator(object):
         limit = self.get_limit(d)
         if not limit:
             return []
-        elif limit == 1:
+        if limit == 1:
             return [f"{self.scope}::{self.odu[0][0]}"]
         r = []
         for n in range(1, limit + 1):

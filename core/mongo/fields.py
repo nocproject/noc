@@ -80,8 +80,7 @@ class PlainReferenceField(BaseField):
             if v is not None:
                 instance._data[self.name] = v
                 return v
-            else:
-                raise ValidationError("Unable to dereference %s:%s" % (self.document_type, value))
+            raise ValidationError("Unable to dereference %s:%s" % (self.document_type, value))
         return value
 
     def to_mongo(self, document):
@@ -119,13 +118,11 @@ class PlainReferenceListField(PlainReferenceField):
                 # Dereference
                 if hasattr(self.document_type, "get_by_id"):
                     return self.document_type.get_by_id(ObjectId(value))
-                else:
-                    v = self.document_type.objects(id=value).first()
+                v = self.document_type.objects(id=value).first()
                 if v is None:
                     raise ValidationError("Unable to dereference %s:%s" % (self.document_type, v))
                 return v
-            else:
-                return value
+            return value
 
         if instance is None:
             # Document class being used rather than a document object
@@ -155,8 +152,7 @@ class PlainReferenceListField(PlainReferenceField):
         id_field = self.document_type._fields[id_field_name]
         if document:
             return [convert(v) for v in document]
-        else:
-            return document
+        return document
 
     def prepare_query_value(self, op, value):
         if value is None:
@@ -206,8 +202,7 @@ class ForeignKeyField(BaseField):
             if v is not None:
                 instance._data[self.name] = v
                 return v
-            else:
-                raise ValidationError("Unable to dereference %s:%s" % (self.document_type, value))
+            raise ValidationError("Unable to dereference %s:%s" % (self.document_type, value))
         return value
 
     def __set__(self, instance, value):
@@ -248,12 +243,8 @@ class ForeignKeyListField(ForeignKeyField):
                 if v is not None:
                     instance._data[self.name] = v
                     return v
-                else:
-                    raise ValidationError(
-                        "Unable to dereference %s:%s" % (self.document_type, value)
-                    )
-            else:
-                return value
+                raise ValidationError("Unable to dereference %s:%s" % (self.document_type, value))
+            return value
 
         if instance is None:
             # Document class being used rather than a document object
@@ -275,13 +266,11 @@ class ForeignKeyListField(ForeignKeyField):
                         "You can only reference models once they have been saved to the database"
                     )
                 return id_
-            else:
-                return value
+            return value
 
         if document:
             return [convert(v) for v in document]
-        else:
-            return document
+        return document
 
     def prepare_query_value(self, op, value):
         if value is None:
@@ -299,8 +288,7 @@ class DateField(DateTimeField):
     def to_python(self, value):
         if isinstance(value, datetime.datetime):
             return datetime.date(year=value.year, month=value.month, day=value.day)
-        else:
-            return value
+        return value
 
 
 ESC1 = "__"  # Escape for '.'

@@ -24,5 +24,4 @@ class GlyphApplication(ExtDocApplication):
     query_condition = "icontains"
 
     def instance_to_lookup(self, o: Glyph, fields=None):
-        r = {"id": str(o.id), "label": smart_text(o), "code": o.code, "font": o.font.font_family}
-        return r
+        return {"id": str(o.id), "label": smart_text(o), "code": o.code, "font": o.font.font_family}

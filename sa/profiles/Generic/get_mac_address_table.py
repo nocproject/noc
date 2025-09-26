@@ -96,7 +96,7 @@ class Script(BaseScript):
                     "Invalid vlan number %s, for MAC: %s, Port: %s", vlan_id, mac, mac_port[r_oid]
                 )
                 continue
-            elif not status:
+            if not status:
                 self.logger.warning("[%s] Unknown status: %s", mac_port[r_oid], status)
                 status = 3
             r += [

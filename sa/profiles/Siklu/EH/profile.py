@@ -27,11 +27,9 @@ class Profile(BaseProfile):
         match = self.rx_strip_cmd_repeat.search(input)
         if match:
             input = match.group(1)
-        input = super().cleaned_input(input)
-        return input
+        return super().cleaned_input(input)
 
     def convert_interface_name(self, s):
         if s.lower().startswith("eth"):
             return "eth%s" % s[3:].strip()
-        else:
-            return s.lower()
+        return s.lower()

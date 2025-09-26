@@ -22,39 +22,36 @@ def humanize_timedelta(delta):
     if not d:
         if s < 30:
             return _("less than a minute")
-        elif s < 90:  # 1:30
+        if s < 90:  # 1:30
             return _("1 minute")
-        elif s < 2670:  # 44:30
+        if s < 2670:  # 44:30
             return _("%d minutes") % round(float(s) / 60.0)
-        elif s < 5370:  # 1:29:30
+        if s < 5370:  # 1:29:30
             return _("about 1 hour")
-        elif s < 86370:  # 24:59:30
+        if s < 86370:  # 24:59:30
             return _("about %d hours") % round(float(s) / 3600.0)
-        else:
-            return _("1 day")
-    elif d == 1 and s < 84600:  # 1D23:59:30
         return _("1 day")
-    elif d < 30 and s < 84600:  # 29D23:59:30
+    if d == 1 and s < 84600:  # 1D23:59:30
+        return _("1 day")
+    if d < 30 and s < 84600:  # 29D23:59:30
         return _("%d days") % round((float(d) * 86400.0 + s) / 86400)
-    elif d < 60 and s < 84600:  # 59D23:59:30
+    if d < 60 and s < 84600:  # 59D23:59:30
         return _("about 1 month")
-    elif d < 365:
+    if d < 365:
         return _("%d months") % round(float(d) / 30)
-    elif d < 446:  # 1Y 3M
+    if d < 446:  # 1Y 3M
         return _("about 1 year")
-    elif d < 626:  # 1Y 9M
+    if d < 626:  # 1Y 9M
         return _("over 1 year")
-    elif d < 730:  # 2Y
+    if d < 730:  # 2Y
         return _("almost 2 years")
-    else:
-        n = d // 365
-        dd = d - n * 356
-        if dd < 446:
-            return _("about %d years") % n
-        elif dd < 626:
-            return _("over %d years") % n
-        else:
-            return _("almost %d years") % (n + 1)
+    n = d // 365
+    dd = d - n * 356
+    if dd < 446:
+        return _("about %d years") % n
+    if dd < 626:
+        return _("over %d years") % n
+    return _("almost %d years") % (n + 1)
 
 
 def humanize_distance(d):

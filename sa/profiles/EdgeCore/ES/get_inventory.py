@@ -133,70 +133,67 @@ class Script(BaseScript):
         for i in self.rx_int_type.finditer(iface):
             if "SFP" not in i.group("type"):
                 continue
-            else:
-                try:
-                    v = self.cli("show int transceiver " + i.group("int"))
-                    for t in v.split("Ethernet"):
-                        pid = ""
-                        # Parsing
-                        match = self.rx_trans_no.search(t)
-                        if match:
-                            match = self.rx_trans_pid.search(t)
-                            pid = match.group("pid").strip() if match else ""
-                            match = self.rx_trans_vend.search(t)
-                            vendor = match.group("vend").strip() if match else "NONAME"
-                            match = self.rx_trans_rev.search(t)
-                            revision = match.group("rev").strip() if match else None
-                            match = self.rx_trans_sn.search(t)
-                            serial = match.group("sn").strip() if match else None
-                            # Noname transceiver
-                            if (
-                                pid in ("", "N/A", "Unspecified")
-                                or "\\x" in repr(pid).strip("'")
-                                or "NONAME" in vendor
-                            ):
-                                pid = self.get_transceiver_pid(i.group("type").upper())
-                            if not pid:
-                                continue
-                            else:
-                                if "\\x" in repr(vendor).strip("'"):
-                                    vendor = "NONAME"
-                                if "\\x" in repr(serial).strip("'"):
-                                    serial = None
-                                if "\\x" in repr(revision).strip("'"):
-                                    revision = None
-                                # Add transceiver
-                                objects += [
-                                    {
-                                        "type": "XCVR",
-                                        "number": i.group("int").split("/")[-1],
-                                        "vendor": vendor,
-                                        "serial": serial,
-                                        "description": "SFP Transceiver",
-                                        "part_no": [pid],
-                                        "revision": revision,
-                                        "builtin": False,
-                                    }
-                                ]
-
-                except self.CLISyntaxError:
-                    pid = self.get_transceiver_pid(i.group("type").upper())
-                    if not pid:
-                        continue
-                    else:
+            try:
+                v = self.cli("show int transceiver " + i.group("int"))
+                for t in v.split("Ethernet"):
+                    pid = ""
+                    # Parsing
+                    match = self.rx_trans_no.search(t)
+                    if match:
+                        match = self.rx_trans_pid.search(t)
+                        pid = match.group("pid").strip() if match else ""
+                        match = self.rx_trans_vend.search(t)
+                        vendor = match.group("vend").strip() if match else "NONAME"
+                        match = self.rx_trans_rev.search(t)
+                        revision = match.group("rev").strip() if match else None
+                        match = self.rx_trans_sn.search(t)
+                        serial = match.group("sn").strip() if match else None
+                        # Noname transceiver
+                        if (
+                            pid in ("", "N/A", "Unspecified")
+                            or "\\x" in repr(pid).strip("'")
+                            or "NONAME" in vendor
+                        ):
+                            pid = self.get_transceiver_pid(i.group("type").upper())
+                        if not pid:
+                            continue
+                        if "\\x" in repr(vendor).strip("'"):
+                            vendor = "NONAME"
+                        if "\\x" in repr(serial).strip("'"):
+                            serial = None
+                        if "\\x" in repr(revision).strip("'"):
+                            revision = None
                         # Add transceiver
                         objects += [
                             {
                                 "type": "XCVR",
                                 "number": i.group("int").split("/")[-1],
-                                "vendor": "NONAME",
-                                "serial": None,
+                                "vendor": vendor,
+                                "serial": serial,
                                 "description": "SFP Transceiver",
                                 "part_no": [pid],
-                                "revision": None,
+                                "revision": revision,
                                 "builtin": False,
                             }
                         ]
+
+            except self.CLISyntaxError:
+                pid = self.get_transceiver_pid(i.group("type").upper())
+                if not pid:
+                    continue
+                # Add transceiver
+                objects += [
+                    {
+                        "type": "XCVR",
+                        "number": i.group("int").split("/")[-1],
+                        "vendor": "NONAME",
+                        "serial": None,
+                        "description": "SFP Transceiver",
+                        "part_no": [pid],
+                        "revision": None,
+                        "builtin": False,
+                    }
+                ]
         return objects
 
     def get_transceiver_pid(self, type):

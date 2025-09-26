@@ -53,8 +53,7 @@ class MySQLExtractor(SQLExtractor):
             )
 
             os.environ = old_env  # Restore environment
-        cursor = self.connect.cursor()
-        return cursor
+        return self.connect.cursor()
 
     def iter_data(self, checkpoint=None, **kwargs):
         cursor = self.get_cursor()

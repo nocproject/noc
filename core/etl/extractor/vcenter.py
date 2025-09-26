@@ -364,7 +364,7 @@ class VCenterFMEventExtractor(VCenterExtractor):
         """"""
         if event.vm:
             return RemoteObject(name=event.vm.name, remote_id=event.vm.vm.config.uuid)
-        elif event.host:
+        if event.host:
             return RemoteObject(
                 name=event.host.name,
                 remote_id=event.host.host.summary.hardware.uuid,
@@ -384,13 +384,13 @@ class VCenterFMEventExtractor(VCenterExtractor):
             v = getattr(event, p.name)
             if not v:
                 continue
-            elif isinstance(v, vim.event.HostEventArgument):
+            if isinstance(v, vim.event.HostEventArgument):
                 v = v.name
             elif hasattr(v, "name"):
                 v = v.name
             if p.name in ("source", "entity"):
                 continue
-            elif p.name == "message":
+            if p.name == "message":
                 message = v
             elif p.name in ("arguments", "info"):
                 # info - taskInfo

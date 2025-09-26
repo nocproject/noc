@@ -395,7 +395,7 @@ class Report(Document):
         for bf in self.bands_format:
             if not band:
                 return bf
-            elif bf.name == band:
+            if bf.name == band:
                 return bf
         return None
 

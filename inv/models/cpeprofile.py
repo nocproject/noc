@@ -282,7 +282,7 @@ class CPEProfile(Document):
         policy = getattr(o, "get_dynamic_classification_policy", None)
         if policy and policy() == "D":
             # Dynamic classification not enabled
-            return
+            return None
         ctx = o.get_matcher_ctx()
         for profile_id, match in cls.get_profiles_matcher():
             if match(ctx):

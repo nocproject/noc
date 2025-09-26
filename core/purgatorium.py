@@ -88,7 +88,7 @@ class PurgatoriumData(object):
     def __str__(self):
         if self.remote_system and self.is_delete:
             return f"|DELETE]{self.source}@{self.remote_system}]: {self.data}"
-        elif self.remote_system:
+        if self.remote_system:
             return f"{self.source}@{self.remote_system}:{self.data['remote_id']}({self.ts}): {self.data}"
         return f"{self.source}({self.ts}): {self.data}"
 
@@ -175,9 +175,9 @@ def register(
     }
     if source == ETL_SOURCE and not remote_system:
         raise ValueError("Source ETL required RemoteSystem set")
-    elif source == ETL_SOURCE and not remote_id:
+    if source == ETL_SOURCE and not remote_id:
         raise ValueError("With RemoteSystem, RemoteId must be set")
-    elif source == ETL_SOURCE:
+    if source == ETL_SOURCE:
         # Set for ETL
         data["remote_system"] = remote_system
         data["remote_id"] = remote_id

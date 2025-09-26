@@ -242,7 +242,7 @@ class CalculatedStatusRule(EmbeddedDocument):
         weights = tuple(w for s, w in statuses.items() if self.is_match_status(s))
         if not weights:
             return None
-        elif not self.weight:
+        if not self.weight:
             return self.set_status
         weight = self.calculate_weight(weights, max_weight=sum(w for s, w in statuses.items()))
         if condition_map[self.op](weight, self.weight):
@@ -254,14 +254,14 @@ class CalculatedStatusRule(EmbeddedDocument):
     def is_match_status(self, status: Status) -> bool:
         if self.min_status and status < self.min_status:
             return False
-        elif self.max_status and status >= self.max_status:
+        if self.max_status and status >= self.max_status:
             return False
         return True
 
     def is_match(self, status: Status, weight: int) -> bool:
         if not self.min_status and status < self.min_status:
             return False
-        elif self.max_status and status >= self.max_status:
+        if self.max_status and status >= self.max_status:
             return False
         if self.weight:
             return condition_map[self.op](weight, self.weight)
@@ -270,11 +270,11 @@ class CalculatedStatusRule(EmbeddedDocument):
     def calculate_weight(self, weights: Tuple[int, ...], max_weight=1) -> float:
         if self.weight_function == "C":
             return len(weights)
-        elif self.weight_function == "MIN":
+        if self.weight_function == "MIN":
             return min(weights)
-        elif self.weight_function == "MAX":
+        if self.weight_function == "MAX":
             return max(weights)
-        elif self.weight_function == "CP":
+        if self.weight_function == "CP":
             # filter by min/max status
             return round(sum(weights) / max_weight * 100, 2)
         return round(sum(weights) / len(weights), 2)
@@ -537,10 +537,10 @@ class ServiceProfile(Document):
             if name and name.endswith("@") and not s.name:
                 cfg = s.get_config()
                 break
-            elif name and s.name and name.endswith(s.name):
+            if name and s.name and name.endswith(s.name):
                 cfg = s.get_config()
                 break
-            elif not name and not s.name:
+            if not name and not s.name:
                 cfg = s.get_config()
         return cfg
 

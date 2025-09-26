@@ -57,10 +57,9 @@ class Coverage(Document):
                 r += [(co.coverage, co.preference)]
         if r:
             return [x[0] for x in sorted(r, key=lambda y: -y[1]) if x[1]]
-        elif object.container:
+        if object.container:
             return cls.coverage_for_object(object.container)
-        else:
-            return []
+        return []
 
     @classmethod
     def coverage_for_building(cls, building, entrance=None):

@@ -997,8 +997,7 @@ class AlarmApplication(ExtApplication):
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r += get_summary(s["service"], ServiceProfile)
-        r = [x for x in r if x]
-        return r
+        return [x for x in r if x]
 
     def bulk_field_total_grouped(self, data):
         if not data or data[0]["status"] != "A":

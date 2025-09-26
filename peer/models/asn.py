@@ -270,10 +270,9 @@ class AS(NOCModel):
         return Label.get_effective_setting(label, setting="enable_asn")
 
     def get_message_context(self) -> Dict[str, Any]:
-        r = {
+        return {
             "id": str(self.id),
             "asn": self.asn,
             "description": self.description,
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
-        return r

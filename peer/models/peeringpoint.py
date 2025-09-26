@@ -48,8 +48,7 @@ class PeeringPoint(NOCModel):
     def __str__(self):
         if self.location:
             return " %s (%s)" % (self.hostname, self.location)
-        else:
-            return self.hostname
+        return self.hostname
 
     @property
     def generated_prefix_lists(self):

@@ -226,7 +226,7 @@ class DataStream(object):
             if not mv and isinstance(mv, list) and not current_meta.get(mf):
                 r[mf] = []
                 continue
-            elif mf not in current_meta or not current_meta[mf]:
+            if mf not in current_meta or not current_meta[mf]:
                 # @todo Save empty list ?
                 r[mf] = [mv]
                 continue

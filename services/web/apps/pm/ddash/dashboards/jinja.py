@@ -40,5 +40,4 @@ class JinjaDashboard(BaseDashboard):
         j2_env.globals["noc_db_metrics"] = config.clickhouse.db
         tmpl = j2_env.get_template(self.template)
         data = tmpl.render(context)
-        render = demjson3.decode(data)
-        return render
+        return demjson3.decode(data)

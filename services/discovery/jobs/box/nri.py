@@ -28,7 +28,7 @@ class NRICheck(TopologyDiscoveryCheck):
         self.logger.info("NRI Topology")
         if not self.object.remote_system:
             self.logger.info("Created directly. No NRI integration. Skipping check")
-            return
+            return None
         # Bulk interface aliasing
         self.seen_neighbors = set()
         # Actual discovery

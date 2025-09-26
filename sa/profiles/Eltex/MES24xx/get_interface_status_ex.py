@@ -25,5 +25,4 @@ class Script(BaseScript):
 
         if re.search("Te", data["interface"]):
             return True
-        else:
-            return False
+        return False

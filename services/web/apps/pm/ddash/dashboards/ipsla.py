@@ -22,8 +22,7 @@ class IPSLADashboard(JinjaDashboard):
         o = ManagedObject.objects.filter(Q(id=object) | Q(bi_id=object))[:1]
         if not o:
             raise self.NotFound()
-        else:
-            return o[0]
+        return o[0]
 
     def get_context(self):
         return {

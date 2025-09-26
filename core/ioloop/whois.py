@@ -90,7 +90,7 @@ async def whois_async(query, fields=None):
         data = await send_whois_request(host=server, port=DEFAULT_WHOIS_PORT, query=query)
     except socket.gaierror as e:
         logger.error(f"Cannot resolve host {server}: {e}")
-        return
+        return None
     data = smart_text(data)
     data = parse_response(data)
     if fields:

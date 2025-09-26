@@ -32,8 +32,7 @@ class Profile(BaseProfile):
     }
 
     def clean_spaces(self, config):
-        config = self.spaces_rx.sub("", config)
-        return config
+        return self.spaces_rx.sub("", config)
 
     INTERFACE_TYPES = {
         "Au": "physical",  # Aux
@@ -83,15 +82,14 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.startswith("Bridge-Aggregation") or name.startswith("Route-Aggregation"):
             return "aggregated"
-        elif name.startswith("LoopBack") or name.startswith("InLoopBack"):
+        if name.startswith("LoopBack") or name.startswith("InLoopBack"):
             return "loopback"
-        elif name.startswith("Vsi") or name.startswith("Vlan-interface"):
+        if name.startswith("Vsi") or name.startswith("Vlan-interface"):
             return "SVI"
-        elif name.startswith("NULL"):
+        if name.startswith("NULL"):
             return "null"
-        elif name.startswith("Tun") or name.startswith("Register-Tunnel"):
+        if name.startswith("Tun") or name.startswith("Register-Tunnel"):
             return "tunnel"
-        elif name.startswith("Aux"):
+        if name.startswith("Aux"):
             return "other"
-        else:
-            return "physical"
+        return "physical"

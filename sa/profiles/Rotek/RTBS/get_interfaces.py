@@ -57,7 +57,7 @@ class Script(BaseScript):
             if not name:
                 self.logger.info("Ignoring unknown interface type: '%s", iftype)
                 continue
-            elif "peer" in name:
+            if "peer" in name:
                 continue
             mac = self.snmp.get(mib["IF-MIB::ifPhysAddress", ifindex])
             mtu = self.snmp.get("1.3.6.1.2.1.2.2.1.4.%s" % str(ifindex))

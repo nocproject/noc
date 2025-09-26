@@ -93,5 +93,4 @@ def test_load_data(initial_data):
 def _dereference(model, id):
     if hasattr(model, "get_by_id"):
         return model.get_by_id(id)
-    else:
-        return model.objects.get(pk=id)
+    return model.objects.get(pk=id)

@@ -55,8 +55,7 @@ class RefBookField(NOCModel):
     def get_extra(self, search):
         if self.search_method:
             return getattr(self, "search_%s" % self.search_method)(search)
-        else:
-            return {}
+        return {}
 
     def search_string(self, search):
         """

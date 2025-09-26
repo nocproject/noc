@@ -33,5 +33,4 @@ class Script(BaseScript):
         if match42:
             version = match42.group("version")
             platform = match42.group("platform")
-        result = {"vendor": "STerra", "version": version, "platform": platform}
-        return result
+        return {"vendor": "STerra", "version": version, "platform": platform}

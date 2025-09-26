@@ -51,7 +51,7 @@ class MailSenderService(FastAPIService):
         if not dst:
             self.logger.debug("[%d] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
-            return
+            return None
         metrics["messages_processed"] += 1
         return self.send_mail(
             msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)
@@ -69,7 +69,7 @@ class MailSenderService(FastAPIService):
             address = [address_to]
         else:
             self.logger.warning("[%s] Message without address", message_id)
-            return
+            return None
         from_address = config.mailsender.from_address
         message = MIMEMultipart()
         message["From"] = from_address

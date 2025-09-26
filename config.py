@@ -1147,8 +1147,7 @@ class Config(BaseConfig):
         if os.path.exists(cpath):
             if prefer_custom:
                 return [cpath, rpath]
-            else:
-                return [rpath, cpath]
+            return [rpath, cpath]
         return [rpath]
 
     def get_hist_config(self, name):

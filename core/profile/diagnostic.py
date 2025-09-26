@@ -123,8 +123,7 @@ class ProfileDiagnostic:
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
                 return True, None, {"profile": rule.profile}, []
-            else:
-                error = f"Not find profile for OID or HTTP string: {result}"
+            error = f"Not find profile for OID or HTTP string: {result}"
         self.logger.info("Cannot detect profile: %s", error)
         self.reason = error
         # Data
@@ -149,7 +148,7 @@ class ProfileDiagnostic:
     def find_profile(self, key, result: str) -> Optional[SuggestProfile]:
         if key not in self.rules:
             self.logger.warning("Not find rule for method: %s", key)
-            return
+            return None
         for rule in self.rules[key]:
             if rule.is_match(result):
                 return rule
@@ -159,7 +158,7 @@ class ProfileDiagnostic:
             param = mib[param]
         except KeyError:
             self.logger.error("Cannot resolve OID '%s'. Ignoring", param)
-            return
+            return None
         return param
 
     def get_profile(self) -> Tuple[Optional[str], Optional[str]]:

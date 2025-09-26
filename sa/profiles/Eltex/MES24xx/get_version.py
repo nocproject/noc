@@ -41,18 +41,17 @@ class Script(BaseScript):
         hw_ver = self.snmp.get("1.3.6.1.4.1.2076.81.1.2.0")
         serial = self.snmp.get("1.3.6.1.4.1.2076.81.1.120.0")
 
-        r = {
+        return {
             "vendor": "Eltex",
             "platform": platform,
             "version": ver,
             "attributes": {"Serial Number": serial, "HW version": hw_ver},
         }
-        return r
 
     def execute_cli(self, **kwargs):
         ver = self.cli("show system information", cached=True)
         match = self.rx_version.search(ver)
-        r = {
+        return {
             "vendor": "Eltex",
             "platform": match.group("platform"),
             "version": match.group("version"),
@@ -62,4 +61,3 @@ class Script(BaseScript):
                 "HW version": match.group("hardware"),
             },
         }
-        return r

@@ -28,15 +28,15 @@ class PrettyJSON(object):
             return indent("null", i)
         if isinstance(o, str):
             return indent('"%s"' % json_escape(o), i)
-        elif isinstance(o, bool):
+        if isinstance(o, bool):
             return indent("true" if o else "false", i)
-        elif isinstance(o, int):
+        if isinstance(o, int):
             return indent("%d" % o, i)
-        elif isinstance(o, float):
+        if isinstance(o, float):
             return indent(str(o), i)
-        elif isinstance(o, uuid.UUID):
+        if isinstance(o, uuid.UUID):
             return indent('"%s"' % o, i)
-        elif isinstance(o, list):
+        if isinstance(o, list):
             if len(o) == 0:
                 return indent("[]", i)
             t = [cls.convert(e, 0, order) for e in o]
@@ -48,10 +48,9 @@ class PrettyJSON(object):
                 r += [",\n".join(indent(x, i + 4) for x in t)]
                 r += [indent("]", i)]
                 return "\n".join(r)
-            else:
-                r = "[%s]" % ", ".join(t)
-                return indent(r, i)
-        elif isinstance(o, dict):
+            r = "[%s]" % ", ".join(t)
+            return indent(r, i)
+        if isinstance(o, dict):
             if not o:
                 return indent("{}", i)
             keys = sorted(o)

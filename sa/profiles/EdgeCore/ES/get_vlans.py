@@ -51,16 +51,15 @@ class Script(BaseScript):
             return r
 
         # ES4612 or 3526S
-        elif self.is_platform_4612 or self.is_platform_3526s:
+        if self.is_platform_4612 or self.is_platform_3526s:
             for match in self.rx_vlan_line_4612.finditer(vlans):
                 r += [match.groupdict()]
             return r
 
         # Other
-        else:
-            for match in self.rx_vlan_line_3526.finditer(vlans):
-                if match.group("name"):
-                    r += [match.groupdict()]
-                else:
-                    r += [{"vlan_id": int(match.group("vlan_id"))}]
-            return r
+        for match in self.rx_vlan_line_3526.finditer(vlans):
+            if match.group("name"):
+                r += [match.groupdict()]
+            else:
+                r += [{"vlan_id": int(match.group("vlan_id"))}]
+        return r

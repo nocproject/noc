@@ -171,7 +171,7 @@ class ServiceDataStream(DataStream):
     def get_meta_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:
         if "$deleted" in data:
             # @@todo Meta fields for deleted object
-            return
+            return None
         return {
             # MX_ADMINISTRATIVE_DOMAIN_ID: str(data[cls.F_ADM_DOMAIN_META]).encode(),
             MX_LABELS: str(MX_H_VALUE_SPLITTER.join(data[cls.F_LABELS_META])).encode(),

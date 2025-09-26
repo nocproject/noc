@@ -41,9 +41,8 @@ class Script(BaseScript):
             mac = match.group("mac")
             if mac.lower() == "incomplete":
                 continue
-            else:
-                iface = match.group("interface")
-                iface = iface.replace("GE", "Gi ")
-                iface = iface.replace("BAGG", "Po ")
-                r += [{"ip": match.group("ip"), "mac": match.group("mac"), "interface": iface}]
+            iface = match.group("interface")
+            iface = iface.replace("GE", "Gi ")
+            iface = iface.replace("BAGG", "Po ")
+            r += [{"ip": match.group("ip"), "mac": match.group("mac"), "interface": iface}]
         return r

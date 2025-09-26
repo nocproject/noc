@@ -25,10 +25,9 @@ class Script(BaseScript):
     def execute(self):
         ver = self.cli("sys mrd atsh")
         match = self.re_search(self.rx_ver, ver)
-        r = {
+        return {
             "vendor": "Zyxel",
             "platform": match.group("platform") + "EE",
             "version": match.group("version"),
             "attributes": {"Boot PROM": match.group("bootprom")},
         }
-        return r

@@ -104,7 +104,7 @@ class MetricsNode(BaseCDAGNode):
         r = mx_converters[self.config.scope](data)
         if not r:
             return
-        elif self.config.message_meta:
+        if self.config.message_meta:
             r["meta"] = self.config.message_meta
         svc = get_service()
         svc.register_message(

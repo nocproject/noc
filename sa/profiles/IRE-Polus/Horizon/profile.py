@@ -257,7 +257,7 @@ class PolusParam:
     @property
     def threshold_param(self) -> Optional[str]:
         if not self.is_threshold:
-            return
+            return None
         return THRESHOLD_PARAM_MAP[rx_threshold.match(self.name).group("type")]
 
     @property
@@ -278,11 +278,11 @@ class PolusParam:
     def component_type(self) -> Optional[str]:
         if rx_transceiver.match(self.name):
             return "XCVR"
-        elif self.port:
+        if self.port:
             return "PORT"
-        elif self.name.startswith("FAN"):
+        if self.name.startswith("FAN"):
             return "FAN"
-        elif self.name.startswith("PEM"):
+        if self.name.startswith("PEM"):
             return "PEM"
         return "CARD"
 
@@ -298,7 +298,7 @@ class PolusParam:
         match = rx_case_component.match(self.name)
         if match:
             return match.group("component")
-        return
+        return None
 
     @property
     def slot(self) -> Optional[str]:

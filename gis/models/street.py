@@ -71,8 +71,7 @@ class Street(Document):
     def __str__(self):
         if self.short_name:
             return "%s, %s" % (self.name, self.short_name)
-        else:
-            return self.name
+        return self.name
 
     @property
     def full_path(self):

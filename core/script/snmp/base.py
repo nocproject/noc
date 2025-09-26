@@ -115,7 +115,7 @@ class SNMP(object):
         version = self._get_snmp_version(version)
         if version < 3 and "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        elif version < 3:
+        if version < 3:
             return str(self.script.credentials["snmp_ro"])
         elif "snmp_username" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
@@ -208,9 +208,9 @@ class SNMP(object):
         version = self._get_snmp_version(version)
         if self.script.is_beefed:
             return "public", SNMP_v2c
-        elif version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
+        if version < SNMP_v3 and "snmp_ro" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        elif version < SNMP_v3:
+        if version < SNMP_v3:
             return str(self.script.credentials["snmp_ro"]), version
         raise NotImplementedError("Native SNMP backend is not supported v3")
 

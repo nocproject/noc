@@ -44,10 +44,7 @@ class ManagedObjectCard(BaseCard):
     def get_object(self, id):
         if self.current_user.is_superuser:
             return ManagedObject.objects.get(id=id)
-        else:
-            return ManagedObject.objects.get(
-                id=id, administrative_domain__in=self.get_user_domains()
-            )
+        return ManagedObject.objects.get(id=id, administrative_domain__in=self.get_user_domains())
 
     def get_template_name(self):
         return self.object.object_profile.card or "managedobject"
@@ -339,7 +336,7 @@ class ManagedObjectCard(BaseCard):
         # Diagnostics
         diagnostics = [d.get_object_form() for d in self.object.iter_diagnostics(to_display=True)]
         mp = MetricProxy(managed_object=self.object.bi_id)
-        r = {
+        return {
             "id": self.object.id,
             "object": self.object,
             "name": self.object.name,
@@ -387,7 +384,6 @@ class ManagedObjectCard(BaseCard):
             "diagnostics": diagnostics,
             "confdb": self.object.get_confdb(errors_policy="ignore"),
         }
-        return r
 
     def get_service_glyphs(self, service):
         """

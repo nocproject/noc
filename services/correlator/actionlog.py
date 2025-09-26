@@ -106,11 +106,11 @@ class ActionLog(object):
         """Check job condition"""
         if severity < self.min_severity:
             return False
-        elif self.time_pattern and not self.time_pattern.match(timestamp):
+        if self.time_pattern and not self.time_pattern.match(timestamp):
             return False
-        elif self.alarm_ack == "ack" and not ack_user:
+        if self.alarm_ack == "ack" and not ack_user:
             return False
-        elif self.alarm_ack == "unack" and ack_user:
+        if self.alarm_ack == "unack" and ack_user:
             return False
         return True
 

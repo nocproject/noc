@@ -197,7 +197,7 @@ class MessageStreamClient(object):
         stream_meta = meta.metadata[name] if name in meta.metadata else None
         if stream_meta and len(stream_meta) == partitions:
             return False
-        elif stream_meta:
+        if stream_meta:
             # Alter settings
             logger.info(
                 "Altering stream %s due to partition/replication factor mismatch (%d -> %d)",

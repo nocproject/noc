@@ -134,12 +134,12 @@ class CLI(BaseCLI):
             except ConnectionRefusedError:
                 self.error = CLIConnectionRefused("Connection refused")
                 metrics["cli_connection_refused", ("proto", self.name)] += 1
-                return
+                return None
             except CLIAuthFailed as e:
                 self.error = CLIAuthFailed(*e.args)
                 self.logger.info("CLI Authentication failed")
                 # metrics["cli_connection_refused", ("proto", self.name)] += 1
-                return
+                return None
         metrics["cli_commands", ("proto", self.name)] += 1
         # Send command
         # @todo: encode to object's encoding
@@ -339,7 +339,7 @@ class CLI(BaseCLI):
                 if isinstance(c, bytes):
                     await self.send(c)
                     return
-                elif isinstance(c, dict):
+                if isinstance(c, dict):
                     # handling case if command is dict
                     default_command = c.get(None)
                     for ck, cv in c.items():
@@ -352,8 +352,7 @@ class CLI(BaseCLI):
                         await self.send(default_command)
                         return
                     raise self.InvalidPagerCommand("Absent required None key")
-                else:
-                    raise self.InvalidPagerCommand(c)
+                raise self.InvalidPagerCommand(c)
         raise self.InvalidPagerPattern(pg)
 
     def expect(

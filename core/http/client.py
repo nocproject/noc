@@ -310,8 +310,7 @@ async def fetch(
                     allow_proxy=allow_proxy,
                     proxies=proxies,
                 )
-            else:
-                return 404, {}, b"Redirect limit exceeded"
+            return 404, {}, b"Redirect limit exceeded"
         # @todo: Process gzip and deflate Content-Encoding
         return code, parsed_headers, b"".join(response_body)
     finally:

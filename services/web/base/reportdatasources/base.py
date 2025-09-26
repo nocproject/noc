@@ -211,11 +211,11 @@ class LongestIter(object):
             return self._default_value
         if self._id == item:
             return self._value
-        elif self._id < item:
+        if self._id < item:
             self._id = item
             next(self, None)
             return self._value
-        elif self._id > item:
+        if self._id > item:
             # print("Overhead")
             pass
         return self._default_value

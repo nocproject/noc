@@ -23,8 +23,7 @@ class Command(BaseCommand):
     def handle(self, command=None, *args, **options):
         if command:
             return self.help_command(command[0])
-        else:
-            return self.list_commands()
+        return self.list_commands()
 
     def list_commands(self):
         def get_help_from_command(path: str) -> str:
@@ -44,7 +43,7 @@ class Command(BaseCommand):
             for f in os.listdir(root):
                 if f.startswith("_") or f.startswith("."):
                     continue
-                elif f.endswith(".py"):
+                if f.endswith(".py"):
                     commands.add((prefix, f[:-3], get_help_from_command(os.path.join(root, f))))
                 elif f.endswith(".sh"):
                     commands.add((prefix, f[:-3], ""))

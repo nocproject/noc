@@ -108,8 +108,7 @@ class MonitorApplication(ObjectListApplication):
                 r += [zlib.decompress(smart_bytes((d["log"])))]
         if r:
             return self.render_plain_text(b"".join(r))
-        else:
-            return self.render_plain_text("No data")
+        return self.render_plain_text("No data")
 
 
 class JobF(object):

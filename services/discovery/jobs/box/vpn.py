@@ -154,7 +154,7 @@ class VPNCheck(DiscoveryCheck):
             return []
         self.logger.debug("Getting MPLS VPNS")
         vpns = self.object.scripts.get_mpls_vpn()
-        r = [
+        return [
             DiscoveredVPN(
                 rd=vpn.get("rd"),
                 vpn_id=vpn["vpn_id"],
@@ -167,7 +167,6 @@ class VPNCheck(DiscoveryCheck):
             for vpn in vpns
             if vpn.get("vpn_id")
         ]
-        return r
 
     def get_confdb_vpns(self):
         """

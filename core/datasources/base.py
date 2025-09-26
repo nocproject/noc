@@ -159,7 +159,7 @@ class ParamInfo:
     def clean_type(self, value: str):
         if self.type == "date" and isinstance(value, datetime.date):
             return value
-        elif self.type == "datetime" and isinstance(value, datetime.datetime):
+        if self.type == "datetime" and isinstance(value, datetime.datetime):
             return value
         return clean_map[self.type](value)
 
@@ -324,9 +324,9 @@ class BaseDataSource(object):
         if not fields:
             # Not filtered field
             return True
-        elif cls.row_index and f.name == cls.row_index:
+        if cls.row_index and f.name == cls.row_index:
             return True
-        elif f.name not in fields:
+        if f.name not in fields:
             # Not filtered field
             return False
         return True
@@ -386,7 +386,7 @@ class BaseDataSource(object):
         series = cls.get_series_from_data(r, fields)
         if not mirror_clickhouse:
             return pl.DataFrame(series)
-        elif not cls.clickhouse_mirror():
+        if not cls.clickhouse_mirror():
             print("Datasource mirroring not supported")
             return pl.DataFrame(series)
         df = pl.DataFrame(series)
@@ -431,7 +431,7 @@ class BaseDataSource(object):
         """"""
         snapshots = cls.get_clickhouse_snapshots(ttl)
         if not snapshots:
-            return
+            return None
         r = sorted(snapshots, key=operator.attrgetter("report_ts"), reverse=True)
         return r[0]
 

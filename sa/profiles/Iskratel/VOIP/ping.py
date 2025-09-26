@@ -40,5 +40,4 @@ class Script(BaseScript):
                 "avg": match.group("avg"),
                 "max": match.group("max"),
             }
-        else:
-            return {"success": 0, "count": 3}
+        return {"success": 0, "count": 3}

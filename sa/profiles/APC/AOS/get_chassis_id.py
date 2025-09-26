@@ -26,5 +26,4 @@ class Script(BaseScript):
         if s:
             s = s["mac"].replace(" ", ":")
             return [{"first_chassis_mac": MAC(s), "last_chassis_mac": MAC(s)}]
-        else:
-            raise self.NotSupportedError
+        raise self.NotSupportedError

@@ -51,5 +51,5 @@ class ReportObjectMetrics(CHTableReportDataSource):
     def get_table(self):
         if "cpu_usage" in self.fields:
             return "noc.cpu"
-        elif "memory_usage" in self.fields:
+        if "memory_usage" in self.fields:
             return "noc.memory"

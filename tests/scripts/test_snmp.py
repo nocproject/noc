@@ -73,8 +73,7 @@ def test_snmp(host, version, community, xcls):
         with pytest.raises(xcls):
             scr.run()
         return
-    else:
-        result = scr.run()
+    result = scr.run()
     # Perform checks
     assert result
     assert result["location"]

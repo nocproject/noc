@@ -78,8 +78,7 @@ class Division(Document):
     def __str__(self):
         if self.short_name:
             return self.short_name
-        else:
-            return self.name
+        return self.name
 
     def get_children(self):
         return Division.objects.filter(parent=self.id)

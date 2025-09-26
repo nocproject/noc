@@ -143,8 +143,7 @@ class SubInterface(Document):
     def get_profile(self):
         if self.profile:
             return self.profile
-        else:
-            return self.interface.profile
+        return self.interface.profile
 
     @classmethod
     def can_set_label(cls, label):
@@ -178,7 +177,7 @@ class SubInterface(Document):
         si = ServiceInstance.objects.filter(resources=self.as_resource()).first()
         if si:
             return si.service
-        return
+        return None
 
     def as_resource(self, path: Optional[str] = None) -> str:
         """

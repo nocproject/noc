@@ -140,7 +140,7 @@ class Template(NOCModel):
         for tmpl in Template.objects.filter(message_type=m_type.value):
             if language and tmpl.language == language:
                 return tmpl
-            elif not tmpl.language or tmpl.language == "en":
+            if not tmpl.language or tmpl.language == "en":
                 default = tmpl
         return default
 

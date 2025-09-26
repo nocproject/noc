@@ -142,9 +142,8 @@ class NOCTableNode(template.Node):
                     a += ["%s='%s'" % (k, v)]
             tt = "<table %s>" % " ".join(a)
             return NOCTableTemplate % attrs + output.replace(t, tt) + "</div>"
-        else:
-            # Return untouched
-            return output
+        # Return untouched
+        return output
 
 
 def do_noctable(parser):
@@ -167,10 +166,9 @@ register.filter("object_name", object_name)
 def bool_icon(value):
     if value is None:
         return "?"
-    elif value:
+    if value:
         return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-yes.svg' alt='Yes' />")
-    else:
-        return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-no.svg' alt='No' />")
+    return SafeString("<img src='/ui/pkg/django-media/admin/img/icon-no.svg' alt='No' />")
 
 
 register.filter("bool_icon", bool_icon)

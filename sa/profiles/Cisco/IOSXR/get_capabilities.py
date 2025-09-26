@@ -27,8 +27,7 @@ class Script(BaseScript):
         Check LACP Status
         :return:
         """
-        r = self.cli("show lacp counters")
-        return r
+        return self.cli("show lacp counters")
 
     @false_on_cli_error
     def has_cdp_cli(self):

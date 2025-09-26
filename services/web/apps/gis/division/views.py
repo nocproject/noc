@@ -26,8 +26,7 @@ class DivisionApplication(ExtDocApplication):
     def field_full_parent(self, o):
         if o.parent:
             return o.parent.full_path
-        else:
-            return ""
+        return ""
 
     def field_full_path(self, o):
         return o.full_path

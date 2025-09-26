@@ -64,7 +64,7 @@ class ReportMetrics(BaseReportColumn):
         for num, field, alias in sorted(self.SELECT_QUERY_MAP, key=lambda x: x[0]):
             func = self.SELECT_QUERY_MAP[(num, field, alias)] or "avg(%s)" % field
             def_map["q_select"] += ["%s AS %s" % (func, alias or "a_" + field)]
-        query = " ".join(
+        return " ".join(
             [
                 "SELECT %s" % ",".join(def_map["q_select"]),
                 "FROM %s" % self.TABLE_NAME,
@@ -74,7 +74,6 @@ class ReportMetrics(BaseReportColumn):
                 "ORDER BY %s" % ",".join(def_map["q_order_by"]),
             ]
         )
-        return query
 
     def do_query(self):
         mo_ids = self.sync_ids[:]

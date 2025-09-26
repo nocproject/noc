@@ -91,7 +91,7 @@ def ensure_report_ds_scopes(connect=None, allow_type: bool = False):
         ds = loader[ds]
         if not hasattr(ds, "name"):
             continue
-        elif not ds.clickhouse_mirror():
+        if not ds.clickhouse_mirror():
             logger.info("[%s] Clickhouse mirror not enabled. Skipping", ds.name)
             continue
         logger.info("Ensure Report DataSources %s", ds.name)

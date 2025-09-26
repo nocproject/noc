@@ -204,8 +204,7 @@ class AddressRange(NOCModel):
         """
         if self.description:
             return self.description.split("\n", 1)[0].strip()
-        else:
-            return ""
+        return ""
 
     @property
     def addresses(self):

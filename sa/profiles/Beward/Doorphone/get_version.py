@@ -33,10 +33,9 @@ class Script(BaseScript):
         responce = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0])
         if responce:
             platform, version, image = self.normalize(responce)
-            r = {
+            return {
                 "vendor": "Beward",
                 "platform": platform or "",
                 "version": version or "",
                 "image": image or "",
             }
-            return r

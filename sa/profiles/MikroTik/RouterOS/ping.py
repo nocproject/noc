@@ -47,6 +47,5 @@ class Script(BaseScript):
                 "avg": match.group("avg"),
                 "max": match.group("max"),
             }
-        else:
-            match = self.rx_result1.search(c)
-            return {"success": match.group("received"), "count": match.group("sent")}
+        match = self.rx_result1.search(c)
+        return {"success": match.group("received"), "count": match.group("sent")}

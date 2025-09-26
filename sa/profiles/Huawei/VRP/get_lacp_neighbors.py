@@ -64,10 +64,10 @@ class Script(BaseScript):
             # print("Split %s" % self.split_re.split(v))
             if not block:
                 continue
-            elif block.endswith("'"):
+            if block.endswith("'"):
                 pc_name = block.strip("'")
                 continue
-            elif not pc_name:
+            if not pc_name:
                 self.logger.debug("Unknown interface")
                 continue
             self.logger.debug("[%s] Block is: %s", pc_name, block)

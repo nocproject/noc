@@ -79,32 +79,29 @@ class Script(BaseScript):
                 "version": version,
                 "attributes": {"FW version": fwversion, "Serial Number": serial},
             }
-        else:
-            v = self.cli("cat /tmp/.board_desc", cached=True)
-            if "No such file or directory" not in v:
-                match = self.rx_shell_platform_tau4.search(v)
-                platform = match.group("platform")
-                serial = match.group("serial")
-                hardware = match.group("hardware")
-                return {
-                    "vendor": "Eltex",
-                    "platform": platform,
-                    "version": version,
-                    "attributes": {"HW version": hardware, "Serial Number": serial},
-                }
-            else:
-                v = self.cli("cat /tmp/board_type", cached=True)
-                if "No such file or directory" not in v:
-                    match = self.rx_shell_platform_tau8.search(v)
-                    platform = match.group("platform")
-                    v = self.cli("cat /tmp/board_serial", cached=True)
-                    match = self.rx_shell_serial_tau8.search(v)
-                    serial = match.group("serial")
-                    return {
-                        "vendor": "Eltex",
-                        "platform": platform,
-                        "version": version,
-                        "attributes": {"Serial Number": serial},
-                    }
-                else:
-                    raise self.NotSupportedError()
+        v = self.cli("cat /tmp/.board_desc", cached=True)
+        if "No such file or directory" not in v:
+            match = self.rx_shell_platform_tau4.search(v)
+            platform = match.group("platform")
+            serial = match.group("serial")
+            hardware = match.group("hardware")
+            return {
+                "vendor": "Eltex",
+                "platform": platform,
+                "version": version,
+                "attributes": {"HW version": hardware, "Serial Number": serial},
+            }
+        v = self.cli("cat /tmp/board_type", cached=True)
+        if "No such file or directory" not in v:
+            match = self.rx_shell_platform_tau8.search(v)
+            platform = match.group("platform")
+            v = self.cli("cat /tmp/board_serial", cached=True)
+            match = self.rx_shell_serial_tau8.search(v)
+            serial = match.group("serial")
+            return {
+                "vendor": "Eltex",
+                "platform": platform,
+                "version": version,
+                "attributes": {"Serial Number": serial},
+            }
+        raise self.NotSupportedError()

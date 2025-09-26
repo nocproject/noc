@@ -82,53 +82,51 @@ class Script(BaseScript):
             for i in stack:
                 r += [stack[i]]
             return r
-        else:
-            v = self.scripts.get_version()
-            r = [
-                {
-                    "type": "CHASSIS",
-                    "vendor": "SKS",
-                    "part_no": v["platform"],
-                }
-            ]
-            serial = self.capabilities.get("Chassis | Serial Number")
-            revision = self.capabilities.get("Chassis | HW Version")
-            if serial:
-                r[0]["serial"] = serial
-            if revision:
-                r[0]["revision"] = revision
-            r += self.get_e1_inventory()
-            try:
-                v = self.cli("show interfaces status", cached=True)
-                rx_port = self.rx_port1
-            except self.CLISyntaxError:
-                v = self.cli("show interface brief")
-                rx_port = self.rx_port2
-            for match in rx_port.finditer(v):
-                if match.group("type") in [
-                    "1G-Combo-C",
-                    "1G-Combo-F",
-                    "10G-Combo-C",
-                    "10G-Combo-F",
-                    "Giga-Combo-TX",
-                    "Giga-Combo-FX",
-                ]:
-                    try:
-                        c = self.cli(
-                            "show fiber-ports optical-transceiver interface %s"
-                            % match.group("port")
-                        )
-                    except self.CLISyntaxError:
-                        break
-                    match1 = self.rx_sfp_serial.search(c)
-                    if match1:
-                        r += [
-                            {
-                                "type": "XCVR",
-                                "vendor": "NONAME",
-                                "part_no": "Unknown | Transceiver | SFP",
-                                "number": match.group("port")[-1:],
-                                "serial": match1.group("serial"),
-                            }
-                        ]
+        v = self.scripts.get_version()
+        r = [
+            {
+                "type": "CHASSIS",
+                "vendor": "SKS",
+                "part_no": v["platform"],
+            }
+        ]
+        serial = self.capabilities.get("Chassis | Serial Number")
+        revision = self.capabilities.get("Chassis | HW Version")
+        if serial:
+            r[0]["serial"] = serial
+        if revision:
+            r[0]["revision"] = revision
+        r += self.get_e1_inventory()
+        try:
+            v = self.cli("show interfaces status", cached=True)
+            rx_port = self.rx_port1
+        except self.CLISyntaxError:
+            v = self.cli("show interface brief")
+            rx_port = self.rx_port2
+        for match in rx_port.finditer(v):
+            if match.group("type") in [
+                "1G-Combo-C",
+                "1G-Combo-F",
+                "10G-Combo-C",
+                "10G-Combo-F",
+                "Giga-Combo-TX",
+                "Giga-Combo-FX",
+            ]:
+                try:
+                    c = self.cli(
+                        "show fiber-ports optical-transceiver interface %s" % match.group("port")
+                    )
+                except self.CLISyntaxError:
+                    break
+                match1 = self.rx_sfp_serial.search(c)
+                if match1:
+                    r += [
+                        {
+                            "type": "XCVR",
+                            "vendor": "NONAME",
+                            "part_no": "Unknown | Transceiver | SFP",
+                            "number": match.group("port")[-1:],
+                            "serial": match1.group("serial"),
+                        }
+                    ]
         return r
