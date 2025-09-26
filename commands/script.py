@@ -344,8 +344,7 @@ class Command(BaseCommand):
             for n in names:
                 if "." in n:
                     nn = int(n.rsplit(".", 1)[-1])
-                    if nn > max_n:
-                        max_n = nn
+                    max_n = max(nn, max_n)
             ntpl = "%s.%%d" % s_name
             for nn, cmd in enumerate(sorted(commands)):
                 spec.answers += [SpecAnswer(name=ntpl % (nn + 1), type="cli", value=cmd)]

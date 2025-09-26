@@ -263,8 +263,7 @@ class WorkflowApplication(ExtDocApplication):
             match = self.rx_clone_name.search(d["name"])
             if match:
                 n = int(match.group(1))
-                if n > m:
-                    m = n
+                m = max(n, m)
         # Generate name
         name = "%s (Copy #%d)" % (wf.name, m + 1)
         # Clone workflow

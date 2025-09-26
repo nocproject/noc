@@ -281,8 +281,7 @@ class TargetedStream(Stream):
                 f = (2.0 * eps * r) / q
             else:
                 f = (2.0 * eps * (n - r)) / (1 - q)
-            if f < m:
-                m = f
+            m = min(f, m)
         return m
 
 

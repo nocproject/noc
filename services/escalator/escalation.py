@@ -83,8 +83,7 @@ class BaseSequence(ABC):
         now = datetime.datetime.now()
         retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
         with retry_lock:
-            if retry < next_retry:
-                retry = next_retry
+            retry = max(retry, next_retry)
             next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
         delta = retry - now
         delay = delta.seconds + (1 if delta.microseconds else 0)
