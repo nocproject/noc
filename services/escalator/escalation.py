@@ -239,7 +239,7 @@ class EscalationSequence(BaseSequence):
         Return True if alarm can be escalated.
         """
         if self.force:
-            return True
+            return bool(self.alarm.managed_object.tt_system)
         return self.alarm.managed_object.can_escalate()
 
     def can_notify(self) -> bool:
