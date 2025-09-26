@@ -53,13 +53,12 @@ class SuggestProfile(object):
         """
         if self.match == "eq":
             return result == self.value
-        elif self.match == "contains":
+        if self.match == "contains":
             return self.value in result
-        elif self.match == "re":
+        if self.match == "re":
             return bool(self.get_re(self.value).search(result))
-        else:
-            # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
-            return False
+        # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
+        return False
 
     @property
     def query_key(self):

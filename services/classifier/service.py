@@ -166,7 +166,7 @@ class ClassifierService(FastAPIService):
         elif ifindex:
             q["ifindex"] = int(ifindex)
         else:
-            return
+            return None
         iface = Interface.objects.filter(**q).scalar("name", "profile").first()
         if iface:
             return iface
@@ -923,7 +923,7 @@ class ClassifierService(FastAPIService):
             # Ignore Patterns
             self.pattern_set.update_pattern(data["id"], data)
             return
-        elif "event_class" not in data:
+        if "event_class" not in data:
             return
         self.ruleset.update_rule(data, r_format=rule_type)
 

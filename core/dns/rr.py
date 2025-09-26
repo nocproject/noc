@@ -66,22 +66,22 @@ class RR(object):
         # Compare by name
         if self._sorder < other._sorder:
             return True
-        elif self._sorder > other._sorder:
+        if self._sorder > other._sorder:
             return False
         # Compare by type
         if self.type < other.type:
             return True
-        elif self.type > other.type:
+        if self.type > other.type:
             return False
         # Compare by content
         if self._content < other._content:
             return True
-        elif self._content > other._content:
+        if self._content > other._content:
             return False
         # Compare by TTL
         if self.ttl < other.ttl:
             return True
-        elif self.ttl > other.ttl:
+        if self.ttl > other.ttl:
             return False
         # Compare by priority
         return (self.priority or 0) < (other.priority or 0)

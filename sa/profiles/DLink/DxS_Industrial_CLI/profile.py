@@ -45,12 +45,11 @@ class Profile(BaseProfile):
         s = s.replace(" ", "")
         if s.startswith("eth"):
             return "E%s" % s[1:]
-        elif s.startswith("1/"):
+        if s.startswith("1/"):
             return "Eth1/0/%s" % s[2:]
-        elif s.startswith("port-channel"):
+        if s.startswith("port-channel"):
             return "P%s" % s[1:]
-        else:
-            return s
+        return s
 
     INTERFACE_TYPES = {
         "eth": "physical",

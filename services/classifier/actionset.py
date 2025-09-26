@@ -196,15 +196,15 @@ class ActionSet(object):
                 for r in a.run_actions(event, target, resources):
                     if not r:
                         continue
-                    elif r.is_drop:
+                    if r.is_drop:
                         return r
-                    elif r.to_dispose:
+                    if r.to_dispose:
                         action = r
             except Exception as e:
                 self.logger.error("[%s] Error when execute action: %s", event.id, str(e))
             if a.action.is_drop:
                 return a.action
-            elif a.action.to_dispose:
+            if a.action.to_dispose:
                 action = a.action
         # Default resource action
         for r in resources:
@@ -282,7 +282,7 @@ class ActionSet(object):
                     resource.managed_object.address,
                 )
             return EventAction.DROP
-        elif action == "L":
+        if action == "L":
             # Do not dispose
             if resource:
                 self.logger.info(

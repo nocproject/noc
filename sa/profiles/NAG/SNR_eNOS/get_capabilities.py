@@ -35,7 +35,7 @@ class Script(BaseScript):
         try:
             cmd = self.cli("show slot")
         except self.CLISyntaxError:
-            return
+            return None
         for match in self.rx_stack.finditer(cmd):
             i = match.group("id")
             s += [i]

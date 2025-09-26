@@ -43,8 +43,7 @@ class Script(BaseScript):
                 tmp_vlan += [vlan_id]
         if result:
             return sorted(result, key=lambda x: x["vlan_id"])
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()
 
     def execute_cli(self):
         # Try CLI
@@ -64,9 +63,8 @@ class Script(BaseScript):
                 {"vlan_id": int(match.group("vlan_id"))}
                 for match in rx_vlan_line_vrp5.finditer(vlans)
             ]
-        else:
-            vlans = self.cli("display vlan all", cached=True)
-            return [
-                {"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}
-                for match in rx_vlan_line_vrp3.finditer(vlans)
-            ]
+        vlans = self.cli("display vlan all", cached=True)
+        return [
+            {"vlan_id": int(match.group("vlan_id")), "name": match.group("name")}
+            for match in rx_vlan_line_vrp3.finditer(vlans)
+        ]

@@ -413,9 +413,7 @@ class CredentialChecker(object):
             if not sr.status and not result:
                 # Skip failed result
                 continue
-            elif (
-                result and result[-1].credential != sr.credential and sr.protocol in processed_proto
-            ):
+            if result and result[-1].credential != sr.credential and sr.protocol in processed_proto:
                 break
             result.append(sr)
             processed_proto.add(sr.protocol)

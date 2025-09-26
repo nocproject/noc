@@ -900,7 +900,7 @@ class BaseService(object):
                 headers=msg.headers,
             )
             return
-        elif not self.router and not self.mx_partitions:
+        if not self.router and not self.mx_partitions:
             self.logger.warning("Not MX service for forwarding message. Skipping...")
             return
         if store:
@@ -946,7 +946,7 @@ class BaseService(object):
         Return None for default weight
         :return:
         """
-        return None
+        return
 
     def get_backend_limit(self):
         """
@@ -955,7 +955,7 @@ class BaseService(object):
         Return None for no limits
         :return:
         """
-        return None
+        return
 
     def is_valid_health_check(self, service_id):
         """

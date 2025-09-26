@@ -158,7 +158,7 @@ class Command(BaseCommand):
             if not mo.object_profile.beef_path_template and not force:
                 self.print("  Beef path template is not configured. Skipping")
                 continue
-            elif not mo.object_profile.beef_path_template and force:
+            if not mo.object_profile.beef_path_template and force:
                 self.print("  Beef path template is not configured. But force set. Generate path")
                 path = smart_text(self.DEFAULT_BEEF_PATH_TEMPLATE.format(mo))
             else:
@@ -546,8 +546,7 @@ class Command(BaseCommand):
         config_st = self.get_storage(storage, beef_test_config=True)
         with config_st.open_fs() as fs:
             cfg = fs.readbytes(smart_text(path))
-            data = yaml.safe_load(cfg)
-        return data
+            return yaml.safe_load(cfg)
 
     def beef_filter(self, storage=None, path="/", uuids=None, profile=None, with_tests=False):
         """

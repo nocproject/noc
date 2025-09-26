@@ -23,8 +23,7 @@ class VLANCard(BaseCard):
     def get_object(self, id):
         if self.current_user.is_superuser:
             return VLAN.get_by_id(id)
-        else:
-            return VLAN.objects.get(id=id, segment__in=self.get_user_domains())
+        return VLAN.objects.get(id=id, segment__in=self.get_user_domains())
 
     def get_data(self):
         return {"object": self.object, "interfaces": self.get_interfaces()}

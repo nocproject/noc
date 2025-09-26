@@ -57,8 +57,7 @@ class Script(BaseScript):
                 self.portchannel_members[i] = pc["members"]
         if iface in self.portchannel_members:
             return self.portchannel_members[iface]
-        else:
-            return []
+        return []
 
     def get_mpls_vpn(self):
         r = []

@@ -139,7 +139,7 @@ class Router(object):
         for rid, r in self.routes.items():
             if r_types and not r.m_types.intersection(r_types) and rid != self.DEFAULT_CHAIN:
                 continue
-            elif r_types:
+            if r_types:
                 updated_types = r.m_types.intersection(r_types)
             else:
                 updated_types = r.m_types
@@ -245,7 +245,7 @@ class Router(object):
                         metrics["action_drops", ("stream", stream)] += 1
                         logger.debug("[%s] Dropped. Stopping processing", msg_id)
                         return
-                    elif stream == DUMP:
+                    if stream == DUMP:
                         logger.info(
                             "[%s] Dump. Message headers: %s;\n-----\n Body: %s \n----\n ",
                             msg_id,

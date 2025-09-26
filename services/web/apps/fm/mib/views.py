@@ -67,14 +67,13 @@ class MIBApplication(ExtDocApplication):
             path = oid_to_list(s.pop())
             if len(s) == 0:
                 return path
-            else:
-                for i in s:
-                    pathi = oid_to_list(i)
-                    if len(path) > len(pathi):
-                        path = pathi
-                    elif len(path) == len(pathi):
-                        path = pathi if path[-1] > pathi[-1] else path
-                return path
+            for i in s:
+                pathi = oid_to_list(i)
+                if len(path) > len(pathi):
+                    path = pathi
+                elif len(path) == len(pathi):
+                    path = pathi if path[-1] > pathi[-1] else path
+            return path
 
         def find_root_node(g):
             root = None

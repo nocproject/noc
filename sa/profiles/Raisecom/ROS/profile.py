@@ -89,8 +89,7 @@ class Profile(BaseProfile):
         if self.rx_port_ip.match(interface):
             match = self.rx_port_ip.match(interface)
             return "ip %s" % match.group("port")
-        else:
-            return interface
+        return interface
 
     INTERFACE_TYPES = {
         "nu": "null",  # NULL
@@ -114,6 +113,6 @@ class Profile(BaseProfile):
             # for ISCOM26(?:24|08)G
             # @todo use matchers
             return "management"
-        elif name.isdigit():
+        if name.isdigit():
             return "physical"
         return cls.INTERFACE_TYPES.get(name[:2].lower())

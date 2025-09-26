@@ -257,11 +257,11 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
                     "Failed to save line %d: Object %s is already exists"
                     % (count, repr(variables)),
                 )
-            elif resolution == IR_SKIP:
+            if resolution == IR_SKIP:
                 # Skip line
                 count -= 1
                 continue
-            elif resolution == IR_UPDATE:
+            if resolution == IR_UPDATE:
                 c = update_if_changed(o, variables)
                 if not c:
                     count -= 1

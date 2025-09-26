@@ -116,7 +116,7 @@ async def snmp_get(
                 raise SNMPError(code=BAD_VALUE, oid=oids)
             logger.debug("[%s] GET result: %r", address, result)
             return result
-        elif resp.error_status == NO_SUCH_NAME and resp.varbinds and len(oids) > 1:
+        if resp.error_status == NO_SUCH_NAME and resp.varbinds and len(oids) > 1:
             # One or more invalid oids
             b_idx = resp.error_index - 1
             logger.debug(
@@ -156,21 +156,19 @@ async def snmp_get(
             if result:
                 logger.debug("[%s] GET result: %r", address, result)
                 return result
+            # All oids excluded as broken
+            logger.debug("[%s] All oids are broken", address)
+            raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
+        oid = None
+        if resp.error_index and resp.varbinds:
+            if resp.error_index & 0x8000:
+                # Some broken SNMP servers (i.e. Huawei) returns
+                # negative error index. Try to negotiate silently
+                oid = resp.varbinds[min(65536 - resp.error_index, len(resp.varbinds) - 1)][0]
             else:
-                # All oids excluded as broken
-                logger.debug("[%s] All oids are broken", address)
-                raise SNMPError(code=NO_SUCH_NAME, oid=oids[0])
-        else:
-            oid = None
-            if resp.error_index and resp.varbinds:
-                if resp.error_index & 0x8000:
-                    # Some broken SNMP servers (i.e. Huawei) returns
-                    # negative error index. Try to negotiate silently
-                    oid = resp.varbinds[min(65536 - resp.error_index, len(resp.varbinds) - 1)][0]
-                else:
-                    oid = resp.varbinds[resp.error_index - 1][0]
-            logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
-            raise SNMPError(code=resp.error_status, oid=oid)
+                oid = resp.varbinds[resp.error_index - 1][0]
+        logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
+        raise SNMPError(code=resp.error_status, oid=oid)
 
 
 async def snmp_count(
@@ -230,20 +228,19 @@ async def snmp_count(
             if resp.error_status == NO_SUCH_NAME:
                 # NULL result
                 break
-            elif resp.error_status != NO_ERROR:
+            if resp.error_status != NO_ERROR:
                 # Error
                 raise SNMPError(code=resp.error_status, oid=oid)
-            else:
-                # Success value
-                for oid, v in resp.varbinds:
-                    if oid.startswith(poid):
-                        # Next value
-                        if filter(oid, v):
-                            result += 1
-                    else:
-                        logger.debug("[%s] COUNT result: %s", address, result)
-                        sock.close()
-                        return result
+            # Success value
+            for oid, v in resp.varbinds:
+                if oid.startswith(poid):
+                    # Next value
+                    if filter(oid, v):
+                        result += 1
+                else:
+                    logger.debug("[%s] COUNT result: %s", address, result)
+                    sock.close()
+                    return result
 
 
 async def snmp_getnext(
@@ -319,19 +316,19 @@ async def snmp_getnext(
             if resp.error_status == NO_SUCH_NAME:
                 # NULL result
                 break
-            elif resp.error_status == END_OID_TREE:
+            if resp.error_status == END_OID_TREE:
                 # End OID Tree
                 return result
-            elif resp.error_status != NO_ERROR:
+            if resp.error_status != NO_ERROR:
                 # Error
                 raise SNMPError(code=resp.error_status, oid=oid)
-            elif not raw_varbinds:
+            if not raw_varbinds:
                 # Success value
                 for oid, v in resp.varbinds:
                     if oid == first_oid:
                         logger.warning("[%s] GETNEXT Oid wrap detected", address)
                         return result
-                    elif oid.startswith(poid) and not (only_first and result) and oid != last_oid:
+                    if oid.startswith(poid) and not (only_first and result) and oid != last_oid:
                         # Next value
                         if filter(oid, v):
                             result += [(oid, v)]
@@ -399,6 +396,5 @@ async def snmp_set(
                 oid = resp.varbinds[resp.error_index - 1][0]
             logger.debug("[%s] SNMP error: %s %s", address, oid, resp.error_status)
             raise SNMPError(code=resp.error_status, oid=oid)
-        else:
-            logger.debug("[%s] SET result: OK", address)
-            return True
+        logger.debug("[%s] SET result: OK", address)
+        return True

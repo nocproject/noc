@@ -334,7 +334,7 @@ class Event(BaseModel):
 
     def get_message_context(self, managed_object: Any) -> Dict[str, Any]:
         """"""
-        r = {
+        return {
             "ts": self.timestamp,
             "id": self.id,
             "event_class": self.type.event_class,
@@ -345,4 +345,3 @@ class Event(BaseModel):
             "raw_vars": {d.name: d.value for d in self.data},
             "managed_object": managed_object.get_message_context(),
         }
-        return r

@@ -16,5 +16,4 @@ class Script(BaseScript):
     always_prefer = "S"
 
     def execute_cli(self, **kwargs):
-        v = self.cli("uname -n").strip()
-        return v
+        return self.cli("uname -n").strip()

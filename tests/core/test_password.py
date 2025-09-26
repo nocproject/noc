@@ -68,7 +68,7 @@ class ErrContext(object):
         exc_tb: TracebackType | None,
     ) -> bool | None:
         if self._msg is None and exc_type is None:
-            return
+            return None
         if self._msg and exc_type is ValueError:
             assert self._msg == exc_val.args[0]
             return True

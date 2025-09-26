@@ -36,11 +36,10 @@ class Script(BaseScript):
         cmd += " %s" % address
         ping = self.cli(cmd)
         result = self.rx_result.search(ping)
-        r = {
+        return {
             "success": result.group("success"),
             "count": result.group("count"),
             "min": result.group("min"),
             "avg": result.group("avg"),
             "max": result.group("max"),
         }
-        return r

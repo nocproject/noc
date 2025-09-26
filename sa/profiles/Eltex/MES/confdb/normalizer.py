@@ -16,8 +16,7 @@ class MESNormalizer(BaseNormalizer):
     def normalize_interface_name(self, tokens):
         if tokens[1] == "vlan":
             return self.interface_name(tokens[1], tokens[2])
-        else:
-            return self.interface_name(tokens[1])
+        return self.interface_name(tokens[1])
 
     @match("hostname", ANY)
     def normalize_hostname(self, tokens):

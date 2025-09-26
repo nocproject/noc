@@ -253,8 +253,7 @@ class Script(BaseScript):
                 i += 1
         if chassis.get(parent_index):
             return chassis.get(parent_index)
-        else:
-            return 1
+        return 1
 
     def get_chassis_sensors(self):
         r = []

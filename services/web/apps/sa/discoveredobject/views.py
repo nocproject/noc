@@ -96,8 +96,7 @@ class DiscoveredObjectApplication(ExtDocApplication):
             q["sources__in"] = [{"scan": "network-scan"}.get(s, s) for s in source]
         if "last_update" in q:
             del q["last_update"]
-        r = super().cleaned_query(q)
-        return r
+        return super().cleaned_query(q)
 
     def get_Q(self, request, query):
         q = super().get_Q(request, query)

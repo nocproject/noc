@@ -279,7 +279,7 @@ class DiscoveredObject(Document):
                 "[%s|%s] Not find rule for address. Skipping", self.pool.name, self.address
             )
             return
-        elif self.rule != rule:
+        if self.rule != rule:
             logger.info(
                 "[%s|%s] Update rule: %s -> %s",
                 self.pool.name,
@@ -406,7 +406,7 @@ class DiscoveredObject(Document):
                     continue
                 if d.remote_id != rid:
                     continue
-                elif d.last_update > ts:
+                if d.last_update > ts:
                     # Clean from Purgatorium Data
                     clean_rids.append((rs.name, rid))
                     continue
@@ -481,9 +481,9 @@ class DiscoveredObject(Document):
         o.refresh_rule(sources, rule=rule)
         if not o.is_dirty or rule:
             logger.debug("[%s|%s] Nothing updating data. Skipping", pool.name, address)
-            return
-        elif not o.rule and getattr(o, "_created"):
-            return
+            return None
+        if not o.rule and getattr(o, "_created"):
+            return None
         if dry_run:
             logger.debug(
                 "[%s|%s] Debug object: %s/%s/%s/%s", pool.name, address, sources, data, labels, rule
@@ -518,7 +518,7 @@ class DiscoveredObject(Document):
                 continue
             if d.is_delete and s.remove_policy == "D":
                 continue
-            elif d.is_delete:
+            if d.is_delete:
                 event = {"U": "unmanaged", "R": "remove"}[s.remove_policy]
             elif d.event:
                 event = d.event
@@ -580,7 +580,7 @@ class DiscoveredObject(Document):
         for d in duplicates:
             if ETL_SOURCE not in d.sources:
                 continue
-            elif self.is_preferred(d):
+            if self.is_preferred(d):
                 origin_ctx.merge_data(d.get_ctx(is_new=is_new), systems_priority=priority)
             else:
                 origin = d
@@ -666,11 +666,11 @@ class DiscoveredObject(Document):
         for s in self.rule.sources:
             if not s.remote_system:
                 continue
-            elif self.has_remote_system(s.remote_system) and not do.has_remote_system(
+            if self.has_remote_system(s.remote_system) and not do.has_remote_system(
                 s.remote_system
             ):
                 return True
-            elif not self.has_remote_system(s.remote_system) and do.has_remote_system(
+            if not self.has_remote_system(s.remote_system) and do.has_remote_system(
                 s.remote_system
             ):
                 return False
@@ -719,7 +719,7 @@ class DiscoveredObject(Document):
             # Unsync object
             self.fire_event("expired")  # Remove
             return
-        elif self.rule != rule:
+        if self.rule != rule:
             self.rule = rule
             self.save()
         action = rule.get_action(self.checks, self.effective_labels, self.effective_data)
@@ -769,7 +769,7 @@ class DiscoveredObject(Document):
         template = template or self.rule.default_template
         if not template:
             logger.warning("[%s] Unknown Template for sync: %s", self, template)
-            return
+            return None
         # Getting ManagedObject
         pool = self.get_pool()
         q = self.get_managed_object_query(pool)
@@ -926,7 +926,7 @@ class DiscoveredObject(Document):
         for item in self.data:
             if item.source != source and not remote_system:
                 return item
-            elif remote_system and item.remote_system == remote_system:
+            if remote_system and item.remote_system == remote_system:
                 return item
 
     def reset_data(self, source: str, remote_system: Optional[RemoteSystem] = None):
@@ -940,9 +940,9 @@ class DiscoveredObject(Document):
         for item in self.data:
             if item.source != source and not remote_system:
                 continue
-            elif remote_system and not item.remote_system:
+            if remote_system and not item.remote_system:
                 continue
-            elif remote_system and item.remote_system.id == remote_system.id:
+            if remote_system and item.remote_system.id == remote_system.id:
                 remote_rids.append(item.remote_id)
                 continue
             data.append(item)
@@ -1003,13 +1003,13 @@ class DiscoveredObject(Document):
         if not self.managed_object_id and not managed_object:
             logger.warning("Not exists ManagedObject. Skipping...")
             return
-        elif managed_object:
+        if managed_object:
             mo = managed_object
         else:
             mo = ManagedObject.get_by_id(int(self.managed_object_id))
         if not mo:
             return
-        elif mo.id != self.managed_object_id:
+        if mo.id != self.managed_object_id:
             logger.info(
                 "[%s] Update managed_object field to: %s", managed_object.name, managed_object.id
             )

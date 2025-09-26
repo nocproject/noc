@@ -50,8 +50,7 @@ class KBEntryAttachment(NOCModel):
         s = self.file.storage.stat(self.file.name)
         if s:
             return s["size"]
-        else:
-            return None
+        return None
 
     @property
     def mtime(self):
@@ -61,5 +60,4 @@ class KBEntryAttachment(NOCModel):
         s = self.file.storage.stat(self.file.name)
         if s:
             return s["mtime"]
-        else:
-            return None
+        return None

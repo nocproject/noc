@@ -180,14 +180,14 @@ class MetricPlugin(InvPlugin):
                 relative_end = x["relative_position"]["right"]
                 absolute_end = x["left"]["right"]
                 break
-            elif x["left"] < value < x["right"]:
+            if x["left"] < value < x["right"]:
                 relative_start, relative_end = (
                     x["relative_position"]["left"],
                     x["relative_position"]["right"],
                 )
                 absolute_start, absolute_end = x["left"], x["right"]
                 break
-            elif len(r) == num and value > x["right"]:
+            if len(r) == num and value > x["right"]:
                 relative_start = x["relative_position"]["left"]
                 absolute_start = x["left"]
                 break

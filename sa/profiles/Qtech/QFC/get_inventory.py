@@ -459,5 +459,4 @@ class Script(BaseScript):
         # RS-232 UPS - UPS Connected
         if not self.is_lite:
             return self.get_v2_rev_sensors()
-        else:
-            return self.get_v3_rev_sensors()
+        return self.get_v3_rev_sensors()

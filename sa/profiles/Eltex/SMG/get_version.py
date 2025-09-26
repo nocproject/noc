@@ -22,8 +22,7 @@ class Script(BaseScript):
             version = match.group("version")
             platform = "SMG-" + match.group("platform")
             return {"vendor": "Eltex", "platform": platform, "version": version}
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()
 
     def execute_cli(self):
         self.cli("sh")

@@ -78,9 +78,8 @@ class Profile(BaseProfile):
         match = self.rx_hw.search(c)
         if match:
             return match.groupdict()
-        else:
-            match = self.rx_hw2.search(c)
-            return match.groupdict()
+        match = self.rx_hw2.search(c)
+        return match.groupdict()
 
     rx_iface = re.compile(r"[01]/\d+")
 

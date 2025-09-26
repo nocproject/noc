@@ -24,5 +24,4 @@ class Script(BaseScript):
         match = self.rx_hostname.search(v)
         if match:
             return match.group("hostname")
-        else:
-            return "None"
+        return "None"

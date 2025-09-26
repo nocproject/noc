@@ -84,10 +84,8 @@ class OIDRule(object):
             oids = tuple(mib[self.expand(o, kwargs)] for o in self.oid)
             if None in oids:
                 return None
-            else:
-                return oids
-        else:
-            return mib[self.expand(self.oid, kwargs)]
+            return oids
+        return mib[self.expand(self.oid, kwargs)]
 
     @classmethod
     def _build_scale_locals(cls):

@@ -93,10 +93,10 @@ class MetricsCheck(DiscoveryCheck):
         if config.discovery.proxy_metric and not result:
             self.logger.info("No metrics found")
             return
-        elif not config.discovery.proxy_metric and "metrics" in result:
+        if not config.discovery.proxy_metric and "metrics" in result:
             self.logger.info("Collected metrics: %s", result["metrics"]["n_measurements"])
             return
-        elif not config.discovery.proxy_metric:
+        if not config.discovery.proxy_metric:
             return
         self.logger.info("Collected metrics: %s", len(result))
         # Send metrics
@@ -172,12 +172,10 @@ class MetricsCheck(DiscoveryCheck):
                 # Skip value
                 self.logger.debug("[%s] Counter stepback: %s -> %s", m.label, r[1], m.value)
                 return None
-            else:
-                # Counter wrap
-                self.logger.debug("[%s] Counter wrap: %s -> %s", m.label, r[1], m.value)
-                return d_wrap
-        else:
-            return m.value - r[1]
+            # Counter wrap
+            self.logger.debug("[%s] Counter wrap: %s -> %s", m.label, r[1], m.value)
+            return d_wrap
+        return m.value - r[1]
 
     def convert_counter(self, m, r):
         """

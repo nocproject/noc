@@ -83,7 +83,7 @@ class MetricActionItem(EmbeddedDocument):
     def __str__(self) -> str:
         if self.metric_action:
             return str(self.metric_action)
-        elif self.metric_type:
+        if self.metric_type:
             return str(self.metric_type)
         return ""
 

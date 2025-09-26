@@ -412,14 +412,13 @@ class AlarmClass(Document):
             if self.config:
                 return self.config.control_time0 or None
             return self.control_time0 or None
-        elif reopens == 1:
+        if reopens == 1:
             if self.config:
                 return self.config.control_time1 or None
             return self.control_time1 or None
-        else:
-            if self.config:
-                return self.config.control_timeN or None
-            return self.control_timeN or None
+        if self.config:
+            return self.config.control_timeN or None
+        return self.control_timeN or None
 
     def get_labels_map(self):
         """

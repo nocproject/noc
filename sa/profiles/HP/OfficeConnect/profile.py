@@ -26,7 +26,7 @@ class Profile(BaseProfile):
         s = s.lower()
         if s == "CPU Interface":
             return "cpu"
-        elif s.startswith("trk"):
+        if s.startswith("trk"):
             return s
         num, *_ = s.split()
         return num
@@ -36,11 +36,11 @@ class Profile(BaseProfile):
         name = name.lower()
         if name.startswith("trk"):
             return "aggregated"
-        elif name.startswith("vlan"):
+        if name.startswith("vlan"):
             return "SVI"
-        elif name.startswith("switch loopback"):
+        if name.startswith("switch loopback"):
             return "loopback"
-        elif name.startswith("cpu"):
+        if name.startswith("cpu"):
             return "management"
         return "physical"
 

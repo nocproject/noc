@@ -95,11 +95,11 @@ class Profile(BaseProfile):
     def get_board_type(name):
         if "EP" in name or "GP" in name or "XGB" in name:
             return "GPON"
-        elif "ETH" in name or "X2C" in name or "GIC" in name or "X1C" in name:
+        if "ETH" in name or "X2C" in name or "GIC" in name or "X1C" in name:
             return "Ethernet"
-        elif "CU" in name or "IPMB" in name:
+        if "CU" in name or "IPMB" in name:
             return "Control"
-        elif "AD" in name or "CS" in name:
+        if "AD" in name or "CS" in name:
             return "ADSL"
         return None
 

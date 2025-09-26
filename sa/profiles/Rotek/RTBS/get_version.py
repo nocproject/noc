@@ -24,14 +24,13 @@ class Script(BaseScript):
                 oid = self.snmp.get("1.3.6.1.2.1.1.1.0", cached=True)
                 platform = oid.split(",")[0].strip()
                 version = oid.split(",")[1].strip()
-                result = {
+                return {
                     "vendor": "Rotek",
                     "version": version,
                     "platform": platform,
                     # "attributes": {
                     # "HW version": hwversion}
                 }
-                return result
             except self.snmp.TimeOutError:
                 pass
 

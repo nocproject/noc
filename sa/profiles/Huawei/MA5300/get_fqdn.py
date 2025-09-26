@@ -25,5 +25,4 @@ class Script(BaseScript):
         v = self.cli("show all-config | include hostname")
         match = self.re_search(self.rx_hostname, v)
         if match:
-            fqdn = match.group("hostname")
-            return fqdn
+            return match.group("hostname")

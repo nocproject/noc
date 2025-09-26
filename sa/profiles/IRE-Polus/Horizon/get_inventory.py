@@ -100,7 +100,7 @@ class Script(BaseScript):
         t, n = n.split("_", 1)
         if t == "Cl":
             return f"CLIENT{n}"
-        elif t == "Ln":
+        if t == "Ln":
             return f"LINE{n}"
         raise ValueError(f"Invalid port {n}")
 
@@ -131,8 +131,7 @@ class Script(BaseScript):
 
         if datatype in OTU_MAP:
             return OTU_MAP[datatype]
-        else:
-            raise ValueError(f"datatype {datatype} is not in map")
+        raise ValueError(f"datatype {datatype} is not in map")
 
     @staticmethod
     def get_default_datatype(mode: str, port: str) -> str:
@@ -171,10 +170,8 @@ class Script(BaseScript):
         if mode in DEFAULT_DATATYPE_MAP:
             if port in DEFAULT_DATATYPE_MAP[mode]:
                 return DEFAULT_DATATYPE_MAP[mode][port]
-            else:
-                raise ValueError(f"Unknown port {port} in mode {mode}")
-        else:
-            raise ValueError(f"Unknown mode {mode}")
+            raise ValueError(f"Unknown port {port} in mode {mode}")
+        raise ValueError(f"Unknown mode {mode}")
 
     @staticmethod
     def get_outer_odu(card_mode: str, dst_port: str, dst_datatype: str) -> str:
@@ -635,7 +632,7 @@ class Script(BaseScript):
         r = []
         c = self.http.get("/api/crates", json=True)
         if not c:
-            return
+            return None
         v = self.http.get("/api/crates/params?names=SrNumber,sysDevType", json=True)
         c = c["crates"][0]
         r += [
@@ -762,7 +759,7 @@ class Script(BaseScript):
                 fru = self.get_fru(c)
                 if c.is_common:
                     continue
-                elif not fru:
+                if not fru:
                     sensors, cfgs = self.get_sensors(c, slot)
                     card["sensors"] += sensors
                     card["param_data"] += cfgs

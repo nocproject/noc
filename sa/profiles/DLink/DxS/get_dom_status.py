@@ -29,8 +29,7 @@ class Script(BaseScript):
             port = match.group("port")
             obj = match.groupdict()
             return port, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def execute_cli(self, interface=None):
         cmd = "show ddm ports status"

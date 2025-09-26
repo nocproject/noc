@@ -19,5 +19,4 @@ class DiagnosticPlugin(AlarmPlugin):
             for x in d:
                 x["timestamp"] = x["timestamp"].isoformat()
             return {"plugins": [("NOC.fm.alarm.plugins.Diagnostic", {})], "diagnostic": d}
-        else:
-            return {}
+        return {}

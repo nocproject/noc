@@ -30,8 +30,7 @@ class Script(BaseScript):
             pass
         # RSTP Check
         rstp = self.cli("show rstp port-info")
-        r = "port-info count : 0" not in rstp
-        return r
+        return "port-info count : 0" not in rstp
 
     @false_on_cli_error
     def has_slots_cli(self):

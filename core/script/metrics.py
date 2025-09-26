@@ -16,8 +16,7 @@ def percent(value, total):
     """
     if total:
         return float(value) * 100.0 / float(total)
-    else:
-        return 100.0
+    return 100.0
 
 
 def percent_usage(value, total):
@@ -26,8 +25,7 @@ def percent_usage(value, total):
     """
     if total:
         return float(value) * 100.0 / (float(total) + float(value))
-    else:
-        return 100.0
+    return 100.0
 
 
 def percent_invert(value, total):

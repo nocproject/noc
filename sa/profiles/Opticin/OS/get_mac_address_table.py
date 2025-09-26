@@ -53,29 +53,27 @@ class Script(BaseScript):
                         }
                     ]
             return r
-        else:
-            r = []
-            for i in self.scripts.get_interface_status():
-                if not bool(i["status"]):
-                    continue
-                else:
-                    cmd = "sh port mac-learning"
-                    port = i["interface"]
-                    cmd += " %s" % int(port.replace("Port", ""))
-                    macs = self.cli(cmd)
-                    for l in macs.splitlines():
-                        match = self.rx_macs.match(l)
-                        if match:
-                            mac = MACAddressParameter().clean(match.group("mac"))
-                            type = match.group("type")
-                            vlan = "1"
-                            intf = [port]
-                            r += [
-                                {
-                                    "vlan_id": vlan,
-                                    "mac": mac,
-                                    "interfaces": intf,
-                                    "type": self.types[type.lower()],
-                                }
-                            ]
-            return r
+        r = []
+        for i in self.scripts.get_interface_status():
+            if not bool(i["status"]):
+                continue
+            cmd = "sh port mac-learning"
+            port = i["interface"]
+            cmd += " %s" % int(port.replace("Port", ""))
+            macs = self.cli(cmd)
+            for l in macs.splitlines():
+                match = self.rx_macs.match(l)
+                if match:
+                    mac = MACAddressParameter().clean(match.group("mac"))
+                    type = match.group("type")
+                    vlan = "1"
+                    intf = [port]
+                    r += [
+                        {
+                            "vlan_id": vlan,
+                            "mac": mac,
+                            "interfaces": intf,
+                            "type": self.types[type.lower()],
+                        }
+                    ]
+        return r

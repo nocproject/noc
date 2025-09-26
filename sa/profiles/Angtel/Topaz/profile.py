@@ -29,7 +29,7 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if str(interface) == "0":
             return "CPU"
-        elif interface.isdigit():
+        if interface.isdigit():
             # Vlan
             interface = "Vlan %s" % interface
         return self.convert_interface_name_cisco(interface)

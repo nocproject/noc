@@ -397,7 +397,7 @@ class Model(object, metaclass=ModelBase):
         dl = len(mos_bi)
         if not dl:
             return None
-        elif dl == 1:
+        if dl == 1:
             q = {"$eq": [{"$field": "managed_object"}, mos_bi]}
         else:
             q = {"$in": [{"$field": "managed_object"}, mos_bi]}
@@ -702,10 +702,10 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
             if field.name in cls._meta.primary_key:
                 r += [f"{cls.quote_name(field.name)} AS {field.name}"]
                 continue
-            elif field.name == "ts" and cls._meta.incremental_update:
+            if field.name == "ts" and cls._meta.incremental_update:
                 r += [f"argMax({cls.quote_name(field.name)}, ts) AS last_changed"]
                 continue
-            elif field.name == "ts":
+            if field.name == "ts":
                 continue
             r += [f"argMax({cls.quote_name(field.name)}, ts) AS {field.name}"]
         r = ",\n".join(r)
@@ -854,7 +854,7 @@ class ViewModel(Model, metaclass=ModelBase):
         for field in cls._meta.ordered_fields:
             if isinstance(field, MaterializedField):
                 continue
-            elif isinstance(field, AggregatedField):
+            if isinstance(field, AggregatedField):
                 r += [f"{field.get_expression(combinator='State')} AS {cls.quote_name(field.name)}"]
             else:
                 r += [f"{cls.quote_name(field.name)} "]

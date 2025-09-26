@@ -249,7 +249,7 @@ class AddressCheck(DiscoveryCheck):
             vpn_db[IP.prefix(a["address"]).first] = a["vpn_id"]
         self.logger.debug("Getting DHCP addresses")
         leases = self.object.scripts.get_dhcp_binding()
-        r = [
+        return [
             DiscoveredAddress(
                 vpn_id=get_vpn_id(a["ip"]),
                 address=a["ip"],
@@ -262,7 +262,6 @@ class AddressCheck(DiscoveryCheck):
             )
             for a in leases
         ]
-        return r
 
     def get_neighbor_addresses(self) -> List[DiscoveredAddress]:
         """Return addresses from ARP/IPv6 ND"""

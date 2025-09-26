@@ -93,7 +93,7 @@ class ParamSchema(BaseModel):
         r["allowBlank"] = False
         if self.choices:
             return {"choices": self.choices}
-        elif self.type == "string":
+        if self.type == "string":
             r["minLength"] = self.min_length or 0
             r["maxLength"] = self.max_length or 100
             if self.pattern:
@@ -368,6 +368,6 @@ class ConfigurationParam(Document):
     def threshold_op(self) -> Optional[str]:
         if not self.threshold_type:
             return None
-        elif self.threshold_type.endswith("min"):
+        if self.threshold_type.endswith("min"):
             return "<="
         return ">="

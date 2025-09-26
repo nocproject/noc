@@ -144,10 +144,9 @@ class Command(BaseCommand):
                 """
                 if isinstance(s, str):
                     return '"%s"' % s
-                elif isinstance(s, bool):
+                if isinstance(s, bool):
                     return "true" if s else "false"
-                else:
-                    return str(s)
+                return str(s)
 
             n = len(data)
             r = ["{"]

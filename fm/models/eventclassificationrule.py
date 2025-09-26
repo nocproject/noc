@@ -301,7 +301,7 @@ class EventClassificationRule(Document):
             rx = re.compile(x.value_re)
             profiles = list(profile_loader.iter_profiles())
             rule_profiles |= {p for p in profiles if rx.search(p)}
-        r = {
+        return {
             "id": str(rule.id),
             "name": rule.name,
             "$type": "classification",
@@ -327,4 +327,3 @@ class EventClassificationRule(Document):
             "to_drop": rule.event_class.to_drop,
             "to_dispose": rule.event_class.to_dispose,
         }
-        return r

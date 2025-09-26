@@ -62,8 +62,7 @@ class Script(BaseScript):
                 "distance_cm": int(distance),
                 "variance_cm": self.variance,
             }
-        else:
-            return {"pair": pair, "status": st, "distance_cm": 0}
+        return {"pair": pair, "status": st, "distance_cm": 0}
 
     def execute(self, interface=None):
         r = []

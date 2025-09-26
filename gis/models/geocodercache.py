@@ -120,9 +120,8 @@ class GeocoderCache(Document):
                     if r.lon is not None and r.lat is not None:
                         error = None
                         break
-                    else:
-                        r = None
-                        error = "No coordinates"
+                    r = None
+                    error = "No coordinates"
                 else:
                     if r and not lr and r.lon and r.lat:
                         lr = r  # Save first non-exact

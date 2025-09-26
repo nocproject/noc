@@ -220,8 +220,7 @@ class Application(object, metaclass=ApplicationBase):
         parts = cls.__module__.split(".")
         if parts[1] == "custom":
             return "%s.%s" % (parts[5], parts[6])
-        else:
-            return "%s.%s" % (parts[4], parts[5])
+        return "%s.%s" % (parts[4], parts[5])
 
     @property
     def base_url(self):
@@ -299,13 +298,12 @@ class Application(object, metaclass=ApplicationBase):
             env = self.get_environment()
             tpl = env.get_template(template)
             return HttpResponse(tpl.render(request=request, app=self, **(dict if dict else kwargs)))
+        ctx = {"app": self}
+        if dict:
+            ctx.update(dict)
         else:
-            ctx = {"app": self}
-            if dict:
-                ctx.update(dict)
-            else:
-                ctx.update(kwargs)
-            return render(request, self.get_template_path(template), ctx)
+            ctx.update(kwargs)
+        return render(request, self.get_template_path(template), ctx)
 
     def render_template(self, template, dict=None, **kwargs):
         """
@@ -535,13 +533,13 @@ class Application(object, metaclass=ApplicationBase):
         """
         Return an URL to change user access
         """
-        return None
+        return
 
     def group_access_change_url(self, group):
         """
         Return an URL to change group access
         """
-        return None
+        return
 
     def customize_form(self, form, table, search=False):
         """
@@ -621,10 +619,9 @@ class Application(object, metaclass=ApplicationBase):
         """
         if v is None:
             return None
-        elif isinstance(v, datetime.datetime):
+        if isinstance(v, datetime.datetime):
             return v.astimezone(self.TZ).isoformat()
-        else:
-            raise Exception("Invalid to_json type")
+        raise Exception("Invalid to_json type")
 
     @view(url="^launch_info/$", method=["GET"], access="launch", api=True)
     def api_launch_info(self, request):

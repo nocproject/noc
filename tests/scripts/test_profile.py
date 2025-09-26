@@ -20,8 +20,7 @@ def get_profiles():
     if os.environ.get("NOC_TEST_PROFILE"):
         p_name = os.environ["NOC_TEST_PROFILE"]
         return [x for x in loader.iter_profiles() if x == p_name]
-    else:
-        return list(loader.iter_profiles())
+    return list(loader.iter_profiles())
 
 
 @pytest.fixture(scope="session", params=get_profiles())

@@ -221,9 +221,8 @@ class PathAPI(NBIAPI):
                 if iface is None:
                     raise ValueError("Interface not found")
                 return mo, iface
-            else:
-                # No interface restriction
-                return mo, None
+            # No interface restriction
+            return mo, None
         if interface:
             iface = Interface.objects.filter(id=interface.id).first()
             if not iface:

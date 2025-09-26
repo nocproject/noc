@@ -138,8 +138,7 @@ class DateField(BaseField):
     def to_python(self, value):
         if not value or value in (self.default_value, "1970-01-01"):
             return None
-        else:
-            return datetime.strptime(value, "%Y-%m-%d").date()
+        return datetime.strptime(value, "%Y-%m-%d").date()
 
 
 class DateTimeField(BaseField):
@@ -154,8 +153,7 @@ class DateTimeField(BaseField):
     def to_python(self, value):
         if not value or value in (self.default_value, "1970-01-01 00:00:00"):
             return None
-        else:
-            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
 
 
 class UInt8Field(BaseField):

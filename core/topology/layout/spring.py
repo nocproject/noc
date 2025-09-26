@@ -148,8 +148,7 @@ def fruchterman_reingold_layout(
     )
     if fixed is None:
         pos = nx.rescale_layout(pos, scale=scale) + center
-    pos = dict(zip(G, pos))
-    return pos
+    return dict(zip(G, pos))
 
 
 def _fruchterman_reingold(

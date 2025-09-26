@@ -132,7 +132,7 @@ class PrefixCheck(DiscoveryCheck):
             vlans = data.get("vlan_ids")
             if not vlans or len(vlans) > 1:
                 return None
-            elif not self.object.l2_domain:
+            if not self.object.l2_domain:
                 # Vlan Only for L2 Domain set
                 return None
             return VLAN.objects.filter(

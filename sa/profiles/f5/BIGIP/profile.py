@@ -25,8 +25,7 @@ class Profile(BaseProfile):
         def clean(v):
             if v.startswith("| "):
                 return v[2:]
-            else:
-                return v
+            return v
 
         in_header = False
         header = []

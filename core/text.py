@@ -136,8 +136,7 @@ def parse_table(
                 ]
     if allow_wrap:
         return [[x.strip() for x in rr] for rr in r]
-    else:
-        return r
+    return r
 
 
 #
@@ -201,8 +200,7 @@ def list_to_ranges(s):
     def f():
         if last_start == last_end:
             return str(last_start)
-        else:
-            return "%d-%d" % (last_start, last_end)
+        return "%d-%d" % (last_start, last_end)
 
     last_start = None
     last_end = None
@@ -291,11 +289,11 @@ def _replace_re_group_text(expr: str, group: str, pattern: str) -> str:
                 # Skip quoted character
                 expr = expr[1:]
                 continue
-            elif c == "(":
+            if c == "(":
                 # Increase nesting level
                 level += 1
                 continue
-            elif c == ")":
+            if c == ")":
                 # Decrease nesting level
                 level -= 1
                 if level == 0:
@@ -333,11 +331,11 @@ def _replace_re_group_binary(expr: bytes, group: bytes, pattern: bytes) -> bytes
                 # Skip quoted character
                 expr = expr[1:]
                 continue
-            elif c == 0x28:  # "("
+            if c == 0x28:  # "("
                 # Increase nesting level
                 level += 1
                 continue
-            elif c == 0x29:  # ")"
+            if c == 0x29:  # ")"
                 # Decrease nesting level
                 level -= 1
                 if level == 0:
@@ -452,7 +450,7 @@ def find_indented(s):
                 r += ["\n".join(cr)]
             cr = [line]
             continue
-        elif line:
+        if line:
             cr += [line]
     if len(cr) > 1:
         r += ["\n".join(cr)]
@@ -575,12 +573,11 @@ def safe_shadow(text):
     """
     if not text:
         return "None"
-    elif not isinstance(text, str):
+    if not isinstance(text, str):
         return "******"
-    elif len(text) > 2:
+    if len(text) > 2:
         return "%s******%s" % (text[0], text[-1])
-    else:
-        return "******"
+    return "******"
 
 
 def ch_escape(s):

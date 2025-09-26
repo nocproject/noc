@@ -431,10 +431,9 @@ class BaseLoader(object):
             )
             if not objects:
                 return None
-            elif len(objects) == 1:
+            if len(objects) == 1:
                 return objects[0]
-            else:
-                find_query = {"id__in": [o.id for o in objects]}
+            find_query = {"id__in": [o.id for o in objects]}
         else:
             find_query = {"remote_system": v.get("remote_system"), "remote_id": v.get("remote_id")}
         try:
@@ -624,7 +623,7 @@ class BaseLoader(object):
         for fn in self.data_model.model_fields:
             if fn == "id" or fn in self.workflow_fields:
                 continue
-            elif fn == "mappings":
+            if fn == "mappings":
                 mappings = nv.pop("mappings")
                 if not mappings and o.mappings:
                     mappings = {}
@@ -783,22 +782,20 @@ class BaseLoader(object):
         if value:
             if isinstance(value, str):
                 return smart_text(value)
-            elif not isinstance(value, str):
+            if not isinstance(value, str):
                 return str(value)
-            else:
-                return value
-        else:
-            return None
+            return value
+        return None
 
     def clean_map_str(self, mappings: Dict[str, str], loader_name, value):
         value = self.clean_str(value)
         if self.disable_mappings and not mappings:
             return value
-        elif value and isinstance(value, dict) and "remote_system" in value:
+        if value and isinstance(value, dict) and "remote_system" in value:
             return self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
-        elif isinstance(value, dict) and "scope" in value:
+        if isinstance(value, dict) and "scope" in value:
             return self.get_mapping(value["scope"], value["value"])
-        elif value:
+        if value:
             try:
                 value = mappings[value]
             except KeyError:
@@ -838,42 +835,40 @@ class BaseLoader(object):
     ) -> Optional[str]:
         if not value:
             return None
-        elif self.disable_mappings and not mappings:
+        if self.disable_mappings and not mappings:
             return value
-        elif isinstance(value, dict) and "remote_system" in value:
+        if isinstance(value, dict) and "remote_system" in value:
             value = self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
             return self.chain.cache[r_model, value]
-        elif isinstance(value, dict) and "scope" in value:
+        if isinstance(value, dict) and "scope" in value:
             return self.get_mapping(value["scope"], value["value"])
-        else:
-            # @todo: Get proper mappings
-            try:
-                value = mappings[value]
-            except KeyError:
-                self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
-                raise self.Deferred()
-            return self.chain.cache[r_model, value]
+        # @todo: Get proper mappings
+        try:
+            value = mappings[value]
+        except KeyError:
+            self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
+            raise self.Deferred()
+        return self.chain.cache[r_model, value]
 
     def clean_int_reference(
         self, mappings: Dict[str, str], r_model, loader_name: str, value: str
     ) -> Optional[int]:
         if not value:
             return None
-        elif self.disable_mappings and not mappings:
+        if self.disable_mappings and not mappings:
             return value
-        elif isinstance(value, dict) and "remote_system" in value:
+        if isinstance(value, dict) and "remote_system" in value:
             value = self.clean_remote_reference(value["remote_system"], loader_name, value["id"])
             return self.chain.cache[r_model, int(value)]
-        elif isinstance(value, dict) and "scope" in value:
+        if isinstance(value, dict) and "scope" in value:
             return self.get_mapping(value["scope"], value["value"])
-        else:
-            # @todo: Get proper mappings
-            try:
-                value = int(mappings[value])
-            except KeyError:
-                self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
-                raise self.Deferred()
-            return self.chain.cache[r_model, value]
+        # @todo: Get proper mappings
+        try:
+            value = int(mappings[value])
+        except KeyError:
+            self.logger.info("Deferred. Unknown value %s:%s", r_model, value)
+            raise self.Deferred()
+        return self.chain.cache[r_model, value]
 
     def clean_wf_state(self, workflow, state: str):
         if not state:

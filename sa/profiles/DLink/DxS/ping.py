@@ -44,5 +44,4 @@ class Script(BaseScript):
         r = self.cli(cmd)
         rx = self.find_re([self.rx_result, self.rx_result_des1210], r)
         match = rx.search(r)
-        r = {"success": int(match.group("success")), "count": int(match.group("count"))}
-        return r
+        return {"success": int(match.group("success")), "count": int(match.group("count"))}

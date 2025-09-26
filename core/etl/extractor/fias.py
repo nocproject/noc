@@ -125,8 +125,7 @@ class AdmDivExtractor(BaseExtractor):
             oktmo = f"{ter}{kod1}{kod2}{kod3}"
             if oktmo in self.twice_code:
                 return False
-            else:
-                self.twice_code.append(oktmo)
+            self.twice_code.append(oktmo)
         return True
 
     def parent_level(self, ter, kod1, kod2, kod3):
@@ -141,16 +140,15 @@ class AdmDivExtractor(BaseExtractor):
         """
         if self.region != "0" and kod1[1:3] == "00" and kod2 == "000" and kod3 == "000":
             return f"{ter}000000000"
-        elif kod1[1:3] != "00" and kod2 == "000" and kod3 == "000":
+        if kod1[1:3] != "00" and kod2 == "000" and kod3 == "000":
             return f"{ter}{kod1[0]}00000000"
-        elif kod2 != "000" and kod3 == "000":
+        if kod2 != "000" and kod3 == "000":
             return f"{ter}{kod1}000000"
-        elif kod2 == "000" and kod3 != "000":
+        if kod2 == "000" and kod3 != "000":
             return f"{ter}{kod1}000000"
-        elif kod2 != "000" and kod3 != "000":
+        if kod2 != "000" and kod3 != "000":
             return f"{ter}{kod1}{kod2}000"
-        else:
-            return ""
+        return ""
 
     def iter_data(self, checkpoint=None, **kwargs):
         self.download()
@@ -383,8 +381,7 @@ class AddressExtractor(BaseExtractor):
             num = found.group()
             letter = num_letter.rstrip()[len(num) :]
             return num, letter
-        else:
-            return None, None
+        return None, None
 
     def iter_data(self, checkpoint=None, **kwargs):
         self.download()

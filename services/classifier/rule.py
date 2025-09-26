@@ -122,7 +122,7 @@ class Rule:
             if key_s == "profile":
                 # profile = value_s.replace("\\", "")
                 continue
-            elif key_s == "source" and value_s == "SNMP Trap":
+            if key_s == "source" and value_s == "SNMP Trap":
                 source = EventSource.SNMP_TRAP
             elif key_s == "source" and value_s == "syslog":
                 source = EventSource.SYSLOG
@@ -219,7 +219,7 @@ class Rule:
                 return None
         if not self.label_matchers:
             return e_vars
-        elif not labels:
+        if not labels:
             return None
         # Labels ctx
         lx = {}
@@ -272,12 +272,11 @@ class Rule:
         # Save patterns
         if x_key and x_value:
             return partial(match_eq, x_value, x_key), rxs
-        elif x_key:
+        if x_key:
             return partial(match_regex, rx_value, x_key), rxs
-        elif x_value:
+        if x_value:
             return partial(match_k_regex, x_value, rx_key), rxs
-        else:
-            return partial(match_k_v_regex, rx_value, rx_key), rxs
+        return partial(match_k_v_regex, rx_value, rx_key), rxs
 
     @staticmethod
     def unescape(pattern: str) -> str:

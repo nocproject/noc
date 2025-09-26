@@ -49,10 +49,9 @@ class Script(BaseScript):
             match = self.rx_descr_if.match(ll.strip())
             if not match:
                 continue
-            else:
-                interface = match.group("interface")
-                if interface in ("Port", "Ch", "-------"):
-                    continue
+            interface = match.group("interface")
+            if interface in ("Port", "Ch", "-------"):
+                continue
             r += [
                 {
                     "interface": self.profile.convert_interface_name(interface),

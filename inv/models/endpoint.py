@@ -41,13 +41,12 @@ class UsageItem(EmbeddedDocument):
     direction = IntField(required=False)
 
     def to_json(self) -> dict[str, str]:
-        r = {
+        return {
             "channel": str(self.channel.id),
             "channel__label": self.channel.name,
             "name": self.channel.name,
             "discriminator": self.discriminator or "",
         }
-        return r
 
 
 class ConstraintItem(EmbeddedDocument):

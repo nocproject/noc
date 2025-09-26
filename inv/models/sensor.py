@@ -126,7 +126,7 @@ class Sensor(Document):
     def __str__(self):
         if self.object:
             return f"{self.object}: {self.local_id}"
-        elif self.managed_object:
+        if self.managed_object:
             return f"{self.managed_object}: {self.local_id}"
         return f"{self.units}: {self.local_id}"
 
@@ -161,7 +161,7 @@ class Sensor(Document):
     @classmethod
     def get_component(cls, managed_object, sensor: str = None, **kwargs) -> Optional["Sensor"]:
         if not sensor:
-            return
+            return None
         if sensor:
             return Sensor.get_by_bi_id(int(sensor))
 

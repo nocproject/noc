@@ -60,8 +60,7 @@ class BaseCard(object):
     def get_object(self, id):
         if hasattr(self.model, "get_by_id"):
             return self.model.get_by_id(id)
-        else:
-            return self.model.objects.get(pk=id)
+        return self.model.objects.get(pk=id)
 
     @classmethod
     def redirect(cls, url):
@@ -137,8 +136,7 @@ class BaseCard(object):
         if template:
             data = self.get_data()
             return template.render(**data)
-        else:
-            return None
+        return None
 
     @classmethod
     def f_managed_object_title(cls, obj):
@@ -165,8 +163,7 @@ class BaseCard(object):
         """
         if isinstance(ts, datetime.datetime):
             return ts.strftime("%Y-%m-%d %H:%M:%S")
-        else:
-            return ts
+        return ts
 
     @classmethod
     def f_logical_status(cls, s):

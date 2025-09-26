@@ -26,8 +26,7 @@ class Profile(BaseProfile):
     def fixBrokenJson(self, brokenJson):
         pass1 = self.rx_pass1.sub(r'\1"\2"', brokenJson)  # {abc: 123} -> {"abc": 123}
         pass2 = self.rx_pass2.sub(r'"', pass1)  # ' -> "
-        pass3 = self.rx_pass3.sub(r'"\1"', pass2)  # 0x1234 -> "0x1234"
-        return pass3
+        return self.rx_pass3.sub(r'"\1"', pass2)  # 0x1234 -> "0x1234"
 
     def parseBrokenJson(self, brokenJson):
         return orjson.loads(self.fixBrokenJson(brokenJson))

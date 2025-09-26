@@ -52,5 +52,5 @@ class Script(BaseScript):
     def execute_cli(self, vrf=None):
         if self.is_kernel_3:
             return self.execute_vrp3(vrf)
-        elif self.is_kernelgte_5:
+        if self.is_kernelgte_5:
             return self.execute_vrp5(vrf)

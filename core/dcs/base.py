@@ -165,10 +165,9 @@ class DCSBase(object):
     ):
         async def wrap():
             resolver = await self.get_resolver(name, critical=critical, near=near, track=track)
-            r = await resolver.resolve(
+            return await resolver.resolve(
                 hint=hint, wait=wait, timeout=timeout, full_result=full_result
             )
-            return r
 
         return await self.runner.trampoline(wrap())
 
@@ -192,10 +191,9 @@ class DCSBase(object):
         """
 
         async def _resolve():
-            r = await self.resolve(
+            return await self.resolve(
                 name, hint=hint, wait=wait, timeout=timeout, full_result=full_result
             )
-            return r
 
         return run_sync(_resolve)
 
@@ -213,8 +211,7 @@ class DCSBase(object):
     def get_status(self):
         if self.status:
             return self.HEALTH_OK_HTTP_CODE, "OK"
-        else:
-            return self.HEALTH_FAILED_HTTP_CODE, self.status_message
+        return self.HEALTH_FAILED_HTTP_CODE, self.status_message
 
     def set_faulty_status(self, message):
         if self.status or self.status_message != message:

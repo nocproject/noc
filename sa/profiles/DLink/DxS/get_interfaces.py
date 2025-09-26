@@ -224,8 +224,7 @@ class Script(BaseScript):
             key = match.group("port")
             obj = {"port": key, "status": match.group("port")}
             return key, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def parse_stp(self, s):
         match = self.rx_stp.search(s)
@@ -237,8 +236,7 @@ class Script(BaseScript):
             key = match.group("port")
             obj = {"port": key}
             return key, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def execute_cli(self):
         if self.is_dgs_1100:

@@ -74,7 +74,7 @@ class EscalationJob(SequenceJob):
         ):
             self.object.sequence_num = 0
             return
-        elif self.object.alarm == "A" and self.object.profile.close_alarm:
+        if self.object.alarm == "A" and self.object.profile.close_alarm:
             # Clear Alarm after End
             self.object.alarm.register_clear("Cleared by End Escalation Sequence")
         elif self.object.profile.end_condition == "E":
@@ -398,7 +398,7 @@ class EscalationJob(SequenceJob):
                     )
                 )
                 continue
-            elif action == TTAction.UN_ACK and not self.object.alarm.ack_ts:
+            if action == TTAction.UN_ACK and not self.object.alarm.ack_ts:
                 continue
             r.append(TTActionContext(action=action))
         return r
@@ -415,7 +415,7 @@ class EscalationJob(SequenceJob):
         """
         cfg = self.object.profile.get_tt_system_config(tt_system)
         actions = self.get_action_context()
-        ctx = TTSystemCtx(
+        return TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
             queue=self.object.managed_object.tt_queue,
@@ -426,7 +426,6 @@ class EscalationJob(SequenceJob):
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
             services=self.get_affected_services_items() or None,
         )
-        return ctx
 
     def check_escalated(self):
         """
@@ -502,7 +501,7 @@ class EscalationJob(SequenceJob):
             metrics["escalation_tt_retry"] += 1
             tt_system.register_failure()
             return r
-        elif r.status == EscalationStatus.FAIL or not r.is_ok or not r.document:
+        if r.status == EscalationStatus.FAIL or not r.is_ok or not r.document:
             self.log_alarm(f"Failed to create TT: {r.error}")
             metrics["escalation_tt_fail"] += 1
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")

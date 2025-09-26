@@ -101,8 +101,7 @@ class TextArrayField(models.Field):
         def to_unicode(s):
             if isinstance(s, str):
                 return s
-            else:
-                return smart_text(s)
+            return smart_text(s)
 
         if value is None:
             return None
@@ -128,9 +127,9 @@ class InetArrayField(models.Field):
     def from_db_value(self, value, expression, connection):
         if isinstance(value, list):
             return value
-        elif value == "{}":
+        if value == "{}":
             return []
-        elif value is None:
+        if value is None:
             return None
         return value[1:-1].split(",")
 
@@ -181,14 +180,13 @@ class TagsField(models.Field):
 
         if value is None:
             return None
-        elif isinstance(value, str):
+        if isinstance(value, str):
             # Legacy AutoCompleteTagsField tweak
             if "," in value:
                 value = value.split(",")
             value = [to_unicode(x) for x in value]
             return [x for x in value if x]
-        else:
-            return [to_unicode(x) for x in value]
+        return [to_unicode(x) for x in value]
 
     def get_db_prep_value(self, value, connection, prepared=False):
         return value
@@ -277,7 +275,7 @@ class DocumentReferenceDescriptor(object):
                 'Cannot assign None: "%s.%s" does not allow null values.'
                 % (instance._meta.object_name, self.field.name)
             )
-        elif value is None or isinstance(value, str):
+        if value is None or isinstance(value, str):
             self._reset_cache(instance)
         elif isinstance(value, ObjectId):
             self._reset_cache(instance)
@@ -309,14 +307,13 @@ class DocumentReferenceField(models.Field):
     def get_prep_value(self, value):
         if value is None:
             return None
-        elif isinstance(value, str):
+        if isinstance(value, str):
             return value
-        elif isinstance(value, ObjectId):
+        if isinstance(value, ObjectId):
             return str(value)
-        else:
-            # Dereference
-            # @todo: Maybe .pk is better way
-            return str(value.id)
+        # Dereference
+        # @todo: Maybe .pk is better way
+        return str(value.id)
 
     def get_cache_name(self):
         return "_%s_cache" % self.name

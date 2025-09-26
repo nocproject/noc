@@ -74,7 +74,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
                 if not local_as:
                     self.logger.warning("[AS%s] Not found AS. Skipping...", p.local_as)
                     continue
-                elif not local_as.profile.enable_discovery_peer:
+                if not local_as.profile.enable_discovery_peer:
                     self.logger.info("[AS%s] Disabled Peer discovery for AS.", p.local_as)
                     continue
                 r[(local_as, p.remote_address)] = p

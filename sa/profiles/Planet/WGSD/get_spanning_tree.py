@@ -268,9 +268,8 @@ class Script(BaseScript):
         v = self.cli("show spanning-tree")
         if "Spanning tree enabled mode STP" in v:
             return self.process_pvst(v, proto="STP", sep="###### STP ")
-        elif "Spanning tree enabled mode RSTP" in v:
+        if "Spanning tree enabled mode RSTP" in v:
             return self.process_pvst(v, proto="RSTP", sep="###### RST ")
-        elif "Spanning tree enabled mode MSTP" in v:
+        if "Spanning tree enabled mode MSTP" in v:
             return self.process_mstp(v, sep="###### MST ")
-        else:
-            return {"mode": "None", "instances": []}
+        return {"mode": "None", "instances": []}

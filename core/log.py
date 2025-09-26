@@ -143,5 +143,4 @@ class ColorFormatter(logging.Formatter):
 class ErrorFormatter(logging.Formatter):
     def formatException(self, ei):
         fp = error_fingerprint()
-        r = get_traceback(reverse=True, fp=fp, exc_info=ei)
-        return r
+        return get_traceback(reverse=True, fp=fp, exc_info=ei)

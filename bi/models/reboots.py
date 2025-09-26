@@ -65,7 +65,7 @@ class Reboots(Model):
         dl = len(domain_ids)
         if not dl:
             return None
-        elif dl == 1:
+        if dl == 1:
             q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
         else:
             q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}

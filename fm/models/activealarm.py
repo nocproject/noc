@@ -234,7 +234,7 @@ class ActiveAlarm(Document):
 
         esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
         if not esc:
-            return
+            return None
         for ii in esc.items:
             if ii.escalation_status in ("fail", "temp"):
                 return ii.escalation_error
@@ -524,8 +524,7 @@ class ActiveAlarm(Document):
     @property
     def body(self) -> str:
         # Replace to message context
-        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
-        return s
+        return Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
 
     def get_message_body(
         self,
@@ -785,7 +784,7 @@ class ActiveAlarm(Document):
         """Replace Alarm Class on Active Alarm"""
         if alarm_class == self.alarm_class:
             return
-        elif self.alarm_class.allow_rewrite(alarm_class):
+        if self.alarm_class.allow_rewrite(alarm_class):
             return
         self.alarm_class = alarm_class
         if not dry_run:

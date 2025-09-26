@@ -36,20 +36,19 @@ class Script(BaseScript):
             )
             if not part_no:
                 continue
-            else:
-                vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [
-                    {
-                        "type": type,
-                        "number": number,
-                        "vendor": vendor,
-                        "serial": match.group("serial"),
-                        "description": match.group("descr"),
-                        "part_no": [part_no],
-                        "revision": match.group("vid"),
-                        "builtin": False,
-                    }
-                ]
+            vendor = "CISCO" if "NoName" not in part_no else "NONAME"
+            objects += [
+                {
+                    "type": type,
+                    "number": number,
+                    "vendor": vendor,
+                    "serial": match.group("serial"),
+                    "description": match.group("descr"),
+                    "part_no": [part_no],
+                    "revision": match.group("vid"),
+                    "builtin": False,
+                }
+            ]
         return objects
 
     def get_type(self, name, pid, descr, lo):
@@ -81,13 +80,11 @@ class Script(BaseScript):
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
                     return None, None, None
-                else:
-                    return "XCVR", number, pid
-            else:
                 return "XCVR", number, pid
-        elif name.lower() == "chassis":
+            return "XCVR", number, pid
+        if name.lower() == "chassis":
             return "CHASSIS", None, pid
-        elif "-PWR-" in pid:
+        if "-PWR-" in pid:
             # Power supply
             if name.lower() == "power supply":
                 number = "0"

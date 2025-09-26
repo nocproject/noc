@@ -156,7 +156,7 @@ class Target(
             and str(self.mop_event_processing_policy) == "E"
         ):
             return True
-        elif str(self.event_processing_policy) == "E":
+        if str(self.event_processing_policy) == "E":
             return True
         return False
 
@@ -411,11 +411,10 @@ class CfgTrapDataStream(DataStream):
 
     @classmethod
     def get_meta(cls, data):
-        r = {
+        return {
             "collectors": [c for c in ["ping", "syslog", "trap"] if data.get(c)],
             "pool": data.get("pool"),
         }
-        return r
 
     @classmethod
     def filter_pool(cls, name):

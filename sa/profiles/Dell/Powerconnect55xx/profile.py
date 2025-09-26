@@ -29,5 +29,4 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.lower().startswith("vlan "):
             return "vlan" + interface[6:]
-        else:
-            return interface
+        return interface

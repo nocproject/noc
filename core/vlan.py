@@ -62,8 +62,7 @@ def optimize_filter(vlan_filter, sep=","):
         if "-" in v:
             v1, v2 = [int(x) for x in v.split("-")]
             return min(v1, v2), max(v1, v2)
-        else:
-            return int(v), int(v)
+        return int(v), int(v)
 
     def iter_merge(parts):
         last = parts.pop(0)

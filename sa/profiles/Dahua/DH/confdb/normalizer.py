@@ -20,13 +20,12 @@ class DHNormalizer(BaseNormalizer):
         # ExtraFormat[1] - ExtraStream 2: channel=1, Subtype=2
         # ExtraFormat[2] - ExtraStream 3: channel=1, Subtype=3
         # ExtraStreamCount is GetMaxStreamCounts MaxExtraStream is {1,2,3}
-        name = {
+        return {
             ("MainFormat", "0"): "main",
             ("ExtraFormat", "0"): "extra_1",
             ("ExtraFormat", "1"): "extra_2",
             ("ExtraFormat", "2"): "extra_3",
         }.get((fmt, subtype))
-        return name
 
     @match("table", "Network", "Hostname", ANY)
     def normalize_hostname(self, tokens):

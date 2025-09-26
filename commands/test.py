@@ -107,8 +107,7 @@ class Command(BaseCommand):
                     self.dump_failed()
                     self.dump_statistics(cov)
             return result
-        else:
-            return run_tests(args)
+        return run_tests(args)
 
     def dump_statistics(self, cov):
         """

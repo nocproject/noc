@@ -511,7 +511,7 @@ class JsonDSAPI(object):
                     q_values += [str(value)]
                 r += [f'{query_field} IN ({",".join(q_values)})']
                 continue
-            elif query_field not in columns or not values:
+            if query_field not in columns or not values:
                 continue
             values = [f"'{str(vv)}'" for vv in values]
             if not query_function:

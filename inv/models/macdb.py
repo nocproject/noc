@@ -86,15 +86,13 @@ class MACDB(Document):
                 m.last_changed = timestamp
                 m.save()
                 return True
-            else:
-                return False
-        else:
-            MACDB(
-                mac=mac,
-                vc_domain=vc_domain,
-                vlan=vlan,
-                managed_object=managed_object,
-                interface=interface,
-                last_changed=timestamp,
-            ).save()
-            return True
+            return False
+        MACDB(
+            mac=mac,
+            vc_domain=vc_domain,
+            vlan=vlan,
+            managed_object=managed_object,
+            interface=interface,
+            last_changed=timestamp,
+        ).save()
+        return True

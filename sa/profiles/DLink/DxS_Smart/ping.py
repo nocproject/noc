@@ -29,5 +29,4 @@ class Script(BaseScript):
             if not match:
                 raise self.NotSupportedError()
             return {"success": match.group("success"), "count": match.group("count")}
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()

@@ -74,9 +74,9 @@ class MetricCollectorConfig(object):
         """
         if self.collector == "sla":
             return f"sla:{self.sla_probe}:{interval}"
-        elif self.collector == "sensor":
+        if self.collector == "sensor":
             return f"sensor:{self.sensor}:{interval}"
-        elif self.collector == "cpe":
+        if self.collector == "cpe":
             return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
 

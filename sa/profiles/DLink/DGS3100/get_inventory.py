@@ -36,7 +36,7 @@ class Script(BaseScript):
         serial = self.rx_ser.search(s).group("serial")
         description = self.rx_des.search(s).group("descr")
 
-        r = [
+        return [
             {
                 "type": "CHASSIS",
                 "number": "1",
@@ -47,4 +47,3 @@ class Script(BaseScript):
                 "description": description,
             }
         ]
-        return r

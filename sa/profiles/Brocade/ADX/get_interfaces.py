@@ -50,7 +50,7 @@ class Script(BaseScript):
                 for m in match:
                     if not m[0]:
                         continue
-                    elif m[0].isdigit():
+                    if m[0].isdigit():
                         vlan = int(m[0])
                         first = m[3]
                         last = m[4]

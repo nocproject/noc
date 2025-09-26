@@ -34,13 +34,12 @@ class MigrationItem(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "from_state__name": self.from_state.name,
             "to_state__name": self.to_state.name,
             "is_active": self.is_active,
             "description": self.description,
         }
-        return r
 
 
 class WFMigration(Document):

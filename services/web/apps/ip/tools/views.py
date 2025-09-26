@@ -81,8 +81,7 @@ class ToolsAppplication(Application):
         def to_utf8(x):
             if x:
                 return x.encode("utf8")
-            else:
-                return ""
+            return ""
 
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
         prefix = self.get_object_or_404(Prefix, vrf=vrf, afi=afi, prefix=prefix)

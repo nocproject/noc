@@ -53,6 +53,6 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if is_int(interface):
             return "port%s" % interface
-        elif " " in interface:
+        if " " in interface:
             return interface.replace(" ", "")
         return interface

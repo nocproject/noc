@@ -31,5 +31,4 @@ class Profile(BaseProfile):
         match = self.rx_interface_name.match(s)
         if not match:
             return s
-        else:
-            return "DryContact %s" % s
+        return "DryContact %s" % s

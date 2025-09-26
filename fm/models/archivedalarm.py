@@ -172,8 +172,7 @@ class ArchivedAlarm(Document):
 
     @property
     def body(self):
-        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
-        return s
+        return Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
 
     @property
     def duration(self):
@@ -189,8 +188,7 @@ class ArchivedAlarm(Document):
         days = duration.days
         if days:
             return "%dd %02d:%02d:%02d" % (days, hours, mins, secs)
-        else:
-            return "%02d:%02d:%02d" % (hours, mins, secs)
+        return "%02d:%02d:%02d" % (hours, mins, secs)
 
     @property
     def effective_style(self):

@@ -145,7 +145,7 @@ class PingService(FastAPIService):
         """Find probe by address"""
         if p_id not in self.probes:
             self.logger.warn("[%s] Probe id not in probes list", id)
-            return
+            return None
         for ps in self.probes[p_id]:
             if ps.address == address:
                 return ps
@@ -286,9 +286,9 @@ class PingService(FastAPIService):
                 if attempts > 0:
                     metrics["ping_check_recover"] += 1
                 return rtt, attempts  # Quit of first success
-            elif rtt is None and ps.policy == Policy.CHECK_ALL:
+            if rtt is None and ps.policy == Policy.CHECK_ALL:
                 return None, 0  # Quit on first failure
-            elif rtt is not None:
+            if rtt is not None:
                 timings.append(rtt)
             attempts += 1
             # await asyncio.sleep(attempts)

@@ -34,5 +34,4 @@ class UDLDCheck(TopologyDiscoveryCheck):
         r = DiscoveryID.get_by_udld_id(device_id)
         if r:
             return ManagedObject.get_by_id(r["object"])
-        else:
-            return None
+        return None

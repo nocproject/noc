@@ -265,7 +265,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         """
         if setup["is_label"] and is_document(model):
             return {f"{field}__contains": o.name}
-        elif setup["is_label"]:
+        if setup["is_label"]:
             return {f"{field}__contains": [o.name]}
         if not setup["is_document"]:
             # If checked Django model

@@ -26,7 +26,7 @@ class Script(BaseScript):
     def execute(self):
         s = self.cli("sys info show", cached=True)
         match = self.rx_info.search(s)
-        r = [
+        return [
             {
                 "type": "CHASSIS",
                 "vendor": "ALU",
@@ -36,5 +36,3 @@ class Script(BaseScript):
                 "revision": match.group("hw1") + " " + match.group("hw2"),
             }
         ]
-
-        return r

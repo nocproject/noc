@@ -29,5 +29,4 @@ class Script(BaseScript):
             if match:
                 fqdn = "%s.%s" % (fqdn, match.group("domain"))
             return fqdn
-        else:
-            return "None"
+        return "None"

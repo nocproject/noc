@@ -28,5 +28,4 @@ class Script(BaseScript):
         config = parseString(config)
         config = config.toprettyxml()
         config = self.rx_sub.sub("\n", config)
-        config = config.replace(">\n</", "></")
-        return config
+        return config.replace(">\n</", "></")

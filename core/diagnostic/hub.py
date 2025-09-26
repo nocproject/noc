@@ -51,7 +51,7 @@ DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 def json_default(obj):
     if isinstance(obj, BaseModel):
         return obj.model_dump()
-    elif isinstance(obj, datetime.datetime):
+    if isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
 

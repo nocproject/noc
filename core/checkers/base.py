@@ -69,7 +69,7 @@ class Check(object):
     def arg0(self):
         if self.args:
             return self.args.get("arg0")
-        return
+        return None
 
     @property
     def arg(self) -> str:
@@ -178,7 +178,7 @@ class CheckResult(object):
     def arg0(self):
         if self.args:
             return self.args.get("arg0")
-        return
+        return None
 
     @classmethod
     def from_dict(cls, v) -> "CheckResult":

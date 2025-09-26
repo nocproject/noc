@@ -72,7 +72,7 @@ class ServiceCard(BaseCard):
             mappings.append(m.get_object_form(self.object))
         # Diagnostics
         diagnostics = [d.get_object_form() for d in self.object.iter_diagnostics(to_display=True)]
-        r = {
+        return {
             "id": self.object.id,
             "service": self.object,
             "current_duration": (
@@ -89,7 +89,6 @@ class ServiceCard(BaseCard):
             "warnings": warnings,
             "maintenance": maintenance,
         }
-        return r
 
     def get_services(self):
         def get_children(ca):

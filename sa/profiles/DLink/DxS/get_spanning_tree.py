@@ -135,8 +135,7 @@ class Script(BaseScript):
         if self.iter_count < 5:
             self.iter_count += 1
             return key, obj, s
-        else:
-            return None
+        return None
 
     def parse_stp(self, s):
         match = self.rx_iface.search(s)
@@ -192,8 +191,7 @@ class Script(BaseScript):
         if match:
             key = match.group("iface")
             return key, iface, s[match.end() :]
-        else:
-            return None
+        return None
 
     def execute_cli(self):
         try:

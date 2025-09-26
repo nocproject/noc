@@ -23,8 +23,8 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name[:2] == "lo":
             return "loopback"
-        elif cls.rx_mgmt.match(name):
+        if cls.rx_mgmt.match(name):
             return "physical"
-        elif cls.rx_media.match(name):
+        if cls.rx_media.match(name):
             return "physical"
         return "other"

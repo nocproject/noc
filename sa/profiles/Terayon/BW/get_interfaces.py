@@ -98,15 +98,14 @@ class Script(BaseScript):
                         else:
                             sub["ipv4_addresses"] += [ip_address]
                         break
-                    else:
-                        for sub in i["subinterfaces"]:
-                            if sub["name"] == match.group("interface"):
-                                if "IPv4" not in sub["enabled_afi"]:
-                                    sub["enabled_afi"] += ["IPv4"]
-                                if "ipv4_addresses" not in sub:
-                                    sub["ipv4_addresses"] = [ip_address]
-                                else:
-                                    sub["ipv4_addresses"] += [ip_address]
-                                break
+                    for sub in i["subinterfaces"]:
+                        if sub["name"] == match.group("interface"):
+                            if "IPv4" not in sub["enabled_afi"]:
+                                sub["enabled_afi"] += ["IPv4"]
+                            if "ipv4_addresses" not in sub:
+                                sub["ipv4_addresses"] = [ip_address]
+                            else:
+                                sub["ipv4_addresses"] += [ip_address]
+                            break
 
         return [{"interfaces": interfaces}]

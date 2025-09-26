@@ -143,8 +143,7 @@ def get_facade_template(model: ObjectModel) -> str:
                 el.append(ct.el)
     # Format tree
     ET.indent(tree)
-    out = ET.tostring(tree.getroot(), encoding="unicode", method=None)
-    return out
+    return ET.tostring(tree.getroot(), encoding="unicode", method=None)
 
 
 def get_model_dimensions(model: ObjectModel) -> Tuple[int, int]:

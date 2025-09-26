@@ -96,8 +96,7 @@ class CommandSnippet(NOCModel):
     def effective_permission_name(self):
         if self.permission_name:
             return "sa:runsnippet:" + self.permission_name
-        else:
-            return "sa:runsnippet:default"
+        return "sa:runsnippet:default"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

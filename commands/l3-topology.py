@@ -158,14 +158,12 @@ class Command(BaseCommand):
                 or a.startswith("0.0.0.0")
             ):
                 return False
-            else:
-                return True
+            return True
 
         def check_ipv6(a):
             if a == "::1":
                 return False
-            else:
-                return True
+            return True
 
         exclude = exclude or []
         si_fields = {"_id": 0, "name": 1, "forwarding_instance": 1, "managed_object": 1}

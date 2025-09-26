@@ -308,7 +308,7 @@ class Command(BaseCommand):
             quiz = Quiz.get_by_name("Ad-Hoc")
             if not quiz:
                 self.print("   'Ad-Hoc' quiz not found. Skipping")
-                return
+                return None
             # Create Ad-Hoc spec for profile
             spec = Spec(
                 name,
