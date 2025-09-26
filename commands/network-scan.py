@@ -156,9 +156,8 @@ class Command(BaseCommand):
                         ip2 = str(x).split("/")
                         if ip2[0] not in self.hosts_exclude:
                             await queue.put(ip2[0])
-                else:
-                    if a not in self.hosts_exclude:
-                        await queue.put(a)
+                elif a not in self.hosts_exclude:
+                    await queue.put(a)
 
             # Read addresses from files
             """
@@ -184,9 +183,8 @@ class Command(BaseCommand):
                                             ip2 = str(x).split("/")
                                             if ip2[0] not in self.hosts_exclude:
                                                 await queue.put(ip2[0])
-                                    else:
-                                        if line not in self.hosts_exclude:
-                                            await queue.put(line)
+                                    elif line not in self.hosts_exclude:
+                                        await queue.put(line)
 
                     except OSError as e:
                         self.die("Cannot read file %s: %s\n" % (fn, e))

@@ -142,17 +142,16 @@ class CustomField(NOCModel):
                 )
             else:
                 raise NotImplementedError
+        elif self.type == "str":
+            return fields.StringField(db_field=self.db_column, required=False)
+        elif self.type == "int":
+            return fields.IntField(db_field=self.db_column, required=False)
+        elif self.type == "bool":
+            return fields.BooleanField(db_field=self.db_column, required=False)
+        elif self.type in ("date", "datetime"):
+            return fields.DateTimeField(db_field=self.db_column, required=False)
         else:
-            if self.type == "str":
-                return fields.StringField(db_field=self.db_column, required=False)
-            elif self.type == "int":
-                return fields.IntField(db_field=self.db_column, required=False)
-            elif self.type == "bool":
-                return fields.BooleanField(db_field=self.db_column, required=False)
-            elif self.type in ("date", "datetime"):
-                return fields.DateTimeField(db_field=self.db_column, required=False)
-            else:
-                raise NotImplementedError
+            raise NotImplementedError
 
     @property
     def db_create_statement(self):

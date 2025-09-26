@@ -187,10 +187,8 @@ def encode(iter: Iterable[Object]) -> (InvData, EncodeResultInfo):
                 if cable.id not in cables:
                     cables[cable.id] = []
                 cables[cable.id].append((x, y))
-            else:
-                # add direct connection
-                if x.object.id in object_ids and y.object.id in object_ids:
-                    direct_connections.append(conn_item(conn))
+            elif x.object.id in object_ids and y.object.id in object_ids:
+                direct_connections.append(conn_item(conn))
         # exclude cables having less than 2 connections
         cables = {k: v for k, v in cables.items() if len(v) == 2}
         cable_connections: list[ConnectionItem] = []

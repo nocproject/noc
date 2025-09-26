@@ -27,11 +27,10 @@ class Script(BaseScript):
                         channels = channels + "," + port[2:]
                     else:
                         channels = port[2:]
+                elif ports:
+                    ports = ports + "," + port
                 else:
-                    if ports:
-                        ports = ports + "," + port
-                    else:
-                        ports = port
+                    ports = port
 
         """
         # Try snmp first

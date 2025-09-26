@@ -127,11 +127,10 @@ class Script(BaseScript):
                     if i["name"] == ifname:
                         if (port_id == untagged) and (untagged != "None"):
                             i["subinterfaces"][0]["untagged_vlan"] = vlan_id
+                        elif "tagged_vlans" in i["subinterfaces"][0]:
+                            i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
                         else:
-                            if "tagged_vlans" in i["subinterfaces"][0]:
-                                i["subinterfaces"][0]["tagged_vlans"] += [vlan_id]
-                            else:
-                                i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
+                            i["subinterfaces"][0]["tagged_vlans"] = [vlan_id]
                         break
 
         return [{"interfaces": interfaces}]

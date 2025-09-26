@@ -26,11 +26,10 @@ class Script(BaseScript):
     def execute_vrp5(self, vrf=None):
         if self.is_kernelgte_5_3:
             displayarp = "display arp"
+        elif vrf:
+            displayarp = "display arp vpn-instance %s" % vrf
         else:
-            if vrf:
-                displayarp = "display arp vpn-instance %s" % vrf
-            else:
-                displayarp = "display arp all"
+            displayarp = "display arp all"
         return self.cli(displayarp, list_re=self.rx_arp_line_vrp5)
 
     rx_arp_line_vrp3 = re.compile(

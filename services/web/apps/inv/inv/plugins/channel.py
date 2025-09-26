@@ -310,14 +310,12 @@ class ChannelPlugin(InvPlugin):
                         x["channel_name"] = channel_name.get(ch1) or ""
                     else:
                         x["status"] = "broken"
+                elif ch1:
+                    x["status"] = "done"
+                    x["channel_id"] = str(ch1)
+                    x["channel_name"] = channel_name.get(ch1, "")
                 else:
-                    # Unidirectional
-                    if ch1:
-                        x["status"] = "done"
-                        x["channel_id"] = str(ch1)
-                        x["channel_name"] = channel_name.get(ch1, "")
-                    else:
-                        x["status"] = "new"
+                    x["status"] = "new"
             return r
 
         o = self.app.get_object_or_404(Object, id=id)

@@ -215,9 +215,8 @@ class Script(BaseScript):
                 hw_type = match.group("hw_type")
                 if ifname.startswith("NULL") and hw_type == "unknown":
                     hw_type = "null"
-            else:
-                if ifname.startswith("loopback"):
-                    hw_type = "loopback"
+            elif ifname.startswith("loopback"):
+                hw_type = "loopback"
             i = {
                 "name": ifname,
                 "type": self.profile.get_interface_type(ifname),

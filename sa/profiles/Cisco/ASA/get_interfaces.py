@@ -133,11 +133,10 @@ class Script(BaseScript):
                     if iftype == "SVI" and ifname.startswith("Vlan"):
                         vid = int(ifname[4:].strip())
                         sub["vlan_ids"] = [vid]
+                elif interfaces[-1]["name"] == interfaces[-1]["subinterfaces"][-1]["name"]:
+                    interfaces[-1]["subinterfaces"] = [sub]
                 else:
-                    if interfaces[-1]["name"] == interfaces[-1]["subinterfaces"][-1]["name"]:
-                        interfaces[-1]["subinterfaces"] = [sub]
-                    else:
-                        interfaces[-1]["subinterfaces"] += [sub]
+                    interfaces[-1]["subinterfaces"] += [sub]
             else:
                 continue
         return [{"interfaces": interfaces}]
