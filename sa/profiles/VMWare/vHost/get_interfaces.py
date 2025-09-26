@@ -138,7 +138,6 @@ class Script(VIMScript):
         for vm in h.vm:
             self.logger.info("Processed VM: %s", vm.name)
             for d in vm.config.hardware.device:
-                print(d)
                 if self.vim.has_internet_adapter(d) and getattr(d.backing, "port", None):
                     name = f"vmnic-{d.backing.port.portKey}"
                     interfaces[name] = {
