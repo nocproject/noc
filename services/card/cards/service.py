@@ -75,7 +75,9 @@ class ServiceCard(BaseCard):
         r = {
             "id": self.object.id,
             "service": self.object,
-            "current_duration": now - self.object.state_changed,
+            "current_duration": (
+                (now - self.object.state_changed) if self.object.state_changed else None
+            ),
             "services": services,
             "diagnostics": diagnostics,
             "mappings": mappings,
