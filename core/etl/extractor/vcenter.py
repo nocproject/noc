@@ -27,6 +27,7 @@ from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
 from noc.core.fm.event import EventSeverity
 from noc.core.validators import is_ipv4, is_fqdn
 from noc.core.ip import IP
+from noc.core.text import alnum_key
 
 
 class AlarmStatus(enum.Enum):
@@ -175,6 +176,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
     def __init__(self, system):
         super().__init__(system)
         self.links = []
+        self.pool: str = self.config.get("POOL") or "default"
 
     def get_mappings(self, obj: Union[vim.VirtualMachine, vim.HostSystem]) -> List[MappingItem]:
         """Additional mappings"""
@@ -236,7 +238,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             auth_profile=ETLMapping(value="default.vcenter", scope="auth_profile"),
             administrative_domain=ETLMapping(value="default", scope="adm_domain"),
             object_profile=ETLMapping(value="host.vcenter.default", scope="objectprofile"),
-            pool="default",
+            pool=self.pool,
             segment=ETLMapping(value="ALL", scope="segment"),
             scheme="4",
         )
@@ -255,14 +257,16 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 continue
             mappings = self.get_mappings(h)
             yield ManagedObject(
-                id=h.summary.hardware.uuid,
+                id=h._moId,
                 name=name,
                 address=self.get_host_mgmt_address(h),
                 # description=description,
                 profile="VMWare.vHost",
-                administrative_domain=ETLMapping(value="default", scope="adm_domain"),
+                # Get_administrative_domain
+                administrative_domain=self.get_administrative_domain(h),
                 object_profile=ETLMapping(value="host.hypervisor.default", scope="objectprofile"),
-                pool="default",
+                pool=self.pool,
+                fm_pool="default",
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
@@ -303,7 +307,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
             elif vm.runtime.powerState == "suspended":
                 wf_event = "pause"
             yield ManagedObject(
-                id=vm.config.uuid,
+                id=vm._moId,
                 name=name,
                 event=wf_event,
                 address=address,
@@ -311,7 +315,8 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 profile="VMWare.vMachine",
                 administrative_domain=self.get_administrative_domain(vm),
                 object_profile=op,
-                pool="default",
+                pool=self.pool,
+                fm_pool="default",
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
@@ -332,11 +337,11 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 ):
                     self.links.append(
                         Link(
-                            id=f"{d.key}_{vm.runtime.host._moId}_{d.backing.port.portKey}",
+                            id=f"{d.key}_{vm.runtime.host._moId}_{alnum_key(str(d.backing.port.portKey))}",
                             source=self.system.remote_system.name,
-                            src_mo=vm.config.uuid,
+                            src_mo=vm._moId,
                             src_interface=f"vmnic-{d.key}",
-                            dst_mo=host_map[vm.runtime.host._moId],
+                            dst_mo=vm.runtime.host._moId,
                             dst_interface=f"vmnic-{d.backing.port.portKey}",
                         )
                     )
@@ -365,10 +370,7 @@ class VCenterFMEventExtractor(VCenterExtractor):
         if event.vm:
             return RemoteObject(name=event.vm.name, remote_id=event.vm.vm.config.uuid)
         if event.host:
-            return RemoteObject(
-                name=event.host.name,
-                remote_id=event.host.host.summary.hardware.uuid,
-            )
+            return RemoteObject(name=event.vm.name, remote_id=event.vm.vm._moId)
         return RemoteObject(
             name=self.url,
             address=content.sessionManager.currentSession.ipAddress,

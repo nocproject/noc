@@ -18,4 +18,17 @@ class Script(BaseScript, VIMScript):
         Check box has lldp enabled
         """
         h = self.vim.get_host_by_id(self.controller.global_id)
-        return bool(h.capabilities.supportsNetworkHints)
+        if not bool(h.config.capabilities.supportsNetworkHints):
+            return False
+        hints = h.configManager.networkSystem.QueryNetworkHint()
+        return hints and hints[0].lldpInfo
+
+    def has_cdp(self):
+        """
+        Check box has cdp enabled
+        """
+        h = self.vim.get_host_by_id(self.controller.global_id)
+        if not bool(h.config.capabilities.supportsNetworkHints):
+            return False
+        hints = h.configManager.networkSystem.QueryNetworkHint()
+        return hints and hints[0].connectedSwitchPort
