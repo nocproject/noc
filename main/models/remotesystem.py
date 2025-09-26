@@ -33,6 +33,8 @@ from noc.core.debug import error_report
 from noc.core.mx import send_message, MessageType, MessageMeta, get_subscription_id
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
+from noc.core.etl.portmapper.loader import loader as portmapper_loader
+from noc.core.etl.portmapper.base import BasePortMapper
 
 id_lock = Lock()
 
@@ -139,6 +141,7 @@ class RemoteSystem(Document):
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
     enable_fmevent = BooleanField()
+    portmapper_name = StringField()
     managed_object_loader_policy = StringField(
         choices=[("D", "As Discovered"), ("M", "As Managed Object")],
         default="M",
@@ -214,6 +217,11 @@ class RemoteSystem(Document):
     @property
     def managed_object_as_discovered(self) -> bool:
         return self.managed_object_loader_policy == "D"
+
+    def get_portmapper(self) -> "BasePortMapper":
+        """Getting portmapper functions"""
+        p_name = self.portmapper_name or self.name
+        return portmapper_loader[p_name]
 
     def get_handler(self) -> BaseRemoteSystem:
         """Return BaseRemoteSystem instance"""

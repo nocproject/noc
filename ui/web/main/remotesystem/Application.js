@@ -350,6 +350,13 @@ Ext.define("NOC.main.remotesystem.Application", {
                     uiStyle: "extra"
                 },
                 {
+                    name: "portmapper_name",
+                    xtype: "textfield",
+                    fieldLabel: __("Pormapper Name"),
+                    allowBlank: true,
+                    uiStyle: "medium"
+                },
+                {
                     name: "environment",
                     xtype: "gridfield",
                     fieldLabel: __("Environment"),
