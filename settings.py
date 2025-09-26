@@ -140,7 +140,7 @@ INSTALLED_APPS = [
 FORCE_SCRIPT_NAME = ""
 
 # Available languages
-_ = lambda s: s  # noqa. _ should be a lambda not a function
+_ = lambda s: s
 LANGUAGES = [("en", _("English")), ("ru", _("Russian")), ("pt_BR", _("Portuguese (BRAZIL)"))]
 
 LOCALE_PATHS = ["locale"]

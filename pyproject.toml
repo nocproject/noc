@@ -195,6 +195,50 @@ ignore = [
   "PLR5501", # Use `elif` instead of `else` then `if`, to reduce indentation
   "PLR1730", # Replace `if` statement with `width = max(width, max_column_data_length[c])`
   "PLR1704", # Redefining argument with the local name `name`
+  "RET501", # Do not explicitly `return None` in function if it is the only possible return value
+  "RET502", # Do not implicitly `return None` in function able to return non-`None` value
+  "RET503", # Missing explicit `return` at the end of function able to return non-`None` value
+  "RET504", # Unnecessary assignment to `r` before `return` statement
+  "RET505", # Unnecessary `elif` after `return` statement
+  "RET506", # Unnecessary `else` after `raise` statement
+  "RET507", # Unnecessary `elif` after `continue` statement
+  "RET508", # Unnecessary `elif` after `break` statement
+  "SIM102", # Use a single `if` statement instead of nested `if` statements
+  "SIM103", # Return the condition `bool(not set(self.labels) - set(labels))` directly
+  "SIM105", # Use `contextlib.suppress(KeyError)` instead of `try`-`except`-`pass`
+  "SIM108", # Use ternary operator `mib_name = name[0].split("::", 1)[0] if isinstance(name, tuple) else name.split("::", 1)[0]` instead of `if`-`else`-block
+  "SIM110", # Use `return any(rule.is_match(labels) for rule in self.required_rules)` instead of `for` loop
+  "SIM112", # Use capitalized environment variable `FTP_PROXY` instead of `ftp_proxy`
+  "SIM113", # Use `enumerate()` for index variable `n` in `for` loop
+  "SIM114", # Combine `if` branches using logical `or` operator
+  "SIM115", # Use a context manager for opening files
+  "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
+  "SIM118", # Use `key in dict` instead of `key in dict.keys()`
+  "SIM201", # Use `data_c[0][4] != data_c[1][4]` instead of `not data_c[0][4] == data_c[1][4]`
+  "SIM210", # Remove unnecessary `True if ... else False`
+  "SIM211", # Use `not ...` instead of `False if ... else True`
+  "SIM222", # Use `"chained"` instead of `"chained" or ...`
+  "SIM300", # Yoda condition detected
+  "SIM401", # Use `job.get(Job.ATTR_STATUS, "--")` instead of an `if` block
+  "SIM910", # Use `port_vlans.get(name)` instead of `port_vlans.get(name, None)`
+  "PIE790", # Unnecessary `pass` statement
+  "PIE794", # Class field `pattern_more` is defined multiple times
+  "PIE804", # Unnecessary `dict` kwargs
+  "PIE808", # Unnecessary `start` argument in `range`
+  "PIE810", # Call `startswith` once with a `tuple`
+  "RUF001", # String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
+  "RUF002", # Docstring contains ambiguous `В` (CYRILLIC CAPITAL LETTER VE). Did you mean `B` (LATIN CAPITAL LETTER B)?
+  "RUF003", # Comment contains ambiguous `С` (CYRILLIC CAPITAL LETTER ES). Did you mean `C` (LATIN CAPITAL LETTER C)?
+  "RUF005", # Consider `["noc", *parts]` instead of concatenation
+  "RUF006", # Store a reference to the return value of `asyncio.create_task`
+  "RUF007", # Prefer `itertools.pairwise()` over `zip()` when iterating over successive pairs
+  "RUF009", # Do not perform function call `Layout` in dataclass defaults
+  "RUF010", # Use explicit conversion flag
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF013", # PEP 484 prohibits implicit `Optional`
+  "RUF015", # Prefer `next(iter(kv.keys()))` over single element slice
+  "RUF019", # Unnecessary key check before dictionary access
+  "RUF100", # Unused blanket `noqa` directive
 ]
 # Enable
 select = [
@@ -215,14 +259,14 @@ select = [
   # "ISC", # flake8-implicit-str-concat
   # "ICN", # flake8-import-conventions
   # "PT", # flake8-pytest-style
-  # "RET", # flake8-return
-  # "SIM", # flake8-simplify
+  "RET", # flake8-return
+  "SIM", # flake8-simplify
   "PLC", # pylint
   "PLE", # pylint
   "PLR", # pylint
   # "PLW", # pylint
-  # "PIE", # flake8-pie
-  # "RUF", # ruff specific
+  "PIE", # flake8-pie
+  "RUF", # ruff specific
 ]
 unfixable = [
   "F401",
