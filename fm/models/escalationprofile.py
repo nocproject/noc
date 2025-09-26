@@ -343,7 +343,7 @@ class EscalationProfile(Document):
     @property
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
-        return self.end_condition == "CT" or self.end_condition == "M"
+        return self.end_condition in ("CT", "M")
 
     def from_alarm(self, alarm: ActiveAlarm):
         """"""

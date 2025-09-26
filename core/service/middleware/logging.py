@@ -29,7 +29,7 @@ class LoggingMiddleware(object):
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         def to_suppress_logging():
             return (method == "GET") and (
-                ((status == 200 or status == 429) and path in ("/health/", "/health"))
+                ((status in (200, 429)) and path in ("/health/", "/health"))
                 or (status == 200 and path == "/metrics")
             )
 

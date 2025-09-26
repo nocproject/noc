@@ -388,11 +388,11 @@ class VCenterFMEventExtractor(VCenterExtractor):
                 v = v.name
             elif hasattr(v, "name"):
                 v = v.name
-            if p.name == "source" or p.name == "entity":
+            if p.name in ("source", "entity"):
                 continue
             elif p.name == "message":
                 message = v
-            elif p.name == "arguments" or p.name == "info":
+            elif p.name in ("arguments", "info"):
                 # info - taskInfo
                 continue
             else:

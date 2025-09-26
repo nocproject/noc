@@ -110,7 +110,7 @@ class Script(BaseScript):
             v = self.xml_2_dict(root)
             c += "Overlay\n"
             for o in v["VideoOverlay"]:
-                if o == "version" or o == "_text":
+                if o in ("version", "_text"):
                     continue
                 elif o == "TextOverlayList":
                     overlay = v["VideoOverlay"][o][0]

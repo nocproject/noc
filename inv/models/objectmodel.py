@@ -521,7 +521,7 @@ class ObjectModel(Document):
         if self.get_model_connection(name).cross_direction:
             return True
         for c in self.cross:
-            if name == c.input or name == c.output:
+            if name in (c.input, c.output):
                 return True
         return False
 

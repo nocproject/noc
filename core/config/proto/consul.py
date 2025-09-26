@@ -62,7 +62,7 @@ class ConsulProtocol(BaseProtocol):
             if "slots" in k or k.endswith("/"):
                 # Section
                 continue
-            if v == b'""' or v == b"''":
+            if v in (b'""', b"''"):
                 # fix if value is "" - return '""'
                 v = ""
             *path, k1 = k.split("/")

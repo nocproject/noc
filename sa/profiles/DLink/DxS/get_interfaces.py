@@ -400,7 +400,7 @@ class Script(BaseScript):
                 ],
             }
             desc = p["desc"]
-            if desc != "" and desc != "null":
+            if desc not in ("", "null"):
                 i["description"] = desc
                 i["subinterfaces"][0]["description"] = desc
             mac = macs.get(ifname)

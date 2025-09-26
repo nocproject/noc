@@ -26,7 +26,7 @@ class Migration(BaseMigration):
             return "100BASETX"
         elif code == "10GBASE-LR":
             return "10GBASELR"
-        elif code == "1000BASELH" or code == "1000BASELHT":
+        elif code in ("1000BASELH", "1000BASELHT"):
             return "1000BASELX10"
         elif code == "1000BASE-LX":
             return "1000BASELX"
@@ -40,7 +40,7 @@ class Migration(BaseMigration):
             return "110VAC"
         elif code == "240VAC":
             return "220VAC"
-        elif code == "USB1" or code == "<USB10":
+        elif code in ("USB1", "<USB10"):
             return "USB10"
         elif code == "USB1.1":
             return "USB11"
@@ -54,7 +54,7 @@ class Migration(BaseMigration):
             return None
         elif code in {"48VDC", "48V DC", "48DC", "-36VDC"}:
             return "-48VDC"
-        elif code == "RS323" or code == "RS-232":
+        elif code in ("RS323", "RS-232"):
             return "RS232"
         elif code == "EM":
             return "E&M"
@@ -64,7 +64,7 @@ class Migration(BaseMigration):
             return "PSTN"
         elif code == "TransEth10GTransEth10G":
             return "TransEth10G"
-        elif code == "-57VDC" or code == "-72VDC" or code == "-60VDC" or code == "-56VDC":
+        elif code in ("-57VDC", "-72VDC", "-60VDC", "-56VDC"):
             return
         elif code == "RS-485":
             return "RS485"
