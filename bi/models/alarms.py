@@ -71,12 +71,10 @@ class Alarms(Model):
     total_objects = Int64Field(description=_("Total Objects"))
     total_services = Int64Field(description=_("Total Services"))
     total_subscribers = Int64Field(description=_("Total Subscribers"))
-    #
     escalation_ts = DateTimeField(description=_("Escalation Time"))
     escalation_tt = StringField(description=_("Number of Escalation"))
     # Amount of reboots during alarm
     reboots = Int16Field(description=_("Qty of Reboots"))
-    #
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
     object_profile = ReferenceField(ObjectProfile, description=_("Object Profile"))

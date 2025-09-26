@@ -76,7 +76,6 @@ class SegmentAlarmCard(BaseCard):
         for a in ActiveAlarm.objects.filter(segment_path=self.object.id):
             seen_seg.update(a.segment_path)
             aseg[a.segment_path[-1]] += [a]
-        #
         tree = {
             "segment": self.object,
             "children": [],

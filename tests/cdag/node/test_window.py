@@ -39,7 +39,6 @@ from .util import NodeCDAG
         ),
         ("sumstep", {"direction": "dec"}, [1, 2, -1, 1, -1, 1], [0, 0, 3, 3, 5, 5]),
         ("sumstep", {"direction": "abs"}, [1, 2, -1, 1, -1, 1], [0, 1, 4, 6, 8, 10]),
-        #
         ("expdecay", {"k": 1.0}, [10], [10]),
     ],
 )

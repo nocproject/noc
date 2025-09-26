@@ -72,7 +72,6 @@ class Command(BaseCommand):
         for c in ctr:
             if c not in self.HEADERS or c not in self.DATA:
                 raise CommandError("Unsupported country: %s" % c)
-        #
         header = ["LEVEL%d" % d for d in range(self.LEVELS)]
         header += [
             "STREET",

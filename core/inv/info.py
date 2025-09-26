@@ -153,7 +153,6 @@ def _info_for_object(resource: str) -> Optional[Info]:
         n_alarms = ActiveAlarm._get_collection().count_documents(
             {"resource_path": {"$elemMatch": {"c": PathCode.OBJECT.value, "p": resource}}}
         )
-    #
     if name:
         # info for connection
         cn = obj.model.get_model_connection(name)

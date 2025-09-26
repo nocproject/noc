@@ -192,15 +192,10 @@ class AlarmRule(Document):
     name = StringField(unique=True)
     description = StringField()
     is_active = BooleanField(default=True)
-    #
     match: List[Match] = EmbeddedDocumentListField(Match)
-    #
     groups: List[Group] = EmbeddedDocumentListField(Group)
-    #
     actions: List[Action] = EmbeddedDocumentListField(Action)
-    #
     escalation_profile: Optional[EscalationProfile] = ReferenceField(EscalationProfile)
-    #
     severity_policy = StringField(
         choices=[
             ("B", "Base"),
@@ -225,7 +220,6 @@ class AlarmRule(Document):
         default="continue",
     )
     rule_apply_delay = IntField(min_value=0, default=0)
-    #
     ttl_policy = StringField(
         choices=[
             ("D", "Disable"),
@@ -237,7 +231,6 @@ class AlarmRule(Document):
     clear_after_delay = IntField(min_value=0, default=0)
     # checks
     alarm_class = PlainReferenceField(AlarmClass, required=False)
-    #
     stop_processing = BooleanField(default=False)
     # BI ID
     bi_id = LongField(unique=True)

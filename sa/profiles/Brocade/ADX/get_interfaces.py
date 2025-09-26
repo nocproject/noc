@@ -134,7 +134,6 @@ class Script(BaseScript):
                         ]
                     else:
                         ip_address.append(line.split()[2])
-                #
                 i["subinterfaces"][0].update({"enabled_afi": ["IPv4"]})
                 i["subinterfaces"][0].update({"ipv4_addresses": ip_address})
                 if descr:

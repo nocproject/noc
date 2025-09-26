@@ -53,7 +53,6 @@ class ThresholdConfig(EmbeddedDocument):
     # Handlers to call on open and close thresholds
     open_handler = PlainReferenceField(Handler)
     close_handler = PlainReferenceField(Handler)
-    #
     template = ForeignKeyField(Template)
 
     def __str__(self):

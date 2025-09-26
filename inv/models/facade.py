@@ -51,7 +51,6 @@ class Facade(Document):
     description = StringField()
     # Image data
     data = StringField(required=True)
-    #
     category = ObjectIdField()
     # List of slots found
     slots = ListField(StringField(), required=False)

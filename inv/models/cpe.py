@@ -123,7 +123,6 @@ class CPE(Document):
     type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
     address = StringField(validation=check_address)
-    #
     label = StringField(required=False)
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)

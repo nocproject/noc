@@ -108,7 +108,6 @@ class ActionLog(EmbeddedDocument):
     # User Actions
     user: Optional[int] = IntField()
     tt_system: Optional[str] = StringField()
-    #
     ctx = DictField()
 
 
@@ -154,7 +153,6 @@ class AlarmJob(Document):
     # List of group references, if any
     tt_docs = DictField()
     groups = EmbeddedDocumentListField(GroupItem)
-    #
     max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
     # affected_services = ListField(ObjectIdField())
@@ -187,13 +185,10 @@ class AlarmJob(Document):
                 [
                     # Filter entities
                     {"$match": {"entity": {"$in": list(entities)}}},
-                    #
                     {
                         "$sort": {"entity": 1, "_id": -1},
                     },
-                    #
                     {"$group": {"_id": "$entity", "max_id": {"$first": "$_id"}}},
-                    #
                     {"$project": {"_id": "$max_id"}},
                 ]
             )

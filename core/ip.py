@@ -167,7 +167,6 @@ class IP(object):
         if n == 0:
             yield self
             return
-        #
         yield from db.iter_free(self)
 
     def area_spot(self, addresses, dist, sep=False, exclude_special=True):

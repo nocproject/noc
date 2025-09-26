@@ -26,12 +26,10 @@ from noc.core.defer import call_later
 class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         check_parser = subparsers.add_parser("check")
         check_parser.add_argument(
             "check_alarms", nargs=argparse.REMAINDER, help="Checks alarms escalation"
         )
-        #
         run_parser = subparsers.add_parser("run")
         run_parser.add_argument(
             "--limit", type=int, default=0, help="Limit escalations (per minute)"
@@ -39,7 +37,6 @@ class Command(BaseCommand):
         run_parser.add_argument(
             "run_alarms", nargs=argparse.REMAINDER, help="Run alarm escalations"
         )
-        #
         close_parser = subparsers.add_parser("close")
         close_parser.add_argument(
             "close_alarms", nargs=argparse.REMAINDER, help="Close escalated TT"
@@ -186,7 +183,6 @@ class Command(BaseCommand):
                 # Check whether consequences has escalations
                 cons_escalated = sorted(iter_escalated(alarm), key=operator.attrgetter("timestamp"))
                 affected_objects = sorted(iter_affected(alarm), key=operator.attrgetter("name"))
-                #
                 ctx = {
                     "alarm": alarm,
                     "affected_objects": affected_objects,

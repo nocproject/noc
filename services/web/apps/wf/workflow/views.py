@@ -292,5 +292,4 @@ class WorkflowApplication(ExtDocApplication):
             new_transition.id = None
             new_transition.bi_id = None
             new_transition.save()
-        #
         return {"id": str(new_wf.id)}

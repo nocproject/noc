@@ -227,7 +227,6 @@ class PhoneRange(Document):
             nrx = compile(" or ".join(nrxc), "<string>", "eval")
         else:
             nrx = None
-        #
         cat_rules = [cr for cr in NumberCategory.get_rules() if cr[0] == self.dialplan]
         # Create numbers
         for number in self.iter_numbers():

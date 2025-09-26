@@ -89,7 +89,6 @@ def render_tc_octetstring(value, format: Union[bytes, str]) -> str:
                         raise ValueError("Unknown format: %s" % fmt)
             # Join with repeat separator
             r += rt.join(rr)
-            #
             if value and dsep:
                 r += dsep
     return r

@@ -105,7 +105,6 @@ class AlarmActionRequest(BaseModel):
     """
 
     id: str = Field(default_factory=lambda: str(ObjectId()))
-    #
     actions: List[ActionConfig]
     allowed_actions: Optional[List[AllowedAction]] = None
     start_at: Optional[datetime.datetime] = None

@@ -82,7 +82,7 @@ class BaseReportColumn(object):
         self.sync_ids = sync_ids  # Sorted Index list
         self.sync_ids_i = iter(self.sync_ids)
         self._current_id = self.next_id()
-        self._value = None  #
+        self._value = None
         self._end_series = False  # Tre
 
     def next_id(self):

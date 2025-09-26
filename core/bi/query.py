@@ -55,7 +55,6 @@ def f_lookup(seq, model=None):
     """
     dict_name = seq[0]
     if "." in dict_name:
-        #
         _, dict_name = dict_name.split(".", 1)
     dc = loader[dict_name]
     if len(seq) == 2:
@@ -117,7 +116,6 @@ def f_names(seq, model=None):
     """
     dict_name = seq[0]
     if "." in dict_name:
-        #
         _, dict_name = dict_name.split(".", 1)
     return f"arrayMap(k->dictGetString('{config.clickhouse.db_dictionaries}.{dict_name}', 'name', toUInt64(k)), dictGetHierarchy('{config.clickhouse.db_dictionaries}.{dict_name}', {seq[1]}))"
 

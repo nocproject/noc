@@ -53,7 +53,6 @@ def config(
     scheme = x_forwarded_proto if x_forwarded_proto else "http"
     host = host or "localhost"
     base = f"{scheme}://{host}"
-    #
     cfg = get_config(agent, level=auth_level, base=base)
     agent.fire_event("seen")
     return cfg

@@ -85,7 +85,6 @@ class SLAProbe(Document):
     first_discovered = DateTimeField(default=datetime.datetime.now)
     # Probe type
     type = StringField(choices=[(x, x) for x in PROBE_TYPES])
-    #
     tos = IntField(min=0, max=64)
     # IP address or URL, depending on type
     target = StringField()
@@ -97,7 +96,6 @@ class SLAProbe(Document):
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
     extra_labels = DictField()
-    #
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

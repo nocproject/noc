@@ -111,7 +111,6 @@ class Migration(BaseMigration):
             "software_image",
             models.CharField("Software Image", max_length=255, null=True, blank=True),
         )
-        #
         platforms_uniq = set()  # Uniq platform name
         for profile, vendor, platform, version in data:
             platform = platform.strip() if platform and platform != "None" else None

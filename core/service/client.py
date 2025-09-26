@@ -16,14 +16,10 @@ from noc.config import config
 CONNECT_TIMEOUT = config.rpc.sync_connect_timeout
 # Total request time
 REQUEST_TIMEOUT = config.rpc.sync_request_timeout
-#
 RETRY_TIMEOUT = config.rpc.sync_retry_timeout
 RETRY_DELTA = config.rpc.sync_retry_delta
-#
 CALLING_SERVICE_HEADER = "X-NOC-Calling-Service"
-#
 RETRIES = config.rpc.sync_retries
-#
 RETRY_SOCKET_ERRORS = (errno.ECONNREFUSED, errno.EHOSTDOWN, errno.EHOSTUNREACH, errno.ENETUNREACH)
 
 

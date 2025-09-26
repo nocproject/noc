@@ -42,31 +42,24 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         split_floating_parser = subparsers.add_parser("split-floating")
         split_floating_parser.add_argument("--profile", help="Floating segment profile id")
         split_floating_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Segment ids")
-        #
         reactivate_floating_parser = subparsers.add_parser("reactivate-floating")
         reactivate_floating_parser.add_argument("--profile", help="Floating segment profile id")
         reactivate_floating_parser.add_argument(
             "--allow_persistent", action="store_true", help="Allow trial persistent segment"
         )
         reactivate_floating_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Segment ids")
-        #
         vacuum_bulling_parser = subparsers.add_parser("vacuum-bulling")
         vacuum_bulling_parser.add_argument(
             "ids", nargs=argparse.REMAINDER, help="Managed Object ids"
         )
-        #
         subparsers.add_parser("show-trials")
-        #
         moderate_trials_parser = subparsers.add_parser("moderate-trials")
         moderate_trials_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Trial ids")
-        #
         retry_trials_parser = subparsers.add_parser("retry-trials")
         retry_trials_parser.add_argument("ids", nargs=argparse.REMAINDER, help="Trial ids")
-        #
         subparsers.add_parser("show-floating")
 
     def handle(self, cmd, *args, **options):

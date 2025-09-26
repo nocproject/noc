@@ -268,7 +268,6 @@ class SubclassOfParameter(Parameter):
             for bc in c.__bases__:
                 if check_name(bc, name):
                     return True
-            #
             return False
 
         return check_name(value, self.cls)

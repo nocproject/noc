@@ -92,7 +92,6 @@ class AS(NOCModel):
     rir = models.ForeignKey(
         RIR, null=True, blank=True, verbose_name="RIR", on_delete=models.CASCADE
     )
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list

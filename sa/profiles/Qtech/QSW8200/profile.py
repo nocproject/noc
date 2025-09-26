@@ -28,7 +28,7 @@ class Profile(BaseProfile):
         "fa": "physical",  # fastethernet1/0/1
         "gi": "physical",  # gigaethernet1/1/7
         "te": "physical",  # tengigabitethernet1/1/28
-        "tr": "aggregated",  #
+        "tr": "aggregated",
         "vl": "SVI",  # vlan
         "lo": "loopback",  # loopback
         "un": "unknown",  # unknown

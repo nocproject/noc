@@ -174,7 +174,7 @@ class MetricPlugin(InvPlugin):
             ]
         # Calculate relative value
         absolute_start, absolute_end = min_value, max_value  # Absolute_start, Absolute end
-        relative_start, relative_end = 0, 100  #
+        relative_start, relative_end = 0, 100
         for num, x in enumerate(r, start=1):
             if num == 1 and value < x["left"]:
                 relative_end = x["relative_position"]["right"]

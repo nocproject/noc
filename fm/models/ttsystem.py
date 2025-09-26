@@ -50,7 +50,6 @@ class TTSystem(Document):
     meta = {"collection": "noc.ttsystem", "strict": False, "auto_create_index": False}
 
     name = StringField(unique=True)
-    #
     is_active = BooleanField(default=False)
     # Full path to BaseTTSystem instance
     handler = StringField()
@@ -61,7 +60,6 @@ class TTSystem(Document):
     # Failure condition checking
     failure_cooldown = IntField(default=0)
     failed_till = DateTimeField()
-    #
     global_limit = IntField()  # Replaced on Escalation Profile
     max_escalation_retries = IntField(default=30)  # @fixme make it configurable
     # escalation_retries_until = IntField(default=30)  # Seconds
@@ -95,7 +93,6 @@ class TTSystem(Document):
     check_updates_interval = IntField(default=0)
     last_update_ts = DateTimeField()
     last_update_id = StringField()
-    #
     tags = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

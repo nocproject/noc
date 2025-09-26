@@ -37,7 +37,6 @@ class Script(BaseScript):
         sw = {}  # Name -> untagged, tagged
         for l in self.scripts.get_switchport():
             sw[l["interface"]] = (l.get("untagged"), l.get("tagged", []))
-        #
         v = self.cli("show interfaces")
         il = self.rx_iface_sep.split(v)[1:]
         # Merge interface names and data together

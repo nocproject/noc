@@ -201,7 +201,6 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
             ids = []
             for ro in iter_related(instance, model, field):
                 ids.append(ro.id)
-            #
             if not ids:
                 continue
             remove_id = instance.name if setup["is_label"] else instance.id

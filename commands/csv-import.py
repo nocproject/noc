@@ -69,7 +69,6 @@ class Command(BaseCommand):
         m = apps.get_model(app, model)
         if not m:
             return self._usage()
-        #
         try:
             resolve = {"fail": IR_FAIL, "skip": IR_SKIP, "update": IR_UPDATE}[options["resolve"]]
         except KeyError:

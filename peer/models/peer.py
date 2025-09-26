@@ -105,7 +105,6 @@ class Peer(NOCModel):
     peering_point: Optional["PeeringPoint"] = ForeignKey(
         PeeringPoint, verbose_name="Peering Point", on_delete=CASCADE, null=True, blank=True
     )
-    #
     local_asn: "AS" = ForeignKey(AS, verbose_name="Local AS", on_delete=CASCADE)
     local_ip = INETField("Local IP", null=True, blank=True)
     local_backup_ip = INETField("Local Backup IP", null=True, blank=True)
@@ -134,7 +133,6 @@ class Peer(NOCModel):
     export_filter_name: Optional[str] = CharField(
         "Export Filter Name", max_length=64, blank=True, null=True
     )
-    #
     labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
 

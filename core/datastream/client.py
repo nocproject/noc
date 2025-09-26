@@ -140,7 +140,6 @@ class DataStreamClient(object):
                     await self.on_move(item)
                 else:
                     await self.on_change(item)
-            #
             if not self._is_ready and "X-NOC-DataStream-More" not in headers:
                 await self.on_ready()
                 self._is_ready = True

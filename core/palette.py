@@ -370,7 +370,6 @@ def get_avatar_bg_color(n: int) -> str:
     """
     # Wrap possibly too long number
     n = n % _AC_PRIME
-    #
     i = n * _AC_PRIME % len(AVATAR_COLORS)
     return AVATAR_COLORS[i]
 

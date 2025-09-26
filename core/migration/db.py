@@ -129,7 +129,6 @@ class DB(object):
         if len(index_name) > 63:
             part = "_%s%s" % (column_names[0], index_unique_name)
             index_name = "%s%s" % (idx_table_name[: self.MAX_NAME_LENGTH - len(part)], part)
-        #
         sql = "CREATE %sINDEX %s ON %s (%s);" % (
             "UNIQUE " if unique else "",
             self.quote_name(index_name),

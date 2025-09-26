@@ -115,7 +115,6 @@ class Command(BaseCommand):
             self.die("Failed to load script %s" % script_class)
         # Get capabilities
         caps = obj.get_caps()
-        #
         if not use_snmp:
             if "snmp_ro" in credentials:
                 del credentials["snmp_ro"]
@@ -347,7 +346,6 @@ class Command(BaseCommand):
                     nn = int(n.rsplit(".", 1)[-1])
                     if nn > max_n:
                         max_n = nn
-            #
             ntpl = "%s.%%d" % s_name
             for nn, cmd in enumerate(sorted(commands)):
                 spec.answers += [SpecAnswer(name=ntpl % (nn + 1), type="cli", value=cmd)]

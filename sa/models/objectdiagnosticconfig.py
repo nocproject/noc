@@ -125,7 +125,6 @@ class ObjectDiagnosticConfig(Document):
     enable_box = BooleanField(default=False)
     enable_periodic = BooleanField(default=False)
     enable_manual = BooleanField(default=True)
-    #
     save_history = BooleanField(default=True)
     run_policy = StringField(choices=["F", "A"], default="A")
     run_order = StringField(choices=["S", "E"], default="S")  # On start, On End
@@ -186,13 +185,10 @@ class ObjectDiagnosticConfig(Document):
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
             "description": self.description,
-            #
             "show_in_display": self.show_in_display,
             "display_order": self.display_order,
-            #
             "state_policy": self.state_policy,
             "checks": [c.json_data for c in self.checks],
-            #
             "save_history": self.save_history,
             "enable_box": self.enable_box,
             "enable_periodic": self.enable_periodic,

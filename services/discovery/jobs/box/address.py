@@ -97,7 +97,6 @@ class AddressCheck(DiscoveryCheck):
             self.logger.info(
                 "VPN ID are missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
             )
-        #
         self.logger.debug("Getting addresses to synchronize")
         for vpn_id in vrfs:
             vrf = vrfs[vpn_id]
@@ -248,7 +247,6 @@ class AddressCheck(DiscoveryCheck):
         vpn_db = PrefixDB()
         for a in addresses:
             vpn_db[IP.prefix(a["address"]).first] = a["vpn_id"]
-        #
         self.logger.debug("Getting DHCP addresses")
         leases = self.object.scripts.get_dhcp_binding()
         r = [

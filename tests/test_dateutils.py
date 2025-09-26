@@ -36,13 +36,9 @@ def test_hits_in_range():
     assert hits_in_range([start, t2, stop], start, stop) == 3
     # Check start, stop & 2 intermediate values
     assert hits_in_range([start, t2, t3, stop], start, stop) == 4
-    #
     assert hits_in_range([t1, t4], start, stop) == 0
-    #
     assert hits_in_range([t1, start, stop, t4], start, stop) == 2
-    #
     assert hits_in_range([t0, t1, t2, t3, t4, t5], start, stop) == 2
-    #
     assert hits_in_range([t0, t1, start, t2, t3, stop, t4, t5], start, stop) == 4
 
 

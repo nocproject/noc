@@ -42,7 +42,6 @@ class Migration(BaseMigration):
                 default="D",
             ),
         )
-        #
         self.db.execute(
             """
             UPDATE sa_managedobjectprofile

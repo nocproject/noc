@@ -192,7 +192,6 @@ class VLANApplication(ExtDocApplication):
             }
             for o in si_objects
         ]
-        #
         return {
             "untagged": sorted(untagged, key=lambda x: x["managed_object_name"]),
             "tagged": sorted(tagged, key=lambda x: x["managed_object_name"]),

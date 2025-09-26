@@ -98,7 +98,6 @@ class Permission(NOCModel):
         perms = set(perms)  # Copy
         for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
             perms.update([x.strip() for x in p.implied.split(",")])
-        #
         current = cls.get_user_permissions(user)
         # Add new permissions
         for p in perms - current:
@@ -131,7 +130,6 @@ class Permission(NOCModel):
         perms = set(perms)  # Copy
         for p in cls.objects.filter(name__in=list(perms), implied__isnull=False):
             perms.update([x.strip() for x in p.implied.split(",")])
-        #
         current = cls.get_group_permissions(group)
         # Add new permissions
         for p in perms - current:
@@ -200,7 +198,6 @@ class Permission(NOCModel):
             nf = [pp for pp in implied_permissions[p] if pp not in new_perms]
             if nf:
                 raise ValueError("Invalid implied permissions: %s" % nf)
-        #
         old_perms = set(Permission.objects.values_list("name", flat=True))
         # New permissions
         created_perms = {}  # name -> permission

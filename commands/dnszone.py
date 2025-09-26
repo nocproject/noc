@@ -33,7 +33,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
-        #
         import_parser = subparsers.add_parser("import")
         (
             import_parser.add_argument(

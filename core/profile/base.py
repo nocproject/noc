@@ -43,7 +43,6 @@ class BaseProfileMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         n.rogue_char_cleaners = n._get_rogue_chars_cleaners()
-        #
         if n.command_more:
             warnings.warn(
                 "%s: 'command_more' is deprecated and will be removed in NOC 20.3" % n.name,

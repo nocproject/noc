@@ -49,7 +49,6 @@ class CommandSnippet(NOCModel):
     # effective permission name will be sa:runsnippet:<permission_name>
     permission_name = models.CharField(_("Permission Name"), max_length=64, null=True, blank=True)
     display_in_menu = models.BooleanField(_("Show in menu"), default=False)
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list

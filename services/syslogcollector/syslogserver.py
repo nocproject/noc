@@ -50,7 +50,6 @@ class SyslogServer(UDPServer):
             data = data[idx + 1 :].strip()
         # Get timestamp
         ts = int(time.time())
-        #
         self.service.register_syslog_message(
             cfg, ts, data, facility=priority >> 3, severity=priority & 7, source_address=address[0]
         )

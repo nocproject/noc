@@ -317,9 +317,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         self.seen_ids = set()
         # get_labels_hash(metric type, labels) -> metric config
         self.metric_labels: Dict[str, List[MetricConfig]] = {}
-        #
         self.sla_metrics: Dict[Tuple[str, str], int] = {}
-        #
         self.cpe_metrics: Dict[Tuple[str, str], int] = {}
         # metric type -> [metric config]
         self.metric_configs: Dict[str, List[MetricConfig]] = defaultdict(list)

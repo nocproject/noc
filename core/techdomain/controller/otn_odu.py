@@ -57,7 +57,6 @@ class OTNODUController(BaseController):
         # Check if card has OTU trails
         if not DBEndpoint.objects.filter(resource__in=otu_endpoints).first():
             return  # No OTU endpoints
-        #
         for cn in obj.model.connections:
             for pvi in obj.iter_connection_effective_protocols(cn.name):
                 # @todo: Check for OTU trails from same card

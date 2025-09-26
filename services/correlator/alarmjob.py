@@ -169,7 +169,6 @@ class AlarmJob(object):
                 self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                 continue
             elif aa.timestamp > now:
-                #
                 self.logger.info("Next action delayed: %s", aa.timestamp - now)
                 break
             elif not aa.is_match(severity, now, self.alarm.ack_user):

@@ -434,7 +434,6 @@ class AlarmActionRunner(object):
                 pre_reason=pre_reason,
                 clear_template=kwargs.get("clear_template"),
             )
-            #
             return ActionResult(
                 status=ActionStatus.SUCCESS,
                 document_id=r.document,

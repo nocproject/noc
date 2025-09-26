@@ -32,7 +32,6 @@ NS = 1_000_000_000
 
 # scope -> name -> cleaner
 scope_cleaners: Dict[str, Dict[str, Callable]] = {}
-#
 mx_converters: Optional[Dict[str, Callable]] = None
 
 

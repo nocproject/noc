@@ -137,22 +137,18 @@ class ActiveAlarm(Document):
     # Alarm reference is a hash of discriminator
     # for external systems
     reference = BinaryField(required=False)
-    #
     log: List[AlarmLog] = EmbeddedDocumentListField(AlarmLog)
     # Manual acknowledgement timestamp
     ack_ts = DateTimeField(required=False)
     # Manual acknowledgement user name
     ack_user = StringField(required=False)
-    #
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # List of subscribers
     watchers: List[WatchItem] = EmbeddedDocumentListField(WatchItem)
-    #
     custom_subject = StringField(required=False)
     custom_object = StringField(required=False)
     custom_style = ForeignKeyField(Style, required=False)
-    #
     reopens = IntField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
@@ -649,7 +645,6 @@ class ActiveAlarm(Document):
         from noc.core.service.loader import get_service
         from noc.main.models.pool import Pool
 
-        #
         if self.managed_object:
             fm_pool = self.managed_object.get_effective_fm_pool()
             partition = int(self.managed_object.id)

@@ -22,7 +22,6 @@ class SLACheck(DiscoveryCheck):
     required_script = "get_sla_probes"
 
     PROFILE_CAPS = {
-        #
         "Cisco.IOS": {"Cisco | IP | SLA | Probes"},
         "Juniper.JUNOS": {"Juniper | RPM | Probes"},
         "Huawei.VRP": {"Huawei | NQA | Probes"},

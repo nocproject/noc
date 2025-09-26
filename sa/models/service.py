@@ -194,7 +194,6 @@ class Service(Document):
     parent: "Service" = ReferenceField("self", required=False)
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
-    #
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
     # Service oper status settings
@@ -210,7 +209,6 @@ class Service(Document):
     status_dependencies: List["ServiceStatusDependency"] = EmbeddedDocumentListField(
         ServiceStatusDependency
     )
-    #
     calculate_status_function = StringField(
         choices=[
             ("D", "Disable"),
@@ -231,7 +229,6 @@ class Service(Document):
     # Supplier information
     supplier = ReferenceField(Supplier)
     description = StringField()
-    #
     agreement_id = StringField()
     # Order Fulfillment order id
     order_id = StringField()
@@ -252,7 +249,6 @@ class Service(Document):
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     diagnostics: List[DiagnosticItem] = EmbeddedDocumentListField(DiagnosticItem)
-    #
     static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
     agent = PlainReferenceField(Agent)
@@ -850,7 +846,6 @@ class Service(Document):
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
                 profile__in=profile_rules,
             )
-        #
         logger.debug("Requested services by query: %s", q)
         if not q:
             return list(services)

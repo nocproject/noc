@@ -140,7 +140,6 @@ class Config(BaseConfig):
         replica_id = IntParameter(help="CH Partition Replica Id", default=0)
         # <address:port> of ClickHouse server to write
         write_to = StringParameter()
-        #
         batch_size = IntParameter(default=50000, help="Size of one portion from queue")
         batch_delay_ms = IntParameter(default=10000, help="Send every period time")
 
@@ -183,7 +182,6 @@ class Config(BaseConfig):
         # 3:2,2 - first shard has 2 replicas an weight 3,
         #   second shard has 2 replicas and weight 1
         cluster_topology = StringParameter(default="1")
-        #
         enable_migrate_type = BooleanParameter(
             default=True,
             help="Run migrate when type mismatch (slowed deploy on large table)",
@@ -488,16 +486,12 @@ class Config(BaseConfig):
         enable_metrics = BooleanParameter(default=False)
         # Comma-separated list of metric scopes
         enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
-        #
         enable_snmptrap = BooleanParameter(default=False)
         enable_syslog = BooleanParameter(default=False)
-        #
         enable_diagnostic_change = BooleanParameter(default=False)
-        #
         embedded_router = BooleanParameter(
             default=True, help="Use embedded process router for sending message"
         )
-        #
         ds_limit = IntParameter(default=1000)
 
     class mongo(ConfigSection):
@@ -778,7 +772,6 @@ class Config(BaseConfig):
         storm_threshold_reduction = FloatParameter(default=0.9)
         # time to live (rounds quantity) of records in storm protection addresses dictionary
         storm_record_ttl = IntParameter(default=10)
-        #
         storm_min_severity = MapParameter(
             default="error",
             mappings={

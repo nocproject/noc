@@ -23,7 +23,6 @@ from .util import NodeCDAG
         ("eq", {"epsilon": 0.01}, 1.0, 1.0, 1),
         ("eq", {"epsilon": 0.01}, 1.0, 1.001, 1),
         ("eq", {"epsilon": 0.01}, 1.0, 1.1, 0),
-        #
         ("ne", {}, 0, 0, 0),
         ("ne", {}, 0, 1, 1),
         ("ne", {"false_level": -3}, 1, 1, -3),

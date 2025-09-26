@@ -230,7 +230,6 @@ class MODiscoveryJob(PeriodicJob):
         :param problems:
         :return:
         """
-        #
         discovery_diagnostics = self.load_diagnostic(
             is_box=self.is_box, is_periodic=self.is_periodic
         )
@@ -399,7 +398,6 @@ class DiscoveryCheck(object):
     required_capabilities = None
     # If not None, check job has all required artefacts
     required_artefacts = None
-    #
     fatal_errors = {
         ERR_CLI_AUTH_FAILED,
         ERR_CLI_NO_SUPER_COMMAND,
@@ -1277,7 +1275,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_interface,
             )
             return
-        #
         if lpolicy in ("O", "R") and rpolicy in ("O", "R"):
             # Unlink when necessary
             if llink:
@@ -1311,7 +1308,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     e,
                 )
             return
-        #
         if lpolicy == "C":
             if rlink:
                 if rpolicy == "O":
@@ -1384,7 +1380,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         e,
                     )
                 return
-        #
         self.logger.info(
             "Not linking: %s:%s -- %s:%s. " "Link creating not allowed",
             local_object.name,

@@ -66,7 +66,6 @@ class XRuleLookup(RuleLookup):
             for rule in kw_rules[keyword]:
                 rule_masks[rule][kwi] = 1
         self.index.fix()
-        #
         for rule in rules:
             self.rule_masks += [(rule, rule_masks[rule])]
 

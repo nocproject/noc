@@ -168,16 +168,12 @@ class MetricAction(Document):
     name = StringField(unique=True)
     uuid = UUIDField(binary=True)
     description = StringField()
-    #
     params: List["MetricActionParam"] = EmbeddedDocumentListField(MetricActionParam)
-    #
     compose_inputs: List["InputMapping"] = ListField(EmbeddedDocumentField(InputMapping))
     compose_expression = StringField(default=None)
     compose_metric_type: "MetricType" = PlainReferenceField(MetricType)
-    #
     activation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
     deactivation_config: ActivationConfig = EmbeddedDocumentField(ActivationConfig)
-    #
     key_expression: str = StringField(default=None)
     alarm_config: "AlarmConfig" = EmbeddedDocumentField(AlarmConfig)
 

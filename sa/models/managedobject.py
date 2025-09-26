@@ -558,7 +558,6 @@ class ManagedObject(NOCModel):
         blank=False,
         default="P",
     )
-    #
     l2_domain = DocumentReferenceField(L2Domain, null=True, blank=True)
     # CM
     config = GridVCSField("config")
@@ -590,13 +589,11 @@ class ManagedObject(NOCModel):
         blank=True,
     )
     shape_title_template = CharField("Shape Name template", max_length=256, blank=True, null=True)
-    #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
     config_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
     config_diff_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
     config_validation_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
-    #
     max_scripts = IntegerField(
         "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
     )
@@ -788,7 +785,6 @@ class ManagedObject(NOCModel):
         ],
         default="p",
     )
-    #
     event_processing_policy = CharField(
         "Event Processing Policy",
         max_length=1,
@@ -842,12 +838,10 @@ class ManagedObject(NOCModel):
     effective_client_groups: List[str] = ObjectIDArrayField(
         db_index=True, blank=True, null=True, default=list
     )
-    #
     labels: List[str] = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels: List[str] = ArrayField(
         CharField(max_length=250), blank=True, null=True, default=list
     )
-    #
     caps: List[Dict[str, Any]] = PydanticField(
         "Caps Items",
         schema=CapsItems,
@@ -1226,7 +1220,6 @@ class ManagedObject(NOCModel):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             NetworkSegment.update_summary(self.segment)
-        #
         self._reset_caches(self.id, credential=True)
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access

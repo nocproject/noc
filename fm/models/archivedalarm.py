@@ -70,7 +70,6 @@ class ArchivedAlarm(Document):
     severity = IntField(required=True)
     vars = DictField()
     log = ListField(EmbeddedDocumentField(AlarmLog))
-    #
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # Number of reopens
@@ -108,7 +107,6 @@ class ArchivedAlarm(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    #
     affected_services = ListField(ObjectIdField())
     # Paths
     adm_path = ListField(IntField())

@@ -117,7 +117,6 @@ class Transition(Document):
     # Handler to be called on starting transitions
     # Any exception aborts transition
     handlers = ListField(StringField())
-    #
     required_rules: RequiredRule = ListField(EmbeddedDocumentField(RequiredRule))
     # Visual vertices
     vertices = ListField(EmbeddedDocumentField(TransitionVertex))

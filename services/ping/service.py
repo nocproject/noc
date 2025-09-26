@@ -66,7 +66,6 @@ class PingService(FastAPIService):
             os.nice(-20)
         except OSError as e:
             self.logger.info("Cannot set nice level to -20: %s", e)
-        #
         metrics["down_objects"] = 0
         # Open ping sockets
         self.ping = Ping(tos=config.ping.tos)

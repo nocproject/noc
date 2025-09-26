@@ -220,19 +220,16 @@ class Report(Document):
     uuid = UUIDField(binary=True)
     description = StringField(required=False)
     report_format = StringField()
-    #
     code = StringField()  # Optional code for REST access
     hide = BooleanField()  # Hide from ReportMenu
     title = StringField()  # Menu Title
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
     allow_rest = BooleanField(default=False)  # Available report data from REST API
-    #
     parameters: List["ReportParam"] = EmbeddedDocumentListField(ReportParam)
     templates: List["Template"] = EmbeddedDocumentListField(Template)
     bands: List["Band"] = EmbeddedDocumentListField(Band)
     bands_format: List["BandFormat"] = EmbeddedDocumentListField(BandFormat)
-    #
     permissions = EmbeddedDocumentListField(Permission)
     localization = MapField(DictField())
 

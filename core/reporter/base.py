@@ -158,7 +158,6 @@ class ReportEngine(object):
         Render document
         :return:
         """
-        #
         from noc.core.reporter.formatter.loader import loader as df_loader
 
         formatter = df_loader[template.formatter]

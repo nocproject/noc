@@ -107,7 +107,6 @@ class ObjectCard(BaseCard):
                     "object_profile": o.object_profile.id,
                     "object_profile_name": o.object_profile.name,
                     "segment": o.segment,
-                    #
                     "current_state": current_state,
                     # Start of uptime/downtime
                     "current_start": current_start,

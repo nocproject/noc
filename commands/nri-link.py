@@ -46,7 +46,6 @@ class Command(BaseCommand):
             dst_mo = ManagedObject.get_by_id(ll.dst_mo)
             if not dst_mo or dst_mo.profile.is_generic:
                 continue
-            #
             if src_mo.id == dst_mo.id:
                 self.update_warn(ll.id, "Loop link")
                 continue
@@ -93,7 +92,6 @@ class Command(BaseCommand):
             if not dst_iface:
                 self.update_warn(ll.id, "Interface not found %s@%s\n" % (dst_mo.name, dst_ifname))
                 continue
-            #
             src_link = src_iface.link
             dst_link = dst_iface.link
             if not src_link and not dst_link:

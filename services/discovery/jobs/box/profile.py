@@ -67,7 +67,6 @@ class ProfileCheck(DiscoveryCheck):
                 snmp_version = [SNMP_v1, SNMP_v2c]
             else:
                 snmp_version = [SNMP_v2c, SNMP_v1]
-        #
         checker = ProfileChecker(
             self.object.address,
             self.object.pool.name,

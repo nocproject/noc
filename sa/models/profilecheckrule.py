@@ -88,19 +88,15 @@ class ProfileCheckRule(Document):
     )
     # Method input parameters, defined by method
     param = StringField()
-    #
     match_method = StringField(
         required=True,
         choices=["eq", "contains", "re"],  # Full match  # Contains  # regular expression
         default="eq",
     )
-    #
     value = StringField(required=True)
-    #
     action = StringField(required=True, choices=["match", "maybe"], default="match")
     # Resulting profile name
     profile = PlainReferenceField(Profile, required=True)
-    #
     category = ObjectIdField()
 
     _rules_cache = cachetools.TTLCache(10, ttl=60)

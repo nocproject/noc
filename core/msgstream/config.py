@@ -31,7 +31,7 @@ class StreamConfig(object):
 @dataclass(frozen=True)
 class StreamItem(object):
     name: Optional[str]
-    shard: Optional[str] = None  #
+    shard: Optional[str] = None
     slot: Optional[str] = None
     enable: bool = True  # Stream is active
     config: Optional[StreamConfig] = None

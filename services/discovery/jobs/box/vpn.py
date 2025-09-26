@@ -67,7 +67,6 @@ class VPNCheck(DiscoveryCheck):
         # Get existing VRFs
         self.logger.debug("Getting VRFs to synchronize")
         vrfs = {vrf.vpn_id: vrf for vrf in VRF.objects.filter(vpn_id__in=list(vpns))}
-        #
         seen = set()
         # Apply changes
         for vpn_id in vpns:
@@ -242,7 +241,6 @@ class VPNCheck(DiscoveryCheck):
                 "Name '%s' is already exists with other vpn_id. Rename to '%s'", old_name, name
             )
             metrics["vpn_name_clash"] += 1
-        #
         p = VRF(name=name, rd=vpn.rd, vpn_id=vpn.vpn_id, profile=vpn.profile, source=vpn.source)
         self.logger.info(
             "Creating vpn %s: name=%s rd=%s profile=%s source=%s",

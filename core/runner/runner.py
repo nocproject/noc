@@ -219,7 +219,6 @@ class Runner(object):
         for s in job.iter_siblings():
             if s.is_waiting and not s.is_scheduled and not s.is_blocked():
                 self._schedule_job(s)
-        #
         p = job.parent
         if not p or p.is_complete:
             return

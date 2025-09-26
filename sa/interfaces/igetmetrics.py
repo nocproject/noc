@@ -49,7 +49,6 @@ class IGetMetrics(BaseInterface):
             "labels": StringListParameter(required=False),
             # Like settings: ifindex::<ifindex>, oid::<oid>, ac::<SC/CS/S/C>
             "hints": StringListParameter(required=False),
-            #
             "service": IntParameter(required=False),
             # Collector field id
             "sensor": IntParameter(required=False),

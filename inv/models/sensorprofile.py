@@ -75,7 +75,6 @@ class SensorProfile(Document):
         choices=[("R", "By Rule"), ("D", "Disable")],
         default="R",
     )
-    #
     match_rules = ListField(EmbeddedDocumentField(MatchRule))
     # Labels
     labels = ListField(StringField())

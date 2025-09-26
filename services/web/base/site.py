@@ -207,7 +207,6 @@ class Site(object):
                             except InterfaceTypeError as e:
                                 errors = str(e)
                     if errors:
-                        #
                         if to_log_api_call:
                             app_logger.error("ERROR: %s", errors)
                         # Return error response

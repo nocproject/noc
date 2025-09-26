@@ -29,7 +29,6 @@ class Migration(BaseMigration):
         self.db.execute(
             "ALTER TABLE sa_managedobjectprofile ALTER metrics TYPE BYTEA USING metrics::bytea"
         )
-        #
         current = itertools.count()
         mdb = self.mongo_db
         # Migrate profiles
@@ -105,7 +104,6 @@ class Migration(BaseMigration):
                     ]
                 # Save profile
                 tp_coll.insert_one(tp)
-                #
                 metric["threshold_profile"] = str(tp_id)
             # Store back
             wb_metrics = psycopg2.Binary(dumps(metrics, HIGHEST_PROTOCOL))

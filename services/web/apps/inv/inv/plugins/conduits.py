@@ -63,7 +63,6 @@ class ConduitsPlugin(InvPlugin):
                 )
             },
         )
-        #
         self.conduits_model = ObjectModel.objects.filter(name=self.CONDUITS_MODEL).first()
 
     def get_data(self, request, object):

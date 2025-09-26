@@ -562,7 +562,6 @@ class Prefix(NOCModel):
         :param new_prefix:
         :return:
         """
-        #
         b = IP.prefix(self.prefix)
         nb = IP.prefix(new_prefix)
         # Validation

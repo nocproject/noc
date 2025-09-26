@@ -89,7 +89,6 @@ class ReportDiscoveryTopologyProblemApplication(SimpleReport):
                 uplinks[mo_id] = nu
         for mo in mos_set - set(problems) - set(uplinks):
             problems[mo] = _("No uplinks")
-        #
         data = []
         for mo_id in problems:
             if mo_id not in mos:

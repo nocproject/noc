@@ -117,14 +117,12 @@ class ProtocolVariant(object):
             modes = [x.strip() for x in m.split(",")]
         else:
             modes = None
-        #
         p_code, *vd_code = p_code.strip("::").split("::")
         # Detect Protocol Code
         if len(vd_code) > 1:
             raise ValueError("Unknown variant format: %s" % code)
         elif vd_code:
             vd_code = vd_code[0]
-        #
         protocol = Protocol.get_by_code(p_code)
         if not protocol and "-" in p_code:
             # Old format
@@ -195,7 +193,6 @@ class Protocol(Document):
         "json_unique_fields": ["code", "uuid"],
     }
 
-    #
     name = StringField()
     code = StringField(unique=True)
     description = StringField()
@@ -217,7 +214,6 @@ class Protocol(Document):
     )
     discriminator_loader = StringField(default=None)
     discriminator_default = StringField(default=None)  # Alias table ?
-    #
     transport_protocols = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     # For
     # use_helper

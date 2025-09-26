@@ -95,7 +95,6 @@ class DNSZone(NOCModel):
         on_delete=models.CASCADE,
     )
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list

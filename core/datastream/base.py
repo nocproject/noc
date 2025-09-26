@@ -667,7 +667,6 @@ class DataStream(object):
         # Raise ValueError if not integer
         instance = int(instance)
         n_instances = int(n_instances)
-        #
         if n_instances < 1:
             raise ValueError("Invalid number of instances")
         if instance < 0:

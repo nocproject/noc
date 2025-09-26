@@ -79,7 +79,6 @@ class ModelInline(object):
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
-        #
         if not self.query_fields:
             # By default - search in unique text fields
             self.query_fields = [

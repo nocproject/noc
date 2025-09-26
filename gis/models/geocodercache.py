@@ -39,14 +39,11 @@ class GeocoderCache(Document):
     query = StringField()
     # Geocoding system
     geocoder = StringField()
-    #
     path = ListField(StringField())
     # Geo coordinates
     lon = FloatField()
     lat = FloatField()
-    #
     error = StringField()
-    #
     expires = DateTimeField()
 
     NEGATIVE_TTL = config.geocoding.negative_ttl
@@ -95,7 +92,6 @@ class GeocoderCache(Document):
         hash = cls.get_hash(query)
         # Search data
         c = cls._get_collection()
-        #
         r = c.find_one({"_id": hash})
         if r:
             # Found

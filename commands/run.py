@@ -23,7 +23,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         cli_parser = subparsers.add_parser("cli")
         cli_parser.add_argument("--limit", default=self.DEFAULT_LIMIT, help="Concurrency limit")
         cli_parser.add_argument("--command", "-c", action="append", help="Command to execute")

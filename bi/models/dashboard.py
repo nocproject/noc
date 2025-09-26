@@ -53,18 +53,14 @@ class Dashboard(Document):
     title = StringField()
     # Username
     owner = ForeignKeyField(User)
-    #
     description = StringField()
-    #
     tags = ListField(StringField())
     # Config format version
     format = IntField(default=1)
     # gzip'ed data
     config = BinaryField()
-    #
     created = DateTimeField(default=datetime.datetime.now)
     changed = DateTimeField(default=datetime.datetime.now)
-    #
     access = ListField(EmbeddedDocumentField(DashboardAccess))
     # Global ID
     uuid = UUIDField(binary=True, unique=True)
