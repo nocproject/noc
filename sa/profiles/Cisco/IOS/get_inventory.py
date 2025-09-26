@@ -249,16 +249,14 @@ class Script(BaseScript):
                     t_rev = None
                 if self.rx_trans.search(match.group("t_part_no").upper().replace("-", "")):
                     pid = self.get_transceiver_pid(match.group("t_part_no"))
+                elif "GBIC" in match.group("t_part_no") and "Gi" in iface:
+                    pid = self.get_transceiver_pid(
+                        "1000BASE" + match.group("t_part_no")[5:].strip()
+                    )
+                elif "NONAME" in t_vendor and self.rx_trans.search(descr):
+                    pid = self.get_transceiver_pid(descr)
                 else:
-                    if "GBIC" in match.group("t_part_no") and "Gi" in iface:
-                        pid = self.get_transceiver_pid(
-                            "1000BASE" + match.group("t_part_no")[5:].strip()
-                        )
-                    else:
-                        if "NONAME" in t_vendor and self.rx_trans.search(descr):
-                            pid = self.get_transceiver_pid(descr)
-                        else:
-                            pid = match.group("t_part_no").strip()
+                    pid = match.group("t_part_no").strip()
                 return t_vendor, t_sn, t_rev, pid
             else:
                 return None, None, None, None

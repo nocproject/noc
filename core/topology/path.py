@@ -122,10 +122,8 @@ class KSPFinder(object):
                     # Egress
                     if not allow_egress:
                         allow_egress = self.constraint.is_valid_egress(iface)
-                else:
-                    # Ingress
-                    if not allow_ingress:
-                        allow_ingress = self.constraint.is_valid_ingress(iface)
+                elif not allow_ingress:
+                    allow_ingress = self.constraint.is_valid_ingress(iface)
                 if allow_egress and allow_ingress:
                     return True
             return False

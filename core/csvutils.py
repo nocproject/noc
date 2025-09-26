@@ -188,48 +188,47 @@ def csv_import(model, f, resolution=IR_FAIL, delimiter=","):
             # Delete empty values
             if not v:
                 del variables[h]
-            else:
-                if h in fk:
-                    # reference foreign keys
-                    rel, rname = fk[h]
+            elif h in fk:
+                # reference foreign keys
+                rel, rname = fk[h]
+                try:
+                    ro = rel.objects.get(**{rname: v})
+                except rel.DoesNotExist:
+                    # Failed to reference by name, fallback to id
                     try:
-                        ro = rel.objects.get(**{rname: v})
+                        id = int(v)
+                    except ValueError:
+                        return (
+                            None,
+                            "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
+                        )
+                    try:
+                        ro = rel.objects.get(**{"id": id})
                     except rel.DoesNotExist:
-                        # Failed to reference by name, fallback to id
-                        try:
-                            id = int(v)
-                        except ValueError:
-                            return (
-                                None,
-                                "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
-                            )
-                        try:
-                            ro = rel.objects.get(**{"id": id})
-                        except rel.DoesNotExist:
-                            return (
-                                None,
-                                "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
-                            )
-                    variables[h] = ro
-                elif h in booleans:
-                    # Convert booleans
-                    variables[h] = v.lower() in ["t", "true", "yes", "y"]
-                elif h in integers:
-                    # Convert integers
-                    try:
-                        variables[h] = int(v)
-                    except ValueError as e:
-                        raise ValueError("Invalid integer: %s" % e)
-                elif h in {
-                    "tags",
-                    "labels",
-                    "static_service_groups",
-                    "effective_service_groups",
-                    "static_client_groups",
-                    "effective_client_groups",
-                    "vendor",
-                }:
-                    variables[h] = [x.strip() for x in v.split(",") if x.strip()]
+                        return (
+                            None,
+                            "Cannot resolve '%s' in field '%s' at line '%s'" % (v, h, count),
+                        )
+                variables[h] = ro
+            elif h in booleans:
+                # Convert booleans
+                variables[h] = v.lower() in ["t", "true", "yes", "y"]
+            elif h in integers:
+                # Convert integers
+                try:
+                    variables[h] = int(v)
+                except ValueError as e:
+                    raise ValueError("Invalid integer: %s" % e)
+            elif h in {
+                "tags",
+                "labels",
+                "static_service_groups",
+                "effective_service_groups",
+                "static_client_groups",
+                "effective_client_groups",
+                "vendor",
+            }:
+                variables[h] = [x.strip() for x in v.split(",") if x.strip()]
         # Find object
         o = None
         for f in u_fields:

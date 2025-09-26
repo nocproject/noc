@@ -22,22 +22,20 @@ class Script(BaseScript):
             prt = int(links["prt"], 16)
             sfp = int(links.get("sfp", "0x0"), 16)
             sfpo = int(links.get("sfpo", "0x0"), 16)
-        else:
-            if self.is_platform_6port1sfp:
-                prt = 6
-                sfp = 1
-                sfpo = 5
+        elif self.is_platform_6port1sfp:
+            prt = 6
+            sfp = 1
+            sfpo = 5
         if sfpo + sfp != prt:
             raise self.UnexpectedResultError("prt=%d sfp=%d sfpo=%d" % (prt, sfp, sfpo))
         ports = []
         for port in range(1, prt + 1):
             if port <= sfpo:
                 ports.append("Port%d" % int(port))
+            elif sfp > 1:
+                ports.append("SFP%d" % (int(port) - sfpo))
             else:
-                if sfp > 1:
-                    ports.append("SFP%d" % (int(port) - sfpo))
-                else:
-                    ports.append("SFP")
+                ports.append("SFP")
 
         for record in macs:
             iface_num = int(record["prt"], 16)

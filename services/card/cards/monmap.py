@@ -297,11 +297,10 @@ class MonMapCard(BaseCard):
                                     )
                                 ]
                         badge = "".join(badge)
+                    elif collapse and c < 2:
+                        badge = "</div>"
                     else:
-                        if collapse and c < 2:
-                            badge = "</div>"
-                        else:
-                            badge = '<span class="badge">%s</span></div>' % c
+                        badge = '<span class="badge">%s</span></div>' % c
                     html2 = "".join(
                         [
                             "<td style='text-align: center; width: ",

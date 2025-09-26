@@ -389,14 +389,13 @@ class BIAPI(JSONRPCAPI):
                 return node
             if node and node["id"] == p_id:
                 return node
+            elif node and "children" in node:
+                for child in node["children"]:
+                    _searched = search_parent(child, p_id)
+                    if _searched:
+                        return _searched
             else:
-                if node and "children" in node:
-                    for child in node["children"]:
-                        _searched = search_parent(child, p_id)
-                        if _searched:
-                            return _searched
-                else:
-                    return None
+                return None
 
         def sort_children(node):
             if "children" not in set(node):
