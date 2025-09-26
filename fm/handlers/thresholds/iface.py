@@ -34,8 +34,7 @@ def grafana_date():
     # interval = (to_date - from_date).days
     ts_from_date = time.mktime(from_date.timetuple())
     ts_date_limit = time.mktime(date_limit.timetuple())
-    if ts_from_date < ts_date_limit:
-        ts_from_date = ts_date_limit
+    ts_from_date = max(ts_from_date, ts_date_limit)
     return str(int(ts_from_date * 1000))
 
 

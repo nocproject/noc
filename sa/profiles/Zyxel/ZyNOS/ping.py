@@ -32,19 +32,17 @@ class Script(BaseScript):
         cnt = 6
         success = 0
         avg = 0
-        max = 0
-        min = 1000
+        max_rtt = 0
+        min_rtt = 1000
         for match in self.rx_result.finditer(self.cli(cmd)):
             success += int(match.group("success"))
-            if int(match.group("min")) < min:
-                min = int(match.group("min"))
-            if int(match.group("max")) > max:
-                max = int(match.group("max"))
+            min_rtt = min(int(match.group("min")), min_rtt)
+            max_rtt = max(int(match.group("max")), max_rtt)
             avg += int(match.group("avg"))
         return {
             "success": success,
             "count": cnt,
-            "min": min if success > 0 else 0,
+            "min": min_rtt if success > 0 else 0,
             "avg": avg / success if success > 0 else 0,
-            "max": max,
+            "max": max_rtt,
         }

@@ -41,8 +41,7 @@ class Node(object):
         Binary prefix is a list of integers
         """
         lp = len(prefix)
-        if lp > self.n:
-            self.n = lp
+        self.n = max(lp, self.n)
         if not prefix:
             # Optimization #1
             # Remove existing specifics

@@ -484,8 +484,7 @@ class ReportDataSource(object):
             if self.fields[c].hidden:
                 continue
             width = 15
-            if width < max_column_data_length[c]:
-                width = max_column_data_length[c]
+            width = max(width, max_column_data_length[c])
             ws.set_column(cn, cn, width=width)
         wb.close()
         response.seek(0)
