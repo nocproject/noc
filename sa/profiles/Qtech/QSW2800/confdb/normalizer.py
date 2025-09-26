@@ -139,4 +139,5 @@ class Qtech2800Normalizer(BaseNormalizer):
     @match("ntp", "server", ANY, ANY, ANY)
     @match("sntp", "server", ANY, ANY, ANY)
     def normalize_ntp_server(self, tokens):
-        yield self.make_ntp_server_address(name=tokens[2], address=tokens[2])
+        addr = tokens[2].strip('"')
+        yield self.make_ntp_server_address(name=addr, address=addr)
