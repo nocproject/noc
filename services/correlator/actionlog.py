@@ -128,9 +128,7 @@ class ActionLog(object):
             alarm_ctx: Alarm context
         """
         r: Dict[str, Any] = {"timestamp": self.timestamp}
-        if (
-            self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT)
-        ) and self.key == "stub":
+        if (self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT)) and self.key == "stub":
             r["tt_system"] = self.tt_system
             r["tt_id"] = self.document_id or document_id
         elif self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT):
