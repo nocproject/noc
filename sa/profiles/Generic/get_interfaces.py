@@ -99,7 +99,7 @@ class Script(BaseScript):
             if not pvid:
                 # if pvid is 0
                 continue
-            elif not is_vlan(pvid):
+            if not is_vlan(pvid):
                 # on Alcatel DSLAM it 16777217
                 self.logger.warning(
                     "Bad value for untagged vlan.Skipping.. oid %s: vlan %s", oid, pvid
@@ -125,10 +125,10 @@ class Script(BaseScript):
             ):
                 if is_egress == "0":
                     continue
-                elif port not in pid_ifindex_mappings:
+                if port not in pid_ifindex_mappings:
                     self.logger.error("Port %s not in PID mappings", port)
                     continue
-                elif vlan_num == result[pid_ifindex_mappings[port]]["untagged_vlan"]:
+                if vlan_num == result[pid_ifindex_mappings[port]]["untagged_vlan"]:
                     continue
                 result[pid_ifindex_mappings[port]]["tagged_vlans"] += [vlan_num]
         return result
@@ -195,7 +195,7 @@ class Script(BaseScript):
             if a_type != "4":
                 # 16, 20 - IPv6 address
                 continue
-            elif address not in ip_mask:
+            if address not in ip_mask:
                 self.logger.error(
                     "Unknown IP address in 'IP-MIB::ipAddressPrefix' table: %s",
                     address,

@@ -45,8 +45,7 @@ class MongoCache(BaseCache):
         if d and d[self.EXPIRES_FIELD] > now:
             # Found, not expired
             return loads(d[self.VALUE_FIELD])
-        else:
-            return default
+        return default
 
     def set(self, key, value, ttl=None, version=None):
         """

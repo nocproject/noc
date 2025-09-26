@@ -25,10 +25,8 @@ class Script(BaseScript):
         v = self.cli("show running-config | include hostname")
         match = self.rx_hostname.search(v)
         if match:
-            fqdn = match.group("hostname")
+            return match.group("hostname")
             #            match = self.rx_domain_name.search(v)
             #            if match:
             #                fqdn = "%s.%s" % (fqdn, match.group("domain"))
-            return fqdn
-        else:
-            return "None"
+        return "None"

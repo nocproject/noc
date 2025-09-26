@@ -198,7 +198,7 @@ class SyslogCollectorService(FastAPIService):
                 source_address,
             )
             return
-        elif config.message.enable_syslog:
+        if config.message.enable_syslog:
             metrics["events_message"] += 1
             n_partitions = get_mx_partitions()
             self.publish(

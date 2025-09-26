@@ -145,7 +145,7 @@ class MAC(Model):
         :return: Dict {mo_a: {iface1: [mo1, mo2], iface2: [mo3, mo4], ...}, mo_b: ...}
         """
         if not macs and not mos:
-            return
+            return None
         neighbors = defaultdict(dict)
         if mos:
             query = {"managed_object__in": mos}

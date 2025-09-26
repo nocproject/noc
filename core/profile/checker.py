@@ -79,7 +79,7 @@ class ProfileChecker(object):
                 r[v] += value[v]
         if (method, param) not in r:
             self.logger.warning("Not find rule for method: %s %s", method, param)
-            return
+            return None
         for match_method, value, action, profile, rname in r[(method, param)]:
             if self.is_match(result, match_method, value):
                 self.logger.info("Matched profile: %s (%s)", profile, rname)
@@ -210,7 +210,7 @@ class ProfileChecker(object):
                 raise NOCError(msg="Unsupported SNMP version")
             if not r and not message:
                 self.snmp_check = self.snmp_check or False
-                return
+                return None
             if r:
                 self.snmp_check = True
                 return r
@@ -235,13 +235,12 @@ class ProfileChecker(object):
         """
         if method == "eq":
             return result == value
-        elif method == "contains":
+        if method == "contains":
             return value in result
-        elif method == "re":
+        if method == "re":
             return bool(self.get_re(value).search(result))
-        else:
-            self.logger.error("Invalid match method '%s'. Ignoring", method)
-            return False
+        self.logger.error("Invalid match method '%s'. Ignoring", method)
+        return False
 
     def snmp_v1_get(self, param):
         """

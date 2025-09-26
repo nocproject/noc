@@ -219,6 +219,5 @@ class Script(BaseScript):
         ports = self.get_ports_attrs()
         if ports:
             return self.process_mstp(ports=ports)
-        else:
-            # No STP ports
-            return {"mode": None, "instances": []}
+        # No STP ports
+        return {"mode": None, "instances": []}

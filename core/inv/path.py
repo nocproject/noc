@@ -103,7 +103,7 @@ def find_path(
                 p0,
                 PathItem(obj=c.object, connection=c.name),
             ]
-        elif r == ConnAction.PASS:
+        if r == ConnAction.PASS:
             # Passable
             wave.add(c.object)
             prev[PathItem(obj=c.object, connection=c.name)] = p0
@@ -151,8 +151,8 @@ def find_path(
                         return list(
                             iter_path(PathItem(obj=adj.remote_object, connection=adj.remote_name))
                         )
-                    else:  # ConnAction.PASS
-                        new_wave.add(adj.remote_object)
+                    # ConnAction.PASS
+                    new_wave.add(adj.remote_object)
         seen |= wave
         wave = new_wave
         max_depth -= 1

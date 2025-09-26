@@ -50,11 +50,10 @@ class RequiredRule(EmbeddedDocument):
         return f'{", ".join(self.labels)}'
 
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "labels": [h for h in self.labels],
             "exclude_labels": [e for e in self.exclude_labels],
         }
-        return r
 
     def is_match(self, labels: List[str]):
         if self.exclude_labels and not set(self.exclude_labels) - set(labels):
@@ -73,11 +72,10 @@ class TransitionVertex(EmbeddedDocument):
         return "%s, %s" % (self.x, self.y)
 
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "x": self.x,
             "y": self.y,
         }
-        return r
 
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y

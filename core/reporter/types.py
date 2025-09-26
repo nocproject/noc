@@ -246,11 +246,11 @@ class OutputDocument(BaseModel):
         """
         if self.output_type == OutputType.CSV:
             return "text/csv"
-        elif self.output_type == OutputType.XLSX:
+        if self.output_type == OutputType.XLSX:
             return "application/vnd.ms-excel"
-        elif self.output_type == OutputType.PDF:
+        if self.output_type == OutputType.PDF:
             return "application/pdf"
-        elif self.output_type == OutputType.CSV_ZIP:
+        if self.output_type == OutputType.CSV_ZIP:
             return "application/zip"
         return "application/octet-stream"
 
@@ -273,7 +273,7 @@ class OutputDocument(BaseModel):
             return self.content
         if self.output_type == OutputType.HTML:
             return self.format_django()
-        elif self.output_type == OutputType.CSV_ZIP:
+        if self.output_type == OutputType.CSV_ZIP:
             f = TemporaryFile(mode="w+b")
             f.write(self.content)
             f.seek(0)

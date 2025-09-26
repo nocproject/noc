@@ -211,15 +211,14 @@ class AssetCheck(DiscoveryCheck):
                             ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
                         ]
                         return
-                    else:
-                        self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
-                            vnd.name,
-                            part_no,
-                            description,
-                        )
-                        self.register_unknown_part_no(vnd, part_no, description)
-                        return
+                    self.logger.info(
+                        "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
+                        vnd.name,
+                        part_no,
+                        description,
+                    )
+                    self.register_unknown_part_no(vnd, part_no, description)
+                    return
 
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
@@ -935,9 +934,8 @@ class AssetCheck(DiscoveryCheck):
             if c_name == m_c and object.get_data("asset", "serial") == serial:
                 # Object with same serial number exists
                 return object
-            else:
-                # Serial number/connection mismatch
-                return None
+            # Serial number/connection mismatch
+            return None
         # Check connection type
         c = t_object.model.get_model_connection(t_c)
         if c is None:

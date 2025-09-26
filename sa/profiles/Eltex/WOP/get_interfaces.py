@@ -48,15 +48,13 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_freq(cls, name):
-        c = cls.FREQ.get(name)
-        return c
+        return cls.FREQ.get(name)
 
     IEEE = {"bg-n": "IEEE 802.11b/g/n", "a-n": "IEEE 802.11a/n"}
 
     @classmethod
     def get_interface_ieee(cls, name):
-        c = cls.IEEE.get(name)
-        return c
+        return cls.IEEE.get(name)
 
     def get_radio_detail(self):
         r = {}

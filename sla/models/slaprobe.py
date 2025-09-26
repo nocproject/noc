@@ -140,7 +140,7 @@ class SLAProbe(Document):
             # port
             address, port = self.target.split(":")
         if not is_ipv4(address):
-            return
+            return None
         mo = ManagedObject.objects.filter(SQL(f"address <<= '{address}/32'")).first()
         if mo:
             return mo
@@ -161,7 +161,7 @@ class SLAProbe(Document):
         cls, managed_object, sla_probe: str = None, target_address: str = None, **kwargs
     ) -> Optional["SLAProbe"]:
         if not sla_probe or target_address:
-            return
+            return None
         if sla_probe:
             return SLAProbe.get_by_bi_id(int(sla_probe))
         if target_address:

@@ -81,41 +81,35 @@ class Profile(BaseProfile):
     def convert_interface_name(self, s):
         if s.startswith("Slot0/"):
             return s[6:]
-        else:
-            return s
+        return s
 
     def get_pmib(self, v):
         if v["platform"].startswith("DES-1210-52"):
             if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.7"
-            elif v["version"].startswith("4"):
+            if v["version"].startswith("4"):
                 return "1.3.6.1.4.1.171.10.75.20.1"
-            else:
-                return "1.3.6.1.4.1.171.10.75.17"
+            return "1.3.6.1.4.1.171.10.75.17"
         if v["platform"].startswith("DES-1210-48"):
             return "1.3.6.1.4.1.171.10.76.11"
         if v["platform"].startswith("DES-1210-08P"):
             if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.13"
-            else:
-                return "1.3.6.1.4.1.171.10.75.14"
+            return "1.3.6.1.4.1.171.10.75.14"
         if v["platform"].startswith("DES-1210-28P"):
             if v["version"].startswith("2") or v["version"].startswith("3"):
                 return "1.3.6.1.4.1.171.10.75.6"
-            else:
-                return "1.3.6.1.4.1.171.10.75.19.1"
+            return "1.3.6.1.4.1.171.10.75.19.1"
         if v["platform"].startswith("DES-1210-28"):
             if v["version"].startswith("1") or v["version"].startswith("2"):
                 return "1.3.6.1.4.1.171.10.75.5"
-            else:
-                return "1.3.6.1.4.1.171.10.75.15"
+            return "1.3.6.1.4.1.171.10.75.15"
         if v["platform"].startswith("DES-1210"):
             return "1.3.6.1.4.1.171.10.75.7"
         r = self.platforms.get(v["platform"])
         if r:
             return r
-        else:
-            raise NotSupportedError()
+        raise NotSupportedError()
 
     rx_port = re.compile(
         r"^(?P<port>\d+)\s+"

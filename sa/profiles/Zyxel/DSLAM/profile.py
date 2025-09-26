@@ -26,8 +26,7 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("enet"):
             return "Enet" + interface[4:]
-        else:
-            return interface
+        return interface
 
     def setup_session(self, script):
         # Useful only on IES-1000

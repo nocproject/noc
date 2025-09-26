@@ -57,7 +57,7 @@ class NetworkInstanceDiscoveryJob(PeriodicJob):
         mac_iface_map = self.get_mac_neighbors()
         # Only Access and Chained interfaces exists, Filter DiscoveryID caches and links
         if not mac_iface_map:
-            return None
+            return
         bulk = []
         processed, objects = set(), set()
         # Processed Instances

@@ -220,12 +220,11 @@ class FirmwarePolicy(Document):
         return Label.get_effective_setting(label, setting="enable_firmwarepolicy")
 
     def get_affected_firmwares(self) -> List["Firmware"]:
-        r = [
+        return [
             fw
             for fw in Firmware.objects.filter(profile=self.firmware.profile)
             if self.is_fw_match(fw)
         ]
-        return r
 
     def get_affected_managed_objects_ids(self) -> List[int]:
         from noc.sa.models.managedobject import ManagedObject

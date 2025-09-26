@@ -236,13 +236,12 @@ class Prefix(NOCModel):
         """
         if self.is_ipv4:
             return bool(self.ipv6_transition)
-        else:
-            try:
-                # pylint: disable=pointless-statement
-                self.ipv4_transition  # noqa
-                return True
-            except Prefix.DoesNotExist:
-                return False
+        try:
+            # pylint: disable=pointless-statement
+            self.ipv4_transition  # noqa
+            return True
+        except Prefix.DoesNotExist:
+            return False
 
     @classmethod
     def get_parent(cls, vrf, afi, prefix) -> Optional["Prefix"]:
@@ -794,7 +793,7 @@ class Prefix(NOCModel):
         """Return effective Address Profile (first found upwards)"""
         if self.default_address_profile:
             return self.default_address_profile
-        elif self.profile.default_address_profile:
+        if self.profile.default_address_profile:
             return self.profile.default_address_profile
         if not self.parent:
             return None

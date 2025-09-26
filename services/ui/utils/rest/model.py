@@ -92,8 +92,7 @@ class ModelResourceAPI(BaseResourceAPI[T]):
         # Then apply sorting order
         qs = qs.order_by(*tuple(sort))
         # Finally, limit to selected frame
-        qs = qs[offset : offset + limit]
-        return qs
+        return qs[offset : offset + limit]
 
     def get_item(self, id: str, user: User) -> Optional[T]:
         return self.queryset(user).filter(pk=id).first()

@@ -66,7 +66,7 @@ class SNMPSuggestsDiagnostic:
         for c in checks:
             if c.skipped:
                 continue
-            elif c.error and c.error.message:
+            if c.error and c.error.message:
                 error = c.error.message
             if c.status:
                 return True, None, {}, []
@@ -136,7 +136,7 @@ class CLISuggestsDiagnostic:
         for c in checks:
             if c.skipped:
                 continue
-            elif c.error and c.error.message:
+            if c.error and c.error.message:
                 error = c.error.message
             if c.key not in r or not r[c.key].status:
                 r[c.key] = CheckStatus.from_result(c)

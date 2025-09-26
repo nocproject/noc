@@ -232,7 +232,7 @@ class WorkflowApplication(ExtDocApplication):
             for k in t:
                 if k in ("id", "bi_id"):
                     continue
-                elif k in ("from_state", "to_state"):
+                if k in ("from_state", "to_state"):
                     t[k] = state_names[t[k]]
                 elif k == "vertices":
                     t[k] = [TransitionVertex(x=vx["x"], y=vx["y"]) for vx in t[k]]

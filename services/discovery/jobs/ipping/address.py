@@ -38,8 +38,7 @@ class AddressCheck(BaseAddressCheck):
     def get_addresses(self):
         # vpn_id, address => DiscoveredAddress
         addresses = {}
-        addresses = self.apply_addresses(addresses, self.get_purgatorium_address())
-        return addresses
+        return self.apply_addresses(addresses, self.get_purgatorium_address())
 
     def get_purgatorium_address(self) -> List[DiscoveredAddress]:
         """

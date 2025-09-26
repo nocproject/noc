@@ -313,7 +313,7 @@ class MetricsService(FastAPIService):
             # Apply Rules after invalidate cache
             self.apply_rules(k, labels)
             return card
-        elif card:
+        if card:
             return card
         # Generate new CDAG
         cdag = self.get_scope_cdag(k)
@@ -482,7 +482,7 @@ class MetricsService(FastAPIService):
         )
         data = coll.find_one({"_id": str(s_id)})
         if not data:
-            return
+            return None
         return self.get_source_config(orjson.loads(data["data"]))
 
     def get_source(self, s_id) -> Optional[SourceConfig]:
@@ -521,7 +521,7 @@ class MetricsService(FastAPIService):
         if "service" in key_ctx:
             service = key_ctx["service"]
         if not source:
-            return
+            return None
         composed_metrics = []
         rules = source.rules or []
         metric_labels = []
@@ -589,7 +589,7 @@ class MetricsService(FastAPIService):
                     # Probe node, will be replaced to Card probes
                     nodes[node.node_id] = card.probes[node_id]
                     continue
-                elif (
+                if (
                     node.name == "probe"
                     and node_id not in card.probes
                     and "compose_" not in node_id
@@ -681,7 +681,7 @@ class MetricsService(FastAPIService):
                 probe = self.add_probe(n, k)
             if not probe:
                 continue
-            elif probe.name == ComposeProbeNode.name:  # Skip composed probe
+            if probe.name == ComposeProbeNode.name:  # Skip composed probe
                 probe.activate(tx, "time_delta", time_delta)
                 continue
             if time_delta is None:
@@ -704,7 +704,7 @@ class MetricsService(FastAPIService):
     @staticmethod
     def get_source_config(data):
         if "$deleted" in data:
-            return
+            return None
         items = []
         for item in data.get("items", []):
             items.append(
@@ -716,7 +716,7 @@ class MetricsService(FastAPIService):
                     rules=item.get("rules"),
                 )
             )
-        sc = SourceConfig(
+        return SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
             fm_pool=data["fm_pool"] if data["fm_pool"] else None,
@@ -728,7 +728,6 @@ class MetricsService(FastAPIService):
             meta=data.get("meta") if global_config.message.enable_metrics else None,
             # Append meta if enable messages
         )
-        return sc
 
     async def update_source_config(self, data: Dict[str, Any]) -> None:
         """
@@ -745,11 +744,10 @@ class MetricsService(FastAPIService):
         if sc_id not in self.sources_config:
             self.sources_config[sc_id] = sc
             return
-        elif sc == self.sources_config[sc_id]:
+        if sc == self.sources_config[sc_id]:
             self.logger.info("Source config is same. Continue")
             return
-        else:
-            self.sources_config[sc_id] = sc
+        self.sources_config[sc_id] = sc
         self.invalidate_card_config(sc)
         # diff = self.sources_config[sc_id].is_differ(sc)
         # if "condition" in diff:

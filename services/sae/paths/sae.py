@@ -79,10 +79,9 @@ class SAEAPI(JSONRPCAPI):
         sn = f"activator-{pool}"
         for i in range(config.sae.activator_resolution_retries):
             try:
-                svc = await self.service.dcs.resolve(
+                return await self.service.dcs.resolve(
                     sn, timeout=config.sae.activator_resolution_timeout
                 )
-                return svc
             except ResolutionError as e:
                 self.logger.info("Cannot resolve %s: %s", sn, e)
                 metrics["error", ("type", "resolve_activator")] += 1
@@ -92,9 +91,8 @@ class SAEAPI(JSONRPCAPI):
         svc = await self.resolve_activator(pool)
         if svc:
             return f"http://{svc}/api/activator/"
-        else:
-            metrics["error", ("type", "empty_activator_list_response")] += 1
-            return None
+        metrics["error", ("type", "empty_activator_list_response")] += 1
+        return None
 
     @api
     async def script(

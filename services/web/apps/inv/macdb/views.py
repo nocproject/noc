@@ -200,7 +200,7 @@ class MACApplication(ExtApplication):
                 {"success": False, "data": [], "message": "For history source, query is required"},
                 status=self.BAD_REQUEST,
             )
-        elif to_history:
+        if to_history:
             r = self.mac_history_query(
                 mac_query=mac_query,
                 managed_object=q.get("managed_object"),
@@ -249,8 +249,7 @@ class MACApplication(ExtApplication):
         sql = " ".join(sql)
         ch = connection()
         r = ch.execute(sql, return_raw=True)
-        r = orjson.loads(r)
-        return r
+        return orjson.loads(r)
 
     @view(url="^(?P<mac>[0-9A-F:]+)/$", method=["GET"], access="view", api=True)
     def api_get_maclog(self, request, mac):

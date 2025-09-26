@@ -38,7 +38,7 @@ class YandexGeocoder(BaseGeocoder):
         code, response = self.get("".join(url))
         if code == 429:
             raise GeoCoderLimitExceeded()
-        elif code != 200:
+        if code != 200:
             raise GeoCoderError(f"{code}: {response}")
         try:
             r = orjson.loads(response)

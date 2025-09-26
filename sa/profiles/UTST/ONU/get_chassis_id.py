@@ -28,10 +28,8 @@ class Script(BaseScript):
             fmac = match.group("mac")
             lmac = match.group("mac")
             return [{"first_chassis_mac": fmac, "last_chassis_mac": lmac}]
-        else:
-            cmd = self.cli("show interface")
-            macs = sorted(self.rx_mac2.findall(cmd))
-            return [
-                {"first_chassis_mac": f, "last_chassis_mac": t}
-                for f, t in self.macs_to_ranges(macs)
-            ]
+        cmd = self.cli("show interface")
+        macs = sorted(self.rx_mac2.findall(cmd))
+        return [
+            {"first_chassis_mac": f, "last_chassis_mac": t} for f, t in self.macs_to_ranges(macs)
+        ]

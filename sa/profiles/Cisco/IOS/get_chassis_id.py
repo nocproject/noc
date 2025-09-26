@@ -134,14 +134,14 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_platform_7200:
             return self.execute_7200()
-        elif self.is_isr_router:
+        if self.is_isr_router:
             return self.execute_c3900()
-        elif self.is_iosxe:
+        if self.is_iosxe:
             return self.execute_IOSXE()
-        elif self.is_cat6000 or self.is_platform_7600:
+        if self.is_cat6000 or self.is_platform_7600:
             return self.execute_cat6000()
-        elif self.is_cat4000:
+        if self.is_cat4000:
             return self.execute_cat4000()
-        elif self.is_small_cat or self.is_platform_me3x00x:
+        if self.is_small_cat or self.is_platform_me3x00x:
             return self.execute_small_cat()
         raise self.NotSupportedError()

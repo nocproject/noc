@@ -53,7 +53,7 @@ def get_medium_type(tokens):
         if t == "medium_type":
             if tokens[i + 1] == "fiber":
                 return "f"
-            elif tokens[i + 1] == "copper":
+            if tokens[i + 1] == "copper":
                 return "c"
     return ""
 

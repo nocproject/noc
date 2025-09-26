@@ -43,5 +43,4 @@ class Script(BaseScript):
             platform = match.group("platform")
         else:
             raise self.NotSupportedError(platform)
-        r = {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}
-        return r
+        return {"vendor": vendor, "platform": platform, "version": version, "attributes": {}}

@@ -144,7 +144,7 @@ class Span(object):
             # N.B. config.features.forensic may be changed during span
             forensic_logger.info("[<%s]", self.forensic_id)
         if not self.is_sampled:
-            return
+            return None
         if exc_type and not self.error_text:
             self.error_code = ERR_UNKNOWN
             self.error_text = str(exc_val).strip("\t").replace("\t", " ").replace("\n", " ")

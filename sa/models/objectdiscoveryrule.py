@@ -93,11 +93,11 @@ class MatchData(EmbeddedDocument):
         value = data[self.field]
         if self.op == "regex":
             return bool(re.match(self.value, value))
-        elif self.op == "contains":
+        if self.op == "contains":
             return value in self.value
-        elif self.op == "gte":
+        if self.op == "gte":
             return int(value) >= int(self.value)
-        elif self.op == "lte":
+        if self.op == "lte":
             return int(value) <= int(self.value)
         return value == self.value
 
@@ -124,7 +124,7 @@ class MatchCheck(EmbeddedDocument):
         value = checks[(self.check, self.port or 0)]
         if self.match_state == "ok" and not value:
             return False
-        elif self.match_state == "fail" and value:
+        if self.match_state == "fail" and value:
             return False
         return True
 
@@ -169,11 +169,11 @@ class MatchItem(EmbeddedDocument):
             return False
         if self.match_data and not data:
             return False
-        elif self.match_data and data:
+        if self.match_data and data:
             return all(d.is_match(data) for d in self.match_data)
         if self.match_checks and not checks:
             return False
-        elif self.match_checks and checks:
+        if self.match_checks and checks:
             return all(c.is_match(checks) for c in self.match_checks)
         return True
 
@@ -389,7 +389,7 @@ class ObjectDiscoveryRule(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -405,7 +405,6 @@ class ObjectDiscoveryRule(Document):
             "ip_scan_discovery_interval": self.ip_scan_discovery_interval,
             "default_action": self.default_action,
         }
-        return r
 
     def to_json(self) -> str:
         return to_json(
@@ -527,12 +526,12 @@ class ObjectDiscoveryRule(Document):
         for s in self.sources:
             if s.source != source:
                 continue
-            elif not remote_system and source != "etl":
+            if not remote_system and source != "etl":
                 r = s
                 break
-            elif s.remote_system == remote_system:
+            if s.remote_system == remote_system:
                 r = s
                 break
-            elif not s.remote_system:
+            if not s.remote_system:
                 r = s
         return r

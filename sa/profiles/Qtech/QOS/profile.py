@@ -48,5 +48,4 @@ class Profile(BaseProfile):
         match = self.rx_ifname.match(s)
         if match:
             return "port%d" % int(match.group("number"))
-        else:
-            return s
+        return s

@@ -28,5 +28,4 @@ class Profile(BaseProfile):
     def convert_interface_name(self, s):
         s = s.replace("Ethernet ", "Eth")
         s = s.replace("port-channel ", "Po")
-        s = s.replace("Vlan ", "vlan")
-        return s
+        return s.replace("Vlan ", "vlan")

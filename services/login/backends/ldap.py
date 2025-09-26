@@ -149,13 +149,12 @@ class LdapBackend(BaseAuthBackend):
         if not servers:
             self.logger.error("No active servers configured for domain '%s'", ldap_domain.name)
             return None
-        pool = ldap3.ServerPool(
+        return ldap3.ServerPool(
             servers,
             self.POOLING_STRATEGIES.get(ldap_domain.ha_policy),
             active=ldap_domain.get_pool_active(),
             exhaust=ldap_domain.get_pool_exhaust(),
         )
-        return pool
 
     def get_server_connection(
         self,
@@ -167,7 +166,7 @@ class LdapBackend(BaseAuthBackend):
         # Connect and bind
         if not user and not ldap_domain.bind_user:
             raise self.LoginError("Failed to bind to LDAP: Bind User is not set")
-        elif not user:
+        if not user:
             self.logger.debug("Use Bind User credential for connect")
             connect_kwargs = {"user": ldap_domain.bind_user, "password": ldap_domain.bind_password}
         else:

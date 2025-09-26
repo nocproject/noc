@@ -70,7 +70,7 @@ class ActionCommands(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -83,7 +83,6 @@ class ActionCommands(Document):
             "preference": self.preference,
             "timeout": self.timeout,
         }
-        return r
 
     def to_json(self) -> str:
         return to_json(

@@ -28,7 +28,7 @@ class PathItem(object):
     @classmethod
     def from_object(cls, o, c) -> "PathItem":
         stackable = o.get_data("stack", "stackable")
-        p = PathItem(
+        return PathItem(
             object=o,
             connection=c,
             context=o.model.cr_context,
@@ -37,7 +37,6 @@ class PathItem(object):
             stack_num=o.get_data("stack", "member") or 0 if stackable else None,
             # slot_num=o.get_data("slot", "number"),
         )
-        return p
 
     def __str__(self):
         return f"{self.c_name} ({self.context})"

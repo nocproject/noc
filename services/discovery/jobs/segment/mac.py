@@ -150,13 +150,12 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
                             # @todo lacp
                             self.confirm_link(mo, iface, ro, uplink)
                             break
-                        else:
-                            self.logger.info(
-                                "[%s] No uplinks. Cannot link to %s:%s. Topology may be imprecise",
-                                ro.name,
-                                mo.name,
-                                iface,
-                            )
+                        self.logger.info(
+                            "[%s] No uplinks. Cannot link to %s:%s. Topology may be imprecise",
+                            ro.name,
+                            mo.name,
+                            iface,
+                        )
 
     def get_uplink_weight(
         self, mo: ManagedObject, if_fib: Set[ManagedObject], segments: Set[NetworkSegment]

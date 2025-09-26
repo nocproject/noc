@@ -220,8 +220,7 @@ class Script(BaseScript):
 
     def split_interface(self, data):
         rx_spaces = re.compile(r"\s+")
-        result = rx_spaces.sub("", "".join(data)).split(",")
-        return result
+        return rx_spaces.sub("", "".join(data)).split(",")
 
     def reformat_vlans(self, data):
         rx_spaces = re.compile(r"\s+")

@@ -114,7 +114,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                 self.logger.info(
                     "[%s][%s] No neighbor found for %s. Cannot link.", name, iface.name, mac
                 )
-                return
+                return None
             self.logger.info("[%s][%s] Neighbor %s is found for %s", name, iface.name, ro.name, mac)
             chain += [ro]
         # Check all objects has different levels
@@ -130,7 +130,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                     ro.name,
                     level,
                 )
-                return
+                return None
             levels[level] = ro
         # Arrange objects
         chain = list(sorted(chain, key=lambda x: x.object_profile.level, reverse=True))
@@ -147,7 +147,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                     n.name,
                     len(ports[p][1]),
                 )
-                return
+                return None
             downlink = ports[p][1][0]
             if n not in ports:
                 self.logger.info(
@@ -156,7 +156,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                     iface.name,
                     n.name,
                 )
-                return
+                return None
             if len(ports[n][0]) != 1:
                 self.logger.info(
                     "[%s][%s] Neighbor %s must have exactly one direct uplink port. %d found. Cannot link.",
@@ -165,7 +165,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                     n.name,
                     len(ports[n][0]),
                 )
-                return
+                return None
             uplink = ports[n][0][0]
             links += [(downlink, uplink)]
         # Link all ports

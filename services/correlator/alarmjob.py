@@ -165,13 +165,13 @@ class AlarmJob(object):
                 if self.dry_run:
                     self.logger.debug("[%s] Action already executed. Next...", aa)
                 continue
-            elif aa.when == "on_end" and not is_end:
+            if aa.when == "on_end" and not is_end:
                 self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                 continue
-            elif aa.timestamp > now:
+            if aa.timestamp > now:
                 self.logger.info("Next action delayed: %s", aa.timestamp - now)
                 break
-            elif not aa.is_match(severity, now, self.alarm.ack_user):
+            if not aa.is_match(severity, now, self.alarm.ack_user):
                 # Set Skip (Condition)
                 self.logger.debug(
                     "[%s] Action severity condition [%s] not Match. Next...",
@@ -180,7 +180,7 @@ class AlarmJob(object):
                 )
                 aa.set_status(ActionResult(status=ActionStatus.SKIP))
                 continue
-            elif self.dry_run and self.static_delay:
+            if self.dry_run and self.static_delay:
                 time.sleep(self.static_delay)
             # if not aa.to_run(status, delay):
             #    continue
@@ -273,7 +273,7 @@ class AlarmJob(object):
         if not alarm:
             raise ValueError("Not Found alarm by id: %s", req.item.alarm)
         start = req.start_at or datetime.datetime.now()
-        job = AlarmJob(
+        return AlarmJob(
             # Job Context
             items=[Item.from_alarm(alarm)],
             name=str(req.name),
@@ -300,7 +300,6 @@ class AlarmJob(object):
             dry_run=dry_run,
             static_delay=static_delay,
         )
-        return job
 
     @classmethod
     def from_alarm(
@@ -321,7 +320,7 @@ class AlarmJob(object):
             static_delay: Delay over action (for tests)
         """
         # TTSystem
-        job = AlarmJob(
+        return AlarmJob(
             # Job Context
             # Item.from_alarm
             items=[Item.from_alarm(alarm, is_clear=is_clear)],
@@ -335,7 +334,6 @@ class AlarmJob(object):
             dry_run=dry_run,
             static_delay=static_delay,
         )
-        return job
 
     def save_state(self, dry_run: bool = False):
         from noc.fm.models.alarmjob import (
@@ -398,7 +396,7 @@ class AlarmJob(object):
                 items.append(Item(alarm=alarm, status=ItemStatus.from_alarm(alarm)))
         if not items:
             raise ValueError("Not Found alarm by id: %s", data["items"])
-        job = AlarmJob(
+        return AlarmJob(
             # Job Context
             items=items,
             name=str(data["name"]),
@@ -414,7 +412,6 @@ class AlarmJob(object):
             ctx_id=data.get("ctx_id"),
             telemetry_sample=data["telemetry_sample"],
         )
-        return job
 
     def is_allowed_action(self, action: AlarmAction, user: User):
         """"""
@@ -451,7 +448,7 @@ class AlarmJob(object):
             return job
         aa = ActiveAlarm.get_by_tt_id(tt_id)
         if not aa:
-            return
+            return None
         return AlarmJob.from_alarm(aa)
 
     @classmethod

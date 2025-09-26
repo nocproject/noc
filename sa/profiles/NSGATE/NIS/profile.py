@@ -26,6 +26,6 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("Link Aggregations"):
             return f"Po {interface[-1]}"
-        elif interface.startswith("2.5"):
+        if interface.startswith("2.5"):
             return f"Tw{interface.split()[-1]}"
         return self.convert_interface_name_cisco(interface)

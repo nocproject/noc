@@ -46,7 +46,7 @@ class BaseDashboard(object):
         """
         Render dashboard and return grafana's dashboard JSON
         """
-        return None
+        return
 
     def load_templates(self):
         """
@@ -92,5 +92,4 @@ class BaseDashboard(object):
             remove_letters = remove_letters or BAD_CHARS
             translate_table = {ord(char): translate_to for char in remove_letters}
             return data.translate(translate_table)
-        else:
-            return data
+        return data

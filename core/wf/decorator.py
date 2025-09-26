@@ -396,7 +396,7 @@ def wipe(model_id: str, oid):
     if not o:
         logger.info("[%s:%s] Object is not found. End..", model_id, oid)
         return
-    elif not o.state.is_wiping:
+    if not o.state.is_wiping:
         logger.info("[%s] Object state: %s is not enable wiping. End..", o, o.state)
         return
     logger.info("[%s] Delete...", oid)

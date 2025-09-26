@@ -18,5 +18,4 @@ class Script(BaseScript):
     def execute_snmp(self):
         platform = self.snmp.get("1.3.6.1.4.1.11863.10.1.10.3.0", cached=True)
         version = self.snmp.get("1.3.6.1.4.1.11863.10.1.10.5.0", cached=True)
-        result = {"vendor": "TPLink", "version": version, "platform": platform}
-        return result
+        return {"vendor": "TPLink", "version": version, "platform": platform}

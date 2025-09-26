@@ -22,5 +22,4 @@ class Script(BaseScript):
         for i in parse_table(v):
             if is_vlan(i[1]) and not int(i[1]) in a:
                 a += [int(i[1])]
-        r = [{"vlan_id": int(i)} for i in a]
-        return r
+        return [{"vlan_id": int(i)} for i in a]

@@ -42,6 +42,6 @@ class Profile(BaseProfile):
         match = self.rx_discrete_name.findall(s)
         if match:
             return "%s %s" % (self.SENSOR_NAME.get(int(s.split("/")[0])), s.split("/")[1])
-        elif is_int(s):
+        if is_int(s):
             return self.SENSOR_NAME.get(int(s))
         return s

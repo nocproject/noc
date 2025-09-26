@@ -168,20 +168,20 @@ class Script(BaseScript):
         for block in self.rx_vlan_splitter.split(switchports):
             if not block:
                 continue
-            elif self.rx_vlan_match.match(block):
+            if self.rx_vlan_match.match(block):
                 vid = int(self.rx_vlan_match.match(block).group("vid"))
                 continue
-            elif vid is None:
+            if vid is None:
                 continue
             key = None
             for switchport in self.rx_vlan_switch_splitter.split(block):
                 if switchport.startswith("UT"):
                     key = "untagged"
                     continue
-                elif switchport.startswith("TG"):
+                if switchport.startswith("TG"):
                     key = "tagged"
                     continue
-                elif key is None:
+                if key is None:
                     continue
                 for match in self.rx_iface_find.finditer(switchport):
                     # if key not in r[match.group("iface")]:

@@ -207,19 +207,18 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.startswith("lo"):
             return "loopback"
-        elif name.startswith(("fxp", "me")):
+        if name.startswith(("fxp", "me")):
             return "management"
-        elif name.startswith(("ae", "reth", "fab", "swfab")):
+        if name.startswith(("ae", "reth", "fab", "swfab")):
             return "aggregated"
-        elif name.startswith(("vlan", "vme")):
+        if name.startswith(("vlan", "vme")):
             return "SVI"
-        elif name.startswith("irb"):
+        if name.startswith("irb"):
             return "SVI"
-        elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
+        if name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
             return "physical"
-        elif name.startswith(("gr", "ip", "st")):
+        if name.startswith(("gr", "ip", "st")):
             return "tunnel"
-        elif name.startswith("em"):
+        if name.startswith("em"):
             return "management"
-        else:
-            return "unknown"
+        return "unknown"

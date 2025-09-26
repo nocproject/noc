@@ -53,10 +53,9 @@ class ASSet(NOCModel):
     def member_list(self):
         if self.members is None:
             return []
-        m = sorted(
+        return sorted(
             self.members.replace(",", " ").replace("\n", " ").replace("\r", " ").upper().split()
         )
-        return m
 
     def get_rpsl(self):
         sep = "remark: %s" % ("-" * 72)

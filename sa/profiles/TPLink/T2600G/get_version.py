@@ -26,13 +26,12 @@ class Script(BaseScript):
         platform, version = v.split()
         version = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.6.0")
         serial = self.snmp.get("1.3.6.1.4.1.11863.6.1.1.8.0")
-        r = {
+        return {
             "vendor": "TPLink",
             "platform": platform,
             "version": version,
             "attributes": {"Serial Number": serial},
         }
-        return r
 
     def execute_cli(self):
         ver = self.cli("show system-info", cached=True)
@@ -41,6 +40,4 @@ class Script(BaseScript):
         match = rx_version.search(ver)
         version = match.group("version")
 
-        r = {"vendor": "TPLink", "platform": platform, "version": version}
-
-        return r
+        return {"vendor": "TPLink", "platform": platform, "version": version}

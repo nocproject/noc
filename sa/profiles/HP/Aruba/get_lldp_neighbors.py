@@ -119,7 +119,7 @@ class Script(BaseScript):
                 continue
             if int(port["neighbors_count"]) == 0:
                 continue
-            elif int(port["neighbors_count"]) == 1:
+            if int(port["neighbors_count"]) == 1:
                 neighbors[port["local_interface"]].append(self.parse_port_neighbor(li))
                 continue
             # Multiple entries

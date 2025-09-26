@@ -123,7 +123,7 @@ class Script(BaseScript):
         if platform is None:
             self.logger.info("Unknown platform OID: %s" % oid)
             raise NotImplementedError("Unknown platform OID: %s" % oid)
-        elif oid == "1.3.6.1.4.1.27514.1.1.1.310":
+        if oid == "1.3.6.1.4.1.27514.1.1.1.310":
             # Both QSW-3580-28T-AC and QSW-3470-28T-AC has same OID
             temp = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1])
             if temp is not None and temp != "QSW-3580-28T-AC":
@@ -223,9 +223,8 @@ class Script(BaseScript):
                     "Serial Number": serial,
                 },
             }
-        else:
-            # For QSW-3470-10T  3.0.1-R1-BETA3 fw
-            r = self.get_info()
-            if r:
-                return r
-            raise NotImplementedError("Unknown platform")
+        # For QSW-3470-10T  3.0.1-R1-BETA3 fw
+        r = self.get_info()
+        if r:
+            return r
+        raise NotImplementedError("Unknown platform")

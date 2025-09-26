@@ -24,14 +24,13 @@ class Script(BaseScript):
         platform = "%s.%s" % (oid.split(" ")[0].strip(), oid.split(" ")[1].strip())
         version = oid.split(" ")[2].strip()
 
-        result = {
+        return {
             "vendor": "Rotek",
             "version": version,
             "platform": platform,
             # "attributes": {
             # "HW version": hwversion}
         }
-        return result
 
     def execute_cli(self, **kwargs):
         try:

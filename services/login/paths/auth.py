@@ -158,11 +158,11 @@ async def auth_authorization(
             return await auth_authorization_basic(
                 request=request, data=data, pinned_user=pinned_user
             )
-        elif schema == "Bearer":
+        if schema == "Bearer":
             return await auth_authorization_bearer(
                 request=request, data=data, svc=svc, pinned_user=pinned_user
             )
-        elif schema == "Apikey":
+        if schema == "Apikey":
             return await auth_private_token(
                 request=request, private_token=data, pinned_user=pinned_user
             )

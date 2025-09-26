@@ -37,8 +37,7 @@ class TTCard(BaseCard):
             tt["tt_system_name"] = tts_name
             tt["full_id"] = id
             return tt
-        else:
-            return None
+        return None
 
     def get_data(self):
         r = self.object.copy()

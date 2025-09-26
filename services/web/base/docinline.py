@@ -158,8 +158,7 @@ class DocInline(object):
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
-            else:
-                return f
+            return f
 
         q = reduce(
             lambda x, y: x | Q(**{get_q(y): query}),
@@ -178,8 +177,7 @@ class DocInline(object):
         """
         if query and self.query_fields:
             return self.model.objects.filter(self.get_Q(request, query))
-        else:
-            return self.model.objects.all()
+        return self.model.objects.all()
 
     def clean(self, data, parent):
         """
@@ -241,18 +239,18 @@ class DocInline(object):
                 else:
                     nq[None] = [extra_where]
                 continue
-            elif lt and hasattr(self, "lookup_%s" % lt):
+            if lt and hasattr(self, "lookup_%s" % lt):
                 # Custom lookup
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
-            elif np in self.fk_fields and lt:
+            if np in self.fk_fields and lt:
                 # dereference
                 try:
                     nq[np] = self.fk_fields[np].objects.get(**{lt: v})
                 except self.fk_fields[np].DoesNotExist:
                     nq[np] = 0  # False search
                 continue
-            elif np in self.clean_fields:  # @todo: Check for valid lookup types
+            if np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
                 # Write back
             nq[p] = v

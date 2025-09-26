@@ -90,22 +90,20 @@ class Script(BaseScript):
     def execute_cli(self, **kwargs):
         if self.is_5350:
             return self.execute_vlans()
-        elif self.is_vlan_switch:
+        if self.is_vlan_switch:
             return self.execute_vlan_switch()
-        elif self.is_ubr:
+        if self.is_ubr:
             return self.execute_ubr()
-        else:
-            vlans = None
-            for cmd in ("show vlan brief", "show vlan-switch brief"):
-                try:
-                    vlans = self.cli(cmd)
-                    break
-                except self.CLISyntaxError:
-                    continue
-            if vlans:
-                return self.extract_vlans(vlans)
-            else:
-                raise self.NotSupportedError
+        vlans = None
+        for cmd in ("show vlan brief", "show vlan-switch brief"):
+            try:
+                vlans = self.cli(cmd)
+                break
+            except self.CLISyntaxError:
+                continue
+        if vlans:
+            return self.extract_vlans(vlans)
+        raise self.NotSupportedError
 
     def execute_snmp(self, **kwargs):
         r = []

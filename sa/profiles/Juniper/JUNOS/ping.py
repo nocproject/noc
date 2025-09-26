@@ -51,6 +51,5 @@ class Script(BaseScript):
                 "avg": match.group("avg"),
                 "max": match.group("max"),
             }
-        else:
-            match = self.rx_result1.search(s)
-            return {"success": match.group("success"), "count": match.group("count")}
+        match = self.rx_result1.search(s)
+        return {"success": match.group("success"), "count": match.group("count")}

@@ -42,10 +42,9 @@ class Script(BaseScript):
         ):  # IF-MIB
             if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
                 continue
-            else:
-                if n[:6] == "Slot0/":
-                    n = n[6:]
-                admin_status.update({n: int(s) == 1})
+            if n[:6] == "Slot0/":
+                n = n[6:]
+            admin_status.update({n: int(s) == 1})
         mac = {}
         for i, m in self.snmp.join_tables(
             mib["IF-MIB::ifName"], mib["IF-MIB::ifPhysAddress"]

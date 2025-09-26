@@ -169,7 +169,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
             nv_label = str(nv)
         if field_name == "effective_labels" and nv and ov and set(nv).difference(set(ov)):
             return None
-        elif str(ov or None) == str(nv or None):
+        if str(ov or None) == str(nv or None):
             return None
         return ChangeField(
             field=field_name,

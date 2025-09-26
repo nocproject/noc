@@ -22,5 +22,4 @@ class Script(BaseScript):
 
     def execute(self):
         match = self.rx_ver.search(self.cli("show version"))
-        r = {"vendor": "Iskratel", "platform": "VOIP", "version": match.group("version")}
-        return r
+        return {"vendor": "Iskratel", "platform": "VOIP", "version": match.group("version")}

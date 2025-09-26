@@ -53,20 +53,19 @@ class Script(BaseScript):
             self.logger.debug("Return: %s, %s, %s", type, number, part_no)
             if not part_no:
                 continue
-            else:
-                vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [
-                    {
-                        "type": type,
-                        "number": number,
-                        "vendor": vendor,
-                        "serial": match.group("serial"),
-                        "description": match.group("descr"),
-                        "part_no": [part_no],
-                        "revision": match.group("vid"),
-                        "builtin": False,
-                    }
-                ]
+            vendor = "CISCO" if "NoName" not in part_no else "NONAME"
+            objects += [
+                {
+                    "type": type,
+                    "number": number,
+                    "vendor": vendor,
+                    "serial": match.group("serial"),
+                    "description": match.group("descr"),
+                    "part_no": [part_no],
+                    "revision": match.group("vid"),
+                    "builtin": False,
+                }
+            ]
         # Reorder chassis
         if objects[-1]["type"] == "CHASSIS":
             objects = [objects[-1]] + objects[:-1]
@@ -82,13 +81,13 @@ class Script(BaseScript):
                 return "RSP", match.group("number"), pid
             number = name.split()[1].split("/")[1][3]
             return "RSP", number, pid
-        elif "A9K-MODULEv" in pid:
+        if "A9K-MODULEv" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
-        elif "MOD" in pid:
+        if "MOD" in pid:
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
-        elif (
+        if (
             (
                 "LC" in descr
                 or "Line Card" in descr
@@ -104,10 +103,10 @@ class Script(BaseScript):
                 return "MOD", match.group("number"), pid
             number = name.split()[1].split("/")[1]
             return "MOD", number, pid
-        elif "MPA" in pid:
+        if "MPA" in pid:
             number = name.split()[1].split("/")[-1]
             return "MPA", number, pid
-        elif "XFP" in pid or "GLC" in pid or "CFP-" in pid or "SFP" in descr:
+        if "XFP" in pid or "GLC" in pid or "CFP-" in pid or "SFP" in descr:
             try:
                 name = name.split()[2]
             except IndexError:
@@ -118,13 +117,13 @@ class Script(BaseScript):
                 if not pid:
                     return None, None, None
             return "XCVR", number, pid
-        elif "FAN" in pid:
+        if "FAN" in pid:
             match = self.rx_new_type.search(name)
             if match:
                 return "FAN", match.group("number"), pid
             number = name.split()[1].split("/")[1][2]
             return "FAN", number, pid
-        elif "Power Module" in descr or "Power Supply" in descr or "AC Power" in descr:
+        if "Power Module" in descr or "Power Supply" in descr or "AC Power" in descr:
             match = self.rx_new_type.search(name)
             if match:
                 return "PWR", match.group("number"), pid
@@ -134,12 +133,12 @@ class Script(BaseScript):
             else:  # 0/PM0/SP
                 number = numbers[1][2:]
             return "PWR", number, pid
-        elif "Power Tray" in descr:
+        if "Power Tray" in descr:
             match = self.rx_new_type.search(name)
             return "PT", match.group("number"), pid
-        elif name.startswith("chassis"):
+        if name.startswith("chassis"):
             return "CHASSIS", None, pid
-        elif name.startswith("Rack") and (
+        if name.startswith("Rack") and (
             "Slot Single Chassis" in descr or self.rx_new_chass.search(descr)
         ):
             return "CHASSIS", None, pid

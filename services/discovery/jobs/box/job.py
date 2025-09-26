@@ -157,9 +157,8 @@ class BoxDiscoveryJob(MODiscoveryJob):
     def get_interval(self):
         if self.object:
             return self.object.object_profile.box_discovery_interval
-        else:
-            # Dereference error
-            return random.randint(270, 330)
+        # Dereference error
+        return random.randint(270, 330)
 
     def get_failed_interval(self):
         return self.object.object_profile.box_discovery_failed_interval

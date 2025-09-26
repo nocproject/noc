@@ -128,8 +128,7 @@ class Script(BaseScript):
                 # Need more examples
                 if self.is_beta:
                     return self.rx_lldp.findall(v)
-                else:
-                    return self.rx_enabled.findall(v)
+                return self.rx_enabled.findall(v)
         except self.CLISyntaxError:
             return []
         return []

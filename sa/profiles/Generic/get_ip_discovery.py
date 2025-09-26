@@ -65,7 +65,7 @@ class Script(BaseScript):
                     continue
                 if vrf and x["interface"] not in vrfs[v]["interfaces"]:
                     continue
-                elif not vrf and x["interface"] in vrf_iface_map:
+                if not vrf and x["interface"] in vrf_iface_map:
                     continue
                 a += [{"ip": x["ip"], "afi": "4", "mac": x["mac"], "interface": x["interface"]}]
             # Process NBD

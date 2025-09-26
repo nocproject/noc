@@ -24,6 +24,5 @@ class Script(BaseScript):
         v = self.cli("show version")
         match = self.rx_hostname.search(v)
         if match:
-            fqdn = match.group("hostname")
-            return fqdn
+            return match.group("hostname")
         raise NotImplementedError

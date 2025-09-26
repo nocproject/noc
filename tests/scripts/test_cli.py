@@ -108,8 +108,7 @@ def test_cli(proto, host, port, user, password, args, xcls):
         with pytest.raises(xcls):
             scr.run()
         return
-    else:
-        result = scr.run()
+    result = scr.run()
     # Perform checks
     assert result
     assert result["motd"] == result["cat-motd"]

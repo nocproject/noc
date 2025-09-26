@@ -52,8 +52,7 @@ class Profile(BaseProfile):
             if "Te" in match.group("type") or "ten" in match.group("type"):
                 return "Te1/0/%s" % int(match.group("number"))
             return "Gi1/0/%d" % int(match.group("number"))
-        else:
-            return s
+        return s
 
     INTERFACE_TYPES = {
         "gi": "physical",  # gigabitethernet

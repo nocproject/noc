@@ -514,8 +514,7 @@ class ObjectModel(Document):
         if self.get_model_connection(name) is None:
             # Check twinax virtual connection
             return self.get_data("twinax", "twinax") and self.get_data("twinax", "alias") == name
-        else:
-            return True
+        return True
 
     def has_connection_cross(self, name: str) -> bool:
         if self.get_model_connection(name).cross_direction:
@@ -591,8 +590,7 @@ class ObjectModel(Document):
                 if m:
                     return m
             return None
-        else:
-            return cls._get_model(vendor, part_no)
+        return cls._get_model(vendor, part_no)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_model_cache"), lock=lambda _: id_lock)

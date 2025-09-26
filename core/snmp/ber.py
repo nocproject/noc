@@ -139,13 +139,13 @@ class BERDecoder(object):
             if f & 0x40:
                 p = -p  # 8.5.6.1
             return p * pow(base, e)
-        elif f & 0xC0 == 0:  # Decimal encoding, 8.5.7
+        if f & 0xC0 == 0:  # Decimal encoding, 8.5.7
             try:
                 if f & 0x3F == 0x01:  # ISO 6093 NR1 form
                     return float(msg[1:])  # 456
-                elif f & 0x3F == 0x02:  # ISO 6093 NR2 form
+                if f & 0x3F == 0x02:  # ISO 6093 NR2 form
                     return float(msg[1:])  # 4.56
-                elif f & 0x3F == 0x03:  # ISO 6093 NR3 form
+                if f & 0x3F == 0x03:  # ISO 6093 NR3 form
                     return float(msg[1:])  # 0123e456
             except ValueError:
                 raise ValueError("Invalid REAL representation: %s" % msg[1:])
@@ -437,11 +437,11 @@ class BEREncoder(object):
         """
         if data == self.INF:
             return self.encode_tlv(9, True, "\x40")
-        elif data == self.NINF:
+        if data == self.NINF:
             return self.encode_tlv(9, True, "\x41")
-        elif math.isnan(data):
+        if math.isnan(data):
             return self.encode_tlv(9, True, "\x42")
-        elif data == self.MZERO:
+        if data == self.MZERO:
             return self.encode_tlv(9, True, "\x43")
         # Normalize
         e = 0

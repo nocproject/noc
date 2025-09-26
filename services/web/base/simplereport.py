@@ -162,8 +162,7 @@ class TextSection(ReportSection):
             return []
         if isinstance(self.text, str):
             return [self.text]
-        else:
-            return self.text
+        return self.text
 
     def to_xml(self):
         """
@@ -268,10 +267,9 @@ class TableColumn(ReportNode):
         """
         if s is None or s == "":
             return ""
-        elif not self.format:
+        if not self.format:
             return s
-        else:
-            return self.format(s)
+        return self.format(s)
 
     def to_xml(self):
         """
@@ -410,8 +408,7 @@ class TableColumn(ReportNode):
         """
         if f:
             return SafeString("<i class='fa fa-check' style='color:#2ecc71'></i>")
-        else:
-            return SafeString("<i class='fa fa-times' style='color:#c0392b'></i>")
+        return SafeString("<i class='fa fa-times' style='color:#c0392b'></i>")
 
     def f_url(self, url):
         """

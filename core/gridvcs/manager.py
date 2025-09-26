@@ -81,8 +81,7 @@ class GridVCSObjectProxy(object):
         return self.get_gridvcs().get(self.id)
 
     def write(self, data):
-        r = self.get_gridvcs().put(self.id, data)
-        return r
+        return self.get_gridvcs().put(self.id, data)
 
     def delete(self):
         return self.get_gridvcs().delete(self.id)

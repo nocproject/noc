@@ -114,13 +114,12 @@ class WhoisCache(object):
                 for p, m in optimize_prefix_list_maxlen(prefixes)
                 if p.mask <= max_len
             ]
-        else:
-            # Optimization is disabled
-            return [
-                (x.prefix, x.mask, x.mask)
-                for x in sorted([IP.prefix(p) for p in prefixes])
-                if x.mask <= max_len
-            ]
+        # Optimization is disabled
+        return [
+            (x.prefix, x.mask, x.mask)
+            for x in sorted([IP.prefix(p) for p in prefixes])
+            if x.mask <= max_len
+        ]
 
     @classmethod
     def cone_power(cls, as_set, mask):

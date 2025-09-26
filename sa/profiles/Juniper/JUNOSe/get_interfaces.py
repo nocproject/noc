@@ -184,8 +184,7 @@ class Script(BaseScript):
 
         if changed:
             return ifaces
-        else:
-            return []
+        return []
 
     def execute_cli(self, interface=None):
         v = self.cli("show running-configuration | include interface")

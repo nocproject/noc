@@ -33,10 +33,9 @@ def get_path(path):
     def q(n):
         if not isinstance(n.token, type):
             return n.token
-        elif n.name:
+        if n.name:
             return "<%s>" % n.name
-        else:
-            return "ANY"
+        return "ANY"
 
     return " ".join(q(p) for p in path)
 

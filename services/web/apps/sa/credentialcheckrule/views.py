@@ -111,7 +111,7 @@ class CredentialCheckRuleApplication(ExtDocApplication):
             return q
         mo = ManagedObject.objects.filter(id=int(mo)).values("effective_labels").first()
         if not mo:
-            return
+            return None
         q["id__in"] = self.get_affected_rules(mo["effective_labels"])
         return q
 

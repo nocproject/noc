@@ -105,7 +105,7 @@ class PredicateTransformer(ast.NodeTransformer):
             _input = ast.Name(id="_input", ctx=ast.Load())
         if isinstance(node.op, ast.And):
             return get_and_call_chain(list(reversed(node.values)))
-        elif isinstance(node.op, ast.Or):
+        if isinstance(node.op, ast.Or):
             return get_or_call_chain(node.values)
         return node
 

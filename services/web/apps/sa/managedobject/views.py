@@ -600,16 +600,16 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+            if name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
-            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
+            if name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
-            elif name == "periodic" and not (
+            if name == "periodic" and not (
                 getattr(o.object_profile, f"enable_{name}_discovery")
                 or getattr(o.object_profile, "enable_metrics")
             ):
                 continue
-            elif not getattr(o.object_profile, f"enable_{name}_discovery", None):
+            if not getattr(o.object_profile, f"enable_{name}_discovery", None):
                 continue  # Disabled by profile
             Job.submit("discovery", jcls, key=o.id, pool=o.pool.name, shard=shard)
         return {"success": True}
@@ -625,16 +625,16 @@ class ManagedObjectApplication(ExtModelApplication):
         for name, jcls in self.DISCOVERY_JOBS:
             if name not in r:
                 continue
-            elif name == "box" and Interaction.BoxDiscovery not in o.interactions:
+            if name == "box" and Interaction.BoxDiscovery not in o.interactions:
                 continue
-            elif name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
+            if name == "periodic" and Interaction.PeriodicDiscovery not in o.interactions:
                 continue
-            elif name == "periodic" and not (
+            if name == "periodic" and not (
                 getattr(o.object_profile, f"enable_{name}_discovery")
                 or getattr(o.object_profile, "enable_metrics")
             ):
                 continue
-            elif not getattr(o.object_profile, f"enable_{name}_discovery"):
+            if not getattr(o.object_profile, f"enable_{name}_discovery"):
                 continue  # Disabled by profile
             Job.remove("discovery", jcls, key=o.id, pool=o.pool.name)
         return {"success": True}
@@ -663,8 +663,7 @@ class ManagedObjectApplication(ExtModelApplication):
                     s = ""
                 style_cache[profile.id] = s
                 return s
-            else:
-                return ""
+            return ""
 
         def get_link(i):
             link = i.link
@@ -1010,8 +1009,7 @@ class ManagedObjectApplication(ExtModelApplication):
         d = get_db()["noc.joblog"].find_one({"_id": key})
         if d and d["log"]:
             return self.render_plain_text(zlib.decompress(smart_bytes((d["log"]))))
-        else:
-            return self.render_plain_text("No data")
+        return self.render_plain_text("No data")
 
     @view(url=r"^(?P<id>\d+)/interactions/$", method=["GET"], access="interactions", api=True)
     def api_interactions(self, request, id):

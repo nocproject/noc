@@ -251,5 +251,4 @@ class Script(BaseScript):
     def get_chassis_sensors(self):
         if self.is_4250lsr:
             return self.get_chassis_sensors_4250lsr()
-        else:
-            return self.get_chassis_sensors_default()
+        return self.get_chassis_sensors_default()

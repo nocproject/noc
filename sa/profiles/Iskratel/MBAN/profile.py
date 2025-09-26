@@ -80,6 +80,5 @@ class Profile(BaseProfile):
         c = self.rx_board.findall(script.cli("show board", cached=True))
         if c:
             return c[0]
-        else:
-            script.logger.warning("Board is not match")
-            return 0, "", "", "", "", ""
+        script.logger.warning("Board is not match")
+        return 0, "", "", "", "", ""

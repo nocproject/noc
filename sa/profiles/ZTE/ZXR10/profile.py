@@ -38,26 +38,25 @@ class Profile(BaseProfile):
         if ifnum.isdigit():
             # SNMP: port 25
             return "physical"
-        elif name.startswith("gei"):
+        if name.startswith("gei"):
             return "physical"
-        elif name.startswith("xgei"):
+        if name.startswith("xgei"):
             return "physical"
-        elif name.startswith("smartgroup"):
+        if name.startswith("smartgroup"):
             return "aggregated"
-        elif name.startswith("lo"):
+        if name.startswith("lo"):
             return "loopback"
-        elif name.startswith("vlan"):
+        if name.startswith("vlan"):
             return "SVI"
-        elif name.startswith("null"):
+        if name.startswith("null"):
             return "null"
-        else:
-            raise Exception("Cannot detect interface type for %s" % name)
+        raise Exception("Cannot detect interface type for %s" % name)
 
         return "other"
 
     def convert_interface_name(self, s):
         if s.count(" "):
             return s.split(" ")[0]
-        elif s.startswith("port-"):
+        if s.startswith("port-"):
             return s.split("-", 1)[-1]
         return s

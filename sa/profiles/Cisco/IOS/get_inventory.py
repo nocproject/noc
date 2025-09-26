@@ -168,20 +168,18 @@ class Script(BaseScript):
                         "builtin": False,
                     }
                 ]
-            else:
-                match = self.rx_ver1.search(c)
-                if match:
-                    return [
-                        {
-                            "type": "CHASSIS",
-                            "vendor": "CISCO",
-                            "part_no": [match.group("part_no")],
-                            "revision": match.group("revision"),
-                            "builtin": False,
-                        }
-                    ]
-                else:
-                    raise self.NotSupportedError()
+            match = self.rx_ver1.search(c)
+            if match:
+                return [
+                    {
+                        "type": "CHASSIS",
+                        "vendor": "CISCO",
+                        "part_no": [match.group("part_no")],
+                        "revision": match.group("revision"),
+                        "builtin": False,
+                    }
+                ]
+            raise self.NotSupportedError()
         return objects
 
     def get_transceivers(self, cmd):
@@ -192,26 +190,23 @@ class Script(BaseScript):
             for s in i.split("\n"):
                 if not s or "BaseTX" in s or s.startswith("Po") or "No Transceiver" in s:
                     continue
-                else:
-                    t_num = s.split()[0].split("/")[-1]
-                    t_vendor, t_sn, t_rev, pid = self.get_idprom(
-                        s.split()[0], s.split()[-1].upper()
-                    )
-                    if not pid:
-                        self.logger.debug("PID on Transiever: :%s is not set. Skipping...", s)
-                        continue
-                    objects += [
-                        {
-                            "type": "XCVR",
-                            "number": t_num,
-                            "vendor": t_vendor,
-                            "serial": t_sn,
-                            "description": s.split()[-1] + " Transceiver",
-                            "part_no": [pid],
-                            "revision": t_rev,
-                            "builtin": False,
-                        }
-                    ]
+                t_num = s.split()[0].split("/")[-1]
+                t_vendor, t_sn, t_rev, pid = self.get_idprom(s.split()[0], s.split()[-1].upper())
+                if not pid:
+                    self.logger.debug("PID on Transiever: :%s is not set. Skipping...", s)
+                    continue
+                objects += [
+                    {
+                        "type": "XCVR",
+                        "number": t_num,
+                        "vendor": t_vendor,
+                        "serial": t_sn,
+                        "description": s.split()[-1] + " Transceiver",
+                        "part_no": [pid],
+                        "revision": t_rev,
+                        "builtin": False,
+                    }
+                ]
             return objects
         except self.CLISyntaxError:
             pass
@@ -258,8 +253,7 @@ class Script(BaseScript):
                 else:
                     pid = match.group("t_part_no").strip()
                 return t_vendor, t_sn, t_rev, pid
-            else:
-                return None, None, None, None
+            return None, None, None, None
         except self.CLISyntaxError:
             return None, None, None, None
 
@@ -272,17 +266,17 @@ class Script(BaseScript):
                 # Cisco ISR series not have PID for motherboard
                 if "1921" in name:
                     return "MOTHERBOARD", None, "CISCO1921-MB"
-                elif "2921" in name:
+                if "2921" in name:
                     return "MOTHERBOARD", None, "CISCO2921-MB"
-                elif "2811" in name:
+                if "2811" in name:
                     return "MOTHERBOARD", None, "CISCO2811-MB"
-                elif "2821" in name:
+                if "2821" in name:
                     return "MOTHERBOARD", None, "CISCO2821-MB"
-                elif "2851" in name:
+                if "2851" in name:
                     return "MOTHERBOARD", None, "CISCO2851-MB"
-                elif "2901" in name:
+                if "2901" in name:
                     return "MOTHERBOARD", None, "CISCO2901-MB"
-                elif "2911" in name:
+                if "2911" in name:
                     return "MOTHERBOARD", None, "CISCO2911-MB"
             pid = ""
             match = self.rx_slot_id.search(name)
@@ -335,27 +329,25 @@ class Script(BaseScript):
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
                     return "XCVR", number, None
-                else:
-                    return "XCVR", number, pid
-            else:
-                # Normalization of pids "GBIC_LX/LH/BX"
-                if pid.startswith("GBIC_") and (
-                    "gigabit" in descr.lower() or "gigabit" in name.lower()
-                ):
-                    pid = self.get_transceiver_pid("1000BASE" + pid[5:])
                 return "XCVR", number, pid
-        elif "Motherboard" in name or "motherboard" in name or "Mother board" in name:
+            # Normalization of pids "GBIC_LX/LH/BX"
+            if pid.startswith("GBIC_") and (
+                "gigabit" in descr.lower() or "gigabit" in name.lower()
+            ):
+                pid = self.get_transceiver_pid("1000BASE" + pid[5:])
+            return "XCVR", number, pid
+        if "Motherboard" in name or "motherboard" in name or "Mother board" in name:
             # Motherboard for Cisco 2800, 2900
             if pid == "CISCO2801":
                 return "MOTHERBOARD", None, "CISCO2801-MB"
-            elif "1921" in name:
+            if "1921" in name:
                 return "MOTHERBOARD", None, "CISCO1921-MB"
             return "MOTHERBOARD", None, pid
-        elif pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name):
+        if pid.startswith("WS-X4920") or (pid.startswith("WS-C4900M") and "Linecard" in name):
             if pid == "WS-C4900M":
                 pid = "WS-C4900M-LC"  # First builtin linecard
             return "LINECARD", self.slot_id, pid
-        elif (
+        if (
             (lo == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
             and not pid.startswith("WS-CAC-")
             and not pid.endswith("-MB")
@@ -374,7 +366,7 @@ class Script(BaseScript):
                 pid = descr
             if is_int(name):  # Stacking
                 return "CHASSIS", int(name), pid
-            elif self.rx_stack_switch.match(name):
+            if self.rx_stack_switch.match(name):
                 # NAME: "Switch 1", DESCR: "WS-C3850-24XS-S"
                 # PID: WS-C3850-24XS-S   , VID: V02
                 return "CHASSIS", int(self.rx_stack_switch.match(name).group(1)), pid
@@ -383,10 +375,10 @@ class Script(BaseScript):
                 if match:
                     pid = match.group("part_no")
             return "CHASSIS", self.slot_id, pid
-        elif ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
+        if ("SUP" in pid or "S2U" in pid) and "supervisor" in descr:
             # Sup2
             return "SUP", self.slot_id, pid
-        elif name.startswith("module ") or name.startswith("SPA subslot "):
+        if name.startswith("module ") or name.startswith("SPA subslot "):
             # Linecards or supervisors
             if pid.startswith("RSP") or (
                 (pid.startswith("WS-SUP") or pid.startswith("VS-S"))
@@ -411,21 +403,20 @@ class Script(BaseScript):
                 if match:
                     return "IO", match.group("slot_id"), pid
                 return "IO", self.slot_id, pid
-            else:
-                if pid == "N/A" and "Gibraltar,G-20" in descr:
-                    # 2-port 100BASE-TX Fast Ethernet port adapter
-                    pid = "CISCO7100-MB"
-                if pid in ("ASR1001", "ASR1001-X"):
-                    if "Route Processor" in descr:
-                        return "RP", self.slot_id, pid + "-RP"
-                    elif "SPA Interface Processor" in descr:
-                        return "SIP", self.slot_id, pid + "-SIP"
-                    elif "Shared Port Adapter" in descr:
-                        return "SPA", self.slot_id, pid + "-SPA"
-                    elif "Embedded Services Processor" in descr:
-                        return "ESP", self.slot_id, pid + "-ESP"
-                return "MOTHERBOARD", self.slot_id, pid
-        elif (
+            if pid == "N/A" and "Gibraltar,G-20" in descr:
+                # 2-port 100BASE-TX Fast Ethernet port adapter
+                pid = "CISCO7100-MB"
+            if pid in ("ASR1001", "ASR1001-X"):
+                if "Route Processor" in descr:
+                    return "RP", self.slot_id, pid + "-RP"
+                if "SPA Interface Processor" in descr:
+                    return "SIP", self.slot_id, pid + "-SIP"
+                if "Shared Port Adapter" in descr:
+                    return "SPA", self.slot_id, pid + "-SPA"
+                if "Embedded Services Processor" in descr:
+                    return "ESP", self.slot_id, pid + "-ESP"
+            return "MOTHERBOARD", self.slot_id, pid
+        if (
             pid.startswith("WS-X61")
             or pid.startswith("WS-X63")
             or pid.startswith("WS-X64")
@@ -436,7 +427,7 @@ class Script(BaseScript):
             or pid.startswith("WS-X49")
         ) and "port" in descr:
             return "LINECARD", self.slot_id, pid
-        elif (
+        if (
             (pid.startswith("WS-SUP") or pid.startswith("VS-S")) and "Supervisor Engine" in descr
         ) or (
             (
@@ -449,22 +440,22 @@ class Script(BaseScript):
             and "Network Processing Engine" in descr
         ):
             return "SUP", self.slot_id, pid
-        elif "-PFC" in pid:
+        if "-PFC" in pid:
             # PFC subcard
             return "PFC", None, pid
-        elif name.startswith("msfc "):
+        if name.startswith("msfc "):
             # MSFC subcard
             return "MSFC", None, pid
-        elif "-DFC" in pid or "-CFC" in pid or "sub-module of" in name:
+        if "-DFC" in pid or "-CFC" in pid or "sub-module of" in name:
             # DFC subcard
             return "DFC", None, pid
-        elif name.startswith("PS "):
+        if name.startswith("PS "):
             # Power supply
             match = self.rx_psu1.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
-        elif name.startswith("Power Supply "):
+        if name.startswith("Power Supply "):
             match = self.rx_psu1.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
@@ -473,22 +464,22 @@ class Script(BaseScript):
                 if match:
                     self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
-        elif "FRU Power Supply" in descr:
+        if "FRU Power Supply" in descr:
             match = self.rx_psu2.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
-        elif " Power Supply" in name:
+        if " Power Supply" in name:
             if pid == "PWR-2911-AC":
                 return "PSU", None, pid
             match = self.rx_psu2.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
             return "PSU", self.slot_id, pid
-        elif pid.startswith("FAN") or pid.endswith("-FAN") or pid == "WS-X4992":
+        if pid.startswith("FAN") or pid.endswith("-FAN") or pid == "WS-X4992":
             # Fan module
             return "FAN", self.slot_id, pid
-        elif (
+        if (
             pid.startswith("NM-")
             or pid.startswith("NME-")
             or pid.startswith("NIM-")
@@ -497,13 +488,13 @@ class Script(BaseScript):
         ):
             # Network Module
             return "NM", self.slot_id, pid
-        elif pid.startswith("SM-"):
+        if pid.startswith("SM-"):
             # ISR 2900/3900 ServiceModule
             return "SM", self.slot_id, pid
-        elif "-NM-" in pid:
+        if "-NM-" in pid:
             # Network module 2
             return "NM", self.slot_id, pid
-        elif (
+        if (
             pid.startswith("WIC-")
             or pid.startswith("HWIC-")
             or pid.startswith("VWIC-")
@@ -515,37 +506,37 @@ class Script(BaseScript):
         ):
             # DaughterCard
             return "DCS", self.slot_id, pid
-        elif pid.startswith("AIM-"):
+        if pid.startswith("AIM-"):
             # Network Module
             return "AIM", self.slot_id, pid
-        elif pid.startswith("PVDM2-") or pid.startswith("PVDM3-") or pid.startswith("PVDM4-"):
+        if pid.startswith("PVDM2-") or pid.startswith("PVDM3-") or pid.startswith("PVDM4-"):
             # PVDM Type 2, 3, 4
             return "PVDM", self.slot_id, pid
-        elif pid.endswith("-MB"):
+        if pid.endswith("-MB"):
             # Motherboard
             return "MOTHERBOARD", None, pid
-        elif pid.startswith("C3900-SPE"):
+        if pid.startswith("C3900-SPE"):
             # SPE for 3900
             return "SPE", self.slot_id, pid
-        elif "Clock FRU" in descr or (pid.endswith("-CL") and "Clock type" in descr):
+        if "Clock FRU" in descr or (pid.endswith("-CL") and "Clock type" in descr):
             # Clock module
             return "CLK", self.slot_id, pid
-        elif "VTT FRU" in descr or "VTT-E FRU" in descr:
+        if "VTT FRU" in descr or "VTT-E FRU" in descr:
             # Clock module
             return "VTT", self.slot_id, pid
-        elif "Compact Flash Disk" in descr:
+        if "Compact Flash Disk" in descr:
             # Compact Flash
             match = self.rx_slot_id.search(name)
             if match:
                 self.slot_id = int(match.group("slot_id"))
             return "Flash | CF", self.slot_id, pid
-        elif "PCMCIA Flash Disk" in descr:
+        if "PCMCIA Flash Disk" in descr:
             # PCMCIA Flash
             match = self.rx_slot_id.search(name)
             if match:
                 self.slot_id = int(match.group("slot_id"))
             return "Flash | PCMCIA", self.slot_id, pid
-        elif name.startswith("StackPort"):
+        if name.startswith("StackPort"):
             match = self.rx_stack1.search(name)
             if match:
                 self.slot_id = int(match.group("number"))
@@ -569,5 +560,4 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_c2960:
             return self.execute_2960()
-        objects = self.get_inv()
-        return objects
+        return self.get_inv()

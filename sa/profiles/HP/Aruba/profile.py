@@ -51,6 +51,6 @@ class Profile(BaseProfile):
         name = name.lower()
         if name.startswith("vlan"):
             return "SVI"
-        elif name.startswith("lag"):
+        if name.startswith("lag"):
             return "aggregated"
         return "physical"

@@ -380,7 +380,7 @@ class NetworkSegment(Document):
     def get_horizontal_transit_policy(self):
         if self.horizontal_transit_policy in ("E", "C"):
             return self.horizontal_transit_policy
-        elif self.horizontal_transit_policy == "P" and self.profile:
+        if self.horizontal_transit_policy == "P" and self.profile:
             return self.profile.horizontal_transit_policy
         return "D"
 
@@ -396,7 +396,7 @@ class NetworkSegment(Document):
         """
         if self.management_vlan_policy == "e":
             return self.management_vlan or None
-        elif self.management_vlan_policy == "p":
+        if self.management_vlan_policy == "p":
             return self.profile.management_vlan or None
         return None
 
@@ -407,10 +407,9 @@ class NetworkSegment(Document):
         """
         if self.multicast_vlan_policy == "e":
             return self.multicast_vlan or None
-        elif self.multicast_vlan_policy == "p":
+        if self.multicast_vlan_policy == "p":
             return self.profile.multicast_vlan or None
-        else:
-            return None
+        return None
 
     def get_nested_ids(self):
         """

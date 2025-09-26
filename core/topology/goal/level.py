@@ -35,10 +35,9 @@ class ManagedObjectLevelGoal(BaseGoal):
             neighbor_level = neighbor.object_profile.level
             if current_level == neighbor_level:
                 return self.SAME_LEVEL_COST
-            elif current_level > neighbor_level:
+            if current_level > neighbor_level:
                 return self.BACKWARDS_COST
-            else:
-                return self.TOWARDS_COST
+            return self.TOWARDS_COST
         return self.DEFAULT_COST
 
     def is_goal(self, obj: ManagedObject) -> bool:

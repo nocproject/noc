@@ -180,8 +180,7 @@ class Action(Document):
         # Execute rendered commands
         if ac.config_mode:
             return obj.scripts.configure(commands=commands)
-        else:
-            return obj.scripts.commands(commands=commands)
+        return obj.scripts.commands(commands=commands)
 
     def clean_args(self, obj, **kwargs):
         args = {}

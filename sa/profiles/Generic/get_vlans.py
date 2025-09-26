@@ -45,5 +45,4 @@ class Script(BaseScript):
                 tmp_vlan += [vlan_id]
         if result:
             return sorted(result, key=operator.itemgetter("vlan_id"))
-        else:
-            raise NotImplementedError()
+        raise NotImplementedError()

@@ -64,9 +64,9 @@ class SNMPProtocolChecker(BaseChecker):
     def get_oids(check: Check, cred=None) -> List[str]:
         if check.args and "oids" in check.args:
             return check.args["oids"].split(",")
-        elif check.credential and check.credential.oids:
+        if check.credential and check.credential.oids:
             return check.credential.oids
-        elif cred and cred.oids:
+        if cred and cred.oids:
             return cred.oids
         return CHECK_OIDS
 
@@ -169,7 +169,7 @@ class SNMPProtocolChecker(BaseChecker):
                     cred.private_key.encode(), key_type=KeyType.Password
                 ),
             )
-        elif cred.auth_proto and cred.auth_key:
+        if cred.auth_proto and cred.auth_key:
             return User(
                 name=cred.username,
                 auth_key=AUTH_PROTO_MAP[cred.auth_proto](

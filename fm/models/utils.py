@@ -66,10 +66,9 @@ def get_severity(alarms):
     def f(a):
         if hasattr(a, "id"):
             return a.id
-        elif isinstance(a, str):
+        if isinstance(a, str):
             return ObjectId(a)
-        else:
-            return a
+        return a
 
     severity = 0
     if not isinstance(alarms, list):

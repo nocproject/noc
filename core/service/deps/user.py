@@ -29,8 +29,8 @@ async def get_current_user(
     :return:
     """
     if not remote_user and not getattr(svc, "auth_required", False):
-        return
-    elif not remote_user:
+        return None
+    if not remote_user:
         raise HTTPException(403, "Not authorized")
     user = User.get_by_username(remote_user)
     if not user:

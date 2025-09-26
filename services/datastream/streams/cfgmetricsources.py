@@ -62,7 +62,7 @@ class CfgMetricSourcesDataStream(DataStream):
     @classmethod
     def on_change(cls, data):
         if cls.F_DELETED in data or data["type"] != "managed_object":
-            return
+            return None
         mo = ManagedObject.get_by_bi_id(data["id"])
         if mo.effective_metric_discovery_interval != int(data.get("discovery_interval")):
             mo.effective_metric_discovery_interval = int(data.get("discovery_interval"))

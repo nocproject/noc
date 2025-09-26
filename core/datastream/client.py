@@ -123,7 +123,7 @@ class DataStreamClient(object):
                 if dt < self.RETRY_TIMEOUT:
                     await retry_timeout(self.RETRY_TIMEOUT - dt, name="datastream_client_retry")
                 continue  # Retry on timeout
-            elif code != 200:
+            if code != 200:
                 logger.info("Invalid response code: %s", code)
                 raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {code}")
             # Parse response

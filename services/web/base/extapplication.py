@@ -116,8 +116,7 @@ class ExtApplication(Application):
                 content_type="text/json; charset=utf-8",
                 status=status,
             )
-        else:
-            return HttpResponse(content, content_type="text/plain; charset=utf-8", status=status)
+        return HttpResponse(content, content_type="text/plain; charset=utf-8", status=status)
 
     def fav_convert(self, item):
         """
@@ -369,14 +368,11 @@ class ExtApplication(Application):
                     {"status": False, "message": "Error", "traceback": str(result)},
                     status=self.INTERNAL_ERROR,
                 )
-            else:
-                return result
-        else:
-            return self.response_accepted(request.path)
+            return result
+        return self.response_accepted(request.path)
 
     def submit_slow_op(self, request, fn, *args, **kwargs):
         f = SlowOp.submit(fn, self.get_app_id(), request.user.username, *args, **kwargs)
         if f.done():
             return f.result()
-        else:
-            return self.response_accepted(location="%sfutures/%s/" % (self.base_url, f.slow_op.id))
+        return self.response_accepted(location="%sfutures/%s/" % (self.base_url, f.slow_op.id))

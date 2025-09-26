@@ -36,8 +36,7 @@ class Script(BaseScript):
             if "." in s:
                 x, y = [int(k) for k in s.split(".")]
                 return "%d.%d" % (x, y)
-            else:
-                return s
+            return s
 
         def port_priority(s):
             return int(s.split(".")[0])

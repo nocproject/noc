@@ -272,7 +272,7 @@ class Script(BaseScript):
             match = match.groupdict()
             if not match:
                 continue
-            elif match["role"] in {"Slot", "Rack"}:
+            if match["role"] in {"Slot", "Rack"}:
                 parent = match["sec_name"]
             if not match["properties"]:
                 self.logger.debug(
@@ -282,7 +282,7 @@ class Script(BaseScript):
             p = parse_kv(self.inv_property_map, match["properties"], sep="=")
             if "vendor" not in p and "type" not in p:
                 raise self.UnexpectedResultError("Partial parsed properties")
-            elif "vendor" not in p and p["type"].startswith("H"):
+            if "vendor" not in p and p["type"].startswith("H"):
                 p["vendor"] = "Huawei"
             elif not p.get("vendor"):
                 self.logger.debug("[%s] Empty Vendor Properties. Skipping...", match["sec_name"])

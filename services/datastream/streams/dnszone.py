@@ -365,7 +365,7 @@ class DNSZoneDataStream(DataStream):
         """
         zone = DNSZone.objects.filter(id=data["id"])[:1]
         if not zone:
-            return
+            return None
         zone = zone[0]
         zone.set_next_serial()
         # Update data

@@ -20,5 +20,4 @@ class Profile(BaseProfile):
 
     def cleaned_config(self, config):
         config = config.replace("--\n", "")
-        config = super().cleaned_config(config)
-        return config
+        return super().cleaned_config(config)

@@ -102,7 +102,7 @@ class EscalationItem(EmbeddedDocument):
     def member(self) -> Optional[EscalationMember]:
         if self.create_tt:
             return EscalationMember.TT_SYSTEM
-        elif self.notification_group:
+        if self.notification_group:
             return EscalationMember.NOTIFICATION_GROUP
         return None
 
@@ -359,13 +359,12 @@ class EscalationProfile(Document):
         ma = []
         for a in self.actions:
             ma += a.get_config()
-        req = AlarmActionRequest(
+        return AlarmActionRequest(
             item=ActionItem(alarm=str(alarm.id)),
             start_at=alarm.timestamp,
             actions=actions,
             allowed_actions=ma,
         )
-        return req
 
     @classmethod
     def get_config(cls, profile: "EscalationProfile") -> Dict[str, Any]:

@@ -195,7 +195,7 @@ class Command(BaseCommand):
             )
         except dns.exception.DNSException as e:
             self.print("ERROR:", e)
-            return
+            return None
         return data
 
     def dns_zone(self, zone, zone_profile, dry_run=False, clean=False):
@@ -570,7 +570,7 @@ class Command(BaseCommand):
         Convert IDNA domain name to unicode
         """
         if not s:
-            return
+            return None
         return ".".join(smart_text(x, encoding="idna") for x in s.split("."))
 
     @classmethod

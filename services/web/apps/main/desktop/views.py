@@ -257,8 +257,7 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        r = {r.key: r.value for r in UserState.objects.filter(user_id=uid)}
-        return r
+        return {r.key: r.value for r in UserState.objects.filter(user_id=uid)}
 
     @view(method=["GET"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_get_state_by_name(self, request, name):
@@ -268,8 +267,7 @@ class DesktopApplication(ExtApplication):
         :return:
         """
         uid = request.user.id
-        r = {r.key: r.value for r in UserState.objects.filter(user_id=uid, key=name)}
-        return r
+        return {r.key: r.value for r in UserState.objects.filter(user_id=uid, key=name)}
 
     @view(method=["DELETE"], url="^state/(?P<name>.+)/$", access=PermitLogged(), api=True)
     def api_clear_state(self, request, name):

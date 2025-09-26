@@ -45,8 +45,7 @@ class MediaWikiParser(BaseParser):
         preprocess(parsed)
         xhtml = MWXHTMLWriter()
         xhtml.writeBook(parsed)
-        block = ET.tostring(xhtml.xmlbody)
-        return block
+        return ET.tostring(xhtml.xmlbody)
 
     @classmethod
     def is_enabled(cls):

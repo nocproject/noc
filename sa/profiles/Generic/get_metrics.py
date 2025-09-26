@@ -202,8 +202,7 @@ class MetricScriptBase(BaseScriptMetaclass):
             """
             if s.startswith(PROFILES_PATH):
                 return 3 if "Generic" in s else 1
-            else:
-                return 2 if "Generic" in s else 0
+            return 2 if "Generic" in s else 0
 
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
@@ -341,8 +340,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def get_labels_hash(metric: str, labels: List[str]):
         if labels:
             return "\x00".join([metric] + labels)
-        else:
-            return metric
+        return metric
 
     def execute(
         self, metrics: Optional[List[Dict[str, Any]]] = None, collected: List[Dict[str, Any]] = None
@@ -368,13 +366,13 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 if coll.collector == "sensor":
                     sensor_metrics.append(coll)
                     continue
-                elif coll.collector == "sla":
+                if coll.collector == "sla":
                     sla_metrics.append(coll)
                     for m in coll.metrics:
                         self.sla_metrics[(coll.sla_probe, m)] = seq_id
                         seq_id += 1
                     continue
-                elif coll.collector == "cpe":
+                if coll.collector == "cpe":
                     cpe_metrics.append(coll)
                     for m in coll.metrics:
                         self.cpe_metrics[(coll.cpe, m)] = seq_id
@@ -617,8 +615,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                             vv = results[o]
                             if vv is None:
                                 break
-                            else:
-                                v += [vv]
+                            v += [vv]
                         else:
                             self.logger.error("Failed to get SNMP OID %s", o)
                             break
@@ -715,7 +712,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             scale = 1
         if sensor and sensor in self.seen_ids:
             return
-        elif sla_probe and (sla_probe, metric) in self.sla_metrics:
+        if sla_probe and (sla_probe, metric) in self.sla_metrics:
             id = self.sla_metrics[(sla_probe, metric)]
         elif sla_probe:
             return

@@ -58,5 +58,4 @@ class Script(BaseScript):
                     "Serial Number": match.group("serial"),
                 },
             }
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()

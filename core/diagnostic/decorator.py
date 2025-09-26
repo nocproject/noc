@@ -82,7 +82,7 @@ def diagnostic(cls):
         return self._diagnostics
 
     if not hasattr(cls, "diagnostics"):
-        return
+        return None
     cls.diagnostic = property(diagnostic)
     cls.iter_diagnostics = iter_diagnostics
     if is_document(cls):

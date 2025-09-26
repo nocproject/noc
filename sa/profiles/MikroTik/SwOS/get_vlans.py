@@ -16,5 +16,4 @@ class Script(BaseScript):
 
     def execute(self):
         vlans = self.profile.parseBrokenJson(self.http.get("/vlan.b", cached=True, eof_mark=b"}"))
-        r = [{"vlan_id": int(vlan["vid"], 16)} for vlan in vlans]
-        return r
+        return [{"vlan_id": int(vlan["vid"], 16)} for vlan in vlans]

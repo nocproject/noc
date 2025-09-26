@@ -53,8 +53,7 @@ class Script(BaseScript):
             s = s.strip()
             if s.startswith("Eth VLAN "):
                 return s[4:]
-            else:
-                return s
+            return s
 
         cmd = "show mac address-table"
         if mac is not None:

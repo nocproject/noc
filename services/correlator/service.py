@@ -674,7 +674,7 @@ class CorrelatorService(FastAPIService):
             self.logger.info("Alarm severity is 0, dropping")
             a.delete()
             metrics["alarm_drop"] += 1
-            return
+            return None
         if managed_object:
             # Gather diagnostics when necessary
             AlarmDiagnosticConfig.on_raise(a)
@@ -721,7 +721,7 @@ class CorrelatorService(FastAPIService):
         )
         if not managed_object:
             self.logger.info("Empty managed object, ignoring")
-            return
+            return None
         if int(event.target.id) != managed_object.id:
             metrics["alarm_change_mo"] += 1
             self.logger.info("Changing managed object to %s", managed_object.name)
@@ -816,20 +816,19 @@ class CorrelatorService(FastAPIService):
                 event.id if event else rule,
             )
             metrics["unknown_object"] += 1
-            return
+            return None
         if not rule.unique:
-            return
+            return None
         r_vars = rule.get_vars(r_vars)
         reference = self.get_default_reference(
             managed_object=managed_object, alarm_class=rule.alarm_class, vars=r_vars
         )
-        alarm = await self.clear_by_reference(
+        return await self.clear_by_reference(
             reference,
             message=f"Cleared by disposition rule '{rule.name}'",
             ts=timestamp,
             event=event,
         )
-        return alarm
 
     def get_delayed_event(
         self, rule: "EventAlarmRule", event: Event, managed_object: ManagedObject
@@ -856,8 +855,7 @@ class CorrelatorService(FastAPIService):
         if not de:
             # No starting event
             return None
-        else:
-            de = de[0]
+        de = de[0]
         # Probable starting event found, get all interesting following event classes
         fe = tuple(
             e
@@ -1181,7 +1179,7 @@ class CorrelatorService(FastAPIService):
             managed_object = ManagedObject.get_by_id(int(oid))
         if not managed_object:
             self.logger.error("Invalid managed object: %s", oid)
-            return
+            return None
         return managed_object
 
     async def on_msg_clear(self, req: ClearRequest) -> None:
@@ -1409,7 +1407,7 @@ class CorrelatorService(FastAPIService):
         alarm = ActiveAlarm.objects.filter(reference=ref_hash).first()
         if not alarm:
             self.logger.info("Alarm '%s' is not found. Skipping", reference)
-            return
+            return None
         # Clear alarm
         if event:
             alarm.closing_event = ObjectId(event.id)
@@ -1470,8 +1468,7 @@ class CorrelatorService(FastAPIService):
                 event_class.name,
             )
             return
-        else:
-            managed_object = ManagedObject.get_by_id(int(e.target.id))
+        managed_object = ManagedObject.get_by_id(int(e.target.id))
         processed = 0
         # Apply disposition rules
         for processed, rule in enumerate(
@@ -1480,7 +1477,7 @@ class CorrelatorService(FastAPIService):
         ):
             if not managed_object and not rule.alarm_class.by_reference:
                 continue  # Alarm Class is not applicable
-            elif rule.action == "raise" and rule.combo_condition == "none":
+            if rule.action == "raise" and rule.combo_condition == "none":
                 alarm = await self.raise_alarm_from_rule(rule, e, managed_object)
                 save_to_disposelog("raise", alarm)
             elif rule.action == "clear" and rule.combo_condition == "none":
@@ -1736,9 +1733,8 @@ class CorrelatorService(FastAPIService):
                         # Below the threshold, set group as deferred
                         deferred.append(h_ref)
                         continue
-                    else:
-                        # Pull deferred alarms later
-                        def_h_ref = h_ref
+                    # Pull deferred alarms later
+                    def_h_ref = h_ref
                 # Raise group alarm
                 g_alarm = await self.raise_alarm(
                     managed_object=None,

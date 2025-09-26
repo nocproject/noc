@@ -26,10 +26,9 @@ class Script(BaseScript):
             sn = self.snmp.get("1.3.6.1.4.1.27514.103.0.3")
             version = self.snmp.get("1.3.6.1.4.1.27514.103.0.2")
 
-        result = {
+        return {
             "vendor": "Qtech",
             "version": version,
             "platform": platform,
             "attributes": {"Serial Number": sn},
         }
-        return result

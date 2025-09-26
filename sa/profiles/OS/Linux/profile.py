@@ -48,8 +48,7 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES.get(name[:2].lower())
-        return c
+        return cls.INTERFACE_TYPES.get(name[:2].lower())
 
     rx_data = re.compile(
         r"^(?P<metric>[a-zA-Z0-9_]+)\{(?P<data>.*)\}\s+(?P<value>\S+)$", re.MULTILINE

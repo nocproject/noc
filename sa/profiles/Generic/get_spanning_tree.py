@@ -92,7 +92,7 @@ class Script(BaseScript):
         ):
             if not d_port:
                 continue
-            elif isinstance(d_port, int):
+            if isinstance(d_port, int):
                 d_port = "%02d.%02d" % (32774 >> 8, 32774 & 0xFF)
             else:
                 d_port = "%02d.%02d" % tuple(d_port)

@@ -39,4 +39,4 @@ class BaseCalculator(object):
         :param kwargs:
         :return:
         """
-        return None
+        return

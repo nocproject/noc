@@ -46,8 +46,7 @@ class Script(BaseScript):
                 ):  # IF-MIB
                     if n[:3] == "Aux" or n[:4] == "Vlan" or n[:11] == "InLoopBack":
                         continue
-                    else:
-                        admin_status.update({n: int(s) == 1})
+                    admin_status.update({n: int(s) == 1})
             except self.snmp.TimeOutError:
                 pass
 
