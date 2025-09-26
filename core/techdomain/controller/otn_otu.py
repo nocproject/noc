@@ -100,7 +100,6 @@ class OTNOTUController(BaseController):
             PathItem(object=start.object, input=None, output=start.name),
             PathItem(object=xcvr, input="in", output=out_conn),
         ]
-        #
         ep = self.get_peer(Endpoint(object=xcvr, name=out_conn))
         if not ep:
             self.logger.info("Transceiver is not connected, stopping")

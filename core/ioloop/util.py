@@ -52,7 +52,6 @@ class IOLoopContext(object):
             task.cancel()
         asyncio.gather(*to_cancel, return_exceptions=True)
         self.new_loop.run_until_complete(self.new_loop.shutdown_asyncgens())
-        #
         self.new_loop.close()
         self.new_loop = None
         asyncio._set_running_loop(self.prev_loop)

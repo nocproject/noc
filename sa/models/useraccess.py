@@ -29,7 +29,6 @@ class UserAccess(NOCModel):
         ordering = ["user"]
 
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
-    #
     administrative_domain = models.ForeignKey(
         AdministrativeDomain, null=True, blank=True, on_delete=models.CASCADE
     )

@@ -121,7 +121,6 @@ class ExtDocApplication(ExtApplication):
                 self.pk = name
             if name == "uuid":
                 self.has_uuid = True
-        #
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)

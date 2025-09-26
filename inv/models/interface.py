@@ -119,7 +119,6 @@ class Interface(Document):
     )
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
-    #
     project = ForeignKeyField(Project)
     state = PlainReferenceField(State)
     # Current status
@@ -372,7 +371,6 @@ class Interface(Document):
                         el.save()
                     else:
                         el.delete()
-                #
                 link = Link(interfaces=[self, other], discovery_method=method)
                 link.save()
                 return link

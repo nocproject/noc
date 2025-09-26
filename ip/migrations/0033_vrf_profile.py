@@ -26,7 +26,6 @@ class Migration(BaseMigration):
         coll = mdb["prefixprofiles"]
         d = coll.find_one({"name": "default"})
         default_prefix_profile = d["_id"]
-        #
         coll = mdb["vpnprofiles"]
         default_id = bson.ObjectId()
         wf = bson.ObjectId("5a01d980b6f529000100d37a")

@@ -95,14 +95,11 @@ class TopologyNode(object):
     title: Optional[str] = ""
     title_position: Optional[ShapeOverlayPosition] = "S"
     title_metric_template: Optional[str] = ""
-    #
     stencil: Optional[str] = None
     overlays: List[ShapeOverlay] = None
-    #
     portal: Optional[Portal] = None
     level: int = 25
     attrs: Optional[Dict[str, Any]] = None
-    #
     object_filter: Optional[Dict[str, Any]] = None
 
     def get_attr(self) -> Dict[str, Any]:

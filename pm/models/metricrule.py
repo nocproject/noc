@@ -60,7 +60,6 @@ class ThresholdConfig(EmbeddedDocument):
     clear_value = FloatField(default=None, null=True)
     # Alarm class
     alarm_class = PlainReferenceField(AlarmClass)
-    #
     alarm_labels = ListField(StringField())
 
     def get_config(self):
@@ -130,9 +129,7 @@ class MetricRule(Document):
     name = StringField(unique=True)
     description = StringField()
     is_active = BooleanField(default=True)
-    #
     match: List["Match"] = EmbeddedDocumentListField(Match)
-    #
     actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

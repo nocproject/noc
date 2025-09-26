@@ -99,7 +99,7 @@ class Profile(BaseProfile):
         "gi": "physical",  # gigaethernet
         "ge": "physical",  # gigaethernet
         "lo": "loopback",  # Loopback
-        "tr": "aggregated",  #
+        "tr": "aggregated",
         "po": "aggregated",  # port-channel
         "mn": "management",  # Stack-port
         # "te": "physical",  # TenGigabitEthernet

@@ -24,8 +24,6 @@ class ModelMapping(Document):
     # Serial number ranges, if applicable
     from_serial = StringField()
     to_serial = StringField()
-    #
     model = PlainReferenceField(ObjectModel)
-    #
     is_active = BooleanField(default=True)
     description = StringField(required=False)

@@ -33,7 +33,6 @@ class Address(Document):
         "auto_create_index": False,
         "indexes": ["building", "street", "remote_id"],
     }
-    #
     building = PlainReferenceField(Building)
     # Address part
     street = PlainReferenceField(Street)
@@ -173,7 +172,6 @@ class Address(Document):
     # @todo: cmp_addr
 
 
-#
 RU_SHORT_AFTER = {"б-р", "проезд", "пер", "ш"}
 
 # Signals

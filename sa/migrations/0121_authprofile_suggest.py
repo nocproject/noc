@@ -16,7 +16,6 @@ class Migration(BaseMigration):
     def migrate(self):
         # Mock Models
         AuthProfile = self.db.mock_model(model_name="AuthProfile", db_table="sa_authprofile")
-        #
         self.db.create_table(
             "sa_authprofilesuggestsnmp",
             (

@@ -70,7 +70,6 @@ def test_load_data(initial_data):
                     mrefs[f.name] = f.remote_field.model
         model_refs[data["$model"]] = refs
         m2m_refs[data["$model"]] = mrefs
-    #
     kwargs = {}
     m2m = {}
     for k in data:

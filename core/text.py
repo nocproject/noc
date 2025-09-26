@@ -612,7 +612,6 @@ def parse_table_header(v):
     empty_header = None
     header = {}
     for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
-        #
         if empty_header is None:
             empty_header = (" ",) * len(lines)
             head += [lines]

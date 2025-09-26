@@ -13,7 +13,6 @@ class PrefixCheck(BasePrefixCheck):
     def get_prefixes(self):
         # vpn_id, prefix => DiscoveredPrefix
         prefixes = {}
-        #
         prefixes = self.apply_prefixes(prefixes, self.get_whois_route_prefixes())
         return prefixes
 

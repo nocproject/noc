@@ -407,11 +407,9 @@ class Collection(object):
         self.stdout.write("[%s] Synchronizing\n" % self.name)
         # Get previous state
         cs = self.get_state()
-        #
         current_uuids = set(cs)
         new_uuids = set(cdata)
         changed = self.get_changed_status()
-        #
         if is_document(self.model):
             self.fix_uuids()
         for u in new_uuids - current_uuids:

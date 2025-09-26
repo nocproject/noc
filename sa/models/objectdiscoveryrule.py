@@ -230,7 +230,6 @@ class ObjectDiscoveryRule(Document):
     uuid = UUIDField(binary=True)
     # Rule preference, processed from lesser to greater
     preference = IntField(required=True, default=100)
-    #
     network_ranges: List["NetworkRange"] = EmbeddedDocumentListField(NetworkRange)
     workflow: "Workflow" = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sa.DiscoveredObject")
@@ -240,7 +239,6 @@ class ObjectDiscoveryRule(Document):
     conditions: List[MatchItem] = EmbeddedDocumentListField(MatchItem)
     update_interval = IntField(default=0)
     expired_ttl = IntField(default=0)  # Time for expired source
-    #
     enable_ip_scan_discovery = BooleanField(default=False)
     ip_scan_discovery_interval = IntField(default=3600)
     checks: List["CheckItem"] = EmbeddedDocumentListField(CheckItem)
@@ -397,13 +395,10 @@ class ObjectDiscoveryRule(Document):
             "uuid": self.uuid,
             "is_active": self.is_active,
             "description": self.description,
-            #
             "preference": self.preference,
             "workflow__uuid": str(self.workflow.uuid),
-            #
             "network_ranges": [c.json_data for c in self.network_ranges],
             "checks": [c.json_data for c in self.checks],
-            #
             "sources": [c.json_data for c in self.sources],
             "conditions": [c.json_data for c in self.conditions],
             "enable_ip_scan_discovery": self.enable_ip_scan_discovery,

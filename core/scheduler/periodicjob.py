@@ -35,7 +35,6 @@ class PeriodicJob(Job):
             # Remove broken job
             self.remove_job()
             return
-        #
         if not interval:
             # Remove disabled jobs
             self.remove_job()

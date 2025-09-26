@@ -41,7 +41,6 @@ class MetricsCheck(DiscoveryCheck):
         self.logger.info("Collecting metrics")
         # Build get_metrics input parameters
         metrics: List[Dict[str, Any]] = []
-        #
         s_data = {"managed_object": self.object.bi_id}
         interval = self.job.get_interval() or self.object.get_metric_discovery_interval()
         runs = self.job.get_runs()

@@ -153,9 +153,7 @@ def main():
         if not has_valid_markup(data):
             msg = f"Cannot find table markup in {path}"
             raise ValueError(msg)
-        #
         nav[mi.name] = f"{mi.name}.md"
-        #
         table = tpl.render(items=mi.items, bq=bq)
         data = rx_table.sub(table, data)
         # Write

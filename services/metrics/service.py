@@ -472,7 +472,6 @@ class MetricsService(FastAPIService):
         p.subscribe(sender, metric_field, dynamic=True, mark_bound=False)
         p.freeze()
         card.probes[unscope(metric_field)] = p
-        #
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
@@ -649,7 +648,6 @@ class MetricsService(FastAPIService):
                 # Add alarms nodes for clear alarm on delete
                 if node.name in {"alarm", "threshold"}:
                     card.alarms += [node]
-            #
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
         # Add complex probe

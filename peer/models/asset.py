@@ -40,7 +40,6 @@ class ASSet(NOCModel):
     members = models.TextField("Members", null=True, blank=True)
     rpsl_header = models.TextField("RPSL Header", null=True, blank=True)
     rpsl_footer = models.TextField("RPSL Footer", null=True, blank=True)
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list

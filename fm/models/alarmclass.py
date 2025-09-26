@@ -165,11 +165,8 @@ class AlarmClass(Document):
     reference = ListField(StringField())
     # Can alarm status be cleared by user
     user_clearable = BooleanField(default=True)
-    #
     datasources = ListField(EmbeddedDocumentField(DataSource))
-    #
     components: List[Component] = ListField(EmbeddedDocumentField(Component))
-    #
     vars: List[AlarmClassVar] = ListField(EmbeddedDocumentField(AlarmClassVar))
     # Text messages
     subject_template = StringField()
@@ -206,11 +203,8 @@ class AlarmClass(Document):
     # Root cause will be detached if consequence alarm
     # will not clear itself in *recover_time*
     recover_time = IntField(required=False, default=300)
-    #
     labels = ListField(StringField())
-    #
     bi_id = LongField(unique=True)
-    #
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

@@ -54,7 +54,6 @@ class Script(BaseScript):
                 "route-filter %s" % (name, x)
                 for x in new_pl.difference(applied_pl)
             ]
-            #
             result += [{"name": name, "status": True}]
         # Apply changeset
         if actions:

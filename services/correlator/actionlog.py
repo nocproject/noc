@@ -85,10 +85,8 @@ class ActionLog(object):
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
         self.repeat_num = repeat_num or 0
-        #
         self.user = user
         self.tt_system = tt_system
-        #
         self.ctx = kwargs
 
     def __str__(self):
@@ -214,12 +212,10 @@ class ActionLog(object):
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
             document_id=document_id,
             timestamp=ts.replace(microsecond=0),
-            #
             time_pattern=action.time_pattern,
             alarm_ack=action.ack,
             when=action.when,
             min_severity=action.min_severity or 0,
-            #
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
             # Ctx

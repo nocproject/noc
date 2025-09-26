@@ -82,9 +82,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # For common scripts - empty list
     # For generics - list of pairs (script_name, interface)
     requires = []
-    #
     base_logger = logging.getLogger(name or "script")
-    #
     _x_seq = itertools.count()
     # Sessions
     cli_session_store = SessionStore()
@@ -192,7 +190,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Store session id
         self.session = session
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
-        #
         self.streaming = streaming
         if self.parent:
             self.controller = self.parent.controller
@@ -207,7 +204,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Suitable only when self.parent is None
         # Cached results of self.cli calls
         self.cli_cache = {}
-        #
         self.http_cache = {}
         self.partial_result = None
         # @todo: Get native encoding from ManagedObject
@@ -218,7 +214,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.cli_tracked_command = None
         # state -> [..]
         self.cli_fsm_tracked_data = {}
-        #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s", version)
             s = name.split(".")
@@ -234,7 +229,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Fill matchers
         if not self.name.endswith(".get_version"):
             self.apply_matchers()
-        #
         if self.profile.setup_script:
             self.profile.setup_script(self)
         # Script perf metrics
@@ -283,7 +277,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Calculate matches
         v = get_matchers(ctx, self.profile.matchers)
         v.update(get_matchers(ctx, self.matchers))
-        #
         for k in v:
             self.logger.debug("%s = %s", k, v[k])
             setattr(self, k, v[k])

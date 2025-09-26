@@ -121,7 +121,6 @@ class SAEAPI(JSONRPCAPI):
         if not loader.has_script(script_name):
             metrics["error", ("type", "invalid_scripts_request")] += 1
             raise APIError("Invalid script")
-        #
         url = await self.get_activator_url(pool)
         if not url:
             raise APIError(f"No active activators for pool '{pool}'")
@@ -245,7 +244,6 @@ class SAEAPI(JSONRPCAPI):
             snmp_priv_proto = ap_snmp_priv_proto
             snmp_priv_key = ap_snmp_priv_key
             snmp_ctx_name = ap_snmp_ctx_name
-        #
         if privilege_policy == "E":
             raise_privileges = True
         elif privilege_policy == "P":

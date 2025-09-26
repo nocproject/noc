@@ -291,7 +291,6 @@ class PathAPI(NBIAPI):
                 last["obj"] = order[-1]
             except ValueError:
                 pass
-            #
             return {
                 "objects": [
                     {

@@ -831,7 +831,6 @@ class ManagedObjectApplication(ExtModelApplication):
         # Project
         if "project" in d:
             i.project = get_or_none(Project, d["project"])
-        #
         i.save()
         return {"success": True}
 

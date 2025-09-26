@@ -47,7 +47,6 @@ def render_template(name, context=None):
                 _tpl_cache[name] = Template(f.read())
         else:
             _tpl_cache[name] = None
-    #
     tpl = _tpl_cache[name]
     if tpl:
         return tpl.render(Context(context or {}))

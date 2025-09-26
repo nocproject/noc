@@ -216,9 +216,7 @@ class DispositionRule(Document):
     uuid = UUIDField(binary=True)
     is_active = BooleanField(default=True)
     preference = IntField(required=True, default=1000)
-    #
     conditions: List[Match] = EmbeddedDocumentListField(Match)
-    #
     vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
     vars_conditions_op: str = StringField(
         choices=[
@@ -260,7 +258,6 @@ class DispositionRule(Document):
     combo_event_classes = ListField(
         PlainReferenceField("fm.EventClass"), required=False, default=[]
     )
-    #
     replace_rule_policy = StringField(
         required=True,
         choices=[
@@ -290,7 +287,6 @@ class DispositionRule(Document):
         ],
         default="N",
     )
-    #
     default_action = StringField(
         choices=[
             ("R", "Raise Disposition Alarm"),

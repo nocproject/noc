@@ -105,7 +105,6 @@ class CorrelatorService(FastAPIService):
         self.alarm_rule_set = AlarmRuleSet()
         self.alarm_class_vars = defaultdict(dict)
         self.status_changes = deque([])  # Save status changes
-        #
         self.slot_number = 0
         self.total_slots = 0
         self.is_distributed = False
@@ -676,7 +675,6 @@ class CorrelatorService(FastAPIService):
             a.delete()
             metrics["alarm_drop"] += 1
             return
-        #
         if managed_object:
             # Gather diagnostics when necessary
             AlarmDiagnosticConfig.on_raise(a)
@@ -1230,7 +1228,6 @@ class CorrelatorService(FastAPIService):
                 self.logger.error("Invalid alarm class: %s", ai.alarm_class)
                 return
             alarm_classes[ai.alarm_class] = alarm_class
-        #
         now = datetime.datetime.now()
         if not group_alarm:
             # Create group alarm

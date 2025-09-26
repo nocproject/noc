@@ -52,7 +52,7 @@ class Events(Model):
     ts = DateTimeField(description=_("Register"))
     start_ts = DateTimeField(description=_("Created"))
     # Event Classification
-    event_id = StringField(description=_("Id"))  #
+    event_id = StringField(description=_("Id"))
     source = StringField(description=_("Event Source"), low_cardinality=True)
     event_class = ReferenceField(EventClass, description=_("Event Class"))
     # Data
@@ -64,11 +64,9 @@ class Events(Model):
     resolved_vars = MapField(StringField(), description=_("Resolved Variables"))
     vars = MapField(StringField(), description=_("Vars"))
     snmp_trap_oid = StringField(description=_("snmp Trap OID"))
-    #
     severity = Int8Field(description="EventSeverity")
     result_action = StringField(description="Result action for event")
     error_message = StringField(description="Error message")
-    #
     remote_system = ReferenceField(RemoteSystem, description="Remote System")
     remote_id = StringField(description="Event Id on Remote System")
     # Target data

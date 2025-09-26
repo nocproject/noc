@@ -46,7 +46,6 @@ class ReportSubscription(Document):
     # Predefined report id
     # <app id>:<variant>
     report = StringField()
-    #
     last_status = BooleanField(default=False)
     last_run = DateTimeField()
 
@@ -110,7 +109,6 @@ class ReportSubscription(Document):
                 logger.error("[%s] Failed to create directory %s: %s", self.file_name, dirname, e)
                 return None
         path = os.path.join(dirname, self.file_name)
-        #
         app = site.apps[app_id]
         args = app.get_predefined_args(variant)
         request = self.RequestStub(user=self.run_as)

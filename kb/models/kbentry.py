@@ -54,7 +54,6 @@ class KBEntry(NOCModel):
     markup_language = models.CharField(
         "Markup Language", max_length=16, choices=[(x, x) for x in loader]
     )
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list

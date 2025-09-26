@@ -25,7 +25,7 @@ class RemoteObject(BaseModel):
     pool: Optional[str] = None  # Pool message receiver
     is_agent: bool = False  # Agent message send
     remote_id: Optional[str] = None  # Id on remote System that message Send
-    remote_system: Optional[str] = None  #
+    remote_system: Optional[str] = None
 
     def get_target(self) -> Target:
         return Target(

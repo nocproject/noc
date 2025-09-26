@@ -50,13 +50,11 @@ class MetricItem(object):
 @dataclass(frozen=True)
 class MetricCollectorConfig(object):
     collector: Literal["sla", "sensor", "managed_object", "cpe"]
-    #
     metrics: Tuple[MetricItem, ...]  # Metric Type List
     # Key labels
     labels: Optional[Tuple[str, ...]] = None
     # Like settings: ifindex::<ifindex>, oid::<oid>, ac::<SC/CS/S/C>
     hints: Optional[List[str]] = None
-    #
     service: Optional[int] = None  # Service BI_Id
     # Collectors
     sensor: Optional[int] = None  # Sensor BI_Id

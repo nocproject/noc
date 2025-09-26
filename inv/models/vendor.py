@@ -106,7 +106,6 @@ class Vendor(Document):
         # Fill full name if not set
         if not self.full_name:
             self.full_name = self.name
-        #
         super().clean()
 
     def on_save(self):

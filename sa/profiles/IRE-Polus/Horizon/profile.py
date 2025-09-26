@@ -82,7 +82,6 @@ METRIC_MAP = {
     "SES": "s",
     "BBE": "1",
     "UAS": "s",
-    #
     "RxPkts": "pkt",
     "RxOcts": "byte",
     "TxPkts": "pkt",

@@ -213,7 +213,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
             source="database",
         )
-        #
         self.collate(if_map)
         # Set artifacts for future use
         self.set_artefact("interface_macs", self.interface_macs)

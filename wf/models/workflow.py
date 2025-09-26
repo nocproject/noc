@@ -79,7 +79,6 @@ class Workflow(Document):
     uuid = UUIDField(binary=True)
     is_active = BooleanField()
     description = StringField()
-    #
     allowed_models = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

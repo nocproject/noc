@@ -84,7 +84,6 @@ class BeefCallWrapper(object):
                 version["image"] = self.object.software_image
         else:
             version = None
-        #
         scr = scls(
             service=get_service(self.object.pool.name),
             credentials=credentials,
@@ -225,7 +224,6 @@ def discovery_object(request):
     mo._beef_path = beef_path
     # Shortcut scripts to beef
     mo.set_scripts_caller(BeefCallWrapper)
-    #
     _configs[mo.id] = data
     return mo
 

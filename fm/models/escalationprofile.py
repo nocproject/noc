@@ -64,9 +64,7 @@ class EscalationItem(EmbeddedDocument):
     )
     time_pattern: TimePattern = ForeignKeyField(TimePattern)
     min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
-    #
     template: Template = ForeignKeyField(Template)
-    #
     close_template: Template = ForeignKeyField(Template)
     # Acton
     # Notification: Group, Register, Local

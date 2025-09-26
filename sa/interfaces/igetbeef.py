@@ -61,7 +61,6 @@ class IGetBeef(BaseInterface):
             "uuid": StringParameter(),
             # spec.uuid
             "spec": StringParameter(),
-            #
             "box": DictParameter(
                 attrs={
                     "profile": StringParameter(),
@@ -83,7 +82,6 @@ class IGetBeef(BaseInterface):
                     "names": StringListParameter(),
                     # ans.value
                     "request": StringParameter(),
-                    #
                     "reply": StringListParameter(),
                 }
             ),

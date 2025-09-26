@@ -301,7 +301,6 @@ class ExtApplication(Application):
                 r[self.fav_status] = r[self.pk] in fav_items
         # Bulk update result. Enrich with proper fields
         out = self.clean_list_data(out)
-        #
         if request.is_extjs:
             ld = len(out)
             if limit and (ld == limit or start > 0):

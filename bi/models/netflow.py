@@ -44,7 +44,6 @@ class Flows(Model):
     # Coordinates
     x = Float64Field(description=_("Longitude"))
     y = Float64Field(description=_("Latitude"))
-    #
     version = UInt8Field(description=_("Flow version"))
     in_bytes = UInt64Field(description=_("Incoming octets"))
     in_pkts = UInt64Field(description=_("Incoming packets"))

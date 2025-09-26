@@ -45,7 +45,6 @@ class Command(BaseCommand):
         today = datetime.date.today()
         # Get partitions
         parts = self.get_parts(ch)
-        #
         partition_claimed = []
         claimed_bytes = 0
         for p in CHPolicy.objects.filter(is_active=True).order_by("table"):

@@ -18,7 +18,6 @@ from noc.core.etl.models.typing import Reference
     [
         # Incomplete items
         ((1,), ValueError),
-        #
         (("1", "test"), {"id": "1", "name": "test", "parent": None, "default_pool": None}),
         (
             ("2", "test children", "1"),

@@ -52,7 +52,6 @@ class Firmware(Document):
     }
     # Global ID
     uuid = UUIDField(binary=True)
-    #
     profile = PlainReferenceField(Profile)
     vendor = PlainReferenceField(Vendor)
     version = StringField()

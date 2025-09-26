@@ -92,7 +92,6 @@ class Script(BaseScript):
                 ic += [" %s" % ept[is_access(c)]]
             else:
                 ic += [" no %s" % ept[is_access(c)]]
-            #
             if ic:
                 if iface[:2] == "ch":
                     commands += ["interface port-channel %s" % iface[2:]] + ic + [" exit"]

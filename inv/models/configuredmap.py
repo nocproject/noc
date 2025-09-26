@@ -83,7 +83,6 @@ class NodeItem(EmbeddedDocument):
     height = IntField()
     # default options
     collapsed = BooleanField()
-    #
     status_filter: List[AlarmFilter] = EmbeddedDocumentListField(AlarmFilter)
     # Link to other map
     portal_generator = StringField()

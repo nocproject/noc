@@ -348,7 +348,6 @@ class Scheduler(object):
                             ctx = {}
                         for k in cjobs[v]:
                             cjobs[v][k].load_context(ctx.get(k, {}))
-                #
                 for job in rjobs:
                     if job.is_retries_exceeded():
                         metrics["%s_jobs_retries_exceeded" % self.name] += 1

@@ -14,7 +14,6 @@ from noc.sa.models.diagnosticitem import DiagnosticItem as DiagnosticItemDoc
 from .types import DiagnosticState, DiagnosticValue
 from .hub import DiagnosticHub, DiagnosticItem
 
-#
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 

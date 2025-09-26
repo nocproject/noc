@@ -87,7 +87,6 @@ class DiscoveryID(Document):
     hostname_id = StringField()
     router_id = StringField()
     udld_id = StringField()  # UDLD local identifier
-    #
     macs = ListField(LongField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

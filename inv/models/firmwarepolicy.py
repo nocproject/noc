@@ -61,11 +61,8 @@ class FirmwarePolicy(Document):
     }
     # Platform (Matched with get_version)
     platform = PlainReferenceField(Platform, required=False)
-    #
     description = StringField()
-    #
     condition = StringField(choices=["<", "<=", ">=", ">", "="], default="=")
-    #
     firmware = PlainReferenceField(Firmware, required=True)
     status = StringField(
         choices=[
@@ -92,7 +89,6 @@ class FirmwarePolicy(Document):
         required=False,
     )
     snmp_rate_limit = IntField(default=0)
-    #
     management = ListField(EmbeddedDocumentField(ManagementPolicy))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)

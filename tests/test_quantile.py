@@ -138,7 +138,6 @@ def test_targeted_quantile(seq, expected):
         # Single-value
         seq_const(0.0, 1),
         seq_const(1.0, 1),
-        #
         seq_const(0.0, 1000),
         seq_const(1.0, 1000),
         seq_linear(0.0, 1.0, 1000),
@@ -163,7 +162,6 @@ def test_low_biased_merged_width(seq):
         # Single-value
         seq_const(0.0, 1),
         seq_const(1.0, 1),
-        #
         seq_const(0.0, 1000),
         seq_const(1.0, 1000),
         seq_linear(0.0, 1.0, 1000),
@@ -188,7 +186,6 @@ def test_high_biased_merged_width(seq):
         # Single-value
         seq_const(0.0, 1),
         seq_const(1.0, 1),
-        #
         seq_const(0.0, 1000),
         seq_const(1.0, 1000),
         seq_linear(0.0, 1.0, 1000),

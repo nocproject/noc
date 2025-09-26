@@ -52,7 +52,6 @@ class ReportDiscoveryLinks(ReportSource):
         sql = pl.SQLContext()
         r = ds.query_sync(fields=["pool", "status", "enable_ping", "enable_box", "link_count"])
         sql.register("mo", r.lazy())
-        #
         od_report = Report.get_by_code("OBJECT_DETAIL")
         if od_report:
             url = f"/main/reportconfig/{od_report.id}/run?" + "&".join(

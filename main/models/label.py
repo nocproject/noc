@@ -232,7 +232,6 @@ class Label(Document):
             "fg_color2": self.fg_color2,
             # Order
             "display_order": self.display_order,
-            #
             "allow_models": list(self.allow_models),
             "allow_auto_create": self.allow_auto_create,
             # Restrict UI operations

@@ -492,7 +492,6 @@ class Command(BaseCommand):
                 "result": result,
             }
             data = bz2.compress(orjson.dumps(tc))
-            #
             rn = os.path.join(test_path, f"{n:04d}.{test['script']}.json.bz2")
             self.print(f"[{n:04d}] Writing {rn}")
             with test_st.open_fs() as fs:

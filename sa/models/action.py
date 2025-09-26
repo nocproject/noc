@@ -89,7 +89,6 @@ class Action(Document):
     access_level = IntField(default=15)
     # Optional handler for non-sa actions
     handler = StringField()
-    #
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
@@ -235,5 +234,4 @@ class Action(Document):
         return args
 
 
-#
 from noc.ip.models.vrf import VRF

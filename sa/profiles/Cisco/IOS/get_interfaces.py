@@ -448,7 +448,6 @@ class Script(BaseScript):
                 continue
             ip = "%s/%s" % (match.group("address"), match.group("mask"))
             ipv6_interfaces[c_iface] += [ip]
-        #
         interfaces = {}
         # Get OSPF interfaces
         ospfs = self.get_ospfint()

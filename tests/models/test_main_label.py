@@ -21,18 +21,15 @@ from noc.main.models.label import Label
         (tuple(), []),
         (([],), []),
         (([], []), []),
-        #
         ((["x"],), ["x"]),
         ((["x", "x"],), ["x"]),
         ((["x"], ["x"]), ["x"]),
         ((["x", "y", "x"],), ["x", "y"]),
         ((["x", "y", "x"], ["x"]), ["x", "y"]),
-        #
         ((["scope::x"],), ["scope::x"]),
         ((["scope::x", "x"],), ["scope::x", "x"]),
         ((["scope::x", "scope::y"],), ["scope::x"]),
         ((["scope::x", "x", "scope::y"],), ["scope::x", "x"]),
-        #
         ((["x", "scope1::scope2::x", "scope1::scope2::x"],), ["x", "scope1::scope2::x"]),
     ],
 )

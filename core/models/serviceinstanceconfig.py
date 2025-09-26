@@ -44,9 +44,7 @@ class ServiceInstanceTypeConfig:
     only_one_instance: bool = True
     send_approve: bool = False
     allow_register: bool = False
-    #
     ttl: Optional[int] = None
-    #
     refs_caps: Optional[Any] = None
     asset_group: Optional[Any] = None
 

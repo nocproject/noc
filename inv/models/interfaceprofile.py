@@ -188,7 +188,6 @@ class InterfaceProfile(Document):
         ],
         default="e",
     )
-    #
     allow_lag_mismatch = BooleanField(default=False)
     # Send up/down notifications
     status_change_notification = StringField(
@@ -199,7 +198,6 @@ class InterfaceProfile(Document):
         default="d",
     )
     default_notification_group = ForeignKeyField(NotificationGroup, required=False)
-    #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Interface profile metrics
     metrics: List[InterfaceProfileMetrics] = EmbeddedDocumentListField(InterfaceProfileMetrics)
@@ -210,16 +208,13 @@ class InterfaceProfile(Document):
     is_uni = BooleanField(default=False)
     # Allow automatic segmentation
     allow_autosegmentation = BooleanField(default=False)
-    #
     allow_vacuum_bulling = BooleanField(default=False)
     # Validation policy
     interface_validation_policy = PlainReferenceField(InterfaceValidationPolicy)
-    #
     ifdesc_patterns = PlainReferenceField(IfDescPatterns)
     ifdesc_handler = PlainReferenceField(Handler)
     # Enable abduct detection on interface
     enable_abduct_detection = BooleanField(default=False)
-    #
     subinterface_apply_policy = StringField(
         choices=[
             ("I", "Inherit from Interface"),
@@ -235,7 +230,6 @@ class InterfaceProfile(Document):
         choices=[("R", "By Rule"), ("D", "Disable")],
         default="R",
     )
-    #
     match_rules = EmbeddedDocumentListField(MatchRule)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from

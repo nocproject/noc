@@ -241,13 +241,10 @@ class EventClass(Document):
     # True if event processing is regulated by
     # Interface Profile.link_events setting
     link_event = BooleanField(default=False)
-    #
     handlers = ListField(StringField())
     # Plugin settings
     plugins = ListField(EmbeddedDocumentField(EventPlugin))
-    #
     bi_id = LongField(unique=True)
-    #
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -387,7 +384,6 @@ class EventClass(Document):
                 disp += ["\n".join(ll)]
             r += [",\n".join(disp)]
             r += ["    ]"]
-            #
             if not r[-1].endswith(","):
                 r[-1] += ","
         # Plugins

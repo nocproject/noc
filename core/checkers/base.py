@@ -40,7 +40,7 @@ class DataItem(object):
 @dataclass(frozen=True, eq=True)
 class Check(object):
     name: str  # Check name
-    args: Optional[Dict[str, str]] = None  #
+    args: Optional[Dict[str, str]] = None
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
     port: Optional[int] = None  # TCP/UDP port

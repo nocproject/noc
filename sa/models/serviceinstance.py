@@ -415,7 +415,6 @@ class ServiceInstance(Document):
         port: Optional[str] = None,
         session: Optional[str] = None,
         pool: Optional[Pool] = None,
-        #
         ts: Optional[datetime.datetime] = None,
     ):
         """

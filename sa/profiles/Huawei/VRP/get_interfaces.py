@@ -382,7 +382,6 @@ class Script(BaseScript):
                 continue
             ip = match.group("ip")
             ipv4_interfaces[c_iface] += [ip]
-        #
         interfaces = {}
         # Get OSPF interfaces
         ospfs = self.get_ospfint()

@@ -95,7 +95,6 @@ class MessageRoute(Document):
     type: MessageType = EnumField(MessageType, required=True)
     # Match message headers
     match: List[MRMatch] = EmbeddedDocumentListField(MRMatch)
-    #
     telemetry_sample = IntField()
     # Message transmuting handler
     transmute_handler = PlainReferenceField(Handler)

@@ -75,7 +75,6 @@ class ReportAllocated(SimpleReport):
             v = kwargs[k]
             if k in cfn and v is not None and v != "":
                 q &= Q(**{str(k): v})
-        #
         return self.from_dataset(
             title=_(
                 "Allocated blocks in VRF %(vrf)s (IPv%(afi)s), %(prefix)s"

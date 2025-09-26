@@ -107,10 +107,8 @@ class DiagnosticConfig(object):
     run_order: str = "S"
     discovery_box: bool = False
     discovery_periodic: bool = False
-    #
     workflow_enabled_event: Optional[str] = None
     workflow_event: Optional[str] = None
-    #
     save_history: bool = False
     # Display Config
     show_in_display: bool = True

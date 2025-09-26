@@ -63,7 +63,6 @@ class Command(BaseCommand):
         # stats command
         stat_parser = subparsers.add_parser("stats", help="Show stats")
         stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
-        #
         bucket_parser = subparsers.add_parser("bucket", help="Show stats by buckets")
         bucket_parser.add_argument("--backets", default=5, help="Bucket count")
         bucket_parser.add_argument(

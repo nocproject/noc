@@ -243,7 +243,6 @@ class ConfigurationParam(Document):
     type: str = StringField(choices=["string", "number", "bool"], default="string")
     # Limitation
     schema: List["ParamSchemaItem"] = EmbeddedDocumentListField(ParamSchemaItem)
-    #
     choices: List["ConfigurationParamChoiceItem"] = EmbeddedDocumentListField(
         ConfigurationParamChoiceItem
     )

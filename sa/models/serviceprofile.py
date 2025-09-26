@@ -71,7 +71,6 @@ class DiagnosticSettings(EmbeddedDocument):
     handler: "Handler" = ReferenceField(Handler, required=False)
     instance_checks = BooleanField(default=False)
     ctx: str = ListField(StringField(required=True))
-    #
     alarm_class: Optional["AlarmClass"] = ReferenceField(AlarmClass, required=False)
     alarm_subject: str = StringField(max_length=256, required=False)
     # For instance ?
@@ -601,7 +600,6 @@ class ServiceProfile(Document):
         queries = {}
         for pid, rules, policy in ServiceProfile.get_alarm_rules():
             if rules is None:
-                #
                 q = ServiceInstance.get_instance_filter_by_alarm(
                     alarm, include_object=policy == "B"
                 )

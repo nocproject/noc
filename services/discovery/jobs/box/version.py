@@ -108,10 +108,8 @@ class VersionCheck(DiscoveryCheck):
         else:
             # Clear capabilities by attributes
             self.set_artefact("object_attributes", {})
-        #
         if changed:
             self.object.save()
-        #
         dfp = self.object.get_denied_firmware_policy()
         if dfp != "I":
             firmware_status = FirmwarePolicy.get_status(version, platform)

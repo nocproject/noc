@@ -413,7 +413,6 @@ class Engine(object):
         inputs = itertools.tee(_input, len(args))
         # Make generators
         gens = [a(self, g) for a, g in zip(args, inputs)]
-        #
         return self.iter_unique(itertools.chain(*gens))
 
     def fn_Del(self, _input, *args):
@@ -591,7 +590,6 @@ class Engine(object):
             else:
                 g_ctx.update(new_ctx)
 
-        #
         stack = kwargs.get("stack")
         # kwargs are callables, evaluate them
         if stack:

@@ -146,7 +146,6 @@ class RackSet(object):
                     # Render allocation
                     if "text" in v and v["text"]:
                         td += v["text"]
-                    #
                     td += "</td>"
                     out += [td]
             out += ["</tr>"]

@@ -90,7 +90,6 @@ class SpanCard(BaseCard):
                 s.width = self.GRAPH_WIDTH
         # Flatten
         spans = self.flatten_spans(root)
-        #
         return {"context": int(self.id), "root": root, "spans": spans}
 
     def flatten_spans(self, span, level=0):

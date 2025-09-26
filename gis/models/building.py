@@ -65,19 +65,14 @@ class Building(Document):
     homes = IntField()
     # Maximal amount of floors
     floors = IntField()
-    #
     entrances = ListField(EmbeddedDocumentField(Entrance))
-    #
     has_cellar = BooleanField()
     has_attic = BooleanField()
-    #
     postal_code = StringField()
     # Type
     is_administrative = BooleanField(default=False)
     is_habitated = BooleanField(default=False)
-    #
     data = DictField()
-    #
     start_date = DateTimeField()
     end_date = DateTimeField()
     # Internal field for sorting

@@ -426,7 +426,6 @@ class CommutationPlugin(InvPlugin):
         node_labels: Dict[str, str] = {}
         for node in nodes:
             update_labels(node)
-        #
         data = []
         seen = set()
         # Collect connections

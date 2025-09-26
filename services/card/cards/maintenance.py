@@ -60,7 +60,6 @@ class MaintenanceCard(BaseCard):
                 "summary": ss,
             }
             affected += [ao]
-        #
         return {
             "title": jinja2.Template(stpl).render({"object": self.object}),
             "object": self.object,

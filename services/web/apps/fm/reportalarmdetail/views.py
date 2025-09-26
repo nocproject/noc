@@ -267,7 +267,6 @@ class ReportAlarmDetailApplication(ExtApplication):
             if enable_autowidth:
                 for i, width in enumerate(get_col_widths(data)):
                     worksheet.set_column(i, i, width)
-            #
             book.close()
             response.seek(0)
             response = HttpResponse(response, content_type="application/vnd.ms-excel")

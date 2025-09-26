@@ -72,7 +72,6 @@ class DocInline(object):
                 self.clean_fields[name] = IntParameter()
             elif isinstance(f, PlainReferenceField):
                 self.clean_fields[name] = DocumentParameter(f.document_type)
-        #
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)

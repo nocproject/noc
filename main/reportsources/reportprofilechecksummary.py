@@ -102,7 +102,6 @@ class ReportProfileCheckSummary(ReportSource):
             ],
         )
         sql.register("mo", r.lazy())
-        #
         od_report = Report.get_by_code("OBJECT_DETAIL")
         if od_report:
             url = f"/main/reportconfig/{od_report.id}/run?" + "&".join(

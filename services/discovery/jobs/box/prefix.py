@@ -79,7 +79,6 @@ class PrefixCheck(DiscoveryCheck):
             self.logger.info(
                 "RD missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
             )
-        #
         self.logger.debug("Getting prefixes to synchronize")
         for vpn_id in vrfs:
             vrf = vrfs[vpn_id]

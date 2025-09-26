@@ -183,7 +183,6 @@ class EventClassificationRule(Document):
     test_cases: List[EventClassificationTestCase] = EmbeddedDocumentListField(
         EventClassificationTestCase
     )
-    #
     category = ObjectIdField()
 
     def __str__(self):

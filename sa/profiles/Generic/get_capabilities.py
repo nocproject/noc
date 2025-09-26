@@ -55,7 +55,6 @@ class Script(BaseScript):
     CHECK_SNMP_GET = {}
     # Dict of capability -> oid to check against snmp GETNEXT
     CHECK_SNMP_GETNEXT = {}
-    #
     CHECK_SNMP_GET_GENERIC = {
         "SNMP | MIB | HOST-RESOURCES-MIB": mib["HOST-RESOURCES-MIB::hrSystemDate", 0],
         "SNMP | MIB | NTPv4-MIB": mib["NTPv4-MIB::ntpEntStatusActiveRefSourceId", 0],
@@ -70,9 +69,7 @@ class Script(BaseScript):
         "Network | BGP": mib["BGP4-MIB::bgpPeerIdentifier"],
         "SNMP | OID | RFC1213-MIB::ipAddrTable": mib["RFC1213-MIB::ipAddrEntry"],
     }
-    #
     GET_SNMP_TABLE_IDX = {}
-    #
     SNMP_CAPS = {SNMP_v1: "SNMP | v1", SNMP_v2c: "SNMP | v2c", SNMP_v3: "SNMP | v3"}
     # MIB Support
 
@@ -413,7 +410,6 @@ class Script(BaseScript):
             self.requested = set(only)
         else:
             self.requested = None
-        #
         caps = {}
         if self.is_requested("snmp"):
             snmp_version = None

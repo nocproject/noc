@@ -265,7 +265,6 @@ class KSPFinder(object):
         pruned_links: DefaultDict[ManagedObject, Set[ObjectId]] = defaultdict(set)
         # Alternative paths
         B: List[Tuple[List[PathInfo], int]] = []
-        #
         for k in range(1, self.n_shortest):
             apply_pruned(A)
             a_path = to_path(A)[:-2]

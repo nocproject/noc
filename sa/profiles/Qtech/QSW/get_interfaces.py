@@ -253,7 +253,6 @@ class Script(BaseScript):
                 ],
             }
             interfaces += [iface]
-        #
 
         # Get L2 interfaces
         mac = self.scripts.get_chassis_id()[0]["first_chassis_mac"]

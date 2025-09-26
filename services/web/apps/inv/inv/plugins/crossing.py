@@ -58,7 +58,6 @@ class CrossingPlugin(InvPlugin):
             }
             for n, c in enumerate(crossings)
         ]
-        #
         n_input_discriminators = defaultdict(int)
         for c in crossings:
             if c.input_discriminator:

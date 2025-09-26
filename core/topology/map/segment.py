@@ -299,7 +299,6 @@ class SegmentTopology(TopologyBase):
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
-            #
             rca_neighbors = list(sorted(neighbors))
             # Recalculated result
             yield ObjectUplinks(

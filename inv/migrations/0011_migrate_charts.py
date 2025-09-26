@@ -64,6 +64,5 @@ class Migration(BaseMigration):
                         "height": my + 70,
                     }
                 )
-        #
         self.db.delete_table("inv_networkchart")
         cstate.drop()

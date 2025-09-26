@@ -54,7 +54,6 @@ class NotificationContact:
 MX_STREAM = "message"
 MX_METRICS_TYPE = "metrics"
 MX_METRICS_SCOPE = "Metric-Scope"
-#
 MX_SPAN_CTX = "NOC-Span-Ctx"
 MX_SPAN_ID = "Span-Id"
 # Headers
@@ -77,7 +76,6 @@ MX_NOTIFICATION_METHOD = "Notification-Method"
 MX_NOTIFICATION_GROUP_ID = "Notification-Group-Id"
 MX_LANG = "Language"
 KAFKA_PARTITION = "Kafka-Partition"
-#
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
 

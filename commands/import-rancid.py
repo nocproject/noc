@@ -277,10 +277,8 @@ class Command(BaseCommand):
             for t in options["tags"]:
                 tags += [x.strip() for x in t.split(",")]
         self.dry_run = bool(options["dry_run"])
-        #
         if not os.path.isdir(self.TMP):
             os.mkdir(self.TMP)
-        #
         revisions = self.index_cvs(options["repo"])
         # Read configs
         hosts = self.parse_hosts(options["hosts"])

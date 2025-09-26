@@ -404,7 +404,6 @@ class Profile(BaseProfile):
         header = {}
 
         for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
-            #
             if empty_header is None:
                 empty_header = (" ",) * len(lines)
                 head += [lines]

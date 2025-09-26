@@ -131,7 +131,6 @@ class Migration(BaseMigration):
                 [header_remarks, footer_remarks, id],
             )
         self.db.execute("COMMIT")
-        #
         self.db.delete_column("peer_as", "maintainer_id")
         self.db.delete_column("peer_as", "routes_maintainer_id")
         self.db.delete_column("peer_as", "rpsl_header")
