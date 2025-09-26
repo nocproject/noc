@@ -58,7 +58,6 @@ def register_connection(
     """Register connection settings"""
     global _vim_connection_settings
 
-    #
     conn_settings = {
         "host": host,
         "user": username,
