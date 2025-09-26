@@ -112,7 +112,7 @@ class DiagnosticItem(BaseModel):
     def workflow_event(self) -> Optional[str]:
         if not self.config.workflow_event:
             return None
-        if self.state != DiagnosticState.enabled and self.state != DiagnosticState.blocked:
+        if self.state not in (DiagnosticState.enabled, DiagnosticState.blocked):
             return self.config.workflow_event
         return None
 
@@ -121,7 +121,7 @@ class DiagnosticItem(BaseModel):
         """
         Check diagnostic has worked: Enabled or Failed state
         """
-        if self.state == DiagnosticState.enabled or self.state == DiagnosticState.failed:
+        if self.state in (DiagnosticState.enabled, DiagnosticState.failed):
             return True
         return False
 

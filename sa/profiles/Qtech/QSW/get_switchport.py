@@ -220,7 +220,7 @@ class Script(BaseScript):
                     list_vlans = self.expand_rangelist(vlans)
                     port_vlans[interface]["tagged"] = list_vlans
 
-            elif "access" == mode or "hybrid" == mode:
+            elif mode in ("access", "hybrid"):
                 match = self.rx_vlan_at.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")

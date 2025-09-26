@@ -236,7 +236,7 @@ class ChannelPlugin(InvPlugin):
                 # Find suitable channels
                 for sep, eep, cs in controller.iter_adhoc_endpoints(no):
                     # Restrict to port if necessary
-                    if is_xcvr and not (sep == xep or eep == xep):
+                    if is_xcvr and not (xep in (sep, eep)):
                         continue
                     # For bidirectional, suppress duplicates from other direction
                     if is_bidi:

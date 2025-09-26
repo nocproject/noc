@@ -274,9 +274,9 @@ class EventClassificationRule(Document):
         if self.profiles:
             mt.profile = self.profiles[0].name
         for p in self.patterns:
-            if p.key_re == "^source$" or p.key_re == "source":
+            if p.key_re in ("^source$", "source"):
                 mt.source = EventSource(p.value_re.strip("^$"))
-            if p.key_re == "^profile$" or p.key_re == "profile":
+            if p.key_re in ("^profile$", "profile"):
                 mt.profile = p.value_re.strip("^$").replace("\\", "")
         for tc in self.test_cases:
             yield (

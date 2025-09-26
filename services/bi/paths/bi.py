@@ -296,7 +296,7 @@ class BIAPI(JSONRPCAPI):
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             return None
-        if d.owner == DEFAULT_USER or d.owner == user or user.is_superuser:
+        if d.owner in (DEFAULT_USER, user) or user.is_superuser:
             return d
         # @todo: Filter by groups
         for i in d.access:

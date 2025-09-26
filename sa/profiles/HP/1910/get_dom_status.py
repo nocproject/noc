@@ -36,19 +36,19 @@ class Script(BaseScript):
             if not match:
                 continue
             temp_c = match.group("temp_c")
-            if temp_c == "N/A" or temp_c == "N/S":
+            if temp_c in ("N/A", "N/S"):
                 temp_c = None
             voltage_v = match.group("voltage_v")
-            if voltage_v == "N/A" or voltage_v == "N/S":
+            if voltage_v in ("N/A", "N/S"):
                 voltage_v = None
             current_ma = match.group("current_ma")
-            if current_ma == "N/A" or current_ma == "N/S":
+            if current_ma in ("N/A", "N/S"):
                 current_ma = None
             optical_rx_dbm = match.group("optical_rx_dbm")
-            if optical_rx_dbm == "N/A" or optical_rx_dbm == "N/S":
+            if optical_rx_dbm in ("N/A", "N/S"):
                 optical_rx_dbm = None
             optical_tx_dbm = match.group("optical_tx_dbm")
-            if optical_tx_dbm == "N/A" or optical_tx_dbm == "N/S":
+            if optical_tx_dbm in ("N/A", "N/S"):
                 optical_tx_dbm = None
             r.append(
                 {

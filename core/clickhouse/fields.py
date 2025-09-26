@@ -136,7 +136,7 @@ class DateField(BaseField):
         return value.strftime("%Y-%m-%d")
 
     def to_python(self, value):
-        if not value or value == self.default_value or value == "1970-01-01":
+        if not value or value in (self.default_value, "1970-01-01"):
             return None
         else:
             return datetime.strptime(value, "%Y-%m-%d").date()
@@ -152,7 +152,7 @@ class DateTimeField(BaseField):
         return value.strftime("%Y-%m-%d %H:%M:%S")
 
     def to_python(self, value):
-        if not value or value == self.default_value or value == "1970-01-01 00:00:00":
+        if not value or value in (self.default_value, "1970-01-01 00:00:00"):
             return None
         else:
             return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
