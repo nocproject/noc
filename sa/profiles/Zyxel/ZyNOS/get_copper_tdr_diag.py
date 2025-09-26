@@ -27,15 +27,13 @@ class Script(BaseScript):
 
     def convert_to_cm(self, distance):
         try:
-            distance = float(distance) * 100
-            return distance
+            return float(distance) * 100
         except (ValueError, TypeError):
             pass
         return 0
 
     def convert_status(self, zstatus):
-        status = {"Ok": "T", "Open": "O", "Short": "S"}[zstatus]
-        return status
+        return {"Ok": "T", "Open": "O", "Short": "S"}[zstatus]
 
     def execute(self, interface):
         r = []

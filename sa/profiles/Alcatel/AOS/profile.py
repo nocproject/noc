@@ -29,7 +29,7 @@ class Profile(BaseProfile):
             # Alcatel 1/2 6.3.1.871.R01
             # Alcatel-Lucent 1/13
             return s.split()[1]
-        elif s.startswith("Dynamic Aggregate Number "):
+        if s.startswith("Dynamic Aggregate Number "):
             # Dynamic Aggregate Number 1 ref 40000001 size 4
             return "Agg %s" % s.split()[3]
         return s

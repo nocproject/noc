@@ -230,14 +230,13 @@ class MODiscoveryJob(PeriodicJob):
         :param problems:
         :return:
         """
-        #
         discovery_diagnostics = self.load_diagnostic(
             is_box=self.is_box, is_periodic=self.is_periodic
         )
         self.logger.debug("Updating diagnostics statuses: %s", problems)
         if not discovery_diagnostics:
             self.logger.info("Discovered diagnostics not found")
-            return None
+            return
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
@@ -399,7 +398,6 @@ class DiscoveryCheck(object):
     required_capabilities = None
     # If not None, check job has all required artefacts
     required_artefacts = None
-    #
     fatal_errors = {
         ERR_CLI_AUTH_FAILED,
         ERR_CLI_NO_SUPER_COMMAND,
@@ -619,7 +617,7 @@ class DiscoveryCheck(object):
             name = mo.get_profile().convert_interface_name(name)
         except ValueError as e:
             self.logger.debug("Cannot convert remote port %s:%r, %r", mo.name, name, e)
-            return
+            return None
         self.logger.debug("Searching port by name: %s:%s", mo.name, name)
         key = (mo, name)
         if key not in self.if_name_cache:
@@ -838,8 +836,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     "Cannot resolve remote interface %s:%r. Skipping", remote_object.name, ri
                 )
                 continue
-            else:
-                self.logger.debug("Resolve remote interface as %s:%r", remote_object.name, ri)
+            self.logger.debug("Resolve remote interface as %s:%r", remote_object.name, ri)
             # Detecting loops
             if remote_object.id == self.object.id:
                 loops[li] = remote_interface
@@ -1277,7 +1274,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 remote_interface,
             )
             return
-        #
         if lpolicy in ("O", "R") and rpolicy in ("O", "R"):
             # Unlink when necessary
             if llink:
@@ -1311,7 +1307,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     e,
                 )
             return
-        #
         if lpolicy == "C":
             if rlink:
                 if rpolicy == "O":
@@ -1325,13 +1320,12 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         remote_interface,
                     )
                     return
-                else:
-                    self.logger.info("Unlinking %s", ri)
-                    try:
-                        ri.unlink()
-                    except ValueError as e:
-                        self.logger.error("Failed to unlink %s: %s", ri, e)
-                        return
+                self.logger.info("Unlinking %s", ri)
+                try:
+                    ri.unlink()
+                except ValueError as e:
+                    self.logger.error("Failed to unlink %s: %s", ri, e)
+                    return
             if llink:
                 # Attach to existing cloud
                 llink.interfaces = llink.interfaces + [ri]
@@ -1363,9 +1357,8 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         remote_interface,
                     )
                     return
-                else:
-                    self.logger.info("Unlinking %s", li)
-                    li.unlink()
+                self.logger.info("Unlinking %s", li)
+                li.unlink()
             if rlink:
                 # Attach to existing cloud
                 rlink.interfaces = rlink.interfaces + [li]
@@ -1384,7 +1377,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         e,
                     )
                 return
-        #
         self.logger.info(
             "Not linking: %s:%s -- %s:%s. " "Link creating not allowed",
             local_object.name,
@@ -1517,7 +1509,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "%s:%s is already linked", iface.managed_object.name, iface.name
                     )
                     continue
-                elif not self.object.segment.profile.is_preferable_method(
+                if not self.object.segment.profile.is_preferable_method(
                     self.name, if_link.discovery_method
                 ):
                     self.logger.info(
@@ -1528,16 +1520,15 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         self.name,
                     )
                     continue
-                else:
-                    self.logger.info(
-                        "Relinking %s:%s to cloud %s:%s",
-                        iface.managed_object.name,
-                        iface.name,
-                        root_interface.managed_object.name,
-                        root_interface.name,
-                    )
-                    iface.unlink()
-                    root_link.interfaces += [iface]
+                self.logger.info(
+                    "Relinking %s:%s to cloud %s:%s",
+                    iface.managed_object.name,
+                    iface.name,
+                    root_interface.managed_object.name,
+                    root_interface.name,
+                )
+                iface.unlink()
+                root_link.interfaces += [iface]
             else:
                 self.logger.info(
                     "Linking %s:%s to cloud %s:%s",
@@ -1622,7 +1613,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         Actually get data from script. Should be overriden
         :return:
         """
-        return None
+        return
 
     def can_get_data_from_script(self):
         """
@@ -1643,7 +1634,7 @@ class PolicyDiscoveryCheck(DiscoveryCheck):
         Actually get data from ConfDB. Should be overriden
         :return:
         """
-        return None
+        return
 
     def can_get_data_from_confdb(self):
         """

@@ -91,5 +91,4 @@ class BaseEvFilter(object):
             r = self.events.get(eh)
             if deadline == r[0]:
                 del self.events[eh]
-        #
         return None

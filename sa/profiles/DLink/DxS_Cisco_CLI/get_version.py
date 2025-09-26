@@ -53,19 +53,17 @@ class Script(BaseScript):
                 "version": match.group("version"),
                 "attributes": {"HW version": match.group("hversion"), "Serial Number": snmp_sn},
             }
-        else:
-            match = self.rx_ver1.search(c)
-            if match:
-                match1 = self.rx_ver2.search(c)
-                return {
-                    "vendor": "DLink",
-                    "platform": match.group("platform"),
-                    "version": match1.group("version"),
-                    "attributes": {
-                        "Boot PROM": match1.group("bootprom"),
-                        "HW version": match.group("hversion"),
-                        "Serial Number": match.group("serial"),
-                    },
-                }
-            else:
-                raise self.NotSupportedError()
+        match = self.rx_ver1.search(c)
+        if match:
+            match1 = self.rx_ver2.search(c)
+            return {
+                "vendor": "DLink",
+                "platform": match.group("platform"),
+                "version": match1.group("version"),
+                "attributes": {
+                    "Boot PROM": match1.group("bootprom"),
+                    "HW version": match.group("hversion"),
+                    "Serial Number": match.group("serial"),
+                },
+            }
+        raise self.NotSupportedError()

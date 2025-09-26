@@ -30,12 +30,11 @@ class Script(BaseScript):
             mac = match.group("mac")
             if mac.lower() in ("incomplete" or "none") or type.lower() in ("pending", "invalid"):
                 continue
-            else:
-                r.append(
-                    {
-                        "ip": match.group("ip"),
-                        "mac": match.group("mac"),
-                        "interface": match.group("interface"),
-                    }
-                )
+            r.append(
+                {
+                    "ip": match.group("ip"),
+                    "mac": match.group("mac"),
+                    "interface": match.group("interface"),
+                }
+            )
         return r

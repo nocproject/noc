@@ -101,7 +101,6 @@ class AuditTrail(Document):
         """
         Audit trail for INSERT and UPDATE operations
         """
-        #
         logger.debug("Logging change for %s", instance)
         changes = []
         if kwargs.get("created", True):
@@ -129,7 +128,6 @@ class AuditTrail(Document):
         """
         Audit trail for DELETE operation
         """
-        #
         logger.debug("Logging deletion of %s", instance)
         changes = [
             {"field": f.name, "old": cls.get_field(instance, f), "new": None}

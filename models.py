@@ -135,7 +135,6 @@ _MODELS = {
     "main.TimePattern": "noc.main.models.timepattern.TimePattern",
     "main.TimePatternTerm": "noc.main.models.timepatternterm.TimePatternTerm",
     "main.UserState": "noc.main.models.userstate.UserState",
-    #
     "dev.Quiz": "noc.dev.models.quiz.Quiz",
     "dev.Spec": "noc.dev.models.spec.Spec",
     # project models
@@ -427,7 +426,6 @@ LABEL_MODELS = {
     "sa.AdministrativeDomain": "enable_administrativedomain",
     "sa.AuthProfile": "enable_authprofile",
     "sa.CommandSnippet": "enable_commandsnippet",
-    #
     "inv.AllocationGroup": "enable_allocationgroup",
     "inv.NetworkSegment": "enable_networksegment",
     "inv.Object": "enable_object",
@@ -438,18 +436,14 @@ LABEL_MODELS = {
     "inv.SensorProfile": "enable_sensorprofile",
     "inv.Interface": "enable_interface",
     "inv.FirmwarePolicy": "enable_firmwarepolicy",
-    #
     "crm.Subscriber": "enable_subscriber",
     "crm.SubscriberProfile": "enable_subscriber",
     "crm.Supplier": "enable_supplier",
     "crm.SupplierProfile": "enable_supplier",
-    #
     "dns.DNSZone": "enable_dnszone",
     "dns.DNSZoneRecord": "enable_dnszonerecord",
-    #
     "gis.Division": "enable_division",
     "kb.KBEntry": "enable_kbentry",
-    #
     "ip.Address": "enable_ipaddress",
     "ip.AddressProfile": "enable_addressprofile",
     "ip.AddressRange": "enable_ipaddressrange",
@@ -457,20 +451,16 @@ LABEL_MODELS = {
     "ip.PrefixProfile": "enable_prefixprofile",
     "ip.VRF": "enable_vrf",
     "ip.VRFGroup": "enable_vrfgroup",
-    #
     "peer.AS": "enable_asn",
     "peer.ASSet": "enable_assetpeer",
     "peer.Peer": "enable_peer",
-    #
     "vc.VLAN": "enable_vlan",
     "vc.VLANProfile": "enable_vlanprofile",
     "vc.VPN": "enable_vpn",
     "vc.VPNProfile": "enable_vpnprofile",
-    #
     "sla.SLAProbe": "enable_slaprobe",
     "sla.SLAProfile": "enable_slaprofile",
     "fm.ActiveAlarm": "enable_alarm",
-    #
     "wf.State": "enable_workflowstate",
 }
 

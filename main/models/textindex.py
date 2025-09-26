@@ -51,7 +51,6 @@ class TextIndex(Document):
     tags = ListField(StringField())
     # Date of last changed
     changed = DateTimeField()
-    #
     language = StringField(default="english")
 
     rx_phrases = re.compile(r"(\d+(?:[-_.:]\d+)+)")
@@ -108,7 +107,6 @@ class TextIndex(Document):
     def search(cls, query, limit=1000):
         # Convert IP, prefixes and MAC addresses to phrases search
         query = cls.rx_phrases.sub('"\\1"', query)
-        #
         r = TextIndex._get_collection().aggregate(
             [
                 {"$match": {"$text": {"$search": query}}},

@@ -41,5 +41,4 @@ class Script(BaseScript):
         version = match.group("version")
         match = self.re_search(self.rx_platform, v)
         platform = match.group("platform")
-        r = {"vendor": "Huawei", "platform": platform, "version": version}
-        return r
+        return {"vendor": "Huawei", "platform": platform, "version": version}

@@ -47,12 +47,10 @@ def render_template(name, context=None):
                 _tpl_cache[name] = Template(f.read())
         else:
             _tpl_cache[name] = None
-    #
     tpl = _tpl_cache[name]
     if tpl:
         return tpl.render(Context(context or {}))
-    else:
-        return None
+    return None
 
 
 def render_message(name, context=None):
@@ -78,8 +76,7 @@ def render_message(name, context=None):
         subject = ln.pop(0)[8:].strip()
         body = "\n".join(strip_leading_newlines(ln[1:]))
         return subject, body
-    else:
-        return None, "\n".join(ln)
+    return None, "\n".join(ln)
 
 
 class ObjectNotification(NOCModel):

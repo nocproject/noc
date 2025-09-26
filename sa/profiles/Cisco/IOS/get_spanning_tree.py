@@ -106,7 +106,6 @@ class Script(BaseScript):
     def process_pvst(self, cli_stp, proto):
         # Save port attributes
         ports = self.get_ports_attrs(cli_stp, "\nVLAN")
-        #
         r = {"mode": proto, "instances": []}
         interfaces = {}
         for I in self.cli("show spanning-tree detail").split("\n VLAN")[1:]:
@@ -181,7 +180,6 @@ class Script(BaseScript):
     def process_mstp(self, cli_stp):
         # Save port attributes
         ports = self.get_ports_attrs(cli_stp, "\nMST")
-        #
         v = self.cli("show spanning-tree mst configuration")
         match = self.rx_mstp_region.search(v)
         r = {
@@ -196,7 +194,6 @@ class Script(BaseScript):
             if vlans == "none":
                 vlans = ""
             iv[instance] = vlans
-        #
         interfaces = {}
         for I in self.cli("show spanning-tree mst detail").split("\n##### MST")[1:]:
             instance_id, _ = I.split(" ", 1)
@@ -239,11 +236,10 @@ class Script(BaseScript):
         v = self.cli("show spanning-tree")
         if "Spanning tree enabled protocol ieee" in v:
             return self.process_pvst(v, proto="PVST+")
-        elif "Spanning tree enabled protocol rstp" in v:
+        if "Spanning tree enabled protocol rstp" in v:
             return self.process_pvst(v, proto="rapid-PVST+")
-        elif "Spanning tree enabled protocol mstp" in v:
+        if "Spanning tree enabled protocol mstp" in v:
             return self.process_mstp(v)
         # elif "No spanning tree instance exists" in v \
         # or "No spanning tree instances exist" in v:
-        else:
-            return {"mode": "None", "instances": []}
+        return {"mode": "None", "instances": []}

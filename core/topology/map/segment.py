@@ -71,10 +71,9 @@ class SegmentTopology(TopologyBase):
     def get_role(self, mo: ManagedObject) -> str:
         if mo.segment in self.segment_siblings:
             return "segment"
-        elif self.parent_segment and mo.segment.id in self.ancestor_segments:
+        if self.parent_segment and mo.segment.id in self.ancestor_segments:
             return "uplink"
-        else:
-            return "downlink"
+        return "downlink"
 
     @cachetools.cachedmethod(operator.attrgetter("_uplinks_cache"))
     def get_uplinks(self) -> List[str]:
@@ -227,7 +226,7 @@ class SegmentTopology(TopologyBase):
             if role == "uplink":
                 # Only downlinks matter
                 return []
-            elif role == "downlink":
+            if role == "downlink":
                 # All segment neighbors are uplinks.
                 # As no inter-downlink segment's links are loaded
                 # so all neigbors are from current segment
@@ -299,7 +298,6 @@ class SegmentTopology(TopologyBase):
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
-            #
             rca_neighbors = list(sorted(neighbors))
             # Recalculated result
             yield ObjectUplinks(

@@ -43,4 +43,4 @@ class ScriptAction(BaseAction):
         # @todo: Wrap and catch errors
         scr = mo.scripts[script]
         await asyncio.to_thread(scr, **kwargs)
-        return None
+        return

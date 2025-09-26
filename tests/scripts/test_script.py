@@ -23,11 +23,10 @@ def get_scripts():
     if os.environ.get("NOC_TEST_SCRIPT"):
         s_name = os.environ["NOC_TEST_SCRIPT"]
         return [x for x in loader.iter_scripts() if x == s_name]
-    elif os.environ.get("NOC_TEST_PROFILE"):
+    if os.environ.get("NOC_TEST_PROFILE"):
         p_name = "%s." % os.environ["NOC_TEST_PROFILE"]
         return [x for x in loader.iter_scripts() if x.startswith(p_name)]
-    else:
-        return [x for x in loader.iter_scripts() if x.split(".")[0] not in IGNORED_VENDOR]
+    return [x for x in loader.iter_scripts() if x.split(".")[0] not in IGNORED_VENDOR]
 
 
 @pytest.fixture(scope="session", params=get_scripts())

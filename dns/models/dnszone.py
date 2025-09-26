@@ -95,7 +95,6 @@ class DNSZone(NOCModel):
         on_delete=models.CASCADE,
     )
     paid_till = models.DateField(_("Paid Till"), null=True, blank=True)
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
@@ -149,10 +148,9 @@ class DNSZone(NOCModel):
         nl = name.lower()
         if nl.endswith(".in-addr.arpa"):
             return ZONE_REVERSE_IPV4  # IPv4 reverse
-        elif nl.endswith(".ip6.int") or nl.endswith(".ip6.arpa"):
+        if nl.endswith(".ip6.int") or nl.endswith(".ip6.arpa"):
             return ZONE_REVERSE_IPV6  # IPv6 reverse
-        else:
-            return ZONE_FORWARD  # Forward
+        return ZONE_FORWARD  # Forward
 
     rx_rzone = re.compile(r"^(\d+)\.(\d+)\.(\d+)\.in-addr.arpa$")
 
@@ -257,8 +255,7 @@ class DNSZone(NOCModel):
         s_base = self.serial // 100
         if s_base < base:
             return base * 100  # New day
-        else:
-            return self.serial + 1  # May cause future lap
+        return self.serial + 1  # May cause future lap
 
     def set_next_serial(self):
         old_serial = self.serial
@@ -282,8 +279,7 @@ class DNSZone(NOCModel):
         name = ns.name.strip()
         if not is_ipv4(name) and not name.endswith("."):
             return name + "."
-        else:
-            return name
+        return name
 
     @property
     def ns_list(self):
@@ -369,14 +365,13 @@ class DNSZone(NOCModel):
             n = name.split(".")
             n.reverse()
             return get_closest("%s.in-addr.arpa" % (".".join(n[1:])))
-        elif is_ipv6(name):
+        if is_ipv6(name):
             # IPv6 zone
             d = IPv6(name).digits
             d.reverse()
             c = ".".join(d)
             return get_closest("%s.ip6.arpa" % c) or get_closest("%s.ip6.int" % c)
-        else:
-            return get_closest(name)
+        return get_closest(name)
 
     def get_notification_groups(self):
         """
@@ -391,8 +386,7 @@ class DNSZone(NOCModel):
         ng = SystemNotification.get_notification_group("dns.change")
         if ng:
             return [ng]
-        else:
-            return []
+        return []
 
     @property
     def is_forward(self):

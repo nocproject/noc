@@ -184,7 +184,6 @@ class MapPlugin(InvPlugin):
                     m[p] = {}
                 m = m[p]
             m[parts[-1]] = str(mt.id)
-        #
         return get_menu_item(d)
 
     def api_create(self, request, model=None, name=None, srid=None, x=None, y=None):

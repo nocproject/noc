@@ -148,28 +148,23 @@ class Script(BaseScript):
         if match:
             r.update(match.groupdict())
             return r
-        else:
-            match = self.rx_ver2.search(c)
+        match = self.rx_ver2.search(c)
         if match:
             r.update(match.groupdict())
             return r
-        else:
-            match = self.rx_ver_2016.search(c)
+        match = self.rx_ver_2016.search(c)
         if match:
             r.update(match.groupdict())
             return r
-        else:
-            match = self.rx_ver_2015.search(c)
+        match = self.rx_ver_2015.search(c)
         if match:
             r.update(match.groupdict())
             return r
-        else:
-            match = self.rx_ver_2017.search(c)
+        match = self.rx_ver_2017.search(c)
         if match:
             r.update(match.groupdict())
             return r
-        else:
-            match = self.rx_ver3.search(c)
+        match = self.rx_ver3.search(c)
         if not match:
             return self.parse_kv_version(c)
         return match.groupdict()

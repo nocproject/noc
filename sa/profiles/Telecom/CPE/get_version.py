@@ -47,10 +47,9 @@ class Script(BaseScript):
     def execute_snmp(self):
         oid = self.snmp.get("1.3.6.1.2.1.1.1.0")
         platform, version, attributes = self.normalize_param(oid)
-        r = {
+        return {
             "vendor": "Telecom",
             "version": version or "",
             "platform": platform or "",
             "attributes": attributes or "",
         }
-        return r

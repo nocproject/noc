@@ -47,10 +47,8 @@ class Channel(object):
         self.size += len(msg.value)
         self.records += msg.value.count(b"\n") + (0 if msg.value.endswith(b"\n") else 1)
         self.last_offset = msg.offset
-        #
         if not self.expired:
             self.expired = perf_counter() + self.ttl
-        #
         if self.is_ready_to_flush():
             await self.schedule_flush()
             await self.feed_ready.wait()

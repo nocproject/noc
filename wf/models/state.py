@@ -138,7 +138,6 @@ class State(Document):
     y = IntField(default=0)
     # Disable all interaction
     disable_all_interaction = BooleanField(default=False)
-    #
     interaction_settings = MapField(EmbeddedDocumentField(InteractionSetting))
     # Labels
     labels = ListField(StringField())

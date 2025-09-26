@@ -216,7 +216,6 @@ def test_case():
         # Activate sender
         sender.activate(tx, "ts", ts)
         sender.activate(tx, "labels", data["labels"])
-        #
         result = tx.inputs.get(cdag.nodes["check"]) or None
         if result:
             result = result["x"]

@@ -95,7 +95,6 @@ class Migration(BaseMigration):
                     ]
                 # Save profile
                 tp_coll.insert_one(tp)
-                #
                 metric["threshold_profile"] = tp_id
             # Store back
             p_coll.update_one({"_id": doc.pop("_id")}, {"$set": doc})

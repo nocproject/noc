@@ -21,8 +21,7 @@ class ReportLOC(SimpleReport):
             m = int(prefix.split("/")[1])
             if m <= powermask:
                 return 2 * (powermask - m)
-            else:
-                return 0
+            return 0
 
         powermask = 24
         r = []  # (Descption, as, filter, cone)

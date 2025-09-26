@@ -47,7 +47,6 @@ class Script(BaseScript):
                 rd = match.group("rd")
                 if not self.is_not_set(rd):
                     current["rd"] = rd
-                #
                 in_interfaces = False
                 continue
             if not current:

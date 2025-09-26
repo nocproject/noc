@@ -121,7 +121,6 @@ class Script(BaseScript):
     rx_check_column_num = re.compile(r"Instance\s*Mode\s*VLANs Mapped")
 
     def process_mstp(self, ports=None):
-        #
         v = self.cli("display stp region-configuration")
         match = self.rx_mstp_region.search(v)
         r = {
@@ -152,7 +151,6 @@ class Script(BaseScript):
                 iv[int(instance)] += row[14:]
         for x in iv:
             iv[x] = iv[x].replace(" to ", "-")
-        #
         interfaces = {}
         for instance_id in iv:
             if instance_id not in ports:
@@ -221,6 +219,5 @@ class Script(BaseScript):
         ports = self.get_ports_attrs()
         if ports:
             return self.process_mstp(ports=ports)
-        else:
-            # No STP ports
-            return {"mode": None, "instances": []}
+        # No STP ports
+        return {"mode": None, "instances": []}

@@ -61,11 +61,8 @@ class FirmwarePolicy(Document):
     }
     # Platform (Matched with get_version)
     platform = PlainReferenceField(Platform, required=False)
-    #
     description = StringField()
-    #
     condition = StringField(choices=["<", "<=", ">=", ">", "="], default="=")
-    #
     firmware = PlainReferenceField(Firmware, required=True)
     status = StringField(
         choices=[
@@ -92,7 +89,6 @@ class FirmwarePolicy(Document):
         required=False,
     )
     snmp_rate_limit = IntField(default=0)
-    #
     management = ListField(EmbeddedDocumentField(ManagementPolicy))
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -224,12 +220,11 @@ class FirmwarePolicy(Document):
         return Label.get_effective_setting(label, setting="enable_firmwarepolicy")
 
     def get_affected_firmwares(self) -> List["Firmware"]:
-        r = [
+        return [
             fw
             for fw in Firmware.objects.filter(profile=self.firmware.profile)
             if self.is_fw_match(fw)
         ]
-        return r
 
     def get_affected_managed_objects_ids(self) -> List[int]:
         from noc.sa.models.managedobject import ManagedObject

@@ -88,7 +88,6 @@ class ReportRebootsApplication(SimpleReport):
                 % ", ".join(chunk)
             )
             mo_names.update({c[0]: c[1:3] for c in cursor})
-        #
         if not request.user.is_superuser:
             data = [
                 (mo_names.get(x["_id"], "---")[1], mo_names.get(x["_id"], "---")[0], x["count"])

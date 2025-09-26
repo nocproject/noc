@@ -194,7 +194,6 @@ class Service(Document):
     parent: "Service" = ReferenceField("self", required=False)
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
-    #
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
     # Service oper status settings
@@ -210,7 +209,6 @@ class Service(Document):
     status_dependencies: List["ServiceStatusDependency"] = EmbeddedDocumentListField(
         ServiceStatusDependency
     )
-    #
     calculate_status_function = StringField(
         choices=[
             ("D", "Disable"),
@@ -231,7 +229,6 @@ class Service(Document):
     # Supplier information
     supplier = ReferenceField(Supplier)
     description = StringField()
-    #
     agreement_id = StringField()
     # Order Fulfillment order id
     order_id = StringField()
@@ -252,7 +249,6 @@ class Service(Document):
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     diagnostics: List[DiagnosticItem] = EmbeddedDocumentListField(DiagnosticItem)
-    #
     static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
     agent = PlainReferenceField(Agent)
@@ -364,7 +360,7 @@ class Service(Document):
         si = ServiceInstance.objects.filter(service=self.id, managed_object__exists=True).first()
         if si:
             return si.interface
-        return
+        return None
 
     @property
     def in_maintenance(self):
@@ -375,8 +371,8 @@ class Service(Document):
         """Generate Workflow signal"""
         statuses = {si.is_deployed for si in self.service_instances}
         if True not in statuses:
-            return
-        elif False in statuses:
+            return None
+        if False in statuses:
             return "partial"
         return "full"
 
@@ -528,7 +524,7 @@ class Service(Document):
         # Set Outage
         if self.profile.raise_status_alarm_policy == "D":
             return
-        elif self.profile.raise_status_alarm_policy == "R" and len(self.service_path) != 1:
+        if self.profile.raise_status_alarm_policy == "R" and len(self.service_path) != 1:
             # Only Root service
             return
         self.register_alarm(os)
@@ -613,7 +609,7 @@ class Service(Document):
             if iface:
                 msg["vars"]["interface"] = str(iface.name)
             return msg
-        elif self.profile.raise_status_alarm_policy == "A" and self.profile.raise_alarm_class:
+        if self.profile.raise_status_alarm_policy == "A" and self.profile.raise_alarm_class:
             # Disposition
             msg = {
                 "$op": "disposition",
@@ -634,7 +630,7 @@ class Service(Document):
                 msg["vars"]["interface"] = str(iface.name)
                 msg["managed_object"] = str(iface.managed_object.id)
             return msg
-        return
+        return None
 
     def register_alarm(self, old_status: Status):
         """
@@ -787,7 +783,7 @@ class Service(Document):
         f = self.get_calculate_status_function()
         if f == "MN":
             return min(statuses.keys())
-        elif f == "MX":
+        if f == "MX":
             return max(statuses.keys())
         logger.info("Calculate Status by Rules: %s", statuses)
         # Add Profile Rules
@@ -818,7 +814,7 @@ class Service(Document):
         """Return service Ids for requested alarm"""
         if alarm.alarm_class.name == SVC_AC:
             return []
-        elif hasattr(alarm.components, "service") and getattr(alarm.components, "service", None):
+        if hasattr(alarm.components, "service") and getattr(alarm.components, "service", None):
             return [alarm.components.service.id]
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
@@ -850,7 +846,6 @@ class Service(Document):
                 effective_client_groups__in=alarm.managed_object.effective_service_groups,
                 profile__in=profile_rules,
             )
-        #
         logger.debug("Requested services by query: %s", q)
         if not q:
             return list(services)

@@ -207,9 +207,7 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             )
             # For -1 as nothing messages
             current_offset = max(0, current_offset)
-            if current_offset > newest_offset:
-                # Fix if cursor not set properly
-                current_offset = newest_offset
+            current_offset = min(current_offset, newest_offset)
             logger.info(
                 "Start copying from current_offset: %s to newest offset: %s",
                 current_offset,

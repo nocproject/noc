@@ -45,12 +45,11 @@ class Object(object):
         return False
 
     def get_check_ctx(self, **kwargs):
-        ctx = {
+        return {
             "labels": self.effective_labels,
             "address": self.address,
             "groups": self.effective_service_groups,
         }
-        return ctx
 
     def iter_diagnostic_configs(self):
         """

@@ -262,5 +262,4 @@ class Script(BaseScript):
     def execute_cli(self):
         if self.is_sks_achtung:
             return self.get_sks_achtung()
-        else:
-            return self.get_sks()
+        return self.get_sks()

@@ -34,5 +34,4 @@ class Profile(BaseProfile):
             for i in range(len(m)):
                 m[i] = m[i].replace(":", '":', 1)
             return json.loads(",".join(m))
-        else:
-            return {}
+        return {}

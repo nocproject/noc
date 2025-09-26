@@ -43,13 +43,11 @@ class Street(Document):
         "auto_create_index": False,
         "indexes": ["parent", "data", "remote_id"],
     }
-    #
     parent = PlainReferenceField(Division)
     # Normalized name
     name = StringField()
     # street/town/city, etc
     short_name = StringField()
-    #
     is_active = BooleanField(default=True)
     # Additional data
     # Depends on importer
@@ -60,7 +58,6 @@ class Street(Document):
     remote_id = StringField()
     # Object id in BI
     bi_id = LongField(unique=True)
-    #
     start_date = DateTimeField()
     end_date = DateTimeField()
 
@@ -74,8 +71,7 @@ class Street(Document):
     def __str__(self):
         if self.short_name:
             return "%s, %s" % (self.name, self.short_name)
-        else:
-            return self.name
+        return self.name
 
     @property
     def full_path(self):

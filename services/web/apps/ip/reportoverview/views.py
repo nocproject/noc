@@ -304,7 +304,6 @@ class ReportOverviewApplication(ReportApplication):
         return dict(c.fetchall())
 
     def report_html(self, request, result=None, query=None):
-        #
         self.ip_usage = self.get_ip_usage()
         self.prefix_children = self.get_prefix_children()
         # Prepare tree

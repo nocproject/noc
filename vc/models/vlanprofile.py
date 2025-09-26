@@ -111,7 +111,7 @@ class VLANProfile(Document):
         """Generate role label"""
         if not self.role:
             return None
-        elif self.role == VLANRole.PROFILE:
+        if self.role == VLANRole.PROFILE:
             return f"{VLAN_ROLE_LABEL_SCOPE}::{self.name}"
         return f"{VLAN_ROLE_LABEL_SCOPE}::{self.role.value}"
 

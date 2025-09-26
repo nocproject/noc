@@ -321,7 +321,7 @@ class TTSystemCtx(object):
         if not isinstance(self.tt_system, BaseTTSystem):
             raise AttributeError("tt_system must be BaseTTSystem instance")
         if not self.tt_system:
-            return
+            return None
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):

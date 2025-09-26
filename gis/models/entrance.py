@@ -16,7 +16,6 @@ class Entrance(EmbeddedDocument):
     # Floors
     first_floor = IntField()
     last_floor = IntField()
-    #
     first_home = StringField()
     last_home = StringField()
     # @todo: Managing company

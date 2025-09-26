@@ -82,9 +82,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # For common scripts - empty list
     # For generics - list of pairs (script_name, interface)
     requires = []
-    #
     base_logger = logging.getLogger(name or "script")
-    #
     _x_seq = itertools.count()
     # Sessions
     cli_session_store = SessionStore()
@@ -192,7 +190,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Store session id
         self.session = session
         self.session_idle_timeout = session_idle_timeout or self.SESSION_IDLE_TIMEOUT
-        #
         self.streaming = streaming
         if self.parent:
             self.controller = self.parent.controller
@@ -207,7 +204,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Suitable only when self.parent is None
         # Cached results of self.cli calls
         self.cli_cache = {}
-        #
         self.http_cache = {}
         self.partial_result = None
         # @todo: Get native encoding from ManagedObject
@@ -218,7 +214,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         self.cli_tracked_command = None
         # state -> [..]
         self.cli_fsm_tracked_data = {}
-        #
         if not parent and version and not name.endswith(".get_version"):
             self.logger.debug("Filling get_version cache with %s", version)
             s = name.split(".")
@@ -234,7 +229,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Fill matchers
         if not self.name.endswith(".get_version"):
             self.apply_matchers()
-        #
         if self.profile.setup_script:
             self.profile.setup_script(self)
         # Script perf metrics
@@ -283,7 +277,6 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         # Calculate matches
         v = get_matchers(ctx, self.profile.matchers)
         v.update(get_matchers(ctx, self.matchers))
-        #
         for k in v:
             self.logger.debug("%s = %s", k, v[k])
             setattr(self, k, v[k])
@@ -476,11 +469,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                     return f(self, **kwargs)
                 # Raise error
             raise self.NotSupportedError()
-        else:
-            # New SNMP/CLI API
-            return self.call_method(
-                cli_handler=self.execute_cli, snmp_handler=self.execute_snmp, **kwargs
-            )
+        # New SNMP/CLI API
+        return self.call_method(
+            cli_handler=self.execute_cli, snmp_handler=self.execute_snmp, **kwargs
+        )
 
     def call_method(self, cli_handler=None, snmp_handler=None, fallback_handler=None, **kwargs):
         """
@@ -568,8 +560,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         t = text.split("\n")
         if len(t) <= lines:
             return ""
-        else:
-            return "\n".join(t[lines:])
+        return "\n".join(t[lines:])
 
     def expand_rangelist(self, s):
         """
@@ -660,8 +651,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """Get root script"""
         if self.parent:
             return self.parent.root
-        else:
-            return self
+        return self
 
     def get_cache(self, key1, key2):
         """Get cached result or raise KeyError"""
@@ -864,8 +854,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
                     if match:
                         x += [match.groupdict()]
                 return x
-            else:
-                return result
+            return result
 
         if file:
             # Read from file
@@ -993,8 +982,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :return:
         """
         stream = self.get_mml_stream()
-        r = stream.execute(cmd, **kwargs)
-        return r
+        return stream.execute(cmd, **kwargs)
 
     def get_mml_stream(self):
         if self.parent:
@@ -1037,8 +1025,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         :return:
         """
         stream = self.get_rtsp_stream()
-        r = stream.execute(path, method, **kwargs)
-        return r
+        return stream.execute(path, method, **kwargs)
 
     def get_rtsp_stream(self):
         if self.parent:
@@ -1123,7 +1110,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         if snmp_version != "v3" and not self.credentials.get("snmp_ro"):
             # V1,V2 credential check
             return False
-        elif snmp_version == "v3" and not self.credentials.get("snmp_username"):
+        if snmp_version == "v3" and not self.credentials.get("snmp_username"):
             # V3 credential check
             return False
         # Check Caps
@@ -1158,8 +1145,7 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
         """
         if allow_zero:
             return self.capabilities.get(capability) is not None
-        else:
-            return bool(self.capabilities.get(capability))
+        return bool(self.capabilities.get(capability))
 
     def ignored_exceptions(self, iterable):
         """
@@ -1309,14 +1295,12 @@ class ScriptsHub(object):
     def __getattr__(self, item):
         if item.startswith("_"):
             return self.__dict__[item]
-        else:
-            from .loader import loader as script_loader
+        from .loader import loader as script_loader
 
-            sc = script_loader.get_script("%s.%s" % (self._script.profile.name, item))
-            if sc:
-                return self._CallWrapper(sc, self._script)
-            else:
-                raise AttributeError(item)
+        sc = script_loader.get_script("%s.%s" % (self._script.profile.name, item))
+        if sc:
+            return self._CallWrapper(sc, self._script)
+        raise AttributeError(item)
 
     def __contains__(self, item):
         """

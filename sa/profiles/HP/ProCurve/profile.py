@@ -58,9 +58,9 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.lower().startswith("trk"):
             return "aggregated"
-        elif name.lower().startswith("vlan"):
+        if name.lower().startswith("vlan"):
             return "SVI"
-        elif name.lower().startswith("switch loopback"):
+        if name.lower().startswith("switch loopback"):
             return "loopback"
         return "physical"
 

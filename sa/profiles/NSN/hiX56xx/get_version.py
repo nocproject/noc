@@ -21,9 +21,8 @@ class Script(BaseScript):
     def execute(self):
         v = self.cli("show system-version", cached=True)
         match = self.rx_ver.search(v)
-        r = {
+        return {
             "vendor": "NSN",
             "platform": match.group("platform"),
             "version": match.group("version"),
         }
-        return r

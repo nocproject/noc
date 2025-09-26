@@ -71,7 +71,6 @@ class SLAProfile(Document):
     meta = {"collection": "noc.sla_profiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
-    #
     workflow = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sla.SLAProfile")
     )
@@ -82,9 +81,7 @@ class SLAProfile(Document):
     test_packets_num = IntField(default=10, min_value=1, max_value=60000)
     # Object id in BI
     bi_id = LongField(unique=True)
-    #
     raise_alarm_to_target = BooleanField(default=True)
-    #
     metrics_default_interval = IntField(default=0, min_value=0)
     # Number interval buckets
     metrics_interval_buckets = IntField(default=1, min_value=0)

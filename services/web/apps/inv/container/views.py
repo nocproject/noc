@@ -27,8 +27,7 @@ class ObjectContainerApplication(ExtApplication):
                 data__match={"interface": "container", "attr": "container", "value": True}
             )
         )
-        qs = Object.objects.filter(model__in=models)
-        return qs
+        return Object.objects.filter(model__in=models)
 
     def cleaned_query(self, q):
         q = q.copy()

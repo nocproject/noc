@@ -56,7 +56,6 @@ class Purgatorium(Model):
     data = MapField(StringField(), description=_("Vars"))
     # Json Field  {check: str PING, avail: True/False, access: None, error: None, port}
     checks = ArrayField(StringField())
-    #
     success_checks = MaterializedField(
         ArrayField(StringField(low_cardinality=True)),
         """arrayMap(

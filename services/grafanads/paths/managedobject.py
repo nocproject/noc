@@ -46,14 +46,14 @@ class ManagedObjectJsonDS(JsonDSAPI):
         """ """
         if name == "metric":
             return super().get_metrics()
-        elif name == "managed_object":
+        if name == "managed_object":
             return [
                 {"label": mo[0], "value": mo[1]}
                 for mo in ManagedObject.objects.filter(is_managed=True)
                 .values_list("name", "bi_id")
                 .order_by("id")[:10000]
             ]
-        elif name == "interface":
+        if name == "interface":
             mo = ManagedObject.get_by_bi_id(int(payload["managed_object"]))
             return [
                 {"label": iface.name, "value": iface.name}

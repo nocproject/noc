@@ -476,7 +476,6 @@ class Script(GetMetricsScript):
         }
         :return:
         """
-        #
         oids = {}
         for probe in metrics:
             hints = probe.get_hints()
@@ -509,7 +508,6 @@ class Script(GetMetricsScript):
                 scale=mc.scale,
                 units=mc.units,
             )
-        #
 
     @metrics(["Telephony | Active DS0s"], volatile=False, access="S")
     def get_active_ds0s(self, metrics):

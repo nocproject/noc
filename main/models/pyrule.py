@@ -19,11 +19,9 @@ class PyRule(Document):
     # Relative modules name
     # i.e. test.mod1 for noc.pyrules.test.mod1
     name = StringField(unique=True, regex=r"^([a-zA-Z_][a-zA-Z0-9_]*)(\.[a-zA-Z_][a-zA-Z0-9_]*)*$")
-    #
     description = StringField()
     # Source code
     source = StringField()
-    #
     last_changed = DateTimeField()
 
     def __str__(self):

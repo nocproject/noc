@@ -167,7 +167,6 @@ class IP(object):
         if n == 0:
             yield self
             return
-        #
         yield from db.iter_free(self)
 
     def area_spot(self, addresses, dist, sep=False, exclude_special=True):
@@ -384,11 +383,10 @@ class IPv4(IP):
         """
         if isinstance(n, IPv4):
             return self.d - n.d
-        else:
-            d = self.d - n
-            if d < 0:
-                d = B32 + self.d
-            return self._to_prefix(d, self.mask)
+        d = self.d - n
+        if d < 0:
+            d = B32 + self.d
+        return self._to_prefix(d, self.mask)
 
     def iter_bits(self):
         """
@@ -531,8 +529,7 @@ class IPv4(IP):
             if nfirst.d == first.d:
                 # 255.255.255.255 + 1 -> 0.0.0.0
                 break
-            else:
-                first = nfirst
+            first = nfirst
         return r
 
     @staticmethod
@@ -697,8 +694,7 @@ class IPv6(IP):
                 "%s::%s/%d"
                 % (":".join(["%x" % p for p in h]), ":".join(["%x" % p for p in t]), mask)
             )
-        else:
-            return IPv6(":".join(["%x" % p for p in r]) + "/%d" % mask)
+        return IPv6(":".join(["%x" % p for p in r]) + "/%d" % mask)
 
     def __hash__(self):
         """
@@ -808,20 +804,19 @@ class IPv6(IP):
         if isinstance(n, IPv6):
             # Rough 32-bit arithmetic
             return self.d3 - n.d3
-        else:
-            d3 -= n
-            if d3 < 0:
-                d3 = B32 + d3 + 1
-                d2 -= 1
-            if d2 < 0:
-                d2 = B32 + d2 + 1
-                d1 -= 1
-            if d1 < 0:
-                d1 = B32 + d1 + 1
-                d0 -= 1
-            if d0 < 0:
-                d0 = B32 + d0 + 1
-                d3 -= 1
+        d3 -= n
+        if d3 < 0:
+            d3 = B32 + d3 + 1
+            d2 -= 1
+        if d2 < 0:
+            d2 = B32 + d2 + 1
+            d1 -= 1
+        if d1 < 0:
+            d1 = B32 + d1 + 1
+            d0 -= 1
+        if d0 < 0:
+            d0 = B32 + d0 + 1
+            d3 -= 1
         return self._to_prefix(d0, d1, d2, d3, self.mask)
 
     def iter_bits(self):
@@ -987,8 +982,7 @@ class PrefixDB(object):
             node = c
         if node.key:
             return node.key
-        else:
-            raise KeyError
+        raise KeyError
 
     def __setitem__(self, prefix: Union["IPv4", "IPv6"], key):
         """

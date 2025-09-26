@@ -250,7 +250,6 @@ class ManagedObjectProfile(NOCModel):
     )
     # Additional alarm weight
     weight = models.IntegerField("Alarm weight", default=0)
-    #
     card = models.CharField(
         _("Card name"), max_length=256, blank=True, null=True, default="managedobject"
     )
@@ -414,12 +413,9 @@ class ManagedObjectProfile(NOCModel):
     # Enable BGP Status
     enable_periodic_discovery_peerstatus = models.BooleanField(default=False)
     periodic_discovery_peerstatus_interval = models.IntegerField(default=0)
-    #
     clear_links_on_platform_change = models.BooleanField(default=False)
     clear_links_on_serial_change = models.BooleanField(default=False)
-    #
     hk_handler = DocumentReferenceField(Handler, null=True, blank=True)
-    #
     access_preference = models.CharField(
         "Access Preference",
         max_length=8,
@@ -725,9 +721,7 @@ class ManagedObjectProfile(NOCModel):
     abduct_detection_threshold = models.IntegerField(default=0)
     # Limits
     snmp_rate_limit = models.IntegerField(default=0)
-    #
     metrics_default_interval = models.IntegerField(default=300, validators=[MinValueValidator(0)])
-    #
     metrics: List[ModelMetricConfigItem] = PydanticField(
         "Metric Config Items",
         schema=MetricConfigItems,
@@ -737,7 +731,6 @@ class ManagedObjectProfile(NOCModel):
         # ? Internal validation not worked with JSON Field
         # validators=[match_rules_validate],
     )
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     # Dynamic Profile Classification
     dynamic_classification_policy = models.CharField(
@@ -1179,7 +1172,7 @@ class ManagedObjectProfile(NOCModel):
         policy = getattr(o, "get_dynamic_classification_policy", None)
         if policy and policy() == "D":
             # Dynamic classification not enabled
-            return
+            return None
         ctx = o.get_matcher_ctx()
         for profile_id, match in cls.get_profiles_matcher():
             if match(ctx):

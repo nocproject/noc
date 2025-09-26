@@ -44,7 +44,7 @@ class MatchRule(BaseModel):
         h = Handler.objects.filter(id=v).first()
         if not h:
             raise ValueError(f"[{h}] Handler not found")
-        elif not h.allow_match_rule:
+        if not h.allow_match_rule:
             raise ValueError(f"[{h}] Handler must be set Allow Match Rule")
         return str(h.id)
 
@@ -185,10 +185,10 @@ class AuthProfile(NOCModel):
                 dynamic_classification_policy="U",
             )
         else:
-            return
+            return None
         ap = AuthProfile.objects.filter(q).first()
         if not ap:
-            return
+            return None
         q &= Q(user=credential.user, password=credential.password)
         c_ap = AuthProfile.objects.filter(q).first()
         return c_ap or ap

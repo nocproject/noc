@@ -220,7 +220,7 @@ class Label(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -231,7 +231,6 @@ class Label(Document):
             "fg_color2": self.fg_color2,
             # Order
             "display_order": self.display_order,
-            #
             "allow_models": list(self.allow_models),
             "allow_auto_create": self.allow_auto_create,
             # Restrict UI operations
@@ -246,7 +245,6 @@ class Label(Document):
             "expose_alarm": self.expose_alarm,
             # Regex
         }
-        return r
 
     def to_json(self) -> str:
         return to_json(
@@ -552,7 +550,7 @@ class Label(Document):
             for label in labels:
                 if label in seen or label.endswith("::*"):
                     continue
-                elif "::" in label and label[-1] not in MATCH_OPS:
+                if "::" in label and label[-1] not in MATCH_OPS:
                     scope = label.rsplit("::", 1)[0]
                     if scope in seen_scopes:
                         continue
@@ -821,12 +819,11 @@ class Label(Document):
                 )
         # Build and clean up effective labels. Filter can_set_labels
         labels_iter = getattr(sender, "iter_effective_labels", default_iter_effective_labels)
-        el = {
+        return {
             ll
             for ll in Label.merge_labels(labels_iter(instance), add_wildcard=True)
             if ll[-1] in MATCH_OPS or can_set_label(ll) or ll[-1] == "*"
         }
-        return el
 
     @classmethod
     def model(cls, m_cls):

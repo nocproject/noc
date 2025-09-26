@@ -104,10 +104,9 @@ class Profile(BaseProfile):
         match = self.rx_ifname.match(s)
         if match:
             return "Ethernet1/%d" % int(match.group("number"))
-        elif self.rx_split_ifname.match(s):
+        if self.rx_split_ifname.match(s):
             return "Ethernet%s" % self.rx_split_ifname.match(s).group(1)
-        else:
-            return s
+        return s
 
     _IF_TYPES = {
         "eth": "physical",
@@ -190,7 +189,6 @@ class Profile(BaseProfile):
             wavelength = wavelength.split(" ")[0]
         if sfp_type and sfp_type != "unknown":
             return ""
-        elif sfp_type == "unknown":
+        if sfp_type == "unknown":
             return "-".join(["QSC", "SFP" + distance + "GE", wavelength])
-        else:
-            return ""
+        return ""

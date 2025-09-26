@@ -29,10 +29,9 @@ class Script(BaseScript):
         if match:
             mac = match.group("id")
             return {"first_chassis_mac": mac, "last_chassis_mac": mac}
-        else:
-            match = self.rx_mac1.search(v)
-            if match:
-                mac = match.group("id")
-                return {"first_chassis_mac": mac, "last_chassis_mac": mac}
+        match = self.rx_mac1.search(v)
+        if match:
+            mac = match.group("id")
+            return {"first_chassis_mac": mac, "last_chassis_mac": mac}
 
         raise self.NotSupportedError()

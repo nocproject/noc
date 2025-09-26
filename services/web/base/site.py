@@ -165,8 +165,7 @@ class Site(object):
                 """
                 if s.endswith("[]"):
                     return s[:-2]
-                else:
-                    return s
+                return s
 
             try:
                 v = view_map[request.method]
@@ -192,22 +191,20 @@ class Site(object):
                                 for k, v in request.GET.lists()
                                 if k != "_dc"
                             }
+                        elif self.is_json(request.META.get("CONTENT_TYPE")):
+                            try:
+                                g = orjson.loads(request.body)
+                            except ValueError as e:
+                                logger.error("Unable to decode JSON: %s", e)
+                                errors = "Unable to decode JSON: %s" % e
                         else:
-                            if self.is_json(request.META.get("CONTENT_TYPE")):
-                                try:
-                                    g = orjson.loads(request.body)
-                                except ValueError as e:
-                                    logger.error("Unable to decode JSON: %s", e)
-                                    errors = "Unable to decode JSON: %s" % e
-                            else:
-                                g = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
+                            g = {k: v[0] if len(v) == 1 else v for k, v in request.POST.lists()}
                         if not errors:
                             try:
                                 kwargs.update(v.validate.clean(g))
                             except InterfaceTypeError as e:
                                 errors = str(e)
                     if errors:
-                        #
                         if to_log_api_call:
                             app_logger.error("ERROR: %s", errors)
                         # Return error response

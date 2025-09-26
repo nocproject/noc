@@ -324,16 +324,15 @@ class ActivatorAPI(JSONRPCAPI):
             code, headers, body = await client.get(url)
             if 200 <= code <= 299:
                 return body.decode(DEFAULT_ENCODING, errors="replace")
-            elif ignore_errors:
+            if ignore_errors:
                 metrics["error", ("type", f"http_error_{code}")] += 1
                 self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
                 return str(
                     {k: v.decode(DEFAULT_ENCODING, errors="replace") for k, v in headers.items()}
                 ) + body.decode(DEFAULT_ENCODING, errors="replace")
-            else:
-                metrics["error", ("type", f"http_error_{code}")] += 1
-                self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
-                return None
+            metrics["error", ("type", f"http_error_{code}")] += 1
+            self.logger.debug("HTTP GET %s failed: %s %s", url, code, body)
+            return None
 
     @api
     async def run_checks(self, checks, first_success: bool = False, **kwargs):

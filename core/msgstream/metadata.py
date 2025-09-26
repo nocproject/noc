@@ -27,7 +27,6 @@ class PartitionMetadata(object):
     # The ids of all brokers that contain in-sync replicas of the partition
     isr: Optional[List[int]] = None
     error: Optional[str] = None
-    #
     high_watermark: Optional[int] = None
     newest_offset: Optional[int] = None
 

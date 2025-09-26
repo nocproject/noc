@@ -24,53 +24,53 @@ class Migration(BaseMigration):
         code = code.strip()
         if code == "100BASET":
             return "100BASETX"
-        elif code == "10GBASE-LR":
+        if code == "10GBASE-LR":
             return "10GBASELR"
-        elif code == "1000BASELH" or code == "1000BASELHT":
+        if code in ("1000BASELH", "1000BASELHT"):
             return "1000BASELX10"
-        elif code == "1000BASE-LX":
+        if code == "1000BASE-LX":
             return "1000BASELX"
-        elif code == "100BASELX":
+        if code == "100BASELX":
             return "100BASELX10"
-        elif code == "V34bis":
+        if code == "V34bis":
             return "V34"
-        elif code == "USB2.0":
+        if code == "USB2.0":
             return "USB20"
-        elif code == "100VAC":
+        if code == "100VAC":
             return "110VAC"
-        elif code == "240VAC":
+        if code == "240VAC":
             return "220VAC"
-        elif code == "USB1" or code == "<USB10":
+        if code in ("USB1", "<USB10"):
             return "USB10"
-        elif code == "USB1.1":
+        if code == "USB1.1":
             return "USB11"
-        elif code.endswith("IC") or code.endswith("IC3") or code.endswith("IC2"):
+        if code.endswith("IC") or code.endswith("IC3") or code.endswith("IC2"):
             return f"CISCO{code}"
-        elif code == "G.703":
+        if code == "G.703":
             return "G703"
-        elif code == "EIA530A":
+        if code == "EIA530A":
             return "EIA530"
-        elif code == "X21":
+        if code == "X21":
             return None
-        elif code in {"48VDC", "48V DC", "48DC", "-36VDC"}:
+        if code in {"48VDC", "48V DC", "48DC", "-36VDC"}:
             return "-48VDC"
-        elif code == "RS323" or code == "RS-232":
+        if code in ("RS323", "RS-232"):
             return "RS232"
-        elif code == "EM":
+        if code == "EM":
             return "E&M"
-        elif code == "TransE1h100M":
+        if code == "TransE1h100M":
             return "TransEth100M"
-        elif code == "POTS":
+        if code == "POTS":
             return "PSTN"
-        elif code == "TransEth10GTransEth10G":
+        if code == "TransEth10GTransEth10G":
             return "TransEth10G"
-        elif code == "-57VDC" or code == "-72VDC" or code == "-60VDC" or code == "-56VDC":
-            return
-        elif code == "RS-485":
+        if code in ("-57VDC", "-72VDC", "-60VDC", "-56VDC"):
+            return None
+        if code == "RS-485":
             return "RS485"
-        elif code == "ADSL+":
+        if code == "ADSL+":
             return "ADSL2+"
-        elif code == "802.11abgn":
+        if code == "802.11abgn":
             return "802.11a"
         return code
 
@@ -90,10 +90,10 @@ class Migration(BaseMigration):
             p_code = code
         p_code = self.fix_code(p_code)
         if not p_code:
-            return
-        elif p_code not in self.protocol_code_map:
+            return None
+        if p_code not in self.protocol_code_map:
             # print("Unknown protocol: %s/%s" % (code, p_code))
-            return
+            return None
         protocol = self.protocol_code_map[p_code]
         return {"protocol": protocol, "direction": d_code, "discriminator": vd_code}
 

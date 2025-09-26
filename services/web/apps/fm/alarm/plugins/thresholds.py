@@ -13,8 +13,7 @@ class ThresholdsPlugin(AlarmPlugin):
     name = "thresholds"
 
     def get_data(self, alarm, config):
-        r = {
+        return {
             "plugins": [("NOC.fm.alarm.plugins.Thresholds", {})],
             "thresholds": alarm.vars.get("thresholds", []),
         }
-        return r

@@ -57,8 +57,7 @@ class Profile(BaseProfile):
         config = config.replace("cat: read error: Is a directory\n", "")
         config = self.empty_lines.sub("\n\n", config)
         config = self.empty_spaces.sub("\n", config)
-        config = super().cleaned_config(config)
-        return config
+        return super().cleaned_config(config)
 
     INTERFACE_TYPES = {
         "e": "physical",  # Ethernet
@@ -69,5 +68,4 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES.get(name[:1])
-        return c
+        return cls.INTERFACE_TYPES.get(name[:1])

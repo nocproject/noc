@@ -38,8 +38,7 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_speed(cls, name):
-        c = cls.SPEED.get(name)
-        return c
+        return cls.SPEED.get(name)
 
     def get_radio_status(self):
         r = {}

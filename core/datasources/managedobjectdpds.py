@@ -76,7 +76,7 @@ class ManagedObjectDPDS(BaseDataSource):
         :return:
         :rtype: list
         """
-        pipeline = [
+        return [
             {
                 "$match": {
                     "key": {"$in": filter_ids},
@@ -101,7 +101,6 @@ class ManagedObjectDPDS(BaseDataSource):
             {"$project": {"job.problems": True, "st": True, "key": True}},
             {"$match": {"job.problems": {"$exists": True, "$ne": {}}}},
         ]
-        return pipeline
 
     @classmethod
     async def iter_query(

@@ -65,12 +65,11 @@ class ModelAttr(EmbeddedDocument):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "interface": self.interface,
             "attr": self.attr,
             "value": self.value,
         }
-        return r
 
 
 @category

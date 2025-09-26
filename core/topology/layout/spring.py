@@ -22,7 +22,6 @@ class SpringLayout(LayoutBase):
     L = config.layout.spring_edge_spacing
     # F-R iterations
     FR_ITERATIONS = config.layout.spring_iterations
-    #
     NODE_SIZE = 48
 
     def get_layout(self):
@@ -144,14 +143,12 @@ def fruchterman_reingold_layout(
         k = dom_size / np.sqrt(nnodes)
     # Cycles
     cycles = [[nfixed[x] for x in c] for c in nx.cycle_basis(G)]
-    #
     pos = _fruchterman_reingold(
         A, k, pos_arr, fixed, iterations, threshold, dim, seed, min_dist, cycles
     )
     if fixed is None:
         pos = nx.rescale_layout(pos, scale=scale) + center
-    pos = dict(zip(G, pos))
-    return pos
+    return dict(zip(G, pos))
 
 
 def _fruchterman_reingold(

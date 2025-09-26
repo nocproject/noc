@@ -26,8 +26,7 @@ class Script(BaseScript):
 
     @classmethod
     def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES.get(name[:3].lower())
-        return c
+        return cls.INTERFACE_TYPES.get(name[:3].lower())
 
     def execute(self):
         interfaces = []

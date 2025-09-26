@@ -29,13 +29,12 @@ class Script(BaseScript):
             match = self.re_search(self.rx_mac_4626, v)
             mac = match.group("id")
             return {"first_chassis_mac": mac, "last_chassis_mac": mac}
+        if self.is_platform_3528mv2:
+            v = self.cli("show system\n")  # ES-3538MV2
+            match = self.rx_mac_3528mv2.search(v)
         else:
-            if self.is_platform_3528mv2:
-                v = self.cli("show system\n")  # ES-3538MV2
-                match = self.rx_mac_3528mv2.search(v)
-            else:
-                v = self.cli("show system", cached=True)
-                match = self.re_search(self.rx_mac, v)
-            first_mac = match.group("id")
-            last_mac = first_mac
-            return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}
+            v = self.cli("show system", cached=True)
+            match = self.re_search(self.rx_mac, v)
+        first_mac = match.group("id")
+        last_mac = first_mac
+        return {"first_chassis_mac": first_mac, "last_chassis_mac": last_mac}

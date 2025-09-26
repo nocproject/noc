@@ -31,8 +31,7 @@ class Script(BaseScript):
         c = cls.INTERFACE_TYPES2.get(name[:3])
         if c:
             return c
-        c = cls.INTERFACE_TYPES.get(name[:2])
-        return c
+        return cls.INTERFACE_TYPES.get(name[:2])
 
     def execute_snmp(self, **kwargs):
         interfaces = []

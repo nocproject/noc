@@ -46,7 +46,7 @@ class Script(BaseScript):
                     }
                 ]
             return r
-        elif self.is_platform_3510 or self.is_platform_46 or self.is_platform_ecs4100:
+        if self.is_platform_3510 or self.is_platform_46 or self.is_platform_ecs4100:
             status = self.cli("show interface status", cached=True)
             r = []
             for match in self.rx_chan_line_3526.finditer(status):
@@ -59,5 +59,4 @@ class Script(BaseScript):
                     }
                 ]
             return r
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()

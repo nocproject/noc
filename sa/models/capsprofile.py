@@ -69,7 +69,6 @@ class CapsProfile(Document):
     enable_snmp_v2c = BooleanField(default=True)
     # Enable L2 protocols caps discovery
     enable_l2 = BooleanField(default=False)
-    #
     bfd_policy = StringField(
         choices=[
             ("D", "Disable"),  # Always disable

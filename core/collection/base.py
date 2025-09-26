@@ -100,18 +100,16 @@ class Collection(object):
             if hasattr(self.model, "name"):
                 self._name_field = "name"
                 return "name"
-            elif hasattr(self.model, "json_name"):
+            if hasattr(self.model, "json_name"):
                 self._name_field = "json_name"
                 return "json_name"
-            else:
-                for spec in self.model._meta["index_specs"]:
-                    if spec.get("unique") and len(spec["fields"]) == 1:
-                        nf = spec["fields"][0][0]
-                        self._name_field = nf
-                        return nf
-                raise ValueError("Cannot find unique index")
-        else:
-            return self._name_field
+            for spec in self.model._meta["index_specs"]:
+                if spec.get("unique") and len(spec["fields"]) == 1:
+                    nf = spec["fields"][0][0]
+                    self._name_field = nf
+                    return nf
+            raise ValueError("Cannot find unique index")
+        return self._name_field
 
     def get_state_collection(self):
         """
@@ -206,7 +204,6 @@ class Collection(object):
             item_hash = item_hash_default
         else:
             item_hash = item_hash_tagged
-        #
         items = {}
         for p in self.get_path():
             for root, dirs, files in os.walk(p):
@@ -234,8 +231,7 @@ class Collection(object):
             # Check Django Model
             return model._fields
         ls_field = model._meta.local_fields
-        dc_field = {field.name: field.__class__ for field in ls_field}
-        return dc_field
+        return {field.name: field.__class__ for field in ls_field}
 
     def dereference(self, d, model=None):
         r = {}
@@ -321,49 +317,48 @@ class Collection(object):
             set_attrs(o, d)
             o.save()
             return True
-        else:
-            self.stdout.write(
-                "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
-            )
-            o = self.model()
-            set_attrs(o, d)
-            try:
-                o.save()
-                return True
-            except (NotUniqueError, IntegrityError):
-                if is_document(self.model):
-                    union_meta = self.model._meta
-                else:
-                    union_meta = self.model._json_collection
-                # Possible local alternative with different uuid
-                if not union_meta.get("json_unique_fields"):
-                    self.stdout.write("Not json_unique_fields on object\n")
-                    raise
-                # Try to find conflicting item
-                for k in union_meta["json_unique_fields"]:
-                    if not isinstance(k, tuple):
-                        k = (k,)
-                    qs = {}
-                    for fk in k:
-                        if isinstance(d[fk], list):
-                            qs["%s__in" % fk] = d[fk]
-                        else:
-                            qs[fk] = d[fk]
-                    o = self.model.objects.filter(**qs).first()
-                    if o:
-                        self.stdout.write(
-                            "[%s|%s] Changing local uuid %s (%s)\n"
-                            % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
-                        )
-                        o.uuid = data["uuid"]
-                        if is_document(self.model):
-                            o.save(clean=bool(o.uuid))
-                        else:
-                            o.save()
-                        # Try again
-                        return self.update_item(data)
-                    self.stdout.write("Not find object by query: %s\n" % qs)
+        self.stdout.write(
+            "[%s|%s] Creating %s\n" % (self.name, data["uuid"], data.get(self.name_field))
+        )
+        o = self.model()
+        set_attrs(o, d)
+        try:
+            o.save()
+            return True
+        except (NotUniqueError, IntegrityError):
+            if is_document(self.model):
+                union_meta = self.model._meta
+            else:
+                union_meta = self.model._json_collection
+            # Possible local alternative with different uuid
+            if not union_meta.get("json_unique_fields"):
+                self.stdout.write("Not json_unique_fields on object\n")
                 raise
+            # Try to find conflicting item
+            for k in union_meta["json_unique_fields"]:
+                if not isinstance(k, tuple):
+                    k = (k,)
+                qs = {}
+                for fk in k:
+                    if isinstance(d[fk], list):
+                        qs["%s__in" % fk] = d[fk]
+                    else:
+                        qs[fk] = d[fk]
+                o = self.model.objects.filter(**qs).first()
+                if o:
+                    self.stdout.write(
+                        "[%s|%s] Changing local uuid %s (%s)\n"
+                        % (self.name, data["uuid"], o.uuid, getattr(o, self.name_field))
+                    )
+                    o.uuid = data["uuid"]
+                    if is_document(self.model):
+                        o.save(clean=bool(o.uuid))
+                    else:
+                        o.save()
+                    # Try again
+                    return self.update_item(data)
+                self.stdout.write("Not find object by query: %s\n" % qs)
+            raise
 
     def delete_item(self, uuid):
         o = self.model.objects.filter(uuid=uuid).first()
@@ -381,11 +376,9 @@ class Collection(object):
         self.stdout.write("[%s] Synchronizing\n" % self.name)
         # Get previous state
         cs = self.get_state()
-        #
         current_uuids = set(cs)
         new_uuids = set(cdata)
         changed = self.get_changed_status()
-        #
         if is_document(self.model):
             self.fix_uuids()
         for u in new_uuids - current_uuids:

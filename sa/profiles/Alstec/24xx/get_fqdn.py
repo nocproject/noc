@@ -20,5 +20,4 @@ class Script(BaseScript):
         self.cli("")
         v = self.get_cli_stream()
         pattern = smart_text(v.patterns["prompt"].pattern)
-        fqdn = pattern.split(r"\(", 1)[1].split("\\)", 1)[0].replace("\\", "")
-        return fqdn
+        return pattern.split(r"\(", 1)[1].split("\\)", 1)[0].replace("\\", "")

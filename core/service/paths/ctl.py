@@ -254,7 +254,6 @@ async def trace_leak(svc, delay=60, top=20, trace=1):
         # Print top current stats
         for i, stat in enumerate(current.statistics("filename")[:top], 1):
             svc.logger.info("[memtrace|top_current|%s] %s", i, str(stat))
-        #
         traces = current.statistics("traceback")
         for stat in traces[:trace]:
             svc.logger.info(

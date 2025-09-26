@@ -115,7 +115,6 @@ class Command(BaseCommand):
             self.die("Failed to load script %s" % script_class)
         # Get capabilities
         caps = obj.get_caps()
-        #
         if not use_snmp:
             if "snmp_ro" in credentials:
                 del credentials["snmp_ro"]
@@ -309,7 +308,7 @@ class Command(BaseCommand):
             quiz = Quiz.get_by_name("Ad-Hoc")
             if not quiz:
                 self.print("   'Ad-Hoc' quiz not found. Skipping")
-                return
+                return None
             # Create Ad-Hoc spec for profile
             spec = Spec(
                 name,
@@ -345,9 +344,7 @@ class Command(BaseCommand):
             for n in names:
                 if "." in n:
                     nn = int(n.rsplit(".", 1)[-1])
-                    if nn > max_n:
-                        max_n = nn
-            #
+                    max_n = max(nn, max_n)
             ntpl = "%s.%%d" % s_name
             for nn, cmd in enumerate(sorted(commands)):
                 spec.answers += [SpecAnswer(name=ntpl % (nn + 1), type="cli", value=cmd)]

@@ -22,7 +22,7 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
     """getting matcher function by operation"""
     if op not in matchers:
         raise ValueError("Unknown matcher: %s" % op)
-    elif isinstance(value, str) and value.startswith("=="):
+    if isinstance(value, str) and value.startswith("=="):
         return partial(match_ctx, value[2:], partial(matchers[op], field=field))
     # Clean Argument
     match op:

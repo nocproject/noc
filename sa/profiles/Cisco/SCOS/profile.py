@@ -28,9 +28,8 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("Fast"):
             return "Fa " + interface[12:].strip()
-        elif interface.startswith("Giga"):
+        if interface.startswith("Giga"):
             return "Gi " + interface[15:].strip()
-        elif interface.startswith("Ten"):
+        if interface.startswith("Ten"):
             return "Te " + interface[18:].strip()
-        else:
-            return interface
+        return interface

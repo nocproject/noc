@@ -92,7 +92,7 @@ class AlarmActionRunner(object):
         """Check alarm have tt_id for tt_system"""
         log = self.alarm.get_escalation_log(tt_system)
         if not log:
-            return
+            return None
         # Compare with tt_system
         tt, tt_id = log.tt_id.split(":")
         return tt_id.strip()
@@ -154,9 +154,9 @@ class AlarmActionRunner(object):
                     TTActionContext(action=TTAction.UN_ACK, label=f"Ack by {self.alarm.ack_user}")
                 )
                 continue
-            elif aa.action == AlarmAction.UN_ACK and not self.alarm.ack_ts:
+            if aa.action == AlarmAction.UN_ACK and not self.alarm.ack_ts:
                 continue
-            elif aa.action == AlarmAction.ACK:
+            if aa.action == AlarmAction.ACK:
                 r.append(TTActionContext(action=TTAction.ACK))
             elif aa.action == AlarmAction.CLEAR:
                 r.append(TTActionContext(action=TTAction.CLOSE))
@@ -186,7 +186,7 @@ class AlarmActionRunner(object):
         cfg = tt_system.get_config()
         if self.alarm.managed_object and not queue:
             queue = self.alarm.managed_object.tt_queue
-        ctx = TTSystemCtx(
+        return TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
             queue=queue,
@@ -197,7 +197,6 @@ class AlarmActionRunner(object):
             items=self.get_escalation_items(tt_system, cfg.promote_item),
             services=self.get_affected_services_items(tt_system),
         )
-        return ctx
 
     def log_alarm(self, message: str, *args) -> None:
         """
@@ -420,7 +419,7 @@ class AlarmActionRunner(object):
             metrics["escalation_tt_retry"] += 1
             tt_system.register_failure()
             return ActionResult(status=ActionStatus.WARNING, error=r.error)
-        elif r.status == EscalationStatus.FAIL or not r.is_ok or not r.document:
+        if r.status == EscalationStatus.FAIL or not r.is_ok or not r.document:
             self.log_alarm(f"Failed to create TT: {r.error}")
             metrics["escalation_tt_fail"] += 1
             # self.object.alarm.log_message(f"Failed to escalate: {r.error}")
@@ -434,7 +433,6 @@ class AlarmActionRunner(object):
                 pre_reason=pre_reason,
                 clear_template=kwargs.get("clear_template"),
             )
-            #
             return ActionResult(
                 status=ActionStatus.SUCCESS,
                 document_id=r.document,

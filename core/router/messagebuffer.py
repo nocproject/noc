@@ -48,7 +48,7 @@ class MBuffer(object):
             if group_key and group_key in self.buf:
                 self.buf[group_key] += [msg.value]
                 return
-            elif group_key:
+            if group_key:
                 self.buf[group_key] = []
             self.queue.append((group_key or "", msg))
 

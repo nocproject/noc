@@ -126,7 +126,7 @@ class Capability(Document):
     def clean_value(self, v: TCapsValue) -> TCapsValue:
         if self.multi and isinstance(v, list):
             return [self.type.clean_value(x) for x in v]
-        elif self.multi:
+        if self.multi:
             return [self.type.clean_value(x) for x in v.split(SPLITTER_MULTI)]
         if not self.type:
             raise ValueError(f"Invalid type: {self.type}")

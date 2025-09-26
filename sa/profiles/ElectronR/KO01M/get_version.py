@@ -20,10 +20,9 @@ class Script(BaseScript):
         platform = self.snmp.get("1.3.6.1.2.1.1.1.0").split()[1]
         sn = self.snmp.get("1.3.6.1.4.1.35419.1.1.1.0")
         version = self.snmp.get("1.3.6.1.4.1.35419.1.1.2.0")
-        result = {
+        return {
             "vendor": "Electron",
             "version": version,
             "platform": platform.strip(),
             "attributes": {"Serial Number": sn},
         }
-        return result

@@ -52,7 +52,6 @@ class Firmware(Document):
     }
     # Global ID
     uuid = UUIDField(binary=True)
-    #
     profile = PlainReferenceField(Profile)
     vendor = PlainReferenceField(Vendor)
     version = StringField()
@@ -74,7 +73,7 @@ class Firmware(Document):
     def __eq__(self, other: "Firmware") -> bool:
         if not other:
             return False
-        elif isinstance(other, Firmware):
+        if isinstance(other, Firmware):
             if self.profile != other.profile:
                 # Not comparable
                 return False
@@ -87,7 +86,7 @@ class Firmware(Document):
     def __lt__(self, other: "Firmware") -> bool:
         if not other:
             return False
-        elif isinstance(other, Firmware):
+        if isinstance(other, Firmware):
             if self.profile != other.profile:
                 # Not comparable
                 return False
@@ -101,7 +100,7 @@ class Firmware(Document):
     def __le__(self, other: "Firmware") -> bool:
         if not other:
             return False
-        elif isinstance(other, Firmware):
+        if isinstance(other, Firmware):
             if self.profile != other.profile:
                 # Not comparable
                 return False

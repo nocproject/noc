@@ -43,7 +43,6 @@ class BaseProfileMetaclass(type):
     def __new__(mcs, name, bases, attrs):
         n = type.__new__(mcs, name, bases, attrs)
         n.rogue_char_cleaners = n._get_rogue_chars_cleaners()
-        #
         if n.command_more:
             warnings.warn(
                 "%s: 'command_more' is deprecated and will be removed in NOC 20.3" % n.name,
@@ -694,8 +693,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         ```
         """
         name = name.split(".")[0]
-        name = name.split(":")[0]
-        return name
+        return name.split(":")[0]
 
     def get_interface_names(self, name):
         """
@@ -730,8 +728,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
             return None
         if "/" in r:
             return int(r.split("/", 1)[0])
-        else:
-            return None
+        return None
 
     # Cisco-like translation
     rx_num1 = re.compile(
@@ -761,10 +758,9 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         match = self.rx_num1.match(interface_name)
         if match:
             return int(match.group("number"))
-        else:
-            match = self.rx_num2.match(interface_name)
-            if match:
-                return int(match.group("number"))
+        match = self.rx_num2.match(interface_name)
+        if match:
+            return int(match.group("number"))
         return None
 
     rx_connection_path = re.compile(r".*?(\d+|\d+/\d+)(_\w+|\.\d+)?$")
@@ -978,7 +974,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
 
         :return: Optional[str]
         """
-        return None
+        return
 
     @classmethod
     def initialize(cls):
@@ -1043,8 +1039,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         def nqi(s):
             if isinstance(s, str):
                 return '"%s"' % s
-            else:
-                return str(s)
+            return str(s)
 
         if ";" in cmd:
             return "%s\r\n" % cmd

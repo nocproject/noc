@@ -77,8 +77,7 @@ async def _run_script(current_user, oid, script, args, span_id=0, bi_id=None):
                 return {"id": str(oid), "error": r["output"]}
             span.out_label = r["output"]
             return {"id": str(oid), "result": r["output"]}
-        else:
-            return {"id": str(oid), "result": r}
+        return {"id": str(oid), "result": r}
 
 
 async def _iterdata(

@@ -63,7 +63,7 @@ class Script(BaseScript):
                     data = []
                     vendor = match.group("vendor")
                     description = match.group("part_no")
-                    if vendor == "" or vendor == "OEM":
+                    if vendor in ("", "OEM"):
                         vendor = "NONAME"
                         part = "NoName | Transceiver | "
                         if match.group("nm"):

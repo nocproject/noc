@@ -22,7 +22,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         html_parser = subparsers.add_parser("htmlindex")
         html_parser.add_argument("-o", "--out", help="Output file")
 

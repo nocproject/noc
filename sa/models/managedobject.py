@@ -180,7 +180,7 @@ class Credentials(object):
     def get_snmp_credential(self) -> Optional[Union[SNMPCredential, SNMPv3Credential]]:
         if self.snmp_security_level == "Community" and self.snmp_ro:
             return SNMPCredential(snmp_ro=self.snmp_ro, snmp_rw=self.snmp_rw)
-        elif self.snmp_security_level != "Community" and self.snmp_username:
+        if self.snmp_security_level != "Community" and self.snmp_username:
             return SNMPv3Credential(
                 username=self.snmp_username,
                 auth_proto=self.snmp_auth_proto,
@@ -216,9 +216,9 @@ class Credentials(object):
         """Compare credential"""
         if isinstance(other, SNMPCredential):
             return self.get_snmp_credential() == other
-        elif isinstance(other, SNMPv3Credential):
+        if isinstance(other, SNMPv3Credential):
             return self.get_snmp_credential() == other
-        elif isinstance(other, CLICredential):
+        if isinstance(other, CLICredential):
             return self.get_cli_credential() == other
         super().__eq__(other)
 
@@ -244,7 +244,7 @@ class Credentials(object):
                 super_password=self.super_password,
             )
             # snmp_v1_only
-        elif isinstance(credential, SNMPv3Credential):
+        if isinstance(credential, SNMPv3Credential):
             return Credentials(
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
@@ -260,7 +260,7 @@ class Credentials(object):
                 password=self.password,
                 super_password=self.super_password,
             )
-        elif isinstance(credential, CLICredential):
+        if isinstance(credential, CLICredential):
             return Credentials(
                 snmp_ro=self.snmp_ro,
                 snmp_rw=self.snmp_rw,
@@ -276,8 +276,7 @@ class Credentials(object):
                 password=credential.password,
                 super_password=credential.super_password,
             )
-        else:
-            raise ValueError("Unknown Credential")
+        raise ValueError("Unknown Credential")
 
     def iter_credential(
         self,
@@ -340,7 +339,7 @@ DiagnosticItems = RootModel[Dict[str, DiagnosticValue]]
 def default(obj):
     if isinstance(obj, BaseModel):
         return obj.model_dump()
-    elif isinstance(obj, datetime.datetime):
+    if isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
 
@@ -368,7 +367,7 @@ class ManagedObjectManager(Manager):
     def get_queryset(self):
         """Overrides the models.Manager method"""
         # qs = super().get_queryset().annotate(cli_state=F("diagnostics__CLI__state"))
-        qs = (
+        return (
             super()
             .get_queryset()
             .annotate(
@@ -394,7 +393,6 @@ class ManagedObjectManager(Manager):
                 ),
             )
         )
-        return qs
 
 
 @full_text_search
@@ -558,7 +556,6 @@ class ManagedObject(NOCModel):
         blank=False,
         default="P",
     )
-    #
     l2_domain = DocumentReferenceField(L2Domain, null=True, blank=True)
     # CM
     config = GridVCSField("config")
@@ -590,13 +587,11 @@ class ManagedObject(NOCModel):
         blank=True,
     )
     shape_title_template = CharField("Shape Name template", max_length=256, blank=True, null=True)
-    #
     time_pattern = ForeignKey(TimePattern, null=True, blank=True, on_delete=SET_NULL)
     # Config processing handlers
     config_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
     config_diff_filter_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
     config_validation_handler: "Handler" = DocumentReferenceField(Handler, null=True, blank=True)
-    #
     max_scripts = IntegerField(
         "Max. Scripts", null=True, blank=True, help_text="Concurrent script session limits"
     )
@@ -788,7 +783,6 @@ class ManagedObject(NOCModel):
         ],
         default="p",
     )
-    #
     event_processing_policy = CharField(
         "Event Processing Policy",
         max_length=1,
@@ -842,12 +836,10 @@ class ManagedObject(NOCModel):
     effective_client_groups: List[str] = ObjectIDArrayField(
         db_index=True, blank=True, null=True, default=list
     )
-    #
     labels: List[str] = ArrayField(CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels: List[str] = ArrayField(
         CharField(max_length=250), blank=True, null=True, default=list
     )
-    #
     caps: List[Dict[str, Any]] = PydanticField(
         "Caps Items",
         schema=CapsItems,
@@ -1226,7 +1218,6 @@ class ManagedObject(NOCModel):
         # Rebuild summary
         if "object_profile" in self.changed_fields:
             NetworkSegment.update_summary(self.segment)
-        #
         self._reset_caches(self.id, credential=True)
         cache.delete_many(deleted_cache_keys)
         # Rebuild segment access
@@ -1299,8 +1290,12 @@ class ManagedObject(NOCModel):
                 content += [config[:10000000]]
             else:
                 content += [config]
-        r = {"title": self.name, "content": "\n".join(content), "card": card, "tags": self.labels}
-        return r
+        return {
+            "title": self.name,
+            "content": "\n".join(content),
+            "card": card,
+            "tags": self.labels,
+        }
 
     @classmethod
     def get_search_result_url(cls, obj_id):
@@ -1344,8 +1339,7 @@ class ManagedObject(NOCModel):
             return default
         if v.lower() in ["t", "true", "y", "yes", "1"]:
             return True
-        else:
-            return False
+        return False
 
     def get_attr_int(self, name, default=0):
         """
@@ -1739,22 +1733,21 @@ class ManagedObject(NOCModel):
                 snmp_priv_proto=self.auth_profile.snmp_priv_proto,
                 snmp_priv_key=self.auth_profile.snmp_priv_key,
             )
-        else:
-            return Credentials(
-                user=self.user,
-                password=self.password,
-                super_password=self.super_password,
-                snmp_ro=self.snmp_ro,
-                snmp_rw=self.snmp_rw,
-                snmp_rate_limit=self.get_effective_snmp_rate_limit(),
-                snmp_security_level=self.snmp_security_level,
-                snmp_username=self.snmp_username,
-                snmp_ctx_name=self.snmp_ctx_name,
-                snmp_auth_proto=self.snmp_auth_proto,
-                snmp_auth_key=self.snmp_auth_key,
-                snmp_priv_proto=self.snmp_priv_proto,
-                snmp_priv_key=self.snmp_priv_key,
-            )
+        return Credentials(
+            user=self.user,
+            password=self.password,
+            super_password=self.super_password,
+            snmp_ro=self.snmp_ro,
+            snmp_rw=self.snmp_rw,
+            snmp_rate_limit=self.get_effective_snmp_rate_limit(),
+            snmp_security_level=self.snmp_security_level,
+            snmp_username=self.snmp_username,
+            snmp_ctx_name=self.snmp_ctx_name,
+            snmp_auth_proto=self.snmp_auth_proto,
+            snmp_auth_key=self.snmp_auth_key,
+            snmp_priv_proto=self.snmp_priv_proto,
+            snmp_priv_key=self.snmp_priv_key,
+        )
 
     @property
     def scripts_limit(self):
@@ -1764,8 +1757,7 @@ class ManagedObject(NOCModel):
             return pl
         if pl:
             return min(ol, pl)
-        else:
-            return ol
+        return ol
 
     def iter_recursive_objects(self):
         """
@@ -1887,7 +1879,7 @@ class ManagedObject(NOCModel):
         if query:
             if ".*" in query and is_ipv4(query.replace(".*", ".1")):
                 return Q(address__regex=query.replace(".", "\\.").replace("*", "[0-9]+"))
-            elif set("+*[]()") & set(query):
+            if set("+*[]()") & set(query):
                 # Maybe regular expression
                 try:
                     # Check syntax
@@ -1937,54 +1929,48 @@ class ManagedObject(NOCModel):
         """
         if self.escalation_policy == "E":
             return True
-        elif self.escalation_policy == "P":
+        if self.escalation_policy == "P":
             return self.object_profile.can_escalate(depended)
-        elif self.escalation_policy == "R":
+        if self.escalation_policy == "R":
             return bool(depended)
-        else:
-            return False
+        return False
 
     def can_create_box_alarms(self):
         if self.box_discovery_alarm_policy == "E":
             return True
-        elif self.box_discovery_alarm_policy == "P":
+        if self.box_discovery_alarm_policy == "P":
             return self.object_profile.can_create_box_alarms()
-        else:
-            return False
+        return False
 
     def can_create_periodic_alarms(self):
         if self.periodic_discovery_alarm_policy == "E":
             return True
-        elif self.periodic_discovery_alarm_policy == "P":
+        if self.periodic_discovery_alarm_policy == "P":
             return self.object_profile.can_create_periodic_alarms()
-        else:
-            return False
+        return False
 
     def can_cli_session(self):
         if self.cli_session_policy == "E":
             return True
-        elif self.cli_session_policy == "P":
+        if self.cli_session_policy == "P":
             return self.object_profile.can_cli_session()
-        else:
-            return False
+        return False
 
     @property
     def box_telemetry_sample(self):
         if self.box_discovery_telemetry_policy == "E":
             return self.box_discovery_telemetry_sample
-        elif self.box_discovery_telemetry_policy == "P":
+        if self.box_discovery_telemetry_policy == "P":
             return self.object_profile.box_discovery_telemetry_sample
-        else:
-            return 0
+        return 0
 
     @property
     def periodic_telemetry_sample(self):
         if self.periodic_discovery_telemetry_policy == "E":
             return self.periodic_discovery_telemetry_sample
-        elif self.periodic_discovery_telemetry_policy == "P":
+        if self.periodic_discovery_telemetry_policy == "P":
             return self.object_profile.periodic_discovery_telemetry_sample
-        else:
-            return 0
+        return 0
 
     @property
     def management_vlan(self):
@@ -1994,10 +1980,9 @@ class ManagedObject(NOCModel):
         """
         if self.segment.management_vlan_policy == "d":
             return None
-        elif self.segment.management_vlan_policy == "e":
+        if self.segment.management_vlan_policy == "e":
             return self.segment.management_vlan
-        else:
-            return self.segment.profile.management_vlan
+        return self.segment.profile.management_vlan
 
     @property
     def multicast_vlan(self):
@@ -2007,10 +1992,9 @@ class ManagedObject(NOCModel):
         """
         if self.segment.multicast_vlan_policy == "d":
             return None
-        elif self.segment.multicast_vlan_policy == "e":
+        if self.segment.multicast_vlan_policy == "e":
             return self.segment.multicast_vlan
-        else:
-            return self.segment.profile.multicast_vlan
+        return self.segment.profile.multicast_vlan
 
     @property
     def escalator_shard(self):
@@ -2020,23 +2004,20 @@ class ManagedObject(NOCModel):
         """
         if self.tt_system:
             return self.tt_system.shard_name
-        else:
-            return DEFAULT_TTSYSTEM_SHARD
+        return DEFAULT_TTSYSTEM_SHARD
 
     @property
     def to_raise_privileges(self):
         if self.cli_privilege_policy == "E":
             return True
-        elif self.cli_privilege_policy == "P":
+        if self.cli_privilege_policy == "P":
             return self.object_profile.cli_privilege_policy == "E"
-        else:
-            return False
+        return False
 
     def get_autosegmentation_policy(self):
         if self.autosegmentation_policy == "p":
             return self.object_profile.autosegmentation_policy
-        else:
-            return self.autosegmentation_policy
+        return self.autosegmentation_policy
 
     @property
     def enable_autosegmentation(self):
@@ -2124,7 +2105,7 @@ class ManagedObject(NOCModel):
             return None
         if self.fqdn.endswith("."):
             return self.fqdn[:-1]
-        elif not self.object_profile.fqdn_suffix:
+        if not self.object_profile.fqdn_suffix:
             return self.fqdn
         return f"{self.fqdn}.{self.object_profile.fqdn_suffix}"
 
@@ -2140,7 +2121,7 @@ class ManagedObject(NOCModel):
             handler = Handler.get_by_id(self.object_profile.resolver_handler)
             if handler and handler.allow_resolver:
                 return handler.get_handler()(fqdn)
-            elif handler and not handler.allow_resolver:
+            if handler and not handler.allow_resolver:
                 logger.warning("Handler is not allowed for resolver")
                 return None
         import socket
@@ -2585,27 +2566,27 @@ class ManagedObject(NOCModel):
             diag in SA_DIAGS or diag == SA_DIAG
         ) and Interaction.ServiceActivation not in self.interactions:
             return False, "Disable by Interaction SA by State"
-        elif diag in FM_DIAGS and Interaction.Event not in self.interactions:
+        if diag in FM_DIAGS and Interaction.Event not in self.interactions:
             return False, "Disable by Interaction FM by State"
-        elif diag == RESOLVER_DIAG and self.get_address_resolution_policy() == "D":
+        if diag == RESOLVER_DIAG and self.get_address_resolution_policy() == "D":
             return False, "Disabled by 'Resolution Policy Settings'"
-        elif diag == PROFILE_DIAG and not self.object_profile.enable_box_discovery_profile:
+        if diag == PROFILE_DIAG and not self.object_profile.enable_box_discovery_profile:
             return False, "Profile Discovery Disabled"
-        elif diag == FIRST_AVAIL and not self.object_profile.enable_ping:
+        if diag == FIRST_AVAIL and not self.object_profile.enable_ping:
             return False, "On if ICMP available received"
         ac = self.get_access_preference()
         if ac == "C" and diag == SNMP_DIAG:
             return False, "Blocked by AccessPreference"
-        elif ac == "S" and diag in {CLI_DIAG, HTTP_DIAG}:
+        if ac == "S" and diag in {CLI_DIAG, HTTP_DIAG}:
             return False, "Blocked by AccessPreference"
         if diag == CLI_DIAG and self.scheme not in {1, 2}:
             return False, "CLI not enabled in selected scheme"
         fm_policy = self.get_event_processing_policy()
         if fm_policy == "d" and diag in FM_DIAGS:
             return False, "Disable by Event Processing policy"
-        elif diag == SNMPTRAP_DIAG and self.trap_source_type == "d":
+        if diag == SNMPTRAP_DIAG and self.trap_source_type == "d":
             return False, "Disable by source settings"
-        elif diag == SYSLOG_DIAG and self.syslog_source_type == "d":
+        if diag == SYSLOG_DIAG and self.syslog_source_type == "d":
             return False, "Disable by source settings"
         return True, None
 
@@ -2745,7 +2726,7 @@ class ManagedObject(NOCModel):
         if self.object_profile.shape:
             # Use profile's shape
             return self.object_profile.shape
-        return
+        return None
 
     def get_shape_overlays(self) -> List[ShapeOverlay]:
         seen: Set[ShapeOverlayPosition] = set()
@@ -3017,7 +2998,7 @@ class ManagedObject(NOCModel):
         """Reset credential"""
         r = {}
         for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
-            if f == "snmp_auth_proto" or f == "snmp_priv_proto":
+            if f in ("snmp_auth_proto", "snmp_priv_proto"):
                 continue
             setattr(self, f, None)
             r[f] = None

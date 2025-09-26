@@ -28,8 +28,7 @@ class WhoisASSetMembers(Document):
         v = cls.objects.filter(as_set=key.upper()).first()
         if v is None:
             return []
-        else:
-            return v.members
+        return v.members
 
     @classmethod
     def upload(cls, data):

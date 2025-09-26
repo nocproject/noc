@@ -20,7 +20,6 @@ class Migration(BaseMigration):
             """,
             ["en", "en-us"],
         )
-        #
         current_default = self.db.execute(
             """
             SELECT column_default

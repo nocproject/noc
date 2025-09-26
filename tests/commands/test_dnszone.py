@@ -17,7 +17,6 @@ from noc.commands.dnszone import Command
     [
         # Empty value
         ("", 0),
-        #
         ("1", 1),
         ("100", 100),
         ("10s", 10),

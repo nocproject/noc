@@ -62,7 +62,6 @@ class VPNProfile(Document):
     workflow = PlainReferenceField(Workflow)
     # Template.subject to render VPN/VRF.name
     name_template = ForeignKeyField(Template)
-    #
     style = ForeignKeyField(Style)
     # For vrf type -- default prefix profile
     # Used to create AFI root prefixes

@@ -50,7 +50,7 @@ class ConfigParamCheck(DiscoveryCheck):
                     # Manual conflict
                     o.set_cfg_data(pd.param, pd.value, pd.scope, is_conflicted=True)
                     continue
-                elif (
+                if (
                     self.object.object_profile.box_discovery_param_data_conflict_resolve_policy
                     == "O"
                 ):

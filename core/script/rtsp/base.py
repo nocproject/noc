@@ -59,8 +59,7 @@ class RTSPBase(BaseCLI):
             port = RTSPStream.default_port
         if port:
             address += ":%s" % port
-        uri = "rtsp://%s%s" % (address, self.path)
-        return uri
+        return "rtsp://%s%s" % (address, self.path)
 
     async def send(self, method: str = None, body: str = None):
         # @todo: Apply encoding
@@ -95,7 +94,7 @@ class RTSPBase(BaseCLI):
                 await self.start_stream()
             except ConnectionRefusedError:
                 self.error = RTSPConnectionRefused("Connection refused")
-                return
+                return None
         # Perform all necessary login procedures
         if not self.is_started:
             self.is_started = True
@@ -109,8 +108,7 @@ class RTSPBase(BaseCLI):
                 )
                 # Send command
         await self.send()
-        r = await self.get_rtsp_response()
-        return r
+        return await self.get_rtsp_response()
 
     async def get_rtsp_response(self):
         result = []

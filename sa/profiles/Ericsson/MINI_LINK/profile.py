@@ -50,5 +50,4 @@ class Profile(BaseProfile):
         self.rogue_chars = [re.compile(rb"%s" % r), b"\r"]
         if cached:
             return script.cli(cmd, cached=True)
-        else:
-            return script.cli(cmd)
+        return script.cli(cmd)

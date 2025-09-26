@@ -34,8 +34,7 @@ class Profile(BaseProfile):
 
     @staticmethod
     def parse_equal_output(string):
-        r = dict(line.split("=", 1) for line in string.splitlines())
-        return r
+        return dict(line.split("=", 1) for line in string.splitlines())
 
     def parse_tokens(self, string):
         for line in string.splitlines():

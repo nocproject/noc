@@ -53,13 +53,12 @@ class SuggestProfile(object):
         """
         if self.match == "eq":
             return result == self.value
-        elif self.match == "contains":
+        if self.match == "contains":
             return self.value in result
-        elif self.match == "re":
+        if self.match == "re":
             return bool(self.get_re(self.value).search(result))
-        else:
-            # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
-            return False
+        # self.logger.error("Invalid match method '%s'. Ignoring", self.method)
+        return False
 
     @property
     def query_key(self):
@@ -88,19 +87,15 @@ class ProfileCheckRule(Document):
     )
     # Method input parameters, defined by method
     param = StringField()
-    #
     match_method = StringField(
         required=True,
         choices=["eq", "contains", "re"],  # Full match  # Contains  # regular expression
         default="eq",
     )
-    #
     value = StringField(required=True)
-    #
     action = StringField(required=True, choices=["match", "maybe"], default="match")
     # Resulting profile name
     profile = PlainReferenceField(Profile, required=True)
-    #
     category = ObjectIdField()
 
     _rules_cache = cachetools.TTLCache(10, ttl=60)

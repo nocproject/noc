@@ -83,8 +83,7 @@ class BaseSequence(ABC):
         now = datetime.datetime.now()
         retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
         with retry_lock:
-            if retry < next_retry:
-                retry = next_retry
+            retry = max(retry, next_retry)
             next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
         delta = retry - now
         delay = delta.seconds + (1 if delta.microseconds else 0)
@@ -333,7 +332,7 @@ class EscalationSequence(BaseSequence):
         queue: Optional[str] = None,
         pre_reason: Optional[str] = None,
     ) -> TTSystemCtx:
-        ctx = TTSystemCtx(
+        return TTSystemCtx(
             id=tt_id,
             tt_system=tt_system.get_system(),
             queue=queue,
@@ -342,7 +341,6 @@ class EscalationSequence(BaseSequence):
             timestamp=self.get_timestamp(),
             is_unavailable=self.has_unavailable_alarm(),
         )
-        return ctx
 
     def get_ctx(self):
         """
@@ -433,7 +431,7 @@ class EscalationSequence(BaseSequence):
         if pre_reason is None:
             self.log_alarm("Cannot find pre reason")
             metrics["escalation_tt_fail"] += 1
-            return None
+            return
         # Build escalation context
         e_ctx_items = [ECtxItem(id=str(mo.id), tt_id=mo.tt_system_id)]
         items_map = {str(mo.id): self.escalation_doc.items[0]}
@@ -477,7 +475,7 @@ class EscalationSequence(BaseSequence):
             self.log_alarm(f"Failed to create TT: {r.error}")
             metrics["escalation_tt_fail"] += 1
             self.alarm.log_message(f"Failed to escalate: {r.error}", to_save=True)
-            return None
+            return
         tt = f"{mo.tt_system.name}:{r.document}"
         self.alarm.escalate(
             tt,
@@ -721,14 +719,13 @@ class EscalationSequence(BaseSequence):
             if maintenance.escalation_policy == "E":
                 self.logger.info("Escalation allowed by maintenance policy")
                 return
-            elif maintenance.escalation_policy == "S":
+            if maintenance.escalation_policy == "S":
                 delay: datetime.timedelta = maintenance.stop - self.escalation_doc.timestamp
                 self.logger.info("Escalation suspended, retry after Maintenance")
                 self.log_alarm(f"Escalation suspended. Object is under maintenance: {m_id}")
                 self.retry_job("Escalation suspended, retry after Maintenance", delay.seconds)
                 continue
-            else:
-                self.log_alarm(f"Object is under maintenance: {m_id}")
+            self.log_alarm(f"Object is under maintenance: {m_id}")
         self.escalation_doc.leader.escalation_status = "maintenance"
 
     def process(self) -> None:
@@ -848,7 +845,7 @@ class DeescalationSequence(BaseSequence):
 
     # TT System API
     def get_tt_system_context(self) -> TTSystemCtx:
-        ctx = TTSystemCtx(
+        return TTSystemCtx(
             id=self.tt_id,
             tt_system=self.tts.get_system(),
             queue=self.queue,
@@ -856,7 +853,6 @@ class DeescalationSequence(BaseSequence):
             login=self.login,
             is_unavailable=self.has_unavailable_alarm(),
         )
-        return ctx
 
     def get_tts(self, tt_id: Optional[str]) -> Optional[TTSystem]:
         """

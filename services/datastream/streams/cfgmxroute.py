@@ -32,5 +32,4 @@ class CfgMetricsCollectorDataStream(DataStream):
             route = MessageRoute.get_by_id(oid)
         if not route or not route.is_active:
             raise KeyError()
-        r = route.get_route_config()
-        return r
+        return route.get_route_config()

@@ -97,18 +97,17 @@ class SlotRule(OIDRule):
                         f"noc::sensor::{desc}",
                     ]
                 yield oid, self.type, self.scale, self.units, labels
-            else:
-                if "Environment" in metric.metric:
-                    if "Temperature" in metric.metric:
-                        desc = "Temperature " + desc
-                    labels = [
-                        f"noc::chassis::{slotid.split('.')[1]}",
-                        f"noc::slot::{slotid.split('.')[2]}",
-                        f"noc::module::{slotid.split('.')[3]}",
-                        (
-                            f"noc::sensor::{desc}"
-                            if "Environment" in metric.metric
-                            else f"noc::cpu::{desc}"
-                        ),
-                    ]
-                    yield oid, self.type, self.scale, self.units, labels
+            elif "Environment" in metric.metric:
+                if "Temperature" in metric.metric:
+                    desc = "Temperature " + desc
+                labels = [
+                    f"noc::chassis::{slotid.split('.')[1]}",
+                    f"noc::slot::{slotid.split('.')[2]}",
+                    f"noc::module::{slotid.split('.')[3]}",
+                    (
+                        f"noc::sensor::{desc}"
+                        if "Environment" in metric.metric
+                        else f"noc::cpu::{desc}"
+                    ),
+                ]
+                yield oid, self.type, self.scale, self.units, labels

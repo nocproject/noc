@@ -100,13 +100,12 @@ class Action(Enum):
     def from_action(cls, a: str) -> "Action":
         if a == "clear":
             return Action.CLOSE
-        elif a == "raise":
+        if a == "raise":
             return Action.OPEN
-        elif a == "ignore":
+        if a == "ignore":
             return Action.IGNORE
-        else:
-            msg = f"Invalid action: {a}"
-            raise ValueError(msg)
+        msg = f"Invalid action: {a}"
+        raise ValueError(msg)
 
     @property
     def is_ignored(self) -> bool:

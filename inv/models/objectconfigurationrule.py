@@ -166,4 +166,4 @@ class ObjectConfigurationRule(Document):
             if rule.match_protocols and not set(rule.match_protocols).intersection(protocols):
                 continue
             return rule.scope
-        return
+        return None

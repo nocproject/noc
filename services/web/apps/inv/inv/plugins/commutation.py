@@ -90,7 +90,7 @@ class CommutationPlugin(InvPlugin):
                 if local_name < remote_name:
                     return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
                 return f"{local_object}|{remote_name}|{remote_object}|{local_name}"
-            elif local_object < remote_object:
+            if local_object < remote_object:
                 return f"{local_object}|{local_name}|{remote_object}|{remote_name}"
             return f"{remote_object}|{remote_name}|{local_object}|{local_name}"
 
@@ -426,7 +426,6 @@ class CommutationPlugin(InvPlugin):
         node_labels: Dict[str, str] = {}
         for node in nodes:
             update_labels(node)
-        #
         data = []
         seen = set()
         # Collect connections

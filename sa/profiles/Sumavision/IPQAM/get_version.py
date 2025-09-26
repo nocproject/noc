@@ -22,7 +22,7 @@ class Script(BaseScript):
         hwversion = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.2.1.4.0")
         serial_number = self.snmp.get("1.3.6.1.4.1.32285.2.2.10.2.1.5.0")
 
-        result = {
+        return {
             "vendor": "Sumavision",
             "version": version.rstrip("\x00"),
             "platform": platform.rstrip("\x00"),
@@ -33,4 +33,3 @@ class Script(BaseScript):
                 "Serial Number": serial_number.rstrip("\x00"),
             },
         }
-        return result

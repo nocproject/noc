@@ -141,8 +141,7 @@ class Script(BaseScript):
     def get_interface_alias(self, port_id, port_descr):
         if self.LLDP_PORT_TABLE == 1:
             return port_id
-        else:
-            return port_descr
+        return port_descr
 
     def get_local_iface(self):
         r = {}

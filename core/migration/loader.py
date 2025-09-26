@@ -120,7 +120,6 @@ class MigrationLoader(object):
             app = app[4:]
             apps += [app]
             chains[app] = iter_chain(app)
-        #
         while chains:
             l_seen = len(seen)
             for app in apps:

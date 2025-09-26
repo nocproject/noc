@@ -232,7 +232,7 @@ class WorkflowApplication(ExtDocApplication):
             for k in t:
                 if k in ("id", "bi_id"):
                     continue
-                elif k in ("from_state", "to_state"):
+                if k in ("from_state", "to_state"):
                     t[k] = state_names[t[k]]
                 elif k == "vertices":
                     t[k] = [TransitionVertex(x=vx["x"], y=vx["y"]) for vx in t[k]]
@@ -263,8 +263,7 @@ class WorkflowApplication(ExtDocApplication):
             match = self.rx_clone_name.search(d["name"])
             if match:
                 n = int(match.group(1))
-                if n > m:
-                    m = n
+                m = max(n, m)
         # Generate name
         name = "%s (Copy #%d)" % (wf.name, m + 1)
         # Clone workflow
@@ -292,5 +291,4 @@ class WorkflowApplication(ExtDocApplication):
             new_transition.id = None
             new_transition.bi_id = None
             new_transition.save()
-        #
         return {"id": str(new_wf.id)}

@@ -85,4 +85,3 @@ class CfgEvent(BaseModel):
     # subject:
     handlers: List[str] = None
     actions: Optional[List[Rule]] = None
-    #

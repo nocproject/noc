@@ -49,7 +49,7 @@ class VersionCheck(DiscoveryCheck):
             else:
                 self.job.set_fatal_error()
             return
-        elif platform is None and len(result["platform"]) > MAX_PLATFORM_LENGTH:
+        if platform is None and len(result["platform"]) > MAX_PLATFORM_LENGTH:
             self.logger.error(
                 "Platform name length over %s. Check 'get_version' script",
                 MAX_PLATFORM_LENGTH,
@@ -108,10 +108,8 @@ class VersionCheck(DiscoveryCheck):
         else:
             # Clear capabilities by attributes
             self.set_artefact("object_attributes", {})
-        #
         if changed:
             self.object.save()
-        #
         dfp = self.object.get_denied_firmware_policy()
         if dfp != "I":
             firmware_status = FirmwarePolicy.get_status(version, platform)

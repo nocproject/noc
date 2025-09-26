@@ -24,7 +24,6 @@ class AddressCard(BaseCard):
         while current:
             path += [current]
             current = current.parent
-        #
         return {
             "object": self.object,
             "path": reversed(path),

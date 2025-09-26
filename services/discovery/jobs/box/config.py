@@ -45,11 +45,11 @@ class ConfigCheck(DiscoveryCheck):
         p = self.object.get_config_policy()
         if p == "s":  # Script
             return self.get_config_script()
-        elif p == "S":  # Script, Download
+        if p == "S":  # Script, Download
             return self.get_config_script() or self.get_config_download()
-        elif p == "D":  # Download, Script
+        if p == "D":  # Download, Script
             return self.get_config_download() or self.get_config_script()
-        elif p == "d":  # Download
+        if p == "d":  # Download
             return self.get_config_download()
         self.logger.error("Invalid config policy: %s", p)
         return None

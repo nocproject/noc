@@ -281,8 +281,7 @@ class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
         ctx["."] = n_deferred
         if resolved:
             return yield_resolved
-        else:
-            return None
+        return None
 
     def _resolve_vars(self, ctx, d_map):
         """

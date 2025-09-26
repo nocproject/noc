@@ -150,8 +150,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
             i = Interface.objects.filter(managed_object=object.id, description=port)[:2]
             if len(i) == 1:
                 return i[0]
-            else:
-                return None
+            return None
         except Exception:
             return None
 
@@ -165,8 +164,7 @@ class LLDPCheck(TopologyDiscoveryCheck):
         si = SubInterface.objects.filter(managed_object=object.id, ifindex=ifindex).first()
         if si:
             return si.interface
-        else:
-            return None
+        return None
 
     def get_interface_by_local(self, port, object):
         """

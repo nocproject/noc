@@ -163,8 +163,7 @@ class Profile(BaseProfile):
                 )
             )
             return r[0] if r else 0
-        else:
-            return None
+        return None
 
     INTERFACE_TYPES = {
         "Aux": "tunnel",
@@ -274,8 +273,7 @@ class Profile(BaseProfile):
     spaces_rx = re.compile(r"^\s{42}|^\s{16}", re.DOTALL | re.MULTILINE)
 
     def clean_spaces(self, config):
-        config = self.spaces_rx.sub("", config)
-        return config
+        return self.spaces_rx.sub("", config)
 
     def fix_version(self, v):
         # CLI return S5628F-HI as platform, but SNMP return S5628F
@@ -404,7 +402,6 @@ class Profile(BaseProfile):
         header = {}
 
         for num, lines in enumerate(zip_longest(*v, fillvalue="-")):
-            #
             if empty_header is None:
                 empty_header = (" ",) * len(lines)
                 head += [lines]

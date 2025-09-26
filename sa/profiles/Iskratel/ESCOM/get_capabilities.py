@@ -43,9 +43,8 @@ class Script(BaseScript):
         if self.is_escom_l:
             cmd = self.cli("show spanning-tree")
             return "Spanning tree enabled" in cmd
-        else:
-            cmd = self.cli("show spanning-tree active")
-            return "  enabled  " in cmd
+        cmd = self.cli("show spanning-tree active")
+        return "  enabled  " in cmd
 
     @false_on_cli_error
     def has_lacp_cli(self):

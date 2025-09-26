@@ -225,22 +225,18 @@ class AlarmApplication(ExtApplication):
                         seconds=ca
                     )
             q.pop("cleared_after")
-        #
         if "wait_tt" in q:
             if status == "A":
                 q["watchers__effect"] = Effect.STOP_CLEAR.value
                 q["wait_ts__exists"] = False
             del q["wait_tt"]
-        #
         if status == "A" and "escalation_tt__contains" in q:
             q["log__tt_id__contains"] = q.pop("escalation_tt__contains")
-        #
         if "collapse" in q:
             c = q["collapse"]
             del q["collapse"]
             if c != "0":
                 q["root__exists"] = False
-        #
         if "ephemeral" in q:
             c = q["ephemeral"]
             del q["ephemeral"]
@@ -1001,8 +997,7 @@ class AlarmApplication(ExtApplication):
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r += get_summary(s["service"], ServiceProfile)
-        r = [x for x in r if x]
-        return r
+        return [x for x in r if x]
 
     def bulk_field_total_grouped(self, data):
         if not data or data[0]["status"] != "A":

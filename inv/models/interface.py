@@ -119,7 +119,6 @@ class Interface(Document):
     )
     # profile locked on manual user change
     profile_locked = BooleanField(required=False, default=False)
-    #
     project = ForeignKeyField(Project)
     state = PlainReferenceField(State)
     # Current status
@@ -182,7 +181,7 @@ class Interface(Document):
         si = ServiceInstance.objects.filter(resources=self.as_resource()).first()
         if si:
             return si.service
-        return
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_component_cache"))
@@ -197,7 +196,7 @@ class Interface(Document):
         elif ifindex:
             q["ifindex"] = int(ifindex)
         if not q:
-            return
+            return None
         q["managed_object"] = managed_object.id
         iface = Interface.objects.filter(**q).first()
         if iface:
@@ -306,12 +305,11 @@ class Interface(Document):
                 )
             )
 
-        else:
-            return bool(
-                Link._get_collection()
-                .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
-                .find_one({"interfaces": self.id})
-            )
+        return bool(
+            Link._get_collection()
+            .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
+            .find_one({"interfaces": self.id})
+        )
 
     def unlink(self):
         """
@@ -372,15 +370,13 @@ class Interface(Document):
                         el.save()
                     else:
                         el.delete()
-                #
                 link = Link(interfaces=[self, other], discovery_method=method)
                 link.save()
                 return link
-            elif other.type == "aggregated" and other.profile.allow_lag_mismatch:
+            if other.type == "aggregated" and other.profile.allow_lag_mismatch:
                 return link_mismatched_lag(other, self)
-            else:
-                raise ValueError("Cannot connect %s interface to %s" % (self.type, other.type))
-        elif self.type == "aggregated":
+            raise ValueError("Cannot connect %s interface to %s" % (self.type, other.type))
+        if self.type == "aggregated":
             # LAG
             if other.type == "aggregated":
                 # Check LAG size match
@@ -394,12 +390,10 @@ class Interface(Document):
                     link = Link(interfaces=l_members + r_members, discovery_method=method)
                     link.save()
                     return link
-                else:
-                    return
-            elif self.profile.allow_lag_mismatch:
+                return None
+            if self.profile.allow_lag_mismatch:
                 return link_mismatched_lag(self, other)
-            else:
-                raise ValueError("Cannot connect %s interface to %s" % (self.type, other.type))
+            raise ValueError("Cannot connect %s interface to %s" % (self.type, other.type))
         raise ValueError("Cannot link")
 
     @classmethod
@@ -419,8 +413,7 @@ class Interface(Document):
         # Normalize interface name
         i = mo.get_profile().convert_interface_name(i)
         # Look for interface
-        iface = Interface.objects.filter(managed_object=mo.id, name=i).first()
-        return iface
+        return Interface.objects.filter(managed_object=mo.id, name=i).first()
 
     @property
     def subinterface_set(self):
@@ -448,8 +441,7 @@ class Interface(Document):
                 if speed >= t:
                     if speed // t * t == speed:
                         return "%d%s" % (speed // t, n)
-                    else:
-                        return "%.2f%s" % (float(speed) / t, n)
+                    return "%.2f%s" % (float(speed) / t, n)
             return str(speed)
 
         s = [{True: "Up", False: "Down", None: "-"}[self.oper_status]]
@@ -532,9 +524,9 @@ class Interface(Document):
         query = query.strip()
         if not query:
             return None
-        elif is_mac(query):
+        if is_mac(query):
             return Q(mac=query)
-        elif is_ipv4(query):
+        if is_ipv4(query):
             # Exact match on IP address
             ids = list(
                 SubInterface.objects.filter(ipv4_addresses=re.compile(query)).scalar("interface")

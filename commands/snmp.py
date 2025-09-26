@@ -115,8 +115,7 @@ class Command(BaseCommand):
                 timeout=timeout,
                 version=SnmpVersion.v3 if username else SnmpVersion.v2c,
             ) as session:
-                r = await session.get_many(oids)
-            return r
+                return await session.get_many(oids)
 
         if username:
             username = self.parse_credentials(username)

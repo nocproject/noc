@@ -99,7 +99,7 @@ class LabelApplication(ExtDocApplication):
             if k == "allow_models":
                 allow_models += v
                 continue
-            elif k.startswith("enable_") and k in enable_models_map:
+            if k.startswith("enable_") and k in enable_models_map:
                 allow_models += [enable_models_map[k]]
             elif k == "allow_wildcard" and "true" in v:
                 allow_wildcard = True

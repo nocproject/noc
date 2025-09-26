@@ -220,7 +220,6 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         ic_handler()
     # Call state on_enter_handlers
     self.state.on_enter_state(self)
-    #
     if state.is_wiping and not state.ttl:
         self.delete()
     elif state.is_wiping:
@@ -397,7 +396,7 @@ def wipe(model_id: str, oid):
     if not o:
         logger.info("[%s:%s] Object is not found. End..", model_id, oid)
         return
-    elif not o.state.is_wiping:
+    if not o.state.is_wiping:
         logger.info("[%s] Object state: %s is not enable wiping. End..", o, o.state)
         return
     logger.info("[%s] Delete...", oid)

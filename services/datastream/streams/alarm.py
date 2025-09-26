@@ -160,8 +160,7 @@ class AlarmDataStream(DataStream):
         ids = [str(AlarmClass.get_by_name(a).id) for a in args if AlarmClass.get_by_name(a)]
         if len(ids) == 1:
             return {"%s.alarmclass" % cls.F_META: ids[0]}
-        else:
-            return {"%s.alarmclass" % cls.F_META: {"$in": ids}}
+        return {"%s.alarmclass" % cls.F_META: {"$in": ids}}
 
     @classmethod
     def get_meta_headers(cls, data: Dict[str, Any]) -> Optional[Dict[str, bytes]]:

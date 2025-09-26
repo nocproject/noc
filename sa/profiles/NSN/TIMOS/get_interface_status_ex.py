@@ -83,5 +83,4 @@ class Script(BaseScript):
         return list(r.values())
 
     def execute_snmp(self, interfaces=None, **kwargs):
-        r = self.get_data()
-        return r
+        return self.get_data()

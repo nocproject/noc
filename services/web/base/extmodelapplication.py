@@ -112,7 +112,6 @@ class ExtModelApplication(ExtApplication):
             h = getattr(self, fn)
             if callable(h):
                 self.custom_fields[fn[6:]] = h
-        #
         if not self.query_fields:
             # By default - search in unique text fields
             self.query_fields = [
@@ -173,23 +172,22 @@ class ExtModelApplication(ExtApplication):
 
         if isinstance(field, BooleanField):
             return BooleanParameter()
-        elif isinstance(field, IntegerField):
+        if isinstance(field, IntegerField):
             return IntParameter()
-        elif isinstance(field, FloatField):
+        if isinstance(field, FloatField):
             return FloatParameter()
-        elif isinstance(field, DateField):
+        if isinstance(field, DateField):
             return DateParameter()
-        elif isinstance(field, DateTimeField):
+        if isinstance(field, DateTimeField):
             return DateTimeParameter()
-        elif isinstance(field, TagsField):
+        if isinstance(field, TagsField):
             return TagsParameter(required=not field.null)
-        elif isinstance(field, TextArrayField):
+        if isinstance(field, TextArrayField):
             return StringListParameter(required=not field.null)
-        elif isinstance(field, related.ForeignKey):
+        if isinstance(field, related.ForeignKey):
             self.fk_fields[field.name] = field.remote_field.model
             return ModelParameter(field.remote_field.model, required=not field.null)
-        else:
-            return None
+        return None
 
     def fav_convert(self, item):
         """
@@ -227,8 +225,7 @@ class ExtModelApplication(ExtApplication):
         def get_q(f):
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
-            else:
-                return f
+            return f
 
         q = reduce(
             lambda x, y: x | Q(**{get_q(y): query}),
@@ -247,8 +244,7 @@ class ExtModelApplication(ExtApplication):
         """
         if query and self.query_fields:
             return self.model.objects.filter(self.get_Q(request, query))
-        else:
-            return self.model.objects.all()
+        return self.model.objects.all()
 
     def clean(self, data):
         """
@@ -353,21 +349,21 @@ class ExtModelApplication(ExtApplication):
                     else:
                         nq[None] = [extra_where]
                 continue
-            elif lt and hasattr(self, "lookup_%s" % lt):
+            if lt and hasattr(self, "lookup_%s" % lt):
                 # Custom lookup
                 getattr(self, "lookup_%s" % lt)(nq, np, v)
                 continue
-            elif np in {"effective_service_groups", "effective_client_groups"} and v:
+            if np in {"effective_service_groups", "effective_client_groups"} and v:
                 nq[f"{np}__overlap"] = ResourceGroup.get_nested_ids(v)
                 continue
-            elif np in self.fk_fields and lt:
+            if np in self.fk_fields and lt:
                 # dereference
                 try:
                     nq[np] = self.fk_fields[np].objects.get(**{lt: v})
                 except self.fk_fields[np].DoesNotExist:
                     nq[np] = 0  # False search
                 continue
-            elif np in self.clean_fields and self.in_param in p:
+            if np in self.clean_fields and self.in_param in p:
                 v = ListOfParameter(self.clean_fields[np]).clean(v)
             elif np in self.clean_fields:  # @todo: Check for valid lookup types
                 v = self.clean_fields[np].clean(v)
@@ -513,8 +509,7 @@ class ExtModelApplication(ExtApplication):
                 else:
                     f[n] = pdata[n]
             return f, m2m
-        else:
-            return pdata, {}
+        return pdata, {}
 
     def update_file(self, files, o, file_attrs=None):
         """

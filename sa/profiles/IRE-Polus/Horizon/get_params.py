@@ -15,9 +15,7 @@ class Script(BaseScript):
     interface = IGetDict
 
     def execute_cli(self):
-        config = self.http.get(
+        return self.http.get(
             "/snapshots/full/config.json",
             json=True,
         )
-
-        return config

@@ -37,10 +37,9 @@ class Profile(BaseProfile):
     def convert_interface_name(self, interface):
         if interface.startswith("enet"):
             return "Enet" + interface[4:]
-        elif interface.startswith("adsl") or interface.startswith("vdsl"):
+        if interface.startswith("adsl") or interface.startswith("vdsl"):
             return interface[4:]
-        else:
-            return interface
+        return interface
 
     def setup_session(self, script):
         # Useful only on IES-1000
@@ -92,7 +91,7 @@ class Profile(BaseProfile):
         if slot_no == 1:
             if hw in ["IES1248-51", "IES1248-71"]:
                 return "IES-1248"
-            if hw == "AAM1212-51" or hw == "AAM1212-53":
+            if hw in ("AAM1212-51", "AAM1212-53"):
                 return "IES-1000"
             # Need more examples
             if hw == "IES-612":

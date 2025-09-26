@@ -26,5 +26,4 @@ class Script(BaseScript):
         if match:
             mac = match.group("mac")
             return {"first_chassis_mac": mac, "last_chassis_mac": mac}
-        else:
-            raise self.NotSupportedError()
+        raise self.NotSupportedError()

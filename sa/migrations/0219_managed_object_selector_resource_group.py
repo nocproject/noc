@@ -357,29 +357,28 @@ class Migration(BaseMigration):
         for label in labels:
             if label in current_labels:
                 continue
-            else:
-                doc = {
-                    # "_id": bson.ObjectId(),
-                    "name": label,
-                    "description": "",
-                    "bg_color1": 8359053,
-                    "fg_color1": 16777215,
-                    "bg_color2": 8359053,
-                    "fg_color2": 16777215,
-                    "is_protected": False,
-                    # Label scope
-                    "enable_agent": False,
-                    "enable_service": False,
-                    "enable_serviceprofile": False,
-                    "enable_managedobject": False,
-                    "enable_managedobjectprofile": False,
-                    "enable_administrativedomain": False,
-                    "enable_authprofile": False,
-                    "enable_commandsnippet": False,
-                    # Exposition scope
-                    "expose_metric": False,
-                    "expose_datastream": False,
-                }
-                bulk += [InsertOne(doc)]
+            doc = {
+                # "_id": bson.ObjectId(),
+                "name": label,
+                "description": "",
+                "bg_color1": 8359053,
+                "fg_color1": 16777215,
+                "bg_color2": 8359053,
+                "fg_color2": 16777215,
+                "is_protected": False,
+                # Label scope
+                "enable_agent": False,
+                "enable_service": False,
+                "enable_serviceprofile": False,
+                "enable_managedobject": False,
+                "enable_managedobjectprofile": False,
+                "enable_administrativedomain": False,
+                "enable_authprofile": False,
+                "enable_commandsnippet": False,
+                # Exposition scope
+                "expose_metric": False,
+                "expose_datastream": False,
+            }
+            bulk += [InsertOne(doc)]
         if bulk:
             l_coll.bulk_write(bulk, ordered=True)

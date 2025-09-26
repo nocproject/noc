@@ -39,8 +39,7 @@ class InterfacesStatusStatDS(BaseDataSource):
             if speed >= t:
                 if speed // t * t == speed:
                     return "%d%s" % (speed // t, n)
-                else:
-                    return "%.2f%s" % (float(speed) / t, n)
+                return "%.2f%s" % (float(speed) / t, n)
         return str(speed)
 
     @classmethod

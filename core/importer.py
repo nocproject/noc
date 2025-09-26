@@ -57,8 +57,7 @@ class NOCLoader(object):
         name = os.path.join(self.path_entry, fullname.replace(".", os.sep))
         if fullname in self.packages:
             return name + os.sep + "__init__.py"
-        else:
-            return name + ".py"
+        return name + ".py"
 
     def is_package(self, fullname):
         return fullname in self.packages

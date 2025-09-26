@@ -83,7 +83,7 @@ class MetricValue:
             return "-"
         if not self.value_units:
             return "%s %s" % Scale.humanize(int(self.value))
-        elif self.value_units.code == "s":
+        if self.value_units.code == "s":
             return Scale.humanize_time(int(self.value))
         return self.value_units.humanize(self.value, with_units=with_units)
 
@@ -91,7 +91,7 @@ class MetricValue:
     def humanize_meta(self) -> str:
         if not self.meta:
             return ""
-        elif "labels" in self.meta:
+        if "labels" in self.meta:
             return "|".join(ll.split("::")[-1] for ll in self.meta["labels"])
         return str(self.meta)
 
@@ -236,7 +236,7 @@ class QuerySet:
         """Check field added to request"""
         if isinstance(field, str):
             return field in self.fields
-        elif isinstance(field, QueryField):
+        if isinstance(field, QueryField):
             return field.alias in self.fields
         return False
 
@@ -244,7 +244,7 @@ class QuerySet:
         """Check fields in Query Cache"""
         if not self.query_cache:
             return False
-        elif not field:
+        if not field:
             return not bool(self.requested_fields.symmetric_difference(self.fields.keys()))
         return field in self.requested_fields
 
@@ -271,7 +271,7 @@ class QuerySet:
                 # Already Requested
                 continue
             select.append(f"{f.query_expr} AS {alias}")
-        SQL = """
+        return """
               SELECT %s
               FROM %s
               WHERE
@@ -287,7 +287,6 @@ class QuerySet:
             # " AND hasAny(labels, [%s]) " % ", ".join(labels) if labels else "",
             "GROUP BY %s" % ", ".join(sorted(group_by)) if group_by else "",
         )
-        return SQL
 
     def query_metrics(self):
         """Run build query and fill query_cache result"""
@@ -707,7 +706,7 @@ def get_interface_metrics(
     # mo = self.object
     if metrics and "map" not in metrics:
         return defaultdict(dict), {}
-    elif not metrics:
+    if not metrics:
         metrics = {
             "table_name": "interface",
             "map": {

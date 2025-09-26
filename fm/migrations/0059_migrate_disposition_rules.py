@@ -45,7 +45,7 @@ class Migration(BaseMigration):
                 ac = d.get("alarm_class")
                 if not ac:
                     continue
-                elif disposition_names and d["name"] in disposition_names:
+                if disposition_names and d["name"] in disposition_names:
                     name = f"{ec['name']} ({ac_map.get(ac)},{d['name']}) ({disposition_names.index(d['name'])})"
                 else:
                     name = f"{ec['name']} ({ac_map.get(ac)},{d['name']})"

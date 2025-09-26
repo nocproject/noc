@@ -137,9 +137,9 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.isdigit() or name.startswith("1/") or name.startswith("1:"):
             return "physical"
-        elif name.startswith("po"):
+        if name.startswith("po"):
             return "aggregated"
-        elif name == "System":
+        if name == "System":
             return "SVI"
         return "other"
 
@@ -168,7 +168,7 @@ class Profile(BaseProfile):
                 )
             ):
                 return "%s:%s" % (match.group("re_slot"), match.group("re_port"))
-            elif match.group("re_port"):
+            if match.group("re_port"):
                 return "%s" % match.group("re_port")
         elif s.startswith("Slot0/"):
             return s[6:]
@@ -281,8 +281,7 @@ class Profile(BaseProfile):
             }
             key = "%s-%s" % (port, media_type)
             return key, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def get_ports(self, script, interface=None):
         if (
@@ -401,8 +400,7 @@ class Profile(BaseProfile):
                 "tagged_ports": set(tagged_ports),
                 "untagged_ports": set(untagged_ports),
             }
-        else:
-            return None
+        return None
 
     def get_vlans(self, script):
         vlans = []
@@ -437,8 +435,7 @@ class Profile(BaseProfile):
     def cleaned_config(self, config):
         if "System locked by other session!" in config:
             raise CLIOperationError("System locked by other session!")
-        config = super().cleaned_config(config)
-        return config
+        return super().cleaned_config(config)
 
 
 def DES1210(v):
@@ -570,8 +567,7 @@ def DxS_L2(v):
         or v["platform"].startswith("DGS-37")
     ):
         return True
-    else:
-        return False
+    return False
 
 
 def get_platform(platform, hw_revision):
@@ -588,10 +584,7 @@ def get_platform(platform, hw_revision):
         if hw_revision is not None:
             if platform.endswith("/%s" % hw_revision):
                 return platform
-        else:
-            # Found in DES-1210-28/ME/A1 with SNMP
-            if platform.startswith("DES-1210-"):
-                hw_revision = "A1"
+        elif platform.startswith("DES-1210-"):
+            hw_revision = "A1"
         return "%s/%s" % (platform, hw_revision)
-    else:
-        return platform
+    return platform

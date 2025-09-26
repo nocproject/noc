@@ -28,10 +28,10 @@ def render_tc_int(value: int, format: str) -> str:
     if format == "x":
         # Hexadecimal
         return "%x" % value
-    elif format == "o":
+    if format == "o":
         # Octal
         return "%o" % value
-    elif format == "b":
+    if format == "b":
         # Binary
         pass
     elif format == "d":
@@ -89,7 +89,6 @@ def render_tc_octetstring(value, format: Union[bytes, str]) -> str:
                         raise ValueError("Unknown format: %s" % fmt)
             # Join with repeat separator
             r += rt.join(rr)
-            #
             if value and dsep:
                 r += dsep
     return r
@@ -106,6 +105,6 @@ def render_tc(value: Any, base_type: str, format: Optional[str] = None) -> str:
     if format:
         if base_type == "Integer32":
             return render_tc_int(value, format)
-        elif base_type == "OctetString":
+        if base_type == "OctetString":
             return render_tc_octetstring(value, format)
     return smart_text(value, errors="ignore")

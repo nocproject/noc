@@ -31,7 +31,7 @@ class ContextTokenizer(LineTokenizer):
             for t, ct in zip(tokens, ctx):
                 if ct is None:
                     continue
-                elif hasattr(ct, "match"):
+                if hasattr(ct, "match"):
                     # Regexp
                     if not ct.match(t):
                         matched = False

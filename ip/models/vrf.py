@@ -143,8 +143,7 @@ class VRF(NOCModel):
     def __str__(self):
         if self.rd == self.GLOBAL_RD:
             return "global"
-        else:
-            return self.name
+        return self.name
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _vpn_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

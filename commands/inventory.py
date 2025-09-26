@@ -19,7 +19,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         rebuild_parser = subparsers.add_parser("find-serial")
         rebuild_parser.add_argument("serials", nargs=argparse.REMAINDER, help="Serials to search")
 

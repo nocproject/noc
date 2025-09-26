@@ -39,8 +39,7 @@ class Engine(object):
         tree = ast.parse(expr, mode="eval")
         tree = PredicateTransformer(self).visit(tree)
         ast.fix_missing_locations(tree)
-        co = compile(tree, "<ast>", "eval")
-        return co
+        return compile(tree, "<ast>", "eval")
 
     def _expr_to_python(self, expr):
         """
@@ -413,7 +412,6 @@ class Engine(object):
         inputs = itertools.tee(_input, len(args))
         # Make generators
         gens = [a(self, g) for a, g in zip(args, inputs)]
-        #
         return self.iter_unique(itertools.chain(*gens))
 
     def fn_Del(self, _input, *args):
@@ -591,7 +589,6 @@ class Engine(object):
             else:
                 g_ctx.update(new_ctx)
 
-        #
         stack = kwargs.get("stack")
         # kwargs are callables, evaluate them
         if stack:

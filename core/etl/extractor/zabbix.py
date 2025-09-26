@@ -203,7 +203,7 @@ class ZabbixEvent(BaseModel):
     @property
     def host(self) -> Optional[int]:
         if not self.hosts:
-            return
+            return None
         return self.hosts[0].host_id
 
 
@@ -488,22 +488,22 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             "ICMP Нет ответа на ping",
         }:
             return "Zabbix | Host | Ping Failed"
-        elif "scope::availability" in labels and name and "Zabbix agent is not available" in name:
+        if "scope::availability" in labels and name and "Zabbix agent is not available" in name:
             return "Zabbix | Agent | Not Available"
-        elif (
+        if (
             "scope::availability" in labels
             and "component::network" in labels
             and "No SNMP data collection" in name
         ):
             return "Zabbix | SNMP | Not Available"
-        elif name == "ICMP Высокое время ответа":
+        if name == "ICMP Высокое время ответа":
             return "Zabbix | ICMP RTT | Too High"
         return None
 
     def get_event_start_ts(self, event: ZabbixEvent) -> Optional[int]:
         """Resolve Start TS for old_event"""
         if not event.object_id:
-            return
+            return None
         for row in self.api.event.get(
             objectids=event.object_id,
             eventid_till=event.event_id,

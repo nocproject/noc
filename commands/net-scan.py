@@ -310,7 +310,7 @@ class Command(BaseCommand):
 
         if name in checker_cache:
             return checker_cache[name]
-        elif name == ICMP_DIAG:
+        if name == ICMP_DIAG:
             checker_cache[name] = Ping(tos=config.ping.tos, timeout=1.0)
         elif name == SUGGEST_CHECK and kwargs:
             checker_cache[SUGGEST_CHECK] = SNMPProtocolChecker(**kwargs)

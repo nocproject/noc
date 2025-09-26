@@ -121,9 +121,9 @@ class ManagedObjectLoader(BaseLoader):
                 continue
             # elif isinstance(v, list):
             #     v = ";".join(v)
-            elif isinstance(v, enum.Enum):
+            if isinstance(v, enum.Enum):
                 continue
-            elif isinstance(v, (Document, Model)):
+            if isinstance(v, (Document, Model)):
                 v = v.id
             data[k] = str(v)
         address = data.pop("address")

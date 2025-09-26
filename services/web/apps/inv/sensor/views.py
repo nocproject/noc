@@ -27,8 +27,7 @@ class SensorApplication(ExtDocApplication):
     def field_row_class(self, o):
         if o.profile and o.profile.style:
             return o.profile.style.css_class_name
-        else:
-            return ""
+        return ""
 
     # def cleaned_query(self, q):
     #     q = super().cleaned_query(q)

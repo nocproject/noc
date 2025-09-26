@@ -31,13 +31,13 @@ def _get_point(p: Union[GPoint, List[float], Tuple[float, float], geojson.Point,
     """
     if isinstance(p, GPoint):
         return p
-    elif isinstance(p, (list, tuple)):
+    if isinstance(p, (list, tuple)):
         return GPoint(p[1], p[0])
-    elif isinstance(p, geojson.Point):
+    if isinstance(p, geojson.Point):
         return GPoint(p.coordinates[1], p.coordinates[0])
-    elif isinstance(p, dict) and "coordinates" in p:
+    if isinstance(p, dict) and "coordinates" in p:
         return GPoint(p["coordinates"][1], p["coordinates"][0])
-    elif isinstance(p, dict) and "geopoint" in p:
+    if isinstance(p, dict) and "geopoint" in p:
         return GPoint(p["geopoint"]["y"], p["geopoint"]["x"])
     return GPoint(p.y, p.x)
 

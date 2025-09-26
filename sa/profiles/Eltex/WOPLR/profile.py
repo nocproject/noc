@@ -27,6 +27,6 @@ class Profile(BaseProfile):
         match = cls.rx_physical.match(name)
         if match and match.group(1) in {"eth", "wlan"}:
             return "physical"
-        elif match and match.group(1) in {"br", "tun", "gre"}:
+        if match and match.group(1) in {"br", "tun", "gre"}:
             return "SVI"
         return "other"

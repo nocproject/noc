@@ -222,7 +222,6 @@ class WhoisCacheLoader(object):
 
         else:
             parser = self.parse_rpsl
-        #
         r = defaultdict(list)
         if self.use_ripe:
             logger.info("Processing RIPE origin -> route")

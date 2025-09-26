@@ -71,12 +71,10 @@ class Alarms(Model):
     total_objects = Int64Field(description=_("Total Objects"))
     total_services = Int64Field(description=_("Total Services"))
     total_subscribers = Int64Field(description=_("Total Subscribers"))
-    #
     escalation_ts = DateTimeField(description=_("Escalation Time"))
     escalation_tt = StringField(description=_("Number of Escalation"))
     # Amount of reboots during alarm
     reboots = Int16Field(description=_("Qty of Reboots"))
-    #
     managed_object = ReferenceField(ManagedObject, description=_("Object Name"))
     pool = ReferenceField(Pool, description=_("Pool Name"))
     object_profile = ReferenceField(ObjectProfile, description=_("Object Profile"))
@@ -111,7 +109,7 @@ class Alarms(Model):
         dl = len(domain_ids)
         if not dl:
             return None
-        elif dl == 1:
+        if dl == 1:
             q = {"$eq": [{"$field": "administrative_domain"}, domain_ids[0]]}
         else:
             q = {"$in": [{"$field": "administrative_domain"}, domain_ids]}
@@ -132,7 +130,7 @@ class Alarms(Model):
                 ]
             )
 
-        elif field == "subscribers":
+        if field == "subscribers":
             return ",".join(
                 [
                     f"arrayStringConcat(arrayMap(x -> concat(dictGetString('{config.clickhouse.db_dictionaries}.subscriberprofile'",

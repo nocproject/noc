@@ -126,8 +126,7 @@ class Script(BaseScript):
         match = self.rx_ip_sla_responder.search(r)
         if match:
             return "enabled" in match.group("state").lower()
-        else:
-            return False
+        return False
 
     @false_on_snmp_error
     def has_ip_sla_responder_snmp(self):
@@ -143,8 +142,7 @@ class Script(BaseScript):
 
     @false_on_snmp_error
     def get_ip_sla_probes_snmp(self):
-        r = self.snmp.count(mib["CISCO-RTTMON-MIB::rttMonCtrlAdminStatus"])
-        return r
+        return self.snmp.count(mib["CISCO-RTTMON-MIB::rttMonCtrlAdminStatus"])
 
     @false_on_cli_error
     def has_lacp_cli(self):
@@ -152,8 +150,7 @@ class Script(BaseScript):
         Check LACP Status
         :return:
         """
-        r = self.cli("show lacp counters")
-        return r
+        return self.cli("show lacp counters")
 
     @false_on_cli_error
     def has_rep_cli(self):

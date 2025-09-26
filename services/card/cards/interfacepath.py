@@ -159,8 +159,7 @@ class InterfacePathCard(BaseCard):
             if cv >= t:
                 if cv // t * t == cv:
                     return "%d%s" % (cv // t, n)
-                else:
-                    return "%.2f%s" % (float(cv) / t, n)
+                return "%.2f%s" % (float(cv) / t, n)
         return str(cv)
 
     def get_ajax_data(self, **kwargs):

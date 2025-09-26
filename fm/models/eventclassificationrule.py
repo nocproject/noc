@@ -183,7 +183,6 @@ class EventClassificationRule(Document):
     test_cases: List[EventClassificationTestCase] = EmbeddedDocumentListField(
         EventClassificationTestCase
     )
-    #
     category = ObjectIdField()
 
     def __str__(self):
@@ -274,9 +273,9 @@ class EventClassificationRule(Document):
         if self.profiles:
             mt.profile = self.profiles[0].name
         for p in self.patterns:
-            if p.key_re == "^source$" or p.key_re == "source":
+            if p.key_re in ("^source$", "source"):
                 mt.source = EventSource(p.value_re.strip("^$"))
-            if p.key_re == "^profile$" or p.key_re == "profile":
+            if p.key_re in ("^profile$", "profile"):
                 mt.profile = p.value_re.strip("^$").replace("\\", "")
         for tc in self.test_cases:
             yield (
@@ -302,7 +301,7 @@ class EventClassificationRule(Document):
             rx = re.compile(x.value_re)
             profiles = list(profile_loader.iter_profiles())
             rule_profiles |= {p for p in profiles if rx.search(p)}
-        r = {
+        return {
             "id": str(rule.id),
             "name": rule.name,
             "$type": "classification",
@@ -328,4 +327,3 @@ class EventClassificationRule(Document):
             "to_drop": rule.event_class.to_drop,
             "to_dispose": rule.event_class.to_dispose,
         }
-        return r

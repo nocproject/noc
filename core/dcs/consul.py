@@ -233,8 +233,7 @@ class ConsulDCS(DCSBase):
                     self.svc_id = svc_id
                 break
             return r
-        else:
-            return True
+        return True
 
     async def deregister(self):
         if self.session:
@@ -305,10 +304,9 @@ class ConsulDCS(DCSBase):
                 )
                 if status:
                     break
-                else:
-                    metrics["error", ("type", "dcs_consul_failed_get_lock")] += 1
-                    self.logger.info("Failed to acquire lock")
-                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                metrics["error", ("type", "dcs_consul_failed_get_lock")] += 1
+                self.logger.info("Failed to acquire lock")
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
                 continue
@@ -369,10 +367,9 @@ class ConsulDCS(DCSBase):
                         key=manifest_path, value=orjson.dumps({"Limit": limit}).decode()
                     )
                     return
-                else:
-                    self.logger.info("Deleting slots for %s", name)
-                    await self.consul.kv.delete(key=manifest_path)
-                    return
+                self.logger.info("Deleting slots for %s", name)
+                await self.consul.kv.delete(key=manifest_path)
+                return
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
 
@@ -402,10 +399,9 @@ class ConsulDCS(DCSBase):
                 )
                 if status:
                     break
-                else:
-                    metrics["error", ("type", "dcs_consul_failed_get_slot")] += 1
-                    self.logger.info("Failed to write contender slot info")
-                    await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
+                metrics["error", ("type", "dcs_consul_failed_get_slot")] += 1
+                self.logger.info("Failed to write contender slot info")
+                await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
             except ConsulRepeatableErrors:
                 await asyncio.sleep(self.DEFAULT_CONSUL_RETRY_TIMEOUT)
         index = 0
@@ -427,11 +423,10 @@ class ConsulDCS(DCSBase):
                     cas = e["ModifyIndex"]
                     # @todo: Handle errors
                     manifest = orjson.loads(e["Value"])
+                elif "Session" in e:
+                    seen_sessions.add(e["Session"])
                 else:
-                    if "Session" in e:
-                        seen_sessions.add(e["Session"])
-                    else:
-                        dead_contenders.add(e["Key"])
+                    dead_contenders.add(e["Key"])
             if manifest:
                 total_slots = int(manifest.get("Limit", 0))
                 holders = [

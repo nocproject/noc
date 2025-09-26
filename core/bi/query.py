@@ -33,17 +33,16 @@ class OP(object):
             raise ValueError("Too many arguments: %s" % seq)
         if self.convert:
             return self.convert(seq, model)
+        r = ["(%s)" % to_sql(x, model=model) for x in seq]
+        if self.join:
+            r = self.join.join(r)
+        elif self.function:
+            r = "%s(%s)" % (self.function, ", ".join(r))
         else:
-            r = ["(%s)" % to_sql(x, model=model) for x in seq]
-            if self.join:
-                r = self.join.join(r)
-            elif self.function:
-                r = "%s(%s)" % (self.function, ", ".join(r))
-            else:
-                r = r[0]
-            if self.prefix:
-                r = "%s%s" % (self.prefix, r)
-            return r
+            r = r[0]
+        if self.prefix:
+            r = "%s%s" % (self.prefix, r)
+        return r
 
 
 def f_lookup(seq, model=None):
@@ -55,7 +54,6 @@ def f_lookup(seq, model=None):
     """
     dict_name = seq[0]
     if "." in dict_name:
-        #
         _, dict_name = dict_name.split(".", 1)
     dc = loader[dict_name]
     if len(seq) == 2:
@@ -117,7 +115,6 @@ def f_names(seq, model=None):
     """
     dict_name = seq[0]
     if "." in dict_name:
-        #
         _, dict_name = dict_name.split(".", 1)
     return f"arrayMap(k->dictGetString('{config.clickhouse.db_dictionaries}.{dict_name}', 'name', toUInt64(k)), dictGetHierarchy('{config.clickhouse.db_dictionaries}.{dict_name}', {seq[1]}))"
 
@@ -151,8 +148,7 @@ def f_selector(seq, model=None):
     ids = model.get_bi_selector(query)
     if ids:
         return "(%s IN (%s))" % (to_sql(expr), ",".join(str(i) for i in ids))
-    else:
-        return "(0 = 1)"
+    return "(0 = 1)"
 
 
 def f_quantile(seq):
@@ -271,8 +267,7 @@ def to_sql(expr, model=None):
     elif isinstance(expr, str):
         if expr.isdigit():
             return int(expr)
-        else:
-            return "'%s'" % escape_str(expr)
+        return "'%s'" % escape_str(expr)
     elif isinstance(expr, int):
         return str(expr)
     elif isinstance(expr, float):

@@ -134,7 +134,6 @@ class ScriptLoader(BaseLoader):
                     continue  # Unsatisfied dependency
                 # Add generic script
                 ns.add(fgn)
-        #
         with self.lock:
             self.all_scripts = ns
 

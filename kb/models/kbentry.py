@@ -54,7 +54,6 @@ class KBEntry(NOCModel):
     markup_language = models.CharField(
         "Markup Language", max_length=16, choices=[(x, x) for x in loader]
     )
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
@@ -63,8 +62,7 @@ class KBEntry(NOCModel):
     def __str__(self):
         if self.id:
             return "KB%d: %s" % (self.id, self.subject)
-        else:
-            return "New: %s" % self.subject
+        return "New: %s" % self.subject
 
     def save(self, *args, **kwargs):
         """

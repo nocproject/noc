@@ -59,7 +59,6 @@ class TopologyBase(object):
         self.node_hints: Optional[Dict[str, Any]] = settings.get("node_hints") or {}
         self.link_hints: Optional[Dict[str, Any]] = settings.get("link_hints") or {}
         self.default_stencil = stencil_registry.get(stencil_registry.DEFAULT_STENCIL)
-        #
         self.pn = 0
         # Caches
         self._rings_cache = {}
@@ -163,7 +162,6 @@ class TopologyBase(object):
         if attrs:
             a.update(attrs)
         a.update({"type": edge_type})
-        #
         self.G.add_edge(o1, o2, **a)
 
     def add_link(self, link):
@@ -192,12 +190,11 @@ class TopologyBase(object):
         def bandwidth(speed, if_bw):
             if speed and if_bw:
                 return min(speed, if_bw)
-            elif speed and not if_bw:
+            if speed and not if_bw:
                 return speed
-            elif if_bw:
+            if if_bw:
                 return if_bw
-            else:
-                return 0
+            return 0
 
         if link.is_loop:
             return  # Loops are not shown on map
@@ -365,10 +362,9 @@ class TopologyBase(object):
             return SpringLayout
         if not self.settings.get("force_spring") and len(self.get_rings()) == 1:
             return RingLayout
-        elif not self.settings.get("force_spring") and nx.is_forest(self.G):
+        if not self.settings.get("force_spring") and nx.is_forest(self.G):
             return TreeLayout
-        else:
-            return SpringLayout
+        return SpringLayout
 
     def layout(self):
         """

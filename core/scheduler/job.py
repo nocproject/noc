@@ -42,7 +42,6 @@ class Job(object):
     # Set to version number otherwise
     # Bump to next number on incompatible context changes
     context_version = None
-    #
     context_cache_key = "jobctx-%(name)s-%(pool)s-%(job_id)s"
     # Collection attributes
     ATTR_ID = "_id"

@@ -20,12 +20,10 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        r = {}
         sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark=b"}"))
-        r = {
+        return {
             "vendor": "MikroTik",
             "platform": smart_text(codecs.decode(sys_info["brd"], "hex")),
             "version": smart_text(codecs.decode(sys_info["ver"], "hex")),
             "attributes": {"Serial Number": smart_text(codecs.decode(sys_info["sid"], "hex"))},
         }
-        return r

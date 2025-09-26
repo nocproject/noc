@@ -67,7 +67,7 @@ class Script(BaseScript):
                         vlan = m[0].split()[1]
                         continue
 
-                    elif m[0][:3] == "ve ":
+                    if m[0][:3] == "ve ":
                         ifc = "".join(m[0].split())
                         if ifc in untagged:
                             untagged[ifc].append(vlan)

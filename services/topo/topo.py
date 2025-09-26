@@ -293,7 +293,6 @@ class Topo(object):
             # Get last appended element
             uplink, _ = visited.popitem()
             visited[uplink] = True
-            #
             if uplink in uplinks[child]:
                 # This path has been traversed from other root.
                 # No new uplinks there and below.

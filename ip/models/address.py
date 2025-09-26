@@ -233,7 +233,7 @@ class Address(NOCModel):
         # Check prefix is of AFI type
         if self.is_ipv4 and not is_ipv4(self.address):
             raise ValidationError({"address": f"Invalid IPv4 {self.address}"})
-        elif self.is_ipv6 and not is_ipv6(self.address):
+        if self.is_ipv6 and not is_ipv6(self.address):
             raise ValidationError({"address": f"Invalid IPv6 {self.address}"})
         # Check VRF
         if not self.vrf:
@@ -253,8 +253,7 @@ class Address(NOCModel):
         """
         if self.description:
             return self.description.split("\n", 1)[0].strip()
-        else:
-            return ""
+        return ""
 
     def get_index(self):
         """
@@ -368,7 +367,7 @@ class Address(NOCModel):
                 break
         if strategy == "L":
             return sorted(addresses, reverse=True)[:limit]
-        elif strategy == "F":
+        if strategy == "F":
             return sorted(addresses)[:limit]
         return addresses
 

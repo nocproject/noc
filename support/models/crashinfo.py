@@ -110,8 +110,7 @@ class Crashinfo(Document):
         json = self.json
         if json:
             return json.get("traceback")
-        else:
-            return None
+        return None
 
     @classmethod
     def on_delete(cls, sender, document, **kwargs):

@@ -51,7 +51,7 @@ class RemoteMappingValue(object):
         if not self.remote_system.object_url_template:
             return ""
         tpl = Template(self.remote_system.object_url_template)
-        url = tpl.render(
+        return tpl.render(
             {
                 "remote_system": self.remote_system,
                 "remote_id": self.remote_id,
@@ -59,7 +59,6 @@ class RemoteMappingValue(object):
                 "config": self.remote_system.config,
             },
         )
-        return url
 
     def set_remote_id(
         self, remote_id: Any, source: Optional[InputSource] = None
@@ -296,7 +295,7 @@ def update_remote_mappings(
             # If empty sources - remove mapping
             changed |= True
             continue
-        elif sources != item.sources:
+        if sources != item.sources:
             item = item.update_sources(sources)
             logger.info("[%s] Update sources: %s", self, sources)
             changed |= True

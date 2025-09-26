@@ -82,7 +82,6 @@ def get_facade_template(model: ObjectModel) -> str:
         # Filter proper direction
         if conn.direction not in DIR_FILTER:
             continue
-        #
         ct_id = f"{name_to_id(conn.type.name)}-{conn.gender}"
         slot_id = slot_to_id(conn.name)
         # Append connnection type if necessary
@@ -144,8 +143,7 @@ def get_facade_template(model: ObjectModel) -> str:
                 el.append(ct.el)
     # Format tree
     ET.indent(tree)
-    out = ET.tostring(tree.getroot(), encoding="unicode", method=None)
-    return out
+    return ET.tostring(tree.getroot(), encoding="unicode", method=None)
 
 
 def get_model_dimensions(model: ObjectModel) -> Tuple[int, int]:

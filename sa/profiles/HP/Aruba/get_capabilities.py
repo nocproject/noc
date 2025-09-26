@@ -54,5 +54,4 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("show lacp configuration")
-        return r
+        return self.cli("show lacp configuration")

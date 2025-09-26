@@ -65,7 +65,6 @@ class CDPCheck(TopologyDiscoveryCheck):
             return nn
         if is_ipv4(n):
             return self.get_neighbor_by_ip(n)
-        elif is_mac(n):
+        if is_mac(n):
             return self.get_neighbor_by_mac(n)
-        else:
-            return None
+        return None

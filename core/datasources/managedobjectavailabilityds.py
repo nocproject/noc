@@ -95,7 +95,7 @@ class ManagedObjectAvailabilityDS(BaseDataSource):
         if not status and (not last or last < start_date):
             # If last less than start interval time - full unavailable
             return int((stop_date - start_date).total_seconds())
-        elif not status and start_date < last < stop_date:
+        if not status and start_date < last < stop_date:
             # Last between interval endpoint
             return int((stop_date - last).total_seconds())
         # No outages on interval ?

@@ -93,7 +93,6 @@ class Script(BaseScript):
                 ic += [" %s" % ept[is_access(c)]]
             else:
                 ic += [" no %s" % ept[is_access(c)]]
-            #
             if ic:
                 commands += ["interface %s" % iface] + ic + [" exit"]
         # Apply commands

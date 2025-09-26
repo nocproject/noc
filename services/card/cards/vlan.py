@@ -23,8 +23,7 @@ class VLANCard(BaseCard):
     def get_object(self, id):
         if self.current_user.is_superuser:
             return VLAN.get_by_id(id)
-        else:
-            return VLAN.objects.get(id=id, segment__in=self.get_user_domains())
+        return VLAN.objects.get(id=id, segment__in=self.get_user_domains())
 
     def get_data(self):
         return {"object": self.object, "interfaces": self.get_interfaces()}
@@ -67,7 +66,6 @@ class VLANCard(BaseCard):
             {"managed_object": o, "interfaces": sorted(si_objects[o], key=lambda x: x["name"])}
             for o in si_objects
         ]
-        #
         return {
             "has_interfaces": bool(len(untagged) + len(tagged) + len(l3)),
             "untagged": sorted(untagged, key=lambda x: x["managed_object"].name),

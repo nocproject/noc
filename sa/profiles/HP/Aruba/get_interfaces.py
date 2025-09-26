@@ -35,7 +35,6 @@ class Script(BaseScript):
     rx_vlan_mode = re.compile(r"VLAN Mode:\s+(?P<vlan_mode>\S+)")
     # IPv4 ifaces
     rx_ipv4_address = re.compile(r"IPv4 address\s+(?P<ip_address>\S+)")
-    #
     rx_vlans = re.compile(r"^(?P<vlan>\d+)\s+", re.MULTILINE)
 
     def get_vlans(self) -> List[int]:

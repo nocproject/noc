@@ -60,8 +60,7 @@ class MaintenanceApplication(ExtDocApplication):
                     data = (am for am in o.affected_maintenances)
                 return Maintenance.objects.filter(id__in=list(data))
             return qs.filter(type=None)
-        else:
-            return qs
+        return qs
 
     @view(url=r"^(?P<id>[a-z0-9]{24})/add/", method=["POST"], api=True, access="update")
     def api_add(self, request, id):

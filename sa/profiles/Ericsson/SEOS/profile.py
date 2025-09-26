@@ -43,5 +43,4 @@ class Profile(BaseProfile):
         if match:
             iface = s.split()
             return "%s-%s" % (iface[1], iface[0])
-        else:
-            return s
+        return s

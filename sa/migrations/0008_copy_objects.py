@@ -47,7 +47,6 @@ class Migration(BaseMigration):
             category2group[id] = self.db.execute(
                 "SELECT id FROM sa_objectgroup WHERE name=%s", [name]
             )[0][0]
-        #
         ManagedObject = self.db.mock_model(model_name="ManagedObject", db_table="sa_managedobject")
         self.db.add_column(
             "cm_config",
