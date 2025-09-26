@@ -180,7 +180,7 @@ class AlarmJob(object):
                 )
                 aa.set_status(ActionResult(status=ActionStatus.SKIP))
                 continue
-            elif self.dry_run and self.static_delay:
+            if self.dry_run and self.static_delay:
                 time.sleep(self.static_delay)
             # if not aa.to_run(status, delay):
             #    continue

@@ -198,7 +198,7 @@ class ActionSet(object):
                         continue
                     if r.is_drop:
                         return r
-                    elif r.to_dispose:
+                    if r.to_dispose:
                         action = r
             except Exception as e:
                 self.logger.error("[%s] Error when execute action: %s", event.id, str(e))

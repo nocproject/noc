@@ -20,7 +20,6 @@ class Script(BaseScript):
     interface = IGetVersion
 
     def execute(self):
-        r = {}
         sys_info = self.profile.parseBrokenJson(self.http.get("/sys.b", cached=True, eof_mark=b"}"))
         return {
             "vendor": "MikroTik",

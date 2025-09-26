@@ -376,21 +376,21 @@ class ModelTemplate(Document):
                 continue
             if p.name not in data and p.required:
                 raise ValueError("Parameter %s is required" % p.name)
-            elif not is_new and not p.override_existing:
+            if not is_new and not p.override_existing:
                 data.pop(p.name, None)
                 continue
-            elif p.preferred_template_value and p.default_expression and p.name in data:
+            if p.preferred_template_value and p.default_expression and p.name in data:
                 r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
                 # May be used in next expression ?
                 data.pop(p.name, None)
                 continue
-            elif p.name not in data and p.default_expression:
+            if p.name not in data and p.default_expression:
                 if p.name in params:
                     r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
                 else:
                     r[p.name] = p.render_default(**data)
                 continue
-            elif p.name not in data:
+            if p.name not in data:
                 continue
             value = data.pop(p.name)
             if p.set_capability:

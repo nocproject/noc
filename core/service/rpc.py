@@ -146,11 +146,9 @@ class RPCProxy(object):
                             remote_code=result["error"].get("code", None),
                         )
                     return result["result"]
-                else:
-                    # Notifications return None
-                    return None
-            else:
-                raise RPCNoService(f"No active service {self._service_name} found")
+                # Notifications return None
+                return None
+            raise RPCNoService(f"No active service {self._service_name} found")
 
         async def async_wrapper(*args, **kwargs):
             return await _call(item, *args, **kwargs)

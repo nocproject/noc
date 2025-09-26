@@ -176,12 +176,11 @@ class CHWriterService(FastAPIService):
                             metrics["error", ("type", "records_spool_timeouts")] += 1
                             await asyncio.sleep(1)
                             continue
-                        else:
-                            self.logger.info(
-                                "[%s] Failed to write records: %s %s", ch.table, code, body
-                            )
-                            metrics["error", ("type", "records_spool_failed")] += 1
-                            break
+                        self.logger.info(
+                            "[%s] Failed to write records: %s %s", ch.table, code, body
+                        )
+                        metrics["error", ("type", "records_spool_failed")] += 1
+                        break
                     except Exception as e:
                         self.logger.error(
                             "[%s] Failed to spool %d records due to unknown error: %s",

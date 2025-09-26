@@ -670,7 +670,7 @@ class DiscoveredObject(Document):
                 s.remote_system
             ):
                 return True
-            elif not self.has_remote_system(s.remote_system) and do.has_remote_system(
+            if not self.has_remote_system(s.remote_system) and do.has_remote_system(
                 s.remote_system
             ):
                 return False

@@ -117,15 +117,15 @@ class SNMP(object):
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
         if version < 3:
             return str(self.script.credentials["snmp_ro"])
-        elif "snmp_username" not in self.script.credentials:
+        if "snmp_username" not in self.script.credentials:
             raise SNMPError(code=ERR_SNMP_BAD_COMMUNITY)
-        elif "snmp_priv_proto" in self.script.credentials:
+        if "snmp_priv_proto" in self.script.credentials:
             return User(
                 name=str(self.script.credentials["snmp_username"]),
                 auth_key=self._get_auth_key(),
                 priv_key=self._get_private_key(),
             )
-        elif "snmp_auth_proto" in self.script.credentials:
+        if "snmp_auth_proto" in self.script.credentials:
             return User(
                 name=str(self.script.credentials["snmp_username"]), auth_key=self._get_auth_key()
             )

@@ -231,17 +231,16 @@ async def snmp_count(
             if resp.error_status != NO_ERROR:
                 # Error
                 raise SNMPError(code=resp.error_status, oid=oid)
-            else:
-                # Success value
-                for oid, v in resp.varbinds:
-                    if oid.startswith(poid):
-                        # Next value
-                        if filter(oid, v):
-                            result += 1
-                    else:
-                        logger.debug("[%s] COUNT result: %s", address, result)
-                        sock.close()
-                        return result
+            # Success value
+            for oid, v in resp.varbinds:
+                if oid.startswith(poid):
+                    # Next value
+                    if filter(oid, v):
+                        result += 1
+                else:
+                    logger.debug("[%s] COUNT result: %s", address, result)
+                    sock.close()
+                    return result
 
 
 async def snmp_getnext(
@@ -320,10 +319,10 @@ async def snmp_getnext(
             if resp.error_status == END_OID_TREE:
                 # End OID Tree
                 return result
-            elif resp.error_status != NO_ERROR:
+            if resp.error_status != NO_ERROR:
                 # Error
                 raise SNMPError(code=resp.error_status, oid=oid)
-            elif not raw_varbinds:
+            if not raw_varbinds:
                 # Success value
                 for oid, v in resp.varbinds:
                     if oid == first_oid:
