@@ -25,7 +25,7 @@ def _build_pdu(community: str, pdu_type: int, oids, request_id, version: int = S
     :param oids:
     :return:
     """
-    if version != SNMP_v1 and version != SNMP_v2c:
+    if version not in (SNMP_v1, SNMP_v2c):
         raise NotImplementedError("Unsupported SNMP version")
     if not request_id:
         request_id = random.randint(0, 0x7FFFFFFF)

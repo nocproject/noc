@@ -117,7 +117,7 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
-        return self.type == "p" or self.type == "a"
+        return self.type in ("p", "a")
 
     @property
     def is_lag(self) -> bool:
@@ -125,7 +125,7 @@ class Link(Document):
         Check link is unresolved LAG
         :return:
         """
-        return self.type == "p" or self.type == "a"
+        return self.type in ("p", "a")
 
     @property
     def is_broadcast(self) -> bool:

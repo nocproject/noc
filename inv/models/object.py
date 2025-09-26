@@ -386,7 +386,7 @@ class Object(Document):
         """
         Object is Generic
         """
-        return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
+        return self.model.vendor.name in ("Generic", "NoName")
 
     @property
     def is_point(self) -> bool:

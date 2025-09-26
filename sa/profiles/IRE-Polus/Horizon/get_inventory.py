@@ -212,7 +212,7 @@ class Script(BaseScript):
 
         r = FRU("", "")
         for p in c.info_params:
-            if p.code == "PtNumber" or p.code == "pId":
+            if p.code in ("PtNumber", "pId"):
                 if p.value.startswith("RBS-"):
                     r.is_rbs = True
                     r.part_no = fix_fru(p.value[4:])

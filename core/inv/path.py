@@ -139,7 +139,7 @@ def find_path(
                 if adj.remote_object in wave:
                     continue  # Shortest path cannot slide across the edge of wave
                 r = get_action(adj.remote_object, adj.remote_name)
-                if r == ConnAction.PASS or r == ConnAction.FOUND:
+                if r in (ConnAction.PASS, ConnAction.FOUND):
                     # Connect internal slots, only if we're not returning back to the incoming
                     pi = PathItem(obj=co, connection=adj.local_name)
                     if adj.local_name != incoming:

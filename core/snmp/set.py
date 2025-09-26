@@ -22,7 +22,7 @@ def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
     :param varbinds: List of (oid, value)
     :return:
     """
-    if version != SNMP_v1 and version != SNMP_v2c:
+    if version not in (SNMP_v1, SNMP_v2c):
         raise NotImplementedError("Unsupported SNMP version")
     e = BEREncoder()
     if not request_id:

@@ -146,7 +146,7 @@ class Rule:
                 if "__" not in name:
                     continue
                 v, fixup, *args = name.split("__")
-                if hasattr(VarTransformRule, fixup) or fixup == "enum" or fixup == "ifindex":
+                if hasattr(VarTransformRule, fixup) or fixup in ("enum", "ifindex"):
                     transform[v] = VarTransformRule(
                         name=v,
                         var=name,

@@ -91,7 +91,7 @@ def test_targeted_f_extremums():
         f0 = stream.f(r0, n)
         f1 = stream.f(r1, n)
         f2 = stream.f(r2, n)
-        if f1 < f0 and f1 < f2 and f1 != f0 and f1 != f2:
+        if f1 < f0 and f1 < f2 and f1 not in (f0, f2):
             extremums.add(r1)
     for r, _ in Q_DEFAULT_TARGET:
         assert int(r * n) in extremums

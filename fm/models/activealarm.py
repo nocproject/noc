@@ -240,7 +240,7 @@ class ActiveAlarm(Document):
         if not esc:
             return
         for ii in esc.items:
-            if ii.escalation_status == "fail" or ii.escalation_status == "temp":
+            if ii.escalation_status in ("fail", "temp"):
                 return ii.escalation_error
 
     @property

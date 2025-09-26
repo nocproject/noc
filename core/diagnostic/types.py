@@ -38,7 +38,7 @@ class DiagnosticState(str, enum.Enum):
 
     @property
     def is_active(self) -> bool:
-        return self.value != "blocked" and self.value != "unknown"
+        return self.value not in ("blocked", "unknown")
 
 
 @dataclass(frozen=True)

@@ -127,7 +127,7 @@ class Script(BaseScript):
                 ],
             }
             desc = descriptions.get(ifname, "")
-            if desc != "" and desc != "null":
+            if desc not in ("", "null"):
                 i.update({"description": desc})
                 i["subinterfaces"][0].update({"description": desc})
             tagged_vlans = []

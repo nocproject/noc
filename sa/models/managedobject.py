@@ -3017,7 +3017,7 @@ class ManagedObject(NOCModel):
         """Reset credential"""
         r = {}
         for f, _ in self.credentials.iter_credential(snmp_only=snmp_only, cli_only=cli_only):
-            if f == "snmp_auth_proto" or f == "snmp_priv_proto":
+            if f in ("snmp_auth_proto", "snmp_priv_proto"):
                 continue
             setattr(self, f, None)
             r[f] = None
