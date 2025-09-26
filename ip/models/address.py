@@ -156,11 +156,8 @@ class Address(NOCModel):
         return f"{self.vrf.name}({self.afi}): {self.address}"
 
     @classmethod
-    def get_by_id(cls, id: int) -> Optional["Address"]:
-        address = Address.objects.filter(id=id)[:1]
-        if address:
-            return address[0]
-        return None
+    def get_by_id(cls, oid: int) -> Optional["Address"]:
+        return Address.objects.filter(id=oid).first()
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_address:
@@ -168,10 +165,13 @@ class Address(NOCModel):
         if config.datastream.enable_dnszone:
             from noc.dns.models.dnszone import DNSZone
 
-            fqdn_changed, address_changed = [self.fqdn, changed_fields.get("fqdn")], [
-                self.address,
-                changed_fields.get("address"),
-            ]
+            fqdn_changed, address_changed = (
+                [self.fqdn, changed_fields.get("fqdn")],
+                [
+                    self.address,
+                    changed_fields.get("address"),
+                ],
+            )
             for fqdn in fqdn_changed:
                 if not fqdn:
                     continue

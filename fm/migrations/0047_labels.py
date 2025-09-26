@@ -13,7 +13,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     TAG_COLLETIONS = [("noc.alarms.active", ""), ("noc.alarms.archived", "")]
 
     def migrate(self):

@@ -1,10 +1,9 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_dom_status
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
-
 
 # Python modules
 import re
@@ -33,7 +32,7 @@ class Script(BaseScript):
         else:
             return None
 
-    def execute(self, interface=None):
+    def execute_cli(self, interface=None):
         cmd = "show ddm ports status"
         if interface is not None:
             cmd = "show ddm ports %s status" % interface

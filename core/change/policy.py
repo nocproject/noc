@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Change tracking policy
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -29,6 +29,7 @@ cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_poli
 cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = ContextVar(
     "cv_policy_stack", default=None
 )
+c_user: ContextVar[Optional[str]] = ContextVar("c_user", default=None)
 
 CHANGE_HANDLERS: Dict[str, Set[str]] = defaultdict(set)
 CHUNK_SIZE = 1000
@@ -63,6 +64,15 @@ class ChangeTracker(object):
             cv_policy.set(policy)
         return policy
 
+    def get_user(self) -> Optional[str]:
+        """Getting user for changes"""
+        from noc.core.middleware.tls import get_user
+
+        user = get_user() or c_user.get()
+        if user:
+            return str(user)
+        return ""
+
     def register(
         self,
         op: Literal["create", "update", "delete"],
@@ -84,11 +94,9 @@ class ChangeTracker(object):
             audit: Send Changes to Audit Log
             caps: Changed Capabilities list
         """
-        from noc.core.middleware.tls import get_user
-
         if not CHANGE_HANDLERS:
             self.load_receivers()
-        user = get_user() or ""
+        user = self.get_user()
         self.get_policy().register(
             item=ChangeItem(
                 op=op,
@@ -140,16 +148,17 @@ class ChangeTracker(object):
         return policy
 
     @contextlib.contextmanager
-    def bulk_changes(self):
+    def bulk_changes(self, user: Optional[str] = None):
         """
         Apply all changes at once
-        :return:
         """
         # Store current effective policy
         prev_policy = cv_policy.get()
         # Install bulk change policy as
         policy = BulkChangeTrackerPolicy()
         cv_policy.set(policy)
+        if user:
+            c_user.set(user)
         yield
         policy.commit()
         cv_policy.set(prev_policy)
@@ -229,6 +238,8 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
                 prev.change(item.op, changed_fields=item.changed_fields, timestamp=item.ts) or prev
             )
             changes[key] = prev
+        if audit:
+            self.changes[AUDIT_CHANGE][key] = item
 
     def register_ds(self, items: List[Tuple[str, str]]) -> None:
         # Changed datastreams

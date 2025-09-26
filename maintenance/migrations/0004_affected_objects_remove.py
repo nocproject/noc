@@ -26,7 +26,7 @@ class Migration(BaseMigration):
         db = self.mongo_db
         processed = set(
             am
-            for am, in self.db.execute(
+            for (am,) in self.db.execute(
                 "SELECT jsonb_object_keys(affected_maintenances) FROM sa_managedobject"
             )
         )

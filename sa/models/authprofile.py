@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # AuthProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -150,8 +150,8 @@ class AuthProfile(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["AuthProfile"]:
-        return AuthProfile.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["AuthProfile"]:
+        return AuthProfile.objects.filter(id=oid).first()
 
     def on_save(self):
         from .managedobject import CREDENTIAL_CACHE_VERSION

@@ -20,7 +20,7 @@ svc = get_service()
 
 
 async def get_current_user(
-    remote_user: Optional[str] = Header(None, alias="Remote-User")
+    remote_user: Optional[str] = Header(None, alias="Remote-User"),
 ) -> Optional[User]:
     """
     Get request current user

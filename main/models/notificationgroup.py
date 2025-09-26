@@ -230,8 +230,8 @@ class NotificationGroup(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["NotificationGroup"]:
-        return NotificationGroup.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["NotificationGroup"]:
+        return NotificationGroup.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
@@ -596,7 +596,7 @@ class NotificationGroup(NOCModel):
                 instance_id=str(o.id),
                 watchers=[],
             )
-        us.watchers.append(c),
+        (us.watchers.append(c),)
         us.save()
         return us
 

@@ -24,7 +24,6 @@ class Script(GetMetricsScript):
     name = "Eltex.LTP16N.get_metrics"
 
     def get_number_pon_ports(self):
-
         if self.capabilities["SNMP | OID | sysDescr"] == "ELTEX LTP-16N":
             N = 16
         else:
@@ -356,7 +355,6 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-
                 load_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.3.{int(ifindex)-N}.1")
                 load_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.4.{int(ifindex)-N}.1")
             # Pon port

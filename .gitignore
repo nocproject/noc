@@ -17,7 +17,6 @@ lib64
 !/.gitignore
 !/.dockerignore*
 !/.gitlab-ci.yml
-!/.flake8
 !/.coveragerc
 !/.prettierrc
 !/.requirements
@@ -45,7 +44,6 @@ docs/src/en/src/
 docs/src/en/include/auto
 docs/src/en/platforms/
 scripts/build/web/node_modules
-README.creole
 pyvenv.cfg
 
 ui/.cache

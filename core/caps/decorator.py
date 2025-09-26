@@ -16,7 +16,7 @@ from noc.core.change.policy import change_tracker
 from noc.core.change.model import ChangeField
 from .types import CapsValue, CapsConfig
 
-logger = logging.getLogger(__name__)
+caps_logger = logging.getLogger(__name__)
 
 
 def iter_model_caps(
@@ -30,18 +30,22 @@ def iter_model_caps(
     for ci in self.caps or []:
         c = Capability.get_by_id(ci["capability"])
         if not c:
-            logger.info("Removing unknown capability id %s", ci["capability"])
+            caps_logger.info("Removing unknown capability id %s", ci["capability"])
             continue
         cs = ci.get("scope", "")
         if scope and scope != cs:
             continue
-        source = ci.get("source", "manual")
+        try:
+            source = InputSource(ci.get("source", "manual"))
+        except ValueError:
+            caps_logger.info("[%s] Unknown InputSource '%s'. Skipping...", c.name, ci.get("source"))
+            continue
         value = ci.get("value")
         value = c.clean_value(value)
         yield CapsValue(
             capability=c,
             value=value,
-            source=InputSource(source),
+            source=source,
             scope=cs,
             config=configs.pop(str(c.id), CapsConfig()),
         )
@@ -192,7 +196,10 @@ def set_caps(
     if not caps:
         return
     value = caps.clean_value(value)
-    source = InputSource(source)
+    try:
+        source = InputSource(source)
+    except ValueError:
+        source = InputSource.UNKNOWN
     scope = scope or ""
     changed, is_new, changed_fields = False, True, []
     for item in self.iter_caps():
@@ -203,7 +210,7 @@ def set_caps(
             if item.scope == scope and item.value != value:
                 new_caps.append(item.set_value(value))
                 changed |= True
-                logger.info("Change capability value: %s -> %s", item, value)
+                caps_logger.info("Change capability value: %s -> %s", item, value)
                 # Register changes
                 changed_fields = [ChangeField(field=item.name, old=item.value, new=value)]
                 continue
@@ -219,7 +226,7 @@ def set_caps(
         ]
         changed |= True
         changed_fields = [ChangeField(field=caps.name, old=None, new=value)]
-        logger.info("Adding capability: %s", new_caps[-1])
+        caps_logger.info("Adding capability: %s", new_caps[-1])
     if changed:
         self.save_caps(new_caps, changed_fields=changed_fields)
 
@@ -237,12 +244,12 @@ def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
     for item in self.iter_caps():
         if scope and scope == item.scope:
             changed |= True
-            logger.info("Removing capability by scope: %s", scope)
+            caps_logger.info("Removing capability by scope: %s", scope)
             changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]
             continue
         if caps and caps == item.name:
             changed |= True
-            logger.info("Removing capability by name: %s", caps)
+            caps_logger.info("Removing capability by name: %s", caps)
             changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]
             continue
         new_caps.append(item)
@@ -257,6 +264,7 @@ def update_caps(
     scope: Optional[str] = None,
     dry_run: bool = False,
     bulk=None,
+    logger: Optional[logging.Logger] = None,
 ) -> Dict[str, Any]:
     """
     Update existing capabilities with a new ones.
@@ -274,8 +282,12 @@ def update_caps(
     from noc.inv.models.capability import Capability
 
     o_label = f"{scope or ''}|{self}|{source}"
-    source = InputSource(source)
+    try:
+        source = InputSource(source)
+    except ValueError:
+        source = InputSource.UNKNOWN
     # Update existing capabilities
+    logger = logger or caps_logger
     new_caps: List[CapsValue] = []
     seen = set()
     changed = False

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # IfDescPatterns
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ class IfDescPatterns(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, oid: Union[bson.ObjectId, str]) -> Optional["IfDescPatterns"]:
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["IfDescPatterns"]:
         return IfDescPatterns.objects.filter(id=oid).first()
 
     def clean(self):

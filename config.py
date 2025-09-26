@@ -183,6 +183,11 @@ class Config(BaseConfig):
         # 3:2,2 - first shard has 2 replicas an weight 3,
         #   second shard has 2 replicas and weight 1
         cluster_topology = StringParameter(default="1")
+        #
+        enable_migrate_type = BooleanParameter(
+            default=True,
+            help="Run migrate when type mismatch (slowed deploy on large table)",
+        )
         # Magic Number
         enable_default_value = BooleanParameter(
             default=False, help="Setting default value for Clickhouse metric Column"
@@ -444,7 +449,7 @@ class Config(BaseConfig):
         radius_secret = SecretParameter(default="noc")
         radius_server = StringParameter()
         register_last_login = BooleanParameter(default=True)
-        max_inactivity = IntParameter(default=0)
+        max_inactivity = SecondsParameter(default="0s")
         jwt_cookie_name = StringParameter(default="noc_jwt")
         jwt_algorithm = StringParameter(default="HS256", choices=["HS256", "HS384", "HS512"])
         min_password_len = IntParameter(default=0)
@@ -1108,7 +1113,7 @@ class Config(BaseConfig):
                 from noc.core.mongo.monitor import MongoCommandSpan
 
                 self._mongo_connection_args["event_listeners"] = [MongoCommandSpan()]
-            self._mongo_connection_args["uuidRepresentation"] = "standard"
+            self._mongo_connection_args["uuidRepresentation"] = "pythonLegacy"
         return self._mongo_connection_args
 
     def setup_logging(self, loglevel=None):

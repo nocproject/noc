@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DLink.DxS.get_spanning_tree
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2016 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -195,7 +195,7 @@ class Script(BaseScript):
         else:
             return None
 
-    def execute(self):
+    def execute_cli(self):
         try:
             c = self.cli("show stp", cached=True)
         except self.CLISyntaxError:

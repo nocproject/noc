@@ -36,6 +36,7 @@ class Script(BaseScript):
     iftype = {
         "100BASE-TX": "physical",
         "Giga-FX": "physical",
+        "Giga-FX-SFP": "physical",
         "Giga-TX": "physical",
         "Giga-Combo-TX": "physical",
         "10Giga-FX": "physical",

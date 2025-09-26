@@ -64,7 +64,7 @@ class Script(BaseScript):
             v = self.cli("show ports description")
             for match in self.rx_port.finditer(v):
                 port = match.group("port")
-                c = self.cli("show ports %s information\n\x1B" % port)
+                c = self.cli("show ports %s information\n\x1b" % port)
                 match1 = self.rx_port_status.search(c)
                 r += [
                     {

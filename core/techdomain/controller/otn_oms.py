@@ -58,8 +58,9 @@ class OTNOMSCotroller(BaseController):
             ep: Endpoint, discriminator: str
         ) -> Iterable[tuple[Endpoint, PathItem]]:
             for cc in ep.object.iter_cross(ep.name, [discriminator]):
-                yield Endpoint(object=ep.object, name=cc.output), PathItem(
-                    object=ep.object, input=ep.name, output=cc.output
+                yield (
+                    Endpoint(object=ep.object, name=cc.output),
+                    PathItem(object=ep.object, input=ep.name, output=cc.output),
                 )
 
         def trace_path(ep: Endpoint) -> Iterable[PathItem]:

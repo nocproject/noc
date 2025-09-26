@@ -8,6 +8,7 @@
 Important see: https://ru.wikipedia.org/w/index.php?oldid=75745192
 
 """
+
 # Python modules
 import re
 
@@ -34,7 +35,6 @@ class Script(BaseScript):
     )
 
     def execute_cli(self, **kwargs):
-
         interfaces = []
         # Ethernet ports
         ifcfg = self.cli("ip link", cached=True)

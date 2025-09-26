@@ -21,14 +21,18 @@ class Command(BaseCommand):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
         # extract command
         user_create = subparsers.add_parser("add")
-        user_create.add_argument("--username", dest="username", action="store", help="User name"),
-        user_create.add_argument("--email", dest="email", action="store", help="Email"),
-        user_create.add_argument(
-            "--template", dest="template", action="append", help="Apply template"
-        ),
-        user_create.add_argument(
-            "--pwgen", dest="pwgen", action="store_true", help="Generate random password"
-        ),
+        (user_create.add_argument("--username", dest="username", action="store", help="User name"),)
+        (user_create.add_argument("--email", dest="email", action="store", help="Email"),)
+        (
+            user_create.add_argument(
+                "--template", dest="template", action="append", help="Apply template"
+            ),
+        )
+        (
+            user_create.add_argument(
+                "--pwgen", dest="pwgen", action="store_true", help="Generate random password"
+            ),
+        )
 
     pwset = "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "1234567890"
     PWLEN = 12

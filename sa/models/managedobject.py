@@ -71,6 +71,8 @@ from noc.core.mx import (
     MX_NOTIFICATION_DELAY,
     MessageMeta,
 )
+from noc.core.caps.decorator import capabilities
+from noc.core.caps.types import CapsConfig
 from noc.core.deprecations import RemovedInNOC2301Warning
 from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
@@ -115,7 +117,6 @@ from noc.core.model.decorator import (
 )
 from noc.inv.models.object import Object
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.inv.models.capability import Capability
 from noc.core.defer import call_later, defer
 from noc.core.cache.decorator import cachedmethod
 from noc.core.cache.base import cache
@@ -147,6 +148,7 @@ from noc.core.models.problem import ProblemItem
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
 from noc.core.etl.remotemappings import mappings
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -396,9 +398,7 @@ class ManagedObjectManager(Manager):
 
 
 @full_text_search
-@Label.dynamic_classification(
-    profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile"
-)
+@dynamic_profile(profile_model_id="sa.ManagedObjectProfile", profile_field="object_profile")
 @bi_sync
 @on_init
 @on_save
@@ -406,6 +406,7 @@ class ManagedObjectManager(Manager):
 @workflow
 @diagnostic
 @change
+@capabilities
 @mappings
 @resourcegroup
 @Label.model
@@ -982,14 +983,14 @@ class ManagedObject(NOCModel):
         lock=lambda _: id_lock,
         version=MANAGEDOBJECT_CACHE_VERSION,
     )
-    def get_by_id(cls, id: int) -> Optional["ManagedObject"]:
+    def get_by_id(cls, oid: int) -> Optional["ManagedObject"]:
         """
         Get ManagedObject by id. Cache returned instance for future use.
 
         :param oid: Managed Object's id
         :return: ManagedObject instance
         """
-        return ManagedObject.objects.filter(id=id).first()
+        return ManagedObject.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
@@ -1775,123 +1776,11 @@ class ManagedObject(NOCModel):
 
         yield from Interface.objects.filter(managed_object=self.id)
 
-    def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
-        """
-        Returns a dict of effective object capabilities
-        """
-
-        caps = {}
-        scope = scope or ""
-        if self.caps:
-            for c in self.caps:
-                cc = Capability.get_by_id(c["capability"])
-                if not cc or (scope and c.get("scope", "") != scope):
-                    continue
-                caps[cc.name] = c.get("value")
-        return caps
-
     def save(self, **kwargs):
         kwargs = kwargs or {}
         if getattr(self, "_allow_update_fields", None) and "update_fields" not in kwargs:
             kwargs["update_fields"] = self._allow_update_fields
         super().save(**kwargs)
-
-    def update_caps(
-        self, caps: Dict[str, Any], source: str, scope: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        Update existing capabilities with a new ones.
-        :param caps: dict of caps name -> caps value
-        :param source: Source name
-        :param scope: Scope name
-        """
-
-        o_label = f"{scope or ''}|{self.name}|{source}"
-        # Update existing capabilities
-        new_caps = []
-        seen = set()
-        changed = False
-        for ci in self.caps:
-            c = Capability.get_by_id(ci["capability"])
-            cs = ci.get("source")
-            css = ci.get("scope", "")
-            cv = ci.get("value")
-            if not c:
-                logger.info("[%s] Removing unknown capability id %s", o_label, ci["capability"])
-                continue
-            cv = c.clean_value(cv)
-            cn = c.name
-            seen.add(cn)
-            if scope and scope != css:
-                logger.debug(
-                    "[%s] Not changing capability %s: from other scope '%s'",
-                    o_label,
-                    cn,
-                    css,
-                )
-            elif cs == source:
-                if cn in caps:
-                    if caps[cn] != cv:
-                        logger.info(
-                            "[%s] Changing capability %s: %s -> %s", o_label, cn, cv, caps[cn]
-                        )
-                        ci["value"] = caps[cn]
-                        changed = True
-                else:
-                    logger.info("[%s] Removing capability %s", o_label, cn)
-                    changed = True
-                    continue
-            elif cn in caps:
-                logger.info(
-                    "[%s] Not changing capability %s: Already set with source '%s'",
-                    o_label,
-                    cn,
-                    cs,
-                )
-            new_caps += [ci]
-        # Add new capabilities
-        for cn in set(caps) - seen:
-            c = Capability.get_by_name(cn)
-            if not c:
-                logger.info("[%s] Unknown capability %s, ignoring", o_label, cn)
-                continue
-            logger.info("[%s] Adding capability %s = %s", o_label, cn, caps[cn])
-            new_caps += [
-                {"capability": str(c.id), "value": caps[cn], "source": source, "scope": scope or ""}
-            ]
-            changed = True
-
-        if changed:
-            logger.info("[%s] Saving changes", o_label)
-            self.caps = new_caps
-            ManagedObject.objects.filter(id=self.id).update(caps=self.caps)
-            self.update_init()
-            self._reset_caches(self.id, credential=True)
-        caps = {}
-        for ci in new_caps:
-            cn = Capability.get_by_id(ci["capability"])
-            if cn:
-                caps[cn.name] = ci.get("value")
-        return caps
-
-    def set_caps(
-        self, key: str, value: Any, source: str = "manual", scope: Optional[str] = ""
-    ) -> None:
-        caps = Capability.get_by_name(key)
-        value = caps.clean_value(value)
-        for item in self.caps:
-            if item["capability"] == str(caps.id):
-                if not scope or item.get("scope", "") == scope:
-                    item["value"] = value
-                    break
-        else:
-            # Insert new item
-            self.caps += [
-                {"capability": str(caps.id), "value": value, "source": source, "scope": scope or ""}
-            ]
-        ManagedObject.objects.filter(id=self.id).update(caps=self.caps)
-        self.update_init()
-        self._reset_caches(self.id, credential=True)
 
     def disable_discovery(self):
         """
@@ -2727,6 +2616,13 @@ class ManagedObject(NOCModel):
         yield from self.object_profile.iter_diagnostic_configs(self)
         for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
             yield dc
+
+    def get_caps_config(self) -> Dict[str, CapsConfig]:
+        """Local Capabilities Config (from Profile)"""
+        r = {}
+        for c in self.object_profile.caps_profile.caps or []:
+            r[str(c.capability.id)] = c.get_config()
+        return r
 
     def update_init(self):
         """

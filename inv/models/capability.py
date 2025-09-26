@@ -41,7 +41,9 @@ SPLITTER_MULTI = ";"
     check=[
         ("pm.MetricType", "required_capability"),
         ("sa.Service", "caps__capability"),
+        ("sa.ServiceProfile", "caps__capability"),
         ("sa.ManagedObject", "caps__capability"),
+        ("sa.CapsProfile", "caps__capability"),
         ("main.ModelTemplate", "params__set_capability"),
     ]
 )
@@ -82,7 +84,7 @@ class Capability(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)
-    def get_by_name(cls, name) -> Optional["Capability"]:
+    def get_by_name(cls, name: str) -> Optional["Capability"]:
         return Capability.objects.filter(name=name).first()
 
     @property

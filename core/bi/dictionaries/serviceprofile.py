@@ -25,7 +25,6 @@ class ServiceProfile(DictionaryModel):
 
     @classmethod
     def extract(cls, item: "ServiceProfileModel"):
-
         return {
             "id": str(item.id),
             "name": item.name,

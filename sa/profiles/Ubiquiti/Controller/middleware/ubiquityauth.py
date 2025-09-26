@@ -10,6 +10,7 @@ import orjson
 
 # NOC modules
 from noc.core.script.http.middleware.base import BaseMiddleware
+from noc.core.script.http.base import HTTPError
 from noc.core.http.sync_client import HttpClient
 
 
@@ -44,11 +45,13 @@ class UbiquitiAuthMiddeware(BaseMiddleware):
             validate_cert=False,
         ) as client:
             code, resp_headers, result = client.post(self.http.get_url("/api/login"), b)
+            if code != 200:
+                raise HTTPError(msg=result.decode())
             self.http._process_cookies(resp_headers, allow_multiple_header=True)
             headers["Cookie"] = (
                 self.http.cookies.output(header="", sep=";", attrs=["value"]).lstrip().encode()
             )
-            self.http.logger.info(
+            self.http.logger.debug(
                 "[%s] Response code %s, headers %s on: %s, body: %s",
                 self.name,
                 code,

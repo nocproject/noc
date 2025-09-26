@@ -60,10 +60,13 @@ class ManagedObjectCollector(BaseCollector):
                     "snmp_blocked": snmp_b_count,
                 }
             yield (
-                "inventory_managedobject_count",
-                ("pool", pool.name),
-                ("state", state.name),
-            ), count
+                (
+                    "inventory_managedobject_count",
+                    ("pool", pool.name),
+                    ("state", state.name),
+                ),
+                count,
+            )
         for pool_name, count in pool_stat.items():
             yield ("inventory_managedobject_total", ("pool", pool_name)), sum(count)
             if pool_name not in diag_state:

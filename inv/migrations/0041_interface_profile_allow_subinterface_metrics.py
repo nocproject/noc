@@ -11,7 +11,6 @@ from noc.core.migration.base import BaseMigration
 
 
 class Migration(BaseMigration):
-
     def migrate(self):
         coll = self.mongo_db["noc.interface_profiles"]
         coll.update_many(

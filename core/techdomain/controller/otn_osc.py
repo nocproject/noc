@@ -73,7 +73,6 @@ class OTNOSCController(BaseController):
         dry_run: bool = False,
         **kwargs: Any,
     ) -> tuple[Channel | None, str]:
-
         is_new = False
         path = list(self.iter_path(ep))
         start = Endpoint(object=path[0].object, name=path[0].input)

@@ -38,7 +38,12 @@ class ScriptCaller(object):
                 return session(self.name, kwargs, streaming=streaming)
         # Direct call
         return open_sync_rpc("sae", calling_service=config.script.calling_service).script(
-            self.object_id, self.name, kwargs, None, streaming, False  # params  # timeout
+            self.object_id,
+            self.name,
+            kwargs,
+            None,
+            streaming,
+            False,  # params  # timeout
         )
 
 

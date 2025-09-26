@@ -130,12 +130,12 @@ class User(NOCModel):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
-    def get_by_id(cls, id: int) -> Optional["User"]:
-        return User.objects.filter(id=id).first()
+    def get_by_id(cls, oid: int) -> Optional["User"]:
+        return User.objects.filter(id=oid).first()
 
     @classmethod
-    def get_by_id_uncached(cls, id: int) -> Optional["User"]:
-        return User.objects.filter(id=id).first()
+    def get_by_id_uncached(cls, oid: int) -> Optional["User"]:
+        return User.objects.filter(id=oid).first()
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_name_cache"), lock=lambda _: id_lock)

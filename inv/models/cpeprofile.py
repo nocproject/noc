@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
-# SensorProfile model
+# CPE Profile model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 import operator
 from threading import Lock, RLock
-from typing import Optional, Union
+from typing import Optional, Union, Dict, Any, Tuple, List, Callable
 from functools import partial
 from dataclasses import dataclass
 
@@ -24,26 +24,32 @@ from mongoengine.fields import (
     BooleanField,
     ReferenceField,
     EmbeddedDocumentField,
+    ObjectIdField,
     IntField,
 )
+from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
 from noc.core.model.decorator import on_delete_check
 from noc.core.stencil import stencil_registry
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
+from noc.core.change.model import ChangeField
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.matcher import build_matcher
 from noc.main.models.style import Style
 from noc.main.models.label import Label
 from noc.main.models.pool import Pool
 from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+from noc.sa.interfaces.igetcpe import IGetCPE
 from noc.config import config
 
 
 id_lock = Lock()
 ips_lock = RLock()
+CPE_TYPES = IGetCPE.returns.element.attrs["type"].choices
 
 
 @dataclass
@@ -54,12 +60,43 @@ class MetricConfig(object):
 
 
 class MatchRule(EmbeddedDocument):
-    dynamic_order = IntField(default=0)
+    dynamic_order = IntField(default=0, min_value=0)
     labels = ListField(StringField())
-    handler = StringField()
+    resource_groups = ListField(ObjectIdField())
+    type = StringField(choices=[(x, x) for x in CPE_TYPES], required=False)
 
     def __str__(self):
         return ", ".join(self.labels)
+
+    def clean(self):
+        super().clean()
+        if not self.resource_groups and not self.labels and not self.type:
+            raise ValueError("One of condition must be set")
+
+    def get_q(self):
+        """Return instance queryset"""
+        q = m_q()
+        if self.labels:
+            q &= m_q(effective_labels_all=self.labels)
+        if self.resource_groups:
+            q &= m_q(effective_service_groups__all=self.resource_groups)
+        if self.type:
+            q &= m_q(type=self.type)
+        return q
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": [x for x in self.resource_groups]}
+        if self.type:
+            r["type"] = self.type
+        # if self.name_patter:
+        #     r["name"] = {"$regex": self.name_patter}
+        # if self.description_patter:
+        #     r["description"] = {"$regex": self.description_patter}
+        return r
 
 
 class CPEProfileMetrics(EmbeddedDocument):
@@ -199,9 +236,10 @@ class CPEProfile(Document):
         ):
             return
         mos = set()
-        for mo, bi_id in CPE.objects.filter(profile=self).scalar("controller", "bi_id"):
-            if mo and (not changed_fields or "metrics_default_interval" in changed_fields):
-                mos.add(mo.bi_id)
+        for controllers, bi_id in CPE.objects.filter(profile=self).scalar("controllers", "bi_id"):
+            if controllers and (not changed_fields or "metrics_default_interval" in changed_fields):
+                # Check Active?
+                mos.add(controllers[0].managed_object.bi_id)
             if not changed_fields or "metrics" in changed_fields or "labels" in changed_fields:
                 yield "cfgmetricsources", f"inv.CPE::{bi_id}"
         for bi_id in mos:
@@ -213,3 +251,53 @@ class CPEProfile(Document):
     def get_metric_discovery_interval(self) -> int:
         r = [m.interval or self.metrics_default_interval for m in self.metrics]
         return min(r) if r else 0
+
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for mr in self.match_rules:
+            expr.append(mr.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = {}
+        for mop_id, rules in CPEProfile.objects.filter(
+            dynamic_classification_policy="R",
+        ).values_list("id", "match_rules"):
+            for mr in rules:
+                r[(str(mop_id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
+        return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
+
+    @classmethod
+    def get_effective_profile(cls, o) -> Optional["str"]:
+        policy = getattr(o, "get_dynamic_classification_policy", None)
+        if policy and policy() == "D":
+            # Dynamic classification not enabled
+            return
+        ctx = o.get_matcher_ctx()
+        for profile_id, match in cls.get_profiles_matcher():
+            if match(ctx):
+                return profile_id
+        return None
+
+    def get_instance_affected_query(
+        self,
+        changes: Optional[List[ChangeField]] = None,
+        include_match: bool = False,
+    ) -> m_q:
+        """Return queryset for instance"""
+        q = m_q(profile=self.id)
+        if include_match and self.match_rules:
+            for mr in self.match_rules:
+                q |= mr.get_q()
+        return q

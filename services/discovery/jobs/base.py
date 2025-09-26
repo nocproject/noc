@@ -201,7 +201,7 @@ class MODiscoveryJob(PeriodicJob):
         return self.caps
 
     def update_caps(self, caps, source):
-        self.caps = self.object.update_caps(caps, source=source)
+        self.caps = self.object.update_caps(caps, source=source, logger=self.logger)
 
     def allow_sessions(self):
         r = self.object.can_cli_session()

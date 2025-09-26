@@ -1,0 +1,396 @@
+{
+    "name": "DLink | DES | DES-3200-18/B1",
+    "$collection": "inv.objectmodels",
+    "uuid": "821102af-0dda-4448-8aab-cc305d611f56",
+    "vendor__code": "DLINK",
+    "description": "DES-3200-18/B1 xStack L2 Managed Switch witch 16 ports 10/100BASE-TX, 1 combo 10/100/1000BASE-T/ 100/1000 SFP, 1 100/1000 SFP",
+    "connection_rule__name": "Generic | Switch SFP",
+    "cr_context": "CHASSIS",
+    "labels": [
+        "noc::inv::chassis",
+        "noc::inv::sup",
+        "noc::inv::psu",
+        "noc::inv::fabric",
+        "noc::inv::port",
+        "noc::inv::fan"
+    ],
+    "connections": [
+        {
+            "name": "1",
+            "description": "1",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "2",
+            "description": "2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "3",
+            "description": "3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "4",
+            "description": "4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "5",
+            "description": "5",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "6",
+            "description": "6",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "7",
+            "description": "7",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "8",
+            "description": "8",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "9",
+            "description": "9",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "10",
+            "description": "10",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "11",
+            "description": "11",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "12",
+            "description": "12",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "13",
+            "description": "13",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "14",
+            "description": "14",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "15",
+            "description": "15",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "16",
+            "description": "16",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "17",
+            "description": "17",
+            "direction": "s",
+            "gender": "f",
+            "group": "17",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "sfp17",
+            "description": "Fiber port 17",
+            "direction": "i",
+            "gender": "f",
+            "group": "17",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "sfp18",
+            "description": "Fiber port 18",
+            "direction": "i",
+            "gender": "f",
+            "group": "18",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth100M"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "console",
+            "description": "Console port",
+            "direction": "s",
+            "gender": "f",
+            "group": "0",
+            "protocols": [{
+                "direction": ">",
+                "protocol__code": "RS232"
+            }],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "power",
+            "description": "Power outlet",
+            "direction": "s",
+            "gender": "m",
+            "group": "0",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        }
+    ],
+    "data": [
+        {
+            "attr": "managed",
+            "interface": "management",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["DES-3200-18/B1"]
+        },
+        {
+            "attr": "units",
+            "interface": "rackmount",
+            "value": 1.0
+        }
+    ]
+}

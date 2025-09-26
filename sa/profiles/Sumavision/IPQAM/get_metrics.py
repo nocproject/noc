@@ -141,14 +141,14 @@ class Script(GetMetricsScript):
         access="S",  # SNMP version
     )
     def get_group_metrics(self, metrics):
-
         for metric in metrics:
             if metric.labels and not self.rx_group.match(metric.labels[0]):
                 continue
             (group_num,) = self.rx_group.match(metric.labels[0]).groups()
             # len needed for group num more than 10
-            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
-                str(metric.ifindex)[len(group_num) :]
+            channel, index = (
+                int(str(metric.ifindex)[: len(group_num)]),
+                int(str(metric.ifindex)[len(group_num) :]),
             )
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
@@ -189,8 +189,9 @@ class Script(GetMetricsScript):
                 continue
             (group_num,) = self.rx_group.match(metric.labels[0]).groups()
             # len needed for group num more than 10
-            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
-                str(metric.ifindex)[len(group_num) :]
+            channel, index = (
+                int(str(metric.ifindex)[: len(group_num)]),
+                int(str(metric.ifindex)[len(group_num) :]),
             )
             mname = self.snmp.get(
                 "1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.%s.%s" % (channel, index)
@@ -224,8 +225,9 @@ class Script(GetMetricsScript):
                 continue
             (group_num,) = self.rx_group.match(metric.labels[0]).groups()
             # len needed for group num more than 10
-            channel, index = int(str(metric.ifindex)[: len(group_num)]), int(
-                str(metric.ifindex)[len(group_num) :]
+            channel, index = (
+                int(str(metric.ifindex)[: len(group_num)]),
+                int(str(metric.ifindex)[len(group_num) :]),
             )
             mname = self.snmp.get(f"1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.5.1.1.{channel}.{index}")
             try:

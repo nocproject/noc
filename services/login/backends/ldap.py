@@ -19,7 +19,6 @@ from .base import BaseAuthBackend
 
 
 class LdapBackend(BaseAuthBackend):
-
     POOLING_STRATEGIES = {
         "f": ldap3.FIRST,
         "rr": ldap3.ROUND_ROBIN,

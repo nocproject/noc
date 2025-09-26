@@ -133,7 +133,11 @@ class NotificationAction(Action):
             # Processed send notification
             logger.error("Notification without Method set. Skipping...")
             return
-        yield NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()], {}, msg.value
+        yield (
+            NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()].decode(),
+            {},
+            msg.value,
+        )
 
 
 class MetricAction(Action):
@@ -228,6 +232,8 @@ class MessageAction(Action):
                     "subject": f'{c.title_tag} {body["subject"]}',
                     "body": body["body"],
                 }
-            yield NOTIFICATION_METHODS[c.method].decode(), {
-                MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)
-            }, body
+            yield (
+                NOTIFICATION_METHODS[c.method].decode(),
+                {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)},
+                body,
+            )

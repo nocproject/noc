@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Sensor model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -340,7 +340,7 @@ def sync_object(obj: "Object") -> None:
     """
     # Get existing sensors
     obj_sensors: Dict[str, Sensor] = {s.local_id: s for s in Sensor.objects.filter(object=obj.id)}
-    logger.info("[%s] Sync sensor for ojbect", obj)
+    logger.info("[%s] Sync sensor for object", obj)
     m_proto = [
         d.value for d in obj.get_effective_data() if d.interface == "modbus" and d.attr == "type"
     ] or ["rtu"]

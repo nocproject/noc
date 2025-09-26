@@ -1,25 +1,60 @@
 # ----------------------------------------------------------------------
 # CapsProfile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import threading
-from typing import Optional, Union
 import operator
+from typing import Optional, Union, List
 
 # Third-party modules
 from bson import ObjectId
-from mongoengine.document import Document
-from mongoengine.fields import StringField, BooleanField
+from mongoengine.document import Document, EmbeddedDocument
+from mongoengine.fields import (
+    StringField,
+    BooleanField,
+    DynamicField,
+    ReferenceField,
+    EmbeddedDocumentListField,
+)
 import cachetools
 
 # NOC modules
+from noc.core.caps.types import CapsConfig
 from noc.core.model.decorator import on_delete_check
+from noc.inv.models.capability import Capability
 
 id_lock = threading.Lock()
+
+
+class CapsSettings(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    # Required
+    capability: Capability = ReferenceField(Capability, required=True)
+    default_value = DynamicField()
+    allow_manual = BooleanField(default=False)
+    # ref_scope = StringField(required=False)
+    # ref_remote_system
+
+    def __str__(self):
+        return f"{self.capability.name}: D:{self.default_value}; M: {self.allow_manual}"
+
+    def clean(self):
+        super().clean()
+        if self.default_value:
+            self.capability.clean_value(self.default_value)
+
+    def get_config(self) -> CapsConfig:
+        """"""
+        return CapsConfig(
+            default_value=self.default_value or None,
+            allow_manual=self.allow_manual,
+            # ref_scope=self.ref_scope,
+        )
 
 
 @on_delete_check(check=[("sa.ManagedObjectProfile", "caps_profile")])
@@ -189,6 +224,8 @@ class CapsProfile(Document):
         ],
         default="T",
     )
+    # Capabilities
+    caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
 
     L2_SECTIONS = ["bfd", "cdp", "fdp", "huawei_ndp", "lacp", "lldp", "oam", "rep", "stp", "udld"]
     L3_SECTIONS = ["hsrp", "vrrp", "vrrpv3", "bgp", "ospf", "ospfv3", "isis", "ldp", "rsvp"]
@@ -211,12 +248,12 @@ class CapsProfile(Document):
     def get_default_profile(cls):
         return CapsProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
 
-    def get_sections(self, mop, nsp):
+    def get_sections(self, mop, nsp) -> List[str]:
         """
         Returns a list of enabled sections
-        :param mop: Managed Object Profile instance
-        :param nsp: Network Segment Profile instance
-        :return: List of string
+        Args:
+            mop: Managed Object Profile instance
+            nsp: Network Segment Profile instance
         """
 
         def l2_is_enabled(method):

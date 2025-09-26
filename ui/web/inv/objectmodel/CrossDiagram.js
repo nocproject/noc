@@ -41,10 +41,10 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
       },
       me = this,
 
-      groupedByOutput = groupBy(data.cross, 'output'),
-      outputGroups = sortGroups(groupedByOutput, 'input'),
-      groupedByInput = groupBy(data.cross, 'input'),
-      inputGroups = sortGroups(groupedByInput, 'output'),
+      groupedByOutput = groupBy(data.cross, "output"),
+      outputGroups = sortGroups(groupedByOutput, "input"),
+      groupedByInput = groupBy(data.cross, "input"),
+      inputGroups = sortGroups(groupedByInput, "output"),
       remainingItems = [data.cross.filter(item =>
         !outputGroups.some(group => group.includes(item)) &&
                 !inputGroups.some(group => group.includes(item)),
@@ -155,7 +155,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
   },
   onSpriteMouseOver: function(sprite){
     switch(sprite.type){
-      case"cross_connection": {
+      case "cross_connection": {
         var inputSprite = sprite.getSurface().get(sprite.inputId),
           outputSprite = sprite.getSurface().get(sprite.outputId);
 
@@ -168,7 +168,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
         });
         break;
       }
-      case"cross_pin": {
+      case "cross_pin": {
         var connections = Ext.Array.filter(sprite.getSurface().getItems(),
                                            function(s){
                                              return s.type === "cross_connection" && (s.outputId === sprite.id || s.inputId === sprite.id)
@@ -187,7 +187,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
   },
   onSpriteMouseOut: function(sprite){
     switch(sprite.type){
-      case"cross_connection": {
+      case "cross_connection": {
         var inputSprite = sprite.getSurface().get(sprite.inputId),
           outputSprite = sprite.getSurface().get(sprite.outputId);
 
@@ -198,7 +198,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
         });
         break;
       }
-      case"cross_pin": {
+      case "cross_pin": {
         var connections = Ext.Array.filter(sprite.getSurface().getItems(),
                                            function(s){
                                              return s.type === "cross_connection" && (s.outputId === sprite.id || s.inputId === sprite.id)
