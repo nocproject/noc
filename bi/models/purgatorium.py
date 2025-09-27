@@ -22,6 +22,7 @@ from noc.core.clickhouse.fields import (
 from noc.core.clickhouse.engines import ReplacingMergeTree
 from noc.core.bi.dictionaries.pool import Pool
 from noc.core.bi.dictionaries.managedobject import ManagedObject
+from noc.core.bi.dictionaries.remotesystem import RemoteSystem
 from noc.core.translation import ugettext as _
 
 
@@ -70,9 +71,21 @@ class Purgatorium(Model):
     labels = ArrayField(StringField(), description=_("Tags"))
     service_groups = ArrayField(UInt64Field(), description=_("Service Groups Ids"))
     clients_groups = ArrayField(UInt64Field(), description=_("Client Groups Ids"))
-    remote_system = StringField(description="Remote System")
+    remote_system = ReferenceField(RemoteSystem, description=_("Remote System"))
     remote_id = StringField(description="Remote System Id")
     # Maybe fields for detect hints
     # available_ports - detect open TCP port
     # maybe_agent
     # maybe_managed_object - bool
+
+    @classmethod
+    def fix_column_type(cls, name: str, connect):
+        """Fix column name"""
+        print("ReCreate column remote_system")
+        if name == "remote_system":
+            connect.execute(
+                f"ALTER TABLE `{cls._get_db_table()}` DROP COLUMN {cls.quote_name(name)}",
+            )
+            connect.execute(
+                f"ALTER TABLE `{cls._get_db_table()}` ADD COLUMN {cls.quote_name(name)} {ReferenceField.db_type}",
+            )

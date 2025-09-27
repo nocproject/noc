@@ -263,6 +263,10 @@ class Model(object, metaclass=ModelBase):
                         connect.execute(query)
                     except ClickhouseError as e:
                         print(f"Error when alter Column type: {e};\n Run it Manually: '{query}'")
+                        try:
+                            cls.fix_column_type(field_name)
+                        except Exception:
+                            pass
             else:
                 print(f"[{table_name}|{field_name}] Alter column")
                 query = (
@@ -508,6 +512,10 @@ class Model(object, metaclass=ModelBase):
         :return: Field name
         """
         return cls._meta.ordered_fields[0].name
+
+    @classmethod
+    def fix_column_type(cls, name, connect: ClickhouseClient):
+        """Run if column type failed migration"""
 
 
 class NestedModel(Model):
