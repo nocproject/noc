@@ -1,0 +1,10 @@
+{
+    "name": "VMWare | VM | GlobalId",
+    "$collection": "inv.capabilities",
+    "uuid": "6500336d-24bc-42b6-bc06-a18a5a7892f1",
+    "description": "Virtual Machine Global Identifier (UUID)",
+    "type": "str",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}

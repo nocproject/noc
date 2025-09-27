@@ -1,0 +1,10 @@
+{
+    "name": "VM | Tools Status",
+    "$collection": "inv.capabilities",
+    "uuid": "e756cf9b-3852-45f8-8290-817a08a27874",
+    "description": "Status installed VM Toolset",
+    "type": "str",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}

@@ -1,0 +1,10 @@
+{
+    "name": "VM | vCPU",
+    "$collection": "inv.capabilities",
+    "uuid": "670de019-2066-41ad-a781-36fc3a791bf6",
+    "description": "Virtual Machine vCPU count",
+    "type": "int",
+    "card_template": null,
+    "allow_manual": true,
+    "multi": false
+}

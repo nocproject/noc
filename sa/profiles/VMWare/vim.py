@@ -9,13 +9,13 @@
 from typing import Optional, Any
 
 # Third-party modules
-from pyVim.connect import Disconnect, SmartConnect
 from pyVmomi import vim
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.script.base import BaseScript
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
+from .connection import connect, disconnect
 
 
 class VIMError(NOCError):
@@ -32,39 +32,48 @@ class VIM(object):
         self.connection: Optional[vim.ServiceInstance] = None
         self._content: Optional[Any] = None
 
-    def ensure_session(self):
-        if not self.connection:
-            self.setup_session()
-
-    def setup_session(self):
+    def get_session_alias(self):
         if self.script.controller:
-            self.connection = SmartConnect(
-                host=self.script.controller.address,
-                user=self.script.controller.user,
-                pwd=self.script.controller.password,
-                disableSslCertValidation=True,
-            )
-        else:
-            self.connection = SmartConnect(
-                host=self.script.credentials["address"],
-                user=self.script.credentials.get("user"),
-                pwd=self.script.credentials.get("password"),
-                disableSslCertValidation=True,
-            )
+            return self.script.controller.address
+        return self.script.credentials["address"]
+
+    def get_args(self):
+        if self.script.controller:
+            return {
+                "host": self.script.controller.address,
+                "alias": self.get_session_alias(),
+                "username": self.script.controller.user,
+                "password": self.script.controller.password,
+            }
+        return {
+            "host": self.script.credentials["address"],
+            "alias": self.get_session_alias(),
+            "username": self.script.credentials.get("user"),
+            "password": self.script.credentials.get("password"),
+        }
 
     def shutdown_session(self):
         self.logger.debug("Shutdown VIM session")
         self.connection = None
+        self._content = None
 
     def get_connection(self) -> "vim.ServiceInstance":
-        self.ensure_session()
+        if not self.connection:
+            self.connection = connect(**self.get_args())
+        #         except vim.fault.NotAuthenticated:
+        #             raise VIMError("Not Authenticated")
         return self.connection
+
+    def refresh_session(self):
+        """Try Login"""
+        # Use SessionId from Prev Session
+        self.close()
+        self.get_connection()
 
     def close(self):
         self.logger.debug("Close VIM connection")
-        # self.connection.content.sessionManager.Logout()
-        if self.connection:
-            Disconnect(self.connection)
+        disconnect(self.get_session_alias())
+        self.shutdown_session()
 
     @property
     def content(self):
@@ -80,35 +89,48 @@ class VIM(object):
     def about(self):
         return self.content.about
 
-    def get_host_by_id(self, hid: str) -> vim.HostSystem:
-        """Getting vCenter host by id, example: 'host-5260'"""
+    def find_by_uuid(self, oid, find_vm: bool = True):
+        """Find by UUID"""
         search_index = self.content.searchIndex
         try:
-            h = search_index.FindByUuid(None, hid, False)
+            return search_index.FindByUuid(None, oid, find_vm, None)
+        except vim.fault.NotAuthenticated:
+            # Refresh session
+            self.refresh_session()
+        try:
+            return search_index.FindByUuid(None, oid, find_vm, None)
         except vim.fault.NotAuthenticated:
             raise VIMError("Not Authenticated")
+
+    def get_host_by_id(self, hid: str) -> vim.HostSystem:
+        """Getting vCenter host by id, example: 'host-5260'"""
+        h = self.find_by_uuid(hid, find_vm=False)
         if not h:
-            raise VIMError("Virtual Machine with Id '%s' Not found" % hid)
+            raise VIMError("Host with Id '%s' Not found" % hid)
         return h
 
     def get_vm_by_id(self, vid: str) -> Optional[vim.VirtualMachine]:
         """Getting vMachine by id, example: 'vm-1030'"""
-        search_index = self.content.searchIndex
-        vm = search_index.FindByUuid(None, vid, True)
+        vm = self.find_by_uuid(vid, find_vm=True)
         if not vm:
             raise VIMError("Virtual Machine with Id '%s' Not found" % vid)
         return vm
 
-    def get_vm_by_name(self, name: str) -> Optional[vim.VirtualMachine]:
-        vm_view = self.content.viewManager.CreateContainerView(
-            self.content.rootFolder,
-            [vim.VirtualMachine],
-            True,
-        )
+    def get_container_view(self, o_type) -> vim.view.ContainerView:
+        """Context for destroy!, iterator?"""
         try:
-            vms = [h for h in vm_view.view if h.name == name]
+            view = self.content.viewManager.CreateContainerView(
+                self.content.rootFolder,
+                [o_type],
+                True,
+            )
         except vim.fault.NotAuthenticated:
             raise VIMError("Not Authenticated")
+        return view
+
+    def get_vm_by_name(self, name: str) -> Optional[vim.VirtualMachine]:
+        vm_view = self.get_container_view(vim.VirtualMachine)
+        vms = [h for h in vm_view.view if h.name == name]
         vm_view.Destroy()
         if vms:
             return vms[0]
@@ -116,7 +138,14 @@ class VIM(object):
 
     @staticmethod
     def has_internet_adapter(item) -> bool:
-        return isinstance(item, vim.vm.device.VirtualEthernetCard)
+        return isinstance(
+            item,
+            (
+                vim.vm.device.VirtualEthernetCard,
+                vim.vm.device.VirtualVmxnet,
+                vim.vm.device.VirtualVmxnet3,
+            ),
+        )
 
 
 class VIMScript(BaseScript):
@@ -134,5 +163,4 @@ class VIMScript(BaseScript):
         super().close_cli_stream()
         if hasattr(self, "_vim"):
             # Close VIM Client
-            self.vim.close()
-            delattr(self, "_vim")
+            self._vim = None
