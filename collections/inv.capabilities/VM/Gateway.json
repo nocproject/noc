@@ -1,0 +1,10 @@
+{
+    "name": "VM | Gateway",
+    "$collection": "inv.capabilities",
+    "uuid": "f59c1fcb-1071-4335-b778-e7ed3f49c5e6",
+    "description": "Host Gateway by VM Agent",
+    "type": "ip_address",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}
