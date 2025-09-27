@@ -76,44 +76,41 @@ class Script(BaseScript):
             rev = [match.group("vid"), None]["N/A" in match.group("vid")]
             if not part_no:
                 continue
-            else:
-                vendor = "CISCO" if "NoName" not in part_no else "NONAME"
-                objects += [
-                    {
-                        "type": type,
-                        "number": number,
-                        "vendor": vendor,
-                        "serial": serial,
-                        "description": match.group("descr"),
-                        "part_no": [part_no],
-                        "revision": rev,
-                        "builtin": builtin,
-                    }
-                ]
-                # Add transceivers
-                if objects[-1]["type"] == "SUP" or (
-                    objects[-1]["type"] == "GEM"
-                    and objects[-1]["part_no"][0] not in self.gem_w_o_sfp
-                ):
-                    # Get number of last chassis
-                    for c in objects:
-                        if c["type"] == "CHASSIS":
-                            number_c = c["number"]
+            vendor = "CISCO" if "NoName" not in part_no else "NONAME"
+            objects += [
+                {
+                    "type": type,
+                    "number": number,
+                    "vendor": vendor,
+                    "serial": serial,
+                    "description": match.group("descr"),
+                    "part_no": [part_no],
+                    "revision": rev,
+                    "builtin": builtin,
+                }
+            ]
+            # Add transceivers
+            if objects[-1]["type"] == "SUP" or (
+                objects[-1]["type"] == "GEM" and objects[-1]["part_no"][0] not in self.gem_w_o_sfp
+            ):
+                # Get number of last chassis
+                for c in objects:
+                    if c["type"] == "CHASSIS":
+                        number_c = c["number"]
 
-                    for i in trans:
-                        t = dict(i)
-                        # check number of chassis and module
-                        if not number_c:
-                            if len(t["number"].split("/")) == 2:
-                                if t["number"].split("/")[0] == number:
-                                    objects += [t]
-                                    # rewrite number
-                                    objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
-                        else:
-                            if int(t["number"].split("/")[0]) == int(number_c):
-                                if int(t["number"].split("/")[1]) == int(number):
-                                    objects += [t]
-                                    objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
+                for i in trans:
+                    t = dict(i)
+                    # check number of chassis and module
+                    if not number_c:
+                        if len(t["number"].split("/")) == 2:
+                            if t["number"].split("/")[0] == number:
+                                objects += [t]
+                                # rewrite number
+                                objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
+                    elif int(t["number"].split("/")[0]) == int(number_c):
+                        if int(t["number"].split("/")[1]) == int(number):
+                            objects += [t]
+                            objects[-1]["number"] = objects[-1]["number"].split("/")[-1]
         return objects
 
     def get_type(self, name, pid, descr, lo):
@@ -126,23 +123,23 @@ class Script(BaseScript):
             except IndexError:
                 number = None
             return "CHASSIS", number, pid
-        elif "GEM" in descr or "Ethernet Module" in descr or "Ethernet Expansion Module" in descr:
+        if "GEM" in descr or "Ethernet Module" in descr or "Ethernet Expansion Module" in descr:
             number = name.split()[-1]
             return "GEM", number, pid
-        elif "Superv" in descr:
+        if "Superv" in descr:
             number = name.split()[-1]
             return "SUP", number, pid + "-SUP"
-        elif "XFP" in pid or "GLC" in pid or "SFP" in descr:
+        if "XFP" in pid or "GLC" in pid or "SFP" in descr:
             number = name.split()[2].split("/")[-1]
             if not pid:
                 pid = self.get_transceiver_pid(descr)
                 if not pid:
                     return None, None, None
             return "XCVR", number, pid
-        elif "FAN" in pid:
+        if "FAN" in pid:
             number = name.split()[-1]
             return "FAN", number, pid
-        elif "power supply" in name.lower():
+        if "power supply" in name.lower():
             number = name.split()[-1]
             return "PSU", number, pid
         # Unknown
@@ -151,14 +148,12 @@ class Script(BaseScript):
     def get_vendor(self, vendor):
         if vendor.upper().startswith("CISCO-"):
             return vendor[6:].upper()
-        else:
-            return vendor.split()[0].upper()
+        return vendor.split()[0].upper()
 
     def get_xcvr_num(self, number):
         if number.startswith("Ethernet"):
             return number[8:]
-        else:
-            return number
+        return number
 
     def get_transceiver_pid(self, descr):
         match = self.rx_trans.search(descr)

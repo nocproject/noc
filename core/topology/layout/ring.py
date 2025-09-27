@@ -47,7 +47,6 @@ class RingLayout(TreeLayout):
         # Split to subtrees
         # and calculate relative positions
         subtree_pos = self.get_subtrees_relative_pos(G, ring)
-        #
         pos = {}
         # Ring length
         N = len(ring)

@@ -137,7 +137,7 @@ class MapApplication(ExtApplication):
                 segment = mo.segment
         object = self.get_object_or_404(ManagedObject, id=int(mo_id))
         s = {1: "telnet", 2: "ssh", 3: "http", 4: "https", 5: "beef"}[object.scheme]
-        r = {
+        return {
             "id": object.id,
             "name": object.name,
             "description": object.description,
@@ -151,7 +151,6 @@ class MapApplication(ExtApplication):
             "caps": object.get_caps(),
             "console_url": "%s://%s/" % (s, object.address),
         }
-        return r
 
     def inspector_objectgroup(self, request, id, rg_id):
         object = self.get_object_or_404(ResourceGroup, id=rg_id)
@@ -259,7 +258,7 @@ class MapApplication(ExtApplication):
     def inspector_cpe(self, request, id, cpe_id):
         cpe: "CPE" = self.get_object_or_404(CPE, id=cpe_id)
         caps = cpe.get_caps()
-        r = {
+        return {
             "id": str(cpe.id),
             "name": str(cpe),
             "description": cpe.description,
@@ -269,7 +268,6 @@ class MapApplication(ExtApplication):
             # "external_segment": {"id": str(object.segment.id), "name": object.segment.name},
             "caps": caps,
         }
-        return r
 
     @view(
         url=r"^info/(?P<inspector>\w+)/(?P<gen_id>[0-9a-f]{24}|\d+)/(?P<r_id>([0-9a-f]{24}|\d+))/$",
@@ -288,19 +286,18 @@ class MapApplication(ExtApplication):
         """
         if not hasattr(self, f"inspector_{inspector}"):
             self.logger.warning("Unknown inspector: %s", inspector)
-            return
+            return None
         hi = getattr(self, f"inspector_{inspector}")
         return hi(request, gen_id, r_id)
 
     @view(url=r"^info/segment/(?P<id>[0-9a-f]{24})/$", method=["GET"], access="read", api=True)
     def api_info_segment(self, request, id):
         segment = self.get_object_or_404(NetworkSegment, id=id)
-        r = {
+        return {
             "name": segment.name,
             "description": segment.description,
             "objects": segment.managed_objects.count(),
         }
-        return r
 
     @view(method=["GET"], url=r"^lookup/$", access="lookup", api=True)
     def api_lookup(self, request):

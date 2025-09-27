@@ -50,7 +50,7 @@ class LoginService(FastAPIService):
         """
         ts = datetime.datetime.utcnow()
         if token in self.revoked_tokens:
-            return None
+            return
         exp = datetime.datetime.fromtimestamp(get_exp_from_jwt(token, audience))
         msg = {
             "token": token,

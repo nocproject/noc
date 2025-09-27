@@ -67,7 +67,6 @@ class RebootsDS(BaseDataSource):
                 WHERE id IN ({", ".join(chunk)})"""
             )
             mo_names.update({c[0]: c[1:3] for c in cursor})
-        #
         row_num = 0
         for row in data:
             row_num += 1

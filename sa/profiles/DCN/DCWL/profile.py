@@ -50,8 +50,7 @@ class Profile(BaseProfile):
 
     @classmethod
     def get_interface_type(cls, name):
-        c = cls.INTERFACE_TYPES.get(name[:3])
-        return c
+        return cls.INTERFACE_TYPES.get(name[:3])
 
     @staticmethod
     def table_parser(v):

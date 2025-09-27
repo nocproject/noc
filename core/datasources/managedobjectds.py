@@ -324,9 +324,9 @@ class ManagedObjectDS(BaseDataSource):
         """
         if caps.type == "str":
             return ""
-        elif caps.type == "int":
+        if caps.type == "int":
             return 0
-        elif caps.type == "float":
+        if caps.type == "float":
             return 0.0
         return False
 
@@ -537,7 +537,6 @@ class ManagedObjectDS(BaseDataSource):
                 yield num, "enable_metrics", mo["object_profile__enable_metrics"]
             if "object_profile__enable_ping" in mo:
                 yield num, "enable_ping", mo["object_profile__enable_ping"]
-            #
             if "trouble_snmp" in mo:
                 yield num, "trouble_snmp", mo["trouble_snmp"]
             if "trouble_profile" in mo:

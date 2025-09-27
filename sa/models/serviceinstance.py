@@ -138,7 +138,7 @@ class ServiceInstance(Document):
             if r.startswith("if"):
                 r, _ = from_resource(r)
                 return r
-            elif r.startswith("si"):
+            if r.startswith("si"):
                 r, _ = from_resource(r)
                 return r.interface
         return None
@@ -172,9 +172,9 @@ class ServiceInstance(Document):
         name = self.name or self.service.label
         if self.type == InstanceType.ASSET:
             return f"[{self.type}|{','.join(self.asset_refs)}] {name}"
-        elif self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
+        if self.type == InstanceType.NETWORK_CHANNEL and self.managed_object:
             return f"[{self.type}|{self.managed_object}] {name}"
-        elif self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
+        if self.type == InstanceType.NETWORK_CHANNEL and self.remote_id:
             return f"[{self.type}|{self.remote_id}] {name}"
         return f"[{self.type}] {name}"
 
@@ -277,7 +277,7 @@ class ServiceInstance(Document):
         if not o:
             # Getting managed_object by query
             return
-        elif self.managed_object and self.managed_object.id == o.id:
+        if self.managed_object and self.managed_object.id == o.id:
             # Already set
             return
         oo = self.managed_object
@@ -415,7 +415,6 @@ class ServiceInstance(Document):
         port: Optional[str] = None,
         session: Optional[str] = None,
         pool: Optional[Pool] = None,
-        #
         ts: Optional[datetime.datetime] = None,
     ):
         """
@@ -435,7 +434,7 @@ class ServiceInstance(Document):
             if a.address not in addresses and source in a.sources:
                 # Skip
                 continue
-            elif a.address in addresses and source not in a.sources:
+            if a.address in addresses and source not in a.sources:
                 # Additional source
                 a.sources.append(source)
                 changed |= True
@@ -534,8 +533,8 @@ class ServiceInstance(Document):
         if resources and set(self.resources) == set(resources):
             # Not changed - Update only last seen
             self.seen(source, last_seen=update_ts)
-            return None
-        elif resources:
+            return
+        if resources:
             # Update last seen and not save (save on bulk)
             self.seen(source, last_seen=update_ts, dry_run=bool(bulk))
         else:
@@ -543,7 +542,7 @@ class ServiceInstance(Document):
         self.resources = resources
         if not self.sources:
             # Instance Deleted
-            return None
+            return
         if bulk is not None:
             bulk += [
                 UpdateOne(

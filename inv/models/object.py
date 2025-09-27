@@ -386,7 +386,7 @@ class Object(Document):
         """
         Object is Generic
         """
-        return self.model.vendor.name == "Generic" or self.model.vendor.name == "NoName"
+        return self.model.vendor.name in ("Generic", "NoName")
 
     @property
     def is_point(self) -> bool:
@@ -771,7 +771,7 @@ class Object(Document):
             c = self.get_effective_connection_data(c.name)
             if not c.cross or c.cross == lc.cross:
                 continue
-            elif lc.group != c.group:
+            if lc.group != c.group:
                 continue
             # Check protocols
             protocols, discriminators = [], []
@@ -783,7 +783,7 @@ class Object(Document):
                         # Not supported discriminators
                         protocols.append(p)
                         continue
-                    elif not pd or not lpd:
+                    if not pd or not lpd:
                         # Not supported discriminators
                         continue
                     # remove discriminators from crossing
@@ -864,7 +864,7 @@ class Object(Document):
                     ]
                 )
                 return c, self.parent, self.parent_connection
-            elif mc and mc.is_inner:
+            if mc and mc.is_inner:
                 warnings.warn(
                     "Object.get_p2p_connection for inner connections is deprecated "
                     "and will be removed in NOC 25.1",
@@ -941,7 +941,7 @@ class Object(Document):
         elif mc.is_inner:
             o = Object.objects.filter(parent=self, parent_connection=name).first()
             if not o:
-                return None
+                return
             move_to_container(o)
         elif mc.is_same_level:
             c, o, _ = self.get_p2p_connection(name)
@@ -1179,10 +1179,9 @@ class Object(Document):
         """
         if self.parent and self.parent_connection:
             return self.parent.get_name_path() + [self.parent_connection]
-        elif self.parent:
+        if self.parent:
             return self.parent.get_name_path() + [self.name]
-        else:
-            return [self.name]
+        return [self.name]
 
     def log(self, message, user=None, system=None, managed_object=None, op=None) -> None:
         if not user:

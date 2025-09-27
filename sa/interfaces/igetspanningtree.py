@@ -32,7 +32,6 @@ class IGetSpanningTree(BaseInterface):
             "mode": StringParameter(
                 choices=["None", "STP", "RSTP", "MSTP", "PVST+", "rapid-PVST+"]
             ),
-            #
             "configuration": DictParameter(
                 attrs={
                     # MSTP-specific configuration

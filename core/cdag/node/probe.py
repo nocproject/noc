@@ -78,10 +78,10 @@ class ProbeNode(BaseCDAGNode):
         if base == self.base:
             # Same base
             return v * base ** (exp - self.exp)
-        elif self.exp == 0:
+        if self.exp == 0:
             # Base mismatch, Target scale is 1
             return v * base**exp
-        elif exp == 0:
+        if exp == 0:
             # Base mismatch, Source scale is 1
             return v * self.base**-self.exp
         return v * (base**exp) * self.base**-self.exp
@@ -132,7 +132,7 @@ class ProbeNode(BaseCDAGNode):
             self.set_state(None, None)
             self.state.flag = flag
             return None
-        elif (ts - self.state.lt) < NS:
+        if (ts - self.state.lt) < NS:
             # Too less timestamp different, Division by zero exception
             logger.info("[%s] Skipping already processed value", self.node_id)
             return None

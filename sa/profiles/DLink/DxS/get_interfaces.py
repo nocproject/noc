@@ -215,8 +215,7 @@ class Script(BaseScript):
             key = match.group("port")
             obj = {"port": key, "status": match.group("port")}
             return key, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def parse_stp(self, s):
         match = self.rx_stp.search(s)
@@ -228,8 +227,7 @@ class Script(BaseScript):
             key = match.group("port")
             obj = {"port": key}
             return key, obj, s[match.end() :]
-        else:
-            return None
+        return None
 
     def execute_cli(self):
         ipif_found = False
@@ -388,7 +386,7 @@ class Script(BaseScript):
                 ],
             }
             desc = p["desc"]
-            if desc != "" and desc != "null":
+            if desc not in ("", "null"):
                 i["description"] = desc
                 i["subinterfaces"][0]["description"] = desc
             mac = macs.get(ifname)

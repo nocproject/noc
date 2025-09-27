@@ -99,16 +99,14 @@ class Script(BaseScript):
 
                 if id != id_last and map[name2] == "local_interface":
                     neighbors += [{map[name2]: value.strip("'"), "neighbors": [remotehost]}]
+                elif map[name2] == "remote_capabilities":
+                    remotehost.update({map[name2]: "30"})
+                elif map[name2] == "remote_port":
+                    # try convert to Cisco format
+                    remotehost.update({"remote_port_subtype": 5})
+                    remotehost.update({map[name2]: value.strip("'")})
                 else:
-                    # chech capabilites
-                    if map[name2] == "remote_capabilities":
-                        remotehost.update({map[name2]: "30"})
-                    elif map[name2] == "remote_port":
-                        # try convert to Cisco format
-                        remotehost.update({"remote_port_subtype": 5})
-                        remotehost.update({map[name2]: value.strip("'")})
-                    else:
-                        remotehost.update({map[name2]: value.strip("'")})
+                    remotehost.update({map[name2]: value.strip("'")})
 
                 id_last = id
 
@@ -126,45 +124,42 @@ class Script(BaseScript):
             )
             return r
 
-        else:
-            for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
-                if self.check_ifcfg.match(match.group("remote_port")):
-                    remote_if = match.group("remote_port")
-                else:
-                    remote_if = self.profile.convert_interface_name_cisco(
-                        match.group("remote_port")
-                    )
+        for match in self.rx_lldpd.finditer(self.cli("lldpcli show neighbors summary")):
+            if self.check_ifcfg.match(match.group("remote_port")):
+                remote_if = match.group("remote_port")
+            else:
+                remote_if = self.profile.convert_interface_name_cisco(match.group("remote_port"))
 
-                i = {"local_interface": match.group("local_interface"), "neighbors": []}
+            i = {"local_interface": match.group("local_interface"), "neighbors": []}
 
-                if match.group("remote_port_type") == "ifname":
-                    rps = 5
-                    remote_port = remote_if
+            if match.group("remote_port_type") == "ifname":
+                rps = 5
+                remote_port = remote_if
 
-                if match.group("remote_port_type") == "mac":
-                    remote_port = match.group("remote_chassis_id")
-                    rps = 3
-                if match.group("remote_port_type") == "local":
-                    remote_port = remote_if
-                    rps = 1
+            if match.group("remote_port_type") == "mac":
+                remote_port = match.group("remote_chassis_id")
+                rps = 3
+            if match.group("remote_port_type") == "local":
+                remote_port = remote_if
+                rps = 1
 
-                # print (match.group("remote_port"))
-                # see sa/profiles/HP/Comware/get_lldp_neighbors.py
-                n = {
-                    "remote_capabilities": 20,
-                    "remote_chassis_id": match.group("remote_id"),
-                    "remote_chassis_id_subtype": 4,
-                    # "remote_port": match.group("remote_chassis_id"),
-                    # "remote_port": match.group("remote_port"),
-                    "remote_port": remote_port,
-                    "remote_port_subtype": rps,
-                    "remote_system_name": match.group("remote_system_name"),
-                }
+            # print (match.group("remote_port"))
+            # see sa/profiles/HP/Comware/get_lldp_neighbors.py
+            n = {
+                "remote_capabilities": 20,
+                "remote_chassis_id": match.group("remote_id"),
+                "remote_chassis_id_subtype": 4,
+                # "remote_port": match.group("remote_chassis_id"),
+                # "remote_port": match.group("remote_port"),
+                "remote_port": remote_port,
+                "remote_port_subtype": rps,
+                "remote_system_name": match.group("remote_system_name"),
+            }
 
-                i["neighbors"] += [n]
-                r += [i]
+            i["neighbors"] += [n]
+            r += [i]
 
-            return r
+        return r
 
 
 """

@@ -31,7 +31,7 @@ class BaseModel(_BaseModel):
         if isinstance(annotation, _GenericAlias):
             if annotation.__origin__ is Reference:
                 return True
-            elif isinstance(annotation.__origin__, _SpecialForm):
+            if isinstance(annotation.__origin__, _SpecialForm):
                 for arg in annotation.__args__:
                     if isinstance(arg, _GenericAlias) and arg.__origin__ is Reference:
                         return True

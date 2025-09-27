@@ -41,9 +41,9 @@ def get_column_width(name):
     name = name.upper()
     if name.startswith("Up") or name.startswith("Down") or name.startswith("-"):
         return 8
-    elif name.startswith("ADM_PATH"):
+    if name.startswith("ADM_PATH"):
         return excel_column_format["ADMIN_DOMAIN"]
-    elif name in excel_column_format:
+    if name in excel_column_format:
         return excel_column_format[name]
     return 15
 
@@ -227,7 +227,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             )
             response["Content-Disposition"] = f'attachment; filename="{filename}.csv"'
             return response
-        elif o_format == "csv_zip":
+        if o_format == "csv_zip":
             response = BytesIO()
             f = TemporaryFile(mode="w+b")
             f.write(
@@ -250,7 +250,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             response = HttpResponse(response.getvalue(), content_type="application/zip")
             response["Content-Disposition"] = f'attachment; filename="{filename}.zip"'
             return response
-        elif o_format == "xlsx":
+        if o_format == "xlsx":
             import xlsxwriter
 
             response = BytesIO()
@@ -267,7 +267,6 @@ class ReportAlarmDetailApplication(ExtApplication):
             if enable_autowidth:
                 for i, width in enumerate(get_col_widths(data)):
                     worksheet.set_column(i, i, width)
-            #
             book.close()
             response.seek(0)
             response = HttpResponse(response, content_type="application/vnd.ms-excel")

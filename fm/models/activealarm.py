@@ -112,22 +112,18 @@ class ActiveAlarm(Document):
     # Alarm reference is a hash of discriminator
     # for external systems
     reference = BinaryField(required=False)
-    #
     log: List[AlarmLog] = EmbeddedDocumentListField(AlarmLog)
     # Manual acknowledgement timestamp
     ack_ts = DateTimeField(required=False)
     # Manual acknowledgement user name
     ack_user = StringField(required=False)
-    #
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # List of subscribers
     watchers: List[WatchItem] = EmbeddedDocumentListField(WatchItem)
-    #
     custom_subject = StringField(required=False)
     custom_object = StringField(required=False)
     custom_style = ForeignKeyField(Style, required=False)
-    #
     reopens = IntField(required=False)
     # RCA
     # Reference to root cause (Active Alarm or Archived Alarm instance)
@@ -211,9 +207,9 @@ class ActiveAlarm(Document):
 
         esc = Escalation.objects.filter(items__alarm=self.id, close_timestamp__exists=False).first()
         if not esc:
-            return
+            return None
         for ii in esc.items:
-            if ii.escalation_status == "fail" or ii.escalation_status == "temp":
+            if ii.escalation_status in ("fail", "temp"):
                 return ii.escalation_error
 
     @property
@@ -486,8 +482,7 @@ class ActiveAlarm(Document):
     @property
     def body(self) -> str:
         # Replace to message context
-        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
-        return s
+        return Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
 
     def get_message_body(
         self,
@@ -607,7 +602,6 @@ class ActiveAlarm(Document):
         from noc.core.service.loader import get_service
         from noc.main.models.pool import Pool
 
-        #
         if self.managed_object:
             fm_pool = self.managed_object.get_effective_fm_pool()
             partition = int(self.managed_object.id)
@@ -748,7 +742,7 @@ class ActiveAlarm(Document):
         """Replace Alarm Class on Active Alarm"""
         if alarm_class == self.alarm_class:
             return
-        elif self.alarm_class.allow_rewrite(alarm_class):
+        if self.alarm_class.allow_rewrite(alarm_class):
             return
         self.alarm_class = alarm_class
         if not dry_run:

@@ -20,9 +20,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         subparsers.add_parser("list")
-        #
         apply_parser = subparsers.add_parser("apply")
         apply_parser.add_argument("fixes", nargs=argparse.REMAINDER, help="Apply named fixes")
 

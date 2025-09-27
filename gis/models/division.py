@@ -47,20 +47,17 @@ class Division(Document):
     }
     # Division type
     type = StringField(default="A", choices=[("A", "Administrative")])
-    #
     parent = PlainReferenceField("self")
     # Normalized name
     name = StringField()
     # street/town/city, etc
     short_name = StringField()
-    #
     is_active = BooleanField(default=True)
     # Division level
     level = IntField()
     # Additional data
     # Depends on importer
     data = DictField()
-    #
     start_date = DateTimeField()
     end_date = DateTimeField()
     # Reference to remote system object has been imported from
@@ -81,8 +78,7 @@ class Division(Document):
     def __str__(self):
         if self.short_name:
             return self.short_name
-        else:
-            return self.name
+        return self.name
 
     def get_children(self):
         return Division.objects.filter(parent=self.id)

@@ -76,10 +76,10 @@ class ThresholdProfile(object):
 
     def get_window_config(self):
         if not self.window_func:
-            return
+            return None
         func, config = function_map.get(self.window_func)
         if not func:
-            return
+            return None
         return {
             "max_window": self.window_size,
             "min_window": self.window_size,

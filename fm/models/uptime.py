@@ -94,7 +94,6 @@ class Uptime(Document):
                 c.insert_one(
                     {"object": oid, "start": ts, "stop": None, "last": now, "last_value": uptime}
                 )
-                #
                 Reboot.register(managed_object, ts, d["last"])
                 cls.send_reboot(managed_object, ts, d["last"])
             else:

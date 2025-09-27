@@ -85,10 +85,8 @@ class ActionLog(object):
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
         self.repeat_num = repeat_num or 0
-        #
         self.user = user
         self.tt_system = tt_system
-        #
         self.ctx = kwargs
 
     def __str__(self):
@@ -108,11 +106,11 @@ class ActionLog(object):
         """Check job condition"""
         if severity < self.min_severity:
             return False
-        elif self.time_pattern and not self.time_pattern.match(timestamp):
+        if self.time_pattern and not self.time_pattern.match(timestamp):
             return False
-        elif self.alarm_ack == "ack" and not ack_user:
+        if self.alarm_ack == "ack" and not ack_user:
             return False
-        elif self.alarm_ack == "unack" and ack_user:
+        if self.alarm_ack == "unack" and ack_user:
             return False
         return True
 
@@ -128,12 +126,10 @@ class ActionLog(object):
             alarm_ctx: Alarm context
         """
         r: Dict[str, Any] = {"timestamp": self.timestamp}
-        if (
-            self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT
-        ) and self.key == "stub":
+        if (self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT)) and self.key == "stub":
             r["tt_system"] = self.tt_system
             r["tt_id"] = self.document_id or document_id
-        elif self.action == AlarmAction.CREATE_TT or self.action == AlarmAction.CLOSE_TT:
+        elif self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT):
             r["tt_system"] = TTSystem.get_by_id(self.key)
             r["tt_id"] = self.document_id or document_id
         elif self.action == AlarmAction.NOTIFY:
@@ -216,12 +212,10 @@ class ActionLog(object):
             status=ActionStatus.NEW if not action.manually else ActionStatus.PENDING,
             document_id=document_id,
             timestamp=ts.replace(microsecond=0),
-            #
             time_pattern=action.time_pattern,
             alarm_ack=action.ack,
             when=action.when,
             min_severity=action.min_severity or 0,
-            #
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
             # Ctx

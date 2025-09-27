@@ -152,14 +152,11 @@ class BaseService(object):
         # MX metrics publisher buffer
         self.mx_partitions: int = 0
         self.mx_queue: Optional[MBuffer] = None
-        #
         self.active_subscribers = 0
         self.subscriber_shutdown_waiter: Optional[asyncio.Event] = None
-        #
         self.watchdog_waiter: Optional[asyncio.Event] = None
         # Metrics partitions
         self.n_metrics_partitions = len(config.clickhouse.cluster_topology.split(","))
-        #
         self.metrics_key_lock = threading.Lock()
         self.metrics_key_seq: int = 0
 
@@ -406,14 +403,12 @@ class BaseService(object):
             connect()
 
         await self.init_api()
-        #
         if config.message.embedded_router and self.use_router:
             self.router = Router()
             self.router.load()
             asyncio.get_running_loop().create_task(self.get_mx_routes_config())
         if not config.message.embedded_router and config.message.enable_metrics:
             self.mx_partitions = await self.get_stream_partitions("message")
-        #
         if self.use_telemetry or self.use_router:
             self.start_telemetry_callback()
         self.loop.create_task(self.on_register())
@@ -905,7 +900,7 @@ class BaseService(object):
                 headers=msg.headers,
             )
             return
-        elif not self.router and not self.mx_partitions:
+        if not self.router and not self.mx_partitions:
             self.logger.warning("Not MX service for forwarding message. Skipping...")
             return
         if store:
@@ -951,7 +946,7 @@ class BaseService(object):
         Return None for default weight
         :return:
         """
-        return None
+        return
 
     def get_backend_limit(self):
         """
@@ -960,7 +955,7 @@ class BaseService(object):
         Return None for no limits
         :return:
         """
-        return None
+        return
 
     def is_valid_health_check(self, service_id):
         """

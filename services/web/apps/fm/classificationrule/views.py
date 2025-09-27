@@ -211,11 +211,10 @@ class EventClassificationRuleApplication(ExtDocApplication):
         """
         q = self.parse_request_query(request)
         source = EventSource(q["source"])
-        rule = Event.get_rule(
+        return Event.get_rule(
             source,
             message=q.get("message"),
             labels=q.get("labels"),
             data=q.get("data"),
             snmp_trap_oid=q.get("snmp_trap_oid"),
         )
-        return rule

@@ -105,9 +105,9 @@ class Script(BaseScript):
             r[ifindex] = {"interface": name}
 
         # Apply ifAdminStatus
-        self.apply_table(r, "%s.10.2.1.3" % o, "admin_status", lambda x: x == "up" or x == 1)
+        self.apply_table(r, "%s.10.2.1.3" % o, "admin_status", lambda x: x in ("up", 1))
         # Apply ifOperStatus
-        self.apply_table(r, "%s.10.2.1.3" % o, "oper_status", lambda x: x == "up" or x == 1)
+        self.apply_table(r, "%s.10.2.1.3" % o, "oper_status", lambda x: x in ("up", 1))
         # Apply ifSpeed
         for ifindex, s in self.get_iftable(s_oid).items():
             ri = r.get(ifindex)

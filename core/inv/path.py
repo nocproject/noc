@@ -103,7 +103,7 @@ def find_path(
                 p0,
                 PathItem(obj=c.object, connection=c.name),
             ]
-        elif r == ConnAction.PASS:
+        if r == ConnAction.PASS:
             # Passable
             wave.add(c.object)
             prev[PathItem(obj=c.object, connection=c.name)] = p0
@@ -139,7 +139,7 @@ def find_path(
                 if adj.remote_object in wave:
                     continue  # Shortest path cannot slide across the edge of wave
                 r = get_action(adj.remote_object, adj.remote_name)
-                if r == ConnAction.PASS or r == ConnAction.FOUND:
+                if r in (ConnAction.PASS, ConnAction.FOUND):
                     # Connect internal slots, only if we're not returning back to the incoming
                     pi = PathItem(obj=co, connection=adj.local_name)
                     if adj.local_name != incoming:
@@ -151,8 +151,8 @@ def find_path(
                         return list(
                             iter_path(PathItem(obj=adj.remote_object, connection=adj.remote_name))
                         )
-                    else:  # ConnAction.PASS
-                        new_wave.add(adj.remote_object)
+                    # ConnAction.PASS
+                    new_wave.add(adj.remote_object)
         seen |= wave
         wave = new_wave
         max_depth -= 1

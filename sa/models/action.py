@@ -89,7 +89,6 @@ class Action(Document):
     access_level = IntField(default=15)
     # Optional handler for non-sa actions
     handler = StringField()
-    #
     params = ListField(EmbeddedDocumentField(ActionParameter))
 
     _id_cache = cachetools.TTLCache(1000, ttl=60)
@@ -181,8 +180,7 @@ class Action(Document):
         # Execute rendered commands
         if ac.config_mode:
             return obj.scripts.configure(commands=commands)
-        else:
-            return obj.scripts.commands(commands=commands)
+        return obj.scripts.commands(commands=commands)
 
     def clean_args(self, obj, **kwargs):
         args = {}
@@ -235,5 +233,4 @@ class Action(Document):
         return args
 
 
-#
 from noc.ip.models.vrf import VRF

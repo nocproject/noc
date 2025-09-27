@@ -44,7 +44,7 @@ class TestCase(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.stop = time.time()
         if exc_type is None:
-            return
+            return None
         self.failure = str(exc_val)
         if exc_type is AssertionError:
             if self.ref:

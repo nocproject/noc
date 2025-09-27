@@ -38,10 +38,9 @@ class Script(BaseScript):
             else:
                 platform = "Unknown"
                 hardware = "Unknown"
-        r = {
+        return {
             "vendor": "InfiNet",
             "platform": platform,
             "version": version,
             "attributes": {"HW version": hardware, "Serial Number": sn},
         }
-        return r

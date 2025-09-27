@@ -40,7 +40,7 @@ class DataItem(object):
 @dataclass(frozen=True, eq=True)
 class Check(object):
     name: str  # Check name
-    args: Optional[Dict[str, str]] = None  #
+    args: Optional[Dict[str, str]] = None
     # pool: Optional[str] = field(default=None, hash=False)  # Address Pool
     address: str = field(default=None, compare=False)  # IP Address
     port: Optional[int] = None  # TCP/UDP port
@@ -69,7 +69,7 @@ class Check(object):
     def arg0(self):
         if self.args:
             return self.args.get("arg0")
-        return
+        return None
 
     @property
     def arg(self) -> str:
@@ -178,7 +178,7 @@ class CheckResult(object):
     def arg0(self):
         if self.args:
             return self.args.get("arg0")
-        return
+        return None
 
     @classmethod
     def from_dict(cls, v) -> "CheckResult":

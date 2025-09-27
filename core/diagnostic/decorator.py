@@ -14,7 +14,6 @@ from noc.sa.models.diagnosticitem import DiagnosticItem as DiagnosticItemDoc
 from .types import DiagnosticState, DiagnosticValue
 from .hub import DiagnosticHub, DiagnosticItem
 
-#
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 
@@ -83,7 +82,7 @@ def diagnostic(cls):
         return self._diagnostics
 
     if not hasattr(cls, "diagnostics"):
-        return
+        return None
     cls.diagnostic = property(diagnostic)
     cls.iter_diagnostics = iter_diagnostics
     if is_document(cls):

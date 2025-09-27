@@ -123,7 +123,6 @@ class CPE(Document):
     type = StringField(choices=[(x, x) for x in CPE_TYPES], default="other")
     # IPv4 CPE address, used for ManagedObject sync
     address = StringField(validation=check_address)
-    #
     label = StringField(required=False)
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
@@ -150,7 +149,7 @@ class CPE(Document):
         for c in self.controllers:
             if c.is_active:
                 return c
-        return
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
@@ -278,7 +277,7 @@ class CPE(Document):
         cls, managed_object, global_id: str = None, local_id: str = None, **kwargs
     ) -> Optional["CPE"]:
         if not global_id or not local_id:
-            return
+            return None
         if global_id:
             return CPE.objects.filter(global_id=global_id).first()
         if local_id:
@@ -426,13 +425,12 @@ class CPE(Document):
         content: List[str] = [self.global_id, self.address]
         if self.description:
             content += [self.description]
-        r = {
+        return {
             "title": f"{self.global_id} {self.controller}",
             "content": "\n".join(content),
             "card": card,
             "tags": self.labels,
         }
-        return r
 
     @classmethod
     def get_search_result_url(cls, obj_id):
@@ -478,7 +476,7 @@ class CPE(Document):
         if self.profile.shape:
             # Use profile's shape
             return self.profile.shape
-        return
+        return None
 
     def get_shape_overlays(self) -> List[ShapeOverlay]:
         return []

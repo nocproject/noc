@@ -48,10 +48,7 @@ class CSVApplication(Application):
                     return self.render_plain_text(
                         csv_export(model), content_type="text/csv; encoding=utf-8"
                     )
-                else:
-                    return self.response_redirect(
-                        "/main/csv/import/%s/" % form.cleaned_data["model"]
-                    )
+                return self.response_redirect("/main/csv/import/%s/" % form.cleaned_data["model"])
         else:
             form = ModelForm()
         return self.render(request, "index.html", form=form)

@@ -69,7 +69,7 @@ class Script(BaseScript):
             match = match.groupdict()
             if not match:
                 continue
-            elif match["role"] in {"Slot", "Rack"}:
+            if match["role"] in {"Slot", "Rack"}:
                 parent = match["sec_name"]
             if not match["properties"]:
                 self.logger.debug(
@@ -79,7 +79,7 @@ class Script(BaseScript):
             p = parse_kv(self.inv_property_map, match["properties"], sep="=")
             if "vendor" not in p and "type" not in p:
                 raise self.UnexpectedResultError("Partial parsed properties")
-            elif "vendor" not in p and p["type"].startswith("H"):
+            if "vendor" not in p and p["type"].startswith("H"):
                 p["vendor"] = "Huawei"
             elif "vendor" not in p or not p["vendor"]:
                 self.logger.debug("[%s] Empty Vendor Properties. Skipping...", match["sec_name"])
@@ -199,15 +199,15 @@ class Script(BaseScript):
         self.logger.debug("Detect type by by part_number")
         if part_no == "LE0MFSUA":
             return "CARD", slot, part_no
-        elif part_no.startswith("LE0"):
+        if part_no.startswith("LE0"):
             return "LPU", slot, part_no
-        elif part_no.startswith("SAE"):
+        if part_no.startswith("SAE"):
             return "LPU", slot, part_no
-        elif "CMU" in part_no:
+        if "CMU" in part_no:
             return "CMU", slot, part_no
-        elif "SRU" in part_no or "MPU" in part_no:
+        if "SRU" in part_no or "MPU" in part_no:
             return "SRU", slot, part_no
-        elif part_no.startswith("AR"):
+        if part_no.startswith("AR"):
             # AR Series ISR, Examples:
             # "SIC": ["AR0MSEG1CA00"], "WSIC": ["AR01WSX220A"], "XSIC": ["AR01XSX550A"], "SRU": ["AR01SRU2C"],
             # PWR: ["AR01PSAC35"]
@@ -224,9 +224,9 @@ class Script(BaseScript):
             else:
                 return None, slot, part_no
             return tp, slot, part_no
-        elif self.is_cloud_engine and part_no.startswith("CE"):
+        if self.is_cloud_engine and part_no.startswith("CE"):
             return "CHASSIS", slot, part_no
-        elif (
+        if (
             not name
             and slot_hints
             and (
@@ -242,38 +242,38 @@ class Script(BaseScript):
             num = card[0]["slot"]
             slot_hints["subcards"].remove(card[0])
             return "PWR", num, part_no
-        elif "PAC" in part_no:
+        if "PAC" in part_no:
             # PAC-350WB-L
             if name and self.rx_slot_num.match(name):
                 # PWR1, PWR2
                 slot = self.rx_slot_num.match(name).group("num")
             return "PWR", slot, part_no
-        elif part_no and part_no.startswith("FAN"):
+        if part_no and part_no.startswith("FAN"):
             if name and self.rx_slot_num.match(name):
                 # FAN1, FAN2
                 slot = self.rx_slot_num.match(name).group("num")
             return "FAN", slot, part_no
-        elif not name and part_no.endswith("FANA"):
+        if not name and part_no.endswith("FANA"):
             # 5XXX FAN card
             return "FAN", 3, part_no
         # elif not sub and "FAN" in part_no:
         #    return "FAN", slot, None
-        elif not name and "stack interface card" in descr:
+        if not name and "stack interface card" in descr:
             # On S5320-36C-EI-28S-AC: LS5D21X02S01,LS5D21X02T01,LS5D21VST000 cards
             return "CARD", 1, part_no
-        elif not name and part_no.endswith("TPC"):
+        if not name and part_no.endswith("TPC"):
             # Slot 2 - TPC
             return "CARD", 2, part_no
-        elif not sub and "PWR" in part_no:
+        if not sub and "PWR" in part_no:
             return "PWR", slot, None
-        elif (not name or name == "Main_Board") and "Chassis" in descr:
+        if (not name or name == "Main_Board") and "Chassis" in descr:
             # 5XXX Series Cards
             # self.logger.debug("Huawei 5XXX series, slot 0 is CHASSIS TYPE")
             #
             return "CHASSIS", slot, part_no
-        elif "Physical Interface Card" in descr:
+        if "Physical Interface Card" in descr:
             return "PIC", slot, part_no
-        elif not name and "Card" in descr:
+        if not name and "Card" in descr:
             # 5XXX Series Cards
             # self.logger.debug("Huawei 5XXX series, slot 0 is CHASSIS TYPE")
             # Slot 1 - Interface card
@@ -283,42 +283,39 @@ class Script(BaseScript):
                 if card:
                     slot = card[0]["slot"]
             return "CARD", slot, part_no
-        elif "Assembly Chassis" in descr:
+        if "Assembly Chassis" in descr:
             return "CHASSIS", slot, part_no
-        elif "Main Processing Unit" in descr:
+        if "Main Processing Unit" in descr:
             return "MPU", slot, part_no
-        elif "Interface Card" in descr:
+        if "Interface Card" in descr:
             return "PIC", slot, part_no
-        elif "Network Processing Unit" in descr:
+        if "Network Processing Unit" in descr:
             return "NPU", slot, part_no
-        elif "Line Processing Unit" in descr:
+        if "Line Processing Unit" in descr:
             return "LPU", slot, part_no
-        elif "Switch and Route Processing Unit" in descr:
+        if "Switch and Route Processing Unit" in descr:
             return "SRU", slot, part_no
-        elif "Switch Fabric Unit" in descr:
+        if "Switch Fabric Unit" in descr:
             return "SFU", slot, part_no
-        elif "Flexible Card" in descr:
+        if "Flexible Card" in descr:
             return "FPIC", slot, part_no
-        elif "Fixed Card" in descr:
+        if "Fixed Card" in descr:
             return "FPIC", slot, part_no
-        elif "General Switch Control Unit" in descr:
+        if "General Switch Control Unit" in descr:
             return "SCU", slot, part_no
-        elif "Fan Box" in descr or "Fan Module" in descr:
+        if "Fan Box" in descr or "Fan Module" in descr:
             if name and (name.startswith("A") or name.startswith("B")):
                 slot = name
             return "FAN", slot, part_no
-        elif (
-            "Power Supply Unit" in descr or "Power Module" in descr or "Power Entry Module" in descr
-        ):
+        if "Power Supply Unit" in descr or "Power Module" in descr or "Power Entry Module" in descr:
             if name and (name.startswith("A") or name.startswith("B")):
                 slot = name
             elif name and self.rx_slot_num.match(name):
                 # PWR1, PWR2
                 slot = self.rx_slot_num.match(name).group("num")
             return "PWR", slot, part_no
-        else:
-            self.logger.info("Not response number place")
-            return None, None, None
+        self.logger.info("Not response number place")
+        return None, None, None
 
     rx_slot_num = re.compile(r"^(?P<type>\w+)(?P<num>\d+)")
 
@@ -530,7 +527,7 @@ class Script(BaseScript):
                 # CX600 has integrated card with same serial
                 # but, Twinax will same S/N as normal
                 continue
-            elif not i_type:
+            if not i_type:
                 i_type = "CHASSIS"
             proccessed_serials.add(item.barcode)  # Same serial on LPUI output
             data = {

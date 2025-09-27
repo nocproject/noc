@@ -68,7 +68,6 @@ class L2DomainProfile(Document):
     workflow = PlainReferenceField(Workflow)
     style = ForeignKeyField(Style)
     pools = EmbeddedDocumentListField(PoolItem)
-    #
     vlan_template = ReferenceField(VLANTemplate)
     default_vlan_profile = ReferenceField(VLANProfile, required=False)
     # Discovery settings

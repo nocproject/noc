@@ -33,11 +33,10 @@ class AlarmCard(BaseCard):
         a = get_alarm(id)
         if self.current_user.is_superuser:
             return a
-        elif set(self.get_user_domains()) & set(a.adm_path):
+        if set(self.get_user_domains()) & set(a.adm_path):
             return a
-        else:
-            metrics["error", ("type", "no_such_alarm")] += 1
-            raise self.NotFoundError()
+        metrics["error", ("type", "no_such_alarm")] += 1
+        raise self.NotFoundError()
 
     def get_data(self):
         if not self.object:

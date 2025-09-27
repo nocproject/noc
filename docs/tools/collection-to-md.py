@@ -63,8 +63,7 @@ class EventClassVar(object):
     def is_required_mark(self):
         if self.is_required:
             return "{{ yes }}"
-        else:
-            return "{{ no }}"
+        return "{{ no }}"
 
 
 class DispositionAction(enum.Enum):
@@ -165,8 +164,7 @@ class MetricScopePath(object):
     def is_required_mark(self):
         if self.is_required:
             return "{{ yes }}"
-        else:
-            return "{{ no }}"
+        return "{{ no }}"
 
 
 @dataclass

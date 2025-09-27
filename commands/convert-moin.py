@@ -25,7 +25,6 @@ from noc.kb.models.kbentry import KBEntry
 from noc.kb.models.kbentryattachment import KBEntryAttachment
 from noc.core.comp import smart_text, smart_bytes
 
-#
 rx_hexseq = re.compile(r"\(((?:[0-9a-f][0-9a-f])+)\)")
 
 

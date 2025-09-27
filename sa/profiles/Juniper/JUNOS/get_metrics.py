@@ -81,7 +81,6 @@ class Script(GetMetricsScript):
             scale=1,
             units="u,s",
         ),
-        #
         "SLA | RTT | Min": ProfileMetricConfig(
             metric="SLA | RTT | Min",
             oid=("JUNIPER-RPM-MIB::jnxRpmResCalcMin", RPMMeasurement.roundTripTime.value),

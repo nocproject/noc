@@ -114,7 +114,6 @@ class Command(BaseCommand):
         stat_parser = subparsers.add_parser("stats", help="Show stats")
         stat_parser.add_argument("--top", default=0, type=int, help="Top device by size")
         stat_parser.add_argument("--slots", default="0", type=str, help="Slots lists")
-        #
         bucket_duration_parser = subparsers.add_parser(
             "bucket-duration", help="Show stats by backets"
         )
@@ -126,7 +125,6 @@ class Command(BaseCommand):
         bucket_duration_parser.add_argument(
             "--detail", default=False, action="store_true", help="Show bucket elements"
         )
-        #
         bucket_late_parser = subparsers.add_parser("bucket-late", help="Show stats by backets")
         bucket_late_parser.add_argument("--backets", default=5, help="Bucket count")
         bucket_late_parser.add_argument("--slots", default="0", type=str, help="Slots lists")

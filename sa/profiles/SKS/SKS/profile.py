@@ -138,5 +138,4 @@ class Profile(BaseProfile):
         if search:
             cfg = cfg[search.span()[0] :]
         # SKS-16E1-IP-ES-L
-        cfg = self.rx_snmp.sub("snmp-server community 7 XXXXX ", cfg)
-        return cfg
+        return self.rx_snmp.sub("snmp-server community 7 XXXXX ", cfg)

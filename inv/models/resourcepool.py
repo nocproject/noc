@@ -197,7 +197,7 @@ class ResourcePool(Document):
         else:
             domains = self.get_resource_domains()
         if not domains:
-            return
+            return None
         allocated: List[Any] = []
         d = domains.pop()
         # Replace to hints
@@ -222,7 +222,7 @@ class ResourcePool(Document):
             if not keys and not domains:
                 logger.debug("[%s|%s] Nothing keys for allocated. Stop", self.name, d.name)
                 break
-            elif not keys:
+            if not keys:
                 # additional domains if bad allocated
                 logger.info(
                     "[%s|%s] Need more keys for allocated. Trying next: %s",
@@ -267,9 +267,9 @@ class ResourcePool(Document):
 
         domains = self.get_resource_domains()
         if not domains:
-            return
+            return None
         if self.type == "ip":
             return round(Prefix.get_resource_pool_usage([self]), 2)
-        elif self.type == "vlan":
+        if self.type == "vlan":
             return round(L2Domain.get_resource_pool_usage([self]), 2)
-        return
+        return None

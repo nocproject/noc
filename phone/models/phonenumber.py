@@ -74,7 +74,6 @@ class PhoneNumber(Document):
     allocated_till = DateTimeField()
     # Last state change
     changed = DateTimeField()
-    #
     administrative_domain = ForeignKeyField(AdministrativeDomain)
     # Resource groups
     static_service_groups = ListField(ObjectIdField())

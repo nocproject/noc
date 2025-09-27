@@ -51,8 +51,7 @@ class InterfaceDetailDS(BaseDataSource):
             if speed >= t:
                 if speed // t * t == speed:
                     return f"{speed // t}{n}"
-                else:
-                    return f"{float(speed) / t:.2f}{n}"
+                return f"{float(speed) / t:.2f}{n}"
         return str(speed)
 
     @staticmethod

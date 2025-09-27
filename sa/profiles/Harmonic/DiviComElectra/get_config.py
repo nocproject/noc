@@ -26,5 +26,4 @@ class Script(BaseScript):
         data = self.http.get("/" + self.postfix)
         parsing = parseString(data)
         data = parsing.toprettyxml()
-        data = self.rx_sub.sub("\n", data)
-        return data
+        return self.rx_sub.sub("\n", data)

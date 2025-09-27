@@ -175,8 +175,8 @@ class MessageAction(Action):
 
         if ng:
             return NotificationGroup.get_by_id(int(ng.decode()))
-        elif not self.ng:
-            return
+        if not self.ng:
+            return None
         return NotificationGroup.get_by_id(int(self.ng))
 
     def register_escalation(self):
@@ -208,7 +208,7 @@ class MessageAction(Action):
             return {"subject": template.render_subject(**ctx), "body": template.render_body(**ctx)}
         except TypeError as e:
             logger.error("Can't Render Template: %s", e)
-            return
+            return None
 
     def iter_action(
         self, msg: Message, message_type: bytes

@@ -131,7 +131,7 @@ async def auth_authorization(
         schema, data = authorization.split(" ", 1)
         if schema == "Basic":
             return await auth_authorization_basic(request=request, data=data)
-        elif schema == "Bearer":
+        if schema == "Bearer":
             return await auth_authorization_bearer(request=request, data=data, svc=svc)
         logger.error(
             "[Authorization][%s] Denied: Unsupported authorization schema '%s'",

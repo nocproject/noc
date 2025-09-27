@@ -29,7 +29,6 @@ class CapsCheck(PolicyDiscoveryCheck):
     LDP_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ldp', 'interface', X)"""
     OSPF_QUERY = """Match('virtual-router', VR, 'forwarding-instance', FI, 'protocols', 'ospf', 'interface', X)"""
 
-    #
     ATTR_CAPS = {
         "Serial Number": "Chassis | Serial Number",
         "Boot PROM": "Chassis | Boot PROM",

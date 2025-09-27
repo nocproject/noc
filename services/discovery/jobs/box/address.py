@@ -97,7 +97,6 @@ class AddressCheck(DiscoveryCheck):
             self.logger.info(
                 "VPN ID are missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
             )
-        #
         self.logger.debug("Getting addresses to synchronize")
         for vpn_id in vrfs:
             vrf = vrfs[vpn_id]
@@ -248,10 +247,9 @@ class AddressCheck(DiscoveryCheck):
         vpn_db = PrefixDB()
         for a in addresses:
             vpn_db[IP.prefix(a["address"]).first] = a["vpn_id"]
-        #
         self.logger.debug("Getting DHCP addresses")
         leases = self.object.scripts.get_dhcp_binding()
-        r = [
+        return [
             DiscoveredAddress(
                 vpn_id=get_vpn_id(a["ip"]),
                 address=a["ip"],
@@ -264,7 +262,6 @@ class AddressCheck(DiscoveryCheck):
             )
             for a in leases
         ]
-        return r
 
     def get_neighbor_addresses(self) -> List[DiscoveredAddress]:
         """Return addresses from ARP/IPv6 ND"""
@@ -494,12 +491,10 @@ class AddressCheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv6 = True
                 vrf.save()
-        else:
-            # IPv4
-            if not vrf.afi_ipv4:
-                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
-                vrf.afi_ipv4 = True
-                vrf.save()
+        elif not vrf.afi_ipv4:
+            self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
+            vrf.afi_ipv4 = True
+            vrf.save()
 
     def is_ignored_address(self, address: DiscoveredAddress):
         """

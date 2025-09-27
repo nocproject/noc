@@ -312,7 +312,7 @@ class ServiceParameter(BaseParameter):
         if isinstance(self.services, list) and ":" in self.services[0]:
             self.value = [ServiceItem(*i.rsplit(":", 1)) for i in self.services]
             return
-        elif isinstance(self.services, str) and ":" in self.services:
+        if isinstance(self.services, str) and ":" in self.services:
             self.value = self.services
             return
 

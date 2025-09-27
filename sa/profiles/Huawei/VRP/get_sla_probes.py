@@ -63,7 +63,7 @@ class Script(BaseScript):
 
             if index not in probes:
                 continue
-            elif not target:
+            if not target:
                 self.logger.info("[%s] Probe without target", index)
                 del probes[index]
                 continue

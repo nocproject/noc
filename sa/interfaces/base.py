@@ -268,7 +268,6 @@ class SubclassOfParameter(Parameter):
             for bc in c.__bases__:
                 if check_name(bc, name):
                     return True
-            #
             return False
 
         return check_name(value, self.cls)
@@ -309,8 +308,7 @@ class ListOfParameter(ListParameter):
         v = super().clean(value)
         if self.is_list:
             return [[e.clean(vv) for e, vv in zip(self.element, nv)] for nv in value]
-        else:
-            return [self.element.clean(x) for x in v]
+        return [self.element.clean(x) for x in v]
 
     def script_clean_input(self, profile, value):
         if value is None and self.default is not None:
@@ -321,8 +319,7 @@ class ListOfParameter(ListParameter):
                 [e.script_clean_input(profile, vv) for e, vv in zip(self.element, nv)]
                 for nv in value
             ]
-        else:
-            return [self.element.script_clean_input(profile, x) for x in v]
+        return [self.element.script_clean_input(profile, x) for x in v]
 
     def script_clean_result(self, profile, value):
         if value is None and self.default is not None:
@@ -333,8 +330,7 @@ class ListOfParameter(ListParameter):
                 [e.script_clean_result(profile, vv) for e, vv in zip(self.element, nv)]
                 for nv in value
             ]
-        else:
-            return [self.element.script_clean_result(profile, x) for x in v]
+        return [self.element.script_clean_result(profile, x) for x in v]
 
 
 class StringListParameter(ListOfParameter):
@@ -539,12 +535,10 @@ class DateTimeParameter(StringParameter):
                 dt = datetime.datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S")
                 us = int(us.rstrip("Z"), 10)
                 return dt + datetime.timedelta(microseconds=us)
-            else:
-                return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-        elif isinstance(value, datetime):
+            return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+        if isinstance(value, datetime):
             return value
-        else:
-            self.raise_error(value)
+        self.raise_error(value)
 
 
 class DateTimeShiftParameter(StringParameter):
@@ -572,12 +566,10 @@ class DateTimeShiftParameter(StringParameter):
                     us, offset = us.split("+")
                 us = int(us.rstrip("Z"), 10)
                 return dt + datetime.timedelta(microseconds=us)
-            else:
-                return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
-        elif isinstance(value, datetime):
+            return datetime.datetime.strptime(value, "%Y-%m-%dT%H:%M:%S")
+        if isinstance(value, datetime):
             return value
-        else:
-            self.raise_error(value)
+        self.raise_error(value)
 
 
 class IPv4Parameter(StringParameter):
@@ -608,8 +600,7 @@ class IPv4Parameter(StringParameter):
         except ValueError:
             self.raise_error(value)
         # Avoid output like 001.002.003.004
-        v = ".".join("%d" % int(c) for c in X)
-        return v
+        return ".".join("%d" % int(c) for c in X)
 
 
 class IPv4PrefixParameter(StringParameter):
@@ -703,8 +694,7 @@ class PrefixParameter(StringParameter):
         """
         if ":" in value:
             return IPv6PrefixParameter().clean(value)
-        else:
-            return IPv4PrefixParameter().clean(value)
+        return IPv4PrefixParameter().clean(value)
 
 
 class VLANIDParameter(IntParameter):
@@ -890,9 +880,8 @@ class RDParameter(Parameter):
             if left > 65535:
                 if right > 65535:  # 4-byte ASN
                     self.raise_error(value)
-            else:
-                if right > 0xFFFFFFFF:  # 2-byte ASN
-                    self.raise_error(value)
+            elif right > 0xFFFFFFFF:  # 2-byte ASN
+                self.raise_error(value)
         return "%s:%s" % (left, right)
 
 
@@ -1026,11 +1015,10 @@ class TagsParameter(Parameter):
         if type(value) in (list, tuple):
             v = [smart_text(v).strip() for v in value]
             return [x for x in v if x]
-        elif isinstance(value, str):
+        if isinstance(value, str):
             v = [smart_text(x.strip()) for x in value.split(",")]
             return [x for x in v if x]
-        else:
-            self.raise_error("Invalid tags: %s" % value)
+        self.raise_error("Invalid tags: %s" % value)
 
 
 class ColorParameter(Parameter):

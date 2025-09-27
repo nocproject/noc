@@ -29,7 +29,6 @@ class BoMPlugin(InvPlugin):
                 else:
                     path.append(current.name or "-")
                 current = current.parent
-            #
             r.append(
                 {
                     "id": str(o.id),

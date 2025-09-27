@@ -84,11 +84,11 @@ def dynamic_profile(
         policy = getattr(instance, "get_dynamic_classification_policy", None)
         if policy and policy() == "D":
             # Dynamic classification not enabled
-            return
+            return None
         profile_id = profile_model.get_effective_profile(instance)
         if not profile_id:
             logger.info("[%s] Nothing profile for match", instance.name)
-            return
+            return None
         profile_field = profile_field or "profile"
         profile = getattr(instance, profile_field)
         if profile_id and profile.id != profile_id:
@@ -218,7 +218,7 @@ def update_profiles(
                         p_id,
                     )
                     return
-                elif profile != o.profile:
+                if profile != o.profile:
                     logger.info(
                         "[%s|%s] Object has been classified as '%s'", o.id, ll, profile.name
                     )

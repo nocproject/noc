@@ -162,8 +162,7 @@ class ThreadPoolExecutor(object):
         if sync:
             self.done_event.wait(timeout=self.shutdown_timeout)
             return self.done_future
-        else:
-            return asyncio.ensure_future(asyncio.wait_for(self.done_future, self.shutdown_timeout))
+        return asyncio.ensure_future(asyncio.wait_for(self.done_future, self.shutdown_timeout))
 
     @staticmethod
     def _set_future_result(future: asyncio.Future, result: Any) -> None:

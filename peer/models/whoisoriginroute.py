@@ -28,8 +28,7 @@ class WhoisOriginRoute(Document):
         v = cls.objects.filter(origin=key.upper()).first()
         if v is None:
             return []
-        else:
-            return v.routes
+        return v.routes
 
     @classmethod
     def upload(cls, data):

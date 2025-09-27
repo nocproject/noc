@@ -175,7 +175,7 @@ class MIB(Document):
                     if not mp and mib_preference == DEFAULT_PREFERENCE:
                         # No preference for destination MIB
                         raise OIDCollision(oid, oid_name, o.name, "No preference for %s" % o_mib)
-                    elif not mp:
+                    if not mp:
                         prefs[o_mib] = DEFAULT_PREFERENCE
                     else:
                         prefs[o_mib] = mp.preference  # Add to cache
@@ -194,11 +194,9 @@ class MIB(Document):
                     if syntax:
                         o.syntax = MIB.parse_syntax(syntax)
                     o.save()
-                else:
-                    # Append to aliases
-                    if oid_name not in o.aliases:
-                        o.aliases = sorted(o.aliases + [oid_name])
-                        o.save()
+                elif oid_name not in o.aliases:
+                    o.aliases = sorted(o.aliases + [oid_name])
+                    o.save()
             else:
                 # No OID collision found, save
                 syntax = v.get("syntax")
@@ -239,8 +237,7 @@ class MIB(Document):
             d = MIBData.objects.filter(oid=c_oid).first()
             if d:
                 return MIBAlias.rewrite(".".join([d.name] + rest))
-            else:
-                rest = [l_oid.pop()] + rest
+            rest = [l_oid.pop()] + rest
         return oid
 
     @classmethod
@@ -278,8 +275,7 @@ class MIB(Document):
             d = MIBData.objects.filter(aliases=name).first()
         if d:
             return d.description
-        else:
-            return None
+        return None
 
     @property
     def depended_by(self):

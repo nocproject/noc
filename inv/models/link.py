@@ -85,8 +85,7 @@ class Link(Document):
     def __str__(self):
         if self.interfaces:
             return "(%s)" % ", ".join(smart_text(i) for i in self.interfaces)
-        else:
-            return "Stale link (%s)" % self.id
+        return "Stale link (%s)" % self.id
 
     @classmethod
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Link"]:
@@ -117,7 +116,7 @@ class Link(Document):
         Check link is point-to-point link
         :return:
         """
-        return self.type == "p" or self.type == "a"
+        return self.type in ("p", "a")
 
     @property
     def is_lag(self) -> bool:
@@ -125,7 +124,7 @@ class Link(Document):
         Check link is unresolved LAG
         :return:
         """
-        return self.type == "p" or self.type == "a"
+        return self.type in ("p", "a")
 
     @property
     def is_broadcast(self) -> bool:
@@ -261,8 +260,7 @@ class Link(Document):
         if n_objects > 2:
             if self.type == "m":
                 return "m"
-            else:
-                return "M"
+            return "M"
         return "u"
 
     def reset_label(self):

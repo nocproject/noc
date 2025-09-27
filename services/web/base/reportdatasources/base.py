@@ -82,7 +82,7 @@ class BaseReportColumn(object):
         self.sync_ids = sync_ids  # Sorted Index list
         self.sync_ids_i = iter(self.sync_ids)
         self._current_id = self.next_id()
-        self._value = None  #
+        self._value = None
         self._end_series = False  # Tre
 
     def next_id(self):
@@ -211,11 +211,11 @@ class LongestIter(object):
             return self._default_value
         if self._id == item:
             return self._value
-        elif self._id < item:
+        if self._id < item:
             self._id = item
             next(self, None)
             return self._value
-        elif self._id > item:
+        if self._id > item:
             # print("Overhead")
             pass
         return self._default_value
@@ -484,8 +484,7 @@ class ReportDataSource(object):
             if self.fields[c].hidden:
                 continue
             width = 15
-            if width < max_column_data_length[c]:
-                width = max_column_data_length[c]
+            width = max(width, max_column_data_length[c])
             ws.set_column(cn, cn, width=width)
         wb.close()
         response.seek(0)

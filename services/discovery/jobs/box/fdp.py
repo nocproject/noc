@@ -29,5 +29,4 @@ class FDPCheck(TopologyDiscoveryCheck):
         nn = self.get_neighbor_by_hostname(n)
         if nn:
             return nn
-        else:
-            return None
+        return None

@@ -134,7 +134,6 @@ class ObjectModelApplication(ExtDocApplication):
                         "gender": mc.gender,
                     }
                 ]
-            #
             if (
                 r
                 and r[-1]["direction"] == c.direction

@@ -18,5 +18,4 @@ class Script(BaseScript):
         v = self.cli("protocol ip ping %s" % address)
         if "No answer from" in v:
             return {"success": 0, "count": 1}
-        else:
-            return {"success": 1, "count": 1}
+        return {"success": 1, "count": 1}

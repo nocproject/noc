@@ -92,7 +92,6 @@ class AS(NOCModel):
     rir = models.ForeignKey(
         RIR, null=True, blank=True, verbose_name="RIR", on_delete=models.CASCADE
     )
-    #
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
         models.CharField(max_length=250), blank=True, null=True, default=list
@@ -271,10 +270,9 @@ class AS(NOCModel):
         return Label.get_effective_setting(label, setting="enable_asn")
 
     def get_message_context(self) -> Dict[str, Any]:
-        r = {
+        return {
             "id": str(self.id),
             "asn": self.asn,
             "description": self.description,
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
         }
-        return r

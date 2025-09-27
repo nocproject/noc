@@ -163,13 +163,10 @@ class Job(Document):
                 [
                     # Filter entities
                     {"$match": {"entity": {"$in": list(entities)}}},
-                    #
                     {
                         "$sort": {"entity": 1, "_id": -1},
                     },
-                    #
                     {"$group": {"_id": "$entity", "max_id": {"$first": "$_id"}}},
-                    #
                     {"$project": {"_id": "$max_id"}},
                 ]
             )

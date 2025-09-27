@@ -34,8 +34,7 @@ class Script(BaseScript):
         def unq(s):
             if s and s.startswith('"') and s.endswith('"'):
                 return s[1:-1]
-            else:
-                return s
+            return s
 
         r = []
         try:

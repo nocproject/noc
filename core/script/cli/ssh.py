@@ -124,7 +124,7 @@ class SSHStream(BaseStream):
                         return b""
                     metrics["ssh_reads_blocked"] += 1
                     continue
-                elif code > 0:
+                if code > 0:
                     n = len(data)
                     metrics["ssh_read_bytes"] += n
                     return data

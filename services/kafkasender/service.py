@@ -150,7 +150,7 @@ class KafkaSenderService(FastAPIService):
         """
         if partitions is None:
             return None
-        elif isinstance(partitions, bytes):
+        if isinstance(partitions, bytes):
             partitions = [partition.strip() for partition in partitions.decode("utf-8").split(",")]
 
         if len(partitions) == 1:

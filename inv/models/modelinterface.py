@@ -84,8 +84,7 @@ class ModelInterfaceAttr(EmbeddedDocument):
     def clean_float(self, value):
         if isinstance(value, str):
             return float(value.replace(",", "."))
-        else:
-            return float(value)
+        return float(value)
 
     def clean_bool(self, value):
         value = value.lower()

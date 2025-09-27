@@ -139,7 +139,6 @@ def iter_free(
     exclusions: set[ObjectId] | None = None
     if exclude is not None:
         exclusions = {o.id for o in exclude}
-    #
     used: dict[RackSide, set[int]] = {
         RackSide.FRONT: set(),
         RackSide.REAR: set(),

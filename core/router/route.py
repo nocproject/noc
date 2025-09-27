@@ -291,7 +291,7 @@ class DefaultNotificationRoute(Route):
     def is_match(self, msg: Message, message_type: bytes) -> bool:
         if message_type == self.MX_METRIC or message_type != MX_NOTIFICATION:
             return False
-        elif MX_NOTIFICATION_METHOD in msg.headers:
+        if MX_NOTIFICATION_METHOD in msg.headers:
             return True
         return MX_NOTIFICATION_GROUP_ID in msg.headers
 

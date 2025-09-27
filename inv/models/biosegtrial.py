@@ -67,7 +67,7 @@ class BioSegTrial(Document):
         if target.id == attacker.id:
             # Not trial same
             return None
-        elif attacker.profile.is_persistent and attacker.parent != target.parent:
+        if attacker.profile.is_persistent and attacker.parent != target.parent:
             # Persistent segment can trial only it has one parent (ring)
             return None
         trial = BioSegTrial(

@@ -83,7 +83,6 @@ class AssetCheck(DiscoveryCheck):
         self.generic_models: List[str] = self.get_generic_models()
         # CPEs
         self.cpes: Dict[str, Tuple[str, str, str, str, str]] = self.load_cpe()
-        #
         self.object_param_artifacts: Dict[str, List[Dict[str, Any]]] = {}  # oid: [Data]
 
     def handler(self):
@@ -113,15 +112,10 @@ class AssetCheck(DiscoveryCheck):
             # cpe_objects
         # Assign stack members
         self.submit_stack_members()
-        #
         self.submit_connections()
-        #
         self.check_management()
-        #
         self.disconnect_connections()
-        #
         self.sync_sensors()
-        #
         self.logger.info("CPE Processed: %s", len(self.cpes))
         for cpe_id, (_, _, vendor, model, sn) in self.cpes.items():
             self.submit(
@@ -132,7 +126,6 @@ class AssetCheck(DiscoveryCheck):
                 serial=sn,
                 cpe_id=cpe_id,
             )
-        #
         self.set_artefact("object_param_artifacts", self.object_param_artifacts)
 
     def submit(
@@ -169,7 +162,6 @@ class AssetCheck(DiscoveryCheck):
             except UnicodeDecodeError:
                 self.logger.info("Trash submitted as serial: %s", serial.encode("hex"))
                 return
-        #
         data, constant_data = self.clean_sa_data(sa_data)
         is_unknown_xcvr = not builtin and part_no[0].startswith("Unknown | Transceiver | ")
         if not o_type and is_unknown_xcvr:
@@ -179,7 +171,6 @@ class AssetCheck(DiscoveryCheck):
             # Adjust context anyway
             self.prepare_context(o_type, number)
             return  # Builtin must aways have type set
-        #
         if is_unknown_xcvr:
             self.logger.info("%s S/N %s should be resolved later", part_no[0], serial)
             self.prepare_context(o_type, number)
@@ -220,19 +211,17 @@ class AssetCheck(DiscoveryCheck):
                             ("XCVR", part_no[0], self.ctx.copy(), serial, data, constant_data)
                         ]
                         return
-                    else:
-                        self.logger.info(
-                            "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
-                            vnd.name,
-                            part_no,
-                            description,
-                        )
-                        self.register_unknown_part_no(vnd, part_no, description)
-                        return
+                    self.logger.info(
+                        "Unknown model: vendor=%s, part_no=%s (%s). Skipping...",
+                        vnd.name,
+                        part_no,
+                        description,
+                    )
+                    self.register_unknown_part_no(vnd, part_no, description)
+                    return
 
         # Sanitize serial number against the model
         serial = self.clean_serial(m, number, serial)
-        #
         if m.cr_context and o_type != m.cr_context:
             # Override type with object mode's one
             self.logger.info("Model changes type to '%s'", m.cr_context)
@@ -945,9 +934,8 @@ class AssetCheck(DiscoveryCheck):
             if c_name == m_c and object.get_data("asset", "serial") == serial:
                 # Object with same serial number exists
                 return object
-            else:
-                # Serial number/connection mismatch
-                return None
+            # Serial number/connection mismatch
+            return None
         # Check connection type
         c = t_object.model.get_model_connection(t_c)
         if c is None:

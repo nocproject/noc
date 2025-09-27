@@ -121,7 +121,6 @@ class ExtDocApplication(ExtApplication):
                 self.pk = name
             if name == "uuid":
                 self.has_uuid = True
-        #
         if not self.query_fields:
             self.query_fields = [
                 "%s__%s" % (n, self.query_condition)
@@ -210,12 +209,10 @@ class ExtDocApplication(ExtApplication):
             if f == "uuid":
                 if is_uuid(query):
                     return f
-                else:
-                    return None
+                return None
             if "__" not in f:
                 return "%s__%s" % (f, self.query_condition)
-            else:
-                return f
+            return f
 
         qfx = [get_q(f) for f in self.query_fields]
         qfx = [x for x in qfx if x]
@@ -232,8 +229,7 @@ class ExtDocApplication(ExtApplication):
         """
         if query and self.query_fields:
             return self.model.objects.filter(self.get_Q(request, query))
-        else:
-            return self.model.objects.all()
+        return self.model.objects.all()
 
     def clean(self, data):
         """

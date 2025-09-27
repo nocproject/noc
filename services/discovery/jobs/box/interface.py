@@ -213,7 +213,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             {"DB | Interfaces": Interface.objects.filter(managed_object=self.object.id).count()},
             source="database",
         )
-        #
         self.collate(if_map)
         # Set artifacts for future use
         self.set_artefact("interface_macs", self.interface_macs)
@@ -506,7 +505,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                 iface.profile.name,
             )
             return
-        elif iface.aggregated_interface and iface.aggregated_interface.profile != iface.profile:
+        if iface.aggregated_interface and iface.aggregated_interface.profile != iface.profile:
             iface.profile = iface.aggregated_interface.profile
             self.logger.info(
                 "[%s] Interface has been classified from members '%s'",
@@ -515,7 +514,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
             )
             iface.save()
             return
-        elif iface.aggregated_interface:
+        if iface.aggregated_interface:
             return
         ctx = iface.get_matcher_ctx()
         for p_id, match in self.get_interface_profile:
@@ -534,7 +533,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     p_id,
                 )
                 return
-            elif profile != iface.profile:
+            if profile != iface.profile:
                 self.logger.info(
                     "[%s] Interface has been classified as '%s'", iface.name, profile.name
                 )
@@ -548,7 +547,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         if iface_discovery_policy == "c":
             self.logger.info("Cannot resolve ifindexes due to policy")
             return
-        elif self.is_confdb_source:
+        if self.is_confdb_source:
             self.logger.info("Resolve ifindexes and macs by script")
             resolve_mac = True
         # Missed properties

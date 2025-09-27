@@ -338,12 +338,11 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
             ops: dict = Depends(get_list_dep()),
             user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)]),
         ):
-            summary = self.get_summary_items(
+            return self.get_summary_items(
                 user,
                 field=field,
                 transforms=[list_ops_map[op].get_transform(v) for op, v in ops.items()],
             )
-            return summary
 
         def inner_get(
             id: str, user: User = Security(get_user_scope, scopes=[self.get_scope_read(view)])

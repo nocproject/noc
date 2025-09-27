@@ -25,7 +25,6 @@ class PrefixCard(BaseCard):
         while current:
             path += [current]
             current = current.parent
-        #
         return {
             "object": self.object,
             "source": self.SOURCES.get(self.object.source, "Unknown"),

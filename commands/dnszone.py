@@ -33,7 +33,6 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd")
-        #
         import_parser = subparsers.add_parser("import")
         (
             import_parser.add_argument(
@@ -196,7 +195,7 @@ class Command(BaseCommand):
             )
         except dns.exception.DNSException as e:
             self.print("ERROR:", e)
-            return
+            return None
         return data
 
     def dns_zone(self, zone, zone_profile, dry_run=False, clean=False):
@@ -468,16 +467,15 @@ class Command(BaseCommand):
                         enclosed_line = []
                     else:
                         enclosed_line += [item]
+                elif cls.has_unquoted(item, "("):
+                    # Starting (
+                    p = item.split("(", 1)
+                    enclosed_line += [p[0] + " "]
+                    if len(p) > 1:
+                        enclosed_line += [p[1] + " "]
                 else:
-                    if cls.has_unquoted(item, "("):
-                        # Starting (
-                        p = item.split("(", 1)
-                        enclosed_line += [p[0] + " "]
-                        if len(p) > 1:
-                            enclosed_line += [p[1] + " "]
-                    else:
-                        # Plain item
-                        collected += [item]
+                    # Plain item
+                    collected += [item]
             if collected and not enclosed_line:
                 line = "".join(collected)
                 if line.strip():
@@ -572,7 +570,7 @@ class Command(BaseCommand):
         Convert IDNA domain name to unicode
         """
         if not s:
-            return
+            return None
         return ".".join(smart_text(x, encoding="idna") for x in s.split("."))
 
     @classmethod

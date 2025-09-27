@@ -79,8 +79,7 @@ class Command(BaseCommand):
     def get_interface_template(interfaces):
         il = max(len(i.name) for i in interfaces)
         il = max(il, 15)
-        tps = "    %%-%ds  %%-12s  %%-30s  %%s ;%%s\n" % il
-        return tps
+        return "    %%-%ds  %%-12s  %%-30s  %%s ;%%s\n" % il
 
     def show_interface(self, tpl, i, status, effective_labels=None):
         if i.description:
@@ -116,7 +115,7 @@ class Command(BaseCommand):
                     i.profile_locked = False
                     i.save()
             return
-        elif not mos:
+        if not mos:
             self.stdout.write("No ManagedObject for processed\n")
             return
         for o in self.get_objects(mos):

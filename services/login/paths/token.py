@@ -82,7 +82,7 @@ async def token(
             )
         await svc.revoke_token(req.refresh_token, "refresh")
         return get_token_response(user)
-    elif req.grant_type == "password":
+    if req.grant_type == "password":
         # ROPCGrantRequest
         auth_req = {"user": req.username, "password": req.password, "ip": request.client.host}
     elif req.grant_type == "client_credentials" and authorization:

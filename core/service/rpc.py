@@ -88,21 +88,19 @@ class RPCProxy(object):
                     # Process response
                     if code == 200:
                         return data
-                    elif code == 307:
+                    if code == 307:
                         # Process redirect
                         if not limit:
                             raise RPCException("Redirects limit exceeded")
                         url = headers.get("location")
                         self._logger.debug("Redirecting to %s", url)
-                        r = await make_call(url.decode(DEFAULT_ENCODING), data, limit - 1)
-                        return r
-                    elif code in (598, 599):
+                        return await make_call(url.decode(DEFAULT_ENCODING), data, limit - 1)
+                    if code in (598, 599):
                         span.set_error(code)
                         self._logger.debug("Timed out")
                         return None
-                    else:
-                        span.set_error(code)
-                        raise RPCHTTPError(f"HTTP Error {code}: {body}")
+                    span.set_error(code)
+                    raise RPCHTTPError(f"HTTP Error {code}: {body}")
 
             t0 = perf_counter()
             self._logger.debug(
@@ -131,8 +129,7 @@ class RPCProxy(object):
                 response = await make_call(f"http://{svc}/api/{self._api}/", body)
                 if response:
                     break
-                else:
-                    await asyncio.sleep(t)
+                await asyncio.sleep(t)
             t = perf_counter() - t0
             self._logger.debug("[CALL<] %s.%s (%.2fms)", self._service_name, method, t * 1000)
             if response:
@@ -148,13 +145,10 @@ class RPCProxy(object):
                             f'RPC call failed: {result["error"]["message"]}',
                             remote_code=result["error"].get("code", None),
                         )
-                    else:
-                        return result["result"]
-                else:
-                    # Notifications return None
-                    return
-            else:
-                raise RPCNoService(f"No active service {self._service_name} found")
+                    return result["result"]
+                # Notifications return None
+                return None
+            raise RPCNoService(f"No active service {self._service_name} found")
 
         async def async_wrapper(*args, **kwargs):
             return await _call(item, *args, **kwargs)
@@ -170,5 +164,4 @@ class RPCProxy(object):
         span_ctx, span_id = get_current_span()
         if self._sync:
             return sync_wrapper
-        else:
-            return async_wrapper
+        return async_wrapper

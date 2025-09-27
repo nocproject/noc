@@ -21,5 +21,4 @@ class Script(BaseScript):
     def execute_cli(self):
         v = self.cli("show system")
         match = self.rx_hostname.search(v)
-        fqdn = [match.group("hostname")]
-        return fqdn
+        return [match.group("hostname")]

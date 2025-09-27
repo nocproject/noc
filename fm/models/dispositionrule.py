@@ -118,7 +118,7 @@ class Match(EmbeddedDocument):
         r = {}
         if self.event_class_re:
             r["event_class_re"] = self.event_class_re
-        if self.object_status == "D" or self.object_status == "U":
+        if self.object_status in ("D", "U"):
             r["object_status"] = self.object_status
         if self.reference_rx:
             r["reference_rx"] = self.reference_rx
@@ -143,7 +143,7 @@ class Match(EmbeddedDocument):
             r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.name)
-        if self.object_status == "D" or self.object_status == "U":
+        if self.object_status in ("D", "U"):
             r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
         if self.reference_rx:
             r["reference"] = {"$regex": self.reference_rx}
@@ -216,9 +216,7 @@ class DispositionRule(Document):
     uuid = UUIDField(binary=True)
     is_active = BooleanField(default=True)
     preference = IntField(required=True, default=1000)
-    #
     conditions: List[Match] = EmbeddedDocumentListField(Match)
-    #
     vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
     vars_conditions_op: str = StringField(
         choices=[
@@ -260,7 +258,6 @@ class DispositionRule(Document):
     combo_event_classes = ListField(
         PlainReferenceField("fm.EventClass"), required=False, default=[]
     )
-    #
     replace_rule_policy = StringField(
         required=True,
         choices=[
@@ -290,7 +287,6 @@ class DispositionRule(Document):
         ],
         default="N",
     )
-    #
     default_action = StringField(
         choices=[
             ("R", "Raise Disposition Alarm"),
@@ -538,7 +534,7 @@ class DispositionRule(Document):
             return r
         rule_conditions = []
         for c in rule.conditions:
-            if c.object_status == "D" or c.object_status == "U":
+            if c.object_status in ("D", "U"):
                 r["object_avail_condition"] = {"U": True, "D": False}[c.object_status]
                 continue
             expr = c.get_match_expr()

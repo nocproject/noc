@@ -61,7 +61,6 @@ class MACBlacklist(Document):
     name = StringField(unique=True)
     # Unique id
     uuid = UUIDField(binary=True)
-    #
     from_mac = StringField()
     to_mac = StringField()
     description = StringField()

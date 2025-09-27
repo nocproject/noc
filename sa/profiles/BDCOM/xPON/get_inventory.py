@@ -93,10 +93,8 @@ class Script(BaseScript):
                     part_no = "SFP"
                 elif t in ["10Giga-FX-SFP"]:
                     part_no = "SFP+"
-                else:
-                    # xPON interfaces do not display the absence of a transceiver
-                    if not t in ["GPON", "Giga-PON"]:
-                        self.logger.info(f"{ifname} - Unknown port type '{t}'.")
+                elif not t in ["GPON", "Giga-PON"]:
+                    self.logger.info(f"{ifname} - Unknown port type '{t}'.")
             if not match:
                 # Some devices can not get transceiver info
                 continue

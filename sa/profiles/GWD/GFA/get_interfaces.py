@@ -107,11 +107,10 @@ class Script(BaseScript):
                         sub = i["subinterfaces"][0]
                         if mode == "u":
                             sub["untagged_vlan"] = match.group("vlan_id")
+                        elif "tagged_vlans" in sub:
+                            sub["tagged_vlans"] += [match.group("vlan_id")]
                         else:
-                            if "tagged_vlans" in sub:
-                                sub["tagged_vlans"] += [match.group("vlan_id")]
-                            else:
-                                sub["tagged_vlans"] = [match.group("vlan_id")]
+                            sub["tagged_vlans"] = [match.group("vlan_id")]
                         break
         v = self.cli("show forward-entry", cached=True)
         for match in self.rx_mac.finditer(v):

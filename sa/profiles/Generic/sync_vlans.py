@@ -25,7 +25,6 @@ class Script(BaseScript):
             dev_vlans.remove(1)
         if 1 in db_vlans:
             db_vlans.remove(1)
-        #
         to_create = db_vlans - dev_vlans
         for vlan in to_create:
             self.scripts.add_vlan(vlan_id=vlan, name=v_map[vlan], tagged_ports=tagged_ports)

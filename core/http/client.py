@@ -107,7 +107,6 @@ async def fetch(
     from http_parser.parser import HttpParser
 
     metrics["httpclient_requests", ("method", method.lower())] += 1
-    #
     if eof_mark:
         eof_mark = smart_bytes(eof_mark)
     # Detect proxy when necessary
@@ -311,8 +310,7 @@ async def fetch(
                     allow_proxy=allow_proxy,
                     proxies=proxies,
                 )
-            else:
-                return 404, {}, b"Redirect limit exceeded"
+            return 404, {}, b"Redirect limit exceeded"
         # @todo: Process gzip and deflate Content-Encoding
         return code, parsed_headers, b"".join(response_body)
     finally:

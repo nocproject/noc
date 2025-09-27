@@ -74,8 +74,7 @@ class Script(BaseScript):
         Check stack members
         :return:
         """
-        r = self.cli("show lag statistics")
-        return r
+        return self.cli("show lag statistics")
 
     @false_on_snmp_error
     def has_lacp_snmp(self):

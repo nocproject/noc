@@ -46,7 +46,7 @@ class CfgMetricRuleDataStream(DataStream):
                     }
                 ]
                 continue
-            elif not action.metric_action:
+            if not action.metric_action:
                 continue
             r_action = {
                 "id": str(action.metric_action.id),

@@ -62,7 +62,6 @@ class AlarmsExtractor(ArchivingExtractor):
         )
         # object -> [ts1, .., tsN]
         reboots = {d["_id"]: d["reboots"] for d in r}
-        #
         for d in self.iter_data():
             mo = ManagedObject.get_by_id(d["managed_object"])
             if not mo:
@@ -72,7 +71,6 @@ class AlarmsExtractor(ArchivingExtractor):
             n_reboots = hits_in_range(
                 o_reboots, d["timestamp"] - self.reboot_interval, d["clear_timestamp"]
             )
-            #
             self.alarm_stream.push(
                 ts=d["timestamp"],
                 close_ts=d["clear_timestamp"],

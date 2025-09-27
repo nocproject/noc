@@ -21,8 +21,7 @@ class Script(BaseScript):
     def execute(self, **kwargs):
         if self.is_s:
             return self.execute_s()
-        else:
-            return self.execute_other()
+        return self.execute_other()
 
     # S-Series
     rx_system_id = re.compile(r"Stack MAC\s+:\s*(?P<id>\S+)", re.IGNORECASE | re.MULTILINE)

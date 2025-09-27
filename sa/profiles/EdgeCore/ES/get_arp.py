@@ -37,8 +37,7 @@ class Script(BaseScript):
                 }
                 for match in self.rx_line_4612.finditer(arp)
             ]
-        else:
-            try:
-                return self.cli("show arp", list_re=self.rx_line)
-            except self.CLISyntaxError:
-                raise self.NotSupportedError()
+        try:
+            return self.cli("show arp", list_re=self.rx_line)
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()

@@ -28,7 +28,7 @@ class Script(BaseScript):
             except ValueError:
                 continue
             r[k] = v
-        ver = {
+        return {
             "vendor": "Beward",
             "platform": r["root.Brand.ProdNbr"],
             "version": r["root.Properties.Firmware.Version"],
@@ -40,5 +40,3 @@ class Script(BaseScript):
                 # "Firmware Type":
             },
         }
-
-        return ver

@@ -69,7 +69,6 @@ class Command(BaseCommand):
         m = apps.get_model(app, model)
         if not m:
             return self._usage()
-        #
         try:
             resolve = {"fail": IR_FAIL, "skip": IR_SKIP, "update": IR_UPDATE}[options["resolve"]]
         except KeyError:
@@ -81,8 +80,7 @@ class Command(BaseCommand):
                 count, error = csv_import(m, f, resolution=resolve, delimiter=options["delimiter"])
                 if count is None:
                     raise CommandError(error)
-                else:
-                    print("... %d rows imported/updated" % count)
+                print("... %d rows imported/updated" % count)
 
 
 if __name__ == "__main__":

@@ -271,7 +271,7 @@ class NotificationGroup(NOCModel):
         for s in self.subscription_settings:
             if "user" in s and s["user"] == user.id:
                 return SubscriptionSettingItem(**s)
-            elif "group" in s and s["group"] in user.groups.values_list("id", flat=True):
+            if "group" in s and s["group"] in user.groups.values_list("id", flat=True):
                 return SubscriptionSettingItem(**s)
         return None
 
@@ -421,9 +421,9 @@ class NotificationGroup(NOCModel):
         ):
             if ngu.policy == "D":
                 continue
-            elif ngu.expired_at and ngu.expired_at > ts:
+            if ngu.expired_at and ngu.expired_at > ts:
                 continue
-            elif ngu.policy == "W":
+            if ngu.policy == "W":
                 watchers.append(get_subscriber_id(ngu.user))
                 continue
             contacts += self.get_active_user_contacts(ngu.user, now)
@@ -776,7 +776,7 @@ class NotificationGroup(NOCModel):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        r = {
+        return {
             "name": self.name,
             "$collection": self._json_collection["json_collection"],
             "uuid": self.uuid,
@@ -784,7 +784,6 @@ class NotificationGroup(NOCModel):
             "message_register_policy": self.message_register_policy,
             "message_types": [t.model_dump() for t in self.message_types],
         }
-        return r
 
     def to_json(self) -> str:
         return to_json(

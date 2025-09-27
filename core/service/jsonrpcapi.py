@@ -117,8 +117,7 @@ class JSONRPCAPI(object):
                         status_code=307,
                         headers={"location": result.location},
                     )
-                else:
-                    return ORJSONResponse(content={"result": result, "id": req.id})
+                return ORJSONResponse(content={"result": result, "id": req.id})
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
                 return ORJSONResponse(

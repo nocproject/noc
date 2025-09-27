@@ -183,8 +183,7 @@ class Map(object):
         o = self.find_nearest(point, layers)
         if o:
             return o, distance(point, o.point)
-        else:
-            return None, None
+        return None, None
 
 
 map = Map()

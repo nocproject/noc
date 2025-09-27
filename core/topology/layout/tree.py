@@ -22,7 +22,6 @@ class TreeLayout(LayoutBase):
     TREE_DX = config.layout.tree_horizontal_step
     # Vertical step
     TREE_DY = config.layout.tree_vertical_step
-    #
     CHILDREN_PER_LEVEL = 10.0
     MAX_LEVELS = config.layout.tree_max_levels
 

@@ -92,7 +92,6 @@ class MapSettings(Document):
     # Paper size
     width = FloatField()
     height = FloatField()
-    #
     nodes = ListField(EmbeddedDocumentField(NodeSettings))
     links = ListField(EmbeddedDocumentField(LinkSettings))
 

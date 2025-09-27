@@ -115,13 +115,13 @@ class ResourceItem(BaseModel):
                 # Remote System priority over discovered data
                 data[d.name] = d
                 continue
-            elif (
+            if (
                 not systems_priority
                 or not d.remote_system
                 or d.remote_system not in systems_priority
             ):
                 continue
-            elif data[d.name].remote_system not in systems_priority:
+            if data[d.name].remote_system not in systems_priority:
                 data[d.name] = d
                 continue
             i1, i2 = (
@@ -283,10 +283,8 @@ class ModelTemplate(Document):
             "description": self.description,
             "resource_model": self.resource_model,
             "type": self.type,
-            #
             "params": [f.json_data for f in self.params],
             "params_form": [f.json_data for f in self.params_form],
-            #
             "allow_manual": self.allow_manual,
             "sticky": self.sticky,
         }
@@ -327,7 +325,7 @@ class ModelTemplate(Document):
         """
         env = self.get_env(item, is_new=True)
         if dry_run:
-            return
+            return None
         if not hasattr(self.model_instance, "from_template"):
             raise ValueError("Resource '%s' does not supported Templating" % self.model_instance)
         o = self.model_instance.from_template(**env)
@@ -376,23 +374,23 @@ class ModelTemplate(Document):
             if p.ignore:
                 data.pop(p.name, None)
                 continue
-            elif p.name not in data and p.required:
+            if p.name not in data and p.required:
                 raise ValueError("Parameter %s is required" % p.name)
-            elif not is_new and not p.override_existing:
+            if not is_new and not p.override_existing:
                 data.pop(p.name, None)
                 continue
-            elif p.preferred_template_value and p.default_expression and p.name in data:
+            if p.preferred_template_value and p.default_expression and p.name in data:
                 r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
                 # May be used in next expression ?
                 data.pop(p.name, None)
                 continue
-            elif p.name not in data and p.default_expression:
+            if p.name not in data and p.default_expression:
                 if p.name in params:
                     r[p.name] = self.normalize_value(params[p.name], p.render_default(**data))
                 else:
                     r[p.name] = p.render_default(**data)
                 continue
-            elif p.name not in data:
+            if p.name not in data:
                 continue
             value = data.pop(p.name)
             if p.set_capability:
@@ -423,7 +421,7 @@ class ModelTemplate(Document):
                 continue
             if str(g.id) in deny_sg:
                 continue
-            elif g not in r["static_service_groups"]:
+            if g not in r["static_service_groups"]:
                 r["static_service_groups"].append(g)
         for k, v in data.items():
             r[k] = v

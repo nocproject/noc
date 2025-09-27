@@ -76,12 +76,12 @@ class ChangeItem(object):
             return replace(
                 self, **{"changed_fields": self.merge_fields(self.changed_fields, changed_fields)}
             )
-        elif self.op == "update":
+        if self.op == "update":
             # Update + Update -> Update with merged fields
             return replace(
                 self, **{"changed_fields": self.merge_fields(self.changed_fields, changed_fields)}
             )
-        elif self.op == "delete":
+        if self.op == "delete":
             raise RuntimeError("Cannot update after delete")
 
     @property

@@ -71,7 +71,6 @@ class SequenceJob(Job):
             return now + datetime.timedelta(seconds=delay)
         retry = now + datetime.timedelta(seconds=RETRY_TIMEOUT)
         with retry_lock:
-            if retry < next_retry:
-                retry = next_retry
+            retry = max(retry, next_retry)
             next_retry = retry + datetime.timedelta(seconds=RETRY_DELTA)
         return retry

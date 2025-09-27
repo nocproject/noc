@@ -87,7 +87,6 @@ class Agent(Document):
     state = PlainReferenceField(State)
     # Unique secret authentication key
     key = StringField(unique=True, default=gen_key)
-    #
     bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())

@@ -54,7 +54,7 @@ class TgSenderService(FastAPIService):
         if not dst:
             self.logger.debug("[%s] Missed '%s' header. Dropping", msg.offset, MX_TO)
             metrics["messages_drops"] += 1
-            return
+            return None
         metrics["messages_processed"] += 1
         return self.send_tb(
             msg.offset, orjson.loads(msg.value), dst.decode(encoding=DEFAULT_ENCODING)

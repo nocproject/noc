@@ -22,8 +22,7 @@ class APITokenApplication(ExtApplication):
         token = APIToken.objects.filter(type=type, user=request.user.id).first()
         if token:
             return {"type": token.type, "token": token.token}
-        else:
-            self.response_not_found()
+        self.response_not_found()
 
     @view(
         "^(?P<type>[^/]+)/$",

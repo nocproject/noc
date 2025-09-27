@@ -141,7 +141,7 @@ class User(NOCModel):
         uc = UserContact.objects.filter(params=contact).first()
         if uc:
             return uc.user
-        return
+        return None
 
     def is_authenticated(self) -> bool:
         """

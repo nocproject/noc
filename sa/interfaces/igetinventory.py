@@ -42,7 +42,6 @@ class IGetInventory(BaseInterface):
             "revision": StringParameter(required=False),
             # Serial number
             "serial": StringParameter(required=False),
-            #
             "mfg_date": REStringParameter(r"^\d{4}-\d{2}-\d{2}$", required=False),
             # Optional description
             "description": StringParameter(required=False),
@@ -77,7 +76,6 @@ class IGetInventory(BaseInterface):
                     "status": BooleanParameter(default=True),
                     # Optional description
                     "description": StringParameter(required=False),
-                    #
                     "labels": LabelListParameter(required=False),
                     # MeasurementUnit Name
                     "measurement": StringParameter(default="Scalar"),

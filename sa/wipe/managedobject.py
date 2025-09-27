@@ -63,7 +63,6 @@ def wipe(o):
     for i in Interface.objects.filter(managed_object=o.id):
         # @todo: Remove aggregated links correctly
         Link.objects.filter(interfaces=i.id).delete()
-    #
     log.debug("Wiping subinterfaces")
     SubInterface.objects.filter(managed_object=o.id).delete()
     log.debug("Wiping interfaces")

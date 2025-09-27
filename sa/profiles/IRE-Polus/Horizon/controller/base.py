@@ -142,8 +142,7 @@ class ChannelMetaclass(type):
                 for uuid in v._CLEANUP_HANDLERS:
                     attrs["_CLEANUP_HANDLERS"][uuid] = v
                 delattr(v, "_CLEANUP_HANDLERS")
-        n = type.__new__(mcs, name, bases, attrs)
-        return n
+        return type.__new__(mcs, name, bases, attrs)
 
 
 class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
@@ -185,7 +184,7 @@ class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
         obj = self.get_object(ep.resource)
         if not obj:
             self.logger.info("Object is not found: %s", ep.resource)
-            return
+            return None
         # Get port
         _, _, port = ep.resource.split(":", 2)
         # Get jobs
@@ -207,7 +206,7 @@ class ChannelMixin(HorizonMixin, metaclass=ChannelMetaclass):
         obj = self.get_object(ep.resource)
         if not obj:
             self.logger.info("Object is not found: %s", ep.resource)
-            return
+            return None
         # Get port
         _, _, port = ep.resource.split(":", 2)
         # Get jobs

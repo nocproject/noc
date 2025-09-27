@@ -107,10 +107,8 @@ class CustomField(NOCModel):
             ).order_by("value")
             if self.type == "int":
                 return [(int(e.key), e.value) for e in qs]
-            else:
-                return [(e.key, e.value) for e in qs]
-        else:
-            return None
+            return [(e.key, e.value) for e in qs]
+        return None
 
     def get_field(self):
         """
@@ -128,31 +126,28 @@ class CustomField(NOCModel):
                     max_length=max_length,
                     choices=self.get_enums(),
                 )
-            elif self.type == "int":
+            if self.type == "int":
                 return models.IntegerField(
                     name=name, db_column=self.db_column, null=True, blank=True
                 )
-            elif self.type == "bool":
+            if self.type == "bool":
                 return models.BooleanField(name=name, db_column=self.db_column, default=False)
-            elif self.type == "date":
+            if self.type == "date":
                 return models.DateField(name=name, db_column=self.db_column, null=True, blank=True)
-            elif self.type == "datetime":
+            if self.type == "datetime":
                 return models.DateTimeField(
                     name=name, db_column=self.db_column, null=True, blank=True
                 )
-            else:
-                raise NotImplementedError
-        else:
-            if self.type == "str":
-                return fields.StringField(db_field=self.db_column, required=False)
-            elif self.type == "int":
-                return fields.IntField(db_field=self.db_column, required=False)
-            elif self.type == "bool":
-                return fields.BooleanField(db_field=self.db_column, required=False)
-            elif self.type in ("date", "datetime"):
-                return fields.DateTimeField(db_field=self.db_column, required=False)
-            else:
-                raise NotImplementedError
+            raise NotImplementedError
+        if self.type == "str":
+            return fields.StringField(db_field=self.db_column, required=False)
+        if self.type == "int":
+            return fields.IntField(db_field=self.db_column, required=False)
+        if self.type == "bool":
+            return fields.BooleanField(db_field=self.db_column, required=False)
+        if self.type in ("date", "datetime"):
+            return fields.DateTimeField(db_field=self.db_column, required=False)
+        raise NotImplementedError
 
     @property
     def db_create_statement(self):
@@ -341,7 +336,7 @@ class CustomField(NOCModel):
         """
         Dict containing ExtJS model field description
         """
-        f = {
+        return {
             "name": self.name,
             "type": {
                 "str": "string",
@@ -351,7 +346,6 @@ class CustomField(NOCModel):
                 "datetime": "date",
             }[self.type],
         }
-        return f
 
     @property
     def ext_grid_column(self):
@@ -439,8 +433,7 @@ class CustomField(NOCModel):
                     q += [{f.name: int(query)}]
         if q:
             return reduce(lambda x, y: x | models.Q(**y), q, models.Q(**q[0]))
-        else:
-            return None
+        return None
 
     @classmethod
     def on_new_model(cls, sender, *args, **kwargs):

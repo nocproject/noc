@@ -288,7 +288,6 @@ class _SideBuilder(object):
             )
         else:
             valid = not self.internal and c.type.name != "Composed"
-        #
         r["free"] = not oc
         r["valid"] = valid
         if self.o_from.model.has_connection_cross(c.name):

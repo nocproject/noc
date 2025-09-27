@@ -51,8 +51,7 @@ class Profile(BaseProfile):
         match = self.rx_ifname.match(s)
         if match:
             return "%d" % (int(match.group("number")) + 1)
-        else:
-            return s
+        return s
 
     def zynos_mode(self, script):
         """Returns configuration context"""

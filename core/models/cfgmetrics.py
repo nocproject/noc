@@ -50,13 +50,11 @@ class MetricItem(object):
 @dataclass(frozen=True)
 class MetricCollectorConfig(object):
     collector: Literal["sla", "sensor", "managed_object", "cpe"]
-    #
     metrics: Tuple[MetricItem, ...]  # Metric Type List
     # Key labels
     labels: Optional[Tuple[str, ...]] = None
     # Like settings: ifindex::<ifindex>, oid::<oid>, ac::<SC/CS/S/C>
     hints: Optional[List[str]] = None
-    #
     service: Optional[int] = None  # Service BI_Id
     # Collectors
     sensor: Optional[int] = None  # Sensor BI_Id
@@ -76,9 +74,9 @@ class MetricCollectorConfig(object):
         """
         if self.collector == "sla":
             return f"sla:{self.sla_probe}:{interval}"
-        elif self.collector == "sensor":
+        if self.collector == "sensor":
             return f"sensor:{self.sensor}:{interval}"
-        elif self.collector == "cpe":
+        if self.collector == "cpe":
             return f"cpe:{self.cpe}:{interval}"
         return f"managed_object:{','.join(self.labels or [])}:{interval}"
 

@@ -129,7 +129,7 @@ class InterfaceClassifierLabels(object):
     def filter_regex(self, field, op, value, rule_name=None):
         if op == "regexp":
             return self.get_regex_label(value, field, rule_name)
-        elif op == "eq":
+        if op == "eq":
             return self.get_regex_label(f"^{value}$", field, rule_name)
         return None
 
@@ -139,7 +139,7 @@ class InterfaceClassifierLabels(object):
             if not name:
                 return None
             return self.get_match_label("prefixfilter", name, op="<")
-        elif op == "eq" and value:
+        if op == "eq" and value:
             name = (f"Migrate InterfaceClassifiaction {rule_name}, for field {field}",)
             self.new_vcfilters.add((name, value))
             return self.get_match_label("prefixfilter", name, matched_scope=field, op="=")
@@ -151,7 +151,7 @@ class InterfaceClassifierLabels(object):
             if not name:
                 return None
             return self.get_match_label("vcfilter", name, matched_scope=field, op="&")
-        elif op == "eq" and value:
+        if op == "eq" and value:
             name = (f"Migrate IC {rule_name}, for field {field}"[:60],)
             self.new_vcfilters.add((name, value))
             return self.get_match_label("vcfilter", name, matched_scope=field, op="=")
@@ -273,29 +273,28 @@ class Migration(BaseMigration):
         for label in labels:
             if label in current_labels:
                 continue
-            else:
-                doc = {
-                    # "_id": bson.ObjectId(),
-                    "name": label,
-                    "description": "",
-                    "bg_color1": 8359053,
-                    "fg_color1": 16777215,
-                    "bg_color2": 8359053,
-                    "fg_color2": 16777215,
-                    "is_protected": False,
-                    # Label scope
-                    "enable_agent": False,
-                    "enable_service": False,
-                    "enable_serviceprofile": False,
-                    "enable_managedobject": False,
-                    "enable_managedobjectprofile": False,
-                    "enable_administrativedomain": False,
-                    "enable_authprofile": False,
-                    "enable_commandsnippet": False,
-                    # Exposition scope
-                    "expose_metric": False,
-                    "expose_datastream": False,
-                }
-                bulk += [InsertOne(doc)]
+            doc = {
+                # "_id": bson.ObjectId(),
+                "name": label,
+                "description": "",
+                "bg_color1": 8359053,
+                "fg_color1": 16777215,
+                "bg_color2": 8359053,
+                "fg_color2": 16777215,
+                "is_protected": False,
+                # Label scope
+                "enable_agent": False,
+                "enable_service": False,
+                "enable_serviceprofile": False,
+                "enable_managedobject": False,
+                "enable_managedobjectprofile": False,
+                "enable_administrativedomain": False,
+                "enable_authprofile": False,
+                "enable_commandsnippet": False,
+                # Exposition scope
+                "expose_metric": False,
+                "expose_datastream": False,
+            }
+            bulk += [InsertOne(doc)]
         if bulk:
             l_coll.bulk_write(bulk, ordered=True)

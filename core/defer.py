@@ -69,7 +69,6 @@ def call_later(
     if shard is None:
         shard = dict_hash_int_args(job_class=job_class, name=name, pool=pool, **kwargs)
     shard = (shard if shard >= 0 else -shard) % 0x7FFFFFFF
-    #
     set_op = {Job.ATTR_TS: ts}
     iset_op = {
         Job.ATTR_STATUS: Job.S_WAIT,

@@ -47,7 +47,7 @@ class DahuaAuthMiddeware(BaseMiddleware):
         """
         if params["encryption"] == "Basic":
             return codecs.encode("%s:%s" % (self.user, self.password), "base64")
-        elif params["encryption"] == "Default":
+        if params["encryption"] == "Default":
             A1 = (
                 hashlib.md5(smart_bytes("%s:%s:%s" % (self.user, params["realm"], self.password)))
                 .hexdigest()

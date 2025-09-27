@@ -35,8 +35,7 @@ class HTTPURLModel(BaseModel):
     @classmethod
     def normalize(cls, value) -> "HttpUrl":
         """https://xxxx"""
-        url = HTTPURLModel(url=value)
-        return url
+        return HTTPURLModel(url=value)
 
 
 class ValueType(enum.Enum):

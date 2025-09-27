@@ -119,11 +119,11 @@ class DataStreamClient(object):
             # code, headers, data = await fetch(url, resolver=self.resolve, headers=req_headers)
             dt = loop.time() - t0
             logger.debug("Response: %s %s [%.2fms]", code, headers, dt * 1000)
-            if code == ERR_TIMEOUT or code == ERR_READ_TIMEOUT:
+            if code in (ERR_TIMEOUT, ERR_READ_TIMEOUT):
                 if dt < self.RETRY_TIMEOUT:
                     await retry_timeout(self.RETRY_TIMEOUT - dt, name="datastream_client_retry")
                 continue  # Retry on timeout
-            elif code != 200:
+            if code != 200:
                 logger.info("Invalid response code: %s", code)
                 raise NOCError(code=ERR_DS_BAD_CODE, msg=f"Invalid response code {code}")
             # Parse response
@@ -140,7 +140,6 @@ class DataStreamClient(object):
                     await self.on_move(item)
                 else:
                     await self.on_change(item)
-            #
             if not self._is_ready and "X-NOC-DataStream-More" not in headers:
                 await self.on_ready()
                 self._is_ready = True

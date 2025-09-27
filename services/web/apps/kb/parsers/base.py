@@ -52,31 +52,30 @@ class BaseParser(object):
             text = link
         if link.startswith("KB") and is_int(link[2:]):
             return "<a href='%s/%s/'>%s</a>" % (BASE_PATH, link[2:], text)
-        elif link.startswith("TT"):
+        if link.startswith("TT"):
             return link[2:]
-        elif link.startswith("attach:"):
+        if link.startswith("attach:"):
             if text == link:
                 text = link[7:]
             link = link[7:]
             return "<a href='%s/%d/attachment/%s/'>%s</a>" % (BASE_PATH, kb_entry.id, link, text)
-        elif link.startswith("attachment:"):
+        if link.startswith("attachment:"):
             if text == link:
                 text = link[11:]
             link = link[11:]
             return "<a href='/kb/kbentry/%d/attachment/%s/'>%s</a>" % (kb_entry.id, link, text)
-        else:
-            try:
-                le = kb_entry.__class__.objects.get(subject=link)
-                return "<a href='%s/%s/'>%s</a>" % (BASE_PATH, le.id, text)
-            except kb_entry.__class__.DoesNotExist:
-                return "<a href='%s'>%s</a>" % (link, text)
+        try:
+            le = kb_entry.__class__.objects.get(subject=link)
+            return "<a href='%s/%s/'>%s</a>" % (BASE_PATH, le.id, text)
+        except kb_entry.__class__.DoesNotExist:
+            return "<a href='%s'>%s</a>" % (link, text)
 
     @classmethod
     def convert_attach(cls, kb_entry, href):
         """Convert attachment ref"""
         if href.startswith("http"):
             return href
-        elif href.startswith("attach:"):
+        if href.startswith("attach:"):
             href = href[7:]
         elif href.startswith("attachment:"):
             href = href[11:]

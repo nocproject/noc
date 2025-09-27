@@ -77,7 +77,7 @@ class SNMPv3Credential(object):
     def security_level(self):
         if self.auth_key and self.private_key:
             return "authPriv"
-        elif self.auth_key:
+        if self.auth_key:
             return "authNoPriv"
         return "noAuthNoPriv"
 

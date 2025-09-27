@@ -146,12 +146,11 @@ class Profile(BaseProfile):
     def valid_interface_name(self, script, name):
         if script.is_olive:
             internal = self.internal_interfaces_olive
+        elif script.is_work_em:
+            # em - is a working interface
+            internal = self.internal_interfaces_without_em
         else:
-            if script.is_work_em:
-                # em - is a working interface
-                internal = self.internal_interfaces_without_em
-            else:
-                internal = self.internal_interfaces
+            internal = self.internal_interfaces
         # Skip internal interfaces
         if internal.search(name):
             return False
@@ -208,19 +207,18 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.startswith("lo"):
             return "loopback"
-        elif name.startswith(("fxp", "me")):
+        if name.startswith(("fxp", "me")):
             return "management"
-        elif name.startswith(("ae", "reth", "fab", "swfab")):
+        if name.startswith(("ae", "reth", "fab", "swfab")):
             return "aggregated"
-        elif name.startswith(("vlan", "vme")):
+        if name.startswith(("vlan", "vme")):
             return "SVI"
-        elif name.startswith("irb"):
+        if name.startswith("irb"):
             return "SVI"
-        elif name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
+        if name.startswith(("fc", "fe", "ge", "xe", "sxe", "xle", "et", "fte")):
             return "physical"
-        elif name.startswith(("gr", "ip", "st")):
+        if name.startswith(("gr", "ip", "st")):
             return "tunnel"
-        elif name.startswith("em"):
+        if name.startswith("em"):
             return "management"
-        else:
-            return "unknown"
+        return "unknown"

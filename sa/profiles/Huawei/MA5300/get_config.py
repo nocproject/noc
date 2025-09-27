@@ -16,5 +16,4 @@ class Script(BaseScript):
     reuse_cli_session = False
 
     def execute_cli(self, **kwargs):
-        config = self.cli("show running-config")
-        return config
+        return self.cli("show running-config")

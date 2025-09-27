@@ -57,7 +57,6 @@ class Migration(BaseMigration):
             for s in v_coll.aggregate([{"$group": {"_id": "$segment", "count": {"$sum": 1}}}])
         ]
         if not segments:
-            #
             return
         l2_domains = []
         vlans_update = []

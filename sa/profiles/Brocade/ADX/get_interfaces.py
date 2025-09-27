@@ -50,7 +50,7 @@ class Script(BaseScript):
                 for m in match:
                     if not m[0]:
                         continue
-                    elif m[0].isdigit():
+                    if m[0].isdigit():
                         vlan = int(m[0])
                         first = m[3]
                         last = m[4]
@@ -134,7 +134,6 @@ class Script(BaseScript):
                         ]
                     else:
                         ip_address.append(line.split()[2])
-                #
                 i["subinterfaces"][0].update({"enabled_afi": ["IPv4"]})
                 i["subinterfaces"][0].update({"ipv4_addresses": ip_address})
                 if descr:

@@ -34,7 +34,7 @@ class Script(BaseScript):
         pr = self.cli(cmd)
         if " is alive" in pr:
             return {"success": 1, "count": 1, "min": 0, "avg": 0, "max": 0}
-        elif "no answer from" in pr:
+        if "no answer from" in pr:
             return {"success": 0, "count": 1}
         match = self.rx_result.search(pr)
         return {

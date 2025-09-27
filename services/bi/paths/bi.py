@@ -296,13 +296,13 @@ class BIAPI(JSONRPCAPI):
         d = Dashboard.objects.filter(id=id).first()
         if not d:
             return None
-        if d.owner == DEFAULT_USER or d.owner == user or user.is_superuser:
+        if d.owner in (DEFAULT_USER, user) or user.is_superuser:
             return d
         # @todo: Filter by groups
         for i in d.access:
             if i.user == user and i.level >= access_level:
                 return d
-            elif i.group and i.group.id in groups and i.level >= access_level:
+            if i.group and i.group.id in groups and i.level >= access_level:
                 return d
         # No access
         metrics["error", ("type", "no_permission")] += 1
@@ -324,9 +324,8 @@ class BIAPI(JSONRPCAPI):
             config["owner"] = d.owner.username if d.owner else DEFAULT_USER
             config["description"] = d.description
             return config
-        else:
-            metrics["error", ("type", "dashboard_not_found")] += 1
-            raise APIError("Dashboard not found")
+        metrics["error", ("type", "dashboard_not_found")] += 1
+        raise APIError("Dashboard not found")
 
     @executor("query")
     @api
@@ -371,9 +370,8 @@ class BIAPI(JSONRPCAPI):
         if d:
             d.delete()
             return True
-        else:
-            metrics["error", ("type", "dashboard_not_found")] += 1
-            raise APIError("Dashboard not found")
+        metrics["error", ("type", "dashboard_not_found")] += 1
+        raise APIError("Dashboard not found")
 
     @executor("query")
     @api
@@ -389,22 +387,20 @@ class BIAPI(JSONRPCAPI):
                 return node
             if node and node["id"] == p_id:
                 return node
+            if node and "children" in node:
+                for child in node["children"]:
+                    _searched = search_parent(child, p_id)
+                    if _searched:
+                        return _searched
             else:
-                if node and "children" in node:
-                    for child in node["children"]:
-                        _searched = search_parent(child, p_id)
-                        if _searched:
-                            return _searched
-                else:
-                    return None
+                return None
 
         def sort_children(node):
             if "children" not in set(node):
                 return
-            else:
-                node["children"] = sorted(node["children"], key=lambda x: x["text"])
-                for n in node["children"]:
-                    sort_children(n)
+            node["children"] = sorted(node["children"], key=lambda x: x["text"])
+            for n in node["children"]:
+                sort_children(n)
 
         if "datasource" not in params:
             metrics["error", ("type", "get_hierarchy_no_datasource")] += 1

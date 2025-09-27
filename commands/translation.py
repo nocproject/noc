@@ -59,18 +59,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         extract_parser = subparsers.add_parser("extract")
         extract_parser.add_argument(
             "services", nargs=argparse.REMAINDER, help="Services to extract"
         )
-        #
         update_parser = subparsers.add_parser("update")
         update_parser.add_argument("services", nargs=argparse.REMAINDER, help="Services to update")
-        #
         update_parser = subparsers.add_parser("compile")
         update_parser.add_argument("services", nargs=argparse.REMAINDER, help="Services to compile")
-        #
         edit_parser = subparsers.add_parser("edit")
         edit_parser.add_argument("service", nargs=1, help="Service to edit")
         edit_parser.add_argument("language", nargs=1, help="Language to translate")

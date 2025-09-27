@@ -105,7 +105,7 @@ class Script(BaseScript):
         try:
             v = self.cli("show interface " + name)
         except self.CLISyntaxError:
-            return
+            return None
         match = self.rx_ip.match(v)
         if match:
             return [IPv4(match.group("ip"), netmask=match.group("mask")).prefix]

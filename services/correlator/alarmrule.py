@@ -187,7 +187,7 @@ class AlarmRule(object):
             current_context, current_span = get_current_span()
             if current_context or current_span:
                 alarm.escalation_ctx = current_context
-        req = AlarmActionRequest(
+        return AlarmActionRequest(
             actions=cfg.actions,
             allowed_actions=cfg.allowed_actions,
             # By policy
@@ -196,7 +196,6 @@ class AlarmRule(object):
             name=cfg.name,
             ctx=alarm.escalation_ctx,
         )
-        return req
 
     def apply_actions(self, alarm: ActiveAlarm):
         for a in self.actions:

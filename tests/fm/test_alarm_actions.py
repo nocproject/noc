@@ -49,7 +49,6 @@ def action_config(request):
 def test_alarm_action(alarm, action_config: ActionConfig, user):
     runner = AlarmActionRunner([Item.from_alarm(alarm=alarm)], dry_run=True)
     alarm_ctx = alarm.get_message_ctx()
-    #
     aa = ActionLog.from_request(action_config, started_at=alarm.timestamp)
     aa.user = user
     r = runner.run_action(
@@ -122,7 +121,6 @@ def test_escalation_action(alarm, tt_action_config: ActionConfig, tt_system):
     # Scenario 5 - escalation group alarm
     runner = AlarmActionRunner([Item.from_alarm(alarm=alarm)], dry_run=True)
     alarm_ctx = alarm.get_message_ctx()
-    #
     aa = ActionLog.from_request(
         tt_action_config, started_at=alarm.timestamp, stub_tt_system=tt_system
     )

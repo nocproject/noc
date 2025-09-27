@@ -90,17 +90,17 @@ class EventAction(enum.Enum):
         """Convert rule value to Action"""
         if action in ["raise", "clear", "R", "C"]:
             return EventAction.DISPOSITION
-        elif action in ["ignore", "log", "I"]:
+        if action in ["ignore", "log", "I"]:
             return EventAction.LOG
-        elif action in ["drop", "D"]:
+        if action in ["drop", "D"]:
             return EventAction.DROP
-        elif action in ["drop_mx", "F"]:
+        if action in ["drop_mx", "F"]:
             return EventAction.DROP_MX
         return EventAction.LOG
 
     @property
     def is_drop(self) -> bool:
-        if self == EventAction.DROP or self == EventAction.DROP_MX:
+        if self in (EventAction.DROP, EventAction.DROP_MX):
             return True
         return False
 
@@ -199,6 +199,6 @@ class ItemStatus(enum.Enum):
         """"""
         if alarm.status == "C" or is_clear:
             return ItemStatus.REMOVED
-        elif alarm.timestamp != alarm.last_update:
+        if alarm.timestamp != alarm.last_update:
             return ItemStatus.CHANGED
         return ItemStatus.NEW

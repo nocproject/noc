@@ -32,5 +32,4 @@ class Script(BaseScript):
 
         result = self.cli(cmd)
         match = self.rx_result.search(result)
-        r = match.groupdict()
-        return r
+        return match.groupdict()

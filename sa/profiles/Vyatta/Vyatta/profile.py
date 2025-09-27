@@ -24,11 +24,10 @@ class Profile(BaseProfile):
     def get_interface_type(cls, name):
         if name.startswith("eth"):
             return "physical"
-        elif name.startswith("lo"):
+        if name.startswith("lo"):
             return "loopback"
-        elif name.startswith("br"):
+        if name.startswith("br"):
             return "aggregated"
-        elif name.startswith("vtun"):
+        if name.startswith("vtun"):
             return "tunnel"
-        else:
-            raise Exception("Cannot detect interface type for %s" % name)
+        raise Exception("Cannot detect interface type for %s" % name)

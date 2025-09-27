@@ -135,7 +135,6 @@ class Migration(BaseMigration):
                     "enable_administrativedomain": False,
                     "enable_authprofile": False,
                     "enable_commandsnippet": False,
-                    #
                     "enable_allocationgroup": False,
                     "enable_networksegment": False,
                     "enable_object": False,

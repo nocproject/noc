@@ -179,7 +179,7 @@ class MeasurementUnits(Document):
     def humanize(self, value: Union[float, int], with_units: bool = False) -> str:
         if self.code == "1":
             return str(value)
-        elif self.code == "s":
+        if self.code == "s":
             return Scale.humanize_time(value)
         # Enum?
         value, m = Scale.humanize(value)

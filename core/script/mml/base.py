@@ -52,7 +52,7 @@ class MMLBase(BaseCLI):
                 await self.start_stream()
             except ConnectionRefusedError:
                 self.error = MMLConnectionRefused("Connection refused")
-                return
+                return None
         # Perform all necessary login procedures
         if not self.is_started:
             self.is_started = True
@@ -63,8 +63,7 @@ class MMLBase(BaseCLI):
                 return None
         # Send command
         await self.send(self.command)
-        r = await self.get_mml_response()
-        return r
+        return await self.get_mml_response()
 
     async def get_mml_response(self):
         result = []

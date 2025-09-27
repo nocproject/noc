@@ -44,7 +44,6 @@ class Migration(BaseMigration):
         )
         self.db.create_index("pm_timeseriesdata", ["timestamp"], unique=False)
 
-        #
         self.db.create_table(
             "pm_chart",
             (
@@ -54,7 +53,6 @@ class Migration(BaseMigration):
         )
 
         Chart = self.db.mock_model(model_name="Chart", db_table="pm_chart")
-        #
         self.db.create_table(
             "pm_chart_time_series",
             (
@@ -63,7 +61,6 @@ class Migration(BaseMigration):
                 ("timeseries", models.ForeignKey(TimeSeries, null=False, on_delete=models.CASCADE)),
             ),
         )
-        #
         self.db.execute(SP_CREATE)
 
 

@@ -87,7 +87,6 @@ class WindowNode(BaseCDAGNode):
         # Fill the window
         ts = time_ns()
         self.push(ts, x)
-        #
         is_ticks = self.config.type == WindowType.TICKS
         # Check min requirements
         if self.config.min_window and (

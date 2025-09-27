@@ -128,7 +128,6 @@ class BaseCDAGNodeMetaclass(type):
                 (),
                 {"__slots__": state_slots, "dict": l_vars["dict"]},
             )
-        #
         return n
 
 

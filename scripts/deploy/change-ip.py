@@ -68,8 +68,7 @@ def take_postgresql_version():
             stdout=subprocess.PIPE,
             shell=True,
         )
-        ver = str(sp.stdout.decode("utf-8")).rstrip("\n")
-        return ver
+        return str(sp.stdout.decode("utf-8")).rstrip("\n")
     if distr_family == "rpm":
         sp = subprocess.run(
             ["yum list installed postgresql* | " "grep -Po 'postgresql\\K\\d*(?=-server)'"],
@@ -78,10 +77,8 @@ def take_postgresql_version():
         )
         ver = str(sp.stdout.decode("utf-8")).rstrip("\n")
         if ver == "96":
-            ver = "9.6"
-            return ver
-        else:
-            return ver
+            return "9.6"
+        return ver
 
 
 def guess_system_type():
@@ -136,8 +133,7 @@ def get_old_ip():
             hostname = socket.gethostname()
             for line in file.readlines():
                 if line.strip().endswith(hostname):
-                    old_address = line.split()[0]
-                    return old_address
+                    return line.split()[0]
     except EnvironmentError:
         print("No file with old IP")
 

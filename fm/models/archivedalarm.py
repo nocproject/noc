@@ -63,7 +63,6 @@ class ArchivedAlarm(Document):
     severity = IntField(required=True)
     vars = DictField()
     log = ListField(EmbeddedDocumentField(AlarmLog))
-    #
     opening_event = ObjectIdField(required=False)
     closing_event = ObjectIdField(required=False)
     # Number of reopens
@@ -101,7 +100,6 @@ class ArchivedAlarm(Document):
     total_objects = ListField(EmbeddedDocumentField(ObjectSummaryItem))
     total_services = ListField(EmbeddedDocumentField(SummaryItem))
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
-    #
     affected_services = ListField(ObjectIdField())
     # Paths
     adm_path = ListField(IntField())
@@ -165,8 +163,7 @@ class ArchivedAlarm(Document):
 
     @property
     def body(self):
-        s = Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
-        return s
+        return Jinja2Template(self.alarm_class.body_template).render(self.get_template_vars())
 
     @property
     def duration(self):
@@ -182,8 +179,7 @@ class ArchivedAlarm(Document):
         days = duration.days
         if days:
             return "%dd %02d:%02d:%02d" % (days, hours, mins, secs)
-        else:
-            return "%02d:%02d:%02d" % (hours, mins, secs)
+        return "%02d:%02d:%02d" % (hours, mins, secs)
 
     @property
     def effective_style(self):

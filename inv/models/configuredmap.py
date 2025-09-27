@@ -83,7 +83,6 @@ class NodeItem(EmbeddedDocument):
     height = IntField()
     # default options
     collapsed = BooleanField()
-    #
     status_filter: List[AlarmFilter] = EmbeddedDocumentListField(AlarmFilter)
     # Link to other map
     portal_generator = StringField()
@@ -130,13 +129,13 @@ class NodeItem(EmbeddedDocument):
     def portal(self) -> Optional[Portal]:
         if self.map_portal:
             return Portal(generator="configured", id=str(self.map_portal))
-        elif self.node_type == "objectgroup":
+        if self.node_type == "objectgroup":
             return Portal(generator="objectgroup", id=str(self.object_filter.resource_group.id))
-        elif self.node_type == "objectsegment":
+        if self.node_type == "objectsegment":
             return Portal(generator="segment", id=str(self.object_filter.segment.id))
-        elif self.node_type == "container":
+        if self.node_type == "container":
             return Portal(generator="container", id=str(self.object_filter.container.id))
-        elif self.node_type == "other" and self.portal_generator:
+        if self.node_type == "other" and self.portal_generator:
             return Portal(
                 generator=self.portal_generator,
                 id=self.portal_id,
@@ -249,4 +248,4 @@ class ConfiguredMap(Document):
         for n in self.nodes:
             if n.id == nid:
                 return n
-        return
+        return None

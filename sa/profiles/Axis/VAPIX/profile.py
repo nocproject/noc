@@ -29,8 +29,7 @@ class Profile(BaseProfile):
             command = "/param.cgi?action=list"
             eof_mark = "root.Time.NTP"
         command = "/axis-cgi/admin" + command
-        v = script.http.get(command, eof_mark=eof_mark, cached=True, use_basic=True)
-        return v
+        return script.http.get(command, eof_mark=eof_mark, cached=True, use_basic=True)
 
     def get_dict(self, script, command=None, eof_mark=None):
         r = {}

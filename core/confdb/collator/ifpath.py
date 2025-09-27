@@ -179,7 +179,7 @@ class IfPathCollator(BaseCollator):
                     continue
                 # self.paths[if_num].remove((p, if_name, protocols))
                 return if_name
-            elif not paths_candidate and len(self.paths[if_num]):
+            if not paths_candidate and len(self.paths[if_num]):
                 # USe for if_num only format
                 # self.paths[if_num].remove((p, if_name, protocols))
                 return if_name

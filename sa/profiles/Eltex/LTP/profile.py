@@ -58,9 +58,8 @@ class Profile(BaseProfile):
             return s
         if "PON channel" in match.group("ifname"):
             return "pon-port %s" % match.group("number")
-        elif "Uplink" in match.group("ifname") and int(match.group("number")) <= 7:
+        if "Uplink" in match.group("ifname") and int(match.group("number")) <= 7:
             return "front-port %s" % match.group("number")
-        elif "Uplink" in match.group("ifname") and int(match.group("number")) > 7:
+        if "Uplink" in match.group("ifname") and int(match.group("number")) > 7:
             return "10G-front-port %s" % (int(match.group("number")) - 8)
-        else:
-            return s
+        return s

@@ -92,7 +92,7 @@ class Band(object):
         r = self.get_rows()
         if not r and not self.data:
             return []
-        elif self.data:
+        if self.data:
             return list(self.data)
         return r[0].columns
 

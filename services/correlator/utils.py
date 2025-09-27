@@ -38,6 +38,5 @@ def linked_object(object, interface):
             mo.add(i.managed_object)
     if len(mo) == 1:
         return mo.pop()
-    else:
-        logger.debug("No linked managed objects found")
-        return None
+    logger.debug("No linked managed objects found")
+    return None

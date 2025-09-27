@@ -38,14 +38,12 @@ class Script(BaseScript):
                 "platform": match.group("platform"),
                 "version": match.group("version"),
             }
-        else:
-            match = self.rx_ver1.match(v)
-            if match:
-                return {
-                    "vendor": "Cisco",
-                    "platform": match.group("platform"),
-                    "version": match.group("version"),
-                    "attributes": {"image": match.group("image")},
-                }
-            else:
-                raise self.NotSupportedError()
+        match = self.rx_ver1.match(v)
+        if match:
+            return {
+                "vendor": "Cisco",
+                "platform": match.group("platform"),
+                "version": match.group("version"),
+                "attributes": {"image": match.group("image")},
+            }
+        raise self.NotSupportedError()

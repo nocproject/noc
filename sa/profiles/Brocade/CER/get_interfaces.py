@@ -161,16 +161,16 @@ class Script(BaseScript):
                     if m[0].split()[0] == "vlan":
                         vlan = int(m[0].split()[1])
                         continue
-                    elif m[0][:3] == "ve ":
+                    if m[0][:3] == "ve ":
                         ifc = "".join(m[0].split())
                         if ifc in untagged:
                             untagged[ifc].append(vlan)
                         else:
                             untagged[ifc] = vlan
                         continue
-                    elif not m[0].split()[0] == "ethe":
+                    if not m[0].split()[0] == "ethe":
                         continue
-                    elif not m[1]:
+                    if not m[1]:
                         ifc = m[0].split()[1]
                         if tag == 1:
                             if ifc in tagged:

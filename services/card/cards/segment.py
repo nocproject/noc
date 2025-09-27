@@ -24,8 +24,7 @@ class SegmentCard(BaseCard):
     def get_object(self, id):
         if self.current_user.is_superuser:
             return NetworkSegment.objects.get(id=id)
-        else:
-            return NetworkSegment.objects.get(id=id, adm_domains__in=self.get_user_domains())
+        return NetworkSegment.objects.get(id=id, adm_domains__in=self.get_user_domains())
 
     def get_data(self):
         # Calculate contained objects

@@ -53,18 +53,14 @@ class Dashboard(Document):
     title = StringField()
     # Username
     owner = ForeignKeyField(User)
-    #
     description = StringField()
-    #
     tags = ListField(StringField())
     # Config format version
     format = IntField(default=1)
     # gzip'ed data
     config = BinaryField()
-    #
     created = DateTimeField(default=datetime.datetime.now)
     changed = DateTimeField(default=datetime.datetime.now)
-    #
     access = ListField(EmbeddedDocumentField(DashboardAccess))
     # Global ID
     uuid = UUIDField(binary=True, unique=True)
@@ -118,7 +114,7 @@ class Dashboard(Document):
                 # @todo changing priority (reverse order)
                 if da.user and "u%d" % da.user.id in processed:
                     continue
-                elif da.group and "g%d" % da.group.id in processed:
+                if da.group and "g%d" % da.group.id in processed:
                     continue
                 if da.user and da.group:
                     # Split User and Group rights

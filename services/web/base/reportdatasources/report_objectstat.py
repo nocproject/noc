@@ -91,8 +91,7 @@ class AttributeIsolator(IsolatorClass):
 
         if value in self.OP_ATTR_MAP[num].get("ne", []):
             return ~d_Q(**{field: self.OP_ATTR_MAP[num][value]})
-        else:
-            return d_Q(**{field: self.OP_ATTR_MAP[num][value]})
+        return d_Q(**{field: self.OP_ATTR_MAP[num][value]})
 
 
 class CapabilitiesIsolator(IsolatorClass):
@@ -115,13 +114,13 @@ class CapabilitiesIsolator(IsolatorClass):
         d = self.f_has_links(3, index)
         if index == "0":
             return self.default_set - set(d)
-        elif index == "1":
+        if index == "1":
             return set(d)
-        elif index == "2":
+        if index == "2":
             return set(dd for dd in d if d[dd] == 1)
-        elif index == "3":
+        if index == "3":
             return set(dd for dd in d if d[dd] == 2)
-        elif index == "4":
+        if index == "4":
             return set(dd for dd in d if d[dd] >= 3)
 
     def _4_has(self, index):
@@ -135,7 +134,7 @@ class CapabilitiesIsolator(IsolatorClass):
         c = set(c["ifaces"])
         if index == "0":
             return self.default_set - c
-        elif index == "1":
+        if index == "1":
             return c
 
     def _5_has(self, index):
@@ -149,7 +148,7 @@ class CapabilitiesIsolator(IsolatorClass):
             c = set(ManagedObject.objects.filter(q).values_list("id", flat=True))
         if index == "0":
             return self.default_set - c
-        elif index == "1":
+        if index == "1":
             return c
 
     def f_has(self, num, value):
@@ -203,7 +202,7 @@ class StatusIsolator(IsolatorClass):
         if index == "1":
             # Is Monitoring = Is managed and not Generic Profile
             return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_ping=True)
-        elif index == "2":
+        if index == "2":
             # Is Not Monitoring = Is not managed + Is managed and not ping
             return set(
                 ManagedObject.objects.filter(d_Q(**{"is_managed": False})).values_list(
@@ -243,7 +242,7 @@ class StatusIsolator(IsolatorClass):
                 ).values_list("id", flat=True)
             )
 
-        elif index == "2":
+        if index == "2":
             # Is topology, not mac
             return set(
                 ManagedObject.objects.filter(
@@ -264,7 +263,7 @@ class StatusIsolator(IsolatorClass):
         if index == "1":
             # Is discovery = Is managed and enable box
             return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_box_discovery=True)
-        elif index == "2":
+        if index == "2":
             # Not discovery = Is managed and disable box
             return d_Q(**{"is_managed": True}) & d_Q(object_profile__enable_box_discovery=False)
 
@@ -321,8 +320,7 @@ class StatusIsolator(IsolatorClass):
         )
         if inverse:
             return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
-        else:
-            return c
+        return c
 
 
 class ProblemIsolator(IsolatorClass):
@@ -340,8 +338,7 @@ class ProblemIsolator(IsolatorClass):
         )
         if index == "0":
             return self.common_filter - c
-        else:
-            return c
+        return c
 
     def _1_isp(self, index):
         # SNMP Problem
@@ -364,8 +361,7 @@ class ProblemIsolator(IsolatorClass):
         )
         if index == "0":
             return self.common_filter - c
-        else:
-            return c
+        return c
 
     def _2_isp(self, index):
         # CLI Problem

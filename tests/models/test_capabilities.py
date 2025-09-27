@@ -34,8 +34,7 @@ class MockManagedObject(object):
 def get_object_caps_mock() -> "MockManagedObject":
     """Prepare ManagedObject for mock"""
     # Send error/send success
-    mo = MockManagedObject()
-    return mo
+    return MockManagedObject()
 
 
 @pytest.fixture(scope="function")

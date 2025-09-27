@@ -91,7 +91,6 @@ class ObjectMetricsAPI(NBIAPI):
                 objects.add(mo_id)
             except ValueError:
                 raise HTTPException(400, f"Invalid object id: {mc.object}")
-        #
         if not objects:
             return []
         # Map managed object id to bi_id
@@ -225,7 +224,6 @@ class ObjectMetricsAPI(NBIAPI):
                         ),
                         key=operator.itemgetter(0),
                     )
-                    #
                     r = {"object": mc.object, "metric_type": mn, "path": path, "values": points}
                     if iface is not None:
                         r["interface"] = iface

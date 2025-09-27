@@ -245,7 +245,7 @@ class Command(BaseCommand):
     def from_config_path(self, path: str) -> CDAG:
         if path.startswith("scope://"):
             return self.from_metric_scope(path[8:])
-        elif path.startswith("action://"):
+        if path.startswith("action://"):
             return self.from_metric_action(path[9:])
         return self.from_config_file(path)
 
@@ -277,10 +277,9 @@ class Command(BaseCommand):
         ext = os.path.splitext(path)[1]
         if ext == ".json":
             return self.from_config_file_json(cfg)
-        elif ext in (".yml", ".yaml"):
+        if ext in (".yml", ".yaml"):
             return self.from_config_file_yaml(cfg)
-        else:
-            self.die("Unknown config format")
+        self.die("Unknown config format")
 
     @staticmethod
     def from_config_file_json(cfg: str) -> CDAG:

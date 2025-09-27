@@ -94,7 +94,7 @@ class IPAMApplication(ExtApplication):
             p = s.split(".")
             if len(p) > 4:
                 return None
-            elif len(p) < 4:
+            if len(p) < 4:
                 p += ["0"] * (4 - len(p))
             s = ".".join(p)
             if not is_ipv4(s):

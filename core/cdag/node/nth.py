@@ -39,7 +39,6 @@ class NthNode(BaseCDAGNode):
             return x
         # Fill window
         self.state.values.insert(0, x)
-        #
         lv = len(self.state.values)
         if lv <= self.config.n:
             return None  # Window is not filled

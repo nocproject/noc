@@ -29,7 +29,6 @@ class Script(BaseScript):
     # OIDS to get MACs via SNMP GETNEXT request
     # capability -> [oid, ...]
     SNMP_GETNEXT_OIDS: Dict[str, List[str]] = {}
-    #
     IGNORED_MACS = {
         "00:00:00:00:00:00",  # Empty MAC
         "00:01:02:03:04:00",  # Very Smart programmer

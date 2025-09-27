@@ -77,7 +77,6 @@ class KafkaStreamCollector(BaseCollector):
             end_offsets = await consumer.end_offsets(partitions)
         # Fetch offsets
         offsets: DefaultDict[TopicPartition, Dict[str, int]] = defaultdict(dict)
-        #
         offset_groups: DefaultDict[str, List[TopicPartition]] = defaultdict(list)
         for p in partitions:
             if p.topic.startswith("ch."):

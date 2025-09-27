@@ -88,13 +88,11 @@ TEMPLATE_LOADERS = [
     "django.template.loaders.filesystem.Loader",
     "django.template.loaders.app_directories.Loader",
 ]
-#
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
 )
-#
 MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "noc.core.middleware.remoteuser.remote_user_middleware",

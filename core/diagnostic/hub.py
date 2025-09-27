@@ -32,7 +32,6 @@ SA_DIAG = "SA"
 EVENT_DIAG = "FM_EVENT"
 ALARM_DIAG = "FM_ALARM"
 TT_DIAG = "TT"
-#
 SNMP_DIAG = "SNMP"
 PROFILE_DIAG = "Profile"
 CLI_DIAG = "CLI"
@@ -45,16 +44,14 @@ RESOLVER_DIAG = "ADDR_RESOLVER"
 # SA Diags
 SA_DIAGS = {SNMP_DIAG, PROFILE_DIAG, CLI_DIAG, HTTP_DIAG}
 FM_DIAGS = {SNMPTRAP_DIAG, SYSLOG_DIAG}
-#
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
-#
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
 
 def json_default(obj):
     if isinstance(obj, BaseModel):
         return obj.model_dump()
-    elif isinstance(obj, datetime.datetime):
+    if isinstance(obj, datetime.datetime):
         return obj.replace(microsecond=0).isoformat(sep=" ")
     raise TypeError
 
@@ -112,7 +109,7 @@ class DiagnosticItem(BaseModel):
     def workflow_event(self) -> Optional[str]:
         if not self.config.workflow_event:
             return None
-        if self.state != DiagnosticState.enabled and self.state != DiagnosticState.blocked:
+        if self.state not in (DiagnosticState.enabled, DiagnosticState.blocked):
             return self.config.workflow_event
         return None
 
@@ -121,7 +118,7 @@ class DiagnosticItem(BaseModel):
         """
         Check diagnostic has worked: Enabled or Failed state
         """
-        if self.state == DiagnosticState.enabled or self.state == DiagnosticState.failed:
+        if self.state in (DiagnosticState.enabled, DiagnosticState.failed):
             return True
         return False
 
@@ -665,7 +662,6 @@ class DiagnosticHub(object):
         now = datetime.datetime.now()
         # Group Alarms
         groups = {}
-        #
         alarms = {}
         alarm_config: Dict[str, Dict[str, Any]] = {}  # diagnostic -> AlarmClass Map
         messages: List[Dict[str, Any]] = []  # Messages for send dispose

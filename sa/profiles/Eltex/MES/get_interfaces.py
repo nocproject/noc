@@ -87,9 +87,9 @@ class Script(BaseScript):
             # Return More That ifaces on devices
             if name.startswith("Fa"):
                 return False
-            elif name.startswith("Vl") and not oper_status:
+            if name.startswith("Vl") and not oper_status:
                 return False
-            elif name.startswith("Tu") and not oper_status:
+            if name.startswith("Tu") and not oper_status:
                 return False
         if self._chassis_filter and self.rx_slot_splitter.match(name):
             chassis, slot, port = self.rx_slot_splitter.match(name).groups()

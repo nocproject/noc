@@ -103,7 +103,6 @@ class RuleSet(object):
                 self.enumerations,
                 r_format="classification",
             )
-        #
         self.load_enumerations()
         if skip_load_rules:
             return

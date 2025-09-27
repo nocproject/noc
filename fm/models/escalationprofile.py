@@ -64,9 +64,7 @@ class EscalationItem(EmbeddedDocument):
     )
     time_pattern: TimePattern = ForeignKeyField(TimePattern)
     min_severity: AlarmSeverity = ReferenceField(AlarmSeverity)
-    #
     template: Template = ForeignKeyField(Template)
-    #
     close_template: Template = ForeignKeyField(Template)
     # Acton
     # Notification: Group, Register, Local
@@ -104,7 +102,7 @@ class EscalationItem(EmbeddedDocument):
     def member(self) -> Optional[EscalationMember]:
         if self.create_tt:
             return EscalationMember.TT_SYSTEM
-        elif self.notification_group:
+        if self.notification_group:
             return EscalationMember.NOTIFICATION_GROUP
         return None
 
@@ -343,7 +341,7 @@ class EscalationProfile(Document):
     @property
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
-        return self.end_condition == "CT" or self.end_condition == "M"
+        return self.end_condition in ("CT", "M")
 
     def from_alarm(self, alarm: ActiveAlarm):
         """"""
@@ -361,13 +359,12 @@ class EscalationProfile(Document):
         ma = []
         for a in self.actions:
             ma += a.get_config()
-        req = AlarmActionRequest(
+        return AlarmActionRequest(
             item=ActionItem(alarm=str(alarm.id)),
             start_at=alarm.timestamp,
             actions=actions,
             allowed_actions=ma,
         )
-        return req
 
     @classmethod
     def get_config(cls, profile: "EscalationProfile") -> Dict[str, Any]:

@@ -32,8 +32,7 @@ class Migration(BaseMigration):
                 return None
             if s and s.startswith("'") and s.endswith("'"):
                 return s[1:-1]
-            else:
-                return s
+            return s
 
         def iteritems(s, sep):
             last = None

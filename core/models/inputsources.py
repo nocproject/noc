@@ -32,7 +32,6 @@ class InputSource(enum.Enum):
     # ServiceDiscovery ?
     MANUAL = "manual"
     CONFIG = "config"  # profile
-    #
     TEMPLATE = "template"
     UNKNOWN = "unknown"
 

@@ -79,7 +79,6 @@ class PrefixCheck(DiscoveryCheck):
             self.logger.info(
                 "RD missed in VRF database and to be ignored: %s", ", ".join(missed_vpn_id)
             )
-        #
         self.logger.debug("Getting prefixes to synchronize")
         for vpn_id in vrfs:
             vrf = vrfs[vpn_id]
@@ -133,7 +132,7 @@ class PrefixCheck(DiscoveryCheck):
             vlans = data.get("vlan_ids")
             if not vlans or len(vlans) > 1:
                 return None
-            elif not self.object.l2_domain:
+            if not self.object.l2_domain:
                 # Vlan Only for L2 Domain set
                 return None
             return VLAN.objects.filter(
@@ -328,12 +327,10 @@ class PrefixCheck(DiscoveryCheck):
                 self.logger.info("[%s|%s] Enabling IPv6 AFI", vrf.name, vrf.vpn_id)
                 vrf.afi_ipv6 = True
                 vrf.save()
-        else:
-            # IPv4
-            if not vrf.afi_ipv4:
-                self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
-                vrf.afi_ipv4 = True
-                vrf.save()
+        elif not vrf.afi_ipv4:
+            self.logger.info("[%s|%s] Enabling IPv4 AFI", vrf.name, vrf.vpn_id)
+            vrf.afi_ipv4 = True
+            vrf.save()
 
     def is_ignored_prefix(self, prefix):
         """

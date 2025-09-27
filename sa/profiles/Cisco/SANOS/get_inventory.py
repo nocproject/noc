@@ -32,20 +32,19 @@ class Script(BaseScript):
             pid = ""
         if name.startswith("Chassis"):
             return "CHASSIC", None, pid
-        elif name.startswith("Slot "):
+        if name.startswith("Slot "):
             if "Supervisor" in descr:
                 return "SUP", name[5:], pid
-            elif "Services Module" in descr:
+            if "Services Module" in descr:
                 return "SERV", name[5:], pid
-            elif "Power Supply" in descr:
+            if "Power Supply" in descr:
                 return "PSU", name[5:], pid
-            elif "Fan Module" in descr:
+            if "Fan Module" in descr:
                 if pid == "" and descr.startswith("MDS 9"):
                     s = descr.split()
                     pid = ("%s-%s-%s" % (s[0], s[1], s[2])).upper()
                 return "FAN", name[5:], pid
-            else:
-                return None, None, None
+            return None, None, None
         return None, None, None
 
     def execute(self):

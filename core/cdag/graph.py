@@ -41,7 +41,6 @@ class CDAG(object):
         if not node_cls:
             raise ValueError("Invalid node type: %s" % node_type)
         config = config or {}
-        #
         node = node_cls.construct(
             node_id,
             description=description,
@@ -105,7 +104,6 @@ class CDAG(object):
                 node.subscribe(
                     nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
                 )
-        #
         return self
 
     def get_dot(self) -> str:

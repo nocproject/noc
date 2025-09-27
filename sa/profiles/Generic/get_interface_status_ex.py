@@ -171,5 +171,4 @@ class Script(BaseScript):
         return speed == self.HIGH_SPEED
 
     def execute_snmp(self, interfaces=None, **kwargs):
-        r = self.get_data(interfaces=interfaces)
-        return r
+        return self.get_data(interfaces=interfaces)

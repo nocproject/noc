@@ -129,7 +129,6 @@ class MetricType(Document):
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
     bi_id = LongField(unique=True)
-    #
     category = ObjectIdField()
 
     _id_cache = cachetools.TTLCache(maxsize=200, ttl=300)

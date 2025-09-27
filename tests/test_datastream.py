@@ -328,7 +328,6 @@ def test_clean_changeid():
     # datetime
     oid = DataStream.clean_change_id("2018-07-04T09:25:51")
     assert oid.generation_time.strftime("%Y-%m-%dT%H:%M:%S") == "2018-07-04T09:25:51"
-    #
     with pytest.raises(ValueError):
         DataStream.clean_change_id("9999-99-99")
 

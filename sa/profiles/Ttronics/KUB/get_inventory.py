@@ -46,13 +46,13 @@ class Script(BaseScript):
         # @todo Amper .1.3.6.1.4.1.51315.1.19.0
         if p_type == "volt":
             return f"1.3.6.1.4.1.51315.1.{9 + num}.0"
-        elif p_type in {"in", "relay"}:
+        if p_type in {"in", "relay"}:
             return f"1.3.6.1.4.1.51315.1.{2 + num}.0"
-        elif p_type == "counter":
+        if p_type == "counter":
             return "1.3.6.1.4.1.51315.1.8.0"
-        elif p_type == "vibration":
+        if p_type == "vibration":
             return "1.3.6.1.4.1.51315.1.2.0"
-        return
+        return None
 
     def get_nano_sensors(self):
         r = [
@@ -86,7 +86,7 @@ class Script(BaseScript):
             if in_config not in self.nano_input_config_map:
                 self.logger.warning("Unknown type of port")
                 continue
-            elif num == 1 and in_config == 0 and tok < 32760:
+            if num == 1 and in_config == 0 and tok < 32760:
                 # kubTok =-32760-obryv datchika
                 # kubTok =-32767-ne nasntroena formula
                 # Current (tok) sensor connected
@@ -403,5 +403,4 @@ class Script(BaseScript):
     def get_chassis_sensors(self):
         if self.is_femto:
             return self.get_femto_sensors()
-        else:
-            return self.get_nano_sensors()
+        return self.get_nano_sensors()

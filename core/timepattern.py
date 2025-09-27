@@ -153,8 +153,7 @@ class TimePattern(object):
         x = " and ".join(["(%s)" % x for x in [dpl, tpl] if x])
         if not x:
             return "True"
-        else:
-            return x
+        return x
 
 
 class TimePatternList(object):

@@ -16,9 +16,7 @@ from noc.core.mongo.connection import connect
 class Command(BaseCommand):
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)
-        #
         subparsers.add_parser("update-cache")
-        #
         prefix_list_parser = subparsers.add_parser("prefix-list")
         prefix_list_parser.add_argument(
             "--profile", default="Cisco.IOS", help="Profile to generate"

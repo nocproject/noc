@@ -132,7 +132,6 @@ class ClassifierService(FastAPIService):
         self.dedup_filter: DedupFilter = DedupFilter()
         self.suppress_filter: SuppressFilter = SuppressFilter()
         self.abduct_detector: AbductDetector = AbductDetector()
-        #
         self.source_lookup: SourceLookup = SourceLookup()
         # Default link event action, when interface is not in inventory
         self.default_link_action = None
@@ -143,13 +142,11 @@ class ClassifierService(FastAPIService):
         # Reporting
         self.last_ts: Optional[float] = None
         self.stats: Dict[EventMetrics, int] = {}
-        #
         self.slot_number = 0
         self.total_slots = 0
         self.add_configs = 0
         self.add_sources = 0
         self.pool_partitions: Dict[str, int] = {}
-        #
         self.cable_abduct_ecls: Optional[EventClass] = None
 
     @classmethod
@@ -169,7 +166,7 @@ class ClassifierService(FastAPIService):
         elif ifindex:
             q["ifindex"] = int(ifindex)
         else:
-            return
+            return None
         iface = Interface.objects.filter(**q).scalar("name", "profile").first()
         if iface:
             return iface
@@ -739,7 +736,7 @@ class ClassifierService(FastAPIService):
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
-        if e_action == EventAction.DROP or e_action == EventAction.DROP_MX:
+        if e_action in (EventAction.DROP, EventAction.DROP_MX):
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
                 event.id,
@@ -855,30 +852,25 @@ class ClassifierService(FastAPIService):
             "date": timestamp.date(),
             "ts": timestamp.isoformat(),
             "start_ts": timestamp.isoformat(),
-            #
             "event_id": str(event.id),
             "event_class": event_config.bi_id,
             "source": event.type.source.value,
-            #
             "labels": event.labels or [],
             "data": orjson.dumps([d.to_json() for d in event.data]).decode(DEFAULT_ENCODING),
             "message": event.message or "",
             "severity": event.type.severity.value,
             "result_action": str(action.name),
             "error_message": error or "",
-            #
             "raw_vars": {d.name: str(d.value) for d in event.data if d.name not in resolved_vars},
             "resolved_vars": {k: str(v) for k, v in resolved_vars.items()},
             "vars": {k: str(v) for k, v in event.vars.items()} if event_config else {},
             "snmp_trap_oid": event.type.id if event.type.source == EventSource.SNMP_TRAP else "",
-            #
             "target": event.target.model_dump(exclude={"is_agent"}, exclude_none=True),
             "target_reference": event.target.reference,
             "target_name": event.target.name,
             "managed_object": None,
             "pool": None,
             "ip": None,
-            #
             "services": [],
         }
         if event.target.address:
@@ -931,7 +923,7 @@ class ClassifierService(FastAPIService):
             # Ignore Patterns
             self.pattern_set.update_pattern(data["id"], data)
             return
-        elif "event_class" not in data:
+        if "event_class" not in data:
             return
         self.ruleset.update_rule(data, r_format=rule_type)
 
