@@ -732,7 +732,7 @@ class ManagedObjectApplication(ExtModelApplication):
                 ],
                 "row_class": get_style(i),
             }
-            for i in Interface.objects.filter(managed_object=o.id, type="physical")
+            for i in Interface.objects.filter(managed_object=o.id, type__in=["virtual", "physical"])
         ]
         # LAG
         lag = [

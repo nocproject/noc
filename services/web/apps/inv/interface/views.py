@@ -188,7 +188,7 @@ class InterfaceApplication(ExtDocApplication):
                 "state__label": smart_text(i.state) if i.state else None,
                 "row_class": self.get_style(i),
             }
-            for i in Interface.objects.filter(managed_object=o.id, type="physical")
+            for i in Interface.objects.filter(managed_object=o.id, type__in=["physical", "virtual"])
         ]
         # LAG
         lag = [
