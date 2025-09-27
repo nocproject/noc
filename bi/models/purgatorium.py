@@ -79,7 +79,7 @@ class Purgatorium(Model):
     # maybe_managed_object - bool
 
     @classmethod
-    def fix_column_type(cls, name: str, connect):
+    def fix_column_type(cls, connect, name: str):
         """Fix column name"""
         print("ReCreate column remote_system")
         if name == "remote_system":

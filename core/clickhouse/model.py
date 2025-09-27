@@ -264,7 +264,7 @@ class Model(object, metaclass=ModelBase):
                     except ClickhouseError as e:
                         print(f"Error when alter Column type: {e};\n Run it Manually: '{query}'")
                         try:
-                            cls.fix_column_type(field_name)
+                            cls.fix_column_type(connect, field_name)
                         except Exception:
                             pass
             else:
@@ -514,7 +514,7 @@ class Model(object, metaclass=ModelBase):
         return cls._meta.ordered_fields[0].name
 
     @classmethod
-    def fix_column_type(cls, name, connect: ClickhouseClient):
+    def fix_column_type(cls, connect: ClickhouseClient,  name):
         """Run if column type failed migration"""
 
 
