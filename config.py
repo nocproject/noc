@@ -198,8 +198,8 @@ class Config(BaseConfig):
         default_Int32 = IntParameter(default=-2147483647)
         default_Int64 = IntParameter(default=-9223372036854775807)
         # Float
-        default_Float32 = FloatParameter(default=-2147483647.0)
-        default_Float64 = FloatParameter(default=-9223372036854775807.0)
+        default_Float32 = FloatParameter(default=-2147483600.0)
+        default_Float64 = FloatParameter(default=-9223372036854000000.0)
 
     class collections(ConfigSection):
         allow_sharing = BooleanParameter(default=True)
