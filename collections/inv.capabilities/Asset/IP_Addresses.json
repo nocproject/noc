@@ -1,0 +1,10 @@
+{
+    "name": "Asset | IP Addresses",
+    "$collection": "inv.capabilities",
+    "uuid": "9d065a1e-4594-4410-a907-f796fe2d3073",
+    "description": null,
+    "type": "ip_address",
+    "card_template": null,
+    "allow_manual": true,
+    "multi": true
+}

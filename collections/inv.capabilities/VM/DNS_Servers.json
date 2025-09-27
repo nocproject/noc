@@ -1,0 +1,10 @@
+{
+    "name": "VM | DNS Servers",
+    "$collection": "inv.capabilities",
+    "uuid": "fa18c3c5-a111-4b67-880e-a1c88f5fbcf7",
+    "description": "Host DNS Settings by VM Agent",
+    "type": "str",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}
