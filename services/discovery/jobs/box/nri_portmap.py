@@ -11,7 +11,6 @@ from collections import namedtuple
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
-from noc.core.etl.portmapper.loader import loader as portmapper_loader
 from noc.inv.models.interface import Interface
 
 IFHint = namedtuple("IFHint", ("name", "ifindex"))
@@ -36,7 +35,7 @@ class NRIPortmapperCheck(DiscoveryCheck):
             self.logger.info("No interfaces discovered. " "Skipping interface status check")
             return
         # Get portmapper instance
-        pm_cls = portmapper_loader[self.object.remote_system.name]
+        pm_cls = self.object.remote_system.get_portmapper()
         if not pm_cls:
             self.logger.info("[%s] No portmapper for NRI. Skipping checks", nri)
             return

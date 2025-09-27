@@ -36,7 +36,10 @@ Ext.define("NOC.main.remotesystem.Model", {
             name: "environment",
             type: "auto"
         },
-
+        {
+            name: "portmapper_name",
+            type: "string"
+        },
         {
             name: "enable_address",
             type: "boolean"
