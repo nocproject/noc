@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Prefix check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -205,7 +205,7 @@ class PrefixCheck(DiscoveryCheck):
         p = Prefix(
             vrf=vrf,
             prefix=prefix.prefix,
-            name=self.get_prefix_name(prefix),
+            name=self.get_prefix_name(prefix) or prefix.prefix,
             profile=prefix.profile,
             asn=prefix.asn,
             vlan=prefix.vlan,
@@ -241,7 +241,7 @@ class PrefixCheck(DiscoveryCheck):
             if discovered_prefix.source in LOCAL_SRC:
                 # Check name
                 name = self.get_prefix_name(discovered_prefix)
-                if name != prefix.name:
+                if name and name != prefix.name:
                     changes += ["name: %s -> %s" % (prefix.name, name)]
                     prefix.name = name
             if discovered_prefix.asn and prefix.asn != discovered_prefix.asn:
@@ -274,8 +274,8 @@ class PrefixCheck(DiscoveryCheck):
         else:
             self.logger.debug(
                 "Do not updating vpn_id=%s prefix=%s. Source level too low",
-                discovered_prefix.prefix,
                 discovered_prefix.vpn_id,
+                discovered_prefix.prefix,
             )
             metrics["prefix_update_denied"] += 1
         self.fire_seen(prefix)
@@ -292,7 +292,7 @@ class PrefixCheck(DiscoveryCheck):
             return parent.effective_prefix_discovery == "E"
         return False
 
-    def get_prefix_name(self, prefix):
+    def get_prefix_name(self, prefix) -> Optional[str]:
         """
         Render address name
         :param prefix: DiscoveredAddress instance
@@ -301,7 +301,7 @@ class PrefixCheck(DiscoveryCheck):
         if prefix.profile.name_template:
             name = prefix.profile.name_template.render_subject(**self.get_template_context(prefix))
             return self.strip(name)
-        return prefix.prefix
+        return None
 
     @staticmethod
     def strip(s):
