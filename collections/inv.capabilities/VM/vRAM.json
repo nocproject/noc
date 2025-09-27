@@ -1,0 +1,10 @@
+{
+    "name": "VM | vRAM",
+    "$collection": "inv.capabilities",
+    "uuid": "ae6adc19-a147-4956-86b3-c3242ed611c9",
+    "description": "Virtual Machine vRAM size (Gb)",
+    "type": "int",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}

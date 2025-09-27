@@ -1,0 +1,10 @@
+{
+    "name": "VM | vHDD",
+    "$collection": "inv.capabilities",
+    "uuid": "45717e4b-c4f0-47cb-855d-fa318ddf7ddf",
+    "description": "Virtual Machine HDD size (Gb)",
+    "type": "float",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}

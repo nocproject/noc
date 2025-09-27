@@ -1,0 +1,10 @@
+{
+    "name": "Controller | GlobalId",
+    "$collection": "inv.capabilities",
+    "uuid": "1ca1ecd4-e3de-4c15-86b2-bdd77ceb3e4f",
+    "description": "Controller Local ID for device",
+    "type": "str",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": false
+}

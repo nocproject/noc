@@ -18,10 +18,7 @@ class Script(VIMScript):
         h = self.vim.get_host_by_id(hid)
         hns = h.configManager.networkSystem
         result = []
-        if not hasattr(h, "capabilities") or not h.capabilities.supportsNetworkHints:
-            # If Host disconnected capabilities not available
-            return result
-        for q in hns.capabilities.supportsNetworkHints.QueryNetworkHint():
+        for q in hns.QueryNetworkHint():
             if q.lldpInfo is None:
                 continue
             nei = {"remote_port": q.lldpInfo.portId, "remote_chassis_id": q.lldpInfo.chassisId}
