@@ -170,6 +170,8 @@ class ReportConfigApplication(ExtDocApplication):
                     cfg["xtype"] = "core.combo"
                     cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
                     cfg["uiStyle"] = "medium-combo"
+                    if param.default:
+                        cfg["value"] = param.default
             elif param.type == "model_multi":
                 model = get_model(param.model_id)
                 cfg["xtype"] = "core.tagfield"
@@ -197,6 +199,8 @@ class ReportConfigApplication(ExtDocApplication):
             elif param.type == "bool":
                 cfg["xtype"] = "checkbox"
                 cfg["uiStyle"] = "small"
+                if param.default and param.default == "1":
+                    cfg["checked"] = "true"
             elif param.type == "fields_selector":
                 cf = self.get_columns_filter(
                     report,
