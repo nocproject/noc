@@ -15,6 +15,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
         "NOC.ip.addressprofile.LookupField",
         "NOC.project.project.LookupField",
         "NOC.sa.managedobject.LookupField",
+        "NOC.main.remotesystem.LookupField",
         "NOC.aaa.user.LookupField",
         "NOC.aaa.group.LookupField"
     ],
@@ -110,6 +111,7 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
                     name: "tt",
                     xtype: "numberfield",
                     fieldLabel: __("TT"),
+                    uiStyle: "medium",
                     allowBlank: true
                 },
                 {
@@ -122,22 +124,101 @@ Ext.define("NOC.ip.ipam.view.forms.prefix.AddressPanel", {
                     }
                 },
                 {
+                    name: "allocated_till",
+                    xtype: "datefield",
+                    startDay: 1,
+                    fieldLabel: __("Allocated till"),
+                    uiStyle: "medium",
+                    allowBlank: true
+                },
+                {
                     name: "project",
                     xtype: "project.project.LookupField",
                     fieldLabel: __("Project"),
                     allowBlank: true
                 },
                 {
-                    name: "managed_object",
-                    xtype: "sa.managedobject.LookupField",
-                    fieldLabel: __("Managed Object"),
-                    allowBlank: true
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "remote_system__label",
+                            xtype: "displayfield",
+                            fieldLabel: __("Remote System"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "remote_id",
+                            xtype: "displayfield",
+                            fieldLabel: __("Remote ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        },
+                        {
+                            name: "bi_id",
+                            xtype: "displayfield",
+                            fieldLabel: __("BI ID"),
+                            allowBlank: true,
+                            uiStyle: "medium"
+                        }
+                    ]
                 },
                 {
-                    name: "subinterface",
-                    xtype: "textfield",
-                    fieldLabel: __("Interface"),
-                    allowBlank: true
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Discovery"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "first_discovered",
+                            xtype: "displayfield",
+                            fieldLabel: __("Discovered"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "last_seen",
+                            xtype: "displayfield",
+                            fieldLabel: __("Last Seen"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "expired",
+                            xtype: "displayfield",
+                            fieldLabel: __("Expired"),
+                            allowBlank: true
+                        }
+                    ]
+                },
+                {
+                    xtype: "fieldset",
+                    layout: "hbox",
+                    title: __("Integration"),
+                    defaults: {
+                        padding: 4,
+                        labelAlign: "right"
+                    },
+                    items: [
+                        {
+                            name: "managed_object",
+                            xtype: "sa.managedobject.LookupField",
+                            fieldLabel: __("Managed Object"),
+                            allowBlank: true
+                        },
+                        {
+                            name: "subinterface",
+                            xtype: "textfield",
+                            fieldLabel: __("Interface"),
+                            allowBlank: true
+                        }
+                    ]
                 },
                 {
                     name: "source",
