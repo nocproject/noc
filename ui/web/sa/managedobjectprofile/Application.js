@@ -17,6 +17,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
         "NOC.main.style.LookupField",
         "NOC.main.ref.stencil.LookupField",
         "NOC.main.ref.windowfunction.LookupField",
+        "NOC.core.tagfield.Tagfield",
         "NOC.pm.metrictype.LookupField",
         "NOC.main.remotesystem.LookupField",
         "NOC.ip.prefixprofile.LookupField",
@@ -442,46 +443,45 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                                     uiStyle: "medium"
                                 },
                                 {
-                                    name: "match_rules",
-                                    xtype: "listform",
-                                    rows: 6,
-                                    labelAlign: "top",
-                                    uiStyle: "large",
-                                    fieldLabel: __("Match Rules"),
-                                    items: [
-                                        {
-                                            name: "dynamic_order",
-                                            xtype: "numberfield",
-                                            fieldLabel: __("Dynamic Order"),
-                                            allowBlank: true,
-                                            defaultValue: 0,
-                                            uiStyle: "small"
-                                        },
-                                        {
-                                            name: "labels",
-                                            xtype: "labelfield",
-                                            fieldLabel: __("Match Labels"),
-                                            allowBlank: true,
-                                            isTree: true,
-                                            filterProtected: false,
-                                            pickerPosition: "down",
-                                            uiStyle: "extra",
-                                            query: {
-                                                "allow_matched": true
-                                            }
-                                        },
-                                        {
-                                            name: "handler",
-                                            xtype: "main.handler.LookupField",
-                                            fieldLabel: __("Match Handler"),
-                                            allowBlank: true,
-                                            uiStyle: "medium",
-                                            query: {
-                                                "allow_match_rule": true
-                                            }
-                                        }
-                                    ]
-                                }
+                                  name: "match_rules",
+                                  xtype: "listform",
+                                  rows: 6,
+                                  labelAlign: "top",
+                                  uiStyle: "large",
+                                  fieldLabel: __("Match Rules"),
+                                  items: [
+                                    {
+                                      name: "dynamic_order",
+                                      xtype: "numberfield",
+                                      fieldLabel: __("Dynamic Order"),
+                                      allowBlank: true,
+                                      defaultValue: 0,
+                                      minValue: 0,
+                                      uiStyle: "small",
+                                    },
+                                    {
+                                      name: "labels",
+                                      xtype: "labelfield",
+                                      fieldLabel: __("Match Labels"),
+                                      allowBlank: true,
+                                      isTree: true,
+                                      filterProtected: false,
+                                      pickerPosition: "down",
+                                      uiStyle: "extra",
+                                      query: {
+                                        "allow_matched": true,
+                                      },
+                                    },
+                                    {
+                                      xtype: "core.tagfield",
+                                      url: "/inv/resourcegroup/lookup/",
+                                      fieldLabel: __("Object Groups"),
+                                      name: "resource_groups",
+                                      allowBlank: true,
+                                      uiStyle: "extra"
+                                    },
+                                  ],
+                                },
                             ]
                         },
                         {
