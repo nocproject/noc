@@ -514,7 +514,7 @@ class Model(object, metaclass=ModelBase):
         return cls._meta.ordered_fields[0].name
 
     @classmethod
-    def fix_column_type(cls, connect: ClickhouseClient,  name):
+    def fix_column_type(cls, connect: ClickhouseClient, name: str):
         """Run if column type failed migration"""
 
 
