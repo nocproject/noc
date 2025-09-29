@@ -20,7 +20,7 @@
             "orientation": "H",
             "parent": "Root",
             "queries": [{
-                "ds_query": "select name, address, vendor, model, attr_hwversion, sw_version, coalesce(serial_odata, serial_moattr) as serial from Root"
+                "ds_query": "select name, address, vendor, model, attr_hwversion, sw_version, coalesce(serial_odata, attr_serialnumber) as serialnumber, attr_serialnumber, serial_odata from Root"
             }]
         }
     ],
@@ -59,8 +59,18 @@
                     "format_type": "string"
                 },
                 {
-                    "name": "serial",
-                    "title": "Serial Number",
+                    "name": "serialnumber",
+                    "title": "serialnumber",
+                    "format_type": "string"
+                },
+                {
+                    "name": "serial_odata",
+                    "title": "serial_odata",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_serialnumber",
+                    "title": "attr_serialnumber",
                     "format_type": "string"
                 }
             ],
