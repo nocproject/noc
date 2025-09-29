@@ -960,7 +960,7 @@ Ext.define("NOC.core.ModelApplication", {
       if(field.length === 1){
         field[0].restoreById(data[v]);
       } else{
-        field = me.down(`[name=${v}]`);
+        field = me.formPanel.down(`[name=${v}]`);
         if(!field){
           return;
         }
