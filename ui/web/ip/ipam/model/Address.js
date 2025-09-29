@@ -69,6 +69,10 @@ Ext.define("NOC.ip.ipam.model.Address", {
             name: "source",
             type: "string"
         },
+        {
+            name: "allocated_till",
+            type: "string"
+        },
         // {
         //     name: "direct_permissions",
         //     type: "auto"
