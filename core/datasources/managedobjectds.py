@@ -29,6 +29,7 @@ from noc.inv.models.vendor import Vendor
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.discoveryid import DiscoveryID
 from noc.project.models.project import Project
+from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_objectid
 from noc.core.diagnostic.types import DiagnosticState
 from noc.core.diagnostic.hub import (
@@ -322,11 +323,11 @@ class ManagedObjectDS(BaseDataSource):
         :param caps:
         :return:
         """
-        if caps.type == "str":
+        if caps.type is ValueType.STRING:
             return ""
-        if caps.type == "int":
+        if caps.type is ValueType.INTEGER:
             return 0
-        if caps.type == "float":
+        if caps.type is ValueType.FLOAT:
             return 0.0
         return False
 
