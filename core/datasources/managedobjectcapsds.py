@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Managed Object Capabilities Datasource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from typing import Optional, Iterable, Dict, Any, Tuple, List, AsyncIterable
 from .base import FieldInfo, BaseDataSource, FieldType
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.capability import Capability
+from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_objectid
 
 
@@ -78,11 +79,11 @@ class ManagedObjectCapsDS(BaseDataSource):
         :param caps:
         :return:
         """
-        if caps.type == "str":
+        if caps.type is ValueType.STRING:
             return ""
-        if caps.type == "int":
+        if caps.type is ValueType.INTEGER:
             return 0
-        if caps.type == "float":
+        if caps.type is ValueType.FLOAT:
             return 0.0
         return False
 
