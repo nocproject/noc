@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # Address check
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Optional
 from collections import namedtuple, defaultdict
 
 # NOC modules
@@ -333,7 +333,7 @@ class AddressCheck(DiscoveryCheck):
         a = Address(
             vrf=vrf,
             address=address.address,
-            name=self.get_address_name(address),
+            name=self.get_address_name(address) or address.address,
             fqdn=address.fqdn,
             profile=address.profile,
             description=address.description,
@@ -374,7 +374,7 @@ class AddressCheck(DiscoveryCheck):
             if discovered_address.source in LOCAL_SRC:
                 # Check name
                 name = self.get_address_name(discovered_address)
-                if name != address.name:
+                if name and name != address.name:
                     changes += ["name: %s -> %s" % (address.name, name)]
                     address.name = name
                 # Check fqdn
@@ -431,7 +431,7 @@ class AddressCheck(DiscoveryCheck):
             return parent.effective_address_discovery == "E"
         return False
 
-    def get_address_name(self, address: DiscoveredAddress):
+    def get_address_name(self, address: DiscoveredAddress) -> Optional[str]:
         """
         Render address name
         :param address: DiscoveredAddress instance
@@ -442,9 +442,9 @@ class AddressCheck(DiscoveryCheck):
                 **self.get_template_context(address)
             )
             return self.strip(name)
-        return address.address
+        return None
 
-    def get_address_fqdn(self, address: DiscoveredAddress):
+    def get_address_fqdn(self, address: DiscoveredAddress) -> Optional[str]:
         """
         Render address name
         :param address: DiscoveredAddress instance
