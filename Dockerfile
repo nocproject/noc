@@ -1,5 +1,5 @@
 # Basic Python image
-FROM python:3.12-slim-trixie AS python
+FROM python:3.13-slim-trixie AS python
 
 # Base layer containing system packages and requirements
 FROM python AS code
@@ -90,5 +90,5 @@ FROM nginx:alpine AS static
 
 RUN apk add --no-cache curl
 
-COPY --from=code /usr/local/lib/python3.12/site-packages/django /usr/lib/python3.1/site-packages/django
+COPY --from=code /usr/local/lib/python3.13/site-packages/django /usr/lib/python3.13/site-packages/django
 COPY --from=code /opt/noc/ui /opt/noc/ui
