@@ -44,7 +44,7 @@ def connect():
 
     ca = config.mongo_connection_args.copy()
     if ca.get("password"):
-        ca["host"] = ca["host"].replace(":%s@" % ca["password"], ":********@")
+        ca["host"] = ca["host"].replace(f":{ca['password']}@", ":********@")
         ca["password"] = "********"
     for i in range(retries):
         try:
