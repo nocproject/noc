@@ -82,6 +82,7 @@ class CollectorMappingItem(EmbeddedDocument):
             "labels": [],
         }
 
+
 @on_save
 @change
 @bi_sync
