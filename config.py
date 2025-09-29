@@ -491,6 +491,7 @@ class Config(BaseConfig):
     class mongo(ConfigSection):
         addresses = ServiceParameter(service="mongo", wait=True)
         db = StringParameter(default="noc")
+        authentication_source = StringParameter()
         user = StringParameter()
         password = SecretParameter()
         rs = StringParameter()
@@ -1079,7 +1080,9 @@ class Config(BaseConfig):
                 self._mongo_connection_args["retryWrites"] = True
             has_credentials = self.mongo.user or self.mongo.password
             if has_credentials:
-                self._mongo_connection_args["authentication_source"] = self.mongo.db
+                self._mongo_connection_args["authentication_source"] = (
+                    self.mongo.authentication_source or self.mongo.db
+                )
             hosts = self.mongo.addresses
             if self.mongo.rs:
                 self._mongo_connection_args["replicaSet"] = self.mongo.rs
