@@ -23,6 +23,7 @@ from noc.sa.models.profile import Profile
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.capability import Capability
+from noc.inv.models.object import Object
 from noc.inv.models.platform import Platform
 from noc.inv.models.firmware import Firmware
 from noc.inv.models.vendor import Vendor
@@ -118,6 +119,10 @@ class ManagedObjectDS(BaseDataSource):
             name="caps",
             description="Object Capabilities",
             is_virtual=True,
+        ),
+        FieldInfo(
+            name="serial_odata",
+            description="Serial Number from Object.data",
         ),
         FieldInfo(
             name="chassis_macs",
@@ -390,6 +395,43 @@ class ManagedObjectDS(BaseDataSource):
                         return c["error"]
         return ""
 
+    @staticmethod
+    def get_odata_serials(mo_ids) -> Dict[id, str]:
+        """
+        Get serial numbers data from `data` field in `inv.Object` model
+        """
+        res = {}
+        for o in Object._get_collection().aggregate(
+            [
+                {
+                    "$match": {
+                        "data": {"$elemMatch": {"attr": "managed_object", "value": {"$in": mo_ids}}}
+                    }
+                },
+                {
+                    "$project": {
+                        "managed_object": {
+                            "$filter": {
+                                "input": "$data",
+                                "cond": {"$eq": ["$$this.attr", "managed_object"]},
+                            }
+                        },
+                        "serial": {
+                            "$filter": {
+                                "input": "$data",
+                                "cond": {"$eq": ["$$this.attr", "serial"]},
+                            }
+                        },
+                    }
+                },
+                {"$match": {"managed_object": {"$size": 1}, "serial": {"$size": 1}}},
+            ]
+        ):
+            mo_id = o["managed_object"][0]["value"]
+            serial = o["serial"][0]["value"]
+            res[mo_id] = serial
+        return res
+
     @classmethod
     async def iter_query(
         cls,
@@ -430,6 +472,8 @@ class ManagedObjectDS(BaseDataSource):
                 q_fields.append(f.name)
             elif f.name.startswith("RS") and f.internal_name:
                 q_maps[f.internal_name] = f.name
+            elif f.name == "serial_odata":
+                continue
             elif not fields or f.name in fields or f.name == "id":
                 q_fields.append(f_query_name)
         if q_caps and "caps" not in q_fields:
@@ -466,6 +510,10 @@ class ManagedObjectDS(BaseDataSource):
             }
         if not fields or "adm_path" in fields:
             adm_paths = cls.load_adm_path()
+        odata_serials = {}
+        if not fields or "serial_odata" in fields:
+            mo_ids = list(mos.values_list("id", flat=True))
+            odata_serials = cls.get_odata_serials(mo_ids)
         for num, mo in enumerate(mos.values(*q_fields).iterator(), start=1):
             yield num, "id", mo["id"]
             yield num, "managed_object_id", mo["id"]
@@ -561,6 +609,8 @@ class ManagedObjectDS(BaseDataSource):
                 )
             async for c in cls.iter_caps(mo.pop("caps", []), requested_caps=q_caps):
                 yield num, c[0], c[1]
+            if not fields or "serial_odata" in fields:
+                yield num, "serial_odata", odata_serials.get(mo["id"], None)
             if not fields or "mappings" in fields:
                 async for c in cls.iter_mappings(
                     mo.pop("mappings", None) or [], requested_mappings=q_maps
