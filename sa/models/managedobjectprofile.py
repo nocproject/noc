@@ -901,7 +901,6 @@ class ManagedObjectProfile(NOCModel):
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
         periodic_changed = self.is_field_changed(["enable_periodic_discovery", "enable_metrics"])
-        alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
                 "access_preference",
