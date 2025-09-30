@@ -15,11 +15,14 @@ import pytest
 from noc.core.script.base import BaseScript
 from noc.core.script.cli.error import CLIConnectionRefused, CLIAuthFailed
 from noc.sa.interfaces.igetdict import IGetDict
+from noc.config import config
 
-
-SSHD_HOST = "sshd"
-DROPBEAR_HOST = "dropbear"
-TELNETD_HOST = "telnetd"
+SSHD_HOST = config.tests.sshd_host
+SSHD_PORT = config.tests.sshd_port
+DROPBEAR_HOST = config.tests.dropbear_host
+DROPBEAR_PORT = config.tests.dropbear_port
+TELNETD_HOST = config.tests.telnetd_host
+TELNETD_PORT = config.tests.telnetd_port
 TEST_USER = "test"
 TEST_PW = "pw1234567890"
 
@@ -53,42 +56,130 @@ class GetDiagScript(BaseScript):
     "proto,host,port,user,password,args,xcls",
     [
         # Plain call (ssh)
-        ("ssh", SSHD_HOST, 22, TEST_USER, TEST_PW, {}, None),
+        ("ssh", SSHD_HOST, SSHD_PORT, TEST_USER, TEST_PW, {}, None),
         # Call with args (ssh)
-        ("ssh", SSHD_HOST, 22, TEST_USER, TEST_PW, {"x": 1, "y": 2}, None),
+        (
+            "ssh",
+            SSHD_HOST,
+            SSHD_PORT,
+            TEST_USER,
+            TEST_PW,
+            {"x": 1, "y": 2},
+            None,
+        ),
         # Connection refused
         ("ssh", SSHD_HOST, 1022, TEST_USER, TEST_PW, {}, CLIConnectionRefused),
         # Invalid user (ssh)
-        ("ssh", SSHD_HOST, 22, TEST_USER + "X", TEST_PW, {}, CLIAuthFailed),
+        (
+            "ssh",
+            SSHD_HOST,
+            SSHD_PORT,
+            TEST_USER + "X",
+            TEST_PW,
+            {},
+            CLIAuthFailed,
+        ),
         # Invalid password (ssh)
-        ("ssh", SSHD_HOST, 22, TEST_USER, TEST_PW + "X", {}, CLIAuthFailed),
+        (
+            "ssh",
+            SSHD_HOST,
+            SSHD_PORT,
+            TEST_USER,
+            TEST_PW + "X",
+            {},
+            CLIAuthFailed,
+        ),
         # Plain call (ssh)
-        ("ssh", DROPBEAR_HOST, 22, TEST_USER, TEST_PW, {}, None),
+        (
+            "ssh",
+            DROPBEAR_HOST,
+            DROPBEAR_PORT,
+            TEST_USER,
+            TEST_PW,
+            {},
+            None,
+        ),
         # Call with args (ssh)
-        ("ssh", DROPBEAR_HOST, 22, TEST_USER, TEST_PW, {"x": 1, "y": 2}, None),
+        (
+            "ssh",
+            DROPBEAR_HOST,
+            DROPBEAR_PORT,
+            TEST_USER,
+            TEST_PW,
+            {"x": 1, "y": 2},
+            None,
+        ),
         # Connection refused
         ("ssh", DROPBEAR_HOST, 1022, TEST_USER, TEST_PW, {}, CLIConnectionRefused),
         # Invalid user (ssh)
-        ("ssh", DROPBEAR_HOST, 22, TEST_USER + "X", TEST_PW, {}, CLIAuthFailed),
+        (
+            "ssh",
+            DROPBEAR_HOST,
+            DROPBEAR_PORT,
+            TEST_USER + "X",
+            TEST_PW,
+            {},
+            CLIAuthFailed,
+        ),
         # Invalid password (ssh)
-        ("ssh", DROPBEAR_HOST, 22, TEST_USER, TEST_PW + "X", {}, CLIAuthFailed),
+        (
+            "ssh",
+            DROPBEAR_HOST,
+            DROPBEAR_PORT,
+            TEST_USER,
+            TEST_PW + "X",
+            {},
+            CLIAuthFailed,
+        ),
         # Plain call (telnet)
-        ("telnet", TELNETD_HOST, 23, TEST_USER, TEST_PW, {}, None),
+        (
+            "telnet",
+            TELNETD_HOST,
+            TELNETD_PORT,
+            TEST_USER,
+            TEST_PW,
+            {},
+            None,
+        ),
         # Call with args (telnet)
-        ("telnet", TELNETD_HOST, 23, TEST_USER, TEST_PW, {"x": 1, "y": 2}, None),
+        (
+            "telnet",
+            TELNETD_HOST,
+            TELNETD_PORT,
+            TEST_USER,
+            TEST_PW,
+            {"x": 1, "y": 2},
+            None,
+        ),
         # Connection refused
         ("telnet", TELNETD_HOST, 1023, TEST_USER, TEST_PW, {}, CLIConnectionRefused),
         # Invalid user (telnet)
-        ("telnet", TELNETD_HOST, 23, TEST_USER + "X", TEST_PW, {}, CLIAuthFailed),
+        (
+            "telnet",
+            TELNETD_HOST,
+            TELNETD_PORT,
+            TEST_USER + "X",
+            TEST_PW,
+            {},
+            CLIAuthFailed,
+        ),
         # Invalid password (telnet)
-        ("telnet", TELNETD_HOST, 23, TEST_USER, TEST_PW + "X", {}, CLIAuthFailed),
+        (
+            "telnet",
+            TELNETD_HOST,
+            TELNETD_PORT,
+            TEST_USER,
+            TEST_PW + "X",
+            {},
+            CLIAuthFailed,
+        ),
     ],
 )
 def test_cli(proto, host, port, user, password, args, xcls):
     try:
         address = socket.gethostbyname(host)
     except socket.gaierror:
-        pytest.fail("Cannot resolve host '%s'" % host)
+        pytest.fail("Cannot resolve host '{host}'")
     scr = GetDiagScript(
         service=ServiceStub(),
         credentials={
