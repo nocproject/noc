@@ -901,7 +901,6 @@ class ManagedObjectProfile(NOCModel):
 
         box_changed = self.is_field_changed(["enable_box_discovery"])
         periodic_changed = self.is_field_changed(["enable_periodic_discovery", "enable_metrics"])
-        alarm_box_changed = self.is_field_changed(["box_discovery_alarm_policy"])
         access_changed = self.is_field_changed(
             [
                 "access_preference",
@@ -919,10 +918,17 @@ class ManagedObjectProfile(NOCModel):
                 box_changed=box_changed,
                 periodic_changed=periodic_changed,
             )
-        if box_changed or periodic_changed or alarm_box_changed:
-            defer(
+        if self.is_field_changed(
+            [
+                "enable_box_discovery",
+                "access_preference",
+                "box_discovery_alarm_policy",
+                "enable_box_discovery_profile",
+            ]
+        ):
+            call_later(
                 "noc.sa.models.managedobjectprofile.update_diagnostics_alarms",
-                key=self.id,
+                delay=30,
                 profile_id=self.id,
                 box_alarm=self.box_discovery_alarm_policy == "D",
             )
@@ -974,7 +980,7 @@ class ManagedObjectProfile(NOCModel):
             yield DiagnosticConfig(
                 PROFILE_DIAG,
                 display_description="Check device profile",
-                show_in_display=False,
+                hide_enable=True,
                 include_credentials=True,
                 diagnostic_handler="noc.core.profile.diagnostic.ProfileDiagnostic",
                 diagnostic_ctx=[CtxItem(name="profile", set_method="set_profile")],
@@ -1205,12 +1211,19 @@ def update_diagnostics_alarms(profile_id, box_alarm: bool, **kwargs):
     """
     from noc.sa.models.managedobject import ManagedObject
 
-    for mo in ManagedObject.objects.filter(is_managed=True, object_profile=int(profile_id)).filter(
-        d_Q(diagnostics__CLI__state=DiagnosticState.failed.value)
-        | d_Q(diagnostics__SNMP__state=DiagnosticState.failed.value)
-        | d_Q(diagnostics__PROFILE__state=DiagnosticState.failed.value)
+    # Move to Refresh Alarm
+    synced = 0
+    mop = ManagedObjectProfile.objects.filter(id=profile_id).first()
+    if not mop:
+        return
+    for mo in ManagedObject.objects.filter(mop.get_instance_affected_query()).filter(
+        d_Q(**{f"diagnostics__{CLI_DIAG}__state": DiagnosticState.failed.value})
+        | d_Q(**{f"diagnostics__{SNMP_DIAG}__state": DiagnosticState.failed.value})
+        | d_Q(**{f"diagnostics__{PROFILE_DIAG}__state": DiagnosticState.failed.value})
     ):
         DiagnosticHub.sync_alarms(mo, list(mo.iter_diagnostics()), alarm_disable=box_alarm)
+        synced += 1
+    print(f"Run refresh diagnostic alarm: Synced: {synced}")
 
 
 def apply_discovery_jobs(profile_id, box_changed, periodic_changed):
