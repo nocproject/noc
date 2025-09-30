@@ -1,0 +1,11 @@
+name: Feature request
+description: Check instructions for submitting your idea in CONTRIBUTING.md first
+title: "ENH: <Please write a comprehensive title after the 'ENH: ' prefix>"
+labels: [enhancement]
+
+body:
+  - type: textarea
+    attributes:
+      label: "Proposed new feature or change:"
+    validations:
+      required: true
