@@ -33,6 +33,11 @@ Ext.define("NOC.sa.service.InstanceModel", {
       type: "string",
     },
     {
+      name: "remote_id",
+      type: "string",
+      persist: false
+    },
+    {
       name: "sources",
       type: "string",
     },

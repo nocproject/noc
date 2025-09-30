@@ -134,6 +134,7 @@ class ServiceApplication(ExtDocApplication):
             data["in_maintenance"] = o.in_maintenance
             data["service_path"] = [str(sp) for sp in data["service_path"]]
             data["diagnostics"] = [d.get_object_form() for d in o.iter_diagnostics(to_display=True)]
+            data["mappings"] = [m.get_object_form(o) for m in o.iter_remote_mappings()]
         return data
 
     @staticmethod
@@ -143,6 +144,7 @@ class ServiceApplication(ExtDocApplication):
             "address": ";".join(a.address for a in o.addresses),
             "port": o.port,
             "fqdn": o.fqdn,
+            "remote_id": o.remote_id,
         }
         if o.managed_object:
             r["managed_object"] = o.managed_object.id
@@ -180,6 +182,7 @@ class ServiceApplication(ExtDocApplication):
             "managed_object": None,
             "addresses": [],
             "name": o.name,
+            "remote_id": o.remote_id,
             "resources": [],
             "allow_update": o.type != InstanceType.OTHER,
         }
