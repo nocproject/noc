@@ -75,7 +75,7 @@ Ext.define("NOC.pm.metrictype.Model", {
             type: "string"
         },
         {
-            name: "agent_mappings",
+            name: "collector_mappings",
             type: "auto"
         },
         {
