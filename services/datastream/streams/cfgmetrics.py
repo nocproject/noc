@@ -18,15 +18,8 @@ class CfgMetricsCollectorDataStream(DataStream):
 
     @classmethod
     def get_object(cls, id: str) -> Dict[str, Any]:
-        mt = MetricType.objects.filter(id=id).first()
-        if not mt or not mt.agent_mappings:
+        mt = MetricType.get_by_id(id)
+        cfg = MetricType.get_config(mt)
+        if not mt:
             raise KeyError()
-        return {
-            "id": str(mt.id),
-            "table": mt.scope.table_name,
-            "field": mt.field_name,
-            "rules": [
-                {"collector": m.collector, "field": m.field, "labels": [], "preference": n}
-                for n, m in enumerate(mt.agent_mappings)
-            ],
-        }
+        return cfg

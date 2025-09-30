@@ -192,9 +192,9 @@ Ext.define("NOC.pm.metrictype.Application", {
           },
         },
         {
-          name: "agent_mappings",
+          name: "collector_mappings",
           xtype: "gridfield",
-          fieldLabel: __("Agent Mappings"),
+          fieldLabel: __("Collector Mappings"),
           allowBlank: true,
           columns: [
             {
@@ -207,7 +207,38 @@ Ext.define("NOC.pm.metrictype.Application", {
               text: __("Field"),
               dataIndex: "field",
               editor: "textfield",
-              flex: 1,
+              width: 100,
+            },
+            {
+              text: __("Allow Part."),
+              dataIndex: "allow_partial_match",
+              width: 50,
+              renderer: NOC.render.Bool,
+              editor: "checkbox",
+            },
+            {
+              text: __("Sender"),
+              dataIndex: "sender",
+              width: 150,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["any", __("Any")],
+                  ["noc_agent", __("NOC Agent")],
+                  ["zabbix", __("Zabbix")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "any": __("Any"),
+                "noc_agent": __("NOC Agent"),
+                "zabbix": __("Zabbix")
+              }),
+            },
+            {
+              text: __("Aliases"),
+              dataIndex: "aliases",
+              width: 300,
+              editor: "stringlistfield",
             },
           ],
         },
