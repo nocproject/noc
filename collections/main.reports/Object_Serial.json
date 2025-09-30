@@ -1,0 +1,122 @@
+{
+    "name": "Managed Object Serial Number",
+    "$collection": "main.reports",
+    "uuid": "23380f03-a2d3-4d57-89ec-f98dd71e92da",
+    "title": "Managed Object Serial Number (New)",
+    "description": "Серийные номера",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select name, address, vendor, model, attr_hwversion, sw_version, coalesce(serial_odata, attr_serialnumber) as serialnumber from Root"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Object Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "IP",
+                    "format_type": "string"
+                },
+                {
+                    "name": "vendor",
+                    "title": "Vendor",
+                    "format_type": "string"
+                },
+                {
+                    "name": "model",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "attr_hwversion",
+                    "title": "HW Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "sw_version",
+                    "title": "SW Version",
+                    "format_type": "string"
+                },
+                {
+                    "name": "serialnumber",
+                    "title": "Serial Number",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": "OBJECT_SERIAL",
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Серийные номера (Новый)"
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств (Селектор)"
+        },
+        "columns.name": {
+            "ru": "Управляемый объект"
+        },
+        "columns.address": {
+            "ru": "IP-адрес"
+        },
+        "columns.vendor": {
+            "ru": "Производитель"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.attr_hwversion": {
+            "ru": "Версия прошивки"
+        },
+        "columns.sw_version": {
+            "ru": "Версия ПО"
+        },
+        "columns.serialnumber": {
+            "ru": "Серийный номер"
+        }
+    },
+    "parameters": [
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group (Selector)",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_name_pattern": "object_serial",
+            "output_type": "csv"
+        }
+    ]
+}
