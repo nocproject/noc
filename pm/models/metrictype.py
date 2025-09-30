@@ -9,7 +9,7 @@
 import os
 import operator
 from threading import Lock
-from typing import Any, Dict, Callable, Optional, Union
+from typing import Any, Dict, Callable, Optional, Union, List
 
 # Third-party modules
 from bson import ObjectId
@@ -48,15 +48,39 @@ from .scale import Scale
 id_lock = Lock()
 
 
-class AgentMappingItem(EmbeddedDocument):
+class CollectorMappingItem(EmbeddedDocument):
+    sender = StringField(choices=["zabbix", "noc_agent", "any"], default="any")
     collector = StringField()
     field = StringField()
+    aliases = ListField(StringField())
+    allow_partial_match = BooleanField(default=False)
+    labels = ListField(StringField())
 
     def __str__(self):
         return f"{self.collector}.{self.field}"
 
     def json_data(self) -> Dict[str, Any]:
-        return {"collector": self.collector, "field": self.field}
+        r = {
+            "sender": self.sender,
+            "collector": self.collector,
+            "field": self.field,
+            "allow_partial_match": self.allow_partial_match,
+        }
+        if self.aliases:
+            r["aliases"] = [x for x in self.aliases]
+        if self.labels:
+            r["labels"] = [x for x in self.labels]
+        return r
+
+    def get_config(self):
+        return {
+            "sender": self.sender,
+            "collector": self.collector,
+            "field": self.field,
+            "allow_partial_match": self.allow_partial_match,
+            "aliases": list(self.aliases or []),
+            "labels": [],
+        }
 
 
 @on_save
@@ -123,8 +147,8 @@ class MetricType(Document):
     # Compose expression
     compose_inputs = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
     compose_expression = StringField()
-    # Agent mappings
-    agent_mappings = EmbeddedDocumentListField(AgentMappingItem)
+    # Remote Mappings
+    collector_mappings: List[CollectorMappingItem] = EmbeddedDocumentListField(CollectorMappingItem)
     # Optional required capability
     required_capability = PlainReferenceField(Capability)
     # Object id in BI, used for counter context hashing
@@ -157,8 +181,8 @@ class MetricType(Document):
             "units__code": self.units.code,
             "scale__code": self.scale.code,
         }
-        if self.agent_mappings:
-            r["agent_mappings"] = [m.json_data() for m in self.agent_mappings]
+        if self.collector_mappings:
+            r["collector_mappings"] = [m.json_data() for m in self.collector_mappings]
         if self.required_capability:
             r["required_capability__name"] = self.required_capability.name
         if self.compose_expression:
@@ -200,6 +224,7 @@ class MetricType(Document):
                 "units__code",
                 "scale__code",
                 "agent_mappings",
+                "collector_mappings",
                 "required_capability__name",
             ],
         )
@@ -337,3 +362,18 @@ class MetricType(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetrics:
             yield "cfgmetrics", self.id
+
+    @classmethod
+    def get_config(cls, metric_type: "MetricType"):
+        """Create config for Services"""
+        rules = []
+        for num, cm in enumerate(metric_type.collector_mappings):
+            cfg = cm.get_config()
+            cfg["preference"] = num
+            rules.append(cfg)
+        return {
+            "id": str(metric_type.id),
+            "table": metric_type.scope.table_name,
+            "field": metric_type.field_name,
+            "rules": rules,
+        }
