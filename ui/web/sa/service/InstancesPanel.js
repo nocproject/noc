@@ -133,6 +133,12 @@ Ext.define("NOC.sa.service.InstancesPanel", {
           renderer: "lockIcon",
         },
         {
+          text: __("RID"),
+          editor: "textfield",
+          dataIndex: "remote_id",
+          maxWidth: 100,
+        },
+        {
           text: __("FQDN"),
           editor: "textfield",
           dataIndex: "fqdn",
@@ -146,6 +152,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
             maxValue: 65535,
           },
           dataIndex: "port",
+          maxWidth: 50,
         },
         {
           text: __("Sources"),
@@ -159,7 +166,7 @@ Ext.define("NOC.sa.service.InstancesPanel", {
         {
           text: __("Type"),
           dataIndex: "type",
-          maxWidth: 120,
+          maxWidth: 50,
           renderer: function(value){
             var app = this.up("[reference=saInstancesPanel]");
             return app.renderStoreValue("typeStore", value.split(","));
