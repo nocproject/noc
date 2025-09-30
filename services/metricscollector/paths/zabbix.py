@@ -173,7 +173,7 @@ class ZabbixAPI(object):
             # response_model=,
             tags=self.openapi_tags,
             name=f"{self.api_name}_zabbix_items",
-            description=f"Integration with Zabbix Items Connector",
+            description="Integration with Zabbix Items Connector",
         )
         # Event
         self.router.add_api_route(
@@ -185,7 +185,7 @@ class ZabbixAPI(object):
             # response_model=,
             tags=self.openapi_tags,
             name=f"{self.api_name}_zabbix_items",
-            description=f"Integration with Zabbix Events Connector",
+            description="Integration with Zabbix Events Connector",
         )
         # AgentV1
         # AgentV2
