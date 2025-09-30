@@ -4,12 +4,14 @@
 // Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
+
 console.debug("Defining NOC.sa.service.Application");
 
 Ext.define("NOC.sa.service.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.StateField",
+    "NOC.core.status.StatusField",
     "NOC.core.InlineGrid",
     "NOC.core.label.LabelField",
     "NOC.core.combotree.ComboTree",
@@ -32,6 +34,7 @@ Ext.define("NOC.sa.service.Application", {
   helpId: "reference-service",
 
   initComponent: function(){
+    let labelWidth = 125;
     this.instancesPanel = Ext.create("NOC.sa.service.InstancesPanel");
     this.subscriptionPanel = Ext.create("NOC.core.SubscriptionPanel");
     this.ITEM_INSTANCES = this.registerItem(this.instancesPanel);
@@ -133,38 +136,111 @@ Ext.define("NOC.sa.service.Application", {
         },
       ],
       fields: [
-        {
-          name: "profile",
-          xtype: "sa.serviceprofile.LookupField",
-          fieldLabel: __("Profile"),
-          allowBlank: false,
+      {
+          xtype: "fieldset",
+          layout: "column",
+          minWidth: this.formMinWidth,
+          maxWidth: this.formMaxWidth,
+          defaults: {
+            xtype: "container",
+            columnWidth: 0.5,
+            layout: "form",
+            padding: 10,
+          },
+          border: false,
+          // margin: 0,
+          padding: "5 15 0 15",
+          items: [
+          {
+            border: false,
+            items: [
+              {
+                name: "name_template",
+                xtype: "textfield",
+                fieldLabel: __("Name Template"),
+                tabIndex: 10,
+                minWidth: 200,
+                labelWidth: labelWidth,
+                allowBlank: true,
+              },
+              {
+                name: "profile",
+                xtype: "sa.serviceprofile.LookupField",
+                fieldLabel: __("Profile"),
+                tabIndex: 20,
+                minWidth: 200,
+                labelWidth: labelWidth,
+                allowBlank: false,
+                autoFocus: true,
+              },
+              {
+                name: "description",
+                xtype: "textarea",
+                fieldLabel: __("Description"),
+                labelWidth: labelWidth,
+                allowBlank: true,
+                tabIndex: 30,
+              },
+            ],
+          },
+          {
+              border: false,
+              items: [ // second column
+                {
+                  name: "diagnostics",
+                  fieldLabel: __("Diag"),
+                  xtype: "statusfield",
+                  allowBlank: true,
+                },
+                {
+                  name: "labels",
+                  fieldLabel: __("Labels"),
+                  tabIndex: 40,
+                  xtype: "labelfield",
+                  allowBlank: true,
+                  minWidth: 100,
+                  query: {
+                    "allow_models": ["sa.Service"],
+                  },
+                },
+                {
+                  name: "bi_id",
+                  xtype: "displayfield",
+                  fieldLabel: __("BI ID"),
+                  allowBlank: true,
+                  renderer: NOC.clipboard,
+                },
+                {
+                  name: "mappings",
+                  xtype: "displayfield",
+                  fieldLabel: __("Mappings"),
+                  allowBlank: true,
+                  renderer: function(values){
+                    if(values === undefined || values === null || Ext.isEmpty(values)){
+                      return "-";
+                    }
+                    var isArray = Array.isArray(values),
+                      v = isArray ? values : [values];
+                    return v.map(function(value){
+                      var mappingString = value.remote_system__label + ": " + value.remote_id;
+                      if(Ext.isEmpty(value.url)){
+                        return mappingString + NOC.clipboardIcon(value.remote_id);
+                      }
+                      return "<a href='" + value.url + "' target='_blank'>" + mappingString + "</a>"
+                         + NOC.clipboardIcon(value.remote_id);
+                    }).join("<br/>");
+                  },
+                },
+              ],
+            },
+          ],
         },
         {
           name: "state",
           xtype: "statefield",
           fieldLabel: __("State"),
+          labelWidth: labelWidth,
           allowBlank: true,
-        },
-        {
-          name: "name_template",
-          xtype: "textfield",
-          fieldLabel: __("Name Template"),
-          allowBlank: true,
-          uiStyle: "large",
-        },
-        {
-          name: "description",
-          xtype: "textarea",
-          fieldLabel: __("Description"),
-          allowBlank: true,
-        },
-        {
-          name: "labels",
-          xtype: "labelfield",
-          fieldLabel: __("Labels"),
-          query: {
-            "allow_models": ["sa.Service"],
-          },
         },
         {
           xtype: "fieldset",
@@ -623,37 +699,6 @@ Ext.define("NOC.sa.service.Application", {
                   }),
                 },
               ],
-            },
-          ],
-        },
-        {
-          xtype: "fieldset",
-          layout: "hbox",
-          title: __("Integration"),
-          defaults: {
-            padding: 4,
-            labelAlign: "top",
-          },
-          items: [
-            {
-              name: "remote_system",
-              xtype: "main.remotesystem.LookupField",
-              fieldLabel: __("Remote System"),
-              allowBlank: true,
-            },
-            {
-              name: "remote_id",
-              xtype: "textfield",
-              fieldLabel: __("Remote ID"),
-              allowBlank: true,
-              uiStyle: "medium",
-            },
-            {
-              name: "bi_id",
-              xtype: "displayfield",
-              fieldLabel: __("BI ID"),
-              allowBlank: true,
-              uiStyle: "medium",
             },
           ],
         },
