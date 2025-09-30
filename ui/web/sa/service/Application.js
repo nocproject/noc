@@ -4,12 +4,6 @@
 // Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-this.fieldSetDefaults = {
-  xtype: "container",
-  padding: 10,
-  layout: "form",
-  columnWidth: 0.5,
-};
 
 console.debug("Defining NOC.sa.service.Application");
 
@@ -145,9 +139,16 @@ Ext.define("NOC.sa.service.Application", {
       {
           xtype: "fieldset",
           layout: "column",
-          defaults: this.fieldSetDefaults,
+          minWidth: this.formMinWidth,
+          maxWidth: this.formMaxWidth,
+          defaults: {
+            xtype: "container",
+            columnWidth: 0.5,
+            layout: "form",
+            padding: 10,
+          },
           border: false,
-          margin: 0,
+          // margin: 0,
           padding: "5 15 0 15",
           items: [
           {
@@ -158,6 +159,8 @@ Ext.define("NOC.sa.service.Application", {
                 xtype: "textfield",
                 fieldLabel: __("Name Template"),
                 tabIndex: 10,
+                minWidth: 200,
+                labelWidth: labelWidth,
                 allowBlank: true,
               },
               {
@@ -165,6 +168,8 @@ Ext.define("NOC.sa.service.Application", {
                 xtype: "sa.serviceprofile.LookupField",
                 fieldLabel: __("Profile"),
                 tabIndex: 20,
+                minWidth: 200,
+                labelWidth: labelWidth,
                 allowBlank: false,
                 autoFocus: true,
               },
@@ -172,6 +177,7 @@ Ext.define("NOC.sa.service.Application", {
                 name: "description",
                 xtype: "textarea",
                 fieldLabel: __("Description"),
+                labelWidth: labelWidth,
                 allowBlank: true,
                 tabIndex: 30,
               },
