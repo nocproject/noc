@@ -371,10 +371,9 @@ class MetricType(Document):
             cfg = cm.get_config()
             cfg["preference"] = num
             rules.append(cfg)
-        r = {
+        return {
             "id": str(metric_type.id),
             "table": metric_type.scope.table_name,
             "field": metric_type.field_name,
             "rules": rules,
         }
-        return r
