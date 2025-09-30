@@ -1007,6 +1007,18 @@ class Config(BaseConfig):
         events_paths = ListParameter(item=StringParameter())
         # List of pyfilesystem URLs holding beef test cases
         beef_paths = ListParameter(item=StringParameter())
+        # SSHD hostname and port
+        sshd_host = StringParameter(default="sshd")
+        sshd_port = IntParameter(default=22)
+        # Dropbear hostname and port
+        dropbear_host = StringParameter(default="dropbear")
+        dropbear_port = IntParameter(default=22)
+        # Telnetd
+        telnetd_host = StringParameter(default="telnetd")
+        telnetd_port = IntParameter(default=23)
+        # Snmpd
+        snmpd_host = StringParameter(default="snmpd")
+        snmpd_port = IntParameter(default=161)
 
     class peer(ConfigSection):
         enable_ripe = BooleanParameter(default=True)
