@@ -3,9 +3,11 @@ on:
   push:
     branches: [master]
     paths:
+      - .github/workflows/infra-image.yml
       - tests/infra/docker/**
   pull_request:
     paths:
+      - .github/workflows/infra-image.yml
       - tests/infra/docker/**
 jobs:
   changes:
@@ -16,6 +18,8 @@ jobs:
       testsshd: ${{ steps.filter.outputs.testsshd }}
       testtelnetd: ${{ steps.filter.outputs.testtelnetd }}
     steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
       - name: Filter Items
         uses: dorny/paths-filter@v3
         id: filter
@@ -37,12 +41,12 @@ jobs:
         include:
           - service: testdropbear
             changed: ${{ needs.changes.outputs.testdropbear }}
+          - service: testtelnetd
+            changed: ${{ needs.changes.outputs.testtelnetd }}
           - service: testsnmpd
             changed: ${{ needs.changes.outputs.testsnmpd }}
           - service: testsshd
             changed: ${{ needs.changes.outputs.testsshd }}
-          - service: testtelnetd
-            changed: ${{ needs.changes.outputs.testtelnetd }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
