@@ -2,13 +2,11 @@ name: Build Test Images
 on:
   push:
     branches: [master]
-    paths:
+    paths: &changed-paths
       - .github/workflows/infra-image.yml
       - tests/infra/docker/**
   pull_request:
-    paths:
-      - .github/workflows/infra-image.yml
-      - tests/infra/docker/**
+    paths: *changed-paths
 jobs:
   changes:
     runs-on: ubuntu-24.04
@@ -75,14 +73,6 @@ jobs:
             tests/infra/docker/${{ matrix.service }}
 
       - name: Push image (main only)
-        if: github.ref == 'refs/heads/master' && matrix.changed == 'true'
+        if: matrix.changed == 'true'
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ steps.version.outputs.version }}
-
-      - name: Push PR preview image
-        if: github.event_name == 'pull_request' && matrix.changed == 'true'
-        run: |
-          PR_TAG=${{ steps.version.outputs.version }}-pr-${{ github.event.pull_request.number }}
-          docker tag ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ steps.version.outputs.version }} \
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:$PR_TAG
-          docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:$PR_TAG

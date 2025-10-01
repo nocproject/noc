@@ -9,5 +9,5 @@ SSH keys are also available
 Docker Compose usage:
 ``` yaml
 sshd:
-  image: "ghcr.io/gufolabs/testdropbear:v1"
+  image: "ghcr.io/gufolabs/testdropbear:v2"
 ```

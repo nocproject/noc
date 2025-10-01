@@ -12,6 +12,7 @@ include/*
 lib/
 lib64
 .*
+!/.github/
 !/.devcontainer/
 !/.docker/*
 !/.gitignore

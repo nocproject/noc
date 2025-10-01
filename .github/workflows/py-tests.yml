@@ -1,0 +1,169 @@
+name: Run Python Tests
+env:
+  PIP_CACHE_DIR: .pip
+  PYTHONPATH: src
+  TEST_PYTHON_VERSION: "3.12"
+on:
+  push:
+    branches: [master]
+    paths: &changed-paths
+      - ".github/workflows/py-tests.yml"
+      - "pyproject.toml"
+      - "codecov.yml"
+      - "**.py"
+  pull_request:
+    paths: *changed-paths
+  release:
+    types: ["published"]
+jobs:
+  py-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set Up Python ${{ env.TEST_PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.TEST_PYTHON_VERSION }}
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ./.pip
+          key: ubuntu-24.04-py-lint-${{ env.TEST_PYTHON_VERSION }}-${{ hashFiles('pyproject.toml') }}
+
+      - name: Upgrade Pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Dependencies
+        run: pip install -IU -e .[lint]
+
+      - name: Check Formatting
+        run: ruff format --check --diff .
+
+      - name: Check ruff
+        run: ruff check -q .
+
+  py-test:
+    runs-on: ubuntu-24.04
+    needs: [py-lint]
+    services:
+      clickhouse:
+        image: clickhouse/clickhouse-server:23
+        ports:
+          - 8123:8123
+        options: >-
+          --mount type=tmpfs,dst=/var/lib/clickhouse
+      kafka:
+        image: bitnamilegacy/kafka:3.6.2
+        env:
+          KAFKA_CFG_NODE_ID: "0"
+          KAFKA_CFG_PROCESS_ROLES: controller,broker
+          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+          KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+          KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+          KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "false"
+          KAFKA_CFG_LOG_FLUSH_INTERVAL_MESSAGES: "1"
+          KAFKA_CFG_LOG_FLUSH_INTERVAL_MS: "1000"
+          KAFKA_CFG_LOG_FLUSH_SCHEDULER_INTERVAL_MS: "1000"
+          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://127.0.0.1:9092
+        ports:
+          - 9092:9092
+        options: >-
+          --mount type=tmpfs,dst=/bitnami/data
+      mongodb:
+        image: mongo:4.4
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: noc
+          MONGO_INITDB_ROOT_PASSWORD: noc
+        options: >-
+          --mount type=tmpfs,dst=/data/db
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: noc
+          POSTGRES_USER: noc
+          POSTGRES_PASSWORD: noc
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd "pg_isready -U noc"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --mount type=tmpfs,dst=/var/lib/postgresql/data
+        ports:
+          - 5432:5432
+      testdropbear:
+        image: ghcr.io/gufolabs/testdropbear:v2
+        ports:
+          - 10001:22
+      testtelnetd:
+        image: ghcr.io/gufolabs/testtelnetd:v1
+        ports:
+          - 10002:23
+      testsnmpd:
+        image: ghcr.io/gufolabs/testsnmpd:v1
+        ports:
+          - 161:161/udp # Custom telnet ports still not implemented
+      testsshd:
+        image: ghcr.io/gufolabs/testsshd:v1
+        ports:
+          - 10004:22
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set Up Python ${{ env.TEST_PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: "${{ env.TEST_PYTHON_VERSION }}"
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ./.pip
+          key: ubuntu-24.04-py-test-${{ env.TEST_PYTHON_VERSION }}-${{ hashFiles('pyproject.toml') }}
+
+      - name: Upgrade Pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install Dependencies
+        run: pip install -IU -e .[node,test,bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]
+
+      - name: Run Tests
+        run: pytest --maxfail=10 --cov --cov-branch --cov-report=xml tests/
+        env:
+          DJANGO_SETTINGS_MODULE: noc.settings
+          NOC_TEST_DB: noc_tests
+          NOC_CONFIG: env:///NOC
+          NOC_MONGO_ADDRESSES: 127.0.0.1:27017
+          NOC_PG_ADDRESSES: 127.0.0.1:5432
+          NOC_CLICKHOUSE_RW_ADDRESSES: 127.0.0.1:8123
+          NOC_CLICKHOUSE_RO_ADDRESSES: 127.0.0.1:8123
+          NOC_FEATURES_CONSUL_HEALTHCHECKS: false
+          NOC_FEATURES_SERVICE_REGISTRATION: false
+          NOC_PG_DB: noc
+          NOC_PG_PASSWORD: noc
+          NOC_PG_USER: noc
+          NOC_MONGO_USER: noc
+          NOC_MONGO_PASSWORD: noc
+          NOC_MONGO_AUTHENTICATION_SOURCE: admin
+          NOC_MSGSTREAM_CLIENT_CLASS: noc.core.msgstream.redpanda.RedPandaClient
+          NOC_REDPANDA_ADDRESSES: 127.0.0.1:9092
+          NOC_TESTS_DROPBEAR_HOST: 127.0.0.1
+          NOC_TESTS_DROPBEAR_PORT: 10001
+          NOC_TESTS_TELNETD_HOST: 127.0.0.1
+          NOC_TESTS_TELNETD_PORT: 10002
+          NOC_TESTS_SNMPD_HOST: 127.0.0.1
+          NOC_TESTS_SNMPD_PORT: 161
+          NOC_TESTS_SSHD_HOST: 127.0.0.1
+          NOC_TESTS_SSHD_PORT: 10004
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

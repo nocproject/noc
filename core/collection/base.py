@@ -484,3 +484,14 @@ class Collection(object):
             raise ValueError("Invalid JSON: No UUID")
         c.stdout.write("[%s|%s] Installing %s\n" % (c.name, data["uuid"], path))
         safe_rewrite(path, json_data, mode=0o644)
+
+    @classmethod
+    def sync_all(cls) -> None:
+        """Synchronize all collections."""
+        partials = []
+        for c in Collection.iter_collections():
+            c.sync()
+            if c.partial_errors:
+                partials.insert(0, c)
+        for c in partials:
+            c.delete_partials()

@@ -9,3 +9,4 @@ RUN \
     && chmod 500 /home/test/.ssh \
     && chmod 400 /home/test/.ssh/*
 CMD ["/usr/sbin/sshd", "-D", "-e", "-4"]
+EXPOSE 22

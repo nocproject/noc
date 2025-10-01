@@ -244,12 +244,10 @@ def run_job(jcls, mo, checks):
     assert not job.problems
 
 
-@pytest.mark.dependency(name="test_box_basic_run")
 def test_box_basic(discovery_object):
     run_job(BoxDiscoveryJob, discovery_object, ["version", "caps", "id", "interface"])
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_version_vendor(discovery_object):
     expected = get_by_path(discovery_object, "checks.version.vendor")
     if not expected:
@@ -258,7 +256,6 @@ def test_version_vendor(discovery_object):
     assert discovery_object.vendor.code == expected
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_version_platform(discovery_object):
     expected = get_by_path(discovery_object, "checks.version.platform")
     if not expected:
@@ -267,7 +264,6 @@ def test_version_platform(discovery_object):
     assert discovery_object.platform.name == expected
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_version_version(discovery_object):
     expected = get_by_path(discovery_object, "checks.version.version")
     if not expected:
@@ -276,7 +272,6 @@ def test_version_version(discovery_object):
     assert discovery_object.version.version == expected
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_capabilities(discovery_object):
     xcaps = get_by_path(discovery_object, "checks.caps")
     if not xcaps:
@@ -287,7 +282,6 @@ def test_capabilities(discovery_object):
         assert caps[expected["name"]] == expected["value"]
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_id_hostname(discovery_object):
     expected = get_by_path(discovery_object, "checks.id.hostname")
     if not expected:
@@ -297,7 +291,6 @@ def test_id_hostname(discovery_object):
     assert d.hostname == expected
 
 
-@pytest.mark.dependency(depends=["test_box_basic_run"])
 def test_id_macs(discovery_object):
     xmacs = get_by_path(discovery_object, "checks.id.macs")
     if not xmacs:

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CLI testing
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -25,6 +25,8 @@ TELNETD_HOST = config.tests.telnetd_host
 TELNETD_PORT = config.tests.telnetd_port
 TEST_USER = "test"
 TEST_PW = "pw1234567890"
+BROKEN_USER = TEST_USER + "X"
+BROKEN_PW = TEST_PW + "X"
 
 
 class ServiceStub(object):
@@ -74,7 +76,7 @@ class GetDiagScript(BaseScript):
             "ssh",
             SSHD_HOST,
             SSHD_PORT,
-            TEST_USER + "X",
+            BROKEN_USER,
             TEST_PW,
             {},
             CLIAuthFailed,
@@ -85,7 +87,7 @@ class GetDiagScript(BaseScript):
             SSHD_HOST,
             SSHD_PORT,
             TEST_USER,
-            TEST_PW + "X",
+            BROKEN_PW,
             {},
             CLIAuthFailed,
         ),
@@ -116,7 +118,7 @@ class GetDiagScript(BaseScript):
             "ssh",
             DROPBEAR_HOST,
             DROPBEAR_PORT,
-            TEST_USER + "X",
+            BROKEN_USER,
             TEST_PW,
             {},
             CLIAuthFailed,
@@ -127,7 +129,7 @@ class GetDiagScript(BaseScript):
             DROPBEAR_HOST,
             DROPBEAR_PORT,
             TEST_USER,
-            TEST_PW + "X",
+            BROKEN_PW,
             {},
             CLIAuthFailed,
         ),
@@ -158,7 +160,7 @@ class GetDiagScript(BaseScript):
             "telnet",
             TELNETD_HOST,
             TELNETD_PORT,
-            TEST_USER + "X",
+            BROKEN_USER,
             TEST_PW,
             {},
             CLIAuthFailed,
@@ -169,7 +171,7 @@ class GetDiagScript(BaseScript):
             TELNETD_HOST,
             TELNETD_PORT,
             TEST_USER,
-            TEST_PW + "X",
+            BROKEN_PW,
             {},
             CLIAuthFailed,
         ),
@@ -202,6 +204,8 @@ def test_cli(proto, host, port, user, password, args, xcls):
     result = scr.run()
     # Perform checks
     assert result
+    print(f"<<<{result['motd']}>>>")
+    print(f">>>{result['cat-motd']}<<<")
     assert result["motd"] == result["cat-motd"]
     assert result["args"] == args
     assert result["fqdn"]

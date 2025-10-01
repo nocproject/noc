@@ -1,0 +1,65 @@
+# NOC code owners
+# Lines starting with `#` will be ignored.
+# Rules defined later in the file take precedence over the rules
+# defined before.
+
+# Python files
+*.py @dv @aversant
+
+# JS files
+*.js @uncol @dv
+
+# CSS files
+*.css @uncol @dv
+
+# Jinja2 templates
+*.j2 @dv @aversant
+
+# Tests
+/tests/ @dv
+
+# Dependencies
+pyproject.toml @dv @aversant
+
+# Ansible Deploy
+/ansible/ @EKbfh
+
+# Fixes
+/fixes/ @dv @aversant
+
+# Profiles
+/sa/profiles/ @dv @aversant @dmitryluhtionov
+
+# Configuration
+/config.py @dv @aversant @EKbfh
+
+# Core
+/core/ @dv @aversant
+/core/config/ @dv @aversant @EKbfh
+
+# Models
+models/ @dv @aversant
+
+# Commands
+/commands/ @dv @aversant
+
+# Services
+/services/ @dv @aversant
+
+# Rust
+/rust/ @dv
+
+# Documentation
+/docs/ @dv
+
+# Codeowners itself
+CODEOWNERS @dv
+
+# CI settings
+/.gitlab-ci.yml @dv @EKbfh
+
+# Docker files
+/.docker/ @dv @EKbfh
+
+# Github
+.github/ @dv

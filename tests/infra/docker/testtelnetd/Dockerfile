@@ -5,3 +5,4 @@ RUN \
     && adduser -S -h /home/test -s /bin/sh test \
     && (echo "test:pw1234567890" | /usr/sbin/chpasswd) 
 CMD ["/usr/sbin/telnetd", "-F"]
+EXPOSE 23

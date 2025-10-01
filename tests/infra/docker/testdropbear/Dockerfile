@@ -11,3 +11,4 @@ RUN \
     && chmod 500 /home/test/.ssh \
     && chmod 400 /home/test/.ssh/*
 CMD ["/usr/sbin/dropbear", "-F", "-E"]
+EXPOSE 22
