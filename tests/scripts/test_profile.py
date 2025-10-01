@@ -28,24 +28,20 @@ def sa_profile(request):
     return request.param
 
 
-@pytest.mark.dependency(name="iter_profiles")
 def test_iter_profiles():
     assert len(list(loader.iter_profiles())) > 0
 
 
-@pytest.mark.dependency(name="profile_loading", depends=["iter_profiles"])
 def test_profile_loading(sa_profile):
     profile = loader.get_profile(sa_profile)
     assert profile is not None
 
 
-@pytest.mark.dependency(depends=["profile_loading"])
 def test_profile_type(sa_profile):
     profile = loader.get_profile(sa_profile)
     assert issubclass(profile, BaseProfile)
 
 
-@pytest.mark.dependency(depends=["profile_loading"])
 def test_profile_name(sa_profile):
     profile = loader.get_profile(sa_profile)
     assert getattr(profile, "name"), "Profile should has name"

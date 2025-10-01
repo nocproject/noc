@@ -1,0 +1,39 @@
+name: Build Docs
+env:
+  PIP_CACHE_DIR: .pip
+  PYTHONPATH: src
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/build-docs.yml"
+      - "mkdocs.yml"
+      - "pypproject.toml"
+      - "docs/**"
+      - "**.md"
+  release:
+    types: ["published"]
+jobs:
+  build-push:
+    name: "Build & Push Docs"
+    runs-on: ubuntu-24.04
+    steps:
+      # Checkout source code
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Cache dependencies
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        with:
+          path: ./.pip
+          key: ${{ runner.os }}-docs-${{ hashFiles('pyproject.toml') }}
+
+      # Install dependencies
+      - name: Install Dependencies
+        run: pip install -IU -e .[docs]
+
+      - name: Build Docs (Testing)
+        run: mkdocs build
+
+      # - name: Build & Deploy Docs
+      #   run: mkdocs gh-deploy --force

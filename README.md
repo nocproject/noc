@@ -1,3 +1,6 @@
+[![codecov](https://codecov.io/gh/gufolabs/noc/graph/badge.svg?token=s2OGCsO5ZW)](https://codecov.io/gh/gufolabs/noc)
+![Sponsors](https://img.shields.io/github/sponsors/gufolabs)
+
 # NOC Project
 ![logo_180px](https://cdn.getnoc.com/logo/logo_180px.png)
 
@@ -6,7 +9,6 @@
 
 
 > NOC project is an Operation Support System (OSS) for telecom companies, service providers, and enterprise Network Operation Centers (NOC)
-
 
 ### [Homepage](https://getnoc.com/)
 

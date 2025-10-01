@@ -1,0 +1,5 @@
+ignore:
+  - ansible/
+  - tests/
+  - "**/*.pyi"
+  - "coverage.xml"

@@ -13,12 +13,15 @@ from .util import get_models, get_documents
 
 
 @pytest.mark.parametrize("model", get_models())
-def test_model_str(model):
+def test_model_str(model, database):
     for o in model.objects.all():
-        assert str(o)
+        s = str(o)
+        assert s
+        assert isinstance(s, str)
 
 
 @pytest.mark.parametrize("model", get_documents())
-def test_document_str(model):
+def test_document_str(model, database):
     for o in model.objects.all():
-        assert isinstance(str(o), str)
+        s = str(o)
+        assert isinstance(s, str)

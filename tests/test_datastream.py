@@ -18,6 +18,7 @@ import bson
 from noc.core.datastream.base import DataStream
 from noc.core.perf import metrics
 from noc.core.datastream.loader import loader
+from .conftest import IN_GITHUB_ACTIONS
 
 
 class ExampleDataStream(DataStream):
@@ -49,12 +50,10 @@ def test_datastream_base():
         DataStream.get_object(1)
 
 
-@pytest.mark.dependency(name="datastream_collection_name")
 def test_datastream_collection_name():
     assert ExampleDataStream.get_collection_name() == "ds_example"
 
 
-@pytest.mark.dependency(name="datastream_collection", depends=["datastream_collection_name"])
 def test_datastream_collection():
     ExampleDataStream.ensure_collection()
     # Test collection exists
@@ -66,7 +65,6 @@ def test_datastream_collection():
     assert ii["change_id_1"].get("unique")
 
 
-@pytest.mark.dependency(name="datastream_hash")
 def test_datastream_hash():
     data = {"id": 1, "name": "test"}
     assert ExampleDataStream.get_hash(data) == "5757d197ae2f024e"
@@ -77,9 +75,6 @@ def ds_index(request):
     return request.param
 
 
-@pytest.mark.dependency(
-    name="datastream_update", depends=["datastream_hash", "datastream_collection"]
-)
 def test_datastream_update(ds_index):
     coll = ExampleDataStream.get_collection()
     # Generate update
@@ -114,12 +109,10 @@ def test_datastream_update(ds_index):
     assert doc["change_id"] == change_id
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_total():
     assert ExampleDataStream.get_total() == 10
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_limit():
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(limit=3):
@@ -128,7 +121,6 @@ def test_datastream_iter_data_limit():
     assert seen == {1, 2, 3}
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data():
     seen = set()
     last_change = None
@@ -141,7 +133,6 @@ def test_datastream_iter_data():
     assert seen == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id1():
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3)"]):
@@ -150,7 +141,6 @@ def test_datastream_iter_data_id1():
     assert seen == {3}
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id2():
     seen = set()
     for id, change_id, data in ExampleDataStream.iter_data(filters=["id(3,7)"]):
@@ -159,7 +149,6 @@ def test_datastream_iter_data_id2():
     assert seen == {3, 7}
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_id_type_check():
     with pytest.raises(ValueError):
         next(ExampleDataStream.iter_data(filters=3))
@@ -169,7 +158,6 @@ def test_datastream_iter_data_id_type_check():
         next(ExampleDataStream.iter_data(change_id="3"))
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_iter_data_chunked():
     seen = set()
     last_change = None
@@ -201,7 +189,6 @@ def test_datastream_iter_data_chunked():
     assert list(ExampleDataStream.iter_data(change_id=last_change, limit=3)) == []
 
 
-@pytest.mark.dependency(depends=["datastream_update"])
 def test_datastream_key_error(ds_index):
     coll = NoEvenDatastream.get_collection()
     NoEvenDatastream.update_object(ds_index)
@@ -276,6 +263,7 @@ def test_loader_contains(datastream_name):
     assert datastream_name in loader
 
 
+@pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Replica set is disabled")
 def test_wait():
     class WaitDS(DataStream):
         name = "wait"
