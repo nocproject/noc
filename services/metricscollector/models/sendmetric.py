@@ -25,6 +25,6 @@ class SendMetric:
     def key(self) -> int:
         if self.managed_object:
             return self.managed_object
-        elif self.service:
+        if self.service:
             return self.service
         return 0
