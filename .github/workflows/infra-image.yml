@@ -1,0 +1,84 @@
+name: Build Test Images
+on:
+  push:
+    branches: [master]
+    paths:
+      - tests/infra/docker/**
+  pull_request:
+    paths:
+      - tests/infra/docker/**
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      testdropbear: ${{ steps.filter.outputs.testdropbear }}
+      testsnmpd: ${{ steps.filter.outputs.testsnmpd }}
+      testsshd: ${{ steps.filter.outputs.testsshd }}
+      testtelnetd: ${{ steps.filter.outputs.testtelnetd }}
+    steps:
+      - name: Filter Items
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            testdropbear:
+              - 'tests/infra/docker/testdropbear/**'
+            testsnmpd:
+              - 'tests/infra/docker/testsnmpd/**'
+            testsshd:
+              - 'tests/infra/docker/testsshd/**'
+            testtelnetd:
+              - 'tests/infra/docker/testtelnetd/**'
+  build:
+    needs: [changes]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        include:
+          - service: testdropbear
+            changed: ${{ needs.changes.outputs.testdropbear }}
+          - service: testsnmpd
+            changed: ${{ needs.changes.outputs.testsnmpd }}
+          - service: testsshd
+            changed: ${{ needs.changes.outputs.testsshd }}
+          - service: testtelnetd
+            changed: ${{ needs.changes.outputs.testtelnetd }}
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+        if: matrix.changed == 'true'
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        if: matrix.changed == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read version
+        id: version
+        if: matrix.changed == 'true'
+        run: |
+          VERSION=$(cat tests/infra/docker/${{ matrix.service }}/VERSION)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build Docker image
+        if: matrix.changed == 'true'
+        run: |
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ steps.version.outputs.version }} \
+            tests/infra/docker/${{ matrix.service }}
+
+      - name: Push image (main only)
+        if: github.ref == 'refs/heads/master' && matrix.changed == 'true'
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ steps.version.outputs.version }}
+
+      - name: Push PR preview image
+        if: github.event_name == 'pull_request' && matrix.changed == 'true'
+        run: |
+          PR_TAG=${{ steps.version.outputs.version }}-pr-${{ github.event.pull_request.number }}
+          docker tag ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ steps.version.outputs.version }} \
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:$PR_TAG
+          docker push ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:$PR_TAG
