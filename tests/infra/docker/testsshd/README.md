@@ -1,4 +1,6 @@
-Testing container with alpine linux and OpenSSH server
+# testsshd image
+
+Testing container with alpine linux and OpenSSH server.
 
 Login as test/pw1234567890
 
