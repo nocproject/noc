@@ -174,7 +174,7 @@
         {
             "name": "g0/5",
             "description": "GigaEthernet0/5 copper",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "protocols": [
                 {
@@ -208,7 +208,7 @@
         {
             "name": "g0/6",
             "description": "GigaEthernet0/6 copper",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "protocols": [
                 {
@@ -242,7 +242,7 @@
         {
             "name": "g0/7",
             "description": "GigaEthernet0/7 copper",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "protocols": [
                 {
@@ -276,7 +276,7 @@
         {
             "name": "g0/8",
             "description": "GigaEthernet0/8 copper",
-            "direction": "i",
+            "direction": "s",
             "gender": "f",
             "protocols": [
                 {
