@@ -37,7 +37,7 @@ services:
       MONGO_REPL_SET_HOSTS: mongo
     entrypoint: sh /rs-init.sh
     healthcheck:
-      test: [ "CMD", "grep", "healthy", "/tmp/job_is_done" ]
+      test: ["CMD", "grep", "healthy", "/tmp/job_is_done"]
       interval: 3s
       timeout: 3s
       retries: 100
@@ -55,15 +55,7 @@ services:
           size: "512M"
     command: -c fsync=off
     healthcheck:
-      test:
-        [
-          "CMD",
-          "su",
-          "-",
-          "postgres",
-          "-c",
-          "psql -U noc -l | grep noc"
-        ]
+      test: ["CMD", "su", "-", "postgres", "-c", "psql -U noc -l | grep noc"]
       interval: 3s
       timeout: 3s
       retries: 100
@@ -103,10 +95,7 @@ services:
         condition: service_started
       snmpd:
         condition: service_started
-    command: >
-      sh -c "set -xe && ./noc test run --junit-report=build/reports/py-test-junit.xml --statistics "
-    environment:
-      NOC_TEST_DB: noc_tests
+    command: pytest --maxfail=10 tests/
     env_file:
       - noc.conf
     volumes:
