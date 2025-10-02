@@ -1,9 +1,18 @@
 # ----------------------------------------------------------------------
 # Password hashers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+"""
+Password hasher implementations.
+
+NB: Weak and insecure MD5 and SHA1 used only to migrate
+historic data and only used for correctly change password
+to strong algorithms, so it cannot considered a security
+flaw and all scanner's complains are suppressed.
+"""
 
 # Python modules
 import hashlib
@@ -158,6 +167,7 @@ class UnsaltedMd5Hasher(BaseHasher):
     def verify(cls, password: str, encoded: str) -> bool:
         if encoded.startswith("md5$$"):
             encoded = encoded[5:]
+        # codeql[py/weak-sensitive-data-hashing]
         h = hashlib.md5(password.encode()).hexdigest()
         return cls.compare(h, encoded)
 
@@ -180,6 +190,7 @@ class Md5Hasher(BaseHasher):
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
         salt, res_hash = encoded[4:].split("$", 1)
+        # codeql[py/weak-sensitive-data-hashing]
         h = hashlib.md5((salt + password).encode()).hexdigest()
         return cls.compare(h, res_hash)
 
@@ -203,6 +214,7 @@ class UnsaltedSha1Hasher(BaseHasher):
 
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
+        # codeql[py/weak-sensitive-data-hashing]
         h = hashlib.sha1(password.encode()).hexdigest()
         return cls.compare(h, encoded[6:])
 
@@ -225,6 +237,7 @@ class Sha1Hasher(BaseHasher):
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
         salt, res_hash = encoded[5:].split("$", 1)
+        # codeql[py/weak-sensitive-data-hashing]
         h = hashlib.sha1((salt + password).encode()).hexdigest()
         return cls.compare(h, res_hash)
 
