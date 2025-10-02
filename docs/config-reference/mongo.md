@@ -20,6 +20,15 @@ Mongo service configuration
 | Key-Value Path | `mongo/db`     |
 | Environment    | `NOC_MONGO_DB` |
 
+## authentication_source
+
+|                |                                   |
+| -------------- | --------------------------------- |
+| Default value  | `None`                            |
+| YAML Path      | `mongo.authentication_source`     |
+| Key-Value Path | `mongo/authentication_source`     |
+| Environment    | `NOC_MONGO_AUTHENTICATION_SOURCE` |
+
 ## user
 
 |                |                  |
