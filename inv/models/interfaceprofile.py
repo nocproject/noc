@@ -327,7 +327,7 @@ class InterfaceProfile(Document):
     )
     def get_interface_profile_metrics(cls, p_id: ObjectId) -> Dict[str, MetricConfig]:
         r = {}
-        ipr = InterfaceProfile.get_by_id(id=p_id)
+        ipr = InterfaceProfile.get_by_id(p_id)
         if not ipr:
             return r
         for m in ipr.metrics:

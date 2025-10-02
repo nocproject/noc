@@ -1126,7 +1126,7 @@ class ManagedObjectProfile(NOCModel):
     )
     def get_object_profile_metrics(cls, p_id: int) -> Dict[str, MetricConfig]:
         r = {}
-        opr = ManagedObjectProfile.get_by_id(id=p_id)
+        opr = ManagedObjectProfile.get_by_id(p_id)
         if not opr:
             return r
         for m in opr.metrics:
