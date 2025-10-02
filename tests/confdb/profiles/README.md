@@ -3,7 +3,7 @@ Test are processed by tests/confdb/test_profiles.py runner.
 
 ## Run manually
 ```
-$ ./noc test run -vv tests/confdb/test_profiles.py
+$ pytest -vv tests/confdb/test_profiles.py
 ```
 
 ## Tests directory tree

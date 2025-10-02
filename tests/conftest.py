@@ -122,7 +122,6 @@ def db_postgres(request):
     """Create and destroy postgres database."""
     _create_pg_db()
     yield
-    _drop_pg_db()
 
 
 @pytest.fixture(scope="session")
@@ -130,23 +129,18 @@ def db_mongo(request):
     """Create and destroy mongo database."""
     _create_mongo_db()
     yield
-    _drop_mongo_db()
 
 
 @pytest.fixture(scope="session")
 def db_clickhouse(request):
     """Create and destroy ClickHouse database."""
-    _create_clickhouse_db()
     yield
-    _drop_clickhouse_db()
 
 
 @pytest.fixture(scope="session")
 def db_kafka(request):
     """Create and destroy Kafka cluster."""
-    _create_kafka_db()
     yield
-    _drop_kafka_db()
 
 
 @pytest.fixture(scope="session")
@@ -163,32 +157,26 @@ def database(request, db_postgres, db_mongo, db_clickhouse, db_kafka):
 
 @with_timing("create_pg_db")
 def _create_pg_db():
-    """Create postgres test database."""
+    """Check postgres test database."""
     import psycopg2
     from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-    db = config.pg_connection_args.copy()
-    database = db["database"]
-    connect = psycopg2.connect(**db)
-    connect.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
-    with connect.cursor() as cursor:
-        # Check for database exists
-        cursor.execute(
-            "SELECT 1 FROM pg_database WHERE datname = %s",
-            [database],
-        )
-        row = cursor.fetchone()
-        if not row:
-            cursor.execute(f"CREATE DATABASE {database} ENCODING 'UTF-8'")
-            # Check
-            cursor.execute(
-                "SELECT 1 FROM pg_database WHERE datname = %s",
-                [database],
-            )
-            row = cursor.fetchone()
-            if not row:
-                msg = f"Database {database} does not exist"
-                raise RuntimeError(msg)
+    try:
+        connect = psycopg2.connect(**config.pg_connection_args)
+        connect.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+        with connect.cursor() as cursor:
+            # Check for database responds
+            cursor.execute("SELECT 1")
+            if not cursor.fetchone():
+                raise RuntimeError("postgres database is not operational")
+            # Check if database is clean to prevent data destruction
+            cursor.execute("SELECT to_regclass('auth_user')")
+            row = cursor.fetchone()  # Always returns one row
+            if row[0] is not None:
+                raise RuntimeError("database is not clean")
+    except psycopg2.OperationalError as e:
+        msg = f"Failed to connect to postgres database: {e}"
+        raise RuntimeError(msg)
 
 
 @with_timing("create_mongo_db")
@@ -205,30 +193,7 @@ def _create_mongo_db():
     if not doc or "ping" not in doc or doc["ping"] != 1:
         msg = "Mongodb check failed: record insertion failed"
         raise RuntimeError(msg)
-
-
-def _create_clickhouse_db():
-    """Create clickhouse test database."""
-
-
-def _create_kafka_db():
-    """Initialize kafka database."""
-
-
-def _drop_pg_db():
-    """Drop postgresql test database"""
-
-
-def _drop_mongo_db():
-    """Drop mongodb database."""
-
-
-def _drop_clickhouse_db():
-    """Drop clickhouse database."""
-
-
-def _drop_kafka_db():
-    """Drop kafka database."""
+    coll.drop()
 
 
 @with_timing("migrate_db")
