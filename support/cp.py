@@ -121,7 +121,10 @@ class CPClient(object):
         logger.debug("JSON-RPC REQUEST: %s", smart_text(r))
         try:
             with HttpClient(
-                user=self.account_name, password=self.account_password, validate_cert=True
+                user=self.account_name,
+                password=self.account_password,
+                validate_cert=True,
+                headers={"Content-Type": b"application/x-www-form-urlencoded"},
             ) as client:
                 code, _, res = client.post(self.cp_url + service, r)
         except Exception as e:
