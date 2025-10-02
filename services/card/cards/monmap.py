@@ -78,7 +78,7 @@ class MonMapCard(BaseCard):
 
     def get_object(self, id=None):
         if id:
-            self.root = Object.get_by_id(id=id)
+            self.root = Object.get_by_id(id)
         else:
             self.root = Object.objects.get(name=self.o_default_name)
 
