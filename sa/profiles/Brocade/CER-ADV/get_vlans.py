@@ -21,7 +21,7 @@ class Script(BaseScript):
     name = "Brocade.CER-ADV.get_vlans"
     interface = IGetVlans
     rx_vlan_line = re.compile(
-        "^\\S+\\s(?P<vlan_id>\\d+)\\,\\sName\\s(?P<name>[A-z0-9\\-\\_]+?),.+$"
+        "^\\S+\\s(?P<vlan_id>\\d+)\\,\\sName\\s(?P<name>[A-Za-z0-9\\-\\_]+?),.+$"
     )
 
     def execute(self):
