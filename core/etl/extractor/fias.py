@@ -9,7 +9,6 @@
 import dbf
 import csv
 import logging
-import requests
 import os
 import re
 from datetime import datetime
@@ -23,6 +22,7 @@ from ..models.address import Address
 from ..models.building import Building
 from ..models.admdiv import AdmDiv
 from noc.core.etl.remotesystem.base import BaseRemoteSystem
+from noc.core.http.sync_client import HttpClient
 
 logger = logging.getLogger(__name__)
 
@@ -101,12 +101,12 @@ class AdmDivExtractor(BaseExtractor):
             os.makedirs(path)
 
     def download(self):
-        r = requests.get(self.oktmo_url, stream=True)
+        with HttpClient() as client:
+            code, _, res = client.get(self.oktmo_url)
         self.csv_path = os.path.join(self.cache_path, "oktmo.csv")
-        if r.status_code == 200:
+        if code == 200:
             with open(self.csv_path, "wb") as f:
-                for chunk in r.iter_content(1024):
-                    f.write(chunk)
+                f.write(res)
 
     def extract(self, incremental: bool = False, **kwargs) -> None:
         super().extract(incremental=incremental)
@@ -206,11 +206,11 @@ class StreetExtractor(BaseExtractor):
             or datetime.fromtimestamp(os.path.getctime(self.zip_path)).date()
             != datetime.now().date()
         ):
-            r = requests.get(self.fias_url, stream=True)
-            if r.status_code == 200:
+            with HttpClient() as client:
+                code, _, res = client.get(self.fias_url)
+            if code == 200:
                 with open(self.zip_path, "wb") as f:
-                    for chunk in r.iter_content(1024):
-                        f.write(chunk)
+                    f.write(res)
         if is_zipfile(self.zip_path):
             with ZipFile(self.zip_path, "r") as f:
                 f.extract(self.dbf_file, self.cache_path)
@@ -337,11 +337,11 @@ class AddressExtractor(BaseExtractor):
             or datetime.fromtimestamp(os.path.getctime(self.zip_path)).date()
             != datetime.now().date()
         ):
-            r = requests.get(self.fias_url, stream=True)
-            if r.status_code == 200:
+            with HttpClient() as client:
+                code, _, res = client.get(self.fias_url)
+            if code == 200:
                 with open(self.zip_path, "wb") as f:
-                    for chunk in r.iter_content(1024):
-                        f.write(chunk)
+                    f.write(res)
         if is_zipfile(self.zip_path):
             with ZipFile(self.zip_path, "r") as f:
                 f.extract(self.dbf_file, self.cache_path)
@@ -445,11 +445,11 @@ class BuildingExtractor(BaseExtractor):
             or datetime.fromtimestamp(os.path.getctime(self.zip_path)).date()
             != datetime.now().date()
         ):
-            r = requests.get(self.fias_url, stream=True)
-            if r.status_code == 200:
+            with HttpClient() as client:
+                code, _, res = client.get(self.fias_url)
+            if code == 200:
                 with open(self.zip_path, "wb") as f:
-                    for chunk in r.iter_content(1024):
-                        f.write(chunk)
+                    f.write(res)
         if is_zipfile(self.zip_path):
             with ZipFile(self.zip_path, "r") as f:
                 f.extract(self.dbf_file_house, self.cache_path)
