@@ -134,9 +134,12 @@ jobs:
       - name: Install Dependencies
         run: pip install -IU -e .[node,test,bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]
 
-      - name: Run Tests
+      - name: Run Tests (with coverage)
         run: pytest --maxfail=10 --cov --cov-branch --cov-report=xml tests/
-        env:
+        if: >
+          (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          (github.event_name == 'pull_request' && contains(join(github.event.pull_request.labels.*.name, ','), 'coverage'))
+        env: &pytest-env
           DJANGO_SETTINGS_MODULE: noc.settings
           NOC_CONFIG: env:///NOC
           NOC_MONGO_ADDRESSES: 127.0.0.1:27017
@@ -162,7 +165,19 @@ jobs:
           NOC_TESTS_SSHD_HOST: 127.0.0.1
           NOC_TESTS_SSHD_PORT: 10004
 
+      - name: Run Tests (without coverage)
+        run: pytest --maxfail=10 --cov --cov-branch --cov-report=xml tests/
+        if: >
+          !(
+            (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+            (github.event_name == 'pull_request' && contains(join(github.event.pull_request.labels.*.name, ','), 'coverage'))
+          )
+        env: *pytest-env
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
+        if: >
+          (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          (github.event_name == 'pull_request' && contains(join(github.event.pull_request.labels.*.name, ','), 'coverage'))
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

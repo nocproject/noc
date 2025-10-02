@@ -1,5 +1,7 @@
 ignore:
   - ansible/
+  - build/
+  - dist/
   - tests/
   - "**/*.pyi"
   - "coverage.xml"
