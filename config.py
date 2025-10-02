@@ -13,6 +13,7 @@ import sys
 from functools import partial
 from urllib.parse import quote as urllib_quote
 from pathlib import Path
+from typing import Dict, Union
 
 # Third-party modules
 import cachetools
@@ -1067,7 +1068,7 @@ class Config(BaseConfig):
         self.setup_logging()
 
     @property
-    def pg_connection_args(self):
+    def pg_connection_args(self) -> Dict[str, Union[str, int]]:
         """
         PostgreSQL database connection arguments
         suitable to pass to psycopg2.connect
