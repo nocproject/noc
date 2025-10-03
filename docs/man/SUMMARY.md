@@ -62,7 +62,6 @@
 * [sync-perm](sync-perm.md)
 * [sync-refbooks](sync-refbooks.md)
 * [sync](sync.md)
-* [test](test.md)
 * [todos](todos.md)
 * [translation](translation.md)
 * [user](user.md)
