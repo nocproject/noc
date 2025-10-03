@@ -11,7 +11,7 @@ Ext.define("NOC.core.PasswordGenerator", {
   chrLower: "abcdefghjkmnpqrstuvwxyz",
   chrUpper: "ABCDEFGHJKMNPQRSTUVWXYZ",
   chrNumbers: "0123456789",
-  chrSymbols: "_!@",
+  chrSymbols: "_",
 
   generate: function(length){
     var characters = this.getCharacterSet(),
