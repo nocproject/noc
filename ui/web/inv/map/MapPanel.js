@@ -366,13 +366,12 @@ Ext.define("NOC.inv.map.MapPanel", {
           badges.push(data.badges);
         }
       };
-    if(
-      data.hasOwnProperty("normalize_position") &&
-      data.normalize_position === false
-    ){
-      me.normalize_position = data.normalize_position;
+    if(data?.normalize_position === false){ // Configured Map
+      me.isConfiguredMap = true;
       me.bg_width = data.width;
       me.bg_height = data.height;
+    } else{
+      me.isConfiguredMap = false;
     }
     me.isInteractive = false;
     me.isDirty = false;
@@ -524,7 +523,6 @@ Ext.define("NOC.inv.map.MapPanel", {
       cfg,
       src,
       dst,
-      connector,
       getConnectionStyle = function(bw){
         for(var i = 0; i < me.bwStyle.length; i++){
           var s = me.bwStyle[i];
@@ -787,7 +785,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         nodes: [],
         links: [],
       };
-    if(me.normalize_position){
+    if(me.isConfiguredMap){
       var bbox = me.paper.getContentBBox();
       r.width = bbox.width - bbox.x;
       r.height = bbox.height - bbox.y;
@@ -829,7 +827,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       method: "POST",
       jsonData: r,
       scope: me,
-      success: function(response){
+      success: function(){
         NOC.info(__("Map has been saved"));
         me.isDirty = false;
         me.app.saveButton.setDisabled(true);
@@ -1133,9 +1131,6 @@ Ext.define("NOC.inv.map.MapPanel", {
             return 0.0;
           }
         },
-        hasMetric = function(port, metric){
-          return data.hasOwnProperty(port) && data[port].hasOwnProperty(metric);
-        },
         getStatus = function(port, status){
           if(data[port] && data[port][status] !== undefined){
             return data[port][status];
@@ -1211,7 +1206,7 @@ Ext.define("NOC.inv.map.MapPanel", {
             metricsName = ["Interface | Load | In", "Interface | Load | Out"];
           Ext.each(metricsName, function(metric){
             var value = "-";
-            if(hasMetric(port, metric)){
+            if(data?.[port]?.[metric] !== undefined){
               value = getTotal(port, metric);
             }
             metrics.push({metric: metric, value: value});
@@ -1418,10 +1413,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       stpNodes = [];
     // Get STP nodes
     Ext.Object.each(me.objectNodes, function(k, v){
-      if(
-        v.attributes.data.hasOwnProperty("caps") &&
-        v.attributes.data.caps.indexOf(me.CAP_STP) !== -1
-      ){
+      if(v.attributes.data?.caps?.indexOf(me.CAP_STP) !== -1){
         stpNodes.push(k);
       }
     });
@@ -1530,7 +1522,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     link.label(0, {position: 0.5});
   },
 
-  onResize: function(width, height){
+  onResize: function(){
     var me = this;
     if("paper" in me){
       me.setPaperDimension();
@@ -1548,13 +1540,13 @@ Ext.define("NOC.inv.map.MapPanel", {
       me.paper.fitToContent();
       var contentBB = me.paper.getContentBBox();
       if(contentBB && contentBB.width && contentBB.height){
-        if(me.normalize_position){
+        if(me.isConfiguredMap){
+          w = me.bg_width * (zoom || 1);
+          h = me.bg_height * (zoom || 1);
+        } else{
           w = Ext.Array.max([contentBB.width, me.getWidth()]);
           h = Ext.Array.max([contentBB.height, me.getHeight()]);
           me.paper.translate(-1 * contentBB.x + paddingX, -1 * contentBB.y + paddingY);
-        } else{
-          w = me.bg_width * (zoom || 1);
-          h = me.bg_height * (zoom || 1);
         }
         me.paper.setDimensions(w + paddingX * 2, h + paddingY * 2);
       }
