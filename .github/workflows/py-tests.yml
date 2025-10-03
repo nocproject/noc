@@ -166,7 +166,7 @@ jobs:
           NOC_TESTS_SSHD_PORT: 10004
 
       - name: Run Tests (without coverage)
-        run: pytest --maxfail=10 --cov --cov-branch --cov-report=xml tests/
+        run: pytest --maxfail=10 tests/
         if: >
           !(
             (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
