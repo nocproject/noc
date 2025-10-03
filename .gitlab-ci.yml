@@ -277,28 +277,6 @@ build:Master Image:
   tags:
     - shell
 
-#Build web section
-build:web:
-  stage: Build
-  image: node:12
-  script:
-    - cd scripts/build/web
-    - npm install
-    - node src/index.js
-  tags:
-    - docker
-  only:
-    refs:
-      - merge_requests
-    changes:
-      - "ui/web/**/*.js"
-      - "ui/web/**/*.css"
-      - "scripts/build/web/**/*"
-  artifacts:
-    paths:
-      - dist/ui/pkg/web
-      - dist/ui/pkg/web.debug
-
 .build_rust:
   image: rust:1.63
   script:
