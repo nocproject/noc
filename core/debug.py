@@ -1,13 +1,12 @@
 # ----------------------------------------------------------------------
 # Various debugging and error logging utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import sys
-import re
 import logging
 import datetime
 import os
@@ -31,7 +30,6 @@ logger = logging.getLogger(__name__)
 if not logger.handlers:
     logging.basicConfig()
 
-rx_coding = re.compile(r"coding[:=]\s*([-\w.]+)")
 
 # CP error reporting
 ENABLE_CP = config.features.cp

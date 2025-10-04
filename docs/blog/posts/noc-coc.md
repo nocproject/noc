@@ -32,3 +32,5 @@ That’s all.
 
 We worked hard to keep it simple. Respect, clarity, and collaboration are what matter most -
 and they’ve carried the NOC community from the beginning.
+
+[Comments...](https://github.com/gufolabs/noc/discussions/11)
