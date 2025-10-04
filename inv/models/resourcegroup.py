@@ -493,9 +493,9 @@ class ResourceGroup(Document):
                 },
             ]
         ):
-            labels += [f'noc::resourcegroup::{rg["name"]}::=']
+            labels += [f"noc::resourcegroup::{rg['name']}::="]
             labels += [
-                f'noc::resourcegroup::{rg_path["name"]}::<'
+                f"noc::resourcegroup::{rg_path['name']}::<"
                 for rg_path in rg["_path"]
                 if rg["_id"] != rg_path["_id"]
             ]

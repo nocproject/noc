@@ -54,8 +54,8 @@ def fix():
                     # print(f'clickhouse-client -h {rep2} --query="{query}"\n\n')
             rep2_migrate = "\n\n".join(rep2_migrate)
             rep1_migrate = "\n\n".join(rep1_migrate)
-            print(f'\n{"="*10}Migrate: {rep1} to {rep2}{"="*10}\n{rep2_migrate}')
-            print(f'\n{"="*10}Migrate: {rep2} to {rep1}{"="*10}\n{rep1_migrate}')
+            print(f"\n{'=' * 10}Migrate: {rep1} to {rep2}{'=' * 10}\n{rep2_migrate}")
+            print(f"\n{'=' * 10}Migrate: {rep2} to {rep1}{'=' * 10}\n{rep1_migrate}")
     else:
         for ms in MetricScope.objects.filter():
             for start, stop in iter_time_interval():
@@ -91,7 +91,7 @@ def get_insert_query(metric_scope: "MetricScope", start, stop, remote=None):
         if fn == "path" and path_ex:
             insert_fields += ["labels"]
             select_fields += [
-                f'arrayFilter(x -> NOT endsWith(x, \'::\'), [{", ".join(path_ex)}]) as labels'
+                f"arrayFilter(x -> NOT endsWith(x, '::'), [{', '.join(path_ex)}]) as labels"
             ]
             continue
         if fn == "path":
@@ -100,8 +100,8 @@ def get_insert_query(metric_scope: "MetricScope", start, stop, remote=None):
         select_fields += [fn]
     return (
         f"INSERT INTO {DEST_DB_NAME}.{metric_scope._get_raw_db_table()} "
-        f'({", ".join(insert_fields)}) '
-        f'SELECT {", ".join(select_fields)} '
+        f"({', '.join(insert_fields)}) "
+        f"SELECT {', '.join(select_fields)} "
         f"FROM {query_from} "
         f"WHERE date >= '{start.date().isoformat()}' AND date < '{stop.date().isoformat()}' ;"
     )

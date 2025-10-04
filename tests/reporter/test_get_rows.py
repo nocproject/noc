@@ -17,11 +17,7 @@ from noc.core.reporter.types import ReportQuery
 
 query1 = ReportQuery(name="query1")
 query1.json_data = (
-    "["
-    '{"id": 1, "name": "entity1"},'
-    '{"id": 2, "name": "entity2"},'
-    '{"id": 3, "name": "entity3"}'
-    "]"
+    '[{"id": 1, "name": "entity1"},{"id": 2, "name": "entity2"},{"id": 3, "name": "entity3"}]'
 )
 
 query_empty = ReportQuery(name="query_empty")

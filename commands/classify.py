@@ -49,7 +49,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         connect()
         cmd = options.pop("cmd")
-        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def parse_syslog_text(self, profile: str, filepath: Path) -> List[Event]:
         """

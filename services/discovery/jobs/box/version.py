@@ -43,7 +43,7 @@ class VersionCheck(DiscoveryCheck):
             if self.object.object_profile.new_platform_creation_policy == "A":
                 self.set_problem(
                     alarm_class="NOC | Managed Object | New Platform",
-                    message=f'New platform ({vendor}: {result["platform"]}) creation is denied by policy',
+                    message=f"New platform ({vendor}: {result['platform']}) creation is denied by policy",
                     fatal=True,
                 )
             else:

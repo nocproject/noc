@@ -88,7 +88,7 @@ class MatchRule(EmbeddedDocument):
         return r
 
     def __str__(self):
-        return f'{self.dynamic_order}: {", ".join(self.labels)}'
+        return f"{self.dynamic_order}: {', '.join(self.labels)}"
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))

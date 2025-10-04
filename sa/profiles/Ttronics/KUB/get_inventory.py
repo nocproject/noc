@@ -92,7 +92,7 @@ class Script(BaseScript):
                 # Current (tok) sensor connected
                 r += [
                     {
-                        "name": f'{self.nano_input_config_map[num]["type"]}{num}',
+                        "name": f"{self.nano_input_config_map[num]['type']}{num}",
                         "status": True,
                         "description": f"Универсальных вход {num}",
                         "measurement": "Ampere",
@@ -107,7 +107,7 @@ class Script(BaseScript):
             oid = self.get_oid(self.nano_input_config_map[num]["type"], num)
             r += [
                 {
-                    "name": f'{self.nano_input_config_map[num]["type"]}{num}',
+                    "name": f"{self.nano_input_config_map[num]['type']}{num}",
                     "status": True,
                     "description": f"Универсальных вход {num}",
                     "measurement": self.nano_input_config_map[num]["units"],
@@ -390,7 +390,7 @@ class Script(BaseScript):
             oid = f"1.3.6.1.3.55.1.3.1.4.{num - 1}"
             r += [
                 {
-                    "name": f'{self.femto_input_config_map[in_config]["type"]}{num}',
+                    "name": f"{self.femto_input_config_map[in_config]['type']}{num}",
                     "status": True,
                     "description": f"Универсальных вход {num}",
                     "measurement": self.femto_input_config_map[in_config]["units"],

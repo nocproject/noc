@@ -61,20 +61,20 @@ def test_signatures(name: str, is_classmethod: bool, args, return_type, model) -
     for param_name, param_type in args:
         assert param_name in sig.parameters, f"Parameter `{param_name}` is missed"
         param = sig.parameters[param_name]
-        assert (
-            param.annotation is not inspect._empty
-        ), f"Parameter `{param_name}` has no type annotation"
+        assert param.annotation is not inspect._empty, (
+            f"Parameter `{param_name}` has no type annotation"
+        )
         if inspect.isclass(param.annotation):
             pa = param.annotation.__name__
         else:
             pa = str(param.annotation)
         if callable(param_type):
             param_type = param_type(model)
-        assert (
-            pa == param_type
-        ), f"Parameter `{param_name}` must be `{param_type!s}`. Current is `{pa}`"
+        assert pa == param_type, (
+            f"Parameter `{param_name}` must be `{param_type!s}`. Current is `{pa}`"
+        )
     # Check return type signature
     expanded_type = return_type.replace("{model}", model.__name__)
-    assert (
-        str(sig.return_annotation) == expanded_type
-    ), f"Return type must be {expanded_type} (has {sig.return_annotation!s})"
+    assert str(sig.return_annotation) == expanded_type, (
+        f"Return type must be {expanded_type} (has {sig.return_annotation!s})"
+    )

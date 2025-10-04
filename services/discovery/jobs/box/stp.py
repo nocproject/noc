@@ -67,7 +67,7 @@ class STPCheck(TopologyDiscoveryCheck):
         dmap = {}
         if self.required_script not in ro.scripts:
             self.logger.info(
-                "Remote object '%s' does not support %s script. " "Cannot confirm links",
+                "Remote object '%s' does not support %s script. Cannot confirm links",
                 ro.name,
                 self.required_script,
             )

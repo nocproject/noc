@@ -377,7 +377,7 @@ class Scheduler(object):
                 r = self.collection.bulk_write(self.bulk)
                 dt = perf_counter() - t0
                 self.logger.info(
-                    "%d bulk operations complete in %dms: " "inserted=%d, updated=%d, removed=%d",
+                    "%d bulk operations complete in %dms: inserted=%d, updated=%d, removed=%d",
                     len(self.bulk),
                     int(dt * 1000),
                     r.inserted_count,

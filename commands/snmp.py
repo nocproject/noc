@@ -92,7 +92,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         cmd = options["cmd"]
-        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     @staticmethod
     def parse_credentials(snmp_user: str):

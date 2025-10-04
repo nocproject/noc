@@ -513,7 +513,7 @@ class CHTableReportDataSource(ReportDataSource):
         return self.TABLE_NAME
 
     def get_object_filter(self, ids) -> str:
-        return f'{self.object_field} IN ({", ".join([str(c) for c in ids])})'
+        return f"{self.object_field} IN ({', '.join([str(c) for c in ids])})"
 
     group_intervals = {
         "HOUR": "toStartOfHour(toDateTime(ts))",
@@ -552,7 +552,7 @@ class CHTableReportDataSource(ReportDataSource):
                     break
             op = ff.get("op", "IN")
             if op == "IN":
-                f_value = f'{tuple(ff["value"])}'
+                f_value = f"{tuple(ff['value'])}"
             else:
                 f_value = ff["value"][0]
             q = f"{f_name} {op} {f_value}"
@@ -593,16 +593,16 @@ class CHTableReportDataSource(ReportDataSource):
         if "q_having" in custom_conditions:
             query_map["q_having"] = custom_conditions["q_having"]
         query = [
-            f'SELECT {",".join(query_map["q_select"])}',
+            f"SELECT {','.join(query_map['q_select'])}",
             f"FROM {self.get_table()}",
-            f'WHERE {" AND ".join(query_map["q_where"])}',
+            f"WHERE {' AND '.join(query_map['q_where'])}",
         ]
         if "q_group" in query_map and query_map["q_group"]:
-            query += [f'GROUP BY {",".join(query_map["q_group"])}']
+            query += [f"GROUP BY {','.join(query_map['q_group'])}"]
         if "q_having" in query_map and query_map["q_having"]:
-            query += [f'HAVING {" AND ".join(query_map["q_having"])}']
+            query += [f"HAVING {' AND '.join(query_map['q_having'])}"]
         if "q_order_by" in query_map:
-            query += [f'ORDER BY {",".join(query_map["q_order_by"])}']
+            query += [f"ORDER BY {','.join(query_map['q_order_by'])}"]
         if self.rows:
             query += [f"LIMIT {self.rows}"]
         if r_format:

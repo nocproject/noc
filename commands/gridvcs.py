@@ -104,7 +104,7 @@ class Command(BaseCommand):
             self.clean_id = lambda y: int(y)
         else:
             self.clean_id = lambda y: y
-        return getattr(self, f'handle_{options["cmd"].replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{options['cmd'].replace('-', '_')}")(*args, **options)
 
     def handle_show(self, *args, **options):
         for o_id in args:

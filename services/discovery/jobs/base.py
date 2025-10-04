@@ -460,7 +460,7 @@ class DiscoveryCheck(object):
         caps = self.get_caps()
         for cn in self.required_capabilities:
             if cn not in caps:
-                self.logger.info("Object hasn't required capability '%s'. " "Skipping", cn)
+                self.logger.info("Object hasn't required capability '%s'. Skipping", cn)
                 return False
             v = caps[cn]
             if not v:
@@ -1084,7 +1084,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         li = self.get_interface_by_name(mo=local_object, name=local_interface)
         if not li:
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                "Not linking: %s:%s -- %s:%s. Interface %s:%s is not discovered",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1096,7 +1096,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         ri = self.get_interface_by_name(mo=remote_object, name=remote_interface)
         if not ri:
             self.logger.info(
-                "Not linking: %s:%s -- %s:%s. " "Interface %s:%s is not discovered",
+                "Not linking: %s:%s -- %s:%s. Interface %s:%s is not discovered",
                 local_object.name,
                 local_interface,
                 remote_object.name,
@@ -1378,7 +1378,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     )
                 return
         self.logger.info(
-            "Not linking: %s:%s -- %s:%s. " "Link creating not allowed",
+            "Not linking: %s:%s -- %s:%s. Link creating not allowed",
             local_object.name,
             local_interface,
             remote_object.name,

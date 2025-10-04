@@ -33,7 +33,7 @@ class Script(BaseScript):
             suffix = "exact" if l["strict"] else "orlonger"
             # Retrieve prefix list
             pl = self.cli(
-                "show configuration policy-options policy-statement %s | " "display set" % name
+                "show configuration policy-options policy-statement %s | display set" % name
             )
             applied_pl = set()
             for ln in pl.splitlines():
@@ -50,8 +50,7 @@ class Script(BaseScript):
             ]
             # Add new records
             actions += [
-                "set policy-options policy-statement %s term pass from "
-                "route-filter %s" % (name, x)
+                "set policy-options policy-statement %s term pass from route-filter %s" % (name, x)
                 for x in new_pl.difference(applied_pl)
             ]
             result += [{"name": name, "status": True}]

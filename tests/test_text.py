@@ -34,12 +34,12 @@ from noc.core.text import (
     "value,kwargs,expected",
     [
         (
-            "First Second Third\n" "----- ------ -----\n" "a     b       c\n" "ddd   eee     fff\n",
+            "First Second Third\n----- ------ -----\na     b       c\nddd   eee     fff\n",
             {},
             [["a", "b", "c"], ["ddd", "eee", "fff"]],
         ),
         (
-            "First Second Third\n" "----- ------ -----\n" "a             c\n" "ddd   eee     fff\n",
+            "First Second Third\n----- ------ -----\na             c\nddd   eee     fff\n",
             {},
             [["a", "", "c"], ["ddd", "eee", "fff"]],
         ),
