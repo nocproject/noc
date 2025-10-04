@@ -14,7 +14,7 @@ from multiprocessing.pool import ThreadPool
 # Third-party modules
 import minify_html
 
-DOCS = Path("build", "docs")
+DOCS = Path("dist", "docs")
 MB = float(1 << 20)
 INDEX_HTML = DOCS / "index.html"
 INDEX_HTML_RU = DOCS / "ru" / "index.html"

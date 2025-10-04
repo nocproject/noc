@@ -2,8 +2,8 @@ site_name: NOC
 site_description: NOC, the open-source network management system
 site_author: Gufo Labs
 site_url: https://getnoc.com/
-repo_url: https://code.getnoc.com/noc/noc/
-repo_name: Gitlab
+repo_url: https://github.com/gufolabs/noc
+repo_name: GitHub
 edit_uri: -/edit/master/docs/
 copyright: 2007-2025, Gufo Labs
 nav:
@@ -16,6 +16,8 @@ nav:
       - Quickstart: quickstart-guide/index.md
       - Community Guide:
           - Overview: community-guide/index.md
+          - Code of Conduct: CODE_OF_CONDUCT.md
+          - Contributing: CONTRIBUTING.md
           - English Telegram: community-guide/tg-en.md
           - Russian Telegram: community-guide/tg-ru.md
       - Docs Contributing Guide: docs-contributing-guide/index.md
@@ -279,7 +281,7 @@ theme:
 extra_css:
   - assets/extra.css
 use_directory_urls: true
-site_dir: build/docs
+site_dir: dist/docs
 strict: false
 markdown_extensions:
   - toc:

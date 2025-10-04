@@ -4,12 +4,16 @@ env:
   PYTHONPATH: src
 on:
   pull_request:
-    paths:
+    paths: &on-paths
       - ".github/workflows/build-docs.yml"
       - "mkdocs.yml"
       - "pypproject.toml"
+      - "macros.py"
       - "docs/**"
       - "**.md"
+  push:
+    branches: [master]
+    paths: *on-paths
   release:
     types: ["published"]
 jobs:
@@ -17,9 +21,13 @@ jobs:
     name: "Build & Push Docs"
     runs-on: ubuntu-24.04
     steps:
-      # Checkout source code
-      - name: Checkout
+      - name: Checkout Repo
         uses: actions/checkout@v4
+
+      - name: Set Up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       # Cache dependencies
       - name: Cache Dependencies
@@ -32,8 +40,12 @@ jobs:
       - name: Install Dependencies
         run: pip install -IU -e .[docs]
 
-      - name: Build Docs (Testing)
+      - name: Build Docs
         run: mkdocs build
 
-      # - name: Build & Deploy Docs
-      #   run: mkdocs gh-deploy --force
+      - name: Minify Docs
+        run: python3 scripts/docs/minify.py
+
+      - name: Build & Deploy Docs
+        run: mkdocs gh-deploy --force
+        if: "github.ref == 'refs/heads/master'"
