@@ -68,8 +68,8 @@ class ReportObjectCaps(BaseReportColumn):
             )
             for v in value:
                 r = {
-                    f'c_{ll["item"]}': ll["val"]
+                    f"c_{ll['item']}": ll["val"]
                     for ll in v["cap"]
-                    if f'c_{ll["item"]}' in self.ATTRS
+                    if f"c_{ll['item']}" in self.ATTRS
                 }
                 yield v["_id"], Caps(**r)

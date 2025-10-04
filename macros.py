@@ -223,7 +223,7 @@ def define_env(env):
         r.append(f"- **YAML Path:** `{param}`")
         kv_path = param.replace(".", "/")
         r.append(f"- **Key-value Path:** `{kv_path}`")
-        env_path = f"NOC_{param.replace('.','_').upper()}"
+        env_path = f"NOC_{param.replace('.', '_').upper()}"
         r.append(f"- **Environment:** `{env_path}`")
         r.append("")
         return "\n".join(r)

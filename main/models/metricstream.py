@@ -65,7 +65,7 @@ class MetricStream(Document):
             f'    "scope": "{self.scope.name}",',
             '    "bi_id": input["managed_object"],',
             '    "labels": input.get("labels", []),',
-            '    "meta": input.get("meta"),' "    }",
+            '    "meta": input.get("meta"),    }',
             '    if "ts" in input:',
             '        v["ts"] = input["ts"].replace(" ", "T")',
             '    if "service" in input:',

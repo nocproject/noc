@@ -266,7 +266,7 @@ class Sensor(Document):
             if sensor.snmp_oid:
                 hints.append(f"oid::{sensor.snmp_oid}")
             if sensor.object and sensor.object.get_data("hw_path", "slot"):
-                hints.append(f'slot::{sensor.object.get_data("hw_path", "slot")}')
+                hints.append(f"slot::{sensor.object.get_data('hw_path', 'slot')}")
             yield MetricCollectorConfig(
                 collector="sensor",
                 metrics=tuple(metrics),

@@ -109,7 +109,7 @@ class Command(BaseCommand):
             self.is_ansi = True
         cmd = options.pop("cmd")
         cmd = cmd or "total"
-        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def handle_total(self, *args, **options):
         self.handle_system(*args, **options)
@@ -193,11 +193,11 @@ class Command(BaseCommand):
             f"{'Library':{col_lib_name}} | {'Required':{col_required}} | "
             f"{'Installed':{col_installed}}"
         )
-        self.print(f"---|-{'-'*col_lib_name}-|-{'-'*col_required}-|-{'-'*col_installed}")
+        self.print(f"---|-{'-' * col_lib_name}-|-{'-' * col_required}-|-{'-' * col_installed}")
         for lib_name, lib_data in sorted(libraries.items(), key=lambda item: item[1].original_name):
             flag = lib_data.get_flag(self.is_ansi)
             self.print(
-                f"{flag} | {lib_data.original_name:{col_lib_name }} | "
+                f"{flag} | {lib_data.original_name:{col_lib_name}} | "
                 f"{lib_data.req_version:{col_required}} | "
                 f"{lib_data.inst_version:{col_installed}}"
             )

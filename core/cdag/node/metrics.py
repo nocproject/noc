@@ -115,7 +115,7 @@ class MetricsNode(BaseCDAGNode):
                 MX_LABELS: self.config.message_labels or b"",
             },
             r["bi_id"],
-            group_key=f'{self.config.scope}-{r["bi_id"]}',
+            group_key=f"{self.config.scope}-{r['bi_id']}",
         )
 
     @classmethod

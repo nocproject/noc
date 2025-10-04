@@ -206,9 +206,9 @@ class Command(BaseCommand):
                 self.print(
                     f"[{event_class_rule.name}] Testing with result: {rule.name}: '{rule.event_class_name}': {e_vars}"
                 )
-                assert (
-                    rule.event_class_id == str(event_class_rule.event_class.id)
-                ), f"Mismatched event class '{rule.event_class_name}' vs '{event_class_rule.event_class.name}'"
+                assert rule.event_class_id == str(event_class_rule.event_class.id), (
+                    f"Mismatched event class '{rule.event_class_name}' vs '{event_class_rule.event_class.name}'"
+                )
                 var_ctx = {"message": event.message}
                 var_ctx |= v
                 var_ctx |= e_vars
@@ -217,9 +217,9 @@ class Command(BaseCommand):
                 if "ifindex" in e_vars and "interface_mock" in v:
                     e_vars["interface"] = v.pop("interface_mock")
                 elif "ifindex" in e_vars:
-                    assert (
-                        "interface_mock" in e_vars
-                    ), "interface_mock Required for ifindex transform test"
+                    assert "interface_mock" in e_vars, (
+                        "interface_mock Required for ifindex transform test"
+                    )
                 try:
                     cfg = EventConfig.from_config(
                         EventClass.get_event_config(event_class_rule.event_class),

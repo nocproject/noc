@@ -356,10 +356,10 @@ class Script(GetMetricsScript):
             if item["ifindex"] in ifaces:
                 for metric, mc in self.CBQOS_OIDS_MAP[item["direction"]].items():
                     labels = ifaces[item["ifindex"]].labels + [
-                        f'noc::traffic_class::{item["cmap_name"]}'
+                        f"noc::traffic_class::{item['cmap_name']}"
                     ]
                     if "tos" in item:
-                        labels.append(f'noc::tos::{item["tos"]}')
+                        labels.append(f"noc::tos::{item['tos']}")
                     oids[mib[mc[0], item["pmap_index"], c]] = (
                         metric,
                         mc,

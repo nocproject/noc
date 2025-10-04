@@ -65,7 +65,7 @@ docs = [
   "cachetools==5.5.2", # For {{ config_param() }}
 ]
 lint = [
-  "ruff==0.6.3",
+  "ruff==0.13.3",
   "mypy==1.10",
   "black==24.8.0",
   "mongo-types==0.15.1",
@@ -183,6 +183,7 @@ ignore = [
   "A001", # A001 Variable `{name}` is shadowing a python builtin
   "A002", # A002 Argument `{name}` is shadowing a python builtin
   "A003", # Class attribute `{name}` is shadowing a python builtin"
+  "A004", # Import `sum` is shadowing a Python builtin
   "D203",
   "D212",
   "D107",
@@ -216,6 +217,9 @@ ignore = [
   "PIE804", # Unnecessary `dict` kwargs
   "PIE808", # Unnecessary `start` argument in `range`
   "PIE810", # Call `startswith` once with a `tuple`
+  "PLC0206", # Extracting value from dictionary without calling `.items()`
+  "PLC1802", # `len(left)` used as condition without comparison
+  "PLC0415", # `import` should be at the top-level of a file
   "RUF001", # String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
   "RUF002", # Docstring contains ambiguous `В` (CYRILLIC CAPITAL LETTER VE). Did you mean `B` (LATIN CAPITAL LETTER B)?
   "RUF003", # Comment contains ambiguous `С` (CYRILLIC CAPITAL LETTER ES). Did you mean `C` (LATIN CAPITAL LETTER C)?
@@ -228,6 +232,13 @@ ignore = [
   "RUF013", # PEP 484 prohibits implicit `Optional`
   "RUF015", # Prefer `next(iter(kv.keys()))` over single element slice
   "RUF019", # Unnecessary key check before dictionary access
+  "RUF021", # Parenthesize `a and b` expressions when chaining `and` and `or` together, to make the precedence clear
+  "RUF022", # `__all__` is not sorted
+  "RUF023", # `ProbeSetting.__slots__` is not sorted
+  "RUF034", # Useless `if`-`else` condition
+  "RUF046", # Value being cast to `int` is already an integer
+  "RUF051", # Use `pop` instead of `key in dict` followed by `del dict[key]`  
+  "RUF059", # Unpacked variable `epsilon` is never used
   "RUF100", # Unused blanket `noqa` directive
 ]
 # Enable

@@ -898,12 +898,12 @@ class ManagedObjectApplication(ExtModelApplication):
                     and optical_data["tx_wavelength"] != optical_data["rx_wavelength"]
                 ):
                     description += [
-                        f'{optical_data["tx_wavelength"]}nmTx/{optical_data["rx_wavelength"]}nmRx'
+                        f"{optical_data['tx_wavelength']}nmTx/{optical_data['rx_wavelength']}nmRx"
                     ]
                 else:
-                    description += [f'{optical_data["tx_wavelength"]}nmTx']
+                    description += [f"{optical_data['tx_wavelength']}nmTx"]
                 if "distance_max" in optical_data:
-                    description += [f'{optical_data["distance_max"]}km']
+                    description += [f"{optical_data['distance_max']}km"]
                 description += ["LC", "DOM"]
                 r["description"] = f"SFP Transceiver ({', '.join(description)})"
                 if "bit_rate" in optical_data:

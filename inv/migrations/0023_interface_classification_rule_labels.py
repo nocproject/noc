@@ -209,7 +209,7 @@ class Migration(BaseMigration):
                 {
                     "order": 5,
                     "description": "",
-                    "mlabels": [f'noc::serviceprofile::{profile["name"]}::='],
+                    "mlabels": [f"noc::serviceprofile::{profile['name']}::="],
                 }
             ]
         # Main loop

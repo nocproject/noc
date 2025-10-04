@@ -261,7 +261,7 @@ class MetricScope(Document):
         Get CREATE TABLE for Distributed engine
         :return:
         """
-        return "CREATE TABLE IF NOT EXISTS %s " "AS %s " "ENGINE = Distributed(%s, %s, %s)" % (
+        return "CREATE TABLE IF NOT EXISTS %s AS %s ENGINE = Distributed(%s, %s, %s)" % (
             self._get_distributed_db_table(),
             self._get_raw_db_table(),
             config.clickhouse.cluster,

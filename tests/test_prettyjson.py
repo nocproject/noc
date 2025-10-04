@@ -16,7 +16,7 @@ from noc.core.prettyjson import to_json
     "config, expected",
     [
         ({"key1": "value1", "key2": "value2", "key3": "value3"}, True),
-        (["key1" "value1" "key2" "value2" "key3" "value3"], False),
+        (["key1value1key2value2key3value3"], False),
     ],
 )
 def test_prettyjson(config, expected):

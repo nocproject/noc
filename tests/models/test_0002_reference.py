@@ -74,9 +74,9 @@ def test_on_delete_check(model, refs):
         # Check Model exists
         get_model(c[0])
         if "__" not in c[1] and "." not in c[1]:
-            assert hasattr(
-                get_model(c[0]), c[1]
-            ), f"@on_delete_check reference to unknown model field {c[0]}:{c[1]}"
+            assert hasattr(get_model(c[0]), c[1]), (
+                f"@on_delete_check reference to unknown model field {c[0]}:{c[1]}"
+            )
 
 
 @pytest.mark.parametrize("model,remote_model,remote_field", iter_references())

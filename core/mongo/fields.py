@@ -89,7 +89,7 @@ class PlainReferenceField(BaseField):
             id_ = document.id
             if id_ is None:
                 raise ValidationError(
-                    "You can only reference documents once " "they have been saved to the database"
+                    "You can only reference documents once they have been saved to the database"
                 )
         elif document:
             id_ = document
@@ -141,8 +141,7 @@ class PlainReferenceListField(PlainReferenceField):
                 id = value.id
                 if id is None:
                     raise ValidationError(
-                        "You can only reference documents once "
-                        "they have been saved to the database"
+                        "You can only reference documents once they have been saved to the database"
                     )
             else:
                 id = value
