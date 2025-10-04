@@ -224,8 +224,8 @@ class Script(GetMetricsScript):
             if not name or not group:
                 continue
             key = (
-                f'{len(group)}.{".".join(str(ord(s)) for s in group)}.'
-                f'{len(name)}.{".".join(str(ord(s)) for s in name)}'
+                f"{len(group)}.{'.'.join(str(ord(s)) for s in group)}."
+                f"{len(name)}.{'.'.join(str(ord(s)) for s in name)}"
             )
             for m in probe.metrics:
                 if m not in self.SLA_METRICS_CONFIG:

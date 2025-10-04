@@ -86,7 +86,7 @@ class Command(BaseCommand):
         benchmark_subscriber_parser.add_argument("--cursor")
 
     def handle(self, cmd, *args, **options):
-        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def handle_show_metadata(self, name: Optional[str] = None, *args, **options):
         async def get_meta() -> Metadata:

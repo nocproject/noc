@@ -65,7 +65,7 @@ class MigrationRunner(object):
         # Get legacy history
         self.logger.info("Migrating legacy history")
         cursor.execute(
-            "SELECT app_name, migration, applied " "FROM south_migrationhistory " "ORDER BY id"
+            "SELECT app_name, migration, applied FROM south_migrationhistory ORDER BY id"
         )
         items = [
             {"name": "%s.%s" % (row[0], row[1]), "ts": row[2], "duration": 0.0} for row in cursor

@@ -63,7 +63,7 @@ class Profile(BaseProfile):
         """
         match = self.rx_ifname.match(s)
         if match:
-            return f'Ethernet1/{match.group("number")}'
+            return f"Ethernet1/{match.group('number')}"
         return s
 
     def get_interface_names(self, name):

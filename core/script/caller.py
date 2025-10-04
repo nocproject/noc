@@ -79,7 +79,7 @@ class Session(object):
         return open_sync_rpc(
             "activator", pool=data["pool"], calling_service=CALLING_SERVICE, hints=self._hints
         ).script(
-            f'{data["profile"]}.{name}',
+            f"{data['profile']}.{name}",
             data["credentials"],
             data["capabilities"],
             data["version"],

@@ -48,7 +48,7 @@ class InterfacesStatusStatDS(BaseDataSource):
         r = fields.copy()
         for ss in statuses:
             oper_status = {True: "Up", False: "Down", None: "-"}[ss.get("oper_status")]
-            key = f'{oper_status}_{cls.humanize_speed(ss.get("in_speed"))}'
+            key = f"{oper_status}_{cls.humanize_speed(ss.get('in_speed'))}"
             if key in fields:
                 r[key] = int(ss["count"])
         return r

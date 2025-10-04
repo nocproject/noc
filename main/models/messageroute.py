@@ -68,7 +68,7 @@ class MRMatch(EmbeddedDocument):
     headers_match = EmbeddedDocumentListField(HeaderMatch)
 
     def __str__(self):
-        return f'{", ".join(self.labels)}, {self.administrative_domain or ""}'
+        return f"{', '.join(self.labels)}, {self.administrative_domain or ''}"
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))

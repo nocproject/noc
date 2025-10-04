@@ -96,7 +96,7 @@ class Command(BaseCommand):
                     )
                     for d in cursor:
                         if as_bi_id:
-                            yield f'{model_id}::{d["bi_id"]}'
+                            yield f"{model_id}::{d['bi_id']}"
                         else:
                             yield d["_id"]
                     if not d or (match and match["_id"]["$gt"] == d["_id"]):

@@ -120,6 +120,10 @@ lint.ignore = [
   "PLR1711", # Useless `return` statement at end of function
   "RET503", # Missing explicit `return` at the end of function able to return non-`None` value
   "F811", # Redefinition of unused `ReportBand` from line 66
+  "PLC0415", # `import` should be at the top-level of a file
+  "A004", # Import `sum` is shadowing a Python builtin
+  "PLC0206", # Extracting value from dictionary without calling `.items()`
+  "PLC1802", # `len(left)` used as condition without comparison
 ] 
 lint.unfixable = [
   "F401",

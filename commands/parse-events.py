@@ -85,7 +85,7 @@ class Command(BaseCommand):
                             [event.raw_vars["message"], rule.event_class.name, rule.name, r_vars]
                         )
                     if reject and rule.is_unknown:
-                        reject.write(f'{event.raw_vars["message"]}\n')
+                        reject.write(f"{event.raw_vars['message']}\n")
                     stats[rule.event_class.name] += 1
                     total += 1
                     if progress and total % 1000 == 0:

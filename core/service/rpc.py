@@ -142,7 +142,7 @@ class RPCProxy(object):
                     if result.get("error"):
                         self._logger.error("RPC call failed: %s", result["error"])
                         raise RPCRemoteError(
-                            f'RPC call failed: {result["error"]["message"]}',
+                            f"RPC call failed: {result['error']['message']}",
                             remote_code=result["error"].get("code", None),
                         )
                     return result["result"]

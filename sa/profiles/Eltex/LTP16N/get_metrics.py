@@ -132,7 +132,7 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                v = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.2.1.2.{int(ifindex)-N}")
+                v = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.2.1.2.{int(ifindex) - N}")
                 if v != 1:
                     v = 0
             # Pon port
@@ -170,7 +170,7 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                v = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.2.1.3.{int(ifindex)-N}")
+                v = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.2.1.3.{int(ifindex) - N}")
             self.set_metric(
                 id=("Interface | Speed", ilabels),
                 labels=ilabels,
@@ -197,10 +197,12 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                packets_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.3.{int(ifindex)-N}")
-                packets_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.14.{int(ifindex)-N}")
-                octets_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.2.{int(ifindex)-N}")
-                octets_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.13.{int(ifindex)-N}")
+                packets_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.3.{int(ifindex) - N}")
+                packets_out = self.snmp.get(
+                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.14.{int(ifindex) - N}"
+                )
+                octets_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.2.{int(ifindex) - N}")
+                octets_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.13.{int(ifindex) - N}")
             # Pon port
             else:
                 packets_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.4.3.2.1.4.1.{ifindex}")
@@ -259,9 +261,9 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                errors_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.7.{int(ifindex)-N}")
-                errors_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.18.{int(ifindex)-N}")
-                errors_fcs = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.8.{int(ifindex)-N}")
+                errors_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.7.{int(ifindex) - N}")
+                errors_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.18.{int(ifindex) - N}")
+                errors_fcs = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.8.{int(ifindex) - N}")
                 discards_in = 0
                 discards_out = 0
                 errors_crc = 0
@@ -355,8 +357,8 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                load_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.3.{int(ifindex)-N}.1")
-                load_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.4.{int(ifindex)-N}.1")
+                load_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.3.{int(ifindex) - N}.1")
+                load_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.3.1.4.{int(ifindex) - N}.1")
             # Pon port
             else:
                 load_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.4.3.6.1.4.1.{ifindex}.1")
@@ -397,13 +399,17 @@ class Script(GetMetricsScript):
             # Front-port
             if int(ifindex) > N:
                 broadcast_out = self.snmp.get(
-                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.17.{int(ifindex)-N}"
+                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.17.{int(ifindex) - N}"
                 )
-                broadcast_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.6.{int(ifindex)-N}")
+                broadcast_in = self.snmp.get(
+                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.6.{int(ifindex) - N}"
+                )
                 multicast_out = self.snmp.get(
-                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.16.{int(ifindex)-N}"
+                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.16.{int(ifindex) - N}"
                 )
-                multicast_in = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.1.1.5.{int(ifindex)-N}")
+                multicast_in = self.snmp.get(
+                    f"1.3.6.1.4.1.35265.1.209.1.6.1.1.5.{int(ifindex) - N}"
+                )
             # Pon port
             else:
                 broadcast_out = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.4.3.2.1.18.1.{ifindex}")
@@ -459,10 +465,10 @@ class Script(GetMetricsScript):
 
             # Front-port
             if int(ifindex) > N:
-                temperature = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.9.{int(ifindex)-N}")
-                voltage = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.10.{int(ifindex)-N}")
-                current = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.11.{int(ifindex)-N}")
-                tx_power = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.12.{int(ifindex)-N}")
+                temperature = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.9.{int(ifindex) - N}")
+                voltage = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.10.{int(ifindex) - N}")
+                current = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.11.{int(ifindex) - N}")
+                tx_power = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.6.6.1.12.{int(ifindex) - N}")
             # Pon port
             else:
                 temperature = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.4.3.1.1.8.1.{ifindex}")

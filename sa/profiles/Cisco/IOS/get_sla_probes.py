@@ -84,7 +84,7 @@ class Script(BaseScript):
             target = match.group("target")
             match = self.rx_target_port.search(config)
             if match and match.group("target") != "0":
-                target += f':{match.group("target").strip()}'
+                target += f":{match.group('target').strip()}"
             match = self.rx_owner.search(config)
             group = ""
             if match:

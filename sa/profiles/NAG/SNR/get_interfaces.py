@@ -139,7 +139,7 @@ class Script(BaseScript):
 
         v = self.cli("show ip", cached=True)
         match = self.rx_mgmt.search(v)
-        ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
+        ip_address = f"{match.group('ip')}/{IPv4.netmask_to_len(match.group('mask'))}"
         interfaces["system"] = {
             "name": "system",
             "type": "SVI",
@@ -204,7 +204,7 @@ class Script(BaseScript):
             # IP Address
             match1 = self.rx_ip.search(other)
             if match1 and "NULL" not in match1.group("ip"):
-                ip_address = f'{match1.group("ip")}/{IPv4.netmask_to_len(match1.group("mask"))}'
+                ip_address = f"{match1.group('ip')}/{IPv4.netmask_to_len(match1.group('mask'))}"
                 sub["ipv4_addresses"] = [ip_address]
                 sub["enabled_afi"] = ["IPv4"]
             iface = {

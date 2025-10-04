@@ -509,7 +509,7 @@ class JsonDSAPI(object):
                             continue
                         value = value.bi_id
                     q_values += [str(value)]
-                r += [f'{query_field} IN ({",".join(q_values)})']
+                r += [f"{query_field} IN ({','.join(q_values)})"]
                 continue
             if query_field not in columns or not values:
                 continue

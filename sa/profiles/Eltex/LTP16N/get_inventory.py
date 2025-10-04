@@ -92,21 +92,21 @@ class Script(BaseScript):
         r = []
         # Fan State
         for id in range(4):
-            state = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.2.{id+6}.0")
+            state = self.snmp.get(f"1.3.6.1.4.1.35265.1.209.1.2.{id + 6}.0")
             if state != 1:
                 state = 0
             r += [
                 {
-                    "name": f"Fan-{id+1}",
+                    "name": f"Fan-{id + 1}",
                     "status": bool(state),
-                    "description": f"State of Fan-{id+1}",
+                    "description": f"State of Fan-{id + 1}",
                     "measurement": "StatusEnum",
                     "labels": [
                         "noc::sensor::placement::internal",
                         "noc::sensor::mode::flag",
                         "noc::sensor::target::fan",
                     ],
-                    "snmp_oid": f"1.3.6.1.4.1.35265.1.209.1.2.{id+6}.0",
+                    "snmp_oid": f"1.3.6.1.4.1.35265.1.209.1.2.{id + 6}.0",
                 }
             ]
 

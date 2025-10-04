@@ -71,7 +71,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         ris = self.find_direct_uplinks(ro)
         if len(ris) != 1:
             self.logger.info(
-                "[%s][%s] Exactly one direct downlink interface required. " "%d found. Skipping",
+                "[%s][%s] Exactly one direct downlink interface required. %d found. Skipping",
                 name,
                 iface.name,
                 len(ris),
