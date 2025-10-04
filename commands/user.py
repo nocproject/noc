@@ -34,7 +34,7 @@ class Command(BaseCommand):
             ),
         )
 
-    pwset = "abcdefghijklmnopqrstuvwxyz" "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "1234567890"
+    pwset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
     PWLEN = 12
 
     TEMPLATES = {"probe": ["pm:probe:config"]}

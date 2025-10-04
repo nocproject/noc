@@ -115,7 +115,7 @@ class SAEAPI(JSONRPCAPI):
             metrics["error", ("type", "pool_not_found")] += 1
             raise APIError("Pool not found")
         # Check script is exists
-        script_name = f'{data["profile"]}.{script}'
+        script_name = f"{data['profile']}.{script}"
         if not loader.has_script(script_name):
             metrics["error", ("type", "invalid_scripts_request")] += 1
             raise APIError("Invalid script")

@@ -62,7 +62,7 @@ class User(NOCModel):
     username = models.CharField(
         max_length=75,
         unique=True,
-        help_text=_("Required. 30 characters or fewer. Letters, digits and " "@/./+/-/_ only."),
+        help_text=_("Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."),
         validators=[
             validators.RegexValidator(r"^[\w.@+-]+$", _("Enter a valid username."), "invalid")
         ],
@@ -81,7 +81,7 @@ class User(NOCModel):
     is_superuser = models.BooleanField(
         default=False,
         help_text=_(
-            "Designates that this user has all permissions without " "explicitly assigning them."
+            "Designates that this user has all permissions without explicitly assigning them."
         ),
     )
     date_joined = models.DateTimeField(default=datetime.datetime.now)

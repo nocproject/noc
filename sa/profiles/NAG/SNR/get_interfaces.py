@@ -161,7 +161,7 @@ class Script(BaseScript):
         if self.has_capability("Network | LLDP"):
             v = self.cli("show lldp interface", cached=True)
             for match in self.rx_lldp_foxgate.finditer(v):
-                ifname = f'e{match.group("port")}'
+                ifname = f"e{match.group('port')}"
                 for iface in interfaces:
                     if iface["name"] == ifname:
                         iface["enabled_protocols"] = ["LLDP"]
@@ -171,7 +171,7 @@ class Script(BaseScript):
         match = self.rx_mgmt.search(v)
         if not match:
             match = self.rx_mgmt2.search(v)
-        ip_address = f'{match.group("ip")}/{IPv4.netmask_to_len(match.group("mask"))}'
+        ip_address = f"{match.group('ip')}/{IPv4.netmask_to_len(match.group('mask'))}"
         interfaces += [
             {
                 "name": "system",
@@ -238,7 +238,7 @@ class Script(BaseScript):
             # IP Address
             match1 = self.rx_ip.search(other)
             if match1 and "NULL" not in match1.group("ip"):
-                ip_address = f'{match1.group("ip")}/{IPv4.netmask_to_len(match1.group("mask"))}'
+                ip_address = f"{match1.group('ip')}/{IPv4.netmask_to_len(match1.group('mask'))}"
                 sub["ipv4_addresses"] = [ip_address]
                 sub["enabled_afi"] = ["IPv4"]
             iface = {

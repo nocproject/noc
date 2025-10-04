@@ -54,7 +54,7 @@ class Script(BaseScript):
         r = []
         # Fan state
         for i in [1, 2, 3, 4, 5]:
-            for oid, v in self.snmp.getnext(f"1.3.6.1.4.1.89.53.15.1.{i+3}"):
+            for oid, v in self.snmp.getnext(f"1.3.6.1.4.1.89.53.15.1.{i + 3}"):
                 if v != 1:
                     v = 0
                 r += [
@@ -68,12 +68,12 @@ class Script(BaseScript):
                             "noc::sensor::mode::flag",
                             "noc::sensor::targer::fan",
                         ],
-                        "snmp_oid": f"1.3.6.1.4.1.89.53.15.1.{i+3}",
+                        "snmp_oid": f"1.3.6.1.4.1.89.53.15.1.{i + 3}",
                     }
                 ]
         # Power Supply state
         for i in [1, 2]:
-            for oid, v in self.snmp.getnext(f"1.3.6.1.4.1.89.53.15.1.{i+1}"):
+            for oid, v in self.snmp.getnext(f"1.3.6.1.4.1.89.53.15.1.{i + 1}"):
                 if v != 1:
                     v = 0
                 r += [
@@ -87,7 +87,7 @@ class Script(BaseScript):
                             "noc::sensor::mode::flag",
                             "noc::sensor::target::supply",
                         ],
-                        "snmp_oid": f"1.3.6.1.4.1.89.53.15.1.{i+1}",
+                        "snmp_oid": f"1.3.6.1.4.1.89.53.15.1.{i + 1}",
                     }
                 ]
         return r

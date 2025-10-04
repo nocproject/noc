@@ -92,7 +92,7 @@ class InterfaceApplication(ExtDocApplication):
         elif link.is_lag:
             # unresolved LAG
             o = [ii for ii in link.other(i) if ii.managed_object.id != i.managed_object.id]
-            label = f'LAG {o[0].managed_object.name}: {", ".join(ii.name for ii in o)}'
+            label = f"LAG {o[0].managed_object.name}: {', '.join(ii.name for ii in o)}"
         else:
             # Broadcast
             label = ", ".join(f"{ii.managed_object.name}:{ii.name}" for ii in link.other(i))

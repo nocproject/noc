@@ -539,7 +539,7 @@ class DictionaryBase(ModelBase):
                 ReplacingMergeTree(None, order_by=getattr(cls.Meta, "primary_key", ("bi_id",))),
             ),
             source_model=getattr(cls.Meta, "source_model", None),
-            db_table=f'dict_{getattr(cls.Meta, "name", None)}',
+            db_table=f"dict_{getattr(cls.Meta, 'name', None)}",
             primary_key=getattr(cls.Meta, "primary_key", ("bi_id",)),
             incremental_update=getattr(cls.Meta, "incremental_update", False),
             description=getattr(cls.Meta, "description", None),
@@ -719,7 +719,7 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         r = ",\n".join(r)
         view = cls._get_db_table()
         src = cls._get_raw_db_table()
-        return f'CREATE OR REPLACE VIEW {view} AS SELECT {r} FROM {src} GROUP BY {", ".join(cls._meta.primary_key)}'
+        return f"CREATE OR REPLACE VIEW {view} AS SELECT {r} FROM {src} GROUP BY {', '.join(cls._meta.primary_key)}"
 
     @classmethod
     def iter_create_sql(cls, is_dictionary=False):
@@ -752,8 +752,8 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         if cls._meta.incremental_update:
             update_field = "UPDATE_FIELD 'last_changed' UPDATE_LAG 15"
         return (
-            f'CREATE DICTIONARY IF NOT EXISTS {cls._getdictionary_table()} ({", ".join(r)}) '
-            f'PRIMARY KEY {", ".join(cls._meta.primary_key)} '
+            f"CREATE DICTIONARY IF NOT EXISTS {cls._getdictionary_table()} ({', '.join(r)}) "
+            f"PRIMARY KEY {', '.join(cls._meta.primary_key)} "
             f"SOURCE(CLICKHOUSE(HOST 'localhost' PORT 9000 USER '{config.clickhouse.ro_user}' "
             f"PASSWORD '{config.clickhouse.ro_password}' DB '{config.clickhouse.db}' "
             f"TABLE '{cls._get_db_table()}' WHERE '' {update_field})) "
@@ -852,8 +852,8 @@ class ViewModel(Model, metaclass=ModelBase):
             r += [f"FROM {cls._get_distributed_db_table()} "]
         else:
             r += [f"FROM {cls._get_raw_db_table()} "]
-        r += [f'GROUP BY {",".join(group_by)} ']
-        return f'CREATE OR REPLACE VIEW {cls._get_db_table()} AS SELECT {" ".join(r)}'
+        r += [f"GROUP BY {','.join(group_by)} "]
+        return f"CREATE OR REPLACE VIEW {cls._get_db_table()} AS SELECT {' '.join(r)}"
 
     @classmethod
     def get_create_select_sql(cls):
@@ -869,7 +869,7 @@ class ViewModel(Model, metaclass=ModelBase):
                 group_by += [cls.quote_name(field.name)]
         r = [",\n".join(r)]
         r += [f"FROM {cls.Meta.view_table_source} "]
-        r += [f'GROUP BY {",".join(group_by)} ']
+        r += [f"GROUP BY {','.join(group_by)} "]
         return "\n".join(r)
 
     @classmethod

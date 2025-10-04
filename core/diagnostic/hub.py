@@ -712,7 +712,7 @@ class DiagnosticHub(object):
                     "alarm_class": alarm_config[d]["alarm_class"],
                     "alarms": [
                         {
-                            "reference": f'dc:{dd["diagnostic"]}:{o.id}',
+                            "reference": f"dc:{dd['diagnostic']}:{o.id}",
                             "alarm_class": alarm_config[dd["diagnostic"]]["alarm_class"],
                             "managed_object": str(o.id),
                             "timestamp": now,

@@ -91,7 +91,7 @@ class ReportDiscoveryLinks(ReportSource):
                         "links_count": x,
                         "mo_count": row[x],
                         "percent_at_all": (
-                            f'{round(row[x] / row["all"] * 100, 2)} %' if x != "all" else ""
+                            f"{round(row[x] / row['all'] * 100, 2)} %" if x != "all" else ""
                         ),
                         "detail": url
                         % (

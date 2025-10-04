@@ -159,7 +159,7 @@ class Script(GetMetricsScript):
                 if ssid.startswith("2a2d"):
                     # 2a2d - hex string
                     ssid = smart_text(codecs.decode(ssid, "hex"))
-                iface = f'{data["name"]}.{ssid}'
+                iface = f"{data['name']}.{ssid}"
             else:
                 iface = data["name"]
             if "radio" in data and data["radio"] in radio_metrics:

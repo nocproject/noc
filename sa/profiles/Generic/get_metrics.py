@@ -622,15 +622,13 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     # Check result does not contain None
                     if len(v) < len(oid):
                         self.logger.error(
-                            "Cannot calculate complex value for %s " "due to missed values: %s",
+                            "Cannot calculate complex value for %s due to missed values: %s",
                             oid,
                             v,
                         )
                         continue
                 else:
-                    self.logger.error(
-                        "Cannot evaluate complex oid %s. " "Scale must be callable", oid
-                    )
+                    self.logger.error("Cannot evaluate complex oid %s. Scale must be callable", oid)
                     continue
                 bv = batch
                 self.set_metric(

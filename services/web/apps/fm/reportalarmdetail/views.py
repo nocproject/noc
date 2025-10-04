@@ -212,7 +212,7 @@ class ReportAlarmDetailApplication(ExtApplication):
             return HttpResponseNotFound(_(f"Report DataSource {report_ds} Not found"))
 
         data = report.query_sync(fields=out_columns, **d_filters)
-        filename = f'alarms_detail_report_{datetime.datetime.now().strftime("%Y%m%d")}'
+        filename = f"alarms_detail_report_{datetime.datetime.now().strftime('%Y%m%d')}"
         csv_header = ";".join(self.HEADER_ROW.get(cc, cc) for cc in data.columns) + "\n"
         if o_format == "csv":
             response = HttpResponse(

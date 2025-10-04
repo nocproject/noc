@@ -265,7 +265,7 @@ class MetricsService(FastAPIService):
                     yield v
 
         labels = data.get("labels")
-        scopes = {f'{ll.rsplit("::", 1)[0]}::': ll for ll in labels or []}
+        scopes = {f"{ll.rsplit('::', 1)[0]}::": ll for ll in labels or []}
         return (
             (
                 si.scope,
@@ -862,14 +862,14 @@ class MetricsService(FastAPIService):
         """
         invalidate_rules = set()
         for action in data["actions"]:
-            rule_id = f'{data["id"]}-{action["id"]}'  # Rule id - join rule and action
-            graph = CDAG(f'{data["name"]}-{action["name"]}')
+            rule_id = f"{data['id']}-{action['id']}"  # Rule id - join rule and action
+            graph = CDAG(f"{data['name']}-{action['name']}")
             g_config = GraphConfig(**action["graph_config"])
             scopes = set()
             for a_input in action["inputs"]:
                 scopes.add(a_input["sender_id"])
                 graph.add_node(
-                    f'{rule_id}::{a_input["probe_id"]}',
+                    f"{rule_id}::{a_input['probe_id']}",
                     node_type="probe",
                     config={"unit": "1"},
                     sticky=True,

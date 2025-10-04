@@ -115,7 +115,7 @@ class Script(BaseScript):
                 "number": None,
                 "vendor": "EDGECORE",
                 "serial": serial,
-                "description": f'{p["vendor"]} {p["platform"]}',
+                "description": f"{p['vendor']} {p['platform']}",
                 "part_no": [p["platform"]],
                 "revision": revision,
                 "builtin": False,

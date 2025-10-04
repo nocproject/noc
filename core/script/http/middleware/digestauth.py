@@ -93,7 +93,7 @@ class DigestAuthMiddeware(BaseMiddleware):
         else:
             respdig = None
 
-        base = 'username="%s", realm="%s", nonce="%s", uri="%s", ' 'response="%s"' % (
+        base = 'username="%s", realm="%s", nonce="%s", uri="%s", response="%s"' % (
             self.user,
             realm,
             nonce,

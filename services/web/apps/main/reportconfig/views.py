@@ -164,18 +164,18 @@ class ReportConfigApplication(ExtDocApplication):
                 model = get_model(param.model_id)
                 if hasattr(model, "get_path"):
                     cfg["xtype"] = "noc.core.combotree"
-                    cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/'
+                    cfg["restUrl"] = f"/{'/'.join(param.model_id.lower().split('.'))}/"
                     cfg["uiStyle"] = "large"
                 else:
                     cfg["xtype"] = "core.combo"
-                    cfg["restUrl"] = f'/{"/".join(param.model_id.lower().split("."))}/lookup/'
+                    cfg["restUrl"] = f"/{'/'.join(param.model_id.lower().split('.'))}/lookup/"
                     cfg["uiStyle"] = "medium-combo"
                     if param.default:
                         cfg["value"] = param.default
             elif param.type == "model_multi":
                 model = get_model(param.model_id)
                 cfg["xtype"] = "core.tagfield"
-                cfg["url"] = f'/{"/".join(param.model_id.lower().split("."))}/'
+                cfg["url"] = f"/{'/'.join(param.model_id.lower().split('.'))}/"
                 cfg["displayField"] = "name"
                 cfg["uiStyle"] = "large"
             elif param.type == "integer":
