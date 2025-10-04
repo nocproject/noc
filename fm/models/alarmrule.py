@@ -55,7 +55,7 @@ class Match(EmbeddedDocument):
     reference_rx = StringField()
 
     def __str__(self):
-        return f'{", ".join(self.labels)}, {self.alarm_class or ""}/{self.reference_rx}'
+        return f"{', '.join(self.labels)}, {self.alarm_class or ''}/{self.reference_rx}"
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
@@ -92,7 +92,7 @@ class Group(EmbeddedDocument):
     labels = ListField(StringField())
 
     def __str__(self):
-        return f'{self.alarm_class or ""}/{self.title_template or ""}: {self.reference_template}'
+        return f"{self.alarm_class or ''}/{self.title_template or ''}: {self.reference_template}"
 
     def get_config(self) -> Dict[str, Any]:
         """"""

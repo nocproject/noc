@@ -132,7 +132,7 @@ class ActivatorAPI(JSONRPCAPI):
 
     @staticmethod
     def script_get_label(name: str, credentials, *args, **kwargs):
-        return f'{name} {credentials.get("address", "-")}'
+        return f"{name} {credentials.get('address', '-')}"
 
     @api
     async def snmp_v1_get(

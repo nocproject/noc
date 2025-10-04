@@ -136,7 +136,7 @@ class MOCardDashboard(MODashboard):
                 distance = o.get_data("optical", "distance_max") or o.model.get_data(
                     "optical", "distance_max"
                 )
-                data["distance"] = f"{float(distance/1000)}km" if distance else None
+                data["distance"] = f"{float(distance / 1000)}km" if distance else None
                 data["vendor"] = o.model.vendor.name
                 data["part_n"] = o.get_data(
                     "asset", "part_no", scope="discovery"

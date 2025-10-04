@@ -229,7 +229,7 @@ class MessageAction(Action):
                 break
             if c.title_tag:
                 body = {
-                    "subject": f'{c.title_tag} {body["subject"]}',
+                    "subject": f"{c.title_tag} {body['subject']}",
                     "body": body["body"],
                 }
             yield (

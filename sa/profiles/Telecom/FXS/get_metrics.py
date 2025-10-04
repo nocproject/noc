@@ -25,7 +25,7 @@ class Script(GetMetricsScript):
             value = self.snmp.get(oid)
             if value == "empty":
                 continue
-            self.logger.info(f"v=={int(value.split('.',1)[0])}")
+            self.logger.info(f"v=={int(value.split('.', 1)[0])}")
             if value is not None:
                 self.set_metric(
                     id=("Environment | Temperature", None),

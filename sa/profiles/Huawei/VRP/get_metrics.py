@@ -405,8 +405,8 @@ class Script(GetMetricsScript):
             if not name or not group:
                 continue
             key = (
-                f'{len(group)}.{".".join(str(ord(s)) for s in group)}.{len(name)}.'
-                f'{".".join(str(ord(s)) for s in name)}'
+                f"{len(group)}.{'.'.join(str(ord(s)) for s in group)}.{len(name)}."
+                f"{'.'.join(str(ord(s)) for s in name)}"
             )
             if key not in stat_index:
                 continue

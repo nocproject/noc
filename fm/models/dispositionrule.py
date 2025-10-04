@@ -111,7 +111,7 @@ class Match(EmbeddedDocument):
     )
 
     def __str__(self):
-        return f'{", ".join(self.labels)}'
+        return f"{', '.join(self.labels)}"
 
     @property
     def json_data(self) -> Dict[str, Any]:

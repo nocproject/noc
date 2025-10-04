@@ -127,7 +127,7 @@ class Migration(BaseMigration):
         for collection, scope in self.TAG_COLLETIONS:
             coll = self.mongo_db[collection]
             for item in coll.find({}, {"name": 1}):
-                label = f'noc::{scope}::{item["name"]}::='
+                label = f"noc::{scope}::{item['name']}::="
                 if label in current_labels:
                     continue
                 bulk += [

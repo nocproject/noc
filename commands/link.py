@@ -157,9 +157,9 @@ class Command(BaseCommand):
         self.print(
             f"# Links: {Link.objects.count()},"
             f" Deadline links: {Link.objects.filter(last_seen__lt=deadline).count()},"
-            f' Manual links: {Link.objects.filter(discovery_method="").count()},'
+            f" Manual links: {Link.objects.filter(discovery_method='').count()},"
             f" On alarmed objects: {Link.objects.filter(linked_objects__in=alarm_mos).count()}"
-            f' Empty last_seen: {Link.objects.filter(first_discovered__lt=deadline, last_seen=None, linked_objects__nin=alarm_mos, discovery_method__ne="").count()}'
+            f" Empty last_seen: {Link.objects.filter(first_discovered__lt=deadline, last_seen=None, linked_objects__nin=alarm_mos, discovery_method__ne='').count()}"
         )
         self.print(
             f"# {deadline_links.count()}/{Link.objects.count()} Links over on deadline: {deadline}"

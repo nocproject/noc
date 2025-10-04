@@ -29,11 +29,11 @@ class Migration(BaseMigration):
             elif mm["header"] == "Profile-Id" and mm["value"] in object_profile_map:
                 if mm["op"] == "==":
                     xx["labels"] = [
-                        f'noc::managedobjectprofile::{object_profile_map[int(mm["value"])]}::='
+                        f"noc::managedobjectprofile::{object_profile_map[int(mm['value'])]}::="
                     ]
                 elif mm["op"] == "!=":
                     xx["exclude_labels"] = [
-                        f'noc::managedobjectprofile::{object_profile_map[int(mm["value"])]}::='
+                        f"noc::managedobjectprofile::{object_profile_map[int(mm['value'])]}::="
                     ]
             else:
                 xx = {"headers_match": [mm.copy()]}

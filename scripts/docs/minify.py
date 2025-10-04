@@ -89,12 +89,12 @@ def main() -> None:
     """
     print("# Compressing docs")
     size_before = total_size()
-    print(f"Docs size: {float(size_before)/MB:.2f}Mb")
+    print(f"Docs size: {float(size_before) / MB:.2f}Mb")
     compress()
     clean_summary()
     size_after = total_size()
     ratio = float(size_before) / float(size_after)
-    print(f"Compressed result: {float(size_after)/MB:.2f}Mb (Ratio: {ratio:.2f})")
+    print(f"Compressed result: {float(size_after) / MB:.2f}Mb (Ratio: {ratio:.2f})")
 
 
 if __name__ == "__main__":
