@@ -25,5 +25,7 @@ We’re updating the [licence] to reflect these changes. This ensures that NOC s
 
 If you have questions, feel free to reach out. Thanks for being part of the NOC community!
 
+[Comments...](https://github.com/gufolabs/noc/discussions/13)
+
 [Gufo Labs]: https://gufolabs.com/
 [licence]: ../../license.md

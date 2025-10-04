@@ -288,3 +288,5 @@ However, after applying all the tweaks we've discussed in this post, we signific
 ![Lighthouse screenshot](lighthouse.png)
 
 These methods are not limited to our use case; anyone looking to host mkdocs-material sites with only the default set of Nginx features can benefit from them. We hope that our insights and experience will help you enhance the user experience of your documentation.
+
+[Comments...](https://github.com/gufolabs/noc/discussions/15)

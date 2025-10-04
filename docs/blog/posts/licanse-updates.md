@@ -52,4 +52,6 @@ The updated version of the NOC license is now available at [license]. The new li
 
 Please review the updated license to ensure compliance with the new terms.
 
+[Comments...](https://github.com/gufolabs/noc/discussions/12)
+
 [license]: ../../license.md

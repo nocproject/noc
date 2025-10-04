@@ -155,4 +155,6 @@ The role of the *Signer* is to serve as a CSR proxy, transferring part of its tr
 Copyright © 2023 by Dmitry Volodin of [Gufo Labs][Gufo Labs]. All rights reserved.
 The protocol may be used in open-source software freely, while commercial use requires prior permission.
 
+[Comments...](https://github.com/gufolabs/noc/discussions/14)
+
 [Gufo Labs]: https://gufolabs.com/
