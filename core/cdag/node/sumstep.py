@@ -12,6 +12,7 @@ from enum import Enum
 # NOC modules
 from .base import ValueType, Category
 from .window import WindowNode, WindowConfig
+import itertools
 
 
 class StepDirection(str, Enum):
@@ -37,7 +38,7 @@ class SumStepNode(WindowNode):
         self, values: List[ValueType], timestamps: List[int]
     ) -> Optional[ValueType]:
         if self.config.direction == StepDirection.INC:
-            return sum(x1 - x0 for x0, x1 in zip(values, values[1:]) if x1 > x0)
+            return sum(x1 - x0 for x0, x1 in itertools.pairwise(values) if x1 > x0)
         if self.config.direction == StepDirection.DEC:
-            return sum(x0 - x1 for x0, x1 in zip(values, values[1:]) if x1 < x0)
-        return sum(abs(x1 - x0) for x0, x1 in zip(values, values[1:]))
+            return sum(x0 - x1 for x0, x1 in itertools.pairwise(values) if x1 < x0)
+        return sum(abs(x1 - x0) for x0, x1 in itertools.pairwise(values))

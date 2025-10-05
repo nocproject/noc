@@ -45,7 +45,7 @@ class Script(BaseScript):
                 "MSTP": {"region": match.group("region"), "revision": match.group("revision")}
             },
         }
-        for instance_id in ["0"] + self.rx_mstp_instance_list.findall(v):
+        for instance_id in ["0", *self.rx_mstp_instance_list.findall(v)]:
             # Get instance data
             ri = {"id": int(instance_id), "interfaces": []}
             v = self.cli("show spanning-tree msti %s brief" % instance_id)

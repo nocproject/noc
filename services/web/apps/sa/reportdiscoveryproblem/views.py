@@ -92,7 +92,7 @@ class ReportForm(forms.Form):
     pool = forms.ChoiceField(
         label=_("Managed Objects Pool"),
         required=False,
-        choices=list(Pool.objects.order_by("name").scalar("id", "name")) + [(None, "-" * 9)],
+        choices=[*list(Pool.objects.order_by("name").scalar("id", "name")), (None, "-" * 9)],
     )
     obj_profile = forms.ModelChoiceField(
         label=_("Managed Objects Profile"),
@@ -103,8 +103,10 @@ class ReportForm(forms.Form):
         label=_("Managed Objects Group (Selector)"),
         required=False,
         help_text="Group for choice",
-        choices=list(ResourceGroup.objects.order_by("name").scalar("id", "name"))
-        + [(None, "-" * 9)],
+        choices=[
+            *list(ResourceGroup.objects.order_by("name").scalar("id", "name")),
+            (None, "-" * 9),
+        ],
     )
     avail_status = forms.BooleanField(label=_("Filter by Ping status"), required=False)
     profile_check_only = forms.BooleanField(label=_("Profile check only"), required=False)
@@ -120,7 +122,7 @@ class ReportFilterApplication(SimpleReport):
 
     predefined_reports = {
         pname: PredefinedReport(_("Problem Discovery (pool)") + f": {pname}", {"pool": str(pid)})
-        for pid, pname in (list(Pool.objects.order_by("name").scalar("id", "name")) + [("", "ALL")])
+        for pid, pname in ([*list(Pool.objects.order_by("name").scalar("id", "name")), ("", "ALL")])
     }
 
     def get_data(

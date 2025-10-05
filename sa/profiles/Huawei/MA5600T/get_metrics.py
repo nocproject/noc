@@ -181,7 +181,7 @@ class Script(GetMetricsScript):
                         metric=m,
                         value=float(results[mc.metric]),
                         ts=ts,
-                        labels=probe.labels + ["noc::interface::0"],
+                        labels=[*probe.labels, "noc::interface::0"],
                         multi=True,
                         type="gauge",
                         scale=1,
@@ -194,8 +194,8 @@ class Script(GetMetricsScript):
                         metric="Interface | DOM | RxPower",
                         value=float(results["optical_rx_dbm_cpe"]),
                         ts=ts,
-                        labels=probe.labels
-                        + [
+                        labels=[
+                            *probe.labels,
                             f"noc::interface::{frame}/{slot}/{port}",
                             f"noc::subinterface::{frame}/{slot}/{port}/{ont_id}",
                         ],

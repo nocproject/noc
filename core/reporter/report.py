@@ -33,15 +33,15 @@ class Band(object):
     """
 
     __slots__ = (
-        "name",
-        "title_template",
-        "parent",
-        "orientation",
-        "data",
         "children_bands",
+        "data",
         "datasets",
         "format",
+        "name",
+        "orientation",
+        "parent",
         "report_field_format",
+        "title_template",
     )
 
     def __init__(
@@ -113,7 +113,7 @@ class Band(object):
     def get_path(self) -> List["Band"]:
         """Getting band path"""
         if self.parent:
-            return self.parent.get_path() + [self]
+            return [*self.parent.get_path(), self]
         return [self]
 
     def get_rows(self) -> List[pl.DataFrame]:

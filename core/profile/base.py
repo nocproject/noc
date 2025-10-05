@@ -843,7 +843,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
             x.insert(0, self.get_connection_path(p.c_name))
         r.append("/".join(x))
         if port.stack_num is not None:
-            r.append("/".join([str(port.stack_num or self.first_stack_unit)] + x))
+            r.append("/".join([str(port.stack_num or self.first_stack_unit), *x]))
         protocol_prefixes = self.get_protocol_prefixes(port.protocols)
         if not protocol_prefixes:
             return r

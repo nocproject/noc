@@ -73,7 +73,7 @@ class BaseLoader(object):
         :param name: class name
         :return:
         """
-        p = (base,) + self.base_path + ("%s.py" % name,)
+        p = (base, *self.base_path, "%s.py" % name)
         return os.path.join(*p)
 
     def get_module_name(self, base, name):

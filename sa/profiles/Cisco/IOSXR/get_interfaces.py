@@ -81,7 +81,7 @@ class Script(BaseScript):
             if match:
                 ip = match.group("ip")
                 if ip.lower() != "unknown":
-                    ifaces[current]["addresses"] = ifaces[current].get("addresses", []) + [ip]
+                    ifaces[current]["addresses"] = [*ifaces[current].get("addresses", []), ip]
                 continue
             # Process hardware type and MAC
             match = self.rx_hw.match(line)
@@ -114,7 +114,7 @@ class Script(BaseScript):
         vpns = self.scripts.get_mpls_vpn()
         for v in vpns:
             seen.update(v["interfaces"])
-        vpns = [{"name": "default", "type": "ip", "interfaces": set(ifaces) - seen}] + vpns
+        vpns = [{"name": "default", "type": "ip", "interfaces": set(ifaces) - seen}, *vpns]
         # Bring result together
         for fi in vpns:
             # Forwarding instance

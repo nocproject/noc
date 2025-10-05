@@ -209,7 +209,7 @@ class Protocol(Document):
     )
     # Discriminators
     discriminator: str = StringField(
-        choices=list(scopes) + ["loader"],
+        choices=[*list(scopes), "loader"],
         required=False,
     )
     discriminator_loader = StringField(default=None)

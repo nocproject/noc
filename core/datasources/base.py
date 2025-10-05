@@ -308,10 +308,7 @@ class BaseDataSource(object):
 
     @classmethod
     def has_field(cls, name) -> bool:
-        for f in cls.iter_ds_fields():
-            if f.name == name:
-                return True
-        return False
+        return any(f.name == name for f in cls.iter_ds_fields())
 
     @classmethod
     def is_out_field(cls, f: FieldInfo, fields: Optional[Set[str]] = None) -> bool:

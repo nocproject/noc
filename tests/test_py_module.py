@@ -85,7 +85,7 @@ def get_py_modules_list():
         else:
             # Strip .py
             parts[-1] = fn[:-3]
-        result += [".".join(["noc"] + parts)]
+        result += [".".join(["noc", *parts])]
     return result
 
 

@@ -43,7 +43,7 @@ class RingLayout(TreeLayout):
             o = T.order_nodes(ring[0], [ring[1], ring[-1]])
             if o[0] != ring[1]:
                 # Reverse ring
-                ring = [ring[0]] + list(reversed(ring[1:]))
+                ring = [ring[0], *list(reversed(ring[1:]))]
         # Split to subtrees
         # and calculate relative positions
         subtree_pos = self.get_subtrees_relative_pos(G, ring)
@@ -103,7 +103,7 @@ class RingLayout(TreeLayout):
         # Remove all ring edges, splitting graph to series
         # of trees
         GG = nx.Graph(G.subgraph(G))
-        for u, v in zip(ring, ring[1:] + [ring[0]]):
+        for u, v in zip(ring, [*ring[1:], ring[0]]):
             GG.remove_edge(u, v)
         # Get all remaining connected components
         for subtree in nx.connected_components(GG):

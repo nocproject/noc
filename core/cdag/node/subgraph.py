@@ -76,7 +76,7 @@ class SubgraphCDAGFactory(ConfigCDAGFactory):
 
 @dataclass
 class InputItem(object):
-    __slots__ = "node", "input"
+    __slots__ = "input", "node"
     node: BaseCDAGNode
     input: str
 
@@ -90,7 +90,7 @@ class SubgraphNode(BaseCDAGNode):
     config_cls = SubgraphConfig
     state_cls = SubgraphState
     categories = [Category.UTIL]
-    __slots__ = "state", "cdag", "input_mappings", "measure_node"
+    __slots__ = "cdag", "input_mappings", "measure_node", "state"
 
     def __init__(
         self,

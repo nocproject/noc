@@ -29,5 +29,5 @@ def setup_timezone():
 
 
 def has_timezone(tzname):
-    path = os.path.join(*([ZONEINFO_ROOT] + tzname.split("/")))
+    path = os.path.join(*([ZONEINFO_ROOT, *tzname.split("/")]))
     return os.path.exists(path)

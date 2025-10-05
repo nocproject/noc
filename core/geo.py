@@ -77,7 +77,7 @@ def bearing_sym(p1, p2):
     """
     b = bearing(p1, p2)
     ob = (b + 360 + BS / 2) % 360
-    return BEARINGS[int(math.floor(ob / BS))]
+    return BEARINGS[math.floor(ob / BS)]
 
 
 def get_bbox(x0: float, x1: float, y0: float, y1: float) -> geojson.Polygon:

@@ -304,10 +304,10 @@ class Command(BaseCommand):
                     content = self.compact(content)
                     # Write template
                     if fn.endswith(".js.j2"):
-                        pp = [ui_root] + dp[:-1]
+                        pp = [ui_root, *dp[:-1]]
                         dn = os.path.join(*pp)
                     else:
-                        pp = [app_root] + dp
+                        pp = [app_root, *dp]
                         dn = os.path.join(*pp)
                     self.create_dir(dn)
                     self.create_file(os.path.join(dn, fn[:-3]), content)

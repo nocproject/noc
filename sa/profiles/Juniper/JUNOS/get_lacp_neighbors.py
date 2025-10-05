@@ -67,7 +67,7 @@ class Script(BaseScript):
             mib["IEEE8023-LAG-MIB::dot3adAggPortActorAdminKey"]
         ):
             ifindex = oid.split(".")[-1]
-            res[admin_key] = res.get(admin_key, []) + [ifindex]
+            res[admin_key] = [*res.get(admin_key, []), ifindex]
         return res
 
     def get_bundle(self, admin_keys, admin_key):

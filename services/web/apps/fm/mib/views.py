@@ -32,7 +32,7 @@ class MIBApplication(ExtDocApplication):
         def insert_tree(data, ds):
             if len(data["path"]) + 1 == len(ds["path"]) and data["path"] == ds["path"][:-1]:
                 # Direct child
-                data["children"] = data.get("children", []) + [ds]
+                data["children"] = [*data.get("children", []), ds]
             else:
                 if "children" not in data:
                     data["children"] = []

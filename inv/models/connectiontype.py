@@ -203,7 +203,7 @@ class ConnectionType(Document):
     def get_subclasses(self):
         s = []
         for c in ConnectionType.objects.filter(extend=self.id):
-            s += [c] + c.get_subclasses()
+            s += [c, *c.get_subclasses()]
         return s
 
     def get_inheritance_path(self, other):

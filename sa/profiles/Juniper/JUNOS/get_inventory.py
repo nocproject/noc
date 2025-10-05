@@ -345,7 +345,7 @@ class Script(BaseScript):
         return slotid, chassis_id, env_status_oid, env_status_num, env_name
 
     def update_sensors_dict(self, sensors_dict, chassis_id, sensor_dict):
-        sensors_dict[chassis_id] = sensors_dict.get(chassis_id, []) + [sensor_dict]
+        sensors_dict[chassis_id] = [*sensors_dict.get(chassis_id, []), sensor_dict]
         return sensors_dict
 
     def get_sensors_snmp(self):

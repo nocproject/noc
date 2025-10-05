@@ -656,7 +656,7 @@ class TableSection(ReportSection):
                     if isinstance(row, SectionRow):
                         writer.writerow([row.name])
                         continue
-                    writer.writerow([n] + list(row))
+                    writer.writerow([n, *list(row)])
                     n += 1
             else:
                 for row in self.data:
@@ -693,7 +693,7 @@ class TableSection(ReportSection):
                         if date:
                             prefix += [date]
                         continue
-                    writer.writerow([n] + prefix + list(row))
+                    writer.writerow([n, *prefix, *list(row)])
                     n += 1
             else:
                 for row in self.data:
