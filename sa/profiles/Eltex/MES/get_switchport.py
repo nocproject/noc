@@ -235,7 +235,7 @@ class Script(BaseScript):
                 swp = {
                     "status": status,
                     "description": description,
-                    "802.1Q Enabled": len(port_vlans.get(name, None)) > 0,
+                    "802.1Q Enabled": bool(port_vlans.get(name)),
                     "802.1ad Tunnel": vlan_stack_status.get(name, False),
                     "tagged": port_vlans[name]["tagged"],
                 }

@@ -194,7 +194,7 @@ class MessageStreamClient(object):
         rf = self.client.get_replication_factor(meta)
         # Apply replication factor from config
         rf = min(rf, stream.config.replication_factor or rf)
-        stream_meta = meta.metadata[name] if name in meta.metadata else None
+        stream_meta = meta.metadata.get(name, None)
         if stream_meta and len(stream_meta) == partitions:
             return False
         if stream_meta:

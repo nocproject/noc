@@ -133,7 +133,7 @@ class AlarmApplication(ExtApplication):
 
     def cleaned_query(self, q):
         q = q.copy()
-        status = q["status"] if "status" in q else "A"
+        status = q.get("status", "A")
         for p in self.ignored_params:
             if p in q:
                 del q[p]

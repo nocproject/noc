@@ -35,7 +35,7 @@ class GetNowApplication(ObjectListApplication):
         last_status = None
         if job:
             last_success = humanize_distance(job["last"]) if "last" in job else "--"
-            last_status = job["ls"] if "ls" in job else None
+            last_status = job.get("ls", None)
         return {
             "id": str(mo.id),
             "name": mo.name,

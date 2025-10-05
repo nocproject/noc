@@ -108,7 +108,7 @@ def _get_features() -> Set[Feature]:
     if _current_features:
         logger.info("Activated features: %s", ", ".join(f.value for f in _current_features))
         for feature in _current_features:
-            fs = _FEATURE_STATUS.get(feature, None)
+            fs = _FEATURE_STATUS.get(feature)
             if not fs:
                 continue
             if fs == FeatureStatus.ALPHA:
