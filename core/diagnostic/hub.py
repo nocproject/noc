@@ -491,7 +491,7 @@ class DiagnosticHub(object):
                         MetricValue(
                             "Check | Status",
                             value=int(cr.status),
-                            labels=m_labels + [f"noc::diagnostic::{d}"],
+                            labels=[*m_labels, f"noc::diagnostic::{d}"],
                         )
                     ]
         # Calculate State and Update diagnostic
@@ -592,7 +592,7 @@ class DiagnosticHub(object):
             self.__object.save_diagnostics(new_diags, dry_run=dry_run)
         if wf_events:
             # Bulk update/Get effective event
-            self.__object.fire_event(list(wf_events)[0])
+            self.__object.fire_event(next(iter(wf_events)))
         if changed_states and self.sync_alarm:
             self.sync_alarms(self.__object, new_diags, dry_run=dry_run)
 

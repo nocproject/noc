@@ -82,4 +82,4 @@ class BaseCollector(object):
 
     @staticmethod
     def metric(metric: str, *, value: int, **kwargs: Any) -> Tuple[Tuple[Any], int]:
-        return ((metric,) + tuple((k, v) for k, v in kwargs.items() if v is not None), value)
+        return ((metric, *tuple((k, v) for k, v in kwargs.items() if v is not None)), value)

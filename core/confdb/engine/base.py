@@ -631,7 +631,7 @@ class Engine(object):
         # kwargs are callables, evaluate them
         collapse_args = {k: kwargs[k]({}) for k in kwargs}
         # Group values
-        match_args = list(args) + [Var("$value")]
+        match_args = [*list(args), Var("$value")]
         collected = defaultdict(list)  # path -> [value, ...]
         for ctx in self.fn_Match(_input, *match_args):
             path = tuple(self.resolve_var(ctx, p) for p in args)

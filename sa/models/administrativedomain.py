@@ -118,7 +118,7 @@ class AdministrativeDomain(NOCModel):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     def get_default_pool(self):

@@ -265,10 +265,7 @@ class SubclassOfParameter(Parameter):
             if c.__name__ == name:
                 return True
             # Check base classes name
-            for bc in c.__bases__:
-                if check_name(bc, name):
-                    return True
-            return False
+            return any(check_name(bc, name) for bc in c.__bases__)
 
         return check_name(value, self.cls)
 

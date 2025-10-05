@@ -36,7 +36,7 @@ class RouterOSTokenizer(LineTokenizer):
     def iter_context(self, context, tokens):
         if tokens:
             if "=" not in tokens[0]:
-                for ct in self.iter_context(context + (tokens[0],), tokens[1:]):
+                for ct in self.iter_context((*context, tokens[0]), tokens[1:]):
                     yield ct
             else:
                 for token in tokens:
@@ -45,7 +45,7 @@ class RouterOSTokenizer(LineTokenizer):
                     k, v = token.split("=", 1)
                     if v.startswith('"') and v.endswith('"'):
                         v = v[1:-1]
-                    yield context + (k, v)
+                    yield (*context, k, v)
 
     def iter_line_tokens(self, line):
         """
@@ -80,11 +80,11 @@ class RouterOSTokenizer(LineTokenizer):
                 ):
                     # set [ find key=value ] ...
                     item = tokens[3].split("=", 1)[1]
-                    for ct in self.iter_context(context + (item,), tokens[5:]):
+                    for ct in self.iter_context((*context, item), tokens[5:]):
                         yield ct
                 elif is_int(tokens[1]):
                     # set 0 ...
-                    for ct in self.iter_context(context + (tokens[1],), tokens[2:]):
+                    for ct in self.iter_context((*context, tokens[1]), tokens[2:]):
                         yield ct
                 else:
                     # set XXX
@@ -93,7 +93,7 @@ class RouterOSTokenizer(LineTokenizer):
                 context_fed = True
             if tokens[0] == "add" and len(tokens) > 1:
                 # Process add instruction
-                for ct in self.iter_context(context + (str(n_item),), tokens[1:]):
+                for ct in self.iter_context((*context, str(n_item)), tokens[1:]):
                     yield ct
                 context_fed = True
                 n_item += 1

@@ -162,7 +162,7 @@ class ObjectMetricsAPI(NBIAPI):
                         "(managed_object = %d AND path[4] IN (%s))"
                         % (wx[0], ", ".join("'%s'" % x for x in wx[1]))
                     ]
-            fields = ["ts", "managed_object", "path"] + sorted(scopes[table][0])
+            fields = ["ts", "managed_object", "path", *sorted(scopes[table][0])]
             query = "SELECT %s FROM %s WHERE %s AND (%s)" % (
                 ", ".join(fields),
                 table,

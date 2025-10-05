@@ -227,8 +227,10 @@ def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         type="modbus_rtu",
         service=sensor.bi_id,
         interval=sensor.profile.collect_interval,
-        labels=[f"noc::sensor::{sensor.local_id}"]
-        + Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        labels=[
+            f"noc::sensor::{sensor.local_id}",
+            *Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        ],
         serial_path="/dev/ttyM0",
         slave=m_data["slave_id"],
         baud_rate=m_data["speed"],
@@ -257,8 +259,10 @@ def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
         type="modbus_tcp",
         service=sensor.bi_id,
         interval=sensor.profile.collect_interval,
-        labels=[f"noc::sensor::{sensor.local_id}"]
-        + Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        labels=[
+            f"noc::sensor::{sensor.local_id}",
+            *Label.filter_labels(sensor.effective_labels or [], lambda x: x.expose_metric),
+        ],
         address=sensor.managed_object.address,
         port=sensor.managed_object.port or DEFAULT_MODBUS_TCP_PORT,
         slave=m_data["slave_id"] if m_data["slave_id"] != 16 else DEFAULT_MODBUS_TCP_SLAVE,
@@ -285,8 +289,12 @@ def iter_sla_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
                 type="twamp_sender",
                 service=slaprobe.bi_id,
                 interval=slaprobe.profile.metrics_default_interval,
-                labels=[f"noc::sla::name::{slaprobe.name}"]
-                + Label.filter_labels(slaprobe.effective_labels or [], lambda x: x.expose_metric),
+                labels=[
+                    f"noc::sla::name::{slaprobe.name}",
+                    *Label.filter_labels(
+                        slaprobe.effective_labels or [], lambda x: x.expose_metric
+                    ),
+                ],
                 server=server,
                 port=port,
                 dscp=DSCP(slaprobe.tos).name,

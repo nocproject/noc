@@ -59,7 +59,7 @@ class ProbeNode(BaseCDAGNode):
     # Test stub, set by .set_scale() classmethod
     _SCALE: Dict[str, Tuple[int, int]] = {}
 
-    __slots__ = "convert", "base", "exp"
+    __slots__ = "base", "convert", "exp"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

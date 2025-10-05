@@ -66,7 +66,7 @@ class Script(BaseScript):
                 ic += [" switchport"]
             # Save commands
             if ic:
-                commands += ["interface %s" % iface] + ic + [" exit"]
+                commands += ["interface %s" % iface, *ic, " exit"]
             # Prepare VLAN mappings
             if is_access(c):
                 # Configuring access port
@@ -108,7 +108,7 @@ class Script(BaseScript):
                 if i not in add_tagged[v]:
                     vc += [" no tagged %s" % i]
             if vc:
-                commands += ["interface Vlan %d" % v] + vc + [" exit"]
+                commands += ["interface Vlan %d" % v, *vc, " exit"]
         # Add interfaces
         for v in vlans:
             vc = []
@@ -119,7 +119,7 @@ class Script(BaseScript):
                 if i not in remove_tagged[v]:
                     vc += [" tagged %s" % i]
             if vc:
-                commands += ["interface Vlan %d" % v] + vc + [" exit"]
+                commands += ["interface Vlan %d" % v, *vc, " exit"]
         # Apply commands
         if not debug and commands:
             with self.configure():

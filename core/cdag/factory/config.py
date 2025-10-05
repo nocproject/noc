@@ -56,10 +56,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
     def requirements_met(self, inputs: Optional[List[InputItem]]):
         if not inputs:
             return True
-        for input in inputs:
-            if self.expand_input(input.node) not in self.graph:
-                return False
-        return True
+        return all(self.expand_input(input.node) in self.graph for input in inputs)
 
     def is_matched(self, expr: Optional[FactoryCtx]) -> bool:
         if not expr:

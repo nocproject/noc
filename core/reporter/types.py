@@ -202,7 +202,7 @@ class ReportConfig(BaseModel):
     # field_format: Optional[List[ReportField]] = None  # Field Formatter
 
     def get_root_band(self) -> ReportBand:
-        return [b for b in self.bands if b.name == ROOT_BAND][0]
+        return next(b for b in self.bands if b.name == ROOT_BAND)
 
     def get_template(self, code: str) -> "Template":
         code = code or "DEFAULT"

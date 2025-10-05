@@ -445,7 +445,7 @@ class ReportObjectDetailApplication(ExtApplication):
                 )
             )
             if "adm_path" in columns_filter:
-                r[-1].extend([ad] + list(ad_path[ad]))
+                r[-1].extend([ad, *list(ad_path[ad])])
             if "interface_type_count" in columns_filter:
                 r[-1].extend(next(iss)[0])
             if "object_caps" in columns_filter:

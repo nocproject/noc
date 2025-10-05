@@ -165,7 +165,4 @@ class TimePatternList(object):
         self.patterns = patterns
 
     def match(self, d):
-        for tp in self.patterns:
-            if not tp.match(d):
-                return False
-        return True
+        return all(tp.match(d) for tp in self.patterns)

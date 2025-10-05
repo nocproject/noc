@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class StormRecord:
     """Record in Storm Table"""
 
-    __slots__ = ("messages_count", "verbose", "raised_alarm", "ttl", "storm_threshold")
+    __slots__ = ("messages_count", "raised_alarm", "storm_threshold", "ttl", "verbose")
     messages_count: int
     verbose: bool
     raised_alarm: bool

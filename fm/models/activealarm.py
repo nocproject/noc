@@ -379,10 +379,7 @@ class ActiveAlarm(Document):
     @property
     def allow_clear(self) -> bool:
         """Check Alarm allowed for clear"""
-        for w in self.watchers or []:
-            if w.effect == Effect.STOP_CLEAR:
-                return False
-        return True
+        return all(w.effect != Effect.STOP_CLEAR for w in self.watchers or [])
 
     def clear_alarm(
         self,
@@ -416,8 +413,9 @@ class ActiveAlarm(Document):
                     h(self)
                 except Exception:
                     error_report()
-        log = self.log + [
-            AlarmLog(timestamp=ts, from_status="A", to_status="C", message=message, source=source)
+        log = [
+            *self.log,
+            AlarmLog(timestamp=ts, from_status="A", to_status="C", message=message, source=source),
         ]
         a = ArchivedAlarm(
             id=self.id,
@@ -589,10 +587,7 @@ class ActiveAlarm(Document):
         self.save()
 
     def is_subscribed(self, user: "User") -> bool:
-        for w in self.watchers:
-            if w.effect == Effect.SUBSCRIPTION and str(user.id) == w.key:
-                return True
-        return False
+        return any(w.effect == Effect.SUBSCRIPTION and str(user.id) == w.key for w in self.watchers)
 
     @property
     def is_link_alarm(self) -> bool:
@@ -602,14 +597,15 @@ class ActiveAlarm(Document):
         """Acknowledge alarm by user"""
         self.ack_ts = datetime.datetime.now()
         self.ack_user = user.username
-        self.log = self.log + [
+        self.log = [
+            *self.log,
             AlarmLog(
                 timestamp=self.ack_ts,
                 from_status="A",
                 to_status="A",
                 message="Acknowledged by %s(%s): %s" % (user.get_full_name(), user.username, msg),
                 source=user.username,
-            )
+            ),
         ]
         self.safe_save()
         self.touch_watch()
@@ -618,14 +614,15 @@ class ActiveAlarm(Document):
         """Delete acknowledge alarm by user"""
         self.ack_ts = None
         self.ack_user = None
-        self.log = self.log + [
+        self.log = [
+            *self.log,
             AlarmLog(
                 timestamp=datetime.datetime.now(),
                 from_status="A",
                 to_status="A",
                 message="Unacknowledged by %s(%s): %s" % (user.get_full_name(), user.username, msg),
                 source=user.username,
-            )
+            ),
         ]
         self.safe_save()
         self.touch_watch()
@@ -983,7 +980,7 @@ class ActiveAlarm(Document):
             if not alarm:
                 # not in alarms - Alarm in the chain already closed
                 return path
-            path = path + [alarm_id]
+            path = [*path, alarm_id]
             root = alarm.get("root")
             if not root or root not in alarms:
                 # root not in alarms - Root alarm already closed

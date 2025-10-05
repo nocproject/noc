@@ -23,7 +23,7 @@ class Message(object):
 
 @dataclass
 class PublishRequest(object):
-    __slots__ = ("stream", "data", "partition", "headers", "key")
+    __slots__ = ("data", "headers", "key", "partition", "stream")
 
     stream: str
     data: bytes

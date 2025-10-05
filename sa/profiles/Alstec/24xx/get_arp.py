@@ -58,11 +58,11 @@ class Script(BaseScript):
                 if len(macs[0]) == 3:
                     # Only mac, iface, type
                     mac_gw = MACAddressParameter().clean(
-                        [m[0] for m in macs if m[2] == "Learned"][0]
+                        next(m[0] for m in macs if m[2] == "Learned")
                     )
                 else:
                     mac_gw = MACAddressParameter().clean(
-                        [m[0] for m in macs if m[3] == "Learned"][0]
+                        next(m[0] for m in macs if m[3] == "Learned")
                     )
         except self.CLISyntaxError:
             macs = parse_table(self.cli("show mac-addr-table"))

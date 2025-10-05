@@ -47,7 +47,7 @@ class ReportLOC(SimpleReport):
             pfx_peers = prefixes[pfx]
             if len(pfx_peers) == 1:
                 # Unique
-                peer = list(pfx_peers)[0]
+                peer = next(iter(pfx_peers))
                 try:
                     uniq_powers[peer] += 1
                 except KeyError:

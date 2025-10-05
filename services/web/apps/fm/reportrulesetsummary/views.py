@@ -26,10 +26,12 @@ class ReportRulesetSummary(SimpleReport):
             return [builtin, local, total]
 
         data = [
-            ["Alarm Classes"] + get_count("fm.alarmclasses", AlarmClass),
-            ["Event Classies"] + get_count("fm.eventclasses", EventClass),
-            ["Classification Rules"]
-            + get_count("fm.eventclassificationrules", EventClassificationRule),
+            ["Alarm Classes", *get_count("fm.alarmclasses", AlarmClass)],
+            ["Event Classies", *get_count("fm.eventclasses", EventClass)],
+            [
+                "Classification Rules",
+                *get_count("fm.eventclassificationrules", EventClassificationRule),
+            ],
         ]
 
         return self.from_dataset(

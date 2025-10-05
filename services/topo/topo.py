@@ -349,7 +349,7 @@ class Topo(object):
         logger.debug("Roots: %s at level %d", self.to_join(roots), max_level)
         uplinks = defaultdict(set)
         if len(roots) == 1:
-            uplinks[list(roots)[0]] = set()
+            uplinks[next(iter(roots))] = set()
         for root in roots:
             logger.debug("Processing from root %s", root)
             for node, uplink in self.iter_uplinks(root, uplinks):

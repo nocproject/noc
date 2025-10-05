@@ -14,7 +14,4 @@ class Script(BaseScript):
     requires = ["get_vlans"]
 
     def execute(self, vlan_id):
-        for v in self.scripts.get_vlans():
-            if v["vlan_id"] == vlan_id:
-                return True
-        return False
+        return any(v["vlan_id"] == vlan_id for v in self.scripts.get_vlans())

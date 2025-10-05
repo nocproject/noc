@@ -535,7 +535,7 @@ class Command(BaseCommand):
             result = socket.gethostbyaddr(ip_address)
         except Exception:
             return None
-        return list(result)[0]
+        return next(iter(result))
 
 
 if __name__ == "__main__":

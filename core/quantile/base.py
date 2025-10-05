@@ -184,7 +184,7 @@ class Stream(object):
             ls = len(self.samples)
             if not ls:
                 return 0.0
-            i = int(math.ceil(float(ls) * q))
+            i = math.ceil(float(ls) * q)
             if i > 0:
                 i -= 1
             self._maybe_sort()
@@ -193,8 +193,8 @@ class Stream(object):
         self.flush()
         # Search through merged data
         r = 0
-        t = int(math.ceil(float(self.merged_width) * q))
-        t += int(math.ceil(self.f(t, len(self.merged)) / 2.0))
+        t = math.ceil(float(self.merged_width) * q)
+        t += math.ceil(self.f(t, len(self.merged)) / 2.0)
         p = None
         for c in self.merged:
             if p:
@@ -342,7 +342,7 @@ class Summary(object):
             return  # Not expired yet
         delta = t - self.next_shift
         self.next_shift = t + math.ceil(delta / self.ttl) * self.ttl
-        to_rotate = min(len(self.slots), int(math.ceil(delta / self.ttl)))
+        to_rotate = min(len(self.slots), math.ceil(delta / self.ttl))
         for _ in range(to_rotate):
             self.slots.appendleft(self.slots.pop())
             self.slots[0].reset()
