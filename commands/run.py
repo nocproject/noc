@@ -50,7 +50,7 @@ class Command(BaseCommand):
             try:
                 result = s(*args, **kwargs)["output"]
             except Exception as e:
-                result = f"ERROR: {str(e)}"
+                result = f"ERROR: {e!s}"
             with cond:
                 buffer.append((o, result))
                 cond.notify()

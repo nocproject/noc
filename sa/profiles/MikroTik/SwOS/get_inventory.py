@@ -33,7 +33,7 @@ class Script(BaseScript):
         sfps = self.profile.parseBrokenJson(self.http.get("/sfp.b", cached=True, eof_mark=b"}"))
         if sfps.get("vnd"):
             sfp_count = len(sfps["vnd"])
-            for i in range(0, sfp_count):
+            for i in range(sfp_count):
                 vendor = smart_text(codecs.decode(sfps["vnd"][i], "hex")).strip()
                 part_no = smart_text(codecs.decode(sfps["pnr"][i], "hex")).strip()
                 revision = smart_text(codecs.decode(sfps["rev"][i], "hex")).strip()

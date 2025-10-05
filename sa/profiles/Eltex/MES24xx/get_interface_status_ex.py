@@ -23,6 +23,4 @@ class Script(BaseScript):
         :return:
         """
 
-        if re.search("Te", data["interface"]):
-            return True
-        return False
+        return bool(re.search("Te", data["interface"]))

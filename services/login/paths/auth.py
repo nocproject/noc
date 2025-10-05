@@ -237,6 +237,6 @@ def is_pinhole(path: str) -> bool:
         path = path[:idx]
     if path in PINHOLE_PATHS:
         return True
-    if path.startswith("/api/") and path.endswith("/openapi.json") and path.count("/") == 3:
-        return True
-    return False
+    return bool(
+        path.startswith("/api/") and path.endswith("/openapi.json") and path.count("/") == 3
+    )

@@ -266,12 +266,10 @@ class MapSettings(Document):
         if len(self.nodes) != len(topology.G.nodes):
             # Change node count
             return True
-        if (topology.meta.width and self.width != topology.meta.width) or (
-            topology.meta.height and self.height != topology.meta.height
-        ):
-            # Change Map Size
-            return True
-        return False
+        return bool(
+            (topology.meta.width and self.width != topology.meta.width)
+            or (topology.meta.height and self.height != topology.meta.height)
+        )
 
     @classmethod
     def get_map(

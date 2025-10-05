@@ -148,11 +148,8 @@ class ToolsAppplication(Application):
                     ip = row[4]
                 # Leave only addresses residing into "prefix"
                 # To prevent uploading to not-owned blocks
-                if (
-                    is_ipv4(ip)
-                    and not p.contains(IPv4(ip))
-                    or is_ipv6(ip)
-                    and not p.contains(IPv6(ip))
+                if (is_ipv4(ip) and not p.contains(IPv4(ip))) or (
+                    is_ipv6(ip) and not p.contains(IPv6(ip))
                 ):
                     continue
                 a = Address.objects.filter(vrf=vrf, afi=afi, address=ip).first()

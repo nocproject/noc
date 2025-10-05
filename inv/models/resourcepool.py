@@ -157,10 +157,7 @@ class ResourcePool(Document):
         """Check Pool Threshold"""
 
         used = round(total / used * 100, 2)
-        if used > self.warn_threshold:
-            # @todo send query
-            return False
-        return True
+        return not used > self.warn_threshold
 
     def allocate(
         self,

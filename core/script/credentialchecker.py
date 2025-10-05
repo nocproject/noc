@@ -167,11 +167,7 @@ class CredentialChecker(object):
             return True
         if "Error: Connection reset" in message:
             return True
-        if "No supported authentication methods" in message:
-            return True
-        # if "SNMP Timeout" in message:
-        #     return True
-        return False
+        return "No supported authentication methods" in message
 
     def iter_suggests(
         self, protocols: Tuple[Protocol, ...] = None

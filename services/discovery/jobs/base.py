@@ -345,9 +345,7 @@ class MODiscoveryJob(PeriodicJob):
 
         self.context["umbrella_settings"] = current_status
 
-        if not prev_status and not current_status:
-            return False
-        return True
+        return not (not prev_status and not current_status)
 
     def can_update_alarms(self):
         return False

@@ -211,6 +211,6 @@ class CPECheck(DiscoveryCheck):
     def cleanup_caps(self, result: Dict[str, Any]) -> Dict[str, str]:
         r = {}
         for attr_name, caps in self.caps_map.items():
-            if attr_name in result and result[attr_name]:
+            if result.get(attr_name):
                 r[caps] = result[attr_name]
         return r

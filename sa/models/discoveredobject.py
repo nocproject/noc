@@ -98,9 +98,7 @@ class DataItem(EmbeddedDocument):
             return False
         if other.remote_system and other.remote_system != self.remote_system:
             return False
-        if self.data != other.data:
-            return False
-        return True
+        return self.data == other.data
 
     def __hash__(self):
         if self.remote_system:

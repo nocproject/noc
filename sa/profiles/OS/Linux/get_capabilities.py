@@ -21,9 +21,7 @@ class Script(BaseScript):
         r1 = self.cli("/bin/ps aux | grep [l]advd")
         r2 = self.cli("/bin/ps aux | grep [l]ldpd")
 
-        if r1 or r2:
-            return True
-        return False
+        return bool(r1 or r2)
 
     @false_on_cli_error
     def has_cdp_cli(self):
@@ -36,6 +34,4 @@ class Script(BaseScript):
         # for lldpd daemon need check CDP enable in config. LLDPD_OPTIONS="-c" in /etc/sysconfig/lldpd
         r2 = self.cli('/bin/ps aux | grep "[/]usr/sbin/lldpd -c"')
 
-        if r1 or r2:
-            return True
-        return False
+        return bool(r1 or r2)

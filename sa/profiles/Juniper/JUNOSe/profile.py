@@ -98,7 +98,7 @@ class Profile(BaseProfile):
                 if match.group("name") == "10GE PR IOA":
                     r += ["TenGigabitEthernet%s/0" % match.group("slot")]
                 elif match.group("name") == "GE-4 IOA":
-                    for i in range(0, 4):
+                    for i in range(4):
                         r += ["GigabitEthernet%s/%s" % (match.group("slot"), i)]
                 elif match.group("name") == "SRP IOA":
                     r += ["FastEthernet%s/0" % match.group("slot")]

@@ -25,7 +25,7 @@ class IPPrefixProfileLoader(BaseLoader):
 
     def clean(self, row):
         d = super().clean(row)
-        if "workflow" in d and d["workflow"]:
+        if d.get("workflow"):
             d["workflow"] = Workflow.objects.get(name=d["workflow"])
         else:
             d["workflow"] = Workflow.get_default_workflow("ip.Address")

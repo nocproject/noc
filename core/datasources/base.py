@@ -326,10 +326,7 @@ class BaseDataSource(object):
             return True
         if cls.row_index and f.name == cls.row_index:
             return True
-        if f.name not in fields:
-            # Not filtered field
-            return False
-        return True
+        return f.name in fields
 
     @classmethod
     def get_series_from_data(cls, data: Dict[str, List[Any]], fields: Optional[Set[str]] = None):
@@ -479,7 +476,7 @@ class BaseDataSource(object):
                 data.append(orjson.dumps(row))
                 if len(data) < CHUNK:
                     continue
-                for part in range(0, n_parts):
+                for part in range(n_parts):
                     await client.publish(
                         b"\n".join(data),
                         stream=f"ch.{cls._get_db_table()}",
@@ -487,7 +484,7 @@ class BaseDataSource(object):
                     )
                 data = []
         if data:
-            for part in range(0, n_parts):
+            for part in range(n_parts):
                 await client.publish(
                     b"\n".join(data),
                     stream=f"ch.{cls._get_db_table()}",
@@ -526,7 +523,6 @@ class BaseDataSource(object):
         :param kwargs:
         :return:
         """
-        ...
 
     @classmethod
     def clean_row_value(cls, value):

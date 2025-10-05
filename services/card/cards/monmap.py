@@ -324,7 +324,7 @@ class MonMapCard(BaseCard):
             from noc.sa.models.serviceprofile import ServiceProfile
 
             r += [get_summary(s["service"], ServiceProfile)]
-        if "fresh_alarms" in s and s["fresh_alarms"]:
+        if s.get("fresh_alarms"):
             r += [
                 '<i class="fa fa-exclamation-triangle"></i><span class="badge">%s</span>'
                 % s["fresh_alarms"]["FreshAlarm"]

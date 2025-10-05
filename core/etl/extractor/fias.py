@@ -244,27 +244,22 @@ class StreetExtractor(BaseExtractor):
             filename="tmp", codepage="cp866", field_specs=field_specs, on_disk=False
         )
 
-        with dbf.Table(filename=self.dbf_path, codepage="cp866") as table:
-            with tmp:
-                for row in table:
-                    if (
-                        row.AOLEVEL in [7, 4, 35]
-                        and row.NEXTID == " " * 36
-                        and row.OKTMO != " " * 11
-                    ):
-                        OKTMO = row.OKTMO.rstrip().zfill(11)
-                        tmp.append(
-                            (
-                                OKTMO,
-                                row.AOLEVEL,
-                                row.SHORTNAME,
-                                row.FORMALNAME,
-                                row.AOGUID,
-                                row.PARENTGUID,
-                                row.STARTDATE,
-                                row.ENDDATE,
-                            )
+        with dbf.Table(filename=self.dbf_path, codepage="cp866") as table, tmp:
+            for row in table:
+                if row.AOLEVEL in [7, 4, 35] and row.NEXTID == " " * 36 and row.OKTMO != " " * 11:
+                    OKTMO = row.OKTMO.rstrip().zfill(11)
+                    tmp.append(
+                        (
+                            OKTMO,
+                            row.AOLEVEL,
+                            row.SHORTNAME,
+                            row.FORMALNAME,
+                            row.AOGUID,
+                            row.PARENTGUID,
+                            row.STARTDATE,
+                            row.ENDDATE,
                         )
+                    )
 
         cities.open(dbf.READ_WRITE)
         streets.open(dbf.READ_WRITE)

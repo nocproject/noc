@@ -90,7 +90,7 @@ class IfDescCheck(TopologyDiscoveryCheck):
         if not iface.description or not iface.description.strip():
             self.logger.info("%s interface %s has no description. Ignoring", direction, iface.name)
             return None
-        if not iface.type == "physical":
+        if iface.type != "physical":
             self.logger.info(
                 "%s interface %s has invalid type %s. Ignoring", direction, iface.name, iface.type
             )

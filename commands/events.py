@@ -169,7 +169,7 @@ class Command(BaseCommand):
             try:
                 data = orjson.loads(f.read())
             except ValueError as e:
-                self.die(f"Failed to decode JSON file '{path}': {str(e)}")
+                self.die(f"Failed to decode JSON file '{path}': {e!s}")
             e = FMEventObject.model_validate(data)
             e = self.get_fm_event(e, rs)
             publish(orjson.dumps(e.model_dump()), "events.default", partition=0)

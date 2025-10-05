@@ -48,7 +48,7 @@ class AddressRangeApplication(ExtModelApplication):
             data["is_locked"] = True
         # @todo: check FQDN template
         # Check reverse_nses is a list of FQDNs or IPs
-        if "reverse_nses" in data and data["reverse_nses"]:
+        if data.get("reverse_nses"):
             reverse_nses = data["reverse_nses"]
             for ns in reverse_nses.split(","):
                 ns = ns.strip()

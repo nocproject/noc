@@ -24,7 +24,7 @@ class SlotRule(OIDRule):
         :return:
         """
         juniSystemSlotLevel = [1]
-        juniSystemSlotNumber = list(range(0, 17))
+        juniSystemSlotNumber = list(range(17))
         i = 0
         r = {}
 

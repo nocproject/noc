@@ -19,7 +19,7 @@ class Script(BaseScript):
     def execute(self):
         interfaces = []
         c = self.profile.get_dict(self)
-        for i in range(0, 4):  # for future models
+        for i in range(4):  # for future models
             mac = c.get(f"root.Network.eth{i}.MACAddress")
             if mac is not None:
                 iface = {
@@ -57,7 +57,7 @@ class Script(BaseScript):
         """
         o = c.get("root.Input.NbrOfInputs")
         if is_int(o) and int(o) > 0:
-            for i in range(0, int(o)):
+            for i in range(int(o)):
                 ifname = c.get(f"root.Input.I{i}.Name")
                 iface = {
                     "name": ifname,
@@ -81,7 +81,7 @@ class Script(BaseScript):
         """
         o = c.get("root.Output.NbrOfOutputs")
         if is_int(o) and int(o) > 0:
-            for i in range(0, int(o)):
+            for i in range(int(o)):
                 ifname = c.get(f"root.Output.O{i}.Name")
                 iface = {
                     "name": ifname,

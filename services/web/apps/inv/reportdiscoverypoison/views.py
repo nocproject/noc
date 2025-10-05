@@ -61,7 +61,7 @@ class ReportDiscoveryIDPoisonApplication(SimpleReport):
             if len(data_c) > 0:
                 if data_c[0][1] == data_c[1][1]:
                     reason = _("Duplicate MO")
-                elif not data_c[0][4] == data_c[1][4]:
+                elif data_c[0][4] != data_c[1][4]:
                     reason = _("MO is move")
             if pool and pool not in pool_c:
                 continue

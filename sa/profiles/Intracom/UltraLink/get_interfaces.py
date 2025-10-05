@@ -89,14 +89,14 @@ class Script(BaseScript):
         ifc = {
             "name": "modem",
             "admin_status": True,
-            "oper_status": True if modem_link == "Locked" else False,
+            "oper_status": modem_link == "Locked",
             "type": "physical",
             "subinterfaces": [
                 {
                     "name": "modem",
                     "enabled_afi": ["BRIDGE"],
                     "admin_status": True,
-                    "oper_status": True if modem_link == "Locked" else False,
+                    "oper_status": modem_link == "Locked",
                     "tagged_vlans": port_vlan["modem"],  # @todo: ES for QinQ support
                 }
             ],

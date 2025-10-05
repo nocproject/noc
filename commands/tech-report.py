@@ -31,10 +31,10 @@ from noc.core.version import version
 # Obtained from the `colorama` python-library
 # see also: https://en.wikipedia.org/wiki/ANSI_escape_code
 CSI = "\033["
-FORE_GREEN = f"{CSI}{str(32)}m"
-FORE_RED = f"{CSI}{str(31)}m"
-FORE_BLUE = f"{CSI}{str(34)}m"
-STYLE_RESET_ALL = f"{CSI}{str(0)}m"
+FORE_GREEN = f"{CSI}{32!s}m"
+FORE_RED = f"{CSI}{31!s}m"
+FORE_BLUE = f"{CSI}{34!s}m"
+STYLE_RESET_ALL = f"{CSI}{0!s}m"
 
 
 class LibStatus(IntEnum):

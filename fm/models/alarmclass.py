@@ -249,9 +249,7 @@ class AlarmClass(Document):
         """Check allowed Alarm Class for rewrite"""
         if not self.vars and not alarm_class.vars:
             return True
-        if {x.name for x in self.vars} == {x.name for x in alarm_class.vars}:
-            return True
-        return False
+        return {x.name for x in self.vars} == {x.name for x in alarm_class.vars}
 
     def get_handlers(self) -> List[Callable]:
         @cachetools.cached(self._handlers_cache, key=lambda x: x.id, lock=handlers_lock)
