@@ -46,7 +46,7 @@ class Match(EmbeddedDocument):
     exclude_labels = ListField(StringField())
 
     def __str__(self):
-        return f'{", ".join(self.labels)}-{", ".join(self.exclude_labels)}'
+        return f"{', '.join(self.labels)}-{', '.join(self.exclude_labels)}"
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))

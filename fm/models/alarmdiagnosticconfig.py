@@ -219,7 +219,7 @@ class AlarmDiagnosticConfig(Document):
                 logger.info(
                     "[%s] Object is not managed, running script %s disabled.", alarm.id, c["script"]
                 )
-                result += [f'Object is not managed, running script {c["script"]} disabled.']
+                result += [f"Object is not managed, running script {c['script']} disabled."]
             if "action" in c:
                 logger.info("[%s] Running action %s", alarm.id, c["action"])
                 try:

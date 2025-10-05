@@ -284,7 +284,7 @@ class ManagedObjectDataStream(DataStream):
             if iface["aggregated_interface"] in ifcache:
                 r["aggregated_interface"] = ifcache[iface["aggregated_interface"]][-1]
             else:
-                print(f'Broken aggregated interface {iface["aggregated_interface"]}')
+                print(f"Broken aggregated interface {iface['aggregated_interface']}")
         # Apply profile
         if iface.get("profile"):
             profile = InterfaceProfile.get_by_id(iface["profile"])

@@ -168,9 +168,9 @@ class TestSuite(object):
         :return:
         """
         with self.test("test_env_labels", fatal=True):
-            assert (
-                ENV_LABELS in os.environ or ENV_CI in os.environ
-            ), f"{ENV_LABELS} environment variable is not defined. Must be called within Gitlab CI"
+            assert ENV_LABELS in os.environ or ENV_CI in os.environ, (
+                f"{ENV_LABELS} environment variable is not defined. Must be called within Gitlab CI"
+            )
 
     def check_backport_label(self):
         with self.test("test_backport"):
@@ -178,9 +178,9 @@ class TestSuite(object):
                 return
             kind = [x for x in self.labels if x.startswith("kind::")]
             for label in kind:
-                assert (
-                    label == "kind::bug"
-                ), f"'{self.BACKPORT}' cannot be used with '{label}'.\n Use only with 'kind::bug'"
+                assert label == "kind::bug", (
+                    f"'{self.BACKPORT}' cannot be used with '{label}'.\n Use only with 'kind::bug'"
+                )
 
     def check_required_scoped_labels(self):
         def test_required(label, choices):
@@ -189,18 +189,18 @@ class TestSuite(object):
             n_labels = len(seen_labels)
             # Check label is exists
             with self.test(f"test_{label}_label_set", ref=f"dev-mr-labels-{label}"):
-                assert (
-                    n_labels > 0
-                ), f"'{label}::*' label is not set. Must be one of {', '.join(choices)}."
+                assert n_labels > 0, (
+                    f"'{label}::*' label is not set. Must be one of {', '.join(choices)}."
+                )
             # Check label is defined only once
             with self.test(f"test_{label}_label_single", ref="dev-mr-labels-{label}"):
                 assert n_labels < 2, f"Multiple '{label}::*' labels defined. Must be exactly one."
             # Check label is known one
             with self.test(f"test_{label}_known", ref=f"dev-mr-labels-{label}"):
                 for x in seen_labels:
-                    assert (
-                        x in choices
-                    ), f"Invalid label '{x}'. Must be one of {', '.join(choices)}."
+                    assert x in choices, (
+                        f"Invalid label '{x}'. Must be one of {', '.join(choices)}."
+                    )
 
         test_required("pri", self.PRI_LABELS)
         test_required("comp", self.COMP_LABELS)

@@ -78,7 +78,7 @@ class Profile(BaseProfile):
         ip_new = ""
         i = 0
         while i < len(ip):
-            ip_new += f"{number_to_hex(ip[i])}{number_to_hex(ip[i+1])}:"
+            ip_new += f"{number_to_hex(ip[i])}{number_to_hex(ip[i + 1])}:"
             i += 2
         return ip_new[:-1]
 

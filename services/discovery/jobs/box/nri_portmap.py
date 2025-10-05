@@ -32,7 +32,7 @@ class NRIPortmapperCheck(DiscoveryCheck):
         nri = self.object.remote_system.name
         # Check object has interfaces
         if not self.has_capability("DB | Interfaces"):
-            self.logger.info("No interfaces discovered. " "Skipping interface status check")
+            self.logger.info("No interfaces discovered. Skipping interface status check")
             return
         # Get portmapper instance
         pm_cls = self.object.remote_system.get_portmapper()

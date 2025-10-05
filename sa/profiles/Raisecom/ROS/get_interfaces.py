@@ -295,7 +295,7 @@ class Script(BaseScript):
         vlans = self.get_switchport_cli()
         for ifname in interfaces:
             port = interfaces[ifname]
-            name = str(f'port{port["name"]}')
+            name = str(f"port{port['name']}")
             port["subinterfaces"] = [
                 {
                     "name": name,

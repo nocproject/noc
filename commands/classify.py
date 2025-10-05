@@ -45,7 +45,7 @@ class Stats(object):
         """str() implementation."""
         return (
             f"{self.path}: messages={self.total} classified={self.classified} "
-            f"({self.quality*100.0:.2f}%) "
+            f"({self.quality * 100.0:.2f}%) "
             f"non-classified={self.non_classified} [{self.duration:.3f}s, {self.rate:.2f} msg/sec]"
         )
 
@@ -157,7 +157,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         cmd = options.pop("cmd")
-        return getattr(self, f'handle_{cmd.replace("-", "_")}')(*args, **options)
+        return getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def parse_syslog_text(self, profile: str, filepath: Path) -> List[Event]:
         """

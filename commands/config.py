@@ -27,7 +27,7 @@ class Command(BaseCommand):
         subparsers.add_parser("compile-docs")
 
     def handle(self, cmd, *args, **options):
-        getattr(self, f"handle_{cmd.replace('-','_')}")(*args, **options)
+        getattr(self, f"handle_{cmd.replace('-', '_')}")(*args, **options)
 
     def handle_dump(self, section=None, *args, **options):
         config.dump(url="yaml://", section=section)

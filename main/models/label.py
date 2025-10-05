@@ -93,7 +93,7 @@ class RegexItem(EmbeddedDocument):
     scope = StringField(choices=list(REGEX_LABEL_SCOPES), required=True)
 
     def __str__(self):
-        return f'{self.scope}: {self.regexp}, {"MULTI" if self.flag_multiline else ""}|{"DOTALL" if self.flag_dotall else ""}'
+        return f"{self.scope}: {self.regexp}, {'MULTI' if self.flag_multiline else ''}|{'DOTALL' if self.flag_dotall else ''}"
 
 
 class VLANFilterItem(EmbeddedDocument):

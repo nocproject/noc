@@ -47,7 +47,7 @@ class RequiredRule(EmbeddedDocument):
     exclude_labels: List[str] = ListField(StringField())
 
     def __str__(self):
-        return f'{", ".join(self.labels)}'
+        return f"{', '.join(self.labels)}"
 
     def json_data(self) -> Dict[str, Any]:
         return {

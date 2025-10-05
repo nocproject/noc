@@ -122,14 +122,14 @@ class LLDPCheck(TopologyDiscoveryCheck):
             rp = None  # Process below
         else:
             self.logger.debug(
-                "Cannot find remote port %r. " "Unsupported remote port subtype %s",
+                "Cannot find remote port %r. Unsupported remote port subtype %s",
                 port,
                 port_subtype,
             )
             return None
         if not rp:
             self.logger.debug(
-                "Trying to guess remote port %s:%r " "using unspecified subtype",
+                "Trying to guess remote port %s:%r using unspecified subtype",
                 remote_object.name,
                 port,
             )

@@ -488,7 +488,7 @@ class Script(BaseScript):
                 iface.update(match_detail.groupdict())
                 if "aggregated_interface" in iface:
                     if is_int(iface["aggregated_interface"]):
-                        iface["aggregated_interface"] = f'lag-{iface["aggregated_interface"]}'
+                        iface["aggregated_interface"] = f"lag-{iface['aggregated_interface']}"
                     else:
                         del iface["aggregated_interface"]
                 iface["type"] = "physical"
@@ -507,7 +507,7 @@ class Script(BaseScript):
                 iface = match.groupdict()
                 iface["type"] = "aggregated"
                 if iface["name"]:
-                    iface["name"] = f'lag-{iface["name"]}'
+                    iface["name"] = f"lag-{iface['name']}"
                 if "mac" in iface and iface["mac"] == "":
                     del iface["mac"]
                 iface["subinterfaces"] = []
@@ -586,7 +586,7 @@ class Script(BaseScript):
                 if fi["rd"] == "None":
                     fi.pop("rd")
                 fi["interfaces"] = []
-                v = self.cli(f'show router {fi["forwarding_instance"]} interface detail')
+                v = self.cli(f"show router {fi['forwarding_instance']} interface detail")
                 ifaces = self.parse_interfaces(v)
                 for iface in ifaces:
                     if iface not in base_ifaces:
@@ -602,7 +602,7 @@ class Script(BaseScript):
                             }
                         )
             elif fi["type"] == "bridge":
-                v = self.cli(f'show service id {fi["forwarding_instance"]} base')
+                v = self.cli(f"show service id {fi['forwarding_instance']} base")
                 match = self.re_vpls.search(v)
                 if not match:
                     fi["type"] = "vpls"

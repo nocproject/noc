@@ -152,7 +152,7 @@ class Script(BaseScript):
                     interfaces[ifname][param] = match.groups()[0]
         # VLAN Interfaces
         for vlan in addresses.values():
-            ifname = self.profile.convert_interface_name(f'VLAN{vlan["vlan"]}')
+            ifname = self.profile.convert_interface_name(f"VLAN{vlan['vlan']}")
             interfaces[ifname] = {
                 "name": ifname,
                 "type": "SVI",

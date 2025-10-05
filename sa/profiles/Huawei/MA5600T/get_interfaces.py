@@ -204,7 +204,7 @@ class Script(BaseScript):
             state = match.group("state")
             if not state and not match.group("type"):
                 continue
-            ports[f'0/{slot_n}/{match.group("port")}'] = {
+            ports[f"0/{slot_n}/{match.group('port')}"] = {
                 "num": match.group("port"),
                 "state": state.lower() in {"online", "activated", "registered"} if state else True,
                 # Output table without type, try SHDSL
@@ -366,7 +366,7 @@ class Script(BaseScript):
             b_type = b_type.pop() if b_type else b["type"]
             if b_type in {"10GE", "GE", "FE", "GE-Optic", "GE-Elec", "FE-Elec"}:
                 for match in self.rx_ether.finditer(v):
-                    ifname = f'0/{slot}/{match.group("port")}'
+                    ifname = f"0/{slot}/{match.group('port')}"
                     admin_status = match.group("admin_status") == "active"
                     oper_status = match.group("oper_status") == "online"
                     ifindex = self.snmp_index("Eth", 0, slot, int(match.group("port")))
