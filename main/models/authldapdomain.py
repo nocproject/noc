@@ -85,7 +85,7 @@ class AuthLDAPDomain(Document):
         choices=[("0", "As-is"), ("l", "Lowercase"), ("u", "Uppercase")], default="l"
     )
     # The pool can have different HA strategies:
-    # FIRST: gets the first server in the pool, if ‘active’ is set to True gets the first available server
+    # FIRST: gets the first server in the pool, if "active" is set to True gets the first available server
     # ROUND_ROBIN: each time the connection is open the subsequent server in the pool is used.
     # If active is set to True unavailable servers will be discarded
     # RANDOM: each time the connection is open a random server

@@ -166,7 +166,7 @@ class Script(BaseScript):
                     subinterfaces += [sub]
             # Append to interfaces
             iface["subinterfaces"] = subinterfaces
-            if "subinterfaces" or "aggregated_interface" in iface:
+            if iface.get("subinterfaces") or iface.get("aggregated_interface"):
                 interfaces += [iface]
         # Get interfaces
         return [{"interfaces": interfaces}]

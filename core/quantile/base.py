@@ -18,7 +18,7 @@ from time import perf_counter
 # Each sample contains
 # * value - sampled item from data stream
 # * width - the difference between the lowest possible rank of item i
-#           and the lowest possible rank of item i − 1
+#           and the lowest possible rank of item i - 1
 # * delta - is the difference between the greatest possible rank of item i
 #           and the lowest possible rank of item i
 Sample = namedtuple("Sample", ["value", "width", "delta"])

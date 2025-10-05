@@ -169,7 +169,7 @@ class Command(BaseCommand):
         async def alter():
             async with MessageStreamClient() as client:
                 meta = await client.fetch_metadata(name)
-                stream_meta = meta.metadata[name] if name in meta.metadata else None
+                stream_meta = meta.metadata.get(name, None)
                 await client.alter_stream(
                     name=name,
                     current_meta=stream_meta,

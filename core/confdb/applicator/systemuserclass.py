@@ -10,9 +10,7 @@ from .query import QueryApplicator
 
 
 class DefaultUserClassApplicator(QueryApplicator):
-    """
-    В случае отсутствия user-class, выставляется значение по умолчанию, задаваемое в profile
-    """
+    """In case of absence of user-class, get defaults from profile."""
 
     CHECK_QUERY = "Match('hints', 'system', 'user', 'defaults', 'class')"
     QUERY = [
