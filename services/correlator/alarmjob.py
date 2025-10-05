@@ -235,10 +235,7 @@ class AlarmJob(object):
 
     def has_state(self):
         """Check log for state logs"""
-        for ll in self.actions:
-            if ll.status != ActionStatus.SKIP:
-                return True
-        return False
+        return any(ll.status != ActionStatus.SKIP for ll in self.actions)
 
     def get_next_ts(self) -> Optional[datetime.datetime]:
         """

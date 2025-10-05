@@ -38,8 +38,8 @@ class RebaseApplicator(BaseApplicator):
         """
         if node.children:
             assert len(node.children) == 1
-            n = list(node.children)[0]
-            return [n] + self.get_path(node.children[n])
+            n = next(iter(node.children))
+            return [n, *self.get_path(node.children[n])]
         return []
 
     def can_apply(self):

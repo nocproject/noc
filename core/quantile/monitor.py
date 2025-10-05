@@ -36,7 +36,8 @@ class Quantile(Summary):
         ext_labels = ['%s="%s"' % (i.lower(), labels[i]) for i in labels]
         for quantile in config.perfomance.default_quantiles:
             (value,) = self.query(quantile, 0)
-            all_labels = ext_labels + [
+            all_labels = [
+                *ext_labels,
                 'quantile="%s"' % quantile,
                 'window="%s"' % config.perfomance.default_quantiles_window,
             ]
@@ -66,7 +67,7 @@ def apply_quantiles(d):
     """
     for x in quantiles:
         if isinstance(x, tuple):
-            xk = (x[0] + Q_SUFFIX,) + x[1:]
+            xk = (x[0] + Q_SUFFIX, *x[1:])
         else:
             xk = x + Q_SUFFIX
         d[xk] = quantiles[x]

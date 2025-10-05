@@ -92,9 +92,9 @@ class Script(BaseScript):
                 ic += [" no %s" % ept[is_access(c)]]
             if ic:
                 if iface[:2] == "ch":
-                    commands += ["interface port-channel %s" % iface[2:]] + ic + [" exit"]
+                    commands += ["interface port-channel %s" % iface[2:], *ic, " exit"]
                 else:
-                    commands += ["interface ethernet %s" % iface] + ic + [" exit"]
+                    commands += ["interface ethernet %s" % iface, *ic, " exit"]
         # Apply commands
         if not debug and commands:
             with self.configure():

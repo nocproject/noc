@@ -206,7 +206,7 @@ class Command(BaseCommand):
                 row.insert(headers.index(key), r[key])
             table += [row]
         if table:
-            self.print("Result:\n", format_table(width, [headers] + table))
+            self.print("Result:\n", format_table(width, [headers, *table]))
         else:
             self.print("Result:")
 

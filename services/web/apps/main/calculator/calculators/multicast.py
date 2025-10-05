@@ -57,7 +57,7 @@ class Calculator(BaseCalculator):
             p = [int(x) for x in ip.split(".")]
             mac = [0x1, 0x0, 0x5E, p[1] & 0x7F, p[2], p[3]]
             mac = ":".join(["%02X" % x for x in mac])
-            r = [("IP", ip), ("MAC", mac)] + mac_ips(mac)
+            r = [("IP", ip), ("MAC", mac), *mac_ips(mac)]
         elif mac:
-            r = [("MAC", mac)] + mac_ips(mac)
+            r = [("MAC", mac), *mac_ips(mac)]
         return r

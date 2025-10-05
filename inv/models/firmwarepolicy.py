@@ -110,7 +110,7 @@ class FirmwarePolicy(Document):
             return None
         fps = cls.get_effective_policies(version, platform)
         if fps:
-            return list(sorted(fps, key=lambda x: PRIORITY_ORDER.index(x.status)))[0].status
+            return next(iter(sorted(fps, key=lambda x: PRIORITY_ORDER.index(x.status)))).status
         return None
 
     def on_save(self):

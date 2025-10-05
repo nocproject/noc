@@ -42,4 +42,4 @@ class RuleLookup(object):
 
     def add_rule(self, rule):
         """Add Rule to Chain"""
-        self.rules = sorted(self.rules + [rule], key=operator.attrgetter("preference"))
+        self.rules = sorted([*self.rules, rule], key=operator.attrgetter("preference"))

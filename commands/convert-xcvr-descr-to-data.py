@@ -379,10 +379,7 @@ class Command(BaseCommand):
         return description.replace(",", "")
 
     def is_list_contain_attr(self, list_, attr) -> bool:
-        for o in list_:
-            if o["interface"] == "optical" and o["attr"] == attr:
-                return True
-        return False
+        return any(o["interface"] == "optical" and o["attr"] == attr for o in list_)
 
     def handle_files(self) -> None:
         connect()

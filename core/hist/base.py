@@ -40,7 +40,7 @@ class Histogram(object):
         bucket_name = "%s_bucket" % name
         for label, metric in zip(self.labels, self.metrics):
             yield "# TYPE %s untyped" % bucket_name
-            all_labels = ext_labels + ['le="%s"' % label]
+            all_labels = [*ext_labels, 'le="%s"' % label]
             yield "%s{%s} %s" % (bucket_name, ",".join(all_labels), metric.value)
         # Yield _sum
         sum_name = "%s_sum" % name

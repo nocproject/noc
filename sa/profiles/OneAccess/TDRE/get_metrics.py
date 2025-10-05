@@ -56,7 +56,7 @@ class Script(GetMetricsScript):
         m = self.get_ip_sla_metrics()
         for bv in metrics:
             if bv.metric in self.ALL_SLA_METRICS:
-                id = tuple(bv.labels + [bv.metric])
+                id = tuple([*bv.labels, bv.metric])
                 if id in m:
                     self.set_metric(
                         id=bv.id, metric=bv.metric, value=m[id], ts=ts, labels=bv.labels

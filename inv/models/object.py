@@ -350,7 +350,7 @@ class Object(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     @property
@@ -1168,7 +1168,7 @@ class Object(Document):
 
     def get_local_name_path(self, include_chassis: bool = False) -> list[str]:
         if self.parent and self.parent_connection:
-            return self.parent.get_local_name_path(include_chassis) + [self.parent_connection]
+            return [*self.parent.get_local_name_path(include_chassis), self.parent_connection]
         if include_chassis and self.name:
             return [self.name]
         return []
@@ -1178,9 +1178,9 @@ class Object(Document):
         Return list of container names
         """
         if self.parent and self.parent_connection:
-            return self.parent.get_name_path() + [self.parent_connection]
+            return [*self.parent.get_name_path(), self.parent_connection]
         if self.parent:
-            return self.parent.get_name_path() + [self.name]
+            return [*self.parent.get_name_path(), self.name]
         return [self.name]
 
     def log(self, message, user=None, system=None, managed_object=None, op=None) -> None:
@@ -1427,10 +1427,7 @@ class Object(Document):
         """
 
         def is_protocol_match(protocols) -> bool:
-            for p in protocols:
-                if p.protocol.technology in technologies:
-                    return True
-            return False
+            return any(p.protocol.technology in technologies for p in protocols)
 
         connections = {
             ro.parent_connection: ro for ro in self.iter_children() if ro.model.cr_context != "XCVR"
@@ -1447,7 +1444,7 @@ class Object(Document):
             elif c.name in connections:
                 ro = connections[c.name]
                 for part_path in ro.iter_technology(technologies):
-                    part_path.path = [PathItem.from_object(self, c)] + part_path.path
+                    part_path.path = [PathItem.from_object(self, c), *part_path.path]
                     yield part_path
 
     def set_connection_interface(self, name, if_name):

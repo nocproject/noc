@@ -80,7 +80,7 @@ class Script(BaseScript):
             prefix = parts[:-1]
             last = last.rsplit("/", 1)[1]
             for i in range(int(parts[-1]), int(last) + 1):
-                yield "".join([str(x) for x in prefix + [i]])
+                yield "".join([str(x) for x in [*prefix, i]])
 
     def execute_cli(self, **kwargs):
         vlans = []

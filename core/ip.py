@@ -598,7 +598,7 @@ class IPv6(IP):
         parts = address.split(":")
         if "." in parts[-1]:
             p = [int(x) for x in parts[-1].split(".")]
-            parts = parts[:-1] + ["%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])]
+            parts = [*parts[:-1], "%02x%02x" % (p[0], p[1]), "%02x%02x" % (p[2], p[3])]
         if len(parts) == 8:
             parts = [pp if pp else "0" for pp in parts]
         else:
@@ -1020,7 +1020,7 @@ class PrefixDB(object):
 
         def walk_tree(c, root_bits):
             for n, v in enumerate(c.children):
-                bits = root_bits + [n]
+                bits = [*root_bits, n]
                 if v is None:
                     yield bits
                 elif len(bits) < max_bits:

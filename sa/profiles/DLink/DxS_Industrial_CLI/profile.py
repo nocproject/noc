@@ -13,7 +13,6 @@ from noc.core.profile.base import BaseProfile
 class Profile(BaseProfile):
     name = "DLink.DxS_Industrial_CLI"
 
-    pattern_more = [(rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a")]
     pattern_more = [
         (rb"CTRL\+C.+?a A[Ll][Ll]\s*", b"a"),
         (

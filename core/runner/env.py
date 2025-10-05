@@ -109,10 +109,7 @@ class Environment(object):
         """
         if name in self._data:
             return True
-        for p in self._iter_parents():
-            if name in p._data:
-                return True
-        return False
+        return any(name in p._data for p in self._iter_parents())
 
     def keys(self) -> Iterable[str]:
         """Iterate over keys."""

@@ -188,8 +188,8 @@ class OTNOMSCotroller(BaseController):
             if len(cc) > 2:
                 return None, "Multiple channels exists"
             if not channel:
-                channel = list(cc)[0]
-            elif list(cc)[0] != channel:
+                channel = next(iter(cc))
+            elif next(iter(cc)) != channel:
                 return None, "Belongs to other channel"
             try:
                 self.validate_ad_hoc_channel(channel)

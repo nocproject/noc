@@ -138,7 +138,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         ports = self.find_direct_uplinks_downlinks(chain)
         ports[self.object] = ([], [iface])
         links = []  # type: List[Tuple[Interface, Interface]]
-        for p, n in zip([self.object] + chain, chain):
+        for p, n in zip([self.object, *chain], chain):
             if len(ports[p][1]) != 1:
                 self.logger.info(
                     "[%s][%s] Neighbor %s must have exactly one direct downlink port. %d found. Cannot link.",

@@ -355,10 +355,7 @@ class ConfigurationParam(Document):
         """
         if not self.scopes:
             return True
-        for s in self.scopes:
-            if s.scope.is_common:
-                return True
-        return False
+        return any(s.scope.is_common for s in self.scopes)
 
     @property
     def has_required_scopes(self) -> bool:

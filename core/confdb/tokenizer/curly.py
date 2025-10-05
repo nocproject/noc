@@ -36,7 +36,7 @@ class CurlyTokenizer(LineTokenizer):
         l_eol = len(self.explicit_eol)
         for tokens in iter:
             if tokens[-1].endswith(self.explicit_eol):
-                tokens = tokens[:-1] + (tokens[-1][:-l_eol],)
+                tokens = (*tokens[:-1], tokens[-1][:-l_eol])
             yield tokens
 
     def repeat_groups(self, tokens: Tuple[str]) -> Iterator[Tuple[str]]:
@@ -44,7 +44,7 @@ class CurlyTokenizer(LineTokenizer):
             idx = tokens.index(self.start_of_group)
             prefix = tokens[:idx]
             for item in tokens[idx + 1 : -1]:
-                yield prefix + (item,)
+                yield (*prefix, item)
         else:
             yield tokens
 

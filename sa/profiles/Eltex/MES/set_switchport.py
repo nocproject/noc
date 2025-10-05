@@ -92,7 +92,7 @@ class Script(BaseScript):
             else:
                 ic += [" no %s" % ept[is_access(c)]]
             if ic:
-                commands += ["interface %s" % iface] + ic + [" exit"]
+                commands += ["interface %s" % iface, *ic, " exit"]
         # Apply commands
         if not debug and commands:
             with self.configure():

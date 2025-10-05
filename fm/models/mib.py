@@ -185,7 +185,7 @@ class MIB(Document):
                     raise OIDCollision(oid, oid_name, o.name, "Equal preferences")
                 if mib_preference < o_preference:
                     # Replace existing
-                    o.aliases = list(sorted(o.aliases + [o.name]))
+                    o.aliases = list(sorted([*o.aliases, o.name]))
                     o.name = oid_name
                     o.mib = self.id
                     if description:
@@ -195,7 +195,7 @@ class MIB(Document):
                         o.syntax = MIB.parse_syntax(syntax)
                     o.save()
                 elif oid_name not in o.aliases:
-                    o.aliases = sorted(o.aliases + [oid_name])
+                    o.aliases = sorted([*o.aliases, oid_name])
                     o.save()
             else:
                 # No OID collision found, save
@@ -236,8 +236,8 @@ class MIB(Document):
             c_oid = ".".join(l_oid)
             d = MIBData.objects.filter(oid=c_oid).first()
             if d:
-                return MIBAlias.rewrite(".".join([d.name] + rest))
-            rest = [l_oid.pop()] + rest
+                return MIBAlias.rewrite(".".join([d.name, *rest]))
+            rest = [l_oid.pop(), *rest]
         return oid
 
     @classmethod
@@ -362,7 +362,7 @@ class MIB(Document):
                         if xv & 1:
                             x = str(n)
                             if x in b_map:
-                                b = [b_map[x]] + b
+                                b = [b_map[x], *b]
                             else:
                                 b = ["%X" % (1 << n)]
                         n += 1

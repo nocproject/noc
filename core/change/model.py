@@ -92,10 +92,7 @@ class ChangeItem(object):
 
     def is_change_field(self, name: str) -> bool:
         """Check field is changed"""
-        for f in self.changed_fields:
-            if f.field == name:
-                return True
-        return False
+        return any(f.field == name for f in self.changed_fields)
 
     def get_field(self, name: str) -> Optional[ChangeField]:
         """Getting changed fields"""

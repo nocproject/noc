@@ -71,7 +71,7 @@ class MBuffer(object):
             if not group_key or group_key not in self.buf:
                 yield msg
                 continue
-            v = [msg.value] + self.buf.pop(group_key)
+            v = [msg.value, *self.buf.pop(group_key)]
             for v in self._iter_chunks(v, math.ceil(len(orjson.dumps(v)) / self.max_size)):
                 msg.value = v
                 yield msg

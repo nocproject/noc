@@ -384,7 +384,7 @@ class AddressExtractor(BaseExtractor):
             for r in table:
                 num, letter = self.num_letter(r.HOUSENUM)
                 if (
-                    r.ENDDATE >= self.now
+                    self.now <= r.ENDDATE
                     and num
                     and r.HOUSEGUID in self.building
                     and r.AOGUID in self.street
@@ -471,5 +471,5 @@ class BuildingExtractor(BaseExtractor):
         with dbf.Table(filename=self.dbf_path_house, codepage="cp866") as table:
             for r in table:
                 oktmo = oktmo_data.get(r.AOGUID)
-                if r.ENDDATE >= self.now and oktmo and oktmo in self.adm_div:
+                if self.now <= r.ENDDATE and oktmo and oktmo in self.adm_div:
                     yield r.HOUSEGUID, oktmo, r.POSTALCODE, r.STARTDATE, r.ENDDATE

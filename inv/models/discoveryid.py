@@ -266,10 +266,7 @@ class DiscoveryID(Document):
 
         def has_ip(ip: str, addresses: list[str]) -> bool:
             x = ip + "/"
-            for a in addresses:
-                if a.startswith(x):
-                    return True
-            return False
+            return any(a.startswith(x) for a in addresses)
 
         metrics["discoveryid_ip_requests"] += 1
         # Try router id
@@ -291,7 +288,7 @@ class DiscoveryID(Document):
         )
         if len(o) != 1:
             return None
-        return ManagedObject.get_by_id(list(o)[0])
+        return ManagedObject.get_by_id(next(iter(o)))
 
     @classmethod
     def find_object(

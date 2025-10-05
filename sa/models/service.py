@@ -868,7 +868,7 @@ class Service(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     @classmethod

@@ -171,7 +171,7 @@ class ResourceGroup(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     def iter_changed_datastream(self, changed_fields=None):
