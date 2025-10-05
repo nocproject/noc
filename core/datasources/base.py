@@ -479,7 +479,7 @@ class BaseDataSource(object):
                 data.append(orjson.dumps(row))
                 if len(data) < CHUNK:
                     continue
-                for part in range(0, n_parts):
+                for part in range(n_parts):
                     await client.publish(
                         b"\n".join(data),
                         stream=f"ch.{cls._get_db_table()}",
@@ -487,7 +487,7 @@ class BaseDataSource(object):
                     )
                 data = []
         if data:
-            for part in range(0, n_parts):
+            for part in range(n_parts):
                 await client.publish(
                     b"\n".join(data),
                     stream=f"ch.{cls._get_db_table()}",
@@ -526,7 +526,6 @@ class BaseDataSource(object):
         :param kwargs:
         :return:
         """
-        ...
 
     @classmethod
     def clean_row_value(cls, value):

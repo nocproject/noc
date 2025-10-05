@@ -110,9 +110,7 @@ class ActionLog(object):
             return False
         if self.alarm_ack == "ack" and not ack_user:
             return False
-        if self.alarm_ack == "unack" and ack_user:
-            return False
-        return True
+        return not (self.alarm_ack == "unack" and ack_user)
 
     def get_ctx(
         self,

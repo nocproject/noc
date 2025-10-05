@@ -751,7 +751,7 @@ class BaseLoader(object):
         r["remote_system"] = self.system.remote_system
         r["remote_id"] = self.clean_str(item.id)
         # Fill mapping
-        if "mappings" in r and r["mappings"]:
+        if r.get("mappings"):
             r["mappings"] = self.clean_object_mappings(item.mappings)
         return r
 

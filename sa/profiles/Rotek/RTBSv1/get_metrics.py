@@ -118,7 +118,7 @@ class Script(GetMetricsScript):
 
         iface = self.snmp.get(f"{base_oid}.4.6")
         for key, value in oid_index_map.items():
-            response = self.snmp.get(f"{base_oid}.{str(value)}.6")
+            response = self.snmp.get(f"{base_oid}.{value!s}.6")
             if response:
                 self.set_metric(
                     id=(key, None),

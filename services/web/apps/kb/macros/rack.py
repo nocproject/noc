@@ -144,7 +144,7 @@ class RackSet(object):
                             td += "%s='%s' " % (attr, v[attr])
                     td += ">"
                     # Render allocation
-                    if "text" in v and v["text"]:
+                    if v.get("text"):
                         td += v["text"]
                     td += "</td>"
                     out += [td]

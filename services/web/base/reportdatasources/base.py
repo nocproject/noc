@@ -597,9 +597,9 @@ class CHTableReportDataSource(ReportDataSource):
             f"FROM {self.get_table()}",
             f"WHERE {' AND '.join(query_map['q_where'])}",
         ]
-        if "q_group" in query_map and query_map["q_group"]:
+        if query_map.get("q_group"):
             query += [f"GROUP BY {','.join(query_map['q_group'])}"]
-        if "q_having" in query_map and query_map["q_having"]:
+        if query_map.get("q_having"):
             query += [f"HAVING {' AND '.join(query_map['q_having'])}"]
         if "q_order_by" in query_map:
             query += [f"ORDER BY {','.join(query_map['q_order_by'])}"]

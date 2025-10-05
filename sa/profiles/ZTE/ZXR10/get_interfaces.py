@@ -173,7 +173,7 @@ class Script(BaseScript):
             else:
                 shift = 0
                 if rx_spaces.sub("", "".join(line[shift : vlan_id_len + shift])) != "":
-                    if not vl["id"] == []:
+                    if vl["id"] != []:
                         vlan_list.append(copy.deepcopy(vl))
                     vl["id"] = line[shift : vlan_id_len + shift]
                     shift += vlan_id_len

@@ -166,8 +166,6 @@ class Command(BaseCommand):
         with open(fname, "w") as f:
             f.write(o.to_json())
 
-        return
-
     def save_json(self, o_dir: str, path_: str, o: dict) -> None:
         """
         Save "o" dictionary as JSON to "o_dir"
@@ -196,8 +194,6 @@ class Command(BaseCommand):
                     ],
                 )
             )
-
-        return
 
     def load_collections_from_files(self) -> dict:
         """

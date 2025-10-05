@@ -170,11 +170,11 @@ class Route(object):
 
     def get_match_ctx(self, msg: Message) -> Dict[MessageMeta, Any]:
         ctx = {}
-        if MX_LABELS in msg.headers and msg.headers[MX_LABELS]:
+        if msg.headers.get(MX_LABELS):
             ctx[MessageMeta.LABELS] = frozenset(
                 msg.headers[MX_LABELS].split(self.MX_H_VALUE_SPLITTER)
             )
-        if MX_RESOURCE_GROUPS in msg.headers and msg.headers[MX_RESOURCE_GROUPS]:
+        if msg.headers.get(MX_RESOURCE_GROUPS):
             ctx[MessageMeta.GROUPS] = frozenset(
                 msg.headers[MX_RESOURCE_GROUPS].split(self.MX_H_VALUE_SPLITTER)
             )

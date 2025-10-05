@@ -55,9 +55,7 @@ class SuggestItem(object):
     def is_match(self, labels: Set[str]) -> bool:
         if not self.labels:
             return True
-        if any(not set(ll) - labels for ll in self.labels):
-            return True
-        return False
+        return bool(any(not set(ll) - labels for ll in self.labels))
 
 
 class Match(EmbeddedDocument):

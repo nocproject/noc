@@ -163,7 +163,7 @@ class EventClassificationRuleApplication(ExtDocApplication):
                 result = True
             r_patterns = s_patterns + i_patterns
         # Calculate rule variables
-        if "vars" in q and q["vars"]:
+        if q.get("vars"):
             for v in q["vars"]:
                 if v["value"].startswith("="):
                     # Evaluate

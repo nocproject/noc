@@ -105,7 +105,7 @@ class Script(BaseScript):
                     "_": "unknown",
                 }[role.lower()]  # @todo: refine roles
                 i["point_to_point"] = "P2P" in link_type.upper()
-                i["edge"] = True if edge.lower().startswith("y") else False
+                i["edge"] = bool(edge.lower().startswith("y"))
             # Append instance to result
             r["instances"] += [ri]
         return r

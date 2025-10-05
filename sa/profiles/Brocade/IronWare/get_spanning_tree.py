@@ -50,7 +50,7 @@ class Script(BaseScript):
                             "interface": interface,
                             "port_id": 0,
                             # Interface state
-                            "state": state if not state == "blocking" else "discarding",
+                            "state": state if state != "blocking" else "discarding",
                             "priority": i[1],
                             # Designated bridge ID
                             "designated_bridge_id": i[7][4:],

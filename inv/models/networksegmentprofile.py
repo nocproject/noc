@@ -148,9 +148,7 @@ class BioCollisionPolicy(EmbeddedDocument):
         """
         if self.match_type == "p" and not persistent:
             return False
-        if self.match_type == "f" and persistent:
-            return False
-        return True
+        return not (self.match_type == "f" and persistent)
 
     def check_level(
         self, attacker_level: Optional[int] = None, target_level: Optional[int] = None
@@ -169,9 +167,7 @@ class BioCollisionPolicy(EmbeddedDocument):
             return True
         if self.match_level == ">=" and attacker_level >= target_level:
             return True
-        if self.match_level == ">" and attacker_level > target_level:
-            return True
-        return False
+        return bool(self.match_level == ">" and attacker_level > target_level)
 
 
 @bi_sync

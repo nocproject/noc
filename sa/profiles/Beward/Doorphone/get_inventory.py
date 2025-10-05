@@ -38,9 +38,7 @@ class Script(BaseScript):
         result = []
         for i in range(1, 4):
             oid = f"1.3.6.1.4.1.44490.1.5.2.{i}.0"
-            value = (
-                False if self.snmp.get(oid) in (2, 3) else True
-            )  # 1 - "open", 2 - "close", 3 - "break"
+            value = not self.snmp.get(oid) in (2, 3)  # 1 - "open", 2 - "close", 3 - "break"
             name = door_sensor_map.get(int(oid.split(".")[-2]))
             sensor = {
                 "name": name,
@@ -54,7 +52,7 @@ class Script(BaseScript):
 
         for index, name in other_sensors_map.items():
             oid = f"1.3.6.1.4.1.44490.1.6.{index}.0"
-            value = False if self.snmp.get(oid) == 2 else True  # 1 - "ok", 2 - "break"
+            value = not self.snmp.get(oid) == 2  # 1 - "ok", 2 - "break"
             sensor = {
                 "name": name,
                 "status": value,

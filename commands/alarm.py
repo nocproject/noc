@@ -193,7 +193,7 @@ class Command(BaseCommand):
 
     def run_scr_action(self, config: AlarmConfig):
         time.sleep(config.delay)
-        for rr in range(0, config.repeat or 1):
+        for rr in range(config.repeat or 1):
             for r in config.alarms:
                 mo = self.resolve_object(r.managed_object)
                 if not mo:
@@ -224,7 +224,7 @@ class Command(BaseCommand):
                         ac = AlarmConfig(**data)
                         self.run_scr_action(ac)
                     except ValueError as e:
-                        self.die(f'Failed to decode JSON file "{path}": {str(e)}')
+                        self.die(f'Failed to decode JSON file "{path}": {e!s}')
 
     def handle_test_rule(self, alarms, rule: Optional[str] = None, *args, **options):
         alarm = get_alarm(alarms[0])

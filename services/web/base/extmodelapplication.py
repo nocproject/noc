@@ -756,7 +756,7 @@ class ExtModelApplication(ExtApplication):
                 self.update_file(request.FILES, o, file_attrs)
         except IntegrityError as e:
             return self.render_json(
-                {"success": False, "message": f"Integrity error {str(e)}"}, status=self.CONFLICT
+                {"success": False, "message": f"Integrity error {e!s}"}, status=self.CONFLICT
             )
         except (ValidationError, ValueError) as e:
             return self.response({"success": False, "message": str(e)}, status=self.BAD_REQUEST)

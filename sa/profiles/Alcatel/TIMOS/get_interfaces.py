@@ -369,7 +369,7 @@ class Script(BaseScript):
                             my_sub["enabled_afi"] += ["MPLS"]
                         else:
                             my_sub["enabled_afi"] = ["MPLS"]
-                    if "mac" in my_dict and my_dict["mac"]:
+                    if my_dict.get("mac"):
                         my_sub["mac"] = my_dict["mac"]
                     if "mtu" in my_dict:
                         my_sub["mtu"] = my_dict["mtu"]

@@ -24,7 +24,7 @@ class Migration(BaseMigration):
         for ll in l_coll.find():
             allow_models = []
             for ff in setting_map:
-                if ff in ll and ll[ff]:
+                if ll.get(ff):
                     allow_models.append(setting_map[ff])
             bulk += [
                 UpdateOne(

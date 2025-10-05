@@ -32,7 +32,7 @@ class Script(BaseScript):
         for n, f, r in v:
             if not r.get("status") or r["status"] == "failed":
                 continue
-            if "mac-address" in r and r["mac-address"]:
+            if r.get("mac-address"):
                 nb += [
                     {
                         "ip": r["address"],

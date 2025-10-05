@@ -57,7 +57,7 @@ class LiftbridgeStreamCollector(BaseCollector):
     def iter_ch_cursors(self, stream, partition):
         # Parse
         cluster = config.clickhouse.cluster_topology.split(",")
-        for replica in range(0, int(cluster[partition])):
+        for replica in range(int(cluster[partition])):
             cursor = run_sync(
                 functools.partial(self.fetch_cursor, stream, partition, f"chwriter-{replica}")
             )

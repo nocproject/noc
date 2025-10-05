@@ -233,7 +233,7 @@ class Interface(Document):
         try:
             super().save(*args, **kwargs)
         except Exception as e:
-            raise ValueError(f"{e.__doc__}: {str(e)}")
+            raise ValueError(f"{e.__doc__}: {e!s}")
 
     def on_delete(self):
         from .macdb import MACDB

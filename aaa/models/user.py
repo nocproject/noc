@@ -232,9 +232,7 @@ class User(NOCModel):
         now = datetime.datetime.now()
         if self.valid_from and self.valid_from > now:
             return False
-        if self.valid_until and self.valid_until < now:
-            return False
-        return True
+        return not (self.valid_until and self.valid_until < now)
 
     def set_unusable_password(self):
         """
