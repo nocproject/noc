@@ -201,7 +201,7 @@ def parse_get_response_strict(
     _, request_id, err_status, err_index, varbinds = pdu
     cleaned_varbinds = []
     for n, item in enumerate(varbinds):
-        if not isinstance(item, list) or not len(item) == 2 or not isinstance(item[0], str):
+        if not isinstance(item, list) or len(item) != 2 or not isinstance(item[0], str):
             # Try to mitigate broken item
             if err_status and err_index - 1 > n:
                 err_index -= 1

@@ -19,7 +19,7 @@ Bc = []
 Cc = []
 zc = []
 c = TS
-for d in range(0, MAX_ZOOM + 1):
+for d in range(MAX_ZOOM + 1):
     e = c / 2
     Bc += [c / 360.0]
     Cc += [c / (2 * PI)]

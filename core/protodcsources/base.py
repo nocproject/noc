@@ -31,13 +31,11 @@ class BaseDiscriminatorSource(ABC):
         """
         Iterate over Discriminator code
         """
-        ...
 
     def __contains__(self, item) -> bool:
         """
         Check discriminator code exists
         """
-        ...
 
     @abstractmethod
     def get_data(self, code: str) -> List[DiscriminatorDataItem]:

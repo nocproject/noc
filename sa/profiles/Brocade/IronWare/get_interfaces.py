@@ -148,7 +148,7 @@ class Script(BaseScript):
                             untagged[ifc] = vlan
                         continue
 
-                    if not m[0].split()[0] == "ethe":
+                    if m[0].split()[0] != "ethe":
                         continue
 
                     if not m[1]:

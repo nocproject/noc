@@ -100,9 +100,7 @@ class EventAction(enum.Enum):
 
     @property
     def is_drop(self) -> bool:
-        if self in (EventAction.DROP, EventAction.DROP_MX):
-            return True
-        return False
+        return self in (EventAction.DROP, EventAction.DROP_MX)
 
     @property
     def to_dispose(self) -> bool:

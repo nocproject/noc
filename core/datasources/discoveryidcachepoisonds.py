@@ -73,7 +73,7 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
             if len(data) > 0:
                 if data[0]["address"] == data[1]["address"]:
                     reason = _("Duplicate MO")
-                elif not data[0]["is_managed"] == data[1]["is_managed"]:
+                elif data[0]["is_managed"] != data[1]["is_managed"]:
                     reason = _("MO is move")
             if reason == "Other" and MACBlacklist.is_banned_mac(row["macs"][0], is_duplicated=True):
                 on_blacklist = True

@@ -144,7 +144,7 @@ class Script(BaseScript):
                             interfaces += [iface]
 
         # Do not use range s1-s10 due to high CPU utilization
-        for s in range(0, 11):
+        for s in range(11):
             v = self.cli("show lre s%s xdsl atm vcctp-info" % s)
             for match in self.rx_line.finditer(v):
                 if match.group("ifname"):

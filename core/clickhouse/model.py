@@ -457,7 +457,7 @@ class Model(object, metaclass=ModelBase):
             if "group" in f:
                 group_by[int(f["group"])] = alias
             if "order" in f:
-                if "desc" in f and f["desc"]:
+                if f.get("desc"):
                     order_by[int(f["order"])] = "%s DESC" % alias
                 else:
                     order_by[int(f["order"])] = alias

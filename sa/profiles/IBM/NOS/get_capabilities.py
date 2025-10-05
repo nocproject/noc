@@ -33,6 +33,4 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if "Spanning Tree is shut down" in r:
-            return False
-        return True
+        return "Spanning Tree is shut down" not in r

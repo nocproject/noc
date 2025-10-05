@@ -32,12 +32,12 @@ class Script(BaseScript):
                 macs = [
                     mac
                     for _, mac in self.snmp.getnext(
-                        f"{base_oid}.{str(index)}.8.6",
-                        display_hints={f"{base_oid}.{str(index)}.8.6": render_mac},
+                        f"{base_oid}.{index!s}.8.6",
+                        display_hints={f"{base_oid}.{index!s}.8.6": render_mac},
                     )
                 ]
             else:
-                ports = [str(port) for _, port in self.snmp.getnext(f"{base_oid}.{str(index)}")]
+                ports = [str(port) for _, port in self.snmp.getnext(f"{base_oid}.{index!s}")]
 
         return macs, ports
 

@@ -32,7 +32,7 @@ class Script(BaseScript):
     )
 
     def get_count_ports(self):
-        return 16, 8 if self.is_LTP16N else 8, 4  # PON-ports, Front-ports
+        return 16, 8, 4  # PON-ports, Front-ports
 
     def execute_snmp(self, **kwargs):
         count_ports = self.get_count_ports()

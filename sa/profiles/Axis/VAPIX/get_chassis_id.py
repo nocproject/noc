@@ -18,7 +18,7 @@ class Script(BaseScript):
     def execute(self):
         macs = []
         c = self.profile.get_dict(self)
-        for i in range(0, 4):  # for future models
+        for i in range(4):  # for future models
             mac = c.get("root.Network.eth%d.MACAddress" % i)
             if mac is not None:
                 macs += [mac]

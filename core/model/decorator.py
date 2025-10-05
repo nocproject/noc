@@ -195,7 +195,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         # Raise value error when referred
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
-                raise ValueError(f"Referred from model {model_id}: {str(ro)} (id={ro.id})")
+                raise ValueError(f"Referred from model {model_id}: {ro!s} (id={ro.id})")
         # Clean related
         for model, model_id, field in iter_models("clean"):
             ids = []
@@ -241,11 +241,11 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
             field = model._fields[field]
         else:
             field = model._meta.get_field(field)
-        if isinstance(
-            field, (ListField, EmbeddedDocumentListField, ArrayField, ObjectIDArrayField)
-        ):
-            return True
-        return False
+        return bool(
+            isinstance(
+                field, (ListField, EmbeddedDocumentListField, ArrayField, ObjectIDArrayField)
+            )
+        )
 
     def iter_lazy_labels(instance):
         model = get_model("main.Label")

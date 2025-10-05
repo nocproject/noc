@@ -767,9 +767,7 @@ class Prefix(NOCModel):
         """
         if Prefix.objects.filter(parent=self).count() > 0:
             return False
-        if Address.objects.filter(prefix=self).count() > 0:
-            return False
-        return True
+        return not Address.objects.filter(prefix=self).count() > 0
 
     def disable_delete_protection(self):
         """

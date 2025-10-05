@@ -1176,9 +1176,7 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
         if not tcls:
             return False
         ncls, _ = cls.get_config_normalizer(object)
-        if not ncls:
-            return False
-        return True
+        return ncls
 
     @classmethod
     def _get_patterns(cls):

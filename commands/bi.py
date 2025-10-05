@@ -195,7 +195,7 @@ class Command(BaseCommand):
             async with MessageStreamClient() as client:
                 while data:
                     chunk, data = data[:CHUNK], data[CHUNK:]
-                    for part in range(0, n_parts):
+                    for part in range(n_parts):
                         await client.publish(
                             b"\n".join(chunk),
                             stream=f"ch.{table}",

@@ -400,7 +400,7 @@ class Script(BaseScript):
                         sub["vlan_ids"] = iface.pop("vlan_ids")
                     if "MPLS" in proto:
                         sub["enabled_afi"] += ["MPLS"]
-                    if "mac" in iface and iface["mac"]:
+                    if iface.get("mac"):
                         sub["mac"] = iface["mac"]
                     if "mtu" in iface:
                         sub["mtu"] = iface.pop("mtu")

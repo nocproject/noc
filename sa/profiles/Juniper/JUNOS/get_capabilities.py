@@ -29,9 +29,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         r = self.cli("show spanning-tree bridge | match Enabled")
-        if "?STP" in r or "MSTP" in r:
-            return True
-        return False
+        return bool("?STP" in r or "MSTP" in r)
 
     @false_on_cli_error
     def has_lldp_cli(self):

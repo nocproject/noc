@@ -62,7 +62,7 @@ class RefFilter(ListOp):
             vv = self.model.get_by_id(value) if value else None
             if value and not vv:
                 raise HTTPException(
-                    status_code=HTTPStatus.NOT_FOUND, detail=f"NotFond {str(self.model)}: {value}"
+                    status_code=HTTPStatus.NOT_FOUND, detail=f"NotFond {self.model!s}: {value}"
                 )
             return qs.filter(**{self.name: vv})
 
@@ -76,7 +76,7 @@ class RefFilter(ListOp):
             vv = self.model.get_by_id(int(value)) if value else None
             if value and not vv:
                 raise HTTPException(
-                    status_code=HTTPStatus.NOT_FOUND, detail=f"NotFond {str(self.model)}: {value}"
+                    status_code=HTTPStatus.NOT_FOUND, detail=f"NotFond {self.model!s}: {value}"
                 )
             return qs.filter(**{self.name: vv})
 

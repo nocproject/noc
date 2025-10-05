@@ -292,7 +292,6 @@ class TopologyBase(object):
         Fill nodes and edges on graph
         :return:
         """
-        ...
 
     def order_nodes(self, uplink, downlinks):
         """
@@ -465,7 +464,6 @@ class TopologyBase(object):
         :param page:
         :return:
         """
-        ...
 
     @classmethod
     def iter_path(cls, gen_id) -> Iterable[PathItem]:
@@ -474,4 +472,3 @@ class TopologyBase(object):
         :param gen_id:
         :return:
         """
-        ...

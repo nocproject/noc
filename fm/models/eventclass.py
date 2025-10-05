@@ -148,13 +148,11 @@ class EventDispositionRule(EmbeddedDocument):
                 return False
         if self.alarm_class is None and other.alarm_class is None:
             return True
-        if (
+        return not (
             self.alarm_class is None
             or other.alarm_class is None
             or self.alarm_class.name != other.alarm_class.name
-        ):
-            return False
-        return True
+        )
 
 
 class EventPlugin(EmbeddedDocument):
@@ -273,9 +271,7 @@ class EventClass(Document):
     @property
     def to_dispose(self) -> bool:
         """Dispose event to correlator"""
-        if self.disposition:
-            return True
-        return False
+        return bool(self.disposition)
 
     @property
     def to_drop(self) -> bool:

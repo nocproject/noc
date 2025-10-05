@@ -254,9 +254,7 @@ class CalculatedStatusRule(EmbeddedDocument):
     def is_match_status(self, status: Status) -> bool:
         if self.min_status and status < self.min_status:
             return False
-        if self.max_status and status >= self.max_status:
-            return False
-        return True
+        return not (self.max_status and status >= self.max_status)
 
     def is_match(self, status: Status, weight: int) -> bool:
         if not self.min_status and status < self.min_status:
@@ -335,9 +333,7 @@ class AlarmStatusRule(EmbeddedDocument):
             return False
         if self.alarm_class_template:
             return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
-        if self.include_labels and set(self.include_labels) - set(alarm.effective_labels):
-            return False
-        return True
+        return not (self.include_labels and set(self.include_labels) - set(alarm.effective_labels))
 
 
 @Label.match_labels("serviceprofile", allowed_op={"="})

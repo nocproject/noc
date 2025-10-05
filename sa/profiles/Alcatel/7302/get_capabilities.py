@@ -23,9 +23,7 @@ class Script(BaseScript):
         try:
             # MSTP Check
             mstp = self.cli("show mstp port-instance")
-            if "instance count : 0" in mstp or "port-instance count : 0" in mstp:
-                return False
-            return True
+            return not ("instance count : 0" in mstp or "port-instance count : 0" in mstp)
         except self.CLISyntaxError:
             pass
         # RSTP Check

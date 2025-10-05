@@ -24,9 +24,7 @@ class Script(BaseScript):
     def is_ignored_interface(self, i):
         if i.lower() in self.ignored_interfaces:
             return True
-        if i.startswith("flood to vlan"):
-            return True
-        return False
+        return bool(i.startswith("flood to vlan"))
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         def qn(s):

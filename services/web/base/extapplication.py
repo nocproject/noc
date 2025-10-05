@@ -10,7 +10,6 @@ from builtins import str
 from typing import Optional, List, Dict, Any  # noqa
 import os
 import re
-from typing import Any
 
 # Third-party modules
 from django.http import HttpResponse
