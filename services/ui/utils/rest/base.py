@@ -298,7 +298,7 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
                     f"    if {list_op.name} is not None:",
                     f'        r["{list_op.name}"] = {list_op.name}',
                 ]
-            code = [f"def inner({', '.join(args)}) -> dict:"] + body + ["    return r"]
+            code = [f"def inner({', '.join(args)}) -> dict:", *body, "    return r"]
             r = {"Optional": typing.Optional, "List": typing.List, "Query": Query}
             exec("\n".join(code), {}, r)
             return r["inner"]

@@ -329,7 +329,7 @@ class CustomField(NOCModel):
             m._fields[fn] = mf
             m._db_field_map[fn] = mf.db_field
             m._reverse_db_field_map[mf.db_field] = fn
-            m._fields_ordered = m._fields_ordered + (fn,)
+            m._fields_ordered = (*m._fields_ordered, fn)
 
     @property
     def ext_model_field(self):

@@ -10,7 +10,7 @@ from noc.core.text import alnum_key
 
 
 class Node(object):
-    __slots__ = ["token", "children"]
+    __slots__ = ["children", "token"]
 
     def __init__(self, token):
         self.token = token

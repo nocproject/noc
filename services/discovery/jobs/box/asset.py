@@ -245,7 +245,7 @@ class AssetCheck(DiscoveryCheck):
                     self.set_context(scope, number)
         # Find existing object or create new
         o: Object | None = Object.objects.filter(
-            model__in=[m.id] + self.generic_models,
+            model__in=[m.id, *self.generic_models],
             data__match={"interface": "asset", "attr": "serial", "value": serial},
         ).first()
         if not o:
@@ -967,7 +967,7 @@ class AssetCheck(DiscoveryCheck):
         data += [ObjectAttr(scope="discovery", interface="asset", attr="part_no", value=[name])]
         o = Object(
             model=model,
-            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial)] + data,
+            data=[ObjectAttr(scope="", interface="asset", attr="serial", value=serial), *data],
             parent=self.object.container if self.object.container else self.lost_and_found,
         )
         o.save()

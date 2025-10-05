@@ -156,7 +156,7 @@ class IfPathCollator(BaseCollator):
         if if_path and physical_path[0].object.get_data("stack", "member"):
             # @todo perhaps move to other collator
             paths_candidate.append(
-                tuple([physical_path[0].object.get_data("stack", "member")] + if_path[1:])
+                tuple([physical_path[0].object.get_data("stack", "member"), *if_path[1:]])
             )
         elif if_path:
             paths_candidate.append(tuple(if_path))

@@ -19,7 +19,7 @@ def get_nodes():
         yield path
         if path[-1].children:
             for c in path[-1].children:
-                for p in iter_children(path + (c,)):
+                for p in iter_children((*path, c)):
                     yield p
 
     def iter_nodes():

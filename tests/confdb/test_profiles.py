@@ -31,7 +31,7 @@ def iter_test_paths():
         for f in files:
             if f.startswith(".") or not f.endswith(".yml"):
                 continue
-            path = prefix + (f,)
+            path = (*prefix, f)
             yield os.path.join(*path)
 
 
@@ -63,7 +63,7 @@ yaml.add_constructor("!IP", create_ip, Loader)
 @pytest.mark.parametrize("path", list(iter_test_paths()))
 def test_profile(path):
     # Open YAML
-    full_path = PREFIX + (path,)
+    full_path = (*PREFIX, path)
     with open(os.path.join(*full_path)) as f:
         test = yaml.load(f.read(), Loader)
     # Check test format

@@ -63,7 +63,7 @@ class ReportSummary(SimpleReport):
             a_s = len(allocated)
             if a_s:
                 avg_allocated_size = allocated_size / a_s
-                avg_allocated_mask = 32 - int(math.ceil(math.log(avg_allocated_size, 2)))
+                avg_allocated_mask = 32 - math.ceil(math.log(avg_allocated_size, 2))
                 data += [
                     ("Average allocated block", avg_allocated_size, ""),
                     ("Average allocated mask", avg_allocated_mask, ""),

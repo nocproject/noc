@@ -196,7 +196,7 @@ class NetworkSegment(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     def clean(self):
@@ -222,7 +222,7 @@ class NetworkSegment(Document):
         sstack = [self.settings or {}]
         p = self.parent
         while p:
-            sstack = [p.settings or {}] + sstack
+            sstack = [p.settings or {}, *sstack]
             p = p.parent
         # Get effective settings
         es = {}

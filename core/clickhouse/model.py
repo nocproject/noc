@@ -21,7 +21,7 @@ from .engines import ReplacingMergeTree, AggregatingMergeTree
 from .connect import ClickhouseClient, connection
 from .error import ClickhouseError
 
-__all__ = ["Model", "NestedModel", "DictionaryModel", "ViewModel"]
+__all__ = ["DictionaryModel", "Model", "NestedModel", "ViewModel"]
 
 OLD_PM_SCHEMA_TABLE = "noc_old"
 
@@ -194,7 +194,7 @@ class Model(object, metaclass=ModelBase):
             src = cls._get_distributed_db_table()
         else:
             src = cls._get_raw_db_table()
-        q = ["*"] + cls.get_materialized_columns()
+        q = ["*", *cls.get_materialized_columns()]
         return f"CREATE OR REPLACE VIEW {view} AS SELECT {', '.join(q)} FROM {src}"
 
     @classmethod

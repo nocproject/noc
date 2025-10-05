@@ -157,7 +157,7 @@ class ReportTTSystemStatApplication(SimpleReport):
             # (server, service)
             tt_s = {}
             for row in ch.execute(query):
-                tt_s[(row[0], row[1])] = [row[2]] + [0, 0, 0] + row[3:]
+                tt_s[(row[0], row[1])] = [row[2], 0, 0, 0, *row[3:]]
             query = q2 % " and ".join(q_where)
             for row in ch.execute(query):
                 if row[2] == "0":

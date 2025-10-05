@@ -52,11 +52,11 @@ class ReportMetrics(BaseReportColumn):
         def_map = {
             "q_select": [],
             "q_where": [
-                "%s",  # mo_filter
+                "%s",
                 "(date >= toDate(%d)) AND (ts >= toDateTime(%d) AND ts <= toDateTime(%d))"
                 % (ts_from_date, ts_from_date, ts_to_date),
-            ]
-            + custom_conditions["where"][:],
+                *custom_conditions["where"][:],
+            ],
             "q_group": self.KEY_FIELDS,
             "q_having": custom_conditions["having"][:],
             "q_order_by": self.KEY_FIELDS,

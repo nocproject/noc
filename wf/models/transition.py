@@ -215,10 +215,7 @@ class Transition(Document):
         """
         if not self.required_rules:
             return True
-        for rule in self.required_rules:
-            if rule.is_match(labels):
-                return True
-        return False
+        return any(rule.is_match(labels) for rule in self.required_rules)
 
     def on_transition(self, obj):
         """

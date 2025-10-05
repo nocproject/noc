@@ -211,7 +211,7 @@ class Script(BaseScript):
             mode = match_mod.group("mode")
 
             i += 1
-            if "trunk" == mode:
+            if mode == "trunk":
                 match = self.rx_vlan_t.match(iface_conf[i])
                 if match:
                     vlans = match.group("vlans")

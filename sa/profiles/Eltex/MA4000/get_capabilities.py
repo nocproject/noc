@@ -34,7 +34,4 @@ class Script(BaseScript):
         """
         Check box has STP enabled
         """
-        for ch in self.scripts.get_portchannel():
-            if ch["type"] == "L":
-                return True
-        return False
+        return any(ch["type"] == "L" for ch in self.scripts.get_portchannel())

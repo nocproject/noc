@@ -66,7 +66,7 @@ class RemoteMappingValue(object):
         """Update value"""
         sources = self.sources
         if source and source not in self.sources:
-            sources = frozenset([source] + list(self.sources))
+            sources = frozenset([source, *list(self.sources)])
         return RemoteMappingValue(
             remote_system=self.remote_system,
             remote_id=remote_id,

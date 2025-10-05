@@ -288,7 +288,7 @@ class Script(GetMetricsScript):
                     metric=metric,
                     value=float(value),
                     ts=ts,
-                    labels=sc.labels + [f"noc::traffic_class::{class_map[classifier]}"],
+                    labels=[*sc.labels, f"noc::traffic_class::{class_map[classifier]}"],
                     multi=True,
                     type="delta" if metric.endswith("Delta") else "gauge",
                     scale=scale,

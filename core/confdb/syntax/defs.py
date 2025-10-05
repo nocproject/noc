@@ -16,7 +16,7 @@ from .patterns import BasePattern
 
 @dataclass
 class SyntaxDef(object):
-    __slots__ = ("token", "children", "required", "name", "multi", "default", "gen")
+    __slots__ = ("children", "default", "gen", "multi", "name", "required", "token")
     token: Union[str, BasePattern]
     children: Optional[List["SyntaxDef"]]
     required: boolean

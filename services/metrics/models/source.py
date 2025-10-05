@@ -20,15 +20,15 @@ class SourceInfo(object):
 
     __slots__ = (
         "bi_id",
-        "sensor",
-        "sla_probe",
-        "service",
+        "composed_metrics",
         "fm_pool",
         "labels",
-        "metric_labels",
-        "composed_metrics",
-        "rules",
         "meta",
+        "metric_labels",
+        "rules",
+        "sensor",
+        "service",
+        "sla_probe",
     )
     bi_id: int
     fm_pool: str
@@ -49,7 +49,7 @@ class ItemConfig(object):
     Match by key_labels
     """
 
-    __slots__ = ("key_labels", "composed_metrics", "rules")
+    __slots__ = ("composed_metrics", "key_labels", "rules")
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
     composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
     rules: Tuple[str, ...]
@@ -70,7 +70,7 @@ class SourceConfig(object):
     * sensor
     """
 
-    __slots__ = ("type", "bi_id", "fm_pool", "labels", "items", "rules", "meta")
+    __slots__ = ("bi_id", "fm_pool", "items", "labels", "meta", "rules", "type")
     type: Literal["managed_object", "sla_probe", "sensor", "agent"]
     bi_id: int
     fm_pool: str
@@ -96,7 +96,7 @@ class SourceConfig(object):
 
 @dataclass
 class ManagedObjectInfo(object):
-    __slots__ = ("id", "bi_id", "fm_pool", "labels", "metric_labels")
+    __slots__ = ("bi_id", "fm_pool", "id", "labels", "metric_labels")
     id: int
     bi_id: int
     fm_pool: str

@@ -45,10 +45,10 @@ PROFILES_PATH = os.path.join("sa", "profiles")
 class MetricConfig(object):
     __slots__ = (
         "id",
-        "metric",
-        "labels",
-        "oid",
         "ifindex",
+        "labels",
+        "metric",
+        "oid",
         "service",
     )
 
@@ -87,7 +87,7 @@ class ProfileMetricConfig(object):
 
 
 class BatchConfig(object):
-    __slots__ = ("id", "metric", "labels", "type", "scale", "units", "service")
+    __slots__ = ("id", "labels", "metric", "scale", "service", "type", "units")
 
     def __init__(self, id, metric, labels, type, scale, units, service=None):
         self.id: int = id
@@ -339,7 +339,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     @staticmethod
     def get_labels_hash(metric: str, labels: List[str]):
         if labels:
-            return "\x00".join([metric] + labels)
+            return "\x00".join([metric, *labels])
         return metric
 
     def execute(

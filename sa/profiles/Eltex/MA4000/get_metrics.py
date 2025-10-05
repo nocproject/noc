@@ -109,7 +109,7 @@ class Script(GetMetricsScript):
                         metric=m,
                         value=float(data[mc.metric].split()[0]),
                         ts=ts,
-                        labels=probe.labels + ["noc::interface::0"],
+                        labels=[*probe.labels, "noc::interface::0"],
                         multi=True,
                         type="gauge",
                         scale=mc.scale,

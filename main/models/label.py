@@ -450,7 +450,7 @@ class Label(Document):
             next(
                 coll.find(
                     {
-                        "name": {"$in": [label] + wildcards},
+                        "name": {"$in": [label, *wildcards]},
                         "allow_models": model_id,
                     },
                     {},
@@ -473,7 +473,7 @@ class Label(Document):
         r = next(
             coll.aggregate(
                 [
-                    {"$match": {"name": {"$in": [label] + wildcards}}},
+                    {"$match": {"name": {"$in": [label, *wildcards]}}},
                     {"$group": {"_id": None, setting: {"$max": f"${setting}"}}},
                 ]
             ),
@@ -719,7 +719,7 @@ class Label(Document):
                 ...
             else:
                 condition = c_map[rule.condition].join([f"{field} <<= %s"] * len(prefixes))
-                params = [[self.name]] + prefixes
+                params = [[self.name], *prefixes]
                 sql = f"""
                 UPDATE {model._meta.db_table}
                 SET effective_labels=ARRAY (
@@ -1449,7 +1449,7 @@ class Label(Document):
                 if not rule["dynamic_order"]:
                     continue
                 r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
-        params = [orjson.dumps(r).decode("utf-8")] + params
+        params = [orjson.dumps(r).decode("utf-8"), *params]
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL, params)
 
@@ -1496,7 +1496,7 @@ class Label(Document):
                 if not rule["dynamic_order"]:
                     continue
                 r += [{"prof": p_id, "ml": list(rule["labels"]), "d_order": rule["dynamic_order"]}]
-        params = [orjson.dumps(r).decode("utf-8")] + params
+        params = [orjson.dumps(r).decode("utf-8"), *params]
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL, params)
             yield from cursor

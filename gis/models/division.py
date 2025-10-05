@@ -113,7 +113,7 @@ class Division(Document):
         r = [smart_text(self)]
         p = self.parent
         while p:
-            r = [smart_text(p)] + r
+            r = [smart_text(p), *r]
             p = p.parent
         return " | ".join(r)
 

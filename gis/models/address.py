@@ -162,9 +162,9 @@ class Address(Document):
                 if to_level is not None and p.level == to_level:
                     break
                 if p.short_name:
-                    n = ["%s %s" % (p.short_name, p.name)] + n
+                    n = ["%s %s" % (p.short_name, p.name), *n]
                 else:
-                    n = [p.name] + n
+                    n = [p.name, *n]
                 p = p.parent
                 levels -= 1
         return sep.join(n)

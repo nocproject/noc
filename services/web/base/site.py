@@ -479,7 +479,7 @@ class Site(object):
                     # site.register will be called by metaclass, registering views
                     __import__(
                         ".".join(
-                            [basename] + f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1 :]
+                            [basename, *f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1 :]]
                         ),
                         {},
                         {},

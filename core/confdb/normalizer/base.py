@@ -25,7 +25,7 @@ REST = REST
 
 
 class Node(object):
-    __slots__ = ["token", "handler", "children", "matcher"]
+    __slots__ = ["children", "handler", "matcher", "token"]
 
     def __init__(self, token):
         if isinstance(token, str):
@@ -95,7 +95,7 @@ class Node(object):
 
 
 class RootNode(Node):
-    __slots__ = ["token", "handler", "children", "matcher"]
+    __slots__ = ["children", "handler", "matcher", "token"]
 
     def __init__(self, token=None):
         super().__init__(token)
@@ -147,7 +147,7 @@ class BaseNormalizerMetaclass(type):
 
     @classmethod
     def process_token(mcs, ncls, sdef, path):
-        path = path + (sdef,)
+        path = (*path, sdef)
         if sdef.children:
             for c in sdef.children:
                 mcs.process_token(ncls, c, path)
@@ -313,8 +313,8 @@ class BaseNormalizer(object, metaclass=BaseNormalizerMetaclass):
 
         def wrap():
             r_id = str(next(self.rebase_id))
-            yield ("hints", "rebase", r_id, "from") + src
-            yield ("hints", "rebase", r_id, "to") + dst
+            yield ("hints", "rebase", r_id, "from", *src)
+            yield ("hints", "rebase", r_id, "to", *dst)
 
         return wrap
 

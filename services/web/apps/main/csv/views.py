@@ -155,7 +155,7 @@ class CSVApplication(Application):
                     db_table = rel._meta.db_table
                     r = ['%s."id"' % db_table]
                     if rname != "id":
-                        r = ['%s."%s"' % (db_table, rname)] + r
+                        r = ['%s."%s"' % (db_table, rname), *r]
             else:
                 r = []
             fields += [(name, required, " or ".join(r))]
