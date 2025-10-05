@@ -26,7 +26,7 @@ class Script(BaseScript):
         for match in self.rx_line.finditer(s):
             type = match.group("type")
             mac = match.group("mac")
-            if mac.lower() in ("incomplete" or "none") or type.lower() in ("pending", "invalid"):
+            if mac.lower() in ("incomplete", "none") or type.lower() in ("pending", "invalid"):
                 continue
             r += [
                 {

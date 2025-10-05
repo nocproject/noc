@@ -86,7 +86,7 @@ class MonitorApplication(ObjectListApplication):
                 {
                     "%s_time_start" % prefix: self.to_json(job[Job.ATTR_TS]),
                     "%s_last_success" % prefix: self.to_json(job.get(Job.ATTR_LAST)),
-                    "%s_status" % prefix: job[Job.ATTR_STATUS] if Job.ATTR_STATUS in job else "--",
+                    "%s_status" % prefix: job.get(Job.ATTR_STATUS, "--"),
                     "%s_time" % prefix: job.get(Job.ATTR_LAST_DURATION, 0),
                     "%s_duration" % prefix: job.get(Job.ATTR_LAST_DURATION, 0),
                     "%s_last_status" % prefix: job.get(Job.ATTR_LAST_STATUS),

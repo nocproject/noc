@@ -202,7 +202,7 @@ class ReportAvailabilityApplication(SimpleReport):
                 round(a.get(mo_id, (100.0, 0, 0))[0], 2),
             ]
             s.extend(a.get(mo_id, (100.0, 0, 0))[1:])
-            s.append(rb[mo_id] if mo_id in rb else 0)
+            s.append(rb.get(mo_id, 0))
             r += [s]
             """
             a1.get(o.id, 100),

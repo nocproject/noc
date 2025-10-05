@@ -103,7 +103,7 @@ class XMACCheck(TopologyDiscoveryCheck):
         :param macs: List of MACs seen on interface
         :param name: Optional method name
         """
-        name = "chained" or None
+        name = "chained"
         if len(macs) == 1:
             return self.process_direct_downlink(iface, macs, name)
         # Get all downlink objects
