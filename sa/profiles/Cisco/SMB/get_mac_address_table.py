@@ -22,9 +22,7 @@ class Script(BaseScript):
     ignored_interfaces = "0"
 
     def is_ignored_interface(self, i):
-        if i.lower() in self.ignored_interfaces:
-            return True
-        return False
+        return i.lower() in self.ignored_interfaces
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         cmd = "show mac address-table"

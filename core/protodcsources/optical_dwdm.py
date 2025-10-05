@@ -44,9 +44,7 @@ class OpticalDWDMDiscriminatorSource(BaseDiscriminatorSource):
         Check discriminator code exists
         """
         lit, num = item[0], item[1:]
-        if lit not in {"C", "H"} or int(num) < 21 or int(num) > 60:
-            return False
-        return True
+        return not (lit not in {"C", "H"} or int(num) < 21 or int(num) > 60)
 
     def get_data(self, code: str) -> List[DiscriminatorDataItem]:
         """

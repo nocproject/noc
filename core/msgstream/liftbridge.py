@@ -186,7 +186,7 @@ class LiftBridgeClient(GugoLiftbridgeClient):
         if not partitions:
             partitions = {0: 0}
         elif isinstance(partitions, int):
-            partitions = {p: p for p in range(0, partitions)}
+            partitions = {p: p for p in range(partitions)}
         elif not isinstance(partitions, dict):
             raise AttributeError("Partitions must be Int or Dict")
             # Copy all unread data to temporary stream as is

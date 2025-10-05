@@ -381,9 +381,7 @@ class InterfaceProfile(Document):
             return True
         if self.metric_collected_policy == "da" and admin_status is False:
             return False
-        if self.metric_collected_policy == "do" and oper_status is False:
-            return False
-        return True
+        return not (self.metric_collected_policy == "do" and oper_status is False)
 
     def get_matcher(self) -> Callable:
         """"""

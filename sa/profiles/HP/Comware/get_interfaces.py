@@ -135,7 +135,7 @@ class Script(BaseScript):
             iftype = self.profile.get_interface_type(ifname)
             self.logger.info("Process interface: %s", ifname)
             o_status = r.get("oper_status", "").lower() == "up"
-            a_status = False if "Administratively" in r.get("oper_status", "") else True
+            a_status = not "Administratively" in r.get("oper_status", "")
             name = ifname
             vlan_ids = 0
             if "." in ifname:

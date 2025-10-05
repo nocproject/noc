@@ -234,7 +234,7 @@ class Script(BaseScript):
                 # start = 2048
                 vlans = range(2048, 4096)
             else:
-                vlans = range(0, 2048)
+                vlans = range(2048)
             result[pid_ifindex_mappings[port_num]]["tagged_vlans"] += list(
                 compress(
                     vlans,

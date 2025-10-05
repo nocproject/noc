@@ -255,7 +255,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
         logger.error("Check fatal error raise exception. Skipping...")
     now = datetime.datetime.now()
     r = [
-        f"UNHANDLED EXCEPTION ({str(now)})",
+        f"UNHANDLED EXCEPTION ({now!s})",
         f"PROCESS: {version.process}",
         f"VERSION: {version.version}",
     ]
@@ -269,7 +269,7 @@ def get_traceback(reverse=config.traceback.reverse, fp=None, exc_info=None):
         format_frames(get_traceback_frames(tb), reverse=reverse),
     ]
     if not reverse:
-        r += [f"UNHANDLED EXCEPTION ({str(now)})", str(t), str(v)]
+        r += [f"UNHANDLED EXCEPTION ({now!s})", str(t), str(v)]
     return "\n".join(smart_text(x, errors="ignore") for x in r)
 
 

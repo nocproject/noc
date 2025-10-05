@@ -1180,7 +1180,7 @@ class Label(Document):
                 ]
         sef = set(labels)
         for profile in match_profiles:
-            if "handler" in profile and profile["handler"]:
+            if profile.get("handler"):
                 handler = Handler.get_by_id(profile["handler"])
                 handler = handler.get_handler()
                 if handler(labels):

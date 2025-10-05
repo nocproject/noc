@@ -24,8 +24,6 @@ class ConnectionFailure(Exception):
     when a connection with a requested alias can't be retrieved.
     """
 
-    pass
-
 
 def disconnect(alias=DEFAULT_CONNECTION_NAME):
     """Close the connection with a given alias."""

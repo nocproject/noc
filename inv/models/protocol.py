@@ -308,7 +308,7 @@ class Protocol(Document):
         if self.allow_different_connection != "BO":
             yield ProtocolVariant(self, ">")
             yield ProtocolVariant(self, "<")
-        if not self.discriminator == "D":
+        if self.discriminator != "D":
             return
         ds = self.get_discriminator_source()
         for code in ds:

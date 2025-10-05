@@ -95,14 +95,11 @@ class Script(BaseScript):
             chassis, slot, port = self.rx_slot_splitter.match(name).groups()
             if chassis not in self._chassis_filter:
                 return False
-        if (
+        return not (
             (name.startswith("Vl") or name.startswith("Lo"))
             and self.vlan_filter
             and ifindex not in self.vlan_filter
-        ):
-            # Filter all vlan ifaces without IP
-            return False
-        return True
+        )
 
     # if ascii or rus text in description
     def convert_description(self, desc):

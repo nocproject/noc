@@ -76,14 +76,14 @@ class Script(BaseScript):
                 macs = [
                     mac
                     for _, mac in self.snmp.getnext(
-                        f"{base_oid}.{str(index)}",
-                        display_hints={f"{base_oid}.{str(index)}": render_mac},
+                        f"{base_oid}.{index!s}",
+                        display_hints={f"{base_oid}.{index!s}": render_mac},
                     )
                 ]
             else:
                 ports = {
                     ".".join(reversed(oid.split(".")[-1:-3:-1])): str(port)
-                    for oid, port in self.snmp.getnext(f"{base_oid}.{str(index)}")
+                    for oid, port in self.snmp.getnext(f"{base_oid}.{index!s}")
                 }
 
         port_description = self.get_remote_ports_data(ports=ports)

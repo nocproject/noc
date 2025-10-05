@@ -151,19 +151,15 @@ class Command(BaseCommand):
         """
 
         def check_ipv4(a):
-            if (
+            return not (
                 a.startswith("127.")
                 or a.startswith("169.254")
                 or a.endswith("/32")
                 or a.startswith("0.0.0.0")
-            ):
-                return False
-            return True
+            )
 
         def check_ipv6(a):
-            if a == "::1":
-                return False
-            return True
+            return a != "::1"
 
         exclude = exclude or []
         si_fields = {"_id": 0, "name": 1, "forwarding_instance": 1, "managed_object": 1}

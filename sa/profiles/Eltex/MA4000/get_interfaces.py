@@ -70,7 +70,7 @@ class Script(BaseScript):
                 if iface["name"] in lldp:
                     iface["enabled_protocols"] = ["LLDP"]
                 interfaces += [iface]
-        for slot in range(0, 16):
+        for slot in range(16):
             c = self.cli("show interface plc-pon-port %d/0-7 vlans" % slot)
             t = parse_table(c, allow_wrap=True, footer="dummy footer")
             for i in t:

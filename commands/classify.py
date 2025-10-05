@@ -339,7 +339,7 @@ class Command(BaseCommand):
                 event_class = item.get("event_class")
                 if not event_class:
                     continue
-                if unknown and not event_class["name"] == "Unknown | Syslog":
+                if unknown and event_class["name"] != "Unknown | Syslog":
                     continue
                 self.print(msg)
 

@@ -167,9 +167,9 @@ class Script(BaseScript):
                     )
             else:
                 neigh["remote_port"] = smart_text(neigh["remote_port"]).rstrip("\x00")
-            if "remote_system_name" in neigh and neigh["remote_system_name"]:
+            if neigh.get("remote_system_name"):
                 neigh["remote_system_name"] = smart_text(neigh["remote_system_name"]).rstrip("\x00")
-            if "remote_port_description" in neigh and neigh["remote_port_description"]:
+            if neigh.get("remote_port_description"):
                 neigh["remote_port_description"] = neigh["remote_port_description"].rstrip("\x00")
             if neigh["remote_chassis_id_subtype"] == 7 and isinstance(
                 neigh["remote_chassis_id"], bytes

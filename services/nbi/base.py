@@ -47,9 +47,7 @@ class NBIAPI(object):
         Checks that each access_header contains at least one required token
         """
         a_set = set(access_header.split(","))
-        if cls.access_tokens_set() & a_set:
-            return True
-        return False
+        return bool(cls.access_tokens_set() & a_set)
 
     def get_routes(self):
         """

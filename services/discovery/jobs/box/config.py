@@ -93,9 +93,8 @@ class ConfigCheck(DiscoveryCheck):
         # Download
         self.logger.info("Downloading from %s:%s", storage.name, path)
         try:
-            with storage.open_fs() as fs:
-                with fs.open(path) as f:
-                    return f.read()
+            with storage.open_fs() as fs, fs.open(path) as f:
+                return f.read()
         except storage.Error as e:
             self.logger.info("Failed to download: %s", e)
             return None

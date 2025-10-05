@@ -43,10 +43,7 @@ class Script(BaseScript):
             return True
         if i.startswith("seq_no:"):
             return True
-        if is_int(i):
-            # 10.27.0.80, 1204773146
-            return True
-        return False
+        return bool(is_int(i))
 
     def execute_cli(self, interface=None, vlan=None, mac=None):
         def qn(s):

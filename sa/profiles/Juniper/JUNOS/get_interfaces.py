@@ -69,9 +69,7 @@ class Script(BaseScript):
     rx_ppp_address = re.compile(r"IP-Header (?P<src>\S+?):(?P<dst>\S+?):(?P<proto>\d+)")
 
     def filter_interface(self, ifindex, name, oper_status):
-        if not self.profile.valid_interface_name(self, name):
-            return False
-        return True
+        return self.profile.valid_interface_name(self, name)
 
     def clean_iftype(self, ifname: str, ifindex=None) -> str:
         if self.is_srx_6xx and ifname.startswith("reth"):

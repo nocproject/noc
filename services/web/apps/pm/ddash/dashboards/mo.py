@@ -89,9 +89,7 @@ class MODashboard(JinjaDashboard):
             """
             Object check metrics
             """
-            if metric.name.startswith("Check"):
-                return True
-            return False
+            return bool(metric.name.startswith("Check"))
 
         port_types = []
         object_metrics = []
