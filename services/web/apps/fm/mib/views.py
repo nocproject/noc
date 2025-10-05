@@ -158,7 +158,7 @@ class MIBApplication(ExtDocApplication):
         for f in request.FILES:
             left[f] = request.FILES[f]
         errors = {}
-        while len(left):
+        while left:
             n = len(left)
             for name in list(left.keys()):
                 try:

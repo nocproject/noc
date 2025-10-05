@@ -159,10 +159,8 @@ class Profile(BaseProfile):
         platforms_with_stacked_ports = ("DGS-3120", "DGS-3100", "DGS-3420")
         match = self.rx_interface_name.match(s.strip())
         if match:
-            if (
-                match.group("re_slot")
-                and match.group("re_slot") > "1"
-                or match.group("re_platform")
+            if (match.group("re_slot") and match.group("re_slot") > "1") or (
+                match.group("re_platform")
                 and any(
                     match.group("re_platform").startswith(p) for p in platforms_with_stacked_ports
                 )
@@ -552,7 +550,7 @@ def DGS3620(v):
 
 
 def DxS_L2(v):
-    if (
+    return bool(
         v["platform"].startswith("DES-1100")
         or v["platform"].startswith("DES-12")
         or v["platform"].startswith("DES-30")
@@ -565,9 +563,7 @@ def DxS_L2(v):
         or v["platform"].startswith("DGS-30")
         or v["platform"].startswith("DGS-32")
         or v["platform"].startswith("DGS-37")
-    ):
-        return True
-    return False
+    )
 
 
 def get_platform(platform, hw_revision):

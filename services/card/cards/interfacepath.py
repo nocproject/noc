@@ -254,7 +254,7 @@ class InterfacePathCard(BaseCard):
             mo = str(mo_map[doc["managed_object"]])
             if_hash = str(bi_hash(doc["name"]))
             status = 0
-            if "admin_status" in doc and doc["admin_status"]:
+            if doc.get("admin_status"):
                 status = 2 if doc["oper_status"] else 1
             duplex = "-"
             if "full_duplex" in doc:

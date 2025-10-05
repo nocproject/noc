@@ -48,7 +48,7 @@ class Script(BaseScript):
             result += [
                 {
                     "interface": "%s/%s" % (channel, mname),
-                    "admin_status": True if m_astatus else False,
+                    "admin_status": bool(m_astatus),
                     "oper_status": m_ostatus,
                     "full_duplex": False,
                 }
@@ -61,8 +61,8 @@ class Script(BaseScript):
             result += [
                 {
                     "interface": "1/1.%s" % cindex,
-                    "admin_status": True if cstatus > 0 else False,
-                    "oper_status": True if cstatus > 0 else False,
+                    "admin_status": cstatus > 0,
+                    "oper_status": cstatus > 0,
                     "full_duplex": True,
                     "in_speed": cspeed,
                     "out_speed": cspeed,

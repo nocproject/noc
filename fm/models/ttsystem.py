@@ -206,9 +206,7 @@ class TTSystem(Document):
     def can_escalate(self, obj) -> bool:
         if self.promote_items == "I":
             return True
-        if self.get_object_tt_id(obj):
-            return True
-        return False
+        return bool(self.get_object_tt_id(obj))
 
     def get_object_tt_id(self, obj) -> Optional[str]:
         """Getting Object TT ID by Policy"""

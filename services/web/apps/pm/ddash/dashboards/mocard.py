@@ -63,9 +63,7 @@ class MOCardDashboard(MODashboard):
             """
             Object check metrics
             """
-            if metric.name.startswith("Check"):
-                return True
-            return False
+            return bool(metric.name.startswith("Check"))
 
         object_metrics = []
         port_types = []

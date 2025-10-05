@@ -1337,9 +1337,7 @@ class ManagedObject(NOCModel):
         v = self.get_attr(name)
         if v is None:
             return default
-        if v.lower() in ["t", "true", "y", "yes", "1"]:
-            return True
-        return False
+        return v.lower() in ["t", "true", "y", "yes", "1"]
 
     def get_attr_int(self, name, default=0):
         """

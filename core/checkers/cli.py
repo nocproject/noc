@@ -49,9 +49,7 @@ class CLIProtocolChecker(BaseChecker):
             return True
         if "Error: Connection reset" in message:
             return True
-        if "No supported authentication methods" in message:
-            return True
-        return False
+        return "No supported authentication methods" in message
 
     def iter_credential(
         self,

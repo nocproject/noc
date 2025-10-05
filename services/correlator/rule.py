@@ -80,19 +80,13 @@ class EventAlarmRule:
         return r
 
     def is_match(self, ctx: Dict[str, Any]) -> bool:
-        if self.match and not self.match(ctx):
-            return False
-        return True
+        return not (self.match and not self.match(ctx))
 
     def is_vars(self, r_vars: Dict[str, Any]) -> bool:
-        if self.match_vars and not self.match_vars(r_vars):
-            return False
-        return True
+        return not (self.match_vars and not self.match_vars(r_vars))
 
     def match_event(self, e: Event) -> bool:
-        if self.match_vars and not self.match_vars(e.vars):
-            return False
-        return True
+        return not (self.match_vars and not self.match_vars(e.vars))
 
     def get_vars(self, e_vars: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         if not self.var_mapping:

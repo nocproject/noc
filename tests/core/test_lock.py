@@ -23,7 +23,6 @@ def test_get_locked_items():
 
 def test_nested_locks():
     lock = ProcessLock("test", "pytest")
-    with lock.acquire(["r1", "r2", "r3"]):
-        with pytest.raises(RuntimeError):
-            with lock.acquire(["r4", "r5"]):
-                pass
+    with lock.acquire(["r1", "r2", "r3"]), pytest.raises(RuntimeError):
+        with lock.acquire(["r4", "r5"]):
+            pass

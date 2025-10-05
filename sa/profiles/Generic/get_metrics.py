@@ -523,9 +523,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 return False
             if f.mt_matcher and not getattr(self, f.mt_matcher, False):
                 return False
-            if f.mt_access == "S" and not self.has_snmp():
-                return False
-            return True
+            return not (f.mt_access == "S" and not self.has_snmp())
 
         pref = self.get_access_preference()
         handlers = self._mt_map[metric]
@@ -546,7 +544,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         Profile extension for very custom logic
         """
         # pylint: disable=unnecessary-pass
-        pass
 
     def schedule_snmp_oids(self, rule, metric, metrics):
         """
@@ -816,7 +813,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :param metrics:
         :return:
         """
-        ...
 
     def collect_cpe_metrics(self, metrics: List[MetricCollectorConfig]):
         """
@@ -824,7 +820,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :param metrics:
         :return:
         """
-        ...
 
     # @metrics(
     #     [

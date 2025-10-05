@@ -45,8 +45,8 @@ class Script(BaseScript):
                     "type": "physical",
                     "name": name,
                     "mac": mac,
-                    "admin_status": True if a_status == 7 else False,
-                    "oper_status": True if o_status == 1 else False,
+                    "admin_status": a_status == 7,
+                    "oper_status": o_status == 1,
                     "hints": ["noc::interface::role::uplink"],
                     "subinterfaces": [],
                 }

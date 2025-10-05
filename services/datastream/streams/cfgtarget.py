@@ -156,9 +156,7 @@ class Target(
             and str(self.mop_event_processing_policy) == "E"
         ):
             return True
-        if str(self.event_processing_policy) == "E":
-            return True
-        return False
+        return str(self.event_processing_policy) == "E"
 
     @property
     def is_enable_ping(self) -> bool:

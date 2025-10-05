@@ -118,9 +118,7 @@ class DiagnosticItem(BaseModel):
         """
         Check diagnostic has worked: Enabled or Failed state
         """
-        if self.state in (DiagnosticState.enabled, DiagnosticState.failed):
-            return True
-        return False
+        return self.state in (DiagnosticState.enabled, DiagnosticState.failed)
 
     @property
     def is_failed(self) -> bool:

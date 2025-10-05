@@ -179,9 +179,7 @@ class Command(BaseCommand):
             base_type = syntax["base_type"]
             if base_type == "Integer32" and hint == "d":
                 return False
-            if base_type == "OctetString" and hint == "255a":
-                return False
-            return True
+            return not (base_type == "OctetString" and hint == "255a")
 
         if len(mib_name) != 1:
             self.print("Specify one MIB")

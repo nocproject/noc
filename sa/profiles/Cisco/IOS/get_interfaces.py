@@ -107,9 +107,7 @@ class Script(BaseScript):
         if name[:2] in ["Vi", "Di", "GM", "CP", "Nv", "Do", "Nu", "Co", "Em"]:
             return False
         # NOC-378 - Dirty hack for interface like ATM0/IMA0
-        if "/ima" in name.lower():
-            return False
-        return True
+        return "/ima" not in name.lower()
 
     def get_lldp_interfaces(self):
         """
@@ -339,7 +337,7 @@ class Script(BaseScript):
             vlans_bank = b"".join([vlans_base, vlans_2k or b"", vlans_3k or b"", vlans_4k or b""])
             result[int(ifindex)]["tagged_vlans"] += list(
                 compress(
-                    range(0, 4096),
+                    range(4096),
                     [
                         int(x)
                         for x in chain.from_iterable("{0:08b}".format(mask) for mask in vlans_bank)

@@ -25,14 +25,12 @@ class ReportSource(object):
         Report Format describe
         :return:
         """
-        ...
 
     def get_parameters(self):
         """
         Return Available report Parameters
         :return:
         """
-        ...
 
     def get_data(self, request, **kwargs) -> List[Band]:
         """
@@ -41,4 +39,3 @@ class ReportSource(object):
         :param kwargs:
         :return:
         """
-        ...

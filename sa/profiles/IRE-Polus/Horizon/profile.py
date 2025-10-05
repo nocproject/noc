@@ -243,16 +243,11 @@ class PolusParam:
             return False
         if self.name in METRIC_MAP:
             return True
-        if self.name.endswith("Alarms") or self.name.endswith("Temp"):
-            return True
-        return False
+        return bool(self.name.endswith("Alarms") or self.name.endswith("Temp"))
 
     @property
     def is_threshold(self) -> bool:
-        match = rx_threshold.match(self.name)
-        if not match:
-            return False
-        return True
+        return bool(rx_threshold.match(self.name))
 
     @property
     def threshold_param(self) -> Optional[str]:
@@ -487,7 +482,7 @@ class Profile(BaseProfile):
         slots = script.http.get("/api/slots", json=True, cached=True)
         # Getting ControlUnit
         for s in slots["slots"]:
-            if "name" not in s or not s["name"].lower().startswith("cu") and "my" in s:
+            if "name" not in s or (not s["name"].lower().startswith("cu") and "my" in s):
                 continue
             return int(s["crateId"]), int(s["slotNumber"])
         raise script.NotSupportedError("Unknown Control Unit")

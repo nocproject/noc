@@ -398,13 +398,13 @@ class _SideBuilder(object):
                 r += [
                     {
                         "from": {
-                            "id": f"{str(o.id)}{c.input}",
+                            "id": f"{o.id!s}{c.input}",
                             "name": c.input,
                             "has_arrow": False,
                             "discriminator": self.format_discriminator(c.input_discriminator or ""),
                         },
                         "to": {
-                            "id": f"{str(o.id)}{c.output}",
+                            "id": f"{o.id!s}{c.output}",
                             "name": c.output,
                             "has_arrow": True,
                             "discriminator": self.format_discriminator(

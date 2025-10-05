@@ -51,12 +51,12 @@ class PeerApplication(ExtModelApplication):
             raise ValueError(
                 "Invalid 'Remote IP Address', must be in x.x.x.x/x form or IPv6 prefix"
             )
-        if "local_backup_ip" in data and data["local_backup_ip"]:
+        if data.get("local_backup_ip"):
             if not is_prefix(data["local_backup_ip"]):
                 raise ValueError(
                     "Invalid 'Local Backup IP Address', must be in x.x.x.x/x form or IPv6 prefix"
                 )
-        if "remote_backup_ip" in data and data["remote_backup_ip"]:
+        if data.get("remote_backup_ip"):
             if not is_prefix(data["remote_backup_ip"]):
                 raise ValueError(
                     "Invalid 'Remote Backup IP Address', must be in x.x.x.x/x form or IPv6 prefix"
@@ -75,7 +75,7 @@ class PeerApplication(ExtModelApplication):
                 {
                     IP.prefix(data[x]).afi
                     for x in ["local_ip", "remote_ip", "local_backup_ip", "remote_backup_ip"]
-                    if x in data and data[x]
+                    if data.get(x)
                 }
             )
             > 1
