@@ -255,7 +255,7 @@ class ActionLog(object):
             document_id=data.get("document_id"),
             template=template,
             subject=data.get("subject"),
-            **data["ctx"] if "ctx" in data else {},
+            **data.get("ctx", {}),
         )
 
     def get_state(self) -> Dict[str, Any]:

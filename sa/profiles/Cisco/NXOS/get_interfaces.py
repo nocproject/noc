@@ -136,7 +136,7 @@ class Script(BaseScript):
         if vlans:
             for sp in self.scripts.get_switchport():
                 switchports[sp["interface"]] = (
-                    sp["untagged"] if "untagged" in sp else None,
+                    sp.get("untagged", None),
                     sp["tagged"],
                 )
 

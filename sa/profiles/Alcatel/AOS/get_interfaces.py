@@ -231,7 +231,7 @@ class Script(BaseScript):
         switchports = {}
         for swp in self.scripts.get_switchport():
             switchports[swp["interface"]] = (
-                swp["untagged"] if "untagged" in swp else None,
+                swp.get("untagged", None),
                 swp["tagged"],
             )
 
