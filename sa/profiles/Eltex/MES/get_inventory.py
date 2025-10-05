@@ -240,7 +240,7 @@ class Script(BaseScript):
         result["name"] = entity
         return result
 
-    # Сalculates id of chassis
+    # Calculates id of chassis
     def get_chassis_id(self, children_index, entity):
         chassis = {}
         i = 1

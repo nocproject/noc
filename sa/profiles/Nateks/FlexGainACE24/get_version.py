@@ -39,7 +39,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
 
-    # FIX  в N.1.1.401.38 нет SN и получить его нереально ?
+    # FIX: N.1.1.401.38 has no serial and there is no way to get it?
     # rx_eeprom = re.compile(
     #  r".*SN                 : S/N: (?P<sn>[^ ,]+)\n"
     #  , re.MULTILINE | re.DOTALL | re.IGNORECASE)
@@ -54,7 +54,7 @@ class Script(BaseScript):
 
         version1 = match.group("version")
 
-        # FIX  в N.1.1.401.38 нет SN и получить его нереально ?
+        # FIX: N.1.1.401.38 has no serial and there is no way to get it?
         # v2 = self.cli("get sys eeprom256", cached=True)
         # matcheeprom = self.re_search(self.rx_eeprom, v2)
         # platform  = version1.split(".")[3]

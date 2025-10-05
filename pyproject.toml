@@ -132,9 +132,6 @@ lint.ignore = [
   "SIM201", # Use `data_c[0][4] != data_c[1][4]` instead of `not data_c[0][4] == data_c[1][4]`
   "SIM210", # Remove unnecessary `True if ... else False`
   "SIM211", # Use `not ...` instead of `False if ... else True`
-  "SIM222", # Use `"chained"` instead of `"chained" or ...`
-  "SIM401", # Use `job.get(Job.ATTR_STATUS, "--")` instead of an `if` block
-  "SIM910", # Use `port_vlans.get(name)` instead of `port_vlans.get(name, None)`
   "PIE790", # Unnecessary `pass` statement
   "PIE804", # Unnecessary `dict` kwargs
   "PIE808", # Unnecessary `start` argument in `range`
@@ -143,8 +140,6 @@ lint.ignore = [
   "PLC1802", # `len(left)` used as condition without comparison
   "PLC0415", # `import` should be at the top-level of a file
   "RUF001", # String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
-  "RUF002", # Docstring contains ambiguous `В` (CYRILLIC CAPITAL LETTER VE). Did you mean `B` (LATIN CAPITAL LETTER B)?
-  "RUF003", # Comment contains ambiguous `С` (CYRILLIC CAPITAL LETTER ES). Did you mean `C` (LATIN CAPITAL LETTER C)?
   "RUF006", # Store a reference to the return value of `asyncio.create_task`
   "RUF009", # Do not perform function call `Layout` in dataclass defaults
   "RUF010", # Use explicit conversion flag
