@@ -41,9 +41,7 @@ class Script(BaseScript):
         """
         r = self.cli("show spanning-tree")
         match = self.rx_stp.search(r)
-        if match:
-            return True
-        return False
+        return bool(match)
 
     @false_on_cli_error
     def has_lldp_cli(self):

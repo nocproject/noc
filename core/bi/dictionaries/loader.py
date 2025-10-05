@@ -17,9 +17,7 @@ class BIDictionaryLoader(BaseLoader):
     ignored_names = {"loader"}
 
     def is_valid_class(self, kls, name):
-        if not hasattr(kls, "_meta"):
-            return False
-        return True
+        return hasattr(kls, "_meta")
 
 
 # Create singleton object

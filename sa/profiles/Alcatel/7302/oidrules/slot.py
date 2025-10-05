@@ -24,7 +24,7 @@ class SlotRule(OIDRule):
                 int(index) for index in script.capabilities["Slot | Member Ids"].split(" | ")
             ]
         elif script.has_capability("Slot | Members"):
-            sys_slot_index = list(range(0, script.capabilities["Slot | Members"] + 1))
+            sys_slot_index = list(range(script.capabilities["Slot | Members"] + 1))
         else:
             sys_slot_index = [0]
 

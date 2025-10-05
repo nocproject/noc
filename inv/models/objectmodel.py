@@ -519,10 +519,7 @@ class ObjectModel(Document):
     def has_connection_cross(self, name: str) -> bool:
         if self.get_model_connection(name).cross_direction:
             return True
-        for c in self.cross:
-            if name in (c.input, c.output):
-                return True
-        return False
+        return any(name in (c.input, c.output) for c in self.cross)
 
     def iter_connection_proposals(self, name: str) -> Iterable[Tuple["ObjectId", str]]:
         """
@@ -828,7 +825,7 @@ class ObjectModel(Document):
             # Connection is broken
             to_prune_connections.add(conn_id)
             # Potencial cables
-            cable_candidates.add([cc["object"] for cc in conns if cc["object"] not in obj_ids][0])
+            cable_candidates.add(next(cc["object"] for cc in conns if cc["object"] not in obj_ids))
         # Process cables
         if cable_candidates:
             to_prune_objects = {

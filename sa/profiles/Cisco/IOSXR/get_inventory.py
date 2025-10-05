@@ -68,7 +68,7 @@ class Script(BaseScript):
             ]
         # Reorder chassis
         if objects[-1]["type"] == "CHASSIS":
-            objects = [objects[-1]] + objects[:-1]
+            objects = [objects[-1], *objects[:-1]]
         return objects
 
     def get_type(self, name, pid, descr, lo):

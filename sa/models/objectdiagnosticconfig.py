@@ -55,9 +55,7 @@ class Match(EmbeddedDocument):
     def is_match(self, labels: List[str]):
         if self.exclude_labels and not set(self.exclude_labels) - set(labels):
             return False
-        if not set(self.labels) - set(labels):
-            return True
-        return False
+        return bool(not set(self.labels) - set(labels))
 
 
 class DiagnosticCheck(EmbeddedDocument):
@@ -169,10 +167,7 @@ class ObjectDiagnosticConfig(Document):
         """
         if not self.match:
             return True
-        for match in self.match:
-            if match.is_match(labels):
-                return True
-        return False
+        return any(match.is_match(labels) for match in self.match)
 
     def clean(self):
         if self in self.diagnostics:

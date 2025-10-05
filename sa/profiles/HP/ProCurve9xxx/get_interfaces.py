@@ -75,7 +75,7 @@ class Script(BaseScript):
                             untagged[ifc] = vlan
                             continue
 
-                    elif not m[0].split()[0] == "ethe":
+                    elif m[0].split()[0] != "ethe":
                         continue
 
                     elif not m[1]:
@@ -128,7 +128,7 @@ class Script(BaseScript):
                 "description": desc,
             }
             mac = s.split()[8]
-            if not mac == "N/A":
+            if mac != "N/A":
                 iface["mac"] = mac
             # Process portchannel members
             if ifname in portchannel_members:

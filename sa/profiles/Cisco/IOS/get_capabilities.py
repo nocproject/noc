@@ -84,9 +84,9 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show spanning-tree")
-        if "No spanning tree instance exists" in r or "No spanning tree instances exist" in r:
-            return False
-        return True
+        return not (
+            "No spanning tree instance exists" in r or "No spanning tree instances exist" in r
+        )
 
     @false_on_cli_error
     def has_udld_cli(self):
@@ -94,19 +94,14 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show udld  neighbors")
-        if len(r.splitlines()) > 2:
-            return True
-        return False
+        return len(r.splitlines()) > 2
 
     @false_on_cli_error
     def has_bfd_cli(self):
         """
         Check box has bfd enabled
         """
-        r = self.cli("show bfd summary")
-        if not r:
-            return False
-        return True
+        return self.cli("show bfd summary")
 
     @false_on_cli_error
     def has_ipv6_cli(self):
@@ -183,7 +178,7 @@ class Script(BaseScript):
         Check box has VRRPv2 enabled
         """
         v = self.cli("show vrrp brief", cached=True).splitlines()
-        return True if len(v) > 1 else False
+        return len(v) > 1
 
     @false_on_cli_error
     def has_vrrp_v3_cli(self):

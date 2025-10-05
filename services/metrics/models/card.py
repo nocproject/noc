@@ -32,7 +32,7 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("alarms", "probes", "senders", "is_dirty", "affected_rules", "config")
+    __slots__ = ("affected_rules", "alarms", "config", "is_dirty", "probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode, ...]
     alarms: List[AlarmNode]

@@ -58,9 +58,7 @@ class RequiredRule(EmbeddedDocument):
     def is_match(self, labels: List[str]):
         if self.exclude_labels and not set(self.exclude_labels) - set(labels):
             return False
-        if not set(self.labels) - set(labels):
-            return True
-        return False
+        return bool(not set(self.labels) - set(labels))
 
 
 class TransitionVertex(EmbeddedDocument):
@@ -217,10 +215,7 @@ class Transition(Document):
         """
         if not self.required_rules:
             return True
-        for rule in self.required_rules:
-            if rule.is_match(labels):
-                return True
-        return False
+        return any(rule.is_match(labels) for rule in self.required_rules)
 
     def on_transition(self, obj):
         """

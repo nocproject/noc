@@ -13,6 +13,7 @@ from noc.inv.models.endpoint import Endpoint as DBEndpoint
 from ..controller.base import Endpoint, PathItem
 from .base import BaseMapper
 from ..controller.otn_otu import OTNOTUController
+import itertools
 
 
 class DWDMOTUMapper(BaseMapper):
@@ -65,7 +66,7 @@ class DWDMOTUMapper(BaseMapper):
                     nodes.append(name)
             if len(nodes) > 1:
                 # Connect nodes between each other
-                for f, t in zip(nodes, nodes[1:]):
+                for f, t in itertools.pairwise(nodes):
                     self.add_edge(start=f, end=t, penwidth=2)
             if forward:
                 self.add_edge(

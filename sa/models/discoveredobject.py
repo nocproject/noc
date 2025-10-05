@@ -98,9 +98,7 @@ class DataItem(EmbeddedDocument):
             return False
         if other.remote_system and other.remote_system != self.remote_system:
             return False
-        if self.data != other.data:
-            return False
-        return True
+        return self.data == other.data
 
     def __hash__(self):
         if self.remote_system:
@@ -233,9 +231,9 @@ class DiscoveredObject(Document):
         self.effective_labels = labels
         # ToDO Rule Settings
         if self.hostname:
-            self.duplicate_keys = [self.address_bin, bi_hash(self.hostname)] + list(rids)
+            self.duplicate_keys = [self.address_bin, bi_hash(self.hostname), *list(rids)]
         else:
-            self.duplicate_keys = [self.address_bin] + list(rids)
+            self.duplicate_keys = [self.address_bin, *list(rids)]
 
     @property
     def is_duplicate(self):
@@ -545,7 +543,8 @@ class DiscoveredObject(Document):
                 ResourceDataItem(name="hostname", value=self.hostname),
                 ResourceDataItem(name="address", value=self.address),
                 ResourceDataItem(name="pool", value=str(self.pool.id)),
-            ] + data
+                *data,
+            ]
         r = ResourceItem(
             id=str(self.managed_object_id),
             labels=self.effective_labels,
@@ -654,10 +653,7 @@ class DiscoveredObject(Document):
 
     def has_remote_system(self, remote_system: RemoteSystem) -> bool:
         """Check RemoteSystem in data"""
-        for d in self.data:
-            if d.remote_system and d.remote_system.id == remote_system.id:
-                return True
-        return False
+        return any(d.remote_system and d.remote_system.id == remote_system.id for d in self.data)
 
     def is_preferred(self, do: "DiscoveredObject") -> bool:
         """Compare DiscoveredObject"""

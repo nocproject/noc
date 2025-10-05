@@ -40,7 +40,7 @@ class Category(str, Enum):
 
 @dataclass
 class Subscriber(object):
-    __slots__ = ("node", "input", "next")
+    __slots__ = ("input", "next", "node")
     node: "BaseCDAGNode"
     input: str
     next: Optional["Subscriber"]
@@ -145,16 +145,16 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
     state_cls_slot: Type  # Filled by metaclass
 
     __slots__ = (
+        "_const_value",
         "_node_id",
         "_prefix",
-        "description",
-        "state",
-        "config",
         "_subscribers",
         "bound_inputs",
-        "dynamic_inputs",
+        "config",
         "const_inputs",
-        "_const_value",
+        "description",
+        "dynamic_inputs",
+        "state",
         "sticky",
     )
 

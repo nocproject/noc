@@ -88,12 +88,12 @@ class ManagedObjectGoal(BaseGoal):
         def merge_path(
             l1: List[NetworkSegment], l2: List[NetworkSegment], cross: Set[NetworkSegment]
         ) -> List[NetworkSegment]:
-            ci = list(cross)[0]
+            ci = next(iter(cross))
             i1 = l1.index(ci)
             ri1 = l1[:i1]
             i2 = l2.index(ci)
             ri2 = list(reversed(l2[:i2]))
-            return ri1 + [ci] + ri2
+            return [*ri1, ci, *ri2]
 
         p1: List[NetworkSegment] = [start.segment]
         p2: List[NetworkSegment] = [goal.segment]

@@ -203,7 +203,7 @@ class ArchivedAlarm(Document):
         """
         reopens = self.reopens or 0
         ts = datetime.datetime.now()
-        log = self.log + [AlarmLog(timestamp=ts, from_status="C", to_status="A", message=message)]
+        log = [*self.log, AlarmLog(timestamp=ts, from_status="C", to_status="A", message=message)]
         a = ActiveAlarm(
             id=self.id,
             timestamp=self.timestamp,

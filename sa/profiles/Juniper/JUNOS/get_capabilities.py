@@ -29,9 +29,7 @@ class Script(BaseScript):
         Check box has STP enabled
         """
         r = self.cli("show spanning-tree bridge | match Enabled")
-        if "?STP" in r or "MSTP" in r:
-            return True
-        return False
+        return bool("?STP" in r or "MSTP" in r)
 
     @false_on_cli_error
     def has_lldp_cli(self):
@@ -86,9 +84,7 @@ class Script(BaseScript):
         """
         # bfdAdminStatus
         bfd = self.snmp.get("1.3.6.1.4.1.2636.5.3.1.1.1.1.0")
-        if is_int(bfd) and int(bfd) == 1:  # enabled(1)
-            return True
-        return False
+        return bool(is_int(bfd) and int(bfd) == 1)
 
     @false_on_cli_error
     def has_lacp_cli(self):

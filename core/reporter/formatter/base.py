@@ -49,7 +49,6 @@ class DataFormatter(object):
         Render document content. Override on child class
         :return:
         """
-        ...
 
     def create_document(self) -> bytes:
         """

@@ -176,7 +176,7 @@ class AuthLDAPDomain(Document):
         return self.DEFAULT_ATTR_MAPPING[self.type]
 
     def get_user_search_attributes(self):
-        return ["distinguishedName"] + list(self.DEFAULT_ATTR_MAPPING[self.type])
+        return ["distinguishedName", *list(self.DEFAULT_ATTR_MAPPING[self.type])]
 
     def get_user_search_dn(self):
         if self.user_search_dn:

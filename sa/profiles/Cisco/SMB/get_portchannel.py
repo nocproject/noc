@@ -31,7 +31,7 @@ class Script(BaseScript):
             parts = split_alnum(first)
             prefix = parts[:-1]
             for i in range(int(parts[-1]), int(last) + 1):
-                yield "".join([str(x) for x in prefix + [i]])
+                yield "".join([str(x) for x in [*prefix, i]])
 
     def execute_cli(self):  # TODO: test with real port-channels - (test pass @fx00f)
         r = []

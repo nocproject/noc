@@ -21,9 +21,8 @@ def test_error_report():
     logger = logging.Logger(__name__ + "::test_error_report")
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler(stream))
-    with pytest.raises(ValueError):
-        with ErrorReport(logger=logger):
-            raise ValueError("Ошибка--@!@--")
+    with pytest.raises(ValueError), ErrorReport(logger=logger):
+        raise ValueError("Ошибка--@!@--")
     report = stream.getvalue()
     assert "@!@" in report
     assert "ValueError" in report

@@ -422,7 +422,7 @@ class MetricAction(Document):
             nodes["dump"] = NodeItem(
                 name=f"{prefix}dump",
                 type="dump",
-                inputs=inputs[:] + [key_input or g_input],
+                inputs=[*inputs[:], key_input or g_input],
             )
             if dkey_input:
                 nodes["dump"].inputs += [dkey_input]

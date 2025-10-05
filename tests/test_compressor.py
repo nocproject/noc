@@ -19,24 +19,20 @@ RESULT = "Lorem ipsum\ndolor sit amet"
 
 
 def test_base_open():
-    with temporary_file() as path:
-        with pytest.raises(NotImplementedError):
-            BaseCompressor(path).open()
+    with temporary_file() as path, pytest.raises(NotImplementedError):
+        BaseCompressor(path).open()
 
 
 def test_base_close():
-    with temporary_file() as path:
-        with pytest.raises(NotImplementedError):
-            BaseCompressor(path).close()
+    with temporary_file() as path, pytest.raises(NotImplementedError):
+        BaseCompressor(path).close()
 
 
 @pytest.mark.parametrize("fmt", loader.iter_classes())
 def test_file_instance(fmt):
     comp_cls = loader.get_class(fmt)
-    with temporary_file() as path:
-        # Write samples
-        with comp_cls(path, mode="w") as f:
-            assert isinstance(f, io.TextIOWrapper)
+    with temporary_file() as path, comp_cls(path, mode="w") as f:
+        assert isinstance(f, io.TextIOWrapper)
 
 
 @pytest.mark.parametrize("fmt", loader.iter_classes())

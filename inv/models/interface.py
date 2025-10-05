@@ -233,7 +233,7 @@ class Interface(Document):
         try:
             super().save(*args, **kwargs)
         except Exception as e:
-            raise ValueError(f"{e.__doc__}: {str(e)}")
+            raise ValueError(f"{e.__doc__}: {e!s}")
 
     def on_delete(self):
         from .macdb import MACDB
@@ -348,7 +348,7 @@ class Interface(Document):
             l_members = [i for i in agg.lag_members if i.oper_status]
             if len(l_members) > 1:
                 raise ValueError("More then one active interface in LAG")
-            link = Link(interfaces=l_members + [phy], discovery_method=method)
+            link = Link(interfaces=[*l_members, phy], discovery_method=method)
             link.save()
             return link
 

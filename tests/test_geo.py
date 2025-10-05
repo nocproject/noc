@@ -19,4 +19,4 @@ def zoom_level(request):
 
 def test_zero_point(zoom_level):
     C = ll_to_xy(zoom_level, (0, 0))
-    assert C == (2 ** (zoom_level - 1), 2 ** (zoom_level - 1))
+    assert (2 ** (zoom_level - 1), 2 ** (zoom_level - 1)) == C

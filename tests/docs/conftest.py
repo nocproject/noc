@@ -47,13 +47,13 @@ class ToC(object):
             k = kv
             v = kv
         else:
-            k = list(kv.keys())[0]
+            k = next(iter(kv.keys()))
             v = kv[k]
         if isinstance(v, list):
             for lkv in v:
-                self.add_item(path + [k], lkv)
+                self.add_item([*path, k], lkv)
         else:
-            self.items[tuple(path + [k])] = v
+            self.items[tuple([*path, k])] = v
             s_path = os.path.join(DOCS_DIR, v)
             if os.path.isdir(s_path):
                 summary = [{sk: v + sv} for sk, sv in self.get_summary(v)]

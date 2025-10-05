@@ -192,52 +192,31 @@ ignore = [
   "PLR0913", # Too many arguments to function call
   "PLR0915", # Too many statements
   "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
-  "PLR1704", # Redefining argument with the local name `name`
-  "RET503", # Missing explicit `return` at the end of function able to return non-`None` value
-  "SIM102", # Use a single `if` statement instead of nested `if` statements
-  "SIM103", # Return the condition `bool(not set(self.labels) - set(labels))` directly
-  "SIM105", # Use `contextlib.suppress(KeyError)` instead of `try`-`except`-`pass`
-  "SIM108", # Use ternary operator `mib_name = name[0].split("::", 1)[0] if isinstance(name, tuple) else name.split("::", 1)[0]` instead of `if`-`else`-block
-  "SIM110", # Use `return any(rule.is_match(labels) for rule in self.required_rules)` instead of `for` loop
-  "SIM112", # Use capitalized environment variable `FTP_PROXY` instead of `ftp_proxy`
-  "SIM113", # Use `enumerate()` for index variable `n` in `for` loop
-  "SIM114", # Combine `if` branches using logical `or` operator
-  "SIM115", # Use a context manager for opening files
-  "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
-  "SIM118", # Use `key in dict` instead of `key in dict.keys()`
-  "SIM201", # Use `data_c[0][4] != data_c[1][4]` instead of `not data_c[0][4] == data_c[1][4]`
-  "SIM210", # Remove unnecessary `True if ... else False`
-  "SIM211", # Use `not ...` instead of `False if ... else True`
+  "PLR1704", # @todo: Manual work! Redefining argument with the local name `name`
+  "RET503", # @todo: Manual work! Missing explicit `return` at the end of function able to return non-`None` value
+  "SIM102", # @todo: Investigate necessity of adding parenthesis! Use a single `if` statement instead of nested `if` statements
+  "SIM105", # @todo: After porting of the reports! Use `contextlib.suppress(KeyError)` instead of `try`-`except`-`pass`
+  "SIM108", # @todo: Controversal! Use ternary operator `mib_name = name[0].split("::", 1)[0] if isinstance(name, tuple) else name.split("::", 1)[0]` instead of `if`-`else`-block
+  "SIM112", # @todo: Not applicabile! Use capitalized environment variable `FTP_PROXY` instead of `ftp_proxy`
+  "SIM113", # @todo: Manual work! Use `enumerate()` for index variable `n` in `for` loop
+  "SIM114", # @todo: Controversal! Combine `if` branches using logical `or` operator
+  "SIM115", # @todo: We have a functions which are return handlers! Use a context manager for opening files
+  "SIM118", # @todo: Clashes with .keys() method! Use `key in dict` instead of `key in dict.keys()`
   "SIM222", # Use `"chained"` instead of `"chained" or ...`
-  "SIM300", # Yoda condition detected
   "SIM401", # Use `job.get(Job.ATTR_STATUS, "--")` instead of an `if` block
   "SIM910", # Use `port_vlans.get(name)` instead of `port_vlans.get(name, None)`
-  "PIE790", # Unnecessary `pass` statement
-  "PIE794", # Class field `pattern_more` is defined multiple times
-  "PIE804", # Unnecessary `dict` kwargs
-  "PIE808", # Unnecessary `start` argument in `range`
-  "PIE810", # Call `startswith` once with a `tuple`
-  "PLC0206", # Extracting value from dictionary without calling `.items()`
-  "PLC1802", # `len(left)` used as condition without comparison
-  "PLC0415", # `import` should be at the top-level of a file
+  "PIE804", # @todo: After porting of reports! Unnecessary `dict` kwargs
+  "PIE810", # @todo: Enable after porting of reports! Call `startswith` once with a `tuple`
+  "PLC0206", # @todo: Manual work! Extracting value from dictionary without calling `.items()`
+  "PLC0415", # @todo: Not possible! `import` should be at the top-level of a file
   "RUF001", # String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
   "RUF002", # Docstring contains ambiguous `В` (CYRILLIC CAPITAL LETTER VE). Did you mean `B` (LATIN CAPITAL LETTER B)?
   "RUF003", # Comment contains ambiguous `С` (CYRILLIC CAPITAL LETTER ES). Did you mean `C` (LATIN CAPITAL LETTER C)?
-  "RUF005", # Consider `["noc", *parts]` instead of concatenation
   "RUF006", # Store a reference to the return value of `asyncio.create_task`
-  "RUF007", # Prefer `itertools.pairwise()` over `zip()` when iterating over successive pairs
-  "RUF009", # Do not perform function call `Layout` in dataclass defaults
-  "RUF010", # Use explicit conversion flag
+  "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
   "RUF013", # PEP 484 prohibits implicit `Optional`
-  "RUF015", # Prefer `next(iter(kv.keys()))` over single element slice
-  "RUF019", # Unnecessary key check before dictionary access
-  "RUF021", # Parenthesize `a and b` expressions when chaining `and` and `or` together, to make the precedence clear
-  "RUF022", # `__all__` is not sorted
-  "RUF023", # `ProbeSetting.__slots__` is not sorted
-  "RUF034", # Useless `if`-`else` condition
-  "RUF046", # Value being cast to `int` is already an integer
-  "RUF051", # Use `pop` instead of `key in dict` followed by `del dict[key]`  
+  "RUF051", # @todo: ruff#20700 reported! Use `pop` instead of `key in dict` followed by `del dict[key]`  
   "RUF059", # Unpacked variable `epsilon` is never used
   "RUF100", # Unused blanket `noqa` directive
 ]

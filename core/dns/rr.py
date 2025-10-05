@@ -17,16 +17,16 @@ DEFAULT_PREF = 100
 
 class RR(object):
     __slots__ = [
-        "zone",
-        "name",
-        "ttl",
-        "type",
-        "priority",
-        "rdata",
-        "_idna",
         "_content",
+        "_idna",
         "_order",
         "_sorder",
+        "name",
+        "priority",
+        "rdata",
+        "ttl",
+        "type",
+        "zone",
     ]
 
     def __init__(self, zone, name, ttl, type, rdata, priority=None):

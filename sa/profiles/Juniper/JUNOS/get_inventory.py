@@ -171,7 +171,7 @@ class Script(BaseScript):
             env_status = env_status.strip().lower()
             if env_status == "absent":
                 continue
-            env_status = True if env_status == "ok" else False
+            env_status = env_status == "ok"
             env_name = env_name.strip()
 
             sensor = {
@@ -250,7 +250,7 @@ class Script(BaseScript):
                         part_no = self.UNKNOWN_XCVR
                     else:
                         part_no = self.get_trans_part_no(serial, description)
-            if serial == "BUILTIN" or serial in chassis_sn and t != "CHASSIS":
+            if serial == "BUILTIN" or (serial in chassis_sn and t != "CHASSIS"):
                 builtin = True
                 part_no = []
             if t == "CHASSIS" and number is None and self.chassis_no is not None:
@@ -345,7 +345,7 @@ class Script(BaseScript):
         return slotid, chassis_id, env_status_oid, env_status_num, env_name
 
     def update_sensors_dict(self, sensors_dict, chassis_id, sensor_dict):
-        sensors_dict[chassis_id] = sensors_dict.get(chassis_id, []) + [sensor_dict]
+        sensors_dict[chassis_id] = [*sensors_dict.get(chassis_id, []), sensor_dict]
         return sensors_dict
 
     def get_sensors_snmp(self):
@@ -513,7 +513,7 @@ class Script(BaseScript):
                     part_no = part_no[:-1]
                 chassis_sn.add(serial)
 
-            if serial == "BUILTIN" or serial in chassis_sn and slot_type != "CHASSIS":
+            if serial == "BUILTIN" or (serial in chassis_sn and slot_type != "CHASSIS"):
                 builtin = True
                 part_no = []
             if slot_type == "CHASSIS" and number is None and self.chassis_no is not None:

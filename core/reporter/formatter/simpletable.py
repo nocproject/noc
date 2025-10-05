@@ -95,5 +95,5 @@ class SimpleTableFormatter(DataFormatter):
         # First we find the maximum length of the index column
         if index_filed:
             idx_max = max([len(str(s)) for s in dataframe[index_filed]] + [len(str(index_filed))])
-            return [idx_max] + r
+            return [idx_max, *r]
         return r

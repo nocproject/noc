@@ -1577,7 +1577,7 @@ class CorrelatorService(FastAPIService):
                 na.managed_object.id: na
                 for na in ActiveAlarm.objects.filter(
                     alarm_class=ca.alarm_class.id,
-                    rca_neighbors__in=[ca.managed_object.id] + ca.uplinks,
+                    rca_neighbors__in=[ca.managed_object.id, *ca.uplinks],
                 )
             }
             # Add current alarm to correlate downlink alarms properly
@@ -1649,7 +1649,7 @@ class CorrelatorService(FastAPIService):
         if self.is_distributed and alarm.managed_object.rca_neighbors:
             # Set lock until the end of dispose
             mo = alarm.managed_object
-            self.topo_rca_lock = RCALock(mo.rca_neighbors + [mo.id])
+            self.topo_rca_lock = RCALock([*mo.rca_neighbors, mo.id])
             self.logger.debug("[%s] Acquire lock: %s", alarm.id, mo.rca_neighbors)
             await self.topo_rca_lock.acquire()
         self.logger.debug("[%s] Get neighboring alarms", alarm.id)
@@ -1907,14 +1907,13 @@ class CorrelatorService(FastAPIService):
             if not count:
                 continue
             r = []
-            for _ in range(0, count):
+            for _ in range(count):
                 r.append(self.status_changes.popleft())
             self.logger.info("Updating %d statuses", len(r))
             try:
                 ManagedObjectStatus.update_status_bulk(r, update_jobs=True)
             except Exception:
                 error_report()
-                pass
 
 
 if __name__ == "__main__":

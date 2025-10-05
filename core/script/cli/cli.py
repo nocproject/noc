@@ -494,7 +494,7 @@ class CLI(BaseCLI):
                 return None
         if not self.is_started:
             self.resolve_pattern_prompt(match)
-        d = b"".join(self.collected_data + [data])
+        d = b"".join([*self.collected_data, data])
         self.collected_data = []
         self.expect(
             {"pager": self.send_pager_reply, "prompt": self.on_prompt},

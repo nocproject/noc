@@ -345,9 +345,7 @@ class MODiscoveryJob(PeriodicJob):
 
         self.context["umbrella_settings"] = current_status
 
-        if not prev_status and not current_status:
-            return False
-        return True
+        return not (not prev_status and not current_status)
 
     def can_update_alarms(self):
         return False
@@ -449,10 +447,7 @@ class DiscoveryCheck(object):
         return bool(self.get_caps().get(cap))
 
     def has_any_capability(self, caps):
-        for c in caps:
-            if self.has_capability(c):
-                return True
-        return False
+        return any(self.has_capability(c) for c in caps)
 
     def has_required_capabilities(self):
         if not self.required_capabilities:
@@ -886,7 +881,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                         "Cannot get neighbors from candidate %s: %s", remote_object.name, e
                     )
                     self.set_problem(
-                        path=list(candidates[remote_object])[0][0],
+                        path=next(iter(candidates[remote_object]))[0],
                         message="Cannot get neighbors from candidate %s: %s"
                         % (remote_object.name, e),
                     )
@@ -1255,12 +1250,12 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
             return
         # Get currently linked ends policies
         if llink:
-            rri = [i for i in llink.interfaces if i.id != li.id][0]
+            rri = next(i for i in llink.interfaces if i.id != li.id)
             lrpolicy = rri.profile.discovery_policy
         else:
             lrpolicy = None
         if rlink:
-            rri = [i for i in rlink.interfaces if i.id != ri.id][0]
+            rri = next(i for i in rlink.interfaces if i.id != ri.id)
             rrpolicy = rri.profile.discovery_policy
         else:
             rrpolicy = None
@@ -1328,7 +1323,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                     return
             if llink:
                 # Attach to existing cloud
-                llink.interfaces = llink.interfaces + [ri]
+                llink.interfaces = [*llink.interfaces, ri]
                 llink.save()
             else:
                 # Create p2p link
@@ -1361,7 +1356,7 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
                 li.unlink()
             if rlink:
                 # Attach to existing cloud
-                rlink.interfaces = rlink.interfaces + [li]
+                rlink.interfaces = [*rlink.interfaces, li]
                 rlink.save()
             else:
                 # Create p2p link

@@ -19,6 +19,4 @@ class Script(BaseScript):
         Check box has stp enabled
         """
         r = self.cli("show stp")
-        if "Spanning Tree Protocol : Disabled" in r:
-            return False
-        return True
+        return "Spanning Tree Protocol : Disabled" not in r

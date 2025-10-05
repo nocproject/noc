@@ -191,6 +191,4 @@ class BoxDiscoveryJob(MODiscoveryJob):
             or mop.enable_box_discovery_prefix_confdb
         ):
             return True
-        if mop.enable_box_discovery_bgppeer:
-            return True
-        return False
+        return bool(mop.enable_box_discovery_bgppeer)

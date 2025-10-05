@@ -554,11 +554,11 @@ class Application(object, metaclass=ApplicationBase):
             if f.type == "str":
                 if search and f.is_filtered:
                     ff = forms.ChoiceField(
-                        required=False, label=f.label, choices=[("", "---")] + f.get_choices()
+                        required=False, label=f.label, choices=[("", "---"), *f.get_choices()]
                     )
                 elif f.enum_group:
                     ff = forms.ChoiceField(
-                        required=False, label=f.label, choices=[("", "---")] + f.get_enums()
+                        required=False, label=f.label, choices=[("", "---"), *f.get_enums()]
                     )
                 else:
                     ml = f.max_length if f.max_length else 256

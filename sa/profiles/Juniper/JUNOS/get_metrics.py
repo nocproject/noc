@@ -114,7 +114,7 @@ class Script(GetMetricsScript):
                     port += chr(int(x))
                 self.set_metric(
                     id=("Subscribers | Summary", None),
-                    labels=("noc::chassis::0", f"noc::interface::{str(port)}"),
+                    labels=("noc::chassis::0", f"noc::interface::{port!s}"),
                     value=int(v),
                     multi=True,
                 )
@@ -188,7 +188,7 @@ class Script(GetMetricsScript):
                         metric=metric,
                         value=float(value),
                         ts=ts,
-                        labels=mc.labels + [f"noc::traffic_class::{traffic_class}"],
+                        labels=[*mc.labels, f"noc::traffic_class::{traffic_class}"],
                         multi=True,
                         type="delta" if metric.endswith("Delta") else "gauge",
                         scale=scale,

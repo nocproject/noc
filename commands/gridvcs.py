@@ -233,7 +233,7 @@ class Command(BaseCommand):
 
         rev = self.vcs.find_revision(mo.id, str(revision))
         if not rev:
-            self.die(f"[{mo.name}] Revision {str(revision)} is not found")
+            self.die(f"[{mo.name}] Revision {revision!s} is not found")
         if rev.ft != GridVCS.T_FILE:
             # End revision is delta
             data = self.vcs.get(mo.id, rev)

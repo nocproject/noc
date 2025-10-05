@@ -1337,9 +1337,7 @@ class ManagedObject(NOCModel):
         v = self.get_attr(name)
         if v is None:
             return default
-        if v.lower() in ["t", "true", "y", "yes", "1"]:
-            return True
-        return False
+        return v.lower() in ["t", "true", "y", "yes", "1"]
 
     def get_attr_int(self, name, default=0):
         """
@@ -2219,7 +2217,7 @@ class ManagedObject(NOCModel):
             config = self.config.read()
         # Insert raw section
         if self.get_confdb_raw_policy() == "E":
-            e.insert_bulk(("raw",) + t for t in self.iter_config_tokens(config))
+            e.insert_bulk(("raw", *t) for t in self.iter_config_tokens(config))
         # Parse and normalize config
         try:
             e.insert_bulk(self.iter_normalized_tokens(config, errors_policy=errors_policy))

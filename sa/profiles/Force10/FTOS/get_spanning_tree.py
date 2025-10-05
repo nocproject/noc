@@ -45,7 +45,7 @@ class Script(BaseScript):
                 "MSTP": {"region": match.group("region"), "revision": match.group("revision")}
             },
         }
-        for instance_id in ["0"] + self.rx_mstp_instance_list.findall(v):
+        for instance_id in ["0", *self.rx_mstp_instance_list.findall(v)]:
             # Get instance data
             ri = {"id": int(instance_id), "interfaces": []}
             v = self.cli("show spanning-tree msti %s brief" % instance_id)
@@ -105,7 +105,7 @@ class Script(BaseScript):
                     "_": "unknown",
                 }[role.lower()]  # @todo: refine roles
                 i["point_to_point"] = "P2P" in link_type.upper()
-                i["edge"] = True if edge.lower().startswith("y") else False
+                i["edge"] = bool(edge.lower().startswith("y"))
             # Append instance to result
             r["instances"] += [ri]
         return r

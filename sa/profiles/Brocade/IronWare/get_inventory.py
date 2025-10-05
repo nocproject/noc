@@ -236,7 +236,7 @@ class Script(BaseScript):
             power = self.cli("show chassis", cached=True)
             for line in power.splitlines():
                 if "Power" in line and "Fail" not in line:
-                    if "Power" == line.split()[0]:
+                    if line.split()[0] == "Power":
                         if "Installed" in line:
                             ln = line.split()
                             pwn = ln[1]

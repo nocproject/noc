@@ -160,11 +160,10 @@ class Job(object):
         if any(True for s in self.iter_siblings() if s.is_complete_failed):
             return True
         # Check dependencies
-        if self.depends_on and any(
-            True for s in self.iter_depends_on() if not s.is_complete_success
-        ):
-            return True
-        return False
+        return bool(
+            self.depends_on
+            and any(True for s in self.iter_depends_on() if not s.is_complete_success)
+        )
 
     def is_blocked(self) -> bool:
         return not self.is_waiting or self.is_blocked_by_parents() or self.is_blocked_by_siblings()

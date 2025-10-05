@@ -125,9 +125,7 @@ class ServiceStatusDependency(EmbeddedDocument):
             return False
         if self.min_status and self.service.oper_status < self.min_status:
             return False
-        if self.max_status and self.service.oper_status > self.max_status:
-            return False
-        return True
+        return not (self.max_status and self.service.oper_status > self.max_status)
 
     # def is_match(
     #     self,
@@ -870,7 +868,7 @@ class Service(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     @classmethod

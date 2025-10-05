@@ -147,7 +147,7 @@ $TTL %(ttl)d
         :return:
         """
         if len(value) <= cls.MAX_TXT:
-            if not value[0] == '"':
+            if value[0] != '"':
                 value = '"%s"' % value
             return [value]
         if value[0] == '"' and value[-1] == '"':

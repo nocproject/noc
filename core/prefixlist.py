@@ -23,7 +23,7 @@ class Node(object):
     Optimizing prefix tree.
     """
 
-    __slots__ = ["parent", "prefix", "children", "is_final", "n"]
+    __slots__ = ["children", "is_final", "n", "parent", "prefix"]
 
     def __init__(self, parent=None, prefix=None, prefixes=None):
         self.parent = parent
@@ -77,7 +77,7 @@ class Node(object):
                 return
         # Cannot reduce prefix (yet). Append to the tree
         if not self.children[d]:
-            self.children[d] = Node(self, self.prefix + [d])
+            self.children[d] = Node(self, [*self.prefix, d])
         self.children[d].append_binary_prefix(prefix)
 
     def append_prefix(self, prefix):

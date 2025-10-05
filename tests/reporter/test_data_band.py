@@ -36,7 +36,7 @@ def test_find_band_recursively():
     assert band1 is not None
     assert band11 is not None
 
-    assert "Band1.Band11" == band11.full_name
+    assert band11.full_name == "Band1.Band11"
 
 
 def test_get_band_data():

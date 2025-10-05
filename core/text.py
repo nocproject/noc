@@ -8,7 +8,7 @@
 # Python modules
 import re
 import string
-from itertools import zip_longest
+from itertools import zip_longest, pairwise
 
 # Third-party modules
 from typing import List, Union, Iterable
@@ -96,9 +96,7 @@ def parse_table(
             if max_width and columns[-1][-1] < max_width:
                 columns[-1] = (columns[-1][0], max_width)
             if expand_columns:
-                columns = [(cc[0], nc[0] - 1) for cc, nc in zip(columns, columns[1:])] + [
-                    columns[-1]
-                ]
+                columns = [(cc[0], nc[0] - 1) for cc, nc in pairwise(columns)] + [columns[-1]]
         elif columns:  # Fetch cells
             if allow_extend:
                 # Find which spaces between column not empty

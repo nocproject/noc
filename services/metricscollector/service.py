@@ -317,10 +317,7 @@ class MetricsCollectorService(FastAPIService):
         """
 
         def is_matched(rule_labels: List[str], item_labels: List[str]) -> bool:
-            for rl in rule_labels:
-                if rl not in item_labels:
-                    return False
-            return True
+            return all(rl in item_labels for rl in rule_labels)
 
         r: List[Dict[str, Any]] = []
         for item in data:

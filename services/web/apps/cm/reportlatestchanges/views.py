@@ -73,8 +73,9 @@ class ReportLatestChangesApplication(SimpleReport):
                 else:
                     objects = objects.filter(mo_q)
             pipeline = [
-                {"$match": {"object": {"$in": list(objects.values_list("id", flat=True))}}}
-            ] + pipeline
+                {"$match": {"object": {"$in": list(objects.values_list("id", flat=True))}}},
+                *pipeline,
+            ]
         # Perform query
         data = list(coll.aggregate(pipeline))
         # Resolve names

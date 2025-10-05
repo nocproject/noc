@@ -171,7 +171,7 @@ class ResourceGroup(Document):
         :return:
         """
         if self.parent:
-            return self.parent.get_path() + [self.id]
+            return [*self.parent.get_path(), self.id]
         return [self.id]
 
     def iter_changed_datastream(self, changed_fields=None):
@@ -296,8 +296,8 @@ class ResourceGroup(Document):
             )
         else:
             sql = (
-                f"UPDATE {model._meta.db_table} SET {group_field}=array_remove({group_field}, '{str(group_id)}') "
-                f"WHERE '{str(group_id)}'=ANY ({group_field})"
+                f"UPDATE {model._meta.db_table} SET {group_field}=array_remove({group_field}, '{group_id!s}') "
+                f"WHERE '{group_id!s}'=ANY ({group_field})"
             )
             with pg_connection.cursor() as cursor:
                 cursor.execute(sql)
@@ -335,8 +335,8 @@ class ResourceGroup(Document):
             )
         else:
             sql = (
-                f"UPDATE {model._meta.db_table} SET {group_field}=array_append({group_field}, '{str(group_id)}') "
-                f"WHERE %s::varchar[] <@ effective_labels AND NOT ('{str(group_id)}'= ANY ({group_field}))"
+                f"UPDATE {model._meta.db_table} SET {group_field}=array_append({group_field}, '{group_id!s}') "
+                f"WHERE %s::varchar[] <@ effective_labels AND NOT ('{group_id!s}'= ANY ({group_field}))"
             )
             with pg_connection.cursor() as cursor:
                 cursor.execute(sql, [labels])

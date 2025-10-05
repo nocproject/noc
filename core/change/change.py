@@ -148,7 +148,7 @@ def apply_ch_dictionary(changes: List[Dict[str, Any]]) -> None:
             lt = time.localtime(ts or t0)
             r["ts"] = time.strftime("%Y-%m-%d %H:%M:%S", lt)
             data += [orjson.dumps(r)]
-        for partition in range(0, n_parts):
+        for partition in range(n_parts):
             svc.publish(
                 value=b"\n".join(data),
                 stream=f"ch.{bi_dict_model._meta.db_table}",

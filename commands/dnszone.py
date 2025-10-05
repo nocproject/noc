@@ -526,7 +526,7 @@ class Command(BaseCommand):
                 parts = line.split()
                 if parts[0] == "IN" or parts[0] in self.RR_TYPES:
                     # missed name
-                    parts = [""] + parts
+                    parts = ["", *parts]
                 # Record ttl
                 if is_int(parts[1]):
                     rttl = int(parts.pop(1))
@@ -534,7 +534,7 @@ class Command(BaseCommand):
                     rttl = None
                 if parts[1] == "IN":
                     # Remove IN
-                    parts = [parts[0]] + parts[2:]
+                    parts = [parts[0], *parts[2:]]
                 # Normalize name
                 name = parts[0]
                 if name == "@" or not name:

@@ -20,6 +20,7 @@ from noc.sa.models.managedobject import ManagedObject
 from .goal.base import BaseGoal
 from .goal.managedobject import ManagedObjectGoal
 from .constraint.base import BaseConstraint
+import itertools
 
 MAX_PATH_LENGTH = 0xFFFFFFFF
 PathInfo = NamedTuple(
@@ -156,7 +157,7 @@ class KSPFinder(object):
                     break
                 obj_path.insert(0, goal_mo)
             full_path = []  # type: List[PathInfo]
-            for mo1, mo2 in zip(obj_path, obj_path[1:]):
+            for mo1, mo2 in itertools.pairwise(obj_path):
                 links = [link for link in self.mo_links[mo1.id] if mo2.id in link.linked_objects]
                 cost = min(link.l2_cost or 1 for link in links)
                 full_path += [PathInfo(mo1, mo2, links, cost)]

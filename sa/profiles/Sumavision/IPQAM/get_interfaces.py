@@ -45,7 +45,7 @@ class Script(BaseScript):
                 {
                     "type": "physical",
                     "name": "%s/%s" % (channel, mname),
-                    "admin_status": True if m_astatus else False,
+                    "admin_status": bool(m_astatus),
                     "oper_status": m_ostatus,
                     "snmp_ifindex": int("%s%s" % (channel, mindex)),
                     "description": "",
@@ -59,8 +59,8 @@ class Script(BaseScript):
                 {
                     "type": "physical",
                     "name": "1/1.%s" % cindex,
-                    "admin_status": True if cstatus > 0 else False,
-                    "oper_status": True if cstatus > 0 else False,
+                    "admin_status": cstatus > 0,
+                    "oper_status": cstatus > 0,
                     "snmp_ifindex": cindex,
                     "description": "",
                     "subinterfaces": [{"name": freq, "description": "1/1.%s" % cindex}],

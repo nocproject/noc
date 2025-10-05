@@ -150,7 +150,7 @@ class JobF(object):
             self.pool = kwargs["pool"]
             del kwargs["pool"]
         if kwargs:
-            self.pipeline = [{"$match": kwargs}] + self.pipeline
+            self.pipeline = [{"$match": kwargs}, *self.pipeline]
         return self
 
     def __getitem__(self, k):
@@ -161,6 +161,6 @@ class JobF(object):
 
     def __iter__(self):
         mos_ids = list(self.mos_filter.values_list("id", flat=True))
-        self.pipeline = [{"$match": {Job.ATTR_KEY: {"$in": mos_ids}}}] + self.pipeline
+        self.pipeline = [{"$match": {Job.ATTR_KEY: {"$in": mos_ids}}}, *self.pipeline]
         scheduler = Scheduler(self.scheduler, pool=self.pool).get_collection()
         yield from scheduler.aggregate(self.pipeline)

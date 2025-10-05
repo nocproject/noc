@@ -18,14 +18,14 @@ class MongoMarshaller(BaseMarshaller):
         def iter_line(n, path):
             if n.children:
                 if n.token:
-                    n_path = path + [n.token]
+                    n_path = [*path, n.token]
                 else:
                     n_path = path
                 for c in n.iter_nodes():
                     for t in iter_line(c, n_path):
                         yield t
             else:
-                yield path + [n.token]
+                yield [*path, n.token]
 
         return {"config": [{"t": x} for x in iter_line(node, [])]}
 

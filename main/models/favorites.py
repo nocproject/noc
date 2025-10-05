@@ -44,7 +44,7 @@ class Favorites(Document):
         fi = list(fv.favorites) or []
         if item not in fi:
             logger.info("Setting favorite item %s@%s for user %s", item, app_id, user.username)
-            fv.favorites = fi + [item]
+            fv.favorites = [*fi, item]
             fv.save()
 
     @classmethod

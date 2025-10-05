@@ -71,10 +71,8 @@ class Script(BaseScript):
                     ic += [" switchport mode trunk"]
                     ic += [" no switchport access vlan"]
                 if (
-                    "untagged" in c
-                    and ("untagged" not in p or c["untagged"] != p["untagged"])
-                    or is_access(p)
-                ):
+                    "untagged" in c and ("untagged" not in p or c["untagged"] != p["untagged"])
+                ) or is_access(p):
                     # Add native vlan
                     ic += [" switchport trunk native vlan %d" % c["untagged"]]
                 if "untagged" not in c and "untagged" in p:
@@ -96,7 +94,7 @@ class Script(BaseScript):
                 else:
                     ic += [" no %s" % ept[is_access(c)]]
             if ic:
-                commands += ["interface %s" % iface] + ic + [" exit"]
+                commands += ["interface %s" % iface, *ic, " exit"]
         # Apply commands
         if not debug and commands:
             with self.configure():

@@ -20,7 +20,7 @@ class BaseConstraint(object):
 
     def __repr__(self: "BaseConstraint") -> str:
         tn = self.__class__.__name__
-        return f"<{tn} {str(self)}>"
+        return f"<{tn} {self!s}>"
 
     def __eq__(self: "BaseConstraint", value: object) -> bool: ...
     def satisfy(self: "BaseConstraint", item: "BaseConstraint") -> bool:

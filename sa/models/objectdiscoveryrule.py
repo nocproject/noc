@@ -124,9 +124,7 @@ class MatchCheck(EmbeddedDocument):
         value = checks[(self.check, self.port or 0)]
         if self.match_state == "ok" and not value:
             return False
-        if self.match_state == "fail" and value:
-            return False
-        return True
+        return not (self.match_state == "fail" and value)
 
     @property
     def json_data(self) -> Dict[str, Any]:
