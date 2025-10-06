@@ -10,3 +10,4 @@ rust/target/
 tests/
 var/
 ansible/
+ui/node_modules/
