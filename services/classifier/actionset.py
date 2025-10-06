@@ -209,7 +209,11 @@ class ActionSet(object):
         # Default resource action
         for r in resources:
             if get_model_id(r) == "inv.Interface":
-                action = self.get_resource_action(r, event=event)
+                action = (
+                    self.get_resource_action(r, event=event)
+                    or action
+                    or self.default_resource_action
+                )
         return action
 
     @staticmethod
@@ -301,4 +305,4 @@ class ActionSet(object):
                     resource.managed_object.address,
                 )
             event.type.severity = EventSeverity.IGNORED  # do_not_dispose
-        return self.default_resource_action
+        return None
