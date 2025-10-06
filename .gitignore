@@ -48,4 +48,9 @@ docs/src/en/include/auto
 docs/src/en/platforms/
 scripts/build/web/node_modules
 pyvenv.cfg
-node_modules
+ui/.cache
+ui/node_modules
+ui/dist
+ui/scripts/.env
+ui/scripts/nginx.conf
+ui/scripts/bundles/monaco.generated.ts
