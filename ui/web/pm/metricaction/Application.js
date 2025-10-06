@@ -623,10 +623,17 @@ Ext.define("NOC.pm.metricaction.Application", {
       }, Ext.Array.map(me.query("[name=metric_type]"), function(input){
         return {metric_type: input.getValue()}
       })),
-      set = function(obj, path, value){
-        obj = typeof obj === "object" ? obj : {};
-        var keys = path.split("."),
-          curStep = obj;
+      set = function(path, value){
+        let keys = path.split("."),
+          curStep = save,
+          keysForSkipping = ["__proto__", "constructor", "prototype", "__label"],
+          isKeyForSkipping = keysForSkipping.some(function(key){
+            return path.indexOf(key) !== -1;
+          });
+        
+        if(isKeyForSkipping){
+          return;
+        }
         for(var i = 0; i < keys.length - 1; i++){
           var key = keys[i];
 
@@ -641,11 +648,9 @@ Ext.define("NOC.pm.metricaction.Application", {
         curStep[finalStep] = value;
       };
 
-    Ext.Object.each(data, function(key, value){
-      if(key.indexOf("__label") === -1){
-        set(save, key, value);
-      }
-    });
+    Ext.Object.each(data, set);
+    // set(key, value);
+    // });
 
     save["compose_inputs"] = inputs;
 
