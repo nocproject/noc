@@ -117,7 +117,7 @@ class Profile(BaseProfile):
     def setup_session(self, script):
         try:
             script.cli("terminal datadump")
-            script.cli("")  # "сommand authorization failed" - not syntax error
+            script.cli("")  # "command authorization failed" - not syntax error
         except script.CLISyntaxError:
             pass
 

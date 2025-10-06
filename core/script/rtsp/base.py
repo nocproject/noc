@@ -255,8 +255,8 @@ class DigestAuth(object):
         # uri = p_parsed.path or "/"
         uri = url
         qop = digest_response.get("qop", "")
-        realm = digest_response["realm"] if "realm" in digest_response else self.last_realm
-        nonce = digest_response["nonce"] if "nonce" in digest_response else self.last_nonce
+        realm = digest_response.get("realm", self.last_realm)
+        nonce = digest_response.get("nonce", self.last_nonce)
         algorithm = digest_response.get("algorithm")
         opaque = digest_response.get("opaque")
 

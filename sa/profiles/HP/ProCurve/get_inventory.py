@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------
-# РЗ.Procurve.get_inventory
+# HP.Procurve.get_inventory
 # ----------------------------------------------------------------------
 # Copyright (C) 2007-2019 The NOC Project
 # See LICENSE for details

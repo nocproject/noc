@@ -202,16 +202,11 @@ ignore = [
   "SIM114", # @todo: Controversal! Combine `if` branches using logical `or` operator
   "SIM115", # @todo: We have a functions which are return handlers! Use a context manager for opening files
   "SIM118", # @todo: Clashes with .keys() method! Use `key in dict` instead of `key in dict.keys()`
-  "SIM222", # Use `"chained"` instead of `"chained" or ...`
-  "SIM401", # Use `job.get(Job.ATTR_STATUS, "--")` instead of an `if` block
-  "SIM910", # Use `port_vlans.get(name)` instead of `port_vlans.get(name, None)`
   "PIE804", # @todo: After porting of reports! Unnecessary `dict` kwargs
   "PIE810", # @todo: Enable after porting of reports! Call `startswith` once with a `tuple`
   "PLC0206", # @todo: Manual work! Extracting value from dictionary without calling `.items()`
   "PLC0415", # @todo: Not possible! `import` should be at the top-level of a file
-  "RUF001", # String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
-  "RUF002", # Docstring contains ambiguous `В` (CYRILLIC CAPITAL LETTER VE). Did you mean `B` (LATIN CAPITAL LETTER B)?
-  "RUF003", # Comment contains ambiguous `С` (CYRILLIC CAPITAL LETTER ES). Did you mean `C` (LATIN CAPITAL LETTER C)?
+  "RUF001", # @todo: Occured in reports! String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
   "RUF006", # Store a reference to the return value of `asyncio.create_task`
   "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
   "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
