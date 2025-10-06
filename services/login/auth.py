@@ -19,7 +19,6 @@ from fastapi.responses import Response
 from noc.aaa.models.user import User
 from noc.config import config
 from noc.core.perf import metrics
-from noc.core.comp import smart_text
 from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
 from .backends.loader import loader
 
@@ -43,13 +42,17 @@ def iter_methods():
 
 def authenticate(credentials: dict[str, Any]) -> str | None:
     """
-    Authenticate user. Returns username when user is authenticated
+    Authenticate user.
+
+    Returns:
+        username: when user is authenticated.
+        None: otherwise.
     """
     c = credentials.copy()
     for f in HIDDEN_FIELDS:
         if f in c:
             c[f] = "***"
-    le = "No active auth methods"
+    login_error = "No active auth methods"
     for method in iter_methods():
         bc = loader.get_class(method)
         if not bc:
@@ -61,18 +64,24 @@ def authenticate(credentials: dict[str, Any]) -> str | None:
             user = backend.authenticate(**credentials)
             metrics["auth_try", ("method", method)] += 1
         except backend.LoginError as e:
-            logger.info("[%s] Login Error: %s", method, smart_text(e))
+            logger.info("[%s] Login Error: %s", method, e)
             metrics["auth_fail", ("method", method)] += 1
-            le = smart_text(e)
+            login_error = str(e)
             continue
         logger.info("Authorized credentials %s as user %s", c, user)
         metrics["auth_success", ("method", method)] += 1
         return user
-    logger.error("Login failed for %s: %s", c, le)
+    logger.error("Login failed for %s: %s", c, login_error)
     return None
 
 
-def register_last_login(user: str):
+def register_last_login(user: str) -> None:
+    """
+    Register last login.
+
+    Args:
+        user: User name.
+    """
     if config.login.register_last_login:
         u = User.get_by_username(user)
         if u:
@@ -81,11 +90,15 @@ def register_last_login(user: str):
 
 def get_jwt_token(user: str, expire: Optional[int] = None, audience: Optional[str] = None) -> str:
     """
-    Build JWT token for given user
-    :param user: User name
-    :param expire: Expiration time in seconds
-    :param aud: Token audience
-    :return:
+    Build JWT token for given user.
+
+    Args:
+        user: User name
+        expire: Expiration time in seconds
+        aud: Token audience
+
+    Returns:
+        JWT token as text.
     """
     expire = expire or config.login.session_ttl
     exp = datetime.datetime.utcnow() + datetime.timedelta(seconds=expire)
@@ -101,9 +114,16 @@ def get_jwt_token(user: str, expire: Optional[int] = None, audience: Optional[st
 def get_user_from_jwt(token: str, audience: Optional[str] = None) -> str:
     """
     Check JWT token and return user.
-    Raise ValueError if failed
-    :param token:
-    :return:
+
+    Args:
+        token: Token to check.
+        audiensce: Expected audience.
+
+    Returns:
+        Username, if authenticated.
+
+    Raises:
+        ValueError: if malformed or authetication failed.
     """
     try:
         token = jwt.decode(
@@ -123,13 +143,19 @@ def get_user_from_jwt(token: str, audience: Optional[str] = None) -> str:
         raise ValueError(str(e))
 
 
-def get_exp_from_jwt(token: str, audience: Optional[str] = None) -> datetime:
+def get_exp_from_jwt(token: str, audience: Optional[str] = None) -> int:
     """
-    Check JWT token and return exp.
-    Raise ValueError if failed
-    :param token:
-    :param audience:
-    :return:
+    Check JWT token and return expiration timestamp.
+
+    Args:
+        token: Token to check.
+        audiensce: Expected audience.
+
+    Returns:
+        Expiration timestamp.
+
+    Raises:
+        ValueError: if malformed or authentication failed.
     """
     try:
         token = jwt.decode(
@@ -160,6 +186,8 @@ def set_jwt_cookie(response: Response, user: str, /, expire: int | None = None) 
         key=config.login.jwt_cookie_name,
         value=get_jwt_token(user, audience="auth", expire=expire),
         expires=expire,
+        secure=True,
+        httponly=True,
     )
 
 
