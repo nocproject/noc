@@ -64,7 +64,8 @@ ENV\
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
     PROJ_DIR=/usr
-COPY pyproject.toml /tmp/
+COPY . /workspaces/noc/
+WORKDIR /workspaces/noc/
 RUN \
     set -x \
     && apt-get update\
@@ -78,9 +79,9 @@ RUN \
     git \
     && (curl -fsSL https://deb.nodesource.com/setup_22.x | bash -)\
     && apt-get install -y --no-install-recommends nodejs\
+    && (cd ui && npm install) \
     && pip3 install --upgrade pip \
-    && (cd /tmp/ && pip install -e .[bh,activator,classifier,cache-redis,dev,docs,lint,node,test,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]) \
-    && npm install -g eslint@8\
+    && pip install -e .[bh,activator,classifier,cache-redis,dev,docs,lint,node,test,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping] \
     && pip cache purge \
     && rm -rf /var/lib/apt/lists/* /tmp/*.whl
 #
