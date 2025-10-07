@@ -42,6 +42,7 @@ class ProxyNode(object):
 
 
 HTTP_METHODS = {"GET", "POST", "PUT", "DELETE"}
+RX_SANITIZE_METHOD = re.compile("[^A-Z]+")
 
 
 class URL(object):
@@ -152,6 +153,11 @@ class Site(object):
 
         return wrap
 
+    @staticmethod
+    def sanitize_method(method: str) -> str:
+        """Sanitize HTTP request method."""
+        return RX_SANITIZE_METHOD.sub("", method.upper())
+
     def site_view(self, app, view_map):
         """
         Decorator for application view
@@ -171,7 +177,9 @@ class Site(object):
                 v = view_map[request.method]
             except KeyError:
                 logger.info("No handler for '%s' method", request.method)
-                return HttpResponseNotFound("No handler for '%s' method" % request.method)
+                return HttpResponseNotFound(
+                    f"No handler for '{self.sanitize_method(request.method)}' method"
+                )
             if not getattr(v.access, "permit", False) and (
                 not request.user or not v.access.check(app, request.user)
             ):
