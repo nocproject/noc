@@ -100,11 +100,10 @@ Ext.define("NOC.core.mixins.Export", {
     var records, columns;
 
     try{
-      if('NOC.core.ModelStore' === Ext.getClassName(grid.getStore())){
-        var renderPlugin = grid.findPlugin('bufferedrenderer'),
-          first = renderPlugin.getFirstVisibleRowIndex(),
+      var renderPlugin = grid.findPlugin("bufferedrenderer");
+      if(!Ext.isEmpty(renderPlugin)){
+        let first = renderPlugin.getFirstVisibleRowIndex(),
           last = renderPlugin.getLastVisibleRowIndex();
-
         records = grid.getStore().getRange(first, last);
       } else{
         records = grid.getStore().getRange(0);
