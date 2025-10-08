@@ -29,12 +29,11 @@ from noc.main.models.doccategory import category
 from noc.core.prettyjson import to_json
 from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
-from noc.core.models.valuetype import ValueType
+from noc.core.models.valuetype import ValueType, ARRAY_ANNEX
 
 id_lock = Lock()
 
 TCapsValue = Union[bool, str, int, float, List[Any]]
-SPLITTER_MULTI = ";"
 
 
 @on_delete_check(
@@ -124,10 +123,18 @@ class Capability(Document):
         return os.path.join(*p) + ".json"
 
     def clean_value(self, v: TCapsValue) -> TCapsValue:
+        """
+        Clean caps value. Split to normalize for clean input value?
+        For convert array (multiple) string, used ANNEX
+        """
+        if isinstance(v, str) and v.startswith(ARRAY_ANNEX):
+            v = ValueType.convert_to_array(v[len(ARRAY_ANNEX) :])
         if self.multi and isinstance(v, list):
             return [self.type.clean_value(x) for x in v]
         if self.multi:
-            return [self.type.clean_value(x) for x in v.split(SPLITTER_MULTI)]
+            return [self.type.clean_value(x) for x in ValueType.convert_to_array(str(v))]
+        # if self.multi and not isinstance(v, str):
+        #    raise ValueError("Value not convert to multiple")
         if not self.type:
             raise ValueError(f"Invalid type: {self.type}")
         return self.type.clean_value(v)
