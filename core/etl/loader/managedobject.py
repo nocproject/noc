@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Managed Object loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from django.db.models.base import Model
 # NOC modules
 from .base import BaseLoader
 from ..models.managedobject import ManagedObject
-from noc.core.purgatorium import register
+from noc.core.purgatorium import register, CapsItem
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject as ManagedObjectModel
 from noc.sa.models.profile import Profile
@@ -117,7 +117,7 @@ class ManagedObjectLoader(BaseLoader):
         service_groups = vv.pop("static_service_groups", None)
         client_groups = vv.pop("static_client_groups", None)
         for k, v in vv.items():
-            if not v or k == "pool":
+            if not v or k in {"pool", "capabilities"}:
                 continue
             # elif isinstance(v, list):
             #     v = ";".join(v)
@@ -137,6 +137,7 @@ class ManagedObjectLoader(BaseLoader):
             remote_id=remote_id,
             # checks=item.checks,
             labels=labels or [],
+            capabilities=[CapsItem(name=c.name, value=c.value) for c in item.capabilities or []],
             service_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in service_groups or []],
             client_groups=[ResourceGroup.get_by_id(sg).bi_id for sg in client_groups or []],
             **data,

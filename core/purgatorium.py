@@ -10,7 +10,7 @@ import datetime
 import socket
 import struct
 from collections import defaultdict
-from typing import Optional, Dict, List, Literal, Iterable, Tuple
+from typing import Optional, Dict, List, Literal, Iterable, Tuple, Any
 from dataclasses import dataclass
 
 # Third-party modules
@@ -46,7 +46,7 @@ SELECT
     groupArray(source) as sources,
     groupArray((source, remote_system,
         map('hostname', hostname, 'description', description, 'uptime', toString(uptime), 'remote_id', remote_id, 'ts', toString(max_ts)),
-         data, labels, service_groups, clients_groups, is_delete)) as all_data,
+         data, labels, caps, service_groups, clients_groups, is_delete)) as all_data,
     groupUniqArrayArray(checks) as all_checks,
     groupUniqArrayArray(labels) as all_labels,
     groupUniqArray(router_id) as router_ids,
@@ -56,9 +56,10 @@ FROM (
      argMax(is_delete, ts) as is_delete,
      argMax(hostname, ts) as hostname, argMax(description, ts) as description,
      argMax(uptime, ts) as uptime, argMax(remote_id, ts) as remote_id, argMax(checks, ts) as checks,
-     argMax(data, ts) as data, argMax(labels, ts) as labels,
+     argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(caps, ts) as caps,
      argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
-     argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts
+     argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts,
+     argMax(refs, ts) as refs
     FROM noc.purgatorium
     WHERE date >= %s
     GROUP BY ip, pool, remote_system, source
@@ -82,6 +83,7 @@ class PurgatoriumData(object):
     service_groups: Optional[List[ObjectId]] = None
     client_groups: Optional[List[ObjectId]] = None
     data: Optional[Dict[str, str]] = None
+    caps: Optional[Dict[str, str]] = None
     event: Optional[str] = None  # Workflow Event
     is_delete: bool = False  # Delete Flag
 
@@ -118,6 +120,19 @@ class ProtocolCheckResult:
     error: Optional[str] = None  # Error message
 
 
+@dataclass
+class CapsItem:
+    name: str
+    value: Any
+
+    @property
+    def encode_value(self) -> str:
+        """"""
+        if isinstance(self.value, list):
+            return f"**{' | '.join(str(x) for x in self.value)}"
+        return str(self.value)
+
+
 def register(
     address: str,  # 0.0.0.0
     pool: int,
@@ -136,6 +151,7 @@ def register(
     template: Optional[str] = None,
     is_delete: bool = False,
     checks: Optional[List[ProtocolCheckResult]] = None,
+    capabilities: Optional[List[CapsItem]] = None,
     **kwargs,
 ):
     """
@@ -158,6 +174,7 @@ def register(
         template: Using template (default template)
         is_delete: Flag that host deleted
         checks: List Checks, that running on discovery
+        capabilities: Capabilities
         kwargs: Some data about Host (used when received from RemoteSystem)
 
     """
@@ -185,6 +202,9 @@ def register(
         raise ValueError("Source Neighbors required Border must be set")
     elif source == "neighbors":
         data["border"] = border
+    caps = {}
+    for c in capabilities or []:
+        caps[c.name] = c.encode_value
     if kwargs:
         data["data"] = {k: str(v) for k, v in kwargs.items()}
     if chassis_id:
@@ -203,6 +223,8 @@ def register(
         data["clients_groups"] = [int(rg) for rg in clients_groups]
     if router_id and router_id != address:
         data["router_id"] = struct.unpack("!I", socket.inet_aton(router_id))[0]
+    if caps:
+        data["caps"] = caps
     svc.publish(orjson.dumps(data), f"ch.{PURGATORIUM_TABLE}")
 
 
@@ -226,10 +248,11 @@ def iter_discovered_object(
     for num, row in enumerate(r.splitlines(), start=1):
         row = orjson.loads(row)
         data = defaultdict(dict)
+        caps = defaultdict(dict)
         d_labels = defaultdict(list)
         groups = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels, s_groups, c_groups, is_delete in row["all_data"]:
+        for source, rs, d1, d2, labels, caps, s_groups, c_groups, is_delete in row["all_data"]:
             # if is_delete:
             #     logger.debug("[%s] Detect deleted flag", row["address"])
             if not int(d1["uptime"]):
@@ -246,6 +269,7 @@ def iter_discovered_object(
             data[(source, rs)].update(d1 | d2)
             data[(source, rs)]["is_delete"] = bool(is_delete)
             d_labels[(source, rs)] = labels
+            caps[(source, rs)] = caps
             for rg in s_groups or []:
                 rg = ResourceGroup.get_by_bi_id(rg)
                 if rg:
@@ -260,6 +284,7 @@ def iter_discovered_object(
                 ts=datetime.datetime.fromisoformat(d.pop("ts")),
                 remote_system=rs,
                 data=d,
+                caps=caps.get((source, rs)) or None,
                 labels=d_labels.get((source, rs)) or [],
                 service_groups=groups.get((source, rs, "s")) or [],
                 client_groups=groups.get((source, rs, "c")) or [],
