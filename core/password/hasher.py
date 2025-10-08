@@ -22,6 +22,12 @@ from secrets import compare_digest, choice
 SALT_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 UNUSABLE_PASSWORD = "!unusable"
 
+# Insecure hashes are used to authenticate users with old passwords
+# to force them change password, which be encrypted by strong hash.
+# So using of them cannot be considered an security issue.
+md5 = hashlib.md5  # codeql [py/weak-sensitive-data-hashing]
+sha1 = hashlib.sha1  # codeql [py/weak-sensitive-data-hashing]
+
 
 def check_password(password: str, encoded: str) -> bool:
     """
@@ -167,8 +173,7 @@ class UnsaltedMd5Hasher(BaseHasher):
     def verify(cls, password: str, encoded: str) -> bool:
         if encoded.startswith("md5$$"):
             encoded = encoded[5:]
-        # codeql[py/weak-sensitive-data-hashing]
-        h = hashlib.md5(password.encode()).hexdigest()
+        h = md5(password.encode()).hexdigest()
         return cls.compare(h, encoded)
 
 
@@ -190,8 +195,7 @@ class Md5Hasher(BaseHasher):
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
         salt, res_hash = encoded[4:].split("$", 1)
-        # codeql[py/weak-sensitive-data-hashing]
-        h = hashlib.md5((salt + password).encode()).hexdigest()
+        h = md5((salt + password).encode()).hexdigest()
         return cls.compare(h, res_hash)
 
 
@@ -214,8 +218,7 @@ class UnsaltedSha1Hasher(BaseHasher):
 
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
-        # codeql[py/weak-sensitive-data-hashing]
-        h = hashlib.sha1(password.encode()).hexdigest()
+        h = sha1(password.encode()).hexdigest()
         return cls.compare(h, encoded[6:])
 
 
@@ -237,8 +240,7 @@ class Sha1Hasher(BaseHasher):
     @classmethod
     def verify(cls, password: str, encoded: str) -> bool:
         salt, res_hash = encoded[5:].split("$", 1)
-        # codeql[py/weak-sensitive-data-hashing]
-        h = hashlib.sha1((salt + password).encode()).hexdigest()
+        h = sha1((salt + password).encode()).hexdigest()
         return cls.compare(h, res_hash)
 
 
