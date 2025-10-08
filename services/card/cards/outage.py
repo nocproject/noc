@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Total Outage card handler
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -74,8 +74,8 @@ class OutageCard(BaseCard):
             "segment_path",
             "severity",
             "timestamp",
-            "escalation_tt",
             "managed_object",
+            "log",
         ).as_pymongo():
             if not alarm["total_services"] and not alarm["total_subscribers"]:
                 continue
@@ -93,6 +93,11 @@ class OutageCard(BaseCard):
                 segments.add(sp_id)
             subscribers = {ss["profile"]: ss["summary"] for ss in alarm["total_subscribers"]}
             services = {ss["profile"]: ss["summary"] for ss in alarm["total_services"]}
+            escalation_tt = None
+            for ll in alarm["log"]:
+                if ll.get("tt_id"):
+                    escalation_tt = ll["tt_id"]
+                    break
             ct["objects"][alarm["_id"]] = {
                 "object": alarm["managed_object"],
                 # "object": None,
@@ -100,7 +105,7 @@ class OutageCard(BaseCard):
                 "severity": alarm["severity"],
                 "timestamp": alarm["timestamp"],
                 "duration": now - alarm["timestamp"],
-                "escalation_tt": alarm.get("escalation_tt", ""),
+                "escalation_tt": escalation_tt or "",
                 "subscribers": subscribers,
                 "services": services,
                 "summary": {"subscriber": subscribers, "service": services},
