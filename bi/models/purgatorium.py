@@ -51,10 +51,12 @@ class Purgatorium(Model):
     description = StringField(description="Description")
     chassis_id = StringField(description="Chassis ID")
     hostname = StringField(description="Hostname Discovery")
+    refs = ArrayField(StringField(), description=_("Unique reference for deduplicate records"))
     uptime = UInt64Field(description="Host Uptime")
     border = ReferenceField(ManagedObject, description=_("Object Name"))
     # Set for records on RemoteSystem
     data = MapField(StringField(), description=_("Vars"))
+    caps = MapField(StringField(), description=_("Capabilities"))
     # Json Field  {check: str PING, avail: True/False, access: None, error: None, port}
     checks = ArrayField(StringField())
     success_checks = MaterializedField(

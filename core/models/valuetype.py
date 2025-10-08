@@ -159,7 +159,7 @@ class ValueType(enum.Enum):
         return str(value)
 
     @staticmethod
-    def decode_serial(value):
+    def decode_serial_num(value):
         """Check"""
         return str(value.strip())
 
