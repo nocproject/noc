@@ -308,7 +308,7 @@ def update_caps(
                 "[%s] Not changing capability %s: Already set with source '%s'",
                 o_label,
                 ci.name,
-                ci.scope,
+                ci.source,
             )
         elif ci.name in caps:
             value = ci.capability.clean_value(caps[ci.name])
@@ -331,10 +331,10 @@ def update_caps(
                 changed |= True
             else:
                 logger.debug(
-                    "[%s] Not changing capability %s: Already set with source '%s'",
+                    "[%s] Caps value is same for '%s': Set with source '%s'",
                     o_label,
                     ci.name,
-                    ci.scope,
+                    ci.source,
                 )
         elif ci.name not in caps and scope == ci.scope:
             logger.info("[%s] Removing capability %s", o_label, ci)
