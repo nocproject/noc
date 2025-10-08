@@ -7,7 +7,7 @@
 
 # Python modules
 import enum
-from typing import Optional, Any
+from typing import Optional, Any, List
 
 # Third-party modules
 from pydantic import BaseModel, HttpUrl, ValidationError
@@ -22,11 +22,14 @@ from noc.sa.interfaces.base import (
     IPv6PrefixParameter,
     MACAddressParameter,
     OIDParameter,
+    VLANIDParameter,
 )
 from noc.core.validators import is_fqdn
 
 BOOL_VALUES = frozenset(("t", "true", "yes"))
 REFERENCE_SCOPE_SPLITTER = "::"
+ARRAY_ANNEX = "**"
+ARRAY_DELIMITER = " | "
 
 
 class HTTPURLModel(BaseModel):
@@ -57,6 +60,9 @@ class ValueType(enum.Enum):
     IFACE_NAME = "interface_name"
     SNMP_OID = "oid"
     HTTP_URL = "http_url"
+    SERIAL_NUM = "serial_num"
+    VLAN = "vlan"
+    IP_VRF = "vrf"
 
     def get_default(self, value):
         match self.value:
@@ -144,6 +150,29 @@ class ValueType(enum.Enum):
     def decode_interface_name(value):
         return value
 
+    @staticmethod
+    def decode_vlan(value):
+        return VLANIDParameter().clean(value)
+
+    @staticmethod
+    def decode_vrf(value):
+        return str(value)
+
+    @staticmethod
+    def decode_serial(value):
+        """Check"""
+        return str(value.strip())
+
+    @staticmethod
+    def convert_from_array(value: Any) -> str:
+        """Convert from strint to array"""
+        return f"{ARRAY_ANNEX}{ARRAY_DELIMITER.join([str(v) for v in value])}"
+
+    @staticmethod
+    def convert_to_array(value: str) -> List[str]:
+        """Convert array to string"""
+        return [v.strip() for v in value.split(ARRAY_DELIMITER)]
+
     def clean_value(self, value, errors: str = "strict"):
         decoder = getattr(self, f"decode_{self.value}")
         try:
@@ -161,6 +190,8 @@ class ValueType(enum.Enum):
             case ValueType.HTTP_URL:
                 scope = "url"
                 value = str(HTTPURLModel(url=value).url)
+            case ValueType.SERIAL_NUM:
+                scope = "sn"
         if scope:
             return f"{scope}{REFERENCE_SCOPE_SPLITTER}{value}"
         return None
