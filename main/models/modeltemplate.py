@@ -81,6 +81,11 @@ class DataItem(BaseModel):
     remote_system: Optional[str] = None  # Reference to Resource Group
 
 
+class CapsItem(BaseModel):
+    capabilities: Dict[str, Any]
+    remote_system: Optional[str] = None  # Scope
+
+
 class ResourceItem(BaseModel):
     """
     Attributes:
@@ -97,6 +102,7 @@ class ResourceItem(BaseModel):
     # Remote System map
     mappings: Optional[Dict[str, str]] = None
     # Caps
+    caps: Optional[List[CapsItem]] = None
     user: Optional[Any] = None  # User for changes
     # Send workflow event
     event: Optional[str] = None
@@ -131,6 +137,10 @@ class ResourceItem(BaseModel):
             if i1 > i2:
                 data[d.name] = d
         self.data = list(data.values())
+        if not self.caps:
+            self.caps = []
+        if ri.caps:
+            self.caps += ri.caps
 
     def has_rs_data(self) -> bool:
         """Check remote system data"""
@@ -391,7 +401,7 @@ class ModelTemplate(Document):
                 continue
             value = data.pop(p.name)
             if p.set_capability:
-                caps[str(p.set_capability.id)] = p.set_capability.clean_value(value)
+                caps[str(p.set_capability.name)] = p.set_capability.clean_value(value)
             r[p.param or p.name] = value
         r["labels"] = []
         # Labels
@@ -426,6 +436,10 @@ class ModelTemplate(Document):
             r["state"] = self.default_state
         if self.sticky:
             r["template"] = self
+        if caps and item.caps:
+            item.caps.append(CapsItem(capabilities=caps))
+        elif caps:
+            item.caps = [CapsItem(capabilities=caps)]
         if item.mappings:
             r["mappings"] = item.mappings
         return r

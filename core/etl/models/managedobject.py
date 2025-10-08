@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Union, Annotated
+from typing import Optional, List, Annotated
 from enum import Enum
 from pydantic import IPvAnyAddress, field_validator
 
@@ -15,8 +15,8 @@ from pydantic import IPvAnyAddress, field_validator
 from pydantic import ConfigDict, StringConstraints
 
 # NOC modules
-from .base import BaseModel, _BaseModel
-from .typing import Reference, MappingItem
+from .base import BaseModel
+from .typing import Reference, MappingItem, CapsItem
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .object import Object
@@ -36,11 +36,6 @@ class SourceType(str, Enum):
     # Loopback address
     l = "l"  # noqa
     a = "a"  # All interface addresses
-
-
-class CapsItem(_BaseModel):
-    name: str
-    value: Union[str, bool, int]
 
 
 DomainName = Annotated[

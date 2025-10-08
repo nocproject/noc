@@ -365,6 +365,8 @@ class BaseLoader(object):
             if rn > 0 and rn % self.REPORT_INTERVAL == 0:
                 self.logger.info("   ... %d records", rn)
         # Add deferred records
+        if len(deferred_add) or len(deferred_change):
+            self.logger.info("Processed deferred: %s/%s", len(deferred_add), len(deferred_change))
         while len(deferred_add):
             nd = []
             for row in deferred_add:
@@ -800,7 +802,7 @@ class BaseLoader(object):
                 value = mappings[value]
             except KeyError:
                 self.logger.warning("Deferred. Unknown map value: %s", value)
-                raise self.Deferred
+                raise self.Deferred()
         return value
 
     @classmethod

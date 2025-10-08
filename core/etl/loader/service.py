@@ -26,7 +26,7 @@ class ServiceLoader(BaseLoader):
     model = ServiceModel
     data_model = Service
 
-    discard_deferred = True
+    discard_deferred = False
     workflow_state_sync = True
     model_mappings = {"profile": ServiceProfile}
 
