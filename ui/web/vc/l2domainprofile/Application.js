@@ -67,7 +67,7 @@ Ext.define("NOC.vc.l2domainprofile.Application", {
                     allowBlank: true
                 },
                 {
-                    name: "type",
+                    name: "vlan_discovery_policy",
                     xtype: "combobox",
                     fieldLabel: __("VLAN Discovery Policy"),
                     allowBlank: false,
