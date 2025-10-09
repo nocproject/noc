@@ -252,7 +252,7 @@ def iter_discovered_object(
         d_labels = defaultdict(list)
         groups = defaultdict(list)
         # hostnames, descriptions, uptimes, all_data,
-        for source, rs, d1, d2, labels, caps, s_groups, c_groups, is_delete in row["all_data"]:
+        for source, rs, d1, d2, labels, d_caps, s_groups, c_groups, is_delete in row["all_data"]:
             # if is_delete:
             #     logger.debug("[%s] Detect deleted flag", row["address"])
             if not int(d1["uptime"]):
@@ -269,7 +269,7 @@ def iter_discovered_object(
             data[(source, rs)].update(d1 | d2)
             data[(source, rs)]["is_delete"] = bool(is_delete)
             d_labels[(source, rs)] = labels
-            caps[(source, rs)] = caps
+            caps[(source, rs)] = d_caps
             for rg in s_groups or []:
                 rg = ResourceGroup.get_by_bi_id(rg)
                 if rg:
