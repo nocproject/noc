@@ -500,8 +500,8 @@ class Service(Document):
                     # Outage
                     "start": ots.isoformat(sep=" "),
                     "stop": self.oper_status_change.isoformat(sep=" "),
-                    "from_status": {"id": os, "name": os.name},
-                    "to_status": self.oper_status,
+                    "from_status": os.value,
+                    "to_status": self.oper_status.value,
                     "in_maintenance": int(self.in_maintenance),
                 }
             ],
@@ -613,7 +613,7 @@ class Service(Document):
                 "$op": "disposition",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "name": self.label,
-                "alarm_class": self.profile.raise_alarm_class,
+                "alarm_class": self.profile.raise_alarm_class.name,
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,
