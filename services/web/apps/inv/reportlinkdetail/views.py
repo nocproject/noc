@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.reportobjectdetail application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -228,21 +228,14 @@ class ReportLinkDetailApplication(ExtApplication):
         # self.logger.info("---------------------------------")
         # print("-----------%s------------%s" % (administrative_domain, columns))
 
-        p = Pool.get_by_name(pool or "default")
+        pool = Pool.get_by_name(pool)
         mos = ManagedObject.objects.filter()
-        if (
-            request.user.is_superuser
-            and not administrative_domain
-            and not resource_group
-            and not segment
-        ):
-            mos = ManagedObject.objects.filter(pool=p)
         if ids:
             mos = ManagedObject.objects.filter(id__in=[ids])
         if is_managed is not None:
             mos = ManagedObject.objects.filter(is_managed=is_managed)
         if pool:
-            mos = mos.filter(pool=p)
+            mos = mos.filter(pool=pool)
         if not request.user.is_superuser:
             mos = mos.filter(administrative_domain__in=UserAccess.get_domains(request.user))
         if administrative_domain:
