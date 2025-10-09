@@ -68,6 +68,13 @@ def test_update_caps(caps, update_caps, expected, object_caps):
     assert object_caps.get_caps() == expected
 
 
+def test_update_caps_scopes(object_caps):
+    object_caps.update_caps({"Cisco | IP | SLA | Probes": 1}, source="manual", scope="scope1")
+    object_caps.update_caps({"Cisco | IP | SLA | Probes": 22}, source="manual", scope="scope2")
+    assert len(list(object_caps.iter_caps())) == 2
+    assert object_caps.get_caps() == {"Cisco | IP | SLA | Probes": 1}
+
+
 def test_set_caps(object_caps):
     for _ in range(1, 4):
         object_caps.set_caps("DB | Interfaces", 1)
