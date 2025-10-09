@@ -31,6 +31,7 @@ class EnsureGroupRequest(BaseModel):
     op: Literal["ensure_group"] = Field(None, alias="$op")
     reference: str
     g_type: GroupType = GroupType.GROUP
+    severity: Optional[int] = None
     name: Optional[str] = None
     alarm_class: Optional[str] = None
     labels: Optional[List[str]] = None
