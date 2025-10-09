@@ -177,6 +177,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
         super().__init__(system)
         self.links = []
         self.pool: str = self.config.get("POOL") or "default"
+        self.fm_pool: str = self.config.get("FM_POOL")
 
     def get_mappings(self, obj: Union[vim.VirtualMachine, vim.HostSystem]) -> List[MappingItem]:
         """Additional mappings"""
@@ -229,16 +230,20 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
         )
         vcenter_uuid = content.about.instanceUuid
         names = set()
+        address = None
+        if is_ipv4(self.url):
+            address = self.url
         yield ManagedObject(
             id=vcenter_uuid,
             name=self.url,
             profile="VMWare.vCenter",
-            address=content.sessionManager.currentSession.ipAddress,
+            address=address,
             fqdn=f"{self.url}." if is_fqdn(self.url) else None,
             auth_profile=ETLMapping(value="default.vcenter", scope="auth_profile"),
             administrative_domain=ETLMapping(value="default", scope="adm_domain"),
             object_profile=ETLMapping(value="host.vcenter.default", scope="objectprofile"),
             pool=self.pool,
+            fm_pool=self.fm_pool,
             segment=ETLMapping(value="ALL", scope="segment"),
             scheme="4",
         )
@@ -256,6 +261,9 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 )
                 continue
             mappings = self.get_mappings(h)
+            # s/n h.summary.hardware.otherIdentifyingInfo, #key = 'SerialNumberTag'
+            # h.summary.hardware.otherIdentifyingInfo[3].identifierType.key
+            # identifierValue
             yield ManagedObject(
                 id=h._moId,
                 name=name,
@@ -266,6 +274,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 administrative_domain=self.get_administrative_domain(h),
                 object_profile=ETLMapping(value="host.hypervisor.default", scope="objectprofile"),
                 pool=self.pool,
+                fm_pool=self.fm_pool,
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
@@ -315,6 +324,7 @@ class VCenterManagedObjectExtractor(VCenterExtractor):
                 administrative_domain=self.get_administrative_domain(vm),
                 object_profile=op,
                 pool=self.pool,
+                fm_pool=self.fm_pool,
                 controller=vcenter_uuid,
                 segment=ETLMapping(value="ALL", scope="segment"),
                 scheme="4",
