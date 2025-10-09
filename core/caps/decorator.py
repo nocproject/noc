@@ -293,7 +293,8 @@ def update_caps(
     changed = False
     changed_fields = []
     for ci in self.iter_caps():
-        seen.add(ci.name)
+        if not scope or (scope and scope == ci.scope):
+            seen.add(ci.name)
         if scope and scope != ci.scope:
             # For Separate scope - skipping update (ETL)
             logger.debug(
