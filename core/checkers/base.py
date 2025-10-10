@@ -20,6 +20,7 @@ T = TypeVar("T")
 
 TCP_CHECK = "TCP"
 FAIL_CHECK = "FAIL"
+NODATA = "NODATA"
 CHECKS = []
 
 
