@@ -230,19 +230,13 @@ class MODiscoveryJob(PeriodicJob):
         :param problems:
         :return:
         """
-        discovery_diagnostics = self.load_diagnostic(
-            is_box=self.is_box, is_periodic=self.is_periodic
-        )
         self.logger.debug("Updating diagnostics statuses: %s", problems)
-        if not discovery_diagnostics:
-            self.logger.info("Discovered diagnostics not found")
-            return
         now = datetime.datetime.now()
         processed = set()
         # Processed failed diagnostics
         with DiagnosticHub(self.object, sync_alarm=self.can_update_alarms()) as d:
             for p in problems:
-                if p.diagnostic and p.diagnostic in discovery_diagnostics:
+                if p.diagnostic:
                     d.set_state(
                         p.diagnostic,
                         state=DiagnosticState.failed,
@@ -708,14 +702,14 @@ class DiscoveryCheck(object):
     ):
         """
         Set discovery problem
-        :param alarm_class: Alarm class instance or name
-        :param path: Additional path
-        :param message: Text message
-        :param fatal: True if problem is fatal and all following checks
+        Args:
+            alarm_class: Alarm class instance or name
+            path: Additional path
+            message: Text message
+            fatal: True if problem is fatal and all following checks
             must be disabled
-        :param diagnostic: Diagnostic name affected by problem
-        :param kwargs: Dict containing optional variables
-        :return:
+            diagnostic: Diagnostic name affected by problem
+            kwargs: Dict containing optional variables
         """
         self.logger.info("Set path: %s", path)
         self.job.set_problem(

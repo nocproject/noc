@@ -348,6 +348,15 @@ class DiagnosticHub(object):
             return False
         return d.is_active
 
+    def has_failed_diagnostic(self, name: str) -> bool:
+        """
+        Check diagnostic has worked: Enabled or Failed state
+        """
+        d = self.get(name)
+        if d is None:
+            return False
+        return d.is_failed
+
     def get_object_diagnostic_value(self, name: str) -> Optional[DiagnosticValue]:
         """
         Get DiagnosticItem from Object
@@ -381,6 +390,8 @@ class DiagnosticHub(object):
 
     def __load_checks(self):
         """Loading all diagnostic checks"""
+        if self.__diagnostics is None:
+            self.__load_diagnostics()
         for d in self.__diagnostics:
             list(self.iter_checks(d))
 
