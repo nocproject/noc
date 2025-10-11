@@ -219,9 +219,16 @@ class ActiveAlarm(Document):
         return DEFAULT_TTSYSTEM_SHARD
 
     @property
-    def severity_policy(self):
+    def severity_policy(self) -> Optional[str]:
         """Getting severity policy for alarm"""
-        return
+        if self.alarm_class.affected_service:
+            policy = "AB"
+        else:
+            policy = None
+        for w in self.watchers:
+            if w.effect == Effect.SEVERITY:
+                policy = w.args.get("policy")
+        return policy
 
     @property
     def clear_timestamp(self) -> Optional[datetime.datetime]:
@@ -826,6 +833,7 @@ class ActiveAlarm(Document):
         # Getting summary
         summary = summary or self.get_summary()
         effective_severity = None
+        policy = policy or self.severity_policy
         match policy:
             case "AB":
                 effective_severity = ServiceSummary.get_severity(summary)
