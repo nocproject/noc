@@ -1031,6 +1031,22 @@ class Service(Document):
             "mappings": self.get_mappings(),
         }
 
+    def get_matcher_ctx(self):
+        """"""
+        if not self.state:
+            state = self.profile.workflow.get_default_state()
+        else:
+            state = self.state
+        return {
+            "name": self.label,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.effective_service_groups),
+            "remote_system": str(self.remote_system.id) if self.remote_system else None,
+            "caps": self.get_caps(),
+            "state": str(state),
+        }
+
 
 def refresh_service_status(svc_ids: List[str]):
     logger.info("Refresh service status: %s", svc_ids)

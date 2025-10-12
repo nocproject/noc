@@ -69,6 +69,7 @@ class ActionParameter(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("sa.ActionCommands", "action"),
+        ("sa.ReactionRule", "action_command"),
         ("fm.DispositionRule", "object_actions.action"),
         ("fm.AlarmDiagnosticConfig", "on_clear_action"),
         ("fm.AlarmDiagnosticConfig", "periodic_action"),

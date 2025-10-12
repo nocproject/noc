@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Any, Literal, List, Dict
+from typing import Optional, Any, Literal, List, Dict, Tuple
 from dataclasses import dataclass, field, replace
 
 
@@ -26,6 +26,8 @@ class ChangeItem(object):
     item_id: str
     changed_fields: Optional[List[ChangeField]] = field(default=None, compare=False)
     changed_caps: Optional[List[str]] = field(default=None, compare=False)
+    domains: Optional[List[Tuple[str, str]]] = None  # model, id, op (in/out)
+    # datastreams: Optional[List[Tuple[str, str]]] = None
     # groups
     # labels
     ts: Optional[float] = field(default=None, compare=False)
@@ -89,6 +91,11 @@ class ChangeItem(object):
         from noc.models import get_object
 
         return get_object(self.model_id, self.item_id)
+
+    @property
+    def key(self) -> int:
+        """Calculate sharding key"""
+        return hash(self.item_id)
 
     def is_change_field(self, name: str) -> bool:
         """Check field is changed"""

@@ -86,7 +86,7 @@ class ActionType(enum.Enum):
         """Callable for execute action"""
         match self:
             case self.ACTION_COMMAND:
-                return None
+                return partial(self.run_action_command, action_name=key)
             case self.AUDIT_COMMAND:
                 return None
             case self.RUN_DISCOVERY:
@@ -179,6 +179,7 @@ class ActionType(enum.Enum):
         **kwargs,
     ):
         """Run Action Command on ManagedObject Action Proxy"""
+        # Map vars
         scr = getattr(obj.actions, action_name)
         scr(**kwargs)
 
