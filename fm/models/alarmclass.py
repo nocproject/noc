@@ -130,6 +130,7 @@ class AlarmClassVar(EmbeddedDocument):
         ("sa.ObjectDiagnosticConfig", "alarm_class"),
         ("sa.ServiceProfile", "raise_alarm_class"),
         ("sa.ServiceProfile", "diagnostic_status.alarm_class"),
+        ("sa.ReactionRule", "alarm_disposition"),
         ("fm.EventClass", "disposition.alarm_class"),
         ("fm.AlarmRule", "groups.alarm_class"),
         ("fm.AlarmRule", "match.alarm_class"),
