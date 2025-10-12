@@ -537,6 +537,7 @@ class RedPandaClient(object):
             newest_offset = p_meta.newest_offset or 0
             # Fetch cursor
             tp = TopicPartition(topic=from_topic, partition=from_p)
+            consumer.assign([tp, to_p])
             r = await consumer.seek_to_committed(tp)
             if r[tp] is not None:
                 logger.info("Resuming from offset %d", r[tp])

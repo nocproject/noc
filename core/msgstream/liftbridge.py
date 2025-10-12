@@ -197,14 +197,17 @@ class LiftBridgeClient(GugoLiftbridgeClient):
             p_meta = await self.fetch_partition_metadata(from_topic, from_p)
             newest_offset = p_meta.newest_offset or 0
             # Fetch cursor
-            current_offset = (
-                await self.fetch_cursor(
-                    stream=from_topic,
-                    partition=from_p,
-                    cursor_id=s.cursor_name,
+            if s.config.is_temp:
+                current_offset = 0
+            else:
+                current_offset = (
+                    await self.fetch_cursor(
+                        stream=from_topic,
+                        partition=from_p,
+                        cursor_id=s.cursor_name,
+                    )
+                    or 0
                 )
-                or 0
-            )
             # For -1 as nothing messages
             current_offset = max(0, current_offset)
             current_offset = min(current_offset, newest_offset)
