@@ -12,6 +12,8 @@ from typing import Optional, List
 # NOC modules
 from noc.config import config
 
+TEMPORARY_STREAM_PREFIX = "__tmp"
+
 
 @dataclass(frozen=True)
 class StreamConfig(object):
@@ -26,6 +28,10 @@ class StreamConfig(object):
     auto_pause_time: bool = False
     auto_pause_disable: bool = False
     replication_factor: Optional[int] = None
+
+    @property
+    def is_temp(self) -> bool:
+        return self.name.startswith(TEMPORARY_STREAM_PREFIX)
 
 
 @dataclass(frozen=True)
@@ -136,6 +142,9 @@ def get_stream(name: str) -> StreamItem:
     cfg_name, *shard = name.split(".", 1)
     shard = shard[0] if shard else None
     cfg = [cfg for cfg in STREAMS if cfg.name == cfg_name]
+    if cfg_name.startswith(TEMPORARY_STREAM_PREFIX):
+        # Temp Stream
+        return StreamItem(name=name, shard=shard, slot=None, config=StreamConfig(name))
     if not cfg:
         raise ValueError(f"[{name}] Unknown stream")
     if cfg[0].sharded and not shard:
