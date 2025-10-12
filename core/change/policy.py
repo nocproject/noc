@@ -24,14 +24,30 @@ BI_APPLY_HANDLER = "noc.core.change.change.apply_ch_dictionary"
 # inv.ObjectModel and sensors, inv.Object and data
 SYNC_SENSOR_HANDLER = "noc.core.change.change.apply_sync_sensors"
 AUDIT_CHANGE = "noc.core.change.change.audit_change"
+REACTION_HANDLER = "noc.core.change.change.apply_reactions"
 
 cv_policy: ContextVar[Optional["BaseChangeTrackerPolicy"]] = ContextVar("cv_policy", default=None)
 cv_policy_stack: ContextVar[Optional[List["BaseChangeTrackerPolicy"]]] = ContextVar(
     "cv_policy_stack", default=None
 )
 c_user: ContextVar[Optional[str]] = ContextVar("c_user", default=None)
+c_reaction_suppress: ContextVar[bool] = ContextVar("c_reaction_suppress", default=False)
 
 CHANGE_HANDLERS: Dict[str, Set[str]] = defaultdict(set)
+REACTION_MODELS = frozenset(
+    [
+        "sa.ManagedObject",
+        "sa.Service",
+        "sla.Probe",
+        "inv.Object",
+        "inv.CPE",
+        "ip.Address",
+        "ip.Prefix",
+        "ip.VRF",
+        "vc.VLAN",
+    ]
+)
+
 CHUNK_SIZE = 1000
 
 
@@ -80,6 +96,7 @@ class ChangeTracker(object):
         id: str,
         fields: Optional[List[ChangeField]] = None,
         datastreams: Optional[List[Tuple[str, str]]] = None,
+        domains: Optional[List[Tuple[str, str]]] = None,
         audit: bool = False,
         caps: Optional[List[str]] = None,
     ) -> None:
@@ -91,6 +108,7 @@ class ChangeTracker(object):
             id: Item id
             fields: List of changed fields
             datastreams: List of changed datastream
+            domains: Configuration domains
             audit: Send Changes to Audit Log
             caps: Changed Capabilities list
         """
@@ -106,6 +124,7 @@ class ChangeTracker(object):
                 user=str(user),
                 changed_fields=fields,
                 changed_caps=caps or None,
+                domains=domains or None,
             ),
             audit=audit and user,
         )
@@ -148,7 +167,7 @@ class ChangeTracker(object):
         return policy
 
     @contextlib.contextmanager
-    def bulk_changes(self, user: Optional[str] = None):
+    def bulk_changes(self, user: Optional[str] = None, suppress_reaction: bool = False):
         """
         Apply all changes at once
         """
@@ -159,6 +178,8 @@ class ChangeTracker(object):
         cv_policy.set(policy)
         if user:
             c_user.set(user)
+        if suppress_reaction:
+            c_reaction_suppress.set(True)
         yield
         policy.commit()
         cv_policy.set(prev_policy)
@@ -200,9 +221,11 @@ class SimpleChangeTrackerPolicy(BaseChangeTrackerPolicy):
 
     def register(self, item: ChangeItem, audit: bool = False) -> None:
         for handler in CHANGE_HANDLERS.get(item.model_id, []):
-            defer(handler, key=hash(item), changes=[item])
+            defer(handler, key=item.key, changes=[item])
         if audit:
-            defer(AUDIT_CHANGE, key=hash(item), changes=[item])
+            defer(AUDIT_CHANGE, key=item.key, changes=[item])
+        if not c_reaction_suppress.get() and item.model_id in REACTION_MODELS:
+            defer(REACTION_HANDLER, key=item.key, changes=[item])
 
     def register_ds(self, items: Optional[List[Tuple[str, str]]]):
         defers: Dict[int, Dict[str, Set[str]]] = {}
@@ -226,7 +249,7 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
         self.ds_changes: Dict[str, Set[str]] = defaultdict(set)
 
     def register(self, item: ChangeItem, audit: bool = False) -> None:
-        key = hash(item)
+        key = item.key
         for handler in CHANGE_HANDLERS.get(item.model_id, []):
             changes = self.changes[handler]
             prev = changes.get(key)
@@ -240,6 +263,8 @@ class BulkChangeTrackerPolicy(BaseChangeTrackerPolicy):
             changes[key] = prev
         if audit:
             self.changes[AUDIT_CHANGE][key] = item
+        if not c_reaction_suppress.get() and item.model_id in REACTION_MODELS:
+            self.changes[REACTION_HANDLER][key] = item
 
     def register_ds(self, items: List[Tuple[str, str]]) -> None:
         # Changed datastreams

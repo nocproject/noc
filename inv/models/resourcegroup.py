@@ -82,6 +82,8 @@ class MatchLabels(EmbeddedDocument):
         # SA
         ("sa.CommandSnippet", "resource_group"),
         ("sa.ObjectNotification", "resource_group"),
+        ("sa.ReactionRule", "conditions__groups"),
+        ("sa.ReactionRule", "conditions__ex_groups"),
         ("main.ModelTemplate", "groups__group"),
         # FM
         ("fm.AlarmDiagnosticConfig", "resource_group"),

@@ -1040,6 +1040,17 @@ class ManagedObject(NOCModel):
         ):
             yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
 
+    def iter_changed_domains(self, changed_fields=None):
+        """
+        Iterate over changed Domain, Configured domains, Migrate to Configuration Context
+        In/Out
+        """
+        l2_domain = self.get_effective_l2_domain()
+        if l2_domain:
+            yield "vc.L2Domain", str(l2_domain.id)
+        if self.segment:
+            yield "inv.Segment", str(self.segment.id)
+
     def set_scripts_caller(self, caller):
         """
         Override default scripts caller
@@ -3018,11 +3029,17 @@ class ManagedObject(NOCModel):
 
     def get_matcher_ctx(self):
         """"""
+        if not self.state:
+            state = self.object_profile.workflow.get_default_state()
+        else:
+            state = self.state
         return {
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
             "service_groups": list(self.effective_service_groups),
+            "remote_system": str(self.remote_system.id) if self.remote_system else None,
+            "state": str(state.id),
         }
 
     def get_effective_managed_object(self) -> Optional[Any]:

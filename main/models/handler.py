@@ -71,6 +71,7 @@ class Handler(Document):
     allow_diagnostics_checks = BooleanField()
     allow_event = BooleanField()
     allow_resource = BooleanField()
+    allow_reaction = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 

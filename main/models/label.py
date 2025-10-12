@@ -123,6 +123,8 @@ class PrefixFilterItem(EmbeddedDocument):
         ("sa.ObjectDiagnosticConfig", "match__exclude_labels"),
         ("sa.CredentialCheckRule", "match__labels"),
         ("sa.CredentialCheckRule", "match__exclude_labels"),
+        ("sa.ReactionRule", "conditions__labels"),
+        ("sa.ReactionRule", "conditions__exclude_labels"),
         ("inv.InterfaceProfile", "match_rules__labels"),
         ("inv.ResourceGroup", "dynamic_service_labels__labels"),
         ("inv.ResourceGroup", "dynamic_client_labels__labels"),
