@@ -220,6 +220,7 @@ _MODELS = {
     "sa.ObjectStatus": "noc.sa.models.objectstatus.ObjectStatus",
     "sa.Profile": "noc.sa.models.profile.Profile",
     "sa.ProfileCheckRule": "noc.sa.models.profilecheckrule.ProfileCheckRule",
+    "sa.ReactionRule": "noc.sa.models.reactionrule.ReactionRule",
     "sa.Service": "noc.sa.models.service.Service",
     "sa.ServiceInstance": "noc.sa.models.serviceinstance.ServiceInstance",
     "sa.ServiceProfile": "noc.sa.models.serviceprofile.ServiceProfile",
