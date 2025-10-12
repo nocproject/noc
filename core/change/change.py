@@ -20,6 +20,7 @@ import orjson
 from noc.models import get_model, get_object
 from noc.core.service.loader import get_service
 from noc.core.change.model import ChangeItem
+from noc.core.change.policy import change_tracker, REACTION_MODELS
 from noc.config import config
 
 logger = getLogger(__name__)
@@ -187,3 +188,15 @@ def apply_sync_sensors(changes: List[Dict[str, Any]]) -> None:
     # Update
     for o in Object.objects.filter(**query):
         sync_object(o)
+
+
+def apply_reactions(changes: List[Dict[str, Any]]) -> None:
+    """Apply reactions"""
+    from noc.sa.models.reactionrule import ReactionRule
+
+    with change_tracker.bulk_changes(suppress_reaction=True):
+        for item in changes:
+            if item["model_id"] not in REACTION_MODELS:
+                continue
+            item = ChangeItem.from_dict(item)
+            ReactionRule.register_change(item)

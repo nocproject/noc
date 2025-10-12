@@ -152,6 +152,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
+        ("sa.ReactionRule", "notification_group"),
         ("peer.PeeringPoint", "prefix_list_notification_group"),
     ],
     delete=[

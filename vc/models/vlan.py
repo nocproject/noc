@@ -239,6 +239,26 @@ class VLAN(Document):
             vlan.name = name
         return vlan
 
+    def iter_changed_domains(self, changed_fields=None):
+        """
+        Iterate over changed Domain, Configured domains, Migrate to Configuration Context
+        In/Out
+        """
+        yield "vc.L2Domain", str(self.l2_domain.id)
+
+    def get_matcher_ctx(self):
+        """"""
+        if not self.state:
+            state = self.profile.workflow.get_default_state()
+        else:
+            state = self.state
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "state": str(state.id),
+        }
+
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, "enable_vlan")
