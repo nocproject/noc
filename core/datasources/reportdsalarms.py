@@ -222,6 +222,8 @@ class ReportDsAlarms(BaseDataSource):
         admin_domain_ads: Optional[List[int]] = None,
         **filters: Optional[Dict[str, Any]],
     ) -> Iterable[Dict[str, Any]]:
+        if end:
+            end += datetime.timedelta(days=1)
         if "objectids" in filters:
             match = {"_id": {"$in": [bson.ObjectId(x) for x in filters["objectids"]]}}
         elif not end:
