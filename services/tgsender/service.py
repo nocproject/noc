@@ -17,7 +17,7 @@ from gufo.http import DEFLATE, GZIP, Proxy
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
 from noc.core.msgstream.message import Message
-from noc.core.mx import MX_TO
+from noc.core.mx import MX_TO, MX_WH_API_URL, MX_NOTIFICATION_METHOD
 from noc.core.perf import metrics
 from noc.config import config
 from noc.core.http.sync_client import HttpClient, ERR_TIMEOUT
@@ -73,7 +73,17 @@ class TgSenderService(FastAPIService):
         if not address:
             self.logger.warning("[%s] Message without address", msg.offset)
             return
-        await self.send_tb(msg.offset, address, data)
+        method = msg.headers[MX_NOTIFICATION_METHOD].decode()
+        if method == "webhook" and MX_WH_API_URL in msg.headers:
+            # parse webhook_headers
+            args = self.parse_webhook_headers(msg.headers)
+            await self.send_webhook(msg.offset, address, data, **args)
+        elif method == "webhook":
+            self.logger.info("[%s] WebHook API is not set", msg.offset)
+        elif not method or method == "tg":
+            await self.send_tb(msg.offset, address, data)
+        else:
+            self.logger.info("[%s] Unknown notification method", msg.offset)
 
     @classmethod
     def iter_tb_messages(
@@ -167,6 +177,59 @@ class TgSenderService(FastAPIService):
                 metrics["telegram_send_failed"] += 1
                 metrics["error", ("type", "send_telegram_post"), ("code", code)] += 1
             break
+
+    @staticmethod
+    def parse_webhook_headers(headers: Dict[str, bytes]) -> Dict[str, str]:
+        """Parse webhooks headers to params"""
+        r = {"api_url": headers[MX_WH_API_URL].decode()}
+        for h in headers:
+            if not h.startswith("WebHook") or h == MX_WH_API_URL:
+                continue
+            code, name = h.split("-", 1)
+            r[name.replace("-", "_").lower()] = headers[h].decode()
+        return r
+
+    async def send_webhook(
+        self,
+        message_id: int,
+        address: str,
+        data: Dict[str, Any],
+        api_url: str,
+        api_method: str = "POST",
+        api_authorization: Optional[str] = None,
+        to_param_name: Optional[str] = None,
+        message_param_name: Optional[str] = None,
+        content_type: Optional[str] = None,
+        **kwargs,
+    ):
+        """Send WebHook"""
+        client = HttpClient(
+            max_redirects=None,
+            compression=DEFLATE | GZIP,
+            validate_cert=False,
+            connect_timeout=config.tgsender.http_connect_timeout,
+            timeout=config.tgsender.http_request_timeout,
+        )
+        headers = {}
+        if api_authorization:
+            headers["Authorization"] = api_authorization.encode()
+        if api_method != "POST":
+            self.logger.warning("Unknown API Method: %s", api_method)
+            return
+        if to_param_name:
+            data[to_param_name] = address
+        if message_param_name:
+            body, subject = data["subject"], data.get("body", "")
+            data[message_param_name] = f"{subject}\n\n{body}"
+        if content_type and content_type == "application/x-www-form-urlencoded":
+            data = urlencode(data).encode()
+        else:
+            data = orjson.dumps(data)
+        content_type = content_type or "application/json"
+        headers["Content-Type"] = content_type.encode()
+        self.logger.info("[%s] Send Data: %s", "webhook", data)
+        code, headers, data = client.post(api_url, data, headers=headers or None)
+        self.logger.info("Send: %s, %s", code, data)
 
 
 if __name__ == "__main__":
