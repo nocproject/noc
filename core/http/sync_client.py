@@ -1,14 +1,15 @@
 # ----------------------------------------------------------------------
 # Synchronous HTTP Client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
+import uuid
 from urllib.parse import urlparse
-from typing import Optional, Dict, Tuple, Any, Callable
+from typing import Optional, Dict, Tuple, Any, Callable, Union
 
 # Third-party modules
 from gufo.http import BasicAuth, RequestMethod, DEFLATE, GZIP, BROTLI, Proxy, HttpError
@@ -110,6 +111,78 @@ class HttpClient(GufoHttpClient):
             host = f"{addr}:{port}"
         return u._replace(netloc=host).geturl()
 
+    @classmethod
+    def encode_part(
+        cls,
+        body,
+        boundary,
+        name: Optional[str] = None,
+        filename: Optional[str] = None,
+        content_type: Optional[str] = None,
+    ):
+        """
+        Encode Form Data Part
+        Args:
+            body: Part body
+            boundary: Part splitter boundary
+            name: Part name
+            filename: If part contains file - its name
+            content_type: Content type in part
+        """
+        content_type = content_type or "application/octet-stream"
+        dispositions = ["form-data", f"name={name}"]
+        if filename:
+            dispositions.append(f'filename="{filename}"')
+        return b"".join(
+            [
+                f"--{boundary}\r\n".encode(),
+                f"Content-Disposition: {';'.join(dispositions)}\r\n".encode(),
+                f"Content-Length: {len(body)}\r\n".encode(),
+                f"Content-Type: {content_type}\r\n".encode(),
+                b"\r\n",
+                body,
+                b"\r\n",
+            ]
+        )
+
+    @classmethod
+    def encode_files(
+        cls,
+        files: Dict[str, Union[bytes, Tuple[bytes, str], Tuple[bytes, str, str]]],
+        boundary: str,
+        content_type: Optional[str] = "application/octet-stream",
+    ) -> bytes:
+        """
+        Render file ports
+            "json_data": (None, json.dumps(data_payload), 'application/json'), # JSON part
+            "uploaded_file": ('data.json', f, 'application/octet-stream') # File part
+        Args:
+            files: name -> content; name -> (content, filename); name -> (content, filename, content-type)
+            boundary: File part splitter
+            content_type: Default content type (application/octet-stream)
+        """
+        content_type = content_type or "application/octet-stream"
+        payload = b""
+        for name, body in files.items():
+            if isinstance(body, bytes):
+                args = []
+            else:
+                body, *args = body
+            # Part Name
+            if args:
+                filename = args[0]
+            else:
+                filename = name
+            # Part Content Type
+            if args and len(args) > 1:
+                mime = args[1]
+            else:
+                mime = content_type
+            payload += cls.encode_part(
+                body, boundary, name=name, filename=filename, content_type=mime
+            )
+        return payload
+
     def request(
         self: "HttpClient",
         method: str,
@@ -158,8 +231,27 @@ class HttpClient(GufoHttpClient):
         body: bytes,
         /,
         headers: Optional[Dict[str, bytes]] = None,
+        files: Optional[Dict[str, Union[bytes, Tuple[bytes, str], Tuple[bytes, str, str]]]] = None,
     ) -> Tuple[int, Dict[str, Any], bytes]:
         metrics["httpclient_requests", ("method", "post")] += 1
+        if files:
+            boundary = str(uuid.uuid4())
+            headers = headers or {}
+            content_type = headers.get("Content-Type") or b"text/plain"
+            # Body parts
+            if body:
+                body = self.encode_part(
+                    body,
+                    boundary,
+                    name="data",
+                    content_type=content_type.decode(),
+                )
+            body += self.encode_files(files, boundary)
+            body += f"--{boundary}--\r\n".encode()
+            headers = headers | {
+                "Content-Type": f"multipart/form-data; boundary={boundary}".encode(),
+                "Content-Length": str(len(body)).encode(),
+            }
         try:
             r = super().post(url, body, headers=headers)
         except ConnectionResetError:
