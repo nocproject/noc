@@ -787,6 +787,10 @@ class Config(BaseConfig):
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
         proxy_address = StringParameter()
+        max_body_size = BytesParameter(default=3000)
+        max_file_size = BytesParameter(default=50000000)
+        http_connect_timeout = IntParameter(min=2, max=60, default=5)
+        http_request_timeout = IntParameter(min=2, max=60, default=3)
 
     class threadpool(ConfigSection):
         idle_timeout = SecondsParameter(default="30s")
