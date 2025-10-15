@@ -35,10 +35,11 @@ from noc.core.mx import (
     MX_NOTIFICATION_GROUP_ID,
     MX_LABELS,
     MX_RESOURCE_GROUPS,
+    MX_JOB_HANDLER,
     MessageType,
     MessageMeta,
 )
-from .action import Action, NotificationAction, MessageAction, ActionCfg
+from .action import Action, NotificationAction, MessageAction, ActionCfg, JobAction
 
 T_BODY = Union[bytes, Any]
 
@@ -290,7 +291,7 @@ class DefaultNotificationRoute(Route):
     MX_METRIC = MessageType.METRICS.value.encode()
 
     def __init__(self):
-        super().__init__(name="default", r_type="*", order=999)
+        super().__init__(name="default", r_type="*", order=-1)
         self.notification_action = NotificationAction(ActionCfg("notification_group"))
         self.message_action = MessageAction(ActionCfg("notification_group"))
 
@@ -311,3 +312,24 @@ class DefaultNotificationRoute(Route):
             yield from self.message_action.iter_action(msg, message_type)
         else:
             yield from self.notification_action.iter_action(msg, message_type)
+
+
+class DefaultJobRoute(Route):
+    """
+    Default Router for Job Request
+    Route request to worker
+    """
+
+    MX_JOB = MessageType.JOB.value.encode()
+
+    def __init__(self):
+        super().__init__(name="jobs", r_type="job", order=999)
+        self.job_action = JobAction(ActionCfg("drop"))
+
+    def is_match(self, msg: Message, message_type: bytes) -> bool:
+        return message_type == self.MX_JOB and MX_JOB_HANDLER in msg.headers
+
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
+        yield from self.job_action.iter_action(msg, message_type)

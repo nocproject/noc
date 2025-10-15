@@ -16,7 +16,6 @@ from .raisereq import RaiseRequest
 from .ensuregroupreq import EnsureGroupRequest
 from .setstatusreq import SetStatusRequest
 from .dispositionreq import DispositionRequest
-from .updatecheckersreq import UpdateCheckersRequest
 
 DisposeRequest = Union[
     ClearRequest,
@@ -26,5 +25,4 @@ DisposeRequest = Union[
     EnsureGroupRequest,
     SetStatusRequest,
     DispositionRequest,
-    UpdateCheckersRequest,
 ]
