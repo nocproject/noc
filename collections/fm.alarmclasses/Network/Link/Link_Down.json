@@ -118,5 +118,6 @@
         }
     ],
     "recover_time": 300,
+    "affected_service": true,
     "labels": ["noc::severity::warning"]
 }

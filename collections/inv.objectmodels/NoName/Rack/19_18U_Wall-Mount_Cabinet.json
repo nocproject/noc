@@ -1,0 +1,45 @@
+{
+    "name": "NoName | Rack | 19\" 18U Wall-Mount Cabinet",
+    "$collection": "inv.objectmodels",
+    "uuid": "f991e8b4-f1da-4661-9953-a1cdef3a59aa",
+    "vendor__code": "NONAME",
+    "description": "19\" 18U Wall-Mount Cabinet",
+    "connections": [],
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["noname"]
+        },
+        {
+            "attr": "rear_door",
+            "interface": "rack",
+            "value": "c"
+        },
+        {
+            "attr": "units",
+            "interface": "rack",
+            "value": 18
+        },
+        {
+            "attr": "depth",
+            "interface": "rack",
+            "value": 600
+        },
+        {
+            "attr": "front_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "width",
+            "interface": "rack",
+            "value": 600
+        }
+    ]
+}
