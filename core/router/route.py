@@ -32,14 +32,13 @@ from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
     MX_NOTIFICATION_METHOD,
-    MX_NOTIFICATION,
     MX_NOTIFICATION_GROUP_ID,
     MX_LABELS,
     MX_RESOURCE_GROUPS,
     MessageType,
     MessageMeta,
 )
-from .action import Action, NotificationAction, ActionCfg
+from .action import Action, NotificationAction, MessageAction, ActionCfg
 
 T_BODY = Union[bytes, Any]
 
@@ -164,6 +163,12 @@ class Route(object):
         self.transmute_handler: Optional[Callable[[Dict[str, bytes], T_BODY], T_BODY]] = None
         self.transmute_template: Optional[TransmuteTemplate] = None
 
+    def __str__(self):
+        return f"{self.name} ({self.type}, {self.order}): {self.actions}"
+
+    def __repr__(self):
+        return f"{self.name} ({self.type}, {self.order}): {self.actions}"
+
     @property
     def m_types(self) -> FrozenSet[bytes]:
         return self.type
@@ -286,10 +291,11 @@ class DefaultNotificationRoute(Route):
 
     def __init__(self):
         super().__init__(name="default", r_type="*", order=999)
-        self.na = NotificationAction(ActionCfg("notification_group"))
+        self.notification_action = NotificationAction(ActionCfg("notification_group"))
+        self.message_action = MessageAction(ActionCfg("notification_group"))
 
     def is_match(self, msg: Message, message_type: bytes) -> bool:
-        if message_type == self.MX_METRIC or message_type != MX_NOTIFICATION:
+        if message_type == self.MX_METRIC:
             return False
         if MX_NOTIFICATION_METHOD in msg.headers:
             return True
@@ -301,4 +307,7 @@ class DefaultNotificationRoute(Route):
     def iter_action(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes]]]:
-        yield from self.na.iter_action(msg, message_type)
+        if MX_NOTIFICATION_GROUP_ID in msg.headers:
+            yield from self.message_action.iter_action(msg, message_type)
+        else:
+            yield from self.notification_action.iter_action(msg, message_type)

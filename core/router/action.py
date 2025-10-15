@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List
+from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List, Any
 from dataclasses import dataclass
 
 # Third-party modules
@@ -183,7 +183,11 @@ class MessageAction(Action):
         """Register Notification escalation"""
 
     def render_template(
-        self, message_type: bytes, msg: Message, language: Optional[str] = None
+        self,
+        message_type: MessageType,
+        msg: Message,
+        language: Optional[str] = None,
+        notification_group: Optional[Any] = None,
     ) -> Optional[Dict[str, str]]:
         """
         Render Body from template
@@ -191,15 +195,16 @@ class MessageAction(Action):
             message_type: Message Type code
             msg: Message
             language: Language Code
-            tag: Subject Tag
+            notification_group: Subject Tag
         """
         from noc.main.models.template import Template
 
-        if not self.rt:
-            mt = MessageType(message_type.decode())
-            template = Template.get_by_message_type(mt, language=language)
-        else:
+        if self.rt:
             template = Template.get_by_id(self.rt)
+        elif notification_group:
+            template = notification_group.get_effective_template(message_type, language=language)
+        else:
+            template = Template.get_by_message_type(message_type, language=language)
         if not template:
             # logger.warning("Not template for message type: %s", message_type)
             return None
@@ -222,9 +227,11 @@ class MessageAction(Action):
         if MX_WATCH_FOR_ID in msg.headers:
             obj = msg.headers[MX_WATCH_FOR_ID].decode()[2:]
         ts = datetime.datetime.now()
-        body = None
+        body, message_type = None, MessageType(message_type.decode())
         for c in ng.get_active_contacts(obj, ts=ts):
-            body = body or self.render_template(message_type, msg, c.language)
+            body = body or self.render_template(
+                message_type, msg, c.language, notification_group=ng
+            )
             if not body:
                 break
             if c.title_tag:
