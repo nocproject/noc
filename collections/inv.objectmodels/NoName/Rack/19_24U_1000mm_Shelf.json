@@ -1,0 +1,45 @@
+{
+    "name": "NoName | Rack | 19\" 24U 1000mm Shelf",
+    "$collection": "inv.objectmodels",
+    "uuid": "69e1bd1b-1271-43d2-bab6-2ec901ffe89e",
+    "vendor__code": "NONAME",
+    "description": "19\" 24 1000mm depth shelf",
+    "connections": [],
+    "data": [
+        {
+            "attr": "container",
+            "interface": "container",
+            "value": true
+        },
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["noname"]
+        },
+        {
+            "attr": "rear_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "units",
+            "interface": "rack",
+            "value": 24
+        },
+        {
+            "attr": "depth",
+            "interface": "rack",
+            "value": 1000
+        },
+        {
+            "attr": "front_door",
+            "interface": "rack",
+            "value": "l"
+        },
+        {
+            "attr": "width",
+            "interface": "rack",
+            "value": 600
+        }
+    ]
+}
