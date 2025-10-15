@@ -120,7 +120,7 @@ Ext.define("NOC.inv.interfaceprofile.Model", {
             type: "boolean"
         },
         {
-            name: "subinterface_policy",
+            name: "subinterface_apply_policy",
             type: "string",
             defaultValue: "D"
         },
