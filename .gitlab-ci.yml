@@ -185,7 +185,7 @@ py:test:
     - >
       docker cp
       "${DOCKER_COMPOSE_PROJECT}_pytests_1:/opt/noc/${JUNIT_XML_REPORT}"
-      "${JUNIT_XML_REPORT}"
+      "${JUNIT_XML_REPORT}" || true
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose
