@@ -17,8 +17,10 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.defer import JOBS_STREAM
 from noc.core.mx import (
     MessageType,
+    MX_JOB_HANDLER,
     NOTIFICATION_METHODS,
     MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION_GROUP_ID,
@@ -160,6 +162,21 @@ class MetricAction(Action):
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
         yield self.stream, self.headers, msg.value
+
+
+class JobAction(Action):
+    name = "job"
+
+    def iter_action(
+        self, msg: Message, message_type: bytes
+    ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
+        handler = msg.headers[MX_JOB_HANDLER].decode()
+        if msg.value:
+            kw = orjson.loads(msg.value)
+        else:
+            kw = {}
+        yield JOBS_STREAM, {}, [{"handler": handler, "kwargs": kw or {}}]
+        yield DROP, {}, msg.value
 
 
 class MessageAction(Action):

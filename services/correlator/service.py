@@ -46,7 +46,6 @@ from noc.services.correlator.models.raisereq import RaiseRequest
 from noc.services.correlator.models.ensuregroupreq import EnsureGroupRequest
 from noc.services.correlator.models.setstatusreq import SetStatusRequest
 from noc.services.correlator.models.dispositionreq import DispositionRequest
-from noc.services.correlator.models.updatecheckersreq import UpdateCheckersRequest
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.activealarm import ActiveAlarm, ComponentHub
 from noc.fm.models.alarmlog import AlarmLog
@@ -1310,29 +1309,6 @@ class CorrelatorService(FastAPIService):
         # Close hanging alarms
         for h_ref in set(open_alarms) - seen_refs:
             await self.clear_by_reference(h_ref, ts=now)
-
-    def resolve_checker_object(self, obj_type: str, oid: str) -> Optional[Any]:
-        """"""
-        match obj_type:
-            case "managed_object":
-                return self.parse_object(oid)
-            case "service":
-                return Service.get_by_id(oid)
-        return None
-
-    async def on_msg_update_checkers_status(self, req: UpdateCheckersRequest) -> None:
-        """
-        Process `ensure_group` message.
-        """
-        for item in req.results:
-            obj = self.resolve_checker_object(item.target_type, item.id)
-            if not obj:
-                continue
-            try:
-                obj.diagnostic.update_checks([ii.get_result() for ii in item.statuses])
-            except Exception as e:
-                self.logger.error("[%s] Failed when update diagnostic Statuses: %s", obj, e)
-                continue
 
     async def on_msg_set_status(self, req: SetStatusRequest) -> None:
         """
