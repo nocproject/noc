@@ -149,6 +149,24 @@ Ext.define("NOC.main.remotesystem.Model", {
       type: "boolean",
     },
     {
+      name: "enable_metrics",
+      type: "boolean",
+    },
+    {
+      name: "api_key",
+      type: "string",
+    },
+    {
+      name: "api_key__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "remote_collectors_policy",
+      type: "string",
+      defaultValue: "D",
+    },
+    {
       name: "managed_object_loader_policy",
       type: "string",
       defaultValue: "M",

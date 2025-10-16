@@ -11,6 +11,7 @@ Ext.define("NOC.main.remotesystem.Application", {
   requires: [
     "NOC.main.remotesystem.Model",
     "Ext.ux.form.GridField",
+    "NOC.aaa.apikey.LookupField",
   ],
   model: "NOC.main.remotesystem.Model",
   search: true,
@@ -219,6 +220,48 @@ Ext.define("NOC.main.remotesystem.Application", {
               name: "enable_fmevent",
               xtype: "checkbox",
               boxLabel: __("Enable FM Event"),
+            },
+            {
+              name: "enable_metrics",
+              xtype: "checkbox",
+              boxLabel: __("Enable Metrics"),
+            },
+          ],
+        },
+        {
+          xtype: "fieldset",
+          layout: "vbox",
+          title: __("Collector Settings"),
+          defaults: {
+            padding: 4,
+            labelAlign: "right",
+          },
+          items: [
+            {
+              name: "remote_collectors_policy",
+              xtype: "combobox",
+              fieldLabel: __("Enable received"),
+              allowBlank: false,
+              labelWidth: 200,
+              queryMode: "local",
+              displayField: "label",
+              valueField: "id",
+              defaultValue: "M",
+              store: {
+                fields: ["id", "label"],
+                data: [
+                  {id: "D", label: "Disable"},
+                  {id: "E", label: "Enable (Any)"},
+                  {id: "S", label: "Strict (Map Only)"},
+                ],
+              },
+              uiStyle: "medium",
+            },
+            {
+              name: "api_key",
+              xtype: "aaa.apikey.LookupField",
+              fieldLabel: __("Api Key"),
+              allowBlank: true,
             },
           ],
         },
