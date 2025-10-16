@@ -7,47 +7,47 @@
 console.debug("Defining NOC.sa.managedobject.LAGStore");
 
 Ext.define("NOC.sa.managedobject.LAGStore", {
-    extend: "Ext.data.Store",
-    model: null,
-    fields: [
-        {
-            name: "id",
-            type: "auto"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "status",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "members",
-            type: "auto"
-        },
-        {
-            name: "count",
-            convert: function(value, record) {
-                return record.get("members").length;
-            }
-        },
-        {
-            name: "profile",
-            type: "string"
-        },
-        {
-            name: "profile__label",
-            type: "string"
-        },
-        {
-            name: "row_class",
-            type: "string"
-        }
-    ],
-    data: []
+  extend: "Ext.data.Store",
+  model: null,
+  fields: [
+    {
+      name: "id",
+      type: "auto",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "status",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "members",
+      type: "auto",
+    },
+    {
+      name: "count",
+      convert: function(value, record){
+        return record.get("members").length;
+      },
+    },
+    {
+      name: "profile",
+      type: "string",
+    },
+    {
+      name: "profile__label",
+      type: "string",
+    },
+    {
+      name: "row_class",
+      type: "string",
+    },
+  ],
+  data: [],
 });

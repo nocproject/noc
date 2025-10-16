@@ -7,25 +7,25 @@
 console.debug("Defining NOC.wf.wfmigration.Model");
 
 Ext.define("NOC.wf.wfmigration.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/wf/wfmigration/",
+  extend: "Ext.data.Model",
+  rest_url: "/wf/wfmigration/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "migrations",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "migrations",
+      type: "auto",
+    },
+  ],
 });

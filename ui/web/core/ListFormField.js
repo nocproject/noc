@@ -109,7 +109,7 @@ Ext.define("NOC.core.ListFormField", {
       data = field.getModelData();
       if(Ext.isObject(data)){
         name = field.getName();
-        if(Object.prototype.hasOwnProperty.call(data, name)){
+        if(Object.hasOwn(data, name)){
           values[name] = data[name];
         }
       }

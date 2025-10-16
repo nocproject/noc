@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.customfield.LookupField");
 
 Ext.define("NOC.main.customfield.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.customfield.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.customfield.LookupField",
+  uiStyle: "medium-combo",
 });

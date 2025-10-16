@@ -199,7 +199,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Container", {
   onFilterChanged: function(_, value){
     var v = "";
 
-    if(value.hasOwnProperty("__query")){
+    if(Object.hasOwn(value, "__query")){
       v = value.__query;
     }
     if(!Ext.isEmpty(v)){

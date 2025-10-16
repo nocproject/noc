@@ -291,9 +291,8 @@ Ext.define("NOC.gis.building.Application", {
     },
   ],
   //
-  onPrimaryAddressChange: function(checkbox, newValue, oldValue, eOpts){
-    var me = this,
-      grid = checkbox.column.up("gridpanel"),
+  onPrimaryAddressChange: function(checkbox, newValue){
+    var grid = checkbox.column.up("gridpanel"),
       store = grid.getStore(),
       sLen = store.getCount();
     if(sLen === 1){

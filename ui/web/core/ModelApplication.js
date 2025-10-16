@@ -675,10 +675,10 @@ Ext.define("NOC.core.ModelApplication", {
     }
     formFields = formFields.concat(formInlines);
     // process protected fields
-    if(Object.prototype.hasOwnProperty.call(me.noc, "protected_field")){
+    if(Object.hasOwn(me.noc, "protected_field")){
       Ext.Object.each(me.noc.protected_field, function(fieldName, value){
         var find = function(object){
-          if(Object.prototype.hasOwnProperty.call(object, "name") && object.name === fieldName){
+          if(Object.hasOwn(object, "name") && object.name === fieldName){
             switch(value){
               case 0:
                 object.hidden = true;
@@ -690,7 +690,7 @@ Ext.define("NOC.core.ModelApplication", {
             }
             return;
           }
-          if(Object.prototype.hasOwnProperty.call(object, "items")){
+          if(Object.hasOwn(object, "items")){
             Ext.Array.each(object.items, find);
           }
         };
@@ -1100,7 +1100,7 @@ Ext.define("NOC.core.ModelApplication", {
 
     fields = form.getFields().items.filter(
       function(item){
-        return !(Object.prototype.hasOwnProperty.call(item, "isListForm") && item.isListForm)
+        return !(Object.hasOwn(item, "isListForm") && item.isListForm)
       });
     fields.forEach(fieldCfg => {
       let formPanel = this.formPanel || this;
@@ -1126,7 +1126,7 @@ Ext.define("NOC.core.ModelApplication", {
       data = field.getModelData();
       name = field.getName();
       if(Ext.isObject(data)){
-        if(Object.prototype.hasOwnProperty.call(data, name)){
+        if(Object.hasOwn(data, name)){
           values[name] = data[name];
         }
       }
@@ -1852,7 +1852,7 @@ Ext.define("NOC.core.ModelApplication", {
     var r = Ext.clone(selection[0].data);
     for(var i = 1; i < selection.length; i++){
       Ext.Object.each(selection[i].data, function(key, value){
-        if(Object.prototype.hasOwnProperty.call(r, key)){
+        if(Object.hasOwn(r, key)){
           if(r[key] !== value){
             r[key] = "Leave unchanged";
           }
@@ -1862,7 +1862,7 @@ Ext.define("NOC.core.ModelApplication", {
       });
     }
     me.groupForm.getFields().items.forEach(function(field){
-      if(r && Object.prototype.hasOwnProperty.call(r, field.name)){
+      if(r && Object.hasOwn(r, field.name)){
         field.value = r[field.name];
       } else{
         field.value = "";
@@ -1881,7 +1881,7 @@ Ext.define("NOC.core.ModelApplication", {
   //
   showClearTrigger: function(field){
     var me = this, newValue = field.getValue() || "";
-    if(Object.prototype.hasOwnProperty.call(me.store.defaultValues, field.name)){
+    if(Object.hasOwn(me.store.defaultValues, field.name)){
       var defaultValue = me.store.defaultValues[field.name] || "";
       if(field.getTrigger("clear").hidden && newValue !== defaultValue){
         field.getTrigger("clear").show();

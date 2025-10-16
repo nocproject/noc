@@ -7,8 +7,8 @@
 console.debug("Defining NOC.main.pyrule.LookupField");
 
 Ext.define("NOC.main.ref.sound.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.ref.sound.LookupField",
-    uiStyle: "medium-combo",
-    askPermission: false
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.ref.sound.LookupField",
+  uiStyle: "medium-combo",
+  askPermission: false,
 });

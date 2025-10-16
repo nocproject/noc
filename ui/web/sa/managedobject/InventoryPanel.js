@@ -108,7 +108,7 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
     me.callParent();
   },
   //
-  preview: function(record, backItem){
+  preview: function(record){
     var me = this;
     me.callParent(arguments);
     me.setTitle(record.get("name") + " inventory");
@@ -133,6 +133,6 @@ Ext.define("NOC.sa.managedobject.InventoryPanel", {
   //
   onExport: function(){
     var me = this;
-    me.save(me.inventoryPanel, 'inventory.csv');
+    me.save(me.inventoryPanel, "inventory.csv");
   },
 });

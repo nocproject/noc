@@ -7,10 +7,10 @@
 console.debug("Defining NOC.core.ObservableModel");
 
 Ext.define("NOC.core.ObservableModel", {
-    extend: "Ext.data.Model",
-    idProperty: "key",
-    fields: [
-        {name: "key", type: "string"},
-        {name: "value"}
-    ],
+  extend: "Ext.data.Model",
+  idProperty: "key",
+  fields: [
+    {name: "key", type: "string"},
+    {name: "value"},
+  ],
 });

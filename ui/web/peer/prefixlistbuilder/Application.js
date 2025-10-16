@@ -53,7 +53,7 @@ Ext.define("NOC.peer.prefixlistbuilder.Application", {
           name: "name",
           emptytext: __("Prefix list name ..."),
           allowBlank: true,
-          regex: /^[0-9a-zA-Z_\-]*$/,
+          regex: /^[0-9a-zA-Z_-]*$/,
           invalidtext: __("Prefix list name must contains only 0-9,a-z,A-Z,-,_"),
         },
         {

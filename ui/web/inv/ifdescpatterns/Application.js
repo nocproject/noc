@@ -50,7 +50,7 @@ Ext.define("NOC.inv.ifdescpatterns.Application", {
           fieldLabel: __("Use object as Port Token"),
           allowBlank: true,
           renderer: NOC.render.Bool,
-          tooltip: __('If checked discovery try find port by object_id (Hostname, Address, Name) contains in description'),
+          tooltip: __("If checked discovery try find port by object_id (Hostname, Address, Name) contains in description"),
           listeners: {
             render: me.addTooltip,
           },

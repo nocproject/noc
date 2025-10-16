@@ -82,7 +82,7 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
   },
   onPrefixContentsOpen: function(grid, params){
     var url = "contents/" + params.id + "/";
-    if(params.hasOwnProperty("afi")){
+    if(Object.hasOwn(params, "afi")){
       url = "get_vrf_prefix/" + params.id + "/" + params.afi + "//";
     }
     this.openPrefixContents(url);
@@ -146,7 +146,7 @@ Ext.define("NOC.ip.ipam.ApplicationController", {
       scope: this,
       success: function(response){
         var value = Ext.decode(response.responseText);
-        if(value.hasOwnProperty("state")){
+        if(Object.hasOwn(value, "state")){
           value.state = {
             value: value.state,
             label: value.state__label,

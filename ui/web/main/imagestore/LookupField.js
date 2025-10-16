@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.imagestore.LookupField");
 
 Ext.define("NOC.main.imagestore.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.imagestore.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.imagestore.LookupField",
+  uiStyle: "medium-combo",
 });

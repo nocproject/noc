@@ -671,7 +671,7 @@ Ext.define("NOC.inv.inv.Application", {
         scope: me,
         success: function(response){
           var data = Ext.decode(response.responseText);
-          if(Object.prototype.hasOwnProperty.call(data, "choices")){
+          if(Object.hasOwn(data, "choices")){
             // open popup with choices
             Ext.create("Ext.window.Window", {
               autoShow: true,
@@ -763,7 +763,7 @@ Ext.define("NOC.inv.inv.Application", {
                 },
               ],
             });
-          } else if(Object.prototype.hasOwnProperty.call(data, "status") && data.status){
+          } else if(Object.hasOwn(data, "status") && data.status){
             me.onReloadNav(); 
             NOC.info(data.message);
           }

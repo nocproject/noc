@@ -15,27 +15,27 @@ Ext.define("NOC.inv.sensorprofile.Application", {
     "NOC.inv.sensorprofile.Model",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField",
-    "NOC.pm.measurementunits.LookupField"
+    "NOC.pm.measurementunits.LookupField",
   ],
   model: "NOC.inv.sensorprofile.Model",
   search: true,
   rowClassField: "row_class",
 
-  initComponent: function() {
+  initComponent: function(){
     var me = this;
     Ext.apply(me, {
       columns: [
         {
           text: __("Name"),
           dataIndex: "name",
-          flex: 1
+          flex: 1,
         },
         {
           text: __("Labels"),
           dataIndex: "labels",
           renderer: NOC.render.LabelField,
-          width: 100
-        }
+          width: 100,
+        },
       ],
 
       fields: [
@@ -44,32 +44,32 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           xtype: "textfield",
           fieldLabel: __("Name"),
           allowBlank: false,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "description",
           xtype: "textarea",
           fieldLabel: __("Description"),
           allowBlank: true,
-          uiStyle: "extra"
+          uiStyle: "extra",
         },
         {
           name: "workflow",
           xtype: "wf.workflow.LookupField",
           fieldLabel: __("WorkFlow"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "style",
           xtype: "main.style.LookupField",
           fieldLabel: __("Style"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "units",
           xtype: "pm.measurementunits.LookupField",
           fieldLabel: __("Sensor Measurement Units"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "dynamic_classification_policy",
@@ -82,18 +82,18 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           store: {
             fields: ["id", "label"],
             data: [
-                {id: "D", label: "Disable"},
-                {id: "R", label: "By Rule"},
-            ]
+              {id: "D", label: "Disable"},
+              {id: "R", label: "By Rule"},
+            ],
           },
           defaultValue: "R",
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "enable_collect",
           xtype: "checkbox",
           boxLabel: __("Enable Collect"),
-          allowBlank: true
+          allowBlank: true,
         },
         {
           name: "collect_interval",
@@ -102,14 +102,14 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true,
           uiStyle: "medium",
           minValue: 1,
-          maxValue: 3600
+          maxValue: 3600,
         },
         {
           name: "bi_id",
           xtype: "displayfield",
           fieldLabel: __("BI ID"),
           allowBlank: true,
-          uiStyle: "medium"
+          uiStyle: "medium",
         },
         {
           name: "labels",
@@ -117,22 +117,22 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           fieldLabel: __("Labels"),
           allowBlank: true,
           query: {
-            "enable_sensorprofile": true
-          }
+            "enable_sensorprofile": true,
+          },
         },
         {
           name: "match_rules",
           xtype: "listform",
           fieldLabel: __("Match Rules"),
           items: [
-              {
-                name: "dynamic_order",
-                xtype: "numberfield",
-                fieldLabel: __("Dynamic Order"),
-                allowBlank: true,
-                defaultValue: 0,
-                uiStyle: "small"
-              },
+            {
+              name: "dynamic_order",
+              xtype: "numberfield",
+              fieldLabel: __("Dynamic Order"),
+              allowBlank: true,
+              defaultValue: 0,
+              uiStyle: "small",
+            },
             {
               name: "labels",
               xtype: "labelfield",
@@ -143,9 +143,9 @@ Ext.define("NOC.inv.sensorprofile.Application", {
               pickerPosition: "down",
               uiStyle: "extra",
               query: {
-                "allow_matched": true
-              }
+                "allow_matched": true,
               },
+            },
             {
               name: "handler",
               xtype: "main.handler.LookupField",
@@ -153,13 +153,13 @@ Ext.define("NOC.inv.sensorprofile.Application", {
               allowBlank: true,
               uiStyle: "medium",
               query: {
-                "allow_match_rule": true
-              }
-            }
-            ]
-        }
-      ]
+                "allow_match_rule": true,
+              },
+            },
+          ],
+        },
+      ],
     });
     me.callParent();
-  }
+  },
 });

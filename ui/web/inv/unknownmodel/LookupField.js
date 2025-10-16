@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.unknownmodel.LookupField");
 
 Ext.define("NOC.inv.unknownmodel.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.unknownmodel.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.unknownmodel.LookupField",
+  uiStyle: "medium-combo",
 });

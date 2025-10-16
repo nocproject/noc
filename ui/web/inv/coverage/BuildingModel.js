@@ -7,30 +7,30 @@
 console.debug("Defining NOC.inv.coverage.BuildingModel");
 
 Ext.define("NOC.inv.coverage.BuildingModel", {
-    extend: "Ext.data.Model",
-    rest_url: "/inv/coverage/{{parent}}/buildings/",
+  extend: "Ext.data.Model",
+  rest_url: "/inv/coverage/{{parent}}/buildings/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "preference",
-            type: "integer"
-        },
-        {
-            name: "building",
-            type: "string"
-        },
-        {
-            name: "building__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "entrance",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "preference",
+      type: "integer",
+    },
+    {
+      name: "building",
+      type: "string",
+    },
+    {
+      name: "building__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "entrance",
+      type: "string",
+    },
+  ],
 });

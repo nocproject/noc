@@ -111,6 +111,6 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
 
   onExport: function(){
     var me = this;
-    me.save(me, 'affected.csv');
+    me.save(me, "affected.csv");
   },
 });

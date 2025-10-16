@@ -25,7 +25,7 @@ Ext.define("NOC.main.home.Application", {
         scope: this,
         success: function(response){
           var data = Ext.decode(response.responseText);
-          if(Object.prototype.hasOwnProperty.call(data, "widgets") && !Ext.isEmpty(data.widgets)){
+          if(Object.hasOwn(data, "widgets") && !Ext.isEmpty(data.widgets)){
             var html = "";
             Ext.Array.each(data.widgets, function(widget){
               switch(widget.type){
@@ -45,7 +45,7 @@ Ext.define("NOC.main.home.Application", {
                 case "summary":
                   var rows = Ext.Array.map(widget.items, function(item){
                     var value = item.value;
-                    if(Object.prototype.hasOwnProperty.call(item, "link")){
+                    if(Object.hasOwn(item, "link")){
                       value = "<a href='" + item.link + "'>" + item.value + "</a>";
                     }
                     return "<tr class='noc-home-summary-select'><td>" + item.text + "</td><td style='padding-left: 5px;text-align: right;'>" + value + "</td></tr>";

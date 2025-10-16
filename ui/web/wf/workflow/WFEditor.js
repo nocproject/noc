@@ -108,15 +108,15 @@ Ext.define("NOC.wf.workflow.WFEditor", {
   //
   afterRender: function(){
     var me = this;
-        new_load_scripts([
-            "/ui/pkg/lodash/lodash.min.js",
-            "/ui/pkg/backbone/backbone.min.js",
-            "/ui/pkg/dagre/dagre.min.js",
-            "/ui/pkg/graphlib/graphlib.min.js",
-            "/ui/pkg/joint/joint.min.js",
-            "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
-            "/ui/web/wf/workflow/js/joint.element.Tools.js"
-        ], me, me.initMap);
+    new_load_scripts([
+      "/ui/pkg/lodash/lodash.min.js",
+      "/ui/pkg/backbone/backbone.min.js",
+      "/ui/pkg/dagre/dagre.min.js",
+      "/ui/pkg/graphlib/graphlib.min.js",
+      "/ui/pkg/joint/joint.min.js",
+      "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
+      "/ui/web/wf/workflow/js/joint.element.Tools.js",
+    ], me, me.initMap);
     me.callParent();
   },
   // Initialize JointJS Map
@@ -230,7 +230,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
             },
           });
           link.prop({data: me.loadData(transition, "transition")});
-          if(transition.hasOwnProperty("vertices")){
+          if(Object.hasOwn(transition, "vertices")){
             transition.vertices.forEach(function(vertex, index){
               link.insertVertex(index, vertex);
             });
@@ -336,12 +336,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     me.clearInspector();
 
     me.inspector.items = fields.map(function(field){
-      if(data.hasOwnProperty(field.name)){
+      if(Object.hasOwn(data, field.name)){
         field.value = data[field.name];
       }
       if(field.xtype === "fieldset"){
         field.items = field.items.map(function(item){
-          if(data.hasOwnProperty(item.name)){
+          if(Object.hasOwn(data, item.name)){
             item.value = data[item.name];
           }
           return item;
@@ -674,13 +674,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
                   element.from_state = findStateNameById(element.source.id);
                   element.to_state = findStateNameById(element.target.id);
                   element.data["vertices"] = [];
-                  if(element.hasOwnProperty("vertices")){
+                  if(Object.hasOwn(element, "vertices")){
                     element.data["vertices"] = element.vertices;
                   }
-                  if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0){
+                  if(Object.hasOwn(element.data, "remote_system") && element.data["remote_system"].length === 0){
                     delete element.data["remote_system"];
                   }
-                  if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0){
+                  if(Object.hasOwn(element.data, "remote_id") && element.data["remote_id"].length === 0){
                     delete element.data["remote_id"];
                   }
                   delete element.data["bi_id"];
@@ -702,10 +702,10 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       if(element.data["job_handler"] != null && element.data["job_handler"].length === 0){
         element.data["job_handler"] = null;
       }
-      if(element.data.hasOwnProperty("remote_system") && element.data["remote_system"].length === 0){
+      if(Object.hasOwn(element.data, "remote_system") && element.data["remote_system"].length === 0){
         delete element.data["remote_system"];
       }
-      if(element.data.hasOwnProperty("remote_id") && element.data["remote_id"].length === 0){
+      if(Object.hasOwn(element.data, "remote_id") && element.data["remote_id"].length === 0){
         delete element.data["remote_id"];
       }
       delete element.data["bi_id"];

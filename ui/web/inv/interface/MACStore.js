@@ -12,20 +12,20 @@ Ext.define("NOC.inv.interface.MACStore", {
   fields: [
     {
       name: "interfaces",
-      type: "auto"
+      type: "auto",
     },
     {
       name: "mac",
-      type: "string"
+      type: "string",
     },
     {
       name: "type",
-      type: "string"
+      type: "string",
     },
     {
       name: "vlan_id",
-      type: "integer"
-    }
+      type: "integer",
+    },
   ],
-  data: []
+  data: [],
 });

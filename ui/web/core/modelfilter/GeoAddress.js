@@ -11,7 +11,7 @@ Ext.define("NOC.core.modelfilter.GeoAddress", {
   extend: "NOC.core.modelfilter.Base",
   name: "__geoaddress",
 
-  initComponent: function() {
+  initComponent: function(){
     var me = this;
     me.combo = Ext.create("NOC.gis.geocoder.LookupField", {
       fieldLabel: me.title,
@@ -20,38 +20,38 @@ Ext.define("NOC.core.modelfilter.GeoAddress", {
       typeAheadDelay: 500,
       minChars: 4,
       pageSize: 0,
-      hideTrigger:  true,
+      hideTrigger: true,
       listeners: {
         scope: me,
         select: me.onChange,
-        clear: me.onChange
+        clear: me.onChange,
       },
       dataFields: ["id", "label", "style", "is_loose"],
       tpl:
         '<tpl for=".">' +
         '<div class="x-boundlist-item {style}">{label}</div>' +
-        "</tpl>"
+        "</tpl>",
     });
     Ext.apply(me, {
-      items: [me.combo]
+      items: [me.combo],
     });
     me.callParent();
   },
 
-  getFilter: function() {
+  getFilter: function(){
     var me = this,
       v = me.combo.getValue(),
       r = {};
-    if (v) {
+    if(v){
       r[me.name] = v;
     }
     return r;
   },
 
-  setFilter: function(filter) {
+  setFilter: function(filter){
     var me = this;
-    if (me.name in filter) {
+    if(me.name in filter){
       me.combo.setValue(filter[me.name]);
     }
-  }
+  },
 });

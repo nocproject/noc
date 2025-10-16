@@ -8,15 +8,15 @@
 console.debug("Defining NOC.core.modelfilter.Favorites");
 
 Ext.define("NOC.core.modelfilter.Favorites", {
-    extend: "NOC.core.modelfilter.AbstractRadioButton",
+  extend: "NOC.core.modelfilter.AbstractRadioButton",
 
-    constructor: function(config) {
-        this.clsYes = "noc-starred";
-        this.clsNo = "noc-unstarred";
-        this.toggleGroup = "favgroup";
-        this.glyphYes = NOC.glyph.star;
-        this.glyphNo = NOC.glyph.star;
-        Ext.apply(this, config);
-        this.callParent();
-    }
+  constructor: function(config){
+    this.clsYes = "noc-starred";
+    this.clsNo = "noc-unstarred";
+    this.toggleGroup = "favgroup";
+    this.glyphYes = NOC.glyph.star;
+    this.glyphNo = NOC.glyph.star;
+    Ext.apply(this, config);
+    this.callParent();
+  },
 });

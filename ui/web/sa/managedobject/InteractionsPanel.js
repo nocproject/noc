@@ -148,7 +148,6 @@ Ext.define("NOC.sa.managedobject.InteractionsPanel", {
   },
   //
   getRowClass: function(record){
-    var me = this;
     switch(record.get("op")){
       case 0:
         return "noc-int-command";

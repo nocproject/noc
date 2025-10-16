@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.networksegment.TreeCombo");
 
 Ext.define("NOC.inv.networksegment.ComboTree", {
-    extend: "NOC.core.combotree.ComboTree",
-    alias: "widget.inv.networksegment.ComboTree",
-    restUrl: "/inv/networksegment/"
+  extend: "NOC.core.combotree.ComboTree",
+  alias: "widget.inv.networksegment.ComboTree",
+  restUrl: "/inv/networksegment/",
 });

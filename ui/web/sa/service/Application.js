@@ -136,7 +136,7 @@ Ext.define("NOC.sa.service.Application", {
         },
       ],
       fields: [
-      {
+        {
           xtype: "fieldset",
           layout: "column",
           minWidth: this.formMinWidth,
@@ -151,39 +151,39 @@ Ext.define("NOC.sa.service.Application", {
           // margin: 0,
           padding: "5 15 0 15",
           items: [
-          {
-            border: false,
-            items: [
-              {
-                name: "name_template",
-                xtype: "textfield",
-                fieldLabel: __("Name Template"),
-                tabIndex: 10,
-                minWidth: 200,
-                labelWidth: labelWidth,
-                allowBlank: true,
-              },
-              {
-                name: "profile",
-                xtype: "sa.serviceprofile.LookupField",
-                fieldLabel: __("Profile"),
-                tabIndex: 20,
-                minWidth: 200,
-                labelWidth: labelWidth,
-                allowBlank: false,
-                autoFocus: true,
-              },
-              {
-                name: "description",
-                xtype: "textarea",
-                fieldLabel: __("Description"),
-                labelWidth: labelWidth,
-                allowBlank: true,
-                tabIndex: 30,
-              },
-            ],
-          },
-          {
+            {
+              border: false,
+              items: [
+                {
+                  name: "name_template",
+                  xtype: "textfield",
+                  fieldLabel: __("Name Template"),
+                  tabIndex: 10,
+                  minWidth: 200,
+                  labelWidth: labelWidth,
+                  allowBlank: true,
+                },
+                {
+                  name: "profile",
+                  xtype: "sa.serviceprofile.LookupField",
+                  fieldLabel: __("Profile"),
+                  tabIndex: 20,
+                  minWidth: 200,
+                  labelWidth: labelWidth,
+                  allowBlank: false,
+                  autoFocus: true,
+                },
+                {
+                  name: "description",
+                  xtype: "textarea",
+                  fieldLabel: __("Description"),
+                  labelWidth: labelWidth,
+                  allowBlank: true,
+                  tabIndex: 30,
+                },
+              ],
+            },
+            {
               border: false,
               items: [ // second column
                 {

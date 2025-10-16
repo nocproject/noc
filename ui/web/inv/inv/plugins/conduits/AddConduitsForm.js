@@ -7,86 +7,86 @@
 console.debug("Defining NOC.inv.inv.plugins.conduits.AddConduitsForm");
 
 Ext.define("NOC.inv.inv.plugins.conduits.AddConduitsForm", {
-    extend: "Ext.Window",
-    title: __("Add Conduits"),
-    closable: true,
-    layout: "fit",
-    app: null,
-    modal: true,
-    width: 400,
-    height: 130,
-    storeData: null,
+  extend: "Ext.Window",
+  title: __("Add Conduits"),
+  closable: true,
+  layout: "fit",
+  app: null,
+  modal: true,
+  width: 400,
+  height: 130,
+  storeData: null,
 
-    initComponent: function() {
-        var me = this;
+  initComponent: function(){
+    var me = this;
 
-        me.store = Ext.create("Ext.data.Store", {
-            model: null,
-            fields: ["id", "label", "name", "s_bearing", "map_distance"],
-            data: me.storeData
-        });
+    me.store = Ext.create("Ext.data.Store", {
+      model: null,
+      fields: ["id", "label", "name", "s_bearing", "map_distance"],
+      data: me.storeData,
+    });
 
-        me.targetCombo = Ext.create("Ext.form.field.ComboBox", {
-            name: "connect_to",
-            fieldLabel: __("Connect to"),
-            allowBlank: false,
-            store: me.store,
-            displayField: "label",
-            valueField: "id",
-            anchor: "100%"
-        });
+    me.targetCombo = Ext.create("Ext.form.field.ComboBox", {
+      name: "connect_to",
+      fieldLabel: __("Connect to"),
+      allowBlank: false,
+      store: me.store,
+      displayField: "label",
+      valueField: "id",
+      anchor: "100%",
+    });
 
-        me.distanceField = Ext.create("Ext.form.field.Text", {
-            name: "project_distance",
-            fieldLabel: __("Project distance (m)"),
-            allowBlank: true
-        });
+    me.distanceField = Ext.create("Ext.form.field.Text", {
+      name: "project_distance",
+      fieldLabel: __("Project distance (m)"),
+      allowBlank: true,
+    });
 
-        me.formPanel = Ext.create("Ext.form.Panel", {
-            items: [
-                me.targetCombo,
-                me.distanceField
-            ],
-            buttons: [
-                {
-                    text: __("Connect"),
-                    glyph: NOC.glyph.plus,
-                    formBind: true,
-                    scope: me,
-                    handler: me.onConnect
-                },
-                {
-                    text: __("Close"),
-                    glyph: NOC.glyph.times,
-                    scope: me,
-                    handler: me.onClose
-                }
-            ]
-        });
+    me.formPanel = Ext.create("Ext.form.Panel", {
+      items: [
+        me.targetCombo,
+        me.distanceField,
+      ],
+      buttons: [
+        {
+          text: __("Connect"),
+          glyph: NOC.glyph.plus,
+          formBind: true,
+          scope: me,
+          handler: me.onConnect,
+        },
+        {
+          text: __("Close"),
+          glyph: NOC.glyph.times,
+          scope: me,
+          handler: me.onClose,
+        },
+      ],
+    });
 
-        Ext.apply(me, {
-            items: [me.formPanel]
-        });
+    Ext.apply(me, {
+      items: [me.formPanel],
+    });
 
-        me.callParent();
-    },
-    //
-    onClose: function() {
-        var me = this;
-        me.close();
-    },
-    //
-    onConnect: function() {
-        var me = this,
-            t = me.targetCombo.getValue(),
-            r = me.targetCombo.findRecordByValue(t);
-        me.app.addConduits({
-            target_id: r.get("id"),
-            target_name: r.get("name"),
-            project_distance: parseFloat(me.distanceField.getValue()),
-            s_bearing: r.get("s_bearing"),
-            map_distance: r.get("map_distance")
-        });
-        me.close();
-    }
+    me.callParent();
+  },
+  //
+  onClose: function(){
+    var me = this;
+    me.close();
+  },
+  //
+  onConnect: function(){
+    var me = this,
+      t = me.targetCombo.getValue(),
+      r = me.targetCombo.findRecordByValue(t);
+    me.app.addConduits({
+      target_id: r.get("id"),
+      target_name: r.get("name"),
+      project_distance: parseFloat(me.distanceField.getValue()),
+      s_bearing: r.get("s_bearing"),
+      map_distance: r.get("map_distance"),
+    });
+    me.close();
+  },
 });

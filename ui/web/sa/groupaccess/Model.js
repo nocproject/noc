@@ -7,31 +7,31 @@
 console.debug("Defining NOC.sa.groupaccess.Model");
 
 Ext.define("NOC.sa.groupaccess.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/sa/groupaccess/",
+  extend: "Ext.data.Model",
+  rest_url: "/sa/groupaccess/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "group",
-            type: "int"
-        },
-        {
-            name: "group__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "administrative_domain",
-            type: "int"
-        },
-        {
-            name: "administrative_domain__label",
-            type: "string",
-            persist: false
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "group",
+      type: "int",
+    },
+    {
+      name: "group__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "administrative_domain",
+      type: "int",
+    },
+    {
+      name: "administrative_domain__label",
+      type: "string",
+      persist: false,
+    },
+  ],
 });

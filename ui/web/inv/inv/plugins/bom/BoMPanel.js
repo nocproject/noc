@@ -254,7 +254,7 @@ Ext.define("NOC.inv.inv.plugins.bom.BoMPanel", {
   preview: function(data, objectId){
     var me = this,
       vm = me.getViewModel();
-    if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
+    if(Object.hasOwn(data, "status") && !data.status){
       NOC.error(data.message);
       return
     }

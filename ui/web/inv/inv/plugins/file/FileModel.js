@@ -7,31 +7,31 @@
 console.debug("Defining NOC.inv.inv.plugins.file.FileModel");
 
 Ext.define("NOC.inv.inv.plugins.file.FileModel", {
-    extend: "Ext.data.Model",
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "mime_type",
-            type: "string"
-        },
-        {
-            name: "size",
-            type: "int"
-        },
-        {
-            name: "ts",
-            type: "date"
-        },
-        {
-            name: "description",
-            type: "string"
-        }
-    ]
+  extend: "Ext.data.Model",
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "mime_type",
+      type: "string",
+    },
+    {
+      name: "size",
+      type: "int",
+    },
+    {
+      name: "ts",
+      type: "date",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+  ],
 });

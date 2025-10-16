@@ -277,7 +277,7 @@ Ext.define("NOC.core.label.LabelField", {
     return me.multiSelectItemTpl.apply(me.valueCollection.getRange());
   },
 
-  setValue: function(value, add, skipLoad){
+  setValue: function(value, add){
     var me = this,
       valueStore = me.valueStore,
       valueField = me.valueField,
@@ -335,8 +335,6 @@ Ext.define("NOC.core.label.LabelField", {
         listener = function(e){
           if(e.clipboardData && Ext.isFunction(e.clipboardData.setData)){
             e.clipboardData.setData("text/plain", text);
-          } else{ // IE 11
-            clipboardData.setData("Text", text);
           }
           e.preventDefault();
         };
@@ -411,7 +409,7 @@ Ext.define("NOC.core.label.LabelField", {
   getArrayValues: function(data){
     var me = this;
     if(data){
-      return data.map(function(element){return element.hasOwnProperty(me.valueField) ? element[me.valueField] : element});
+      return data.map(function(element){return Object.hasOwn(element, me.valueField) ? element[me.valueField] : element});
     }
     return me.valueCollection.items.map(function(element){return element.get(me.valueField)});
   },

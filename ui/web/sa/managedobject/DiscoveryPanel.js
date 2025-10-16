@@ -205,7 +205,7 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
   preview: function(record){
     var me = this;
 
-    me.logPanel.items.first().update('');
+    me.logPanel.items.first().update("");
     me.currentRecord = record;
     me.setTitle(record.get("name") + " discovery");
     if(me.historyHashPrefix){
@@ -234,7 +234,6 @@ Ext.define("NOC.sa.managedobject.DiscoveryPanel", {
   },
   //
   getRowClass: function(record){
-    var me = this;
     if(!record.get("enable_profile")){
       return "noc-inactive";
     } else if(record.get("last_status") === "F"){

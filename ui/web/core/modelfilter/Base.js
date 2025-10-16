@@ -8,21 +8,21 @@
 console.debug("Defining NOC.core.modelfilter.Base");
 
 Ext.define("NOC.core.modelfilter.Base", {
-    extend: "Ext.container.Container",
-    ftype: "base",
-    name: null,
-    handler: undefined,
-    width: 180,
+  extend: "Ext.container.Container",
+  ftype: "base",
+  name: null,
+  handler: undefined,
+  width: 180,
 
-    onChange: function() {
-        var me = this;
-        if(Ext.isDefined(me.handler))
-            me.handler();
-    },
+  onChange: function(){
+    var me = this;
+    if(Ext.isDefined(me.handler))
+      me.handler();
+  },
 
-    getFilter: function() {
-        return {};
-    },
+  getFilter: function(){
+    return {};
+  },
 
-    setFilter: Ext.emptyFn
+  setFilter: Ext.emptyFn,
 });

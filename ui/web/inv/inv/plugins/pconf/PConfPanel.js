@@ -271,7 +271,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfPanel", {
     if(Ext.isEmpty(gridStore) || Ext.isEmpty(groupStore) || Ext.isEmpty(tableStore)){
       return;
     }
-    if(Object.prototype.hasOwnProperty.call(data, "status") && !data.status){
+    if(Object.hasOwn(data, "status") && !data.status){
       NOC.error(data.message);
       return
     }

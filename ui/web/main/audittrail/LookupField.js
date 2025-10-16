@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.audittrail.LookupField");
 
 Ext.define("NOC.main.audittrail.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.audittrail.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.audittrail.LookupField",
+  uiStyle: "medium-combo",
 });

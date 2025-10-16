@@ -19,7 +19,7 @@ Ext.define("NOC.main.desktop.About", {
   width: 380,
   height: 190,
 
-  initComponent: function () {
+  initComponent: function(){
     var me = this;
     Ext.apply(me, {
       items: [

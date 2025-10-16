@@ -7,7 +7,7 @@
 console.debug("Defining NOC.dns.dnszone.LookupField");
 
 Ext.define("NOC.dns.dnszone.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.dns.dnszone.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.dns.dnszone.LookupField",
+  uiStyle: "medium-combo",
 });

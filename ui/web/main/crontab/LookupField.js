@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.crontab.LookupField");
 
 Ext.define("NOC.main.crontab.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.crontab.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.crontab.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -7,9 +7,9 @@
 console.debug("Defining NOC.ip.ipam.ApplicationModel");
 
 Ext.define("NOC.ip.ipam.ApplicationModel", {
-    extend: "Ext.app.ViewModel",
-    alias: "viewmodel.ip.ipam",
-    data: {
-        activeItem: "ipam-vrf-list"
-    }
+  extend: "Ext.app.ViewModel",
+  alias: "viewmodel.ip.ipam",
+  data: {
+    activeItem: "ipam-vrf-list",
+  },
 });
