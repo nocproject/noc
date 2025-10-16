@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,8 +17,8 @@ import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
-    ListField,
-    EmbeddedDocumentField,
+    EmbeddedDocumentListField,
+    ReferenceField,
     BooleanField,
     DateTimeField,
     LongField,
@@ -35,8 +35,12 @@ from noc.core.scheduler.scheduler import Scheduler
 from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
 from noc.core.etl.portmapper.loader import loader as portmapper_loader
 from noc.core.etl.portmapper.base import BasePortMapper
+from noc.core.change.decorator import change
+from noc.aaa.models.apikey import APIKey
+from noc.config import config
 
 id_lock = Lock()
+REFERENCE_CODE = "rs"
 
 
 class EnvItem(EmbeddedDocument):
@@ -52,6 +56,7 @@ class EnvItem(EmbeddedDocument):
 
 
 @bi_sync
+@change
 @on_delete
 @on_save
 @on_delete_check(
@@ -104,13 +109,18 @@ class EnvItem(EmbeddedDocument):
     delete=[("main.NotificationGroupSubscription", "remote_system")],
 )
 class RemoteSystem(Document):
-    meta = {"collection": "noc.remotesystem", "strict": False, "auto_create_index": False}
+    meta = {
+        "collection": "noc.remotesystem",
+        "strict": False,
+        "auto_create_index": False,
+        "indexes": ["remote_collectors_policy"],
+    }
 
     name = StringField(unique=True)
     description = StringField()
     handler = StringField()
     # Environment variables
-    environment = ListField(EmbeddedDocumentField(EnvItem))
+    environment = EmbeddedDocumentListField(EnvItem)
     # Enable extractors/loaders
     enable_address = BooleanField()
     enable_admdiv = BooleanField()
@@ -142,6 +152,16 @@ class RemoteSystem(Document):
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
     enable_fmevent = BooleanField()
+    enable_metrics = BooleanField()
+    api_key: Optional[APIKey] = ReferenceField(APIKey)
+    remote_collectors_policy: str = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("E", "Enable"),
+            ("S", "Strict"),
+        ],
+        default="D",
+    )
     portmapper_name = StringField()
     managed_object_loader_policy = StringField(
         choices=[("D", "As Discovered"), ("M", "As Managed Object")],
@@ -218,6 +238,27 @@ class RemoteSystem(Document):
     @property
     def managed_object_as_discovered(self) -> bool:
         return self.managed_object_loader_policy == "D"
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.sa.models.managedobject import ManagedObject
+
+        changed_fields = set(changed_fields or [])
+        if config.datastream.enable_cfgtarget and changed_fields.intersection(
+            {
+                "name",
+                "api_key",
+                "remote_collectors_policy",
+                "enable_fmevent",
+            }
+        ):
+            if self.remote_collectors_policy == "S":
+                for mo_id in ManagedObject.objects.filter(remote_system=self).values_list(
+                    "id", flat=True
+                ):
+                    yield "cfgtarget", mo_id
+            else:
+                for mo_id in ManagedObject.objects.filter().values_list("id", flat=True):
+                    yield "cfgtarget", mo_id
 
     def get_portmapper(self) -> "BasePortMapper":
         """Getting portmapper functions"""
@@ -375,6 +416,28 @@ class RemoteSystem(Document):
                 scheduler.submit(jcls=self.JCLS, key=self.id, ts=ts)
                 return
         scheduler.remove_job(jcls=self.JCLS, key=self.id)
+
+    @classmethod
+    def get_collector_config(cls, remote_system: "RemoteSystem") -> Dict[str, Any]:
+        """Collector config"""
+        if remote_system.remote_collectors_policy != "D" and remote_system.api_key:
+            return {
+                "name": remote_system.name,
+                "api_key": remote_system.api_key.key,
+                "bi_id": remote_system.bi_id,
+                "enable_fmevent": remote_system.enable_fmevent,
+                "enable_metrics": remote_system.enable_metrics,
+                "nodata_policy": "C",
+                "nodata_ttl": 3600,
+                # register_unknown_policy
+                "remote_system": str(remote_system.id),
+            }
+        return {}
+
+    @classmethod
+    def clean_reference(cls, remote_system: "RemoteSystem", remote_id: str):
+        """Build reference string. Maybe add aliases ?"""
+        return f"{REFERENCE_CODE}:{remote_system.name}:{remote_id}"
 
     def reset_lock(self):
         """"""
