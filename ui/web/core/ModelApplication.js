@@ -910,6 +910,9 @@ Ext.define("NOC.core.ModelApplication", {
       } else{
         field.setValue("");
       }
+      if(["statefield"].includes(field.xtype)){
+        field.setDisabled(true);
+      }
       field.resetOriginalValue();
     });
     this.form.reset();
@@ -968,7 +971,8 @@ Ext.define("NOC.core.ModelApplication", {
           r[v] = field.cleanValue(
             me.currentRecord,
             me.store.rest_url,
-          )
+          );
+          field.setDisabled(false);
         } else{
           r[v] = data[v];
         }
