@@ -78,8 +78,8 @@ if(httpRequest.status === 200){
   document.title = setup.brand + "|" + setup.installation_name;
   // Add favicon
   if(setup.favicon_mime){
-    var link = document.createElement('link');
-    link.rel = 'icon';
+    var link = document.createElement("link");
+    link.rel = "icon";
     link.type = setup.favicon_mime;
     link.href = setup.favicon_url;
     document.head.appendChild(link);

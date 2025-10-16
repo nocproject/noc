@@ -9,54 +9,54 @@
 console.debug("Defining NOC.inv.map.SelectIconForm");
 
 Ext.define("NOC.inv.map.SelectIconForm", {
-    extend: "Ext.Window",
-    requires: [
-        "NOC.main.ref.stencil.LookupField"
-    ],
-    title: __("Select Shape"),
-    autoShow: true,
-    modal: true,
-    app: null,
-    closable: true,
+  extend: "Ext.Window",
+  requires: [
+    "NOC.main.ref.stencil.LookupField",
+  ],
+  title: __("Select Shape"),
+  autoShow: true,
+  modal: true,
+  app: null,
+  closable: true,
 
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            items: [
-                {
-                    xtype: "form",
-                    items: [
-                        {
-                            xtype: "main.ref.stencil.LookupField",
-                            name: "shape",
-                            fieldLabel: __("Shape"),
-                            labelWidth: 40,
-                            minWidth: 300,
-                            labelAlign: "left",
-                            allowBlank: false
-                        }
-                    ]
-                }
-            ],
-            buttons: [
-                {
-                    text: __("Set"),
-                    itemId: "set",
-                    glyph: NOC.glyph.check,
-                    scope: me,
-                    /*formBind: true,
+  initComponent: function(){
+    var me = this;
+    Ext.apply(me, {
+      items: [
+        {
+          xtype: "form",
+          items: [
+            {
+              xtype: "main.ref.stencil.LookupField",
+              name: "shape",
+              fieldLabel: __("Shape"),
+              labelWidth: 40,
+              minWidth: 300,
+              labelAlign: "left",
+              allowBlank: false,
+            },
+          ],
+        },
+      ],
+      buttons: [
+        {
+          text: __("Set"),
+          itemId: "set",
+          glyph: NOC.glyph.check,
+          scope: me,
+          /*formBind: true,
                     disabled: true,*/
-                    handler: me.onSet
-                }
-            ]
-        });
-        me.callParent();
-    },
-    // Called when "Set" button pressed
-    onSet: function() {
-        var me = this;
-        var r = me.down("form").getForm().getValues();
-        me.close();
-        me.app.setIcon(r.shape);
-    }
+          handler: me.onSet,
+        },
+      ],
+    });
+    me.callParent();
+  },
+  // Called when "Set" button pressed
+  onSet: function(){
+    var me = this;
+    var r = me.down("form").getForm().getValues();
+    me.close();
+    me.app.setIcon(r.shape);
+  },
 });

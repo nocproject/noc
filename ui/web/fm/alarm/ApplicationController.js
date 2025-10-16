@@ -40,7 +40,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       viewModel = view.getViewModel(),
       prefix = url[0], queryStr = url.length ? url[1] : undefined;
     this.initFilter(viewModel);
-    if(this.getView().getCmd() === "history" && Object.prototype.hasOwnProperty.call(this.getView().noc, "cmd")){
+    if(this.getView().getCmd() === "history" && Object.hasOwn(this.getView().noc, "cmd")){
       var alarmId = this.getView().noc.cmd.args[0];
       if(this.urlHasId("fm.alarm/" + alarmId)){
         view.setHistoryHash(alarmId);
@@ -128,13 +128,13 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     this.updateHash(false);
   },
   onChangeDisplayFilters: function(data){
-    if(Object.prototype.hasOwnProperty.call(data, "hasProfiles") && !Ext.Object.isEmpty(data.hasProfiles)){
+    if(Object.hasOwn(data, "hasProfiles") && !Ext.Object.isEmpty(data.hasProfiles)){
       window.localStorage.setItem("fm-alarm-has-profiles", JSON.stringify(data.hasProfiles));
     } else{
       this.getViewModel().set("displayFilter.hasProfiles",
                               this.getView().down("[itemId=fm-alarm-multi-panel]").getInitValues());
     }
-    if(Object.prototype.hasOwnProperty.call(data, "duration") && !Ext.Object.isEmpty(data.duration)){
+    if(Object.hasOwn(data, "duration") && !Ext.Object.isEmpty(data.duration)){
       window.localStorage.setItem("fm-alarm-duration", JSON.stringify(data.duration));
     } else{
       this.getViewModel().set("displayFilter.duration",
@@ -161,13 +161,13 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
   deserialize: function(queryStr, viewModel){
     var params, cleared_after, listsView, profiles,
       setParam = function(name, value){
-        if(!Object.prototype.hasOwnProperty.call(params, name)){
+        if(!Object.hasOwn(params, name)){
           params[name] = value;
         }
       },
       restoreCombo = function(name){
         var me = this;
-        if(Object.prototype.hasOwnProperty.call(params, name)){
+        if(Object.hasOwn(params, name)){
           var store = me.getView().down("[name=" + name + "]").getStore();
           store.load({
             params: {id: params[name]}, callback: function(records){
@@ -237,7 +237,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
     setParam("wait_tt", 0);
     // restore date and datetime params
     Ext.each(["timestamp__gte", "timestamp__lte"], function(name){
-      if(Object.prototype.hasOwnProperty.call(params, name)){
+      if(Object.hasOwn(params, name)){
         params[name] = Ext.Date.parse(params[name], "Y-m-d\\TH:i:s");
       }
     });
@@ -253,7 +253,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       "administrative_domain",
     ], restoreTagField, this);
     // don't change, http params is string compare with int, 0 == "0"
-    if(Object.prototype.hasOwnProperty.call(params, "cleared_after") && params.cleared_after != 0){
+    if(Object.hasOwn(params, "cleared_after") && params.cleared_after != 0){
       listsView = this.getView().lookupReference("fm-alarm-list");
       cleared_after = params["cleared_after"];
       listsView.lookupReference("fm-alarm-sidebar").down("[reference=fm-alarm-recent-switcher]").setExpanded(true);
@@ -321,7 +321,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
       {key: "alarm_class", valueField: "id"},
       {key: "administrative_domain", valueField: "id"},
     ], setParam);
-    if(Object.prototype.hasOwnProperty.call(value, "profiles")){
+    if(Object.hasOwn(value, "profiles")){
       var i, len = value.profiles.length;
       for(i = 0; i < len; i++){
         var item = value.profiles[i], v = item.profileId + ":",
@@ -469,7 +469,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
             return item.total_subscribers.concat(item.total_services)
           }));
           selectionSummary = Ext.Array.reduce(selection, function(prev, item){
-            if(Object.prototype.hasOwnProperty.call(prev, item.profile)){
+            if(Object.hasOwn(prev, item.profile)){
               prev[item.profile] += item.summary
             } else{
               prev[item.profile] = item.summary
@@ -479,7 +479,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
 
           summary = Ext.Array.map(selected, function(item){
             return Ext.merge(item, {
-              summary: (Object.prototype.hasOwnProperty.call(selectionSummary, item.id)) ? selectionSummary[item.id] : 0,
+              summary: (Object.hasOwn(selectionSummary, item.id)) ? selectionSummary[item.id] : 0,
             });
           });
         } else{
@@ -518,7 +518,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
               if(!data.status){
                 Ext.MessageBox.show({
                   title: "Error",
-                  message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+                  message: Object.hasOwn(data, "message") ? data.message : msg,
                   buttons: Ext.Msg.OK,
                   icon: Ext.Msg.ERROR,
                 });
@@ -544,7 +544,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
   //   if(!data.status){
   //     Ext.MessageBox.show({
   //       title: "Error",
-  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       message: Object.hasOwn(data, "message") ? data.message : msg,
   //       buttons: Ext.Msg.OK,
   //       icon: Ext.Msg.ERROR,
   //     });
@@ -560,7 +560,7 @@ Ext.define("NOC.fm.alarm.ApplicationController", {
   //   } else{
   //     Ext.MessageBox.show({
   //       title: "Error",
-  //       message: Object.prototype.hasOwnProperty.call(data, "message") ? data.message : msg,
+  //       message: Object.hasOwn(data, "message") ? data.message : msg,
   //       buttons: Ext.Msg.OK,
   //       icon: Ext.Msg.ERROR,
   //     });

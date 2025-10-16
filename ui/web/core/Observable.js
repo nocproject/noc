@@ -7,57 +7,57 @@
 console.debug("Defining NOC.core.Observable");
 
 Ext.define("NOC.core.Observable", {
-    requires: [
-        "NOC.core.ObservableModel",
-        "Ext.data.ArrayStore"
-    ],
-    qty: 0,
+  requires: [
+    "NOC.core.ObservableModel",
+    "Ext.data.ArrayStore",
+  ],
+  qty: 0,
 
-    constructor: function(config) {
-        this.subscribers = Ext.create("Ext.data.ArrayStore", {
-            fields: [
-                {name: "key", type: "string"},
-                {name: "value"}
-            ]
-        });
-        this.stored = Ext.create("Ext.data.ArrayStore", {
-            model: "NOC.core.ObservableModel"
-        });
-        this.initConfig(config);
-        return this;
-    },
+  constructor: function(config){
+    this.subscribers = Ext.create("Ext.data.ArrayStore", {
+      fields: [
+        {name: "key", type: "string"},
+        {name: "value"},
+      ],
+    });
+    this.stored = Ext.create("Ext.data.ArrayStore", {
+      model: "NOC.core.ObservableModel",
+    });
+    this.initConfig(config);
+    return this;
+  },
 
-    next: function(values) {
-        var me = this;
-        this.stored.loadRecords(values);
-        this.subscribers.each(function(record) {
-            var key = record.get("key"),
-                cb = record.get("value"),
-                valueRecord = me.stored.getById(key);
-            if(valueRecord && valueRecord.get("value")) {
-                cb(valueRecord.get("value"));
-            } else {
-                console.warn(key + " permission not found");
-                cb([]);
-            }
-        });
-    },
+  next: function(values){
+    var me = this;
+    this.stored.loadRecords(values);
+    this.subscribers.each(function(record){
+      var key = record.get("key"),
+        cb = record.get("value"),
+        valueRecord = me.stored.getById(key);
+      if(valueRecord && valueRecord.get("value")){
+        cb(valueRecord.get("value"));
+      } else{
+        console.warn(key + " permission not found");
+        cb([]);
+      }
+    });
+  },
 
-    subscribe: function(value) {
-        this.qty += 1;
-        this.subscribers.add(value);
-    },
+  subscribe: function(value){
+    this.qty += 1;
+    this.subscribers.add(value);
+  },
 
-    isLoaded: function() {
-        return this.stored.isLoaded();
-    },
+  isLoaded: function(){
+    return this.stored.isLoaded();
+  },
 
-    getPermissions: function(key) {
-        var record = this.stored.getById(key);
+  getPermissions: function(key){
+    var record = this.stored.getById(key);
 
-        if(record) {
-            return record.get("value");
-        }
-        return [];
+    if(record){
+      return record.get("value");
     }
+    return [];
+  },
 });

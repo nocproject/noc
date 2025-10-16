@@ -7,6 +7,6 @@
 console.debug("Defining NOC.sa.service.TreeCombo");
 
 Ext.define("NOC.sa.service.TreeCombo", {
-    extend: "NOC.core.TreeCombo",
-    alias: "widget.sa.service.TreeCombo"
+  extend: "NOC.core.TreeCombo",
+  alias: "widget.sa.service.TreeCombo",
 });

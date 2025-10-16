@@ -65,7 +65,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmController", {
         if(data.status){
           NOC.info(__("Escalated"));
         } else{
-          NOC.error(__("Escalate failed : ") + (Object.prototype.hasOwnProperty.call(data, "error") ? data.error : "unknowns error!"));
+          NOC.error(__("Escalate failed : ") + (Object.hasOwn(data, "error") ? data.error : "unknowns error!"));
         }
       },
       failure: function(){

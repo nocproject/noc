@@ -4,11 +4,11 @@
 // Copyright (C) 2007-2016 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug('Defining NOC.inv.map.BasketController');
+console.debug("Defining NOC.inv.map.BasketController");
 
-Ext.define('NOC.inv.map.BasketController', {
-  extend: 'Ext.app.ViewController',
-  alias: 'controller.basket',
+Ext.define("NOC.inv.map.BasketController", {
+  extend: "Ext.app.ViewController",
+  alias: "controller.basket",
 
   mixins: [
     "NOC.core.mixins.Export",
@@ -29,23 +29,23 @@ Ext.define('NOC.inv.map.BasketController', {
   onCreateMaintainceClick: function(){
     var grid = this.getView();
 
-    grid.fireEvent('createmaintaince', grid.getStore().getData());
+    grid.fireEvent("createmaintaince", grid.getStore().getData());
   },
 
   onAddToMaintainceClick: function(){
     var grid = this.getView();
 
-    grid.fireEvent('addtomaintaince', grid.getStore().getData());
+    grid.fireEvent("addtomaintaince", grid.getStore().getData());
   },
 
   onExportClick: function(){
     this.save(this.getView(),
-              'basket.csv',
+              "basket.csv",
               [
-                {dataIndex: 'object'},
-                {dataIndex: 'address'},
-                {dataIndex: 'platform'},
-                {dataIndex: 'time'},
+                {dataIndex: "object"},
+                {dataIndex: "address"},
+                {dataIndex: "platform"},
+                {dataIndex: "time"},
 
               ])
   },

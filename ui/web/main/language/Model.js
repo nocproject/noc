@@ -7,29 +7,29 @@
 console.debug("Defining NOC.main.language.Model");
 
 Ext.define("NOC.main.language.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/main/language/",
+  extend: "Ext.data.Model",
+  rest_url: "/main/language/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
 
-        {
-            name: "name",
-            type: "string"
-        },
+    {
+      name: "name",
+      type: "string",
+    },
 
-        {
-            name: "native_name",
-            type: "string"
-        },
+    {
+      name: "native_name",
+      type: "string",
+    },
         
-        {
-            name: "is_active",
-            type: "boolean",
-            defaultValue: false
-        }
-    ]
+    {
+      name: "is_active",
+      type: "boolean",
+      defaultValue: false,
+    },
+  ],
 });

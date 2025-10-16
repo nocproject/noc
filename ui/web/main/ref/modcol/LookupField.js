@@ -7,18 +7,18 @@
 console.debug("Defining NOC.main.ref.modcol.LookupField");
 
 Ext.define("NOC.main.ref.modcol.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.ref.modcol.LookupField",
-    tpl: [
-        '<tpl for=".">',
-            '<div class="x-boundlist-item">',
-                '{label}<br/>',
-                '<div class="item-description">',
-                    '<tpl if="table">Table: {table}</tpl>',
-                    '<tpl if="collection">Collection: {collection}</tpl>',
-                '</div>',
-            '</div>',
-        '</tpl>'
-    ],
-    uiStyle: "large"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.ref.modcol.LookupField",
+  tpl: [
+    '<tpl for=".">',
+    '<div class="x-boundlist-item">',
+    "{label}<br/>",
+    '<div class="item-description">',
+    '<tpl if="table">Table: {table}</tpl>',
+    '<tpl if="collection">Collection: {collection}</tpl>',
+    "</div>",
+    "</div>",
+    "</tpl>",
+  ],
+  uiStyle: "large",
 });

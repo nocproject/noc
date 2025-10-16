@@ -35,12 +35,12 @@ Ext.define("NOC.sa.discoveredobject.controller.Grid", {
     var renderPlugin, grid = this.getView();
 
     switch(record.get("cmd")){
-      case"SCREEN": {
+      case "SCREEN": {
         renderPlugin = grid.findPlugin("bufferedrenderer");
         grid.getSelectionModel().selectRange(0, renderPlugin.getLastVisibleRowIndex());
         return;
       }
-      case"N_ROWS": {
+      case "N_ROWS": {
         Ext.Msg.prompt(__("Select rows"), __("Please enter number:"), function(btn, text){
           if(btn === "ok"){
             this.getNRows(grid, "0", text);
@@ -48,7 +48,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Grid", {
         }, this);
         break;
       }
-      case"PERIOD": {
+      case "PERIOD": {
         Ext.Msg.prompt(__("Select period"), __("Please enter period (start,qty), first pos is 0:"), function(btn, text){
           if(btn === "ok"){
             this.getNRows(grid, text.split(",")[0], text.split(",")[1]);

@@ -307,7 +307,7 @@ Ext.define("NOC.pm.metricaction.Application", {
                   xtype: "textfield",
                   fieldLabel: __("Name"),
                   margin: "10 0 0 0",
-                  regex: /^[a-zA-Z0-9\-\_ ]+( \| [a-zA-Z0-9\-\_ ]+)*$/,
+                  regex: /^[a-zA-Z0-9\-_ ]+( \| [a-zA-Z0-9\-_ ]+)*$/,
                 },
                 {
                   name: "uuid",
@@ -637,7 +637,7 @@ Ext.define("NOC.pm.metricaction.Application", {
         for(var i = 0; i < keys.length - 1; i++){
           var key = keys[i];
 
-          if(!curStep[key] && !Object.prototype.hasOwnProperty.call(curStep, key)){
+          if(!curStep[key] && !Object.hasOwn(curStep, key)){
             var nextKey = keys[i + 1];
             var useArray = /^\+?(0|[1-9]\d*)$/.test(nextKey);
             curStep[key] = useArray ? [] : {};
@@ -673,7 +673,7 @@ Ext.define("NOC.pm.metricaction.Application", {
         me.saveInlines(
           data[me.idField],
           me.inlineStores.filter(function(store){
-            return !(store.hasOwnProperty("isLocal") && store.isLocal);
+            return !(Object.hasOwn(store, "isLocal") && store.isLocal);
           }));
         me.unmask();
         NOC.msg.complete(__("Saved"));

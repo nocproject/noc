@@ -7,7 +7,7 @@
 console.debug("Defining NOC.wf.state.LookupField");
 
 Ext.define("NOC.wf.state.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.wf.state.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.wf.state.LookupField",
+  uiStyle: "medium-combo",
 });

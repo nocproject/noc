@@ -7,21 +7,21 @@
 console.debug("Defining NOC.main.datastreamconfig.Model");
 
 Ext.define("NOC.main.datastreamconfig.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/main/datastreamconfig/",
+  extend: "Ext.data.Model",
+  rest_url: "/main/datastreamconfig/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "formats",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "formats",
+      type: "auto",
+    },
+  ],
 });

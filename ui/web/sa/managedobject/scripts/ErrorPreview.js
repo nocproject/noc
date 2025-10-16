@@ -7,18 +7,18 @@
 console.debug("Defining NOC.sa.managedobject.scripts.ErrorPreview");
 
 Ext.define("NOC.sa.managedobject.scripts.ErrorPreview", {
-    extend: "NOC.sa.managedobject.scripts.ResultPreview",
+  extend: "NOC.sa.managedobject.scripts.ResultPreview",
 
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                bodyPadding: 4,
-                html: "<b>ERROR: </b>" + Ext.util.Format.htmlEncode(me.result)
-            }]
-        });
-        me.callParent();
-    }
+  initComponent: function(){
+    var me = this;
+    Ext.apply(me, {
+      items: [{
+        xtype: "container",
+        autoScroll: true,
+        bodyPadding: 4,
+        html: "<b>ERROR: </b>" + Ext.util.Format.htmlEncode(me.result),
+      }],
+    });
+    me.callParent();
+  },
 });

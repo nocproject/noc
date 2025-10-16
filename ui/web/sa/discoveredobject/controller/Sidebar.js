@@ -57,7 +57,7 @@ Ext.define("NOC.sa.discoveredobject.controller.Sidebar", {
 
     // don't save parameter 'addresses' into url
     var queryObject = Ext.clone(filterObject);
-    if(queryObject.hasOwnProperty("addresses")){
+    if(Object.hasOwn(queryObject, "addresses")){
       delete queryObject["addresses"];
     }
 

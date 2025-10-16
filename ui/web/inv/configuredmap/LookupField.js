@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.configuredmap.LookupField");
 
 Ext.define("NOC.inv.configuredmap.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.configuredmap.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.configuredmap.LookupField",
+  uiStyle: "medium-combo",
 });

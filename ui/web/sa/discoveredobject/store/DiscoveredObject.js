@@ -19,8 +19,8 @@ Ext.define("NOC.sa.discoveredobject.store.DiscoveredObject", {
   remoteSort: true,
   sorters: [
     {
-      property: 'timestamp',
-      direction: 'DESC',
+      property: "timestamp",
+      direction: "DESC",
     },
   ],
   proxy: {

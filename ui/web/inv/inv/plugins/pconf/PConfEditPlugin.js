@@ -84,7 +84,7 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfEditPlugin", {
       editor.ownerCmp = me.grid.ownerGrid;
       if(column.isTreeColumn){
         editor.isForTree = column.isTreeColumn;
-        editor.addCls(Ext.baseCSSPrefix + 'tree-cell-editor');
+        editor.addCls(Ext.baseCSSPrefix + "tree-cell-editor");
       }
       editor.setGrid(me.grid);
       editor.editingPlugin = me;

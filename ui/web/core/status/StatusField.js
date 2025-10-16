@@ -19,11 +19,11 @@ Ext.define("NOC.core.status.StatusField", {
     ' class="{fieldCls} {fieldCls}-{ui} label-display noc-state-container">{value}</div>',
     {
       compiled: true,
-      disableFormats: true
-    }
+      disableFormats: true,
+    },
   ],
 
-  getDisplayValue: function() {
+  getDisplayValue: function(){
     var me = this,
       value = this.getRawValue(),
       display,
@@ -32,41 +32,41 @@ Ext.define("NOC.core.status.StatusField", {
         '<span class="noc-state-field noc-state-{state}"',
         '<tpl if="description.length &gt; 0">',
         'data-qtip="{[this.tip(values)]}"',
-        '</tpl>',
-        '>{[this.strip(values)]}</span>',
-        '</tpl>',
+        "</tpl>",
+        ">{[this.strip(values)]}</span>",
+        "</tpl>",
         {
           disableFormats: true,
-          strip: function(value) {
+          strip: function(value){
             var maxChar = 7;
             return value.name.length > maxChar ? value.name.substring(0, maxChar) : value.name;
           },
-          tip: function(value) {
+          tip: function(value){
             var tip = "",
               details = value.details;
 
-            if(value.description) {
+            if(value.description){
               tip += "<div>" + value.description + "</div>";
             }
-            if(!value.reason) {
-              for (var i = 0; i < details.length; i++) {
+            if(!value.reason){
+              for(var i = 0; i < details.length; i++){
                 tip += "<div style='padding-left: 5px;'>" + details[i].name + " : " + details[i].state;
-                if (details[i].error) {
+                if(details[i].error){
                   tip += " (" + details[i].error + ")";
                 }
                 tip += "</div>";
               }
             }
-            if(value.reason) {
+            if(value.reason){
               tip += "<div>" + "Reason: " + value.reason + "</div>";
             }
             return tip;
-          }
-        }
+          },
+        },
       ]);
-    if(me.renderer) {
+    if(me.renderer){
       display = me.renderer.call(me.scope || me, value, me);
-    } else {
+    } else{
       display = me.htmlEncode ? Ext.util.Format.htmlEncode(value) : value;
     }
     return chip.apply(display);

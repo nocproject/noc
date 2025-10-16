@@ -11,7 +11,7 @@ Ext.define("NOC.inv.reportlinkdetail.Application", {
   requires: [
     "NOC.core.ReportControl",
     "NOC.inv.networksegment.TreeCombo",
-    'NOC.inv.resourcegroup.TreeCombo',
+    "NOC.inv.resourcegroup.TreeCombo",
     "NOC.sa.administrativedomain.TreeCombo",
   ],
 

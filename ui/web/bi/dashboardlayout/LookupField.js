@@ -7,7 +7,7 @@
 console.debug("Defining NOC.bi.dashboardlayout.LookupField");
 
 Ext.define("NOC.bi.dashboardlayout.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.bi.dashboardlayout.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.bi.dashboardlayout.LookupField",
+  uiStyle: "medium-combo",
 });

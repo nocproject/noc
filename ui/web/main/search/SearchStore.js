@@ -7,33 +7,33 @@
 console.debug("Defining NOC.main.search.SearchStore");
 
 Ext.define("NOC.main.search.SearchStore", {
-    extend: "Ext.data.Store",
-    model: null,
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "title",
-            type: "string"
-        },
-        {
-            name: "card",
-            type: "string"
-        },
-        {
-            name: "tags",
-            type: "auto"
-        },
-        {
-            name: "url",
-            type: "string"
-        },
-        {
-            name: "score",
-            type: "auto"
-        }
-    ],
-    data: []
+  extend: "Ext.data.Store",
+  model: null,
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "title",
+      type: "string",
+    },
+    {
+      name: "card",
+      type: "string",
+    },
+    {
+      name: "tags",
+      type: "auto",
+    },
+    {
+      name: "url",
+      type: "string",
+    },
+    {
+      name: "score",
+      type: "auto",
+    },
+  ],
+  data: [],
 });

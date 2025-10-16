@@ -7,7 +7,7 @@
 console.debug("Defining NOC.fm.dispositionrule.LookupField");
 
 Ext.define("NOC.fm.dispositionrule.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.fm.dispositionrule.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.fm.dispositionrule.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.techdomain.LookupField");
 
 Ext.define("NOC.inv.techdomain.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.techdomain.LookupField",
-    uiStyle: "medium"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.techdomain.LookupField",
+  uiStyle: "medium",
 });

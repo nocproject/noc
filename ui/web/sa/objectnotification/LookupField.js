@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.objectnotification.LookupField");
 
 Ext.define("NOC.sa.objectnotification.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.sa.objectnotification.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.sa.objectnotification.LookupField",
+  uiStyle: "medium-combo",
 });

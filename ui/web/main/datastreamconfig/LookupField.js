@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.datastreamconfig.LookupField");
 
 Ext.define("NOC.main.datastreamconfig.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.datastreamconfig.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.datastreamconfig.LookupField",
+  uiStyle: "medium-combo",
 });

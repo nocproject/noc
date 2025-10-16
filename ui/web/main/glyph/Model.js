@@ -7,29 +7,29 @@
 console.debug("Defining NOC.main.glyph.Model");
 
 Ext.define("NOC.main.glyph.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/main/glyph/",
+  extend: "Ext.data.Model",
+  rest_url: "/main/glyph/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "uuid",
-            type: "string"
-        },
-        {
-            name: "font",
-            type: "string"
-        },
-        {
-            name: "code",
-            type: "int"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "uuid",
+      type: "string",
+    },
+    {
+      name: "font",
+      type: "string",
+    },
+    {
+      name: "code",
+      type: "int",
+    },
+  ],
 });

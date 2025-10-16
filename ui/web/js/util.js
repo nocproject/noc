@@ -657,11 +657,12 @@ Ext.define("NOC.form.field.VTypes", {
       var id = parseInt(val);
       return NOC.is_vlanid(id);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
   VlanIDText: "Must be a numeric value [1-4095]",
-  VlanIDMask: /[\d\/]/,
+  VlanIDMask: /^(?:[1-9]|[1-9]\d|[1-9]\d{2}|[1-3]\d{3}|40[0-8]\d|409[0-5])$/,
 
   // Autonomous system name checking
   ASN: function(val){
@@ -669,44 +670,48 @@ Ext.define("NOC.form.field.VTypes", {
       var asn = parseInt(val);
       return NOC.is_asn(asn);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
   ASNText: "AS num must be a numeric value > 0",
-  ASNMask: /[\d\/]/,
+  ASNMask: /^[1-9]\d*$/,
 
   // IPv4 check
   IPv4: function(val){
     try{
       return NOC.is_ipv4(val);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
   IPv4Text: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
-  IPv4Mask: /[\d\.]/i,
+  IPv4Mask: /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d?\d{1})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d?\d{1})$/,
   // IPv4 check
   IPv4Group: function(val){
     if(val === "Leave unchanged") return true;
     try{
       return NOC.is_ipv4(val);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
   IPv4GroupText: "Must be a numeric value 0.0.0.0 - 255.255.255.255",
-  IPv4GroupMask: /[\d\.]/i,
+  IPv4GroupMask: /^(?:(?:25[0-5]|2[0-4]\d|[01]?\d?\d{1})\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d?\d{1})$/, 
 
   // IPv4 prefix check
   IPv4Prefix: function(val){
     try{
       return NOC.is_ipv4_prefix(val);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
   IPv4PrefixText: "Must be a numeric value 0.0.0.0/0 - 255.255.255.255/32",
-  IPv4PrefixMask: /[\d\.\/]/i,
+  IPv4PrefixMask: /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\/(3[0-2]|[1-2]?\d)$/,
 
   // FQDN check
   FQDN: function(val){
@@ -714,10 +719,11 @@ Ext.define("NOC.form.field.VTypes", {
     try{
       return me.FQDNRe.test(val);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
-  FQDNRe: /^([a-z0-9\-]+\.)+[a-z0-9\-]+$/i,
+  FQDNRe: /(?=^.{1,253}$)(^((?!-)[a-zA-Z0-9-]{1,63}(?<!-)\.)+[a-zA-Z]{2,63}$)/,
   FQDNText: "Not valid FQDN",
 
   // AS-set check for compatibility whith: 
@@ -731,6 +737,7 @@ Ext.define("NOC.form.field.VTypes", {
     try{
       return me.ASSETRe.test(val);
     } catch(e){
+      console.error(e);
       return false;
     }
   },
@@ -767,6 +774,7 @@ Ext.define("NOC.form.field.VTypes", {
       Ext.decode(val);
       return true
     } catch(err){
+      console.error(err);
       return false;
     }
   },

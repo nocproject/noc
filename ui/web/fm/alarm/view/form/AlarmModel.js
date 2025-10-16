@@ -26,23 +26,23 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
                     + "<div>"
                     + "<span class='noc-alarm-label'>Object</span>" + value.managed_object__label
                     + "<span class='noc-alarm-label' style='padding-left: 5px'>IP</span>" + value.managed_object_address;
-        if(Object.prototype.hasOwnProperty.call(value, "managed_object_platform")){
+        if(Object.hasOwn(value, "managed_object_platform")){
           header += "<span class='noc-alarm-label' style='padding-left: 5px'>Platform</span>" + value.managed_object_platform;
         }
-        if(Object.prototype.hasOwnProperty.call(value, "managed_object_version")){
+        if(Object.hasOwn(value, "managed_object_version")){
           header += "<span class='noc-alarm-label' style='padding-left: 5px'>Version</span>" + value.managed_object_version;
         }
         header += "</div>";
-        if(Object.prototype.hasOwnProperty.call(value, "segment_path")){
+        if(Object.hasOwn(value, "segment_path")){
           header += "<div><span class='noc-alarm-label'>Segment</span>" + value.segment_path + "</div>";
         }
-        if(Object.prototype.hasOwnProperty.call(value, "container_path")){
+        if(Object.hasOwn(value, "container_path")){
           header += "<div><span class='noc-alarm-label'>Location</span>" + value.container_path + "</div>";
         }
-        if(Object.prototype.hasOwnProperty.call(value, "address_path")){
+        if(Object.hasOwn(value, "address_path")){
           header += "<div><span class='noc-alarm-label'>Address</span>" + value.address_path + "</div>";
         }
-        if(Object.prototype.hasOwnProperty.call(value, "ack_user") && value.ack_user){
+        if(Object.hasOwn(value, "ack_user") && value.ack_user){
           header += "<div><span class='noc-alarm-label'>Acknowledge</span>" + value.ack_user + " at " + value.ack_ts + "</div>";
         }
         return header;
@@ -151,7 +151,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
       bind: "{selected}",
       deep: true,
       get: function(value){
-        return Object.prototype.hasOwnProperty.call(value, "alarms");
+        return Object.hasOwn(value, "alarms");
       },
     },
     selectedLog: {
@@ -218,7 +218,7 @@ Ext.define("NOC.fm.alarm.view.form.AlarmModel", {
       deep: true,
       get: function(value){
         var data = value.alarms;
-        if(!Object.prototype.hasOwnProperty.call(value, "alarms")){
+        if(!Object.hasOwn(value, "alarms")){
           data = {
             text: __("."),
             children: [],

@@ -118,10 +118,10 @@ Ext.define("NOC.inv.inv.plugins.FileSchemePluginAbstract", {
       },
     });
     // ToDo refactoring backend to rack like facade plugin
-    if(Object.prototype.hasOwnProperty.call(data, "load")){ // Rack plugin
+    if(Object.hasOwn(data, "load")){ // Rack plugin
       vm.get("gridStore").loadData(data.load);
     }
-    if(Object.prototype.hasOwnProperty.call(data, "views")){ // Facade plugin
+    if(Object.hasOwn(data, "views")){ // Facade plugin
       vm.set("hasRear", data.views.length > 1);
     } else{
       vm.set("hasRear", true);

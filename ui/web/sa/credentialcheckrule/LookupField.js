@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.credentialcheckrule.LookupField");
 
 Ext.define("NOC.sa.credentialcheckrule.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.sa.credentialcheckrule.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.sa.credentialcheckrule.LookupField",
+  uiStyle: "medium-combo",
 });

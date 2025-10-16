@@ -7,6 +7,6 @@
 console.debug("Defining NOC.sa.mrt.Application");
 
 Ext.define("NOC.sa.mrt.Application", {
-    extend: "NOC.core.Application",
-    items: []
+  extend: "NOC.core.Application",
+  items: [],
 });

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.fm.alarmtrigger.LookupField");
 
 Ext.define("NOC.fm.alarmtrigger.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.fm.alarmtrigger.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.fm.alarmtrigger.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -57,7 +57,7 @@ Ext.define("NOC.pm.metrictype.Application", {
           name: "name",
           xtype: "textfield",
           fieldLabel: __("Name"),
-          regex: /^[a-zA-Z0-9\-\_ ]+( \| [a-zA-Z0-9\-\_ ]+)*$/,
+          regex: /^[a-zA-Z0-9\-_ ]+( \| [a-zA-Z0-9\-_ ]+)*$/,
         },
         {
           name: "uuid",
@@ -81,7 +81,7 @@ Ext.define("NOC.pm.metrictype.Application", {
           xtype: "textfield",
           fieldLabel: __("Field Name"),
           allowBlank: false,
-          regex: /[a-z][0-9a-z_]*/,
+          regex: /^[a-z][0-9a-z_]+$/,
           uiStyle: "medium",
         },
         {
@@ -231,7 +231,7 @@ Ext.define("NOC.pm.metrictype.Application", {
               renderer: NOC.render.Choices({
                 "any": __("Any"),
                 "noc_agent": __("NOC Agent"),
-                "zabbix": __("Zabbix")
+                "zabbix": __("Zabbix"),
               }),
             },
             {

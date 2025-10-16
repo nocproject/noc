@@ -478,7 +478,7 @@ Ext.define("NOC.sa.managedobjectprofile.Application", {
                       fieldLabel: __("Object Groups"),
                       name: "resource_groups",
                       allowBlank: true,
-                      uiStyle: "extra"
+                      uiStyle: "extra",
                     },
                   ],
                 },

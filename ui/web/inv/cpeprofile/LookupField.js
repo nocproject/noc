@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.cpeprofile.LookupField");
 
 Ext.define("NOC.inv.cpeprofile.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.cpeprofile.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.cpeprofile.LookupField",
+  uiStyle: "medium-combo",
 });

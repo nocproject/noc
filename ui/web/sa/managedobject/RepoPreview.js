@@ -59,7 +59,7 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
       me.menuBtnFn("revision", me.currentRecord.get("id"));
     }
   },
-  preview: function(record, backItem){
+  preview: function(record){
     var me = this;
     me.callParent(arguments);
     me.menuBtnFn("revision", record.get("id"));

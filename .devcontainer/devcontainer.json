@@ -13,10 +13,10 @@
 		// Dockerfile target
 		"target": "devcontainer"
 	},
+	"postStartCommand": "/usr/local/bin/docker-entrypoint.sh bash",
 	// Environment
 	"containerEnv": {
-		"PYTHONPATH": "src",
-		"ESLINT_USE_FLAT_CONFIG": "false"
+		"PYTHONPATH": "src"
 	},
 	// VSCode settings
 	"customizations": {
@@ -42,6 +42,9 @@
 					"editor.defaultFormatter": "dbaeumer.vscode-eslint",
 					"editor.formatOnSave": true,
 					"eslint.format.enable": true,
+					"editor.codeActionsOnSave": {
+						"source.fixAll": "explicit"
+					},
 					"eslint.validate": [
 						"javascript"
 					]

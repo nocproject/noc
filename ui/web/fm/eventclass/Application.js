@@ -201,13 +201,13 @@ Ext.define("NOC.fm.eventclass.Application", {
             {
               title: __("Disposition"),
               items: [
-                        {
-                            xtype: "displayfield",
-                            fieldLabel: __("Deprecated"),
-                            uiStyle: "medium",
-                            value: __("Moved to FM -> Setup -> Disposition Rules collection")
-                        }
-                  ],
+                {
+                  xtype: "displayfield",
+                  fieldLabel: __("Deprecated"),
+                  uiStyle: "medium",
+                  value: __("Moved to FM -> Setup -> Disposition Rules collection"),
+                },
+              ],
             },
             {
               title: __("Suppression"),

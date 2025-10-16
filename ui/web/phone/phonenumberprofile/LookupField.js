@@ -7,7 +7,7 @@
 console.debug("Defining NOC.phone.phonenumberprofile.LookupField");
 
 Ext.define("NOC.phone.phonenumberprofile.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.phone.phonenumberprofile.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.phone.phonenumberprofile.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.objectdiscoveryrule.LookupField");
 
 Ext.define("NOC.sa.objectdiscoveryrule.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.sa.objectdiscoveryrule.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.sa.objectdiscoveryrule.LookupField",
+  uiStyle: "medium-combo",
 });

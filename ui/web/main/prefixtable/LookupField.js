@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.prefixtable.LookupField");
 
 Ext.define("NOC.main.prefixtable.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.prefixtable.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.prefixtable.LookupField",
+  uiStyle: "medium-combo",
 });

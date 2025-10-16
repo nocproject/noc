@@ -52,7 +52,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
       text: __("Pref"),
       dataIndex: "preference",
       width: 50,
-    }
+    },
   ],
 
   initComponent: function(){
@@ -125,7 +125,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
             ["config_changed", __("Config Changed")],
             ["version_changed", __("Version Changed")],
             ["version_set", __("Version Set")],
-            ["any", __("Any")]
+            ["any", __("Any")],
           ],
           uiStyle: "medium",
         },
@@ -172,7 +172,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
               editor: {
                 xtype: "main.handler.LookupField",
                 query: {
-                    allow_reaction: true
+                  allow_reaction: true,
                 },
               },
               renderer: NOC.render.Lookup("handler"),
@@ -212,7 +212,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
               fieldLabel: __("Dispose Alarm"),
               uiStyle: "medium",
               allowBlank: true,
-            }
+            },
           ],
         },
         {
@@ -226,7 +226,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
           fieldLabel: __("Condition Op Vars"),
           store: [
             ["AND", __("AND")],
-            ["OR", __("OR")]
+            ["OR", __("OR")],
           ],
           uiStyle: "medium",
         },
@@ -242,11 +242,11 @@ Ext.define("NOC.sa.reactionrule.Application", {
               width: 250,
             },
             {
-                text: __("Capability"),
-                dataIndex: "capability",
-                renderer: NOC.render.Lookup("capability"),
-                width: 250,
-                editor: "inv.capability.LookupField"
+              text: __("Capability"),
+              dataIndex: "capability",
+              renderer: NOC.render.Lookup("capability"),
+              width: 250,
+              editor: "inv.capability.LookupField",
             },
             {
               text: __("Op"),
@@ -282,7 +282,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
               text: __("Value"),
               dataIndex: "value",
               editor: "textfield",
-              width: 100
+              width: 100,
             },
             // {
             //   text: __("Set Context"),

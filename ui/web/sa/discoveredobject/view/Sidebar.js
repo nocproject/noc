@@ -73,7 +73,7 @@ Ext.define("NOC.sa.discoveredobject.view.Sidebar", {
           name: "rule",
           fieldLabel: __("By Rule:"),
           listeners: {
-            select: "setFilter"
+            select: "setFilter",
           },
         },
         {

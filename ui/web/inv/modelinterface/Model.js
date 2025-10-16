@@ -7,35 +7,35 @@
 console.debug("Defining NOC.inv.modelinterface.Model");
 
 Ext.define("NOC.inv.modelinterface.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/inv/modelinterface/",
+  extend: "Ext.data.Model",
+  rest_url: "/inv/modelinterface/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "is_builtin",
-            type: "boolean",
-            persist: false
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "uuid",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "attrs",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "is_builtin",
+      type: "boolean",
+      persist: false,
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "uuid",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "attrs",
+      type: "auto",
+    },
+  ],
 });

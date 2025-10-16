@@ -110,7 +110,7 @@ Ext.define("NOC.inv.inv.sprites.Pin", {
           me.allowDiscriminators = attr.allowDiscriminators;
           me.label.setAttributes({
             text: attr.pinName,
-            fontWeight: attr.pinOver ? 'bold' : me.getFontWeight(),
+            fontWeight: attr.pinOver ? "bold" : me.getFontWeight(),
             textAlign: attr.labelAlign === "left" ? "end" : "start",
             fill: attr.labelColor,
           });

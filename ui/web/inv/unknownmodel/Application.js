@@ -101,30 +101,30 @@ Ext.define("NOC.inv.unknownmodel.Application", {
     new Ext.Promise(function(resolve){
       Ext.Ajax.request({
         url: "/inv/vendor/lookup/?__format=ext&__limit=2&__query=" + me.currentRecord.get("vendor"),
-        method: 'GET',
+        method: "GET",
         scope: me,
         success: function(response){
           var result = Ext.decode(response.responseText);
-          if(result.hasOwnProperty("total") && result.total === 1){
+          if(Object.hasOwn(result, "total") && result.total === 1){
             resolve(result.data[0]);
-          } else if(result.hasOwnProperty("total") && result.total === 0){
+          } else if(Object.hasOwn(result, "total") && result.total === 0){
             NOC.error(__("Vendor not found!"));
           } else{
             NOC.error(__("Too many vendors found!"));
           }
         },
         failure: function(){
-          NOC.error(__('Failed to get vendor information'));
+          NOC.error(__("Failed to get vendor information"));
         },
       })
     }).then(function(vendor){
       Ext.Ajax.request({
         url: "/inv/objectmodel/" + formData.type + "/",
-        method: 'GET',
+        method: "GET",
         scope: me,
         success: function(response){
           var result = Ext.decode(response.responseText);
-          if(result.hasOwnProperty("connections")){
+          if(Object.hasOwn(result, "connections")){
             NOC.run(
               "NOC.inv.objectmodel.Application",
               __("Create Model"),
