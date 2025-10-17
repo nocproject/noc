@@ -67,11 +67,16 @@ class EventApplication(ExtApplication):
             ads = UserAccess.get_domains(request.user)
         else:
             ads = None
+        if q.get("resource_group"):
+            groups = [q["resource_group"]]
+        else:
+            groups = []
         out, total = self.event_query(
             managed_object=q.get("managed_object"),
             segment=q.get("segment"),
             event_class=q.get("event_class"),
             administrative_domains=ads,
+            groups=groups,
             from_query=q.get("timestamp__gte"),
             to_query=q.get("timestamp__lte"),
             offset=start,
@@ -95,6 +100,10 @@ class EventApplication(ExtApplication):
         if managed_object:
             mo = ManagedObject.get_by_id(managed_object)
             r.append(f"managed_object_bi_id = {mo.bi_id}")
+        elif groups:
+            r.append(
+                f"has({list(ManagedObject.objects.filter(effective_service_groups__overlap=groups).values_list('bi_id', flat=True))}, managed_object_bi_id)"
+            )
         if segment:
             r.append(f"segment = {segment}")
         if event_class:
@@ -246,6 +255,9 @@ class EventApplication(ExtApplication):
             ):
                 continue
             data.append(d)
+        sev = EventSeverity[q["severity"]]
+        if sev == EventSeverity.IGNORED:
+            sev = EventSeverity.INDETERMINATE
         e = Event(
             id=q["id"],
             ts=datetime.datetime.fromisoformat(q["timestamp"]).timestamp(),
@@ -253,7 +265,7 @@ class EventApplication(ExtApplication):
             type=MessageType(
                 source=source,
                 id=q.get("snmp_trap_oid"),
-                severity=EventSeverity[q["severity"]],
+                severity=sev,
             ),
             data=data,
             labels=q["labels"],
