@@ -7,26 +7,26 @@
 console.debug("Defining NOC.main.prefixtable.Model");
 
 Ext.define("NOC.main.prefixtable.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/main/prefixtable/",
+  extend: "Ext.data.Model",
+  rest_url: "/main/prefixtable/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "match_labels",
-            type: "auto",
-            persist: false
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "match_labels",
+      type: "auto",
+      persist: false,
+    },
+  ],
 });

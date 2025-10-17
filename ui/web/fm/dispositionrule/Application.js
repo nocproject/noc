@@ -249,7 +249,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               ],
               value: null,
               uiStyle: "medium",
-            }
+            },
           ],
         },
         {
@@ -278,7 +278,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
             ["N", __("Disable Update")],
             ["D", __("Set Down")],
             ["U", __("Set Up")],
-            ["V", __("Set Var")]
+            ["V", __("Set Var")],
           ],
           uiStyle: "medium",
         },
@@ -324,7 +324,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           fieldLabel: __("Condition Op Vars"),
           store: [
             ["AND", __("AND")],
-            ["OR", __("OR")]
+            ["OR", __("OR")],
           ],
           uiStyle: "medium",
         },
@@ -371,14 +371,14 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               text: __("Value"),
               dataIndex: "value",
               editor: "textfield",
-              width: 100
+              width: 100,
             },
             {
               text: __("Choices (for multi)"),
               dataIndex: "choices",
               flex: 1,
-              editor: "stringlistfield"
-            }
+              editor: "stringlistfield",
+            },
           ],
         },
         {
@@ -422,11 +422,11 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
             {
-                name: 'reference_rx',
-                xtype: 'textfield',
-                fieldLabel: __('Group Reference Regex'),
-                uiStyle: 'large',
-                allowBlank: true
+              name: "reference_rx",
+              xtype: "textfield",
+              fieldLabel: __("Group Reference Regex"),
+              uiStyle: "large",
+              allowBlank: true,
             },
             {
               name: "object_status",
@@ -435,10 +435,10 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               store: [
                 ["A", __("Any")],
                 ["D", __("To DOWN")],
-                ["U", __("To UP")]
+                ["U", __("To UP")],
               ],
               uiStyle: "medium",
-            }
+            },
           ],
         },
 

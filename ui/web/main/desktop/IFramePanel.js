@@ -7,22 +7,22 @@
 console.debug("Defining NOC.main.desktop.IFramePanel");
 
 Ext.define("NOC.main.desktop.IFramePanel", {
-    extend: "Ext.Container",
-    layout: "fit",
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            style : "border: none",
-            autoEl: {
-                tag: "iframe",
-                src: me.noc.url
-            }
-        });
-        me.callParent();
-    },
-    getHistoryHash: function() {
-        var me = this;
-        return me.noc.app_id;
-    },
-    onCloseApp: function() {}
+  extend: "Ext.Container",
+  layout: "fit",
+  initComponent: function(){
+    var me = this;
+    Ext.apply(me, {
+      style: "border: none",
+      autoEl: {
+        tag: "iframe",
+        src: me.noc.url,
+      },
+    });
+    me.callParent();
+  },
+  getHistoryHash: function(){
+    var me = this;
+    return me.noc.app_id;
+  },
+  onCloseApp: function(){},
 });

@@ -7,7 +7,9 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional, Any, List
+
+# NOC modules
 from noc.core.models.inputsources import InputSource
 
 
@@ -16,6 +18,7 @@ class CapsConfig(object):
     allow_manual: bool = False
     default_value: Optional[Any] = None
     ref_scope: Optional[str] = None
+    set_label: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -57,3 +60,11 @@ class CapsValue(object):
             "scope": self.scope or "",
             "editor": self.capability.get_editor() if self.config.allow_manual else None,
         }
+
+    def get_labels(self) -> Optional[List[str]]:
+        """Get caps Label"""
+        if not self.config.set_label:
+            return None
+        if self.capability.multi:
+            return [f"{self.config.set_label[:-1]}{v}" for v in self.value]
+        return [f"{self.config.set_label[:-1]}{self.value}"]

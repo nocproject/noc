@@ -7,18 +7,18 @@
 console.debug("Defining NOC.sa.managedobject.scripts.TextPreview");
 
 Ext.define("NOC.sa.managedobject.scripts.TextPreview", {
-    extend: "NOC.sa.managedobject.scripts.ResultPreview",
+  extend: "NOC.sa.managedobject.scripts.ResultPreview",
 
-    initComponent: function() {
-        var me = this;
-        Ext.apply(me, {
-            items: [{
-                xtype: "container",
-                autoScroll: true,
-                bodyPadding: 4,
-                html: "<pre>" + Ext.util.Format.htmlEncode(me.result) + "</pre>"
-            }]
-        });
-        me.callParent();
-    }
+  initComponent: function(){
+    var me = this;
+    Ext.apply(me, {
+      items: [{
+        xtype: "container",
+        autoScroll: true,
+        bodyPadding: 4,
+        html: "<pre>" + Ext.util.Format.htmlEncode(me.result) + "</pre>",
+      }],
+    });
+    me.callParent();
+  },
 });

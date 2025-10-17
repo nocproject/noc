@@ -161,6 +161,6 @@ Ext.define("NOC.core.Rack", {
         "text-anchor": me.TEXT_ANCHOR,
       });
     }
-    return{sprites: out, height: e_height+me.U_HEIGH};
+    return {sprites: out, height: e_height+me.U_HEIGH};
   },
 });

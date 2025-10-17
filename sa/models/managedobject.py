@@ -156,8 +156,8 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 53
-CREDENTIAL_CACHE_VERSION = 9
+MANAGEDOBJECT_CACHE_VERSION = 54
+CREDENTIAL_CACHE_VERSION = 10
 
 
 @dataclass(frozen=True)
@@ -1039,6 +1039,17 @@ class ManagedObject(NOCModel):
             {"id", "bi_id", "state", "pool", "fm_pool", "labels", "effective_labels"}
         ):
             yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
+
+    def iter_changed_domains(self, changed_fields=None):
+        """
+        Iterate over changed Domain, Configured domains, Migrate to Configuration Context
+        In/Out
+        """
+        l2_domain = self.get_effective_l2_domain()
+        if l2_domain:
+            yield "vc.L2Domain", str(l2_domain.id)
+        if self.segment:
+            yield "inv.Segment", str(self.segment.id)
 
     def set_scripts_caller(self, caller):
         """
@@ -2356,6 +2367,9 @@ class ManagedObject(NOCModel):
                     [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
                     ["sa.ManagedObject"],
                 )
+        for c in instance.iter_caps():
+            if c.config.set_label:
+                yield c.get_labels()
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:
@@ -2543,6 +2557,7 @@ class ManagedObject(NOCModel):
             ],
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
+            "remote_mappings": [],
         }
         if self.remote_system:
             r["remote_system"] = {
@@ -2556,6 +2571,16 @@ class ManagedObject(NOCModel):
                 "name": self.administrative_domain.remote_system.name,
             }
             r["administrative_domain"]["remote_id"] = self.administrative_domain.remote_id
+        for m in self.iter_remote_mappings():
+            r["remote_mappings"].append(
+                {
+                    "remote_system": {
+                        "id": str(m.remote_system.id),
+                        "name": m.remote_system.name,
+                    },
+                    "remote_id": m.remote_id,
+                }
+            )
         return r
 
     def is_enabled_diagnostic(self, diag: str) -> Tuple[bool, Optional[str]]:
@@ -2693,6 +2718,11 @@ class ManagedObject(NOCModel):
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": sorted(mo.effective_labels),
+            "exposed_labels": [
+                ll
+                for ll in mo.effective_labels
+                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
+            ],
             "discovery_interval": mo.get_metric_discovery_interval(),
             "composed_metrics": [
                 mc.metric_type.field_name
@@ -2707,12 +2737,11 @@ class ManagedObject(NOCModel):
 
     @property
     def has_configured_metrics(self) -> bool:
-        """
-        Check configured collected metrics
-        :return:
-        """
+        """Check configured collected metrics"""
         if Interaction.ServiceActivation not in self.interactions:
             return False
+        if RemoteSystem.has_active_remote_collector():
+            return True
         if not self.object_profile.enable_metrics:
             return False
         return bool(self.get_metric_discovery_interval())
@@ -3018,11 +3047,17 @@ class ManagedObject(NOCModel):
 
     def get_matcher_ctx(self):
         """"""
+        if not self.state:
+            state = self.object_profile.workflow.get_default_state()
+        else:
+            state = self.state
         return {
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
             "service_groups": list(self.effective_service_groups),
+            "remote_system": str(self.remote_system.id) if self.remote_system else None,
+            "state": str(state.id),
         }
 
     def get_effective_managed_object(self) -> Optional[Any]:

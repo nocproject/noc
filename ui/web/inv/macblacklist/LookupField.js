@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.macblacklist.LookupField");
 
 Ext.define("NOC.inv.macblacklist.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.macblacklist.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.macblacklist.LookupField",
+  uiStyle: "medium-combo",
 });

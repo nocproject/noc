@@ -49,7 +49,7 @@ Ext.define("NOC.core.mixins.Export", {
       if(i === 0){
         // Loop through the names
         for(name in obj){
-          if(Object.prototype.hasOwnProperty.call(obj, name)){
+          if(Object.hasOwn(obj, name)){
             names.push(name);
             row += [sDelimiter, name, sDelimiter, cDelimiter].join("");
           }

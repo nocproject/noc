@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.resourcepool.LookupField");
 
 Ext.define("NOC.inv.resourcepool.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.resourcepool.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.resourcepool.LookupField",
+  uiStyle: "medium-combo",
 });

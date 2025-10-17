@@ -7,7 +7,7 @@
 console.debug("Defining NOC.inv.channel.LookupField");
 
 Ext.define("NOC.inv.channel.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.inv.channel.LookupField",
-    uiStyle: "medium"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.inv.channel.LookupField",
+  uiStyle: "medium",
 });

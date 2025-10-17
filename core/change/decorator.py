@@ -25,6 +25,12 @@ def get_datastreams(instance, changed_fields=None) -> Optional[List[Tuple[str, s
     return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or {})]
 
 
+def get_domains(instance, changed_fields=None) -> Optional[List[Tuple[str, str]]]:
+    if not hasattr(instance, "iter_changed_domains"):
+        return None
+    return [item for item in instance.iter_changed_domains(changed_fields=changed_fields or {})]
+
+
 def change(model=None, *, audit=True):
     """
     @change decorator to enable generalized change tracking on the model.
@@ -80,7 +86,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
             ov = document.initial_data[field_name]
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
-            ov_label = str(ov)
+            ov_label = repr(ov)
         elif hasattr(ov, "_instance"):
             # Embedded field
             ov = [str(x) for x in ov]
@@ -92,7 +98,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         nv, nv_label = getattr(document, field_name), None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-            nv_label = str(ov)
+            nv_label = repr(ov)
         elif hasattr(nv, "_instance"):
             # Embedded field
             nv = [str(x) for x in nv]
@@ -125,6 +131,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         id=str(document.id),
         fields=changed_fields,
         datastreams=get_datastreams(document, {cf.field: cf.old for cf in changed_fields or []}),
+        domains=get_domains(document, changed_fields or []),
         audit=getattr(document, "_flag_audit", False),
     )
 
@@ -139,6 +146,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
         datastreams=get_datastreams(document),
+        domains=get_domains(document),
         audit=getattr(document, "_flag_audit", False),
     )
     if not hasattr(document, "get_changed_instance"):
@@ -150,6 +158,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         id=str(document.id),
         fields=None,
         datastreams=get_datastreams(document),
+        domains=get_domains(document),
         audit=getattr(document, "_flag_audit", False),
     )
 
@@ -198,6 +207,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         id=str(instance.id),
         fields=changed_fields,
         datastreams=get_datastreams(instance, {cf.field: cf.old for cf in changed_fields or []}),
+        domains=get_domains(instance, changed_fields or []),
         audit=getattr(instance, "_flag_audit", False),
     )
 
@@ -212,6 +222,7 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         id=str(instance.id),
         fields=None,
         datastreams=get_datastreams(instance),
+        domains=get_domains(instance),
         audit=getattr(instance, "_flag_audit", False),
     )
     if not hasattr(instance, "get_changed_instance"):
@@ -223,5 +234,6 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         id=str(instance.id),
         fields=None,
         datastreams=get_datastreams(instance),
+        domains=get_domains(instance),
         audit=getattr(instance, "_flag_audit", False),
     )

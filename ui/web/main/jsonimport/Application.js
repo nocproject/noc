@@ -74,7 +74,7 @@ Ext.define("NOC.main.jsonimport.Application", {
           NOC.error("Error loading object: " + data.error);
         }
       },
-      failure: function(response){
+      failure: function(){
         NOC.error("Error loading object");
       },
     });

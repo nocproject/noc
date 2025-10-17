@@ -7,45 +7,45 @@
 console.debug("Defining NOC.inv.macblacklist.Model");
 
 Ext.define("NOC.inv.macblacklist.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/inv/macblacklist/",
+  extend: "Ext.data.Model",
+  rest_url: "/inv/macblacklist/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "uuid",
-            type: "string"
-        },
-        {
-            name: "from_mac",
-            type: "string"
-        },
-        {
-            name: "to_mac",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "affected",
-            type: "auto"
-        },
-        {
-            name: "is_duplicated",
-            type: "boolean"
-        },
-        {
-            name: "is_ignored",
-            type: "boolean"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "uuid",
+      type: "string",
+    },
+    {
+      name: "from_mac",
+      type: "string",
+    },
+    {
+      name: "to_mac",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "affected",
+      type: "auto",
+    },
+    {
+      name: "is_duplicated",
+      type: "boolean",
+    },
+    {
+      name: "is_ignored",
+      type: "boolean",
+    },
+  ],
 });

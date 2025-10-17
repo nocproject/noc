@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.interface.MACForm");
 Ext.define("NOC.inv.interface.MACForm", {
   extend: "Ext.window.Window",
   requires: [
-    "NOC.inv.interface.MACStore"
+    "NOC.inv.interface.MACStore",
   ],
   autoShow: true,
   closable: true,
@@ -19,7 +19,7 @@ Ext.define("NOC.inv.interface.MACForm", {
   height: 400,
   constrain: true,
 
-  initComponent: function() {
+  initComponent: function(){
     var me = this;
 
     me.store = Ext.create("NOC.inv.interface.MACStore");
@@ -35,45 +35,45 @@ Ext.define("NOC.inv.interface.MACForm", {
           scrollable: "y",
           emptyText: __("No MACs collected"),
           viewConfig: {
-            enableTextSelection: true
+            enableTextSelection: true,
           },
           tbar: [
             {
               scope: me,
               text: __("Refresh"),
               glyph: NOC.glyph.refresh,
-              handler: me.refresh
-            }
+              handler: me.refresh,
+            },
           ],
           columns: [
             {
               text: __("Interface"),
               dataIndex: "interfaces",
-              flex: 1
+              flex: 1,
             },
             {
               text: __("MAC"),
               dataIndex: "mac",
-              width: 130
+              width: 130,
             },
             {
               text: __("VLAN"),
               dataIndex: "vlan_id",
-              width: 75
+              width: 75,
             },
             {
               text: __("type"),
               dataIndex: "type",
-              width: 55
-            }
-          ]
-        }
-      ]
+              width: 55,
+            },
+          ],
+        },
+      ],
     });
     me.callParent();
   },
 
-  refresh: function() {
+  refresh: function(){
     var me = this;
 
     NOC.mrt({
@@ -83,16 +83,16 @@ Ext.define("NOC.inv.interface.MACForm", {
           id: me.objectId,
           script: "get_mac_address_table",
           args: {
-            interface: me.interfaceName
-          }
-        }
+            interface: me.interfaceName,
+          },
+        },
       ],
       errorMsg: __("Failed to get MACs"),
-      cb: me.loadData
+      cb: me.loadData,
     });
   },
 
-  loadData: function(data, scope) {
+  loadData: function(data, scope){
     scope.store.loadData(data);
-  }
+  },
 });

@@ -7,7 +7,7 @@
 console.debug("Defining NOC.cm.confdbquery.LookupField");
 
 Ext.define("NOC.cm.confdbquery.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.cm.confdbquery.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.cm.confdbquery.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -95,7 +95,7 @@ Ext.define("NOC.fm.alarm.view.grids.DurationFilter", {
   },
   setWidgetValues: function(data){
     var me = this, setIf = function(key){
-      if(Object.prototype.hasOwnProperty.call(data, key)){
+      if(Object.hasOwn(data, key)){
         me.getViewModel().set(key, data[key]);
         me.down("[name=" + key + "]").setValue(data[key]);
       }

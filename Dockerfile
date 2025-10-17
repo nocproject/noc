@@ -42,6 +42,8 @@ RUN \
 # Developer's container
 #
 FROM code AS dev
+ENV PNPM_HOME="/root/.local/share/pnpm" \
+    PATH="/root/.local/share/pnpm:$PATH"
 
 RUN \
     apt-get update\
@@ -49,21 +51,39 @@ RUN \
     snmp \
     vim \
     git \
-    && (curl -fsSL https://deb.nodesource.com/setup_22.x | bash -)\
-    && apt-get install -y --no-install-recommends nodejs\
+    && (curl -fsSL https://get.pnpm.io/install.sh | bash -) \
     && pip install --upgrade pip\
     && pip install -e .[dev,docs,lint,test]\
-    && npm install -g eslint@8\
     && rm -rf /var/lib/apt/lists/*
+RUN pnpm env use --global 22\
+    && (cd ui && pnpm i)
 
 # Devcontainer
-FROM python AS devcontainer
+# Node.js layer
+FROM python AS nodejs
+RUN \
+    set -x \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && (curl -fsSL https://get.pnpm.io/install.sh | bash -) \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV PNPM_HOME="/root/.local/share/pnpm" \
+    PATH="/root/.local/share/pnpm:$PATH"
+
+RUN pnpm env use --global 22
+
+FROM nodejs AS devcontainer
 ENV\
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
-    PROJ_DIR=/usr
+    PROJ_DIR=/usr\
+    NODE_OPTIONS=--max-old-space-size=8192\
+    PNPM_HOME=/root/.local/share/pnpm\
+    PATH=$PNPM_HOME:$PATH
+COPY docker-entrypoint.sh /usr/local/bin/
 COPY . /workspaces/noc/
 WORKDIR /workspaces/noc/
 RUN \
@@ -77,13 +97,16 @@ RUN \
     snmp \
     vim \
     git \
-    && (curl -fsSL https://deb.nodesource.com/setup_22.x | bash -)\
-    && apt-get install -y --no-install-recommends nodejs\
-    && (cd ui && npm install) \
     && pip3 install --upgrade pip \
     && pip install -e .[bh,activator,classifier,cache-redis,dev,docs,lint,node,test,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping] \
     && pip cache purge \
-    && rm -rf /var/lib/apt/lists/* /tmp/*.whl
+    && rm -rf /var/lib/apt/lists/* /tmp/*.whl \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh
+    
+VOLUME ["/workspaces/noc/ui/node_modules"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/bin/bash"]
+
 #
 # Self-serving static ui files
 #

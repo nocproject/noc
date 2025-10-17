@@ -138,6 +138,8 @@ class PendingLinksDS(BaseDataSource):
                         }
                     if "Pending link:" in iface_problem:
                         pend_str = rx_pending_link.search(iface_problem)
+                        if not pend_str:
+                            continue
                         try:
                             rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                         except ManagedObject.DoesNotExist:

@@ -7,6 +7,6 @@
 console.debug("Defining NOC.dns.dnsserver.M2MField");
 
 Ext.define("NOC.dns.dnsserver.M2MField", {
-    extend: "NOC.core.M2MField",
-    alias: "widget.dns.dnsserver.M2MField"
+  extend: "NOC.core.M2MField",
+  alias: "widget.dns.dnsserver.M2MField",
 });

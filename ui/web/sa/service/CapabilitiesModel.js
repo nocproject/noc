@@ -7,26 +7,26 @@
 console.debug("Defining NOC.sa.service.CapabilitiesModel");
 
 Ext.define("NOC.sa.service.CapabilitiesModel", {
-    extend: "Ext.data.Model",
-    rest_url: "/sa/service/{{parent}}/caps/",
-    parentField: "service_id",
+  extend: "Ext.data.Model",
+  rest_url: "/sa/service/{{parent}}/caps/",
+  parentField: "service_id",
 
-    fields: [
-        {
-            name: "capability",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "source",
-            type: "string"
-        },
-        {
-            name: "value",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "capability",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "source",
+      type: "string",
+    },
+    {
+      name: "value",
+      type: "auto",
+    },
+  ],
 });

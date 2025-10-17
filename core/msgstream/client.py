@@ -18,7 +18,7 @@ import orjson
 from noc.core.handler import get_handler
 from noc.core.ioloop.util import run_sync
 from .message import Message, PublishRequest
-from .config import get_stream
+from .config import get_stream, TEMPORARY_STREAM_PREFIX
 from .metadata import Metadata, PartitionMetadata
 from noc.config import config
 
@@ -268,7 +268,7 @@ class MessageStreamClient(object):
         new_partitions: Optional[int] = None,
         replication_factor: Optional[int] = None,
     ) -> bool:
-        tmp_stream = f"__tmp-{name}"
+        tmp_stream = f"{TEMPORARY_STREAM_PREFIX}-{name}"
         old_partitions = len(current_meta)
         logger.info("Altering stream %s", name)
         # Create temporary stream with same structure, as original one

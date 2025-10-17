@@ -41,19 +41,19 @@ Ext.define("NOC.core.layout.Flex", {
   },
 
   beginLayoutCycle: function(){
-    var me = this,
-      items = me.getLayoutItems(),
-      len = items.length,
-      i, item;
+    var me = this;
+    // items = me.getLayoutItems();
+    // len = items.length,
+    // i, item;
 
     me.callParent(arguments);
-    for(i = 0; i < len; i++){
-      item = items[i];/*
-      item.el.setStyle({
-        flex: item.flex || "1 1 auto",
-        margin: item.margin || "10px",
-        minWidth: item.minWidth || "auto",
-      });*/
-    }
+    // for(i = 0; i < len; i++){
+    //   item = items[i];/*
+    //   item.el.setStyle({
+    //     flex: item.flex || "1 1 auto",
+    //     margin: item.margin || "10px",
+    //     minWidth: item.minWidth || "auto",
+    //   });*/
+    // }
   },
 });

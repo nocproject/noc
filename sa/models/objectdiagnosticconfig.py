@@ -213,9 +213,12 @@ class ObjectDiagnosticConfig(Document):
     def d_config(self) -> "DiagnosticConfig":
         checks, d_ctx = [], []
         for c in self.checks:
-            if c.ctx:
-                d_ctx.append(CtxItem.from_string(c.ctx))
-            checks.append(Check(name=c.check, script=c.script))
+            c_args = {}
+            for ctx in c.ctx:
+                ctx = CtxItem.from_string(ctx)
+                c_args[ctx.name] = ctx.value
+                d_ctx.append(ctx)
+            checks.append(Check(name=c.check, script=c.script, args=c_args or None))
         return DiagnosticConfig(
             diagnostic=self.name,
             checks=checks,

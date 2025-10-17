@@ -17,6 +17,7 @@ from noc.aaa.models.user import User
 from noc.aaa.models.group import Group
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
+from noc.main.models.template import Template
 from noc.sa.interfaces.base import (
     ListOfParameter,
     ModelParameter,
@@ -126,4 +127,7 @@ class NotificationGroupApplication(ExtModelApplication):
             r["subscription_settings"].append(x)
         for ss in r.get("message_types", []):
             ss["message_type__label"] = ss["message_type"]
+            if ss.get("template"):
+                t = Template.get_by_id(int(ss["template"]))
+                ss["template__label"] = t.name
         return r

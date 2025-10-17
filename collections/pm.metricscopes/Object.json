@@ -16,6 +16,10 @@
         {
             "field_name": "service",
             "model": "sa.Service"
+        },
+        {
+            "field_name": "remote_system",
+            "model": "main.RemoteSystem"
         }
     ],
     "enable_timedelta": false,

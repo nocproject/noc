@@ -41,7 +41,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
     grid.store.removeAt(rowIndex);
   },
   //
-  onSelectedStoreSizeChange: function(store){
+  onSelectedStoreSizeChange: function(){
     this.getViewModel().set("total.selected", this.getStore("selectedStore").getCount());
   },
   //
@@ -244,7 +244,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
       delete config["modeId"];
 
       for(var key in config){
-        if(config.hasOwnProperty(key)){
+        if(Object.hasOwn(config, key)){
           if(!config[key]){
             delete config[key];
           }
@@ -261,7 +261,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
           var commands = [];
 
           for(var key in obj){
-            if(obj.hasOwnProperty(key) && obj[key]){
+            if(Object.hasOwn(obj, key) && obj[key]){
               commands.push({
                 id: key,
                 script: "commands",
@@ -475,7 +475,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
     xhr.onload = function(){
       viewModel.set("isRunning", false);
     };
-    xhr.onerror = function(e){
+    xhr.onerror = function(){
       NOC.error("Error!");
       selectedStore.each(function(record){
         if("r" === record.get("status")){
@@ -601,7 +601,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
         this.getView().getLayout().setActiveItem("managedobject-form");
         Ext.Array.each(groupEditFields, function(field){
           var value = selection[0][field.name];
-          if(selection[0].hasOwnProperty(field.name)){
+          if(Object.hasOwn(selection[0], field.name)){
             if(isSameValue(selection, field.name)){
               if(isLookup(selection[0], field.name)){
                 value = {[field.displayField]: selection[0][field.name + "__label"], [field.valueField]: selection[0][field.name]};
@@ -613,7 +613,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
             field.initValue();
           }
         }, this);
-        if(this.getView().noc.hasOwnProperty("protected_field")){
+        if(Object.hasOwn(this.getView().noc, "protected_field")){
           this.setProtectedField(this.getView().noc.protected_field);
         }
       },
@@ -779,7 +779,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
           this.setFormTitle(formView.changeTitle, data);
           this.showMapHandler(record);
         }
-        if(view.noc.hasOwnProperty("protected_field")){
+        if(Object.hasOwn(view.noc, "protected_field")){
           this.setProtectedField(view.noc.protected_field);
         }
         if(gridView && isEmbedded === undefined){
@@ -826,7 +826,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
                  model: gridField.model,
                });
                gridField.setStore(store);
-               if(store.hasOwnProperty("rootProperty") && this.hasOwnProperty(store.rootProperty)){
+               if(Object.hasOwn(store, "rootProperty") && Object.hasOwn(this, store.rootProperty)){
                  value = this[store.rootProperty];
                }
                store.loadData(value);

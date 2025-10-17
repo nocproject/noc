@@ -7,21 +7,21 @@
 console.debug("Defining NOC.inv.coverage.Model");
 
 Ext.define("NOC.inv.coverage.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/inv/coverage/",
+  extend: "Ext.data.Model",
+  rest_url: "/inv/coverage/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+  ],
 });

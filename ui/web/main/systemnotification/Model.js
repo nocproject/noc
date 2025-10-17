@@ -7,26 +7,26 @@
 console.debug("Defining NOC.main.systemnotification.Model");
 
 Ext.define("NOC.main.systemnotification.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/main/systemnotification/",
+  extend: "Ext.data.Model",
+  rest_url: "/main/systemnotification/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "notification_group",
-            type: "int"
-        },
-        {
-            name: "notification_group__label",
-            type: "string",
-            persist:false
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "notification_group",
+      type: "int",
+    },
+    {
+      name: "notification_group__label",
+      type: "string",
+      persist: false,
+    },
+  ],
 });

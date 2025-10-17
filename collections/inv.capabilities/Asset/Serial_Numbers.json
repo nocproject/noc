@@ -1,0 +1,10 @@
+{
+    "name": "Asset | Serial Numbers",
+    "$collection": "inv.capabilities",
+    "uuid": "891a664f-e9fc-49a0-af5b-4cdc048ad21c",
+    "description": "Serial number for asset (from remote system)",
+    "type": "serial_num",
+    "card_template": null,
+    "allow_manual": false,
+    "multi": true
+}

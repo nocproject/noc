@@ -23,8 +23,8 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
       width: "100%",
       scrollable: true,
       style: {
-        marginLeft: '10px',
-        'font-size': '12px',
+        marginLeft: "10px",
+        "font-size": "12px",
       },
     });
 
@@ -38,8 +38,8 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
       width: "100%",
       scrollable: true,
       style: {
-        marginLeft: '10px',
-        'font-size': '12px',
+        marginLeft: "10px",
+        "font-size": "12px",
       },
     });
 
@@ -53,8 +53,8 @@ Ext.define("NOC.inv.inv.plugins.contacts.ContactsPanel", {
       width: "100%",
       scrollable: true,
       style: {
-        marginLeft: '10px',
-        'font-size': '12px',
+        marginLeft: "10px",
+        "font-size": "12px",
       },
     });
 

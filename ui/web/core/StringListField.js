@@ -8,25 +8,25 @@
 console.debug("Defining NOC.core.StringListField");
 
 Ext.define("NOC.core.StringListField", {
-    extend: "Ext.form.field.Tag",
-    alias: ["widget.stringlistfield"],
-    forceSelection: false,
-    displayField: "label",
-    valueField: "label",
-    queryMode: "local",
-    queryParam: "__query",
-    createNewOnEnter: true,
-    createNewOnBlur: true,
+  extend: "Ext.form.field.Tag",
+  alias: ["widget.stringlistfield"],
+  forceSelection: false,
+  displayField: "label",
+  valueField: "label",
+  queryMode: "local",
+  queryParam: "__query",
+  createNewOnEnter: true,
+  createNewOnBlur: true,
 
-    initComponent: function() {
-        var me = this;
+  initComponent: function(){
+    var me = this;
 
-        Ext.apply(me, {
-            store: Ext.create("Ext.data.Store", {
-                fields: ["id", "label"],
-                data: []
-            })
-        });
-        me.callParent();
-    }
+    Ext.apply(me, {
+      store: Ext.create("Ext.data.Store", {
+        fields: ["id", "label"],
+        data: [],
+      }),
+    });
+    me.callParent();
+  },
 });

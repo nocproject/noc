@@ -7,35 +7,35 @@
 console.debug("Defining NOC.ip.vrfgroup.Model");
 
 Ext.define("NOC.ip.vrfgroup.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/ip/vrfgroup/",
+  extend: "Ext.data.Model",
+  rest_url: "/ip/vrfgroup/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "address_constraint",
-            type: "string",
-            defaultValue: "V"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "labels",
-            type: "auto"
-        },
-        {
-            name: "vrf_count",
-            type: "int",
-            persist: false
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "address_constraint",
+      type: "string",
+      defaultValue: "V",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "labels",
+      type: "auto",
+    },
+    {
+      name: "vrf_count",
+      type: "int",
+      persist: false,
+    },
+  ],
 });

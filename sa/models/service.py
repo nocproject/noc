@@ -500,8 +500,8 @@ class Service(Document):
                     # Outage
                     "start": ots.isoformat(sep=" "),
                     "stop": self.oper_status_change.isoformat(sep=" "),
-                    "from_status": {"id": os, "name": os.name},
-                    "to_status": self.oper_status,
+                    "from_status": os.value,
+                    "to_status": self.oper_status.value,
                     "in_maintenance": int(self.in_maintenance),
                 }
             ],
@@ -613,7 +613,7 @@ class Service(Document):
                 "$op": "disposition",
                 "reference": f"{SVC_REF_PREFIX}:{self.id}",
                 "name": self.label,
-                "alarm_class": self.profile.raise_alarm_class,
+                "alarm_class": self.profile.raise_alarm_class.name,
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,
@@ -1029,6 +1029,22 @@ class Service(Document):
             "service_groups": list(self.effective_service_groups),
             "caps": self.get_caps(),
             "mappings": self.get_mappings(),
+        }
+
+    def get_matcher_ctx(self):
+        """"""
+        if not self.state:
+            state = self.profile.workflow.get_default_state()
+        else:
+            state = self.state
+        return {
+            "name": self.label,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            "service_groups": list(self.effective_service_groups),
+            "remote_system": str(self.remote_system.id) if self.remote_system else None,
+            "caps": self.get_caps(),
+            "state": str(state),
         }
 
 

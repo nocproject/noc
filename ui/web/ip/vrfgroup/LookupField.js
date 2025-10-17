@@ -7,7 +7,7 @@
 console.debug("Defining NOC.ip.vrfgroup.LookupField");
 
 Ext.define("NOC.ip.vrfgroup.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.ip.vrfgroup.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.ip.vrfgroup.LookupField",
+  uiStyle: "medium-combo",
 });

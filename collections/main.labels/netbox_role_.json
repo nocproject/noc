@@ -1,0 +1,20 @@
+{
+    "name": "netbox::role::*",
+    "$collection": "main.labels",
+    "uuid": "7711d6e7-b049-408d-b6fe-84f5df1fcf64",
+    "description": null,
+    "bg_color1": 2600544,
+    "fg_color1": 16777215,
+    "bg_color2": 2719929,
+    "fg_color2": 16777215,
+    "display_order": 0,
+    "allow_models": ["ip.Address", "ip.Prefix"],
+    "allow_auto_create": true,
+    "propagate": true,
+    "is_protected": false,
+    "is_matching": false,
+    "expose_metric": false,
+    "expose_datastream": false,
+    "expose_alarm": false,
+    "unique_value": true
+}

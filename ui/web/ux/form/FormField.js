@@ -7,38 +7,38 @@
 console.debug("Defining Ext.ux.form.FormField");
 
 Ext.define("Ext.ux.form.FormField", {
-    extend: "Ext.form.FieldContainer",
-    mixins: {
-        field: 'Ext.form.field.Field'
-    },
-    alias: "widget.formfield",
-    border: false,
-    form: [],
+  extend: "Ext.form.FieldContainer",
+  mixins: {
+    field: "Ext.form.field.Field",
+  },
+  alias: "widget.formfield",
+  border: false,
+  form: [],
 
-    initComponent: function() {
-        var me = this;
+  initComponent: function(){
+    var me = this;
 
-        me.formPanel = Ext.create("Ext.form.Panel", {
-            items: me.form,
-            border: false,
-            defaults: {
-                anchor: "100%"
-            }
-        });
+    me.formPanel = Ext.create("Ext.form.Panel", {
+      items: me.form,
+      border: false,
+      defaults: {
+        anchor: "100%",
+      },
+    });
 
-        Ext.apply(me, {
-            items: [me.formPanel]
-        });
-        me.callParent();
-    },
-    //
-    getValue: function() {
-        var me = this;
-        return me.formPanel.getForm().getValues();
-    },
-    //
-    setValue: function(value) {
-        var me = this;
-        me.formPanel.getForm().setValues(value);
-    }
+    Ext.apply(me, {
+      items: [me.formPanel],
+    });
+    me.callParent();
+  },
+  //
+  getValue: function(){
+    var me = this;
+    return me.formPanel.getForm().getValues();
+  },
+  //
+  setValue: function(value){
+    var me = this;
+    me.formPanel.getForm().setValues(value);
+  },
 });

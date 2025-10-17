@@ -7,8 +7,10 @@
 
 # Python modules
 import datetime
+from typing import Optional, Union
 
 # Third-party modules
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -20,6 +22,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.acl import match
+from noc.core.model.decorator import on_delete_check
 
 
 class APIAccess(EmbeddedDocument):
@@ -43,6 +46,7 @@ class APIAccessACL(EmbeddedDocument):
         return "%s (inactive)" % self.prefix
 
 
+@on_delete_check(check=[("main.RemoteSystem", "api_key")])
 class APIKey(Document):
     meta = {"collection": "apikeys", "strict": False, "auto_create_index": False}
 
@@ -59,6 +63,10 @@ class APIKey(Document):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["APIKey"]:
+        return APIKey.objects.filter(id=oid).first()
 
     @classmethod
     def get_name_and_access(cls, key, ip=None):

@@ -130,6 +130,7 @@ SubscriptionConditions = RootModel[List[SubscriptionConditionItem]]
 class MessageTypeItem(BaseModel):
     message_type: MessageType
     template: Optional[int] = None
+    language: Optional[str] = None
     deny: bool = False
 
 
@@ -152,6 +153,7 @@ MessageTypes = RootModel[List[MessageTypeItem]]
         ("main.SystemNotification", "notification_group"),
         ("main.MessageRoute", "notification_group"),
         ("sa.ObjectNotification", "notification_group"),
+        ("sa.ReactionRule", "notification_group"),
         ("peer.PeeringPoint", "prefix_list_notification_group"),
     ],
     delete=[
@@ -262,6 +264,20 @@ class NotificationGroup(NOCModel):
             notification_group=group,
             user=user,
         ).first()
+
+    def get_effective_template(
+        self,
+        message_type: MessageType,
+        language: Optional[str] = None,
+    ) -> Optional["Template"]:
+        """Return effective template for Notification Group"""
+        for mt in self.message_types or []:
+            mt = MessageTypeItem.model_validate(mt)
+            if not mt.template or mt.message_type != message_type:
+                continue
+            if not language or not mt.language or (language and language == mt.language):
+                return Template.get_by_id(mt.template)
+        return Template.get_by_message_type(message_type, language)
 
     def get_subscription_setting(
         self,

@@ -215,7 +215,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         return item.get("total_subscribers").concat(item.get("total_services"))
       })),
       selectionSummary = Ext.Array.reduce(selection, function(prev, item){
-        if(Object.prototype.hasOwnProperty.call(prev, item.profile)){
+        if(Object.hasOwn(prev, item.profile)){
           prev[item.profile] += item.summary
         } else{
           prev[item.profile] = item.summary
@@ -229,7 +229,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     }, 0));
     this.getViewModel().set("total.selected", Ext.Array.map(selected, function(item){
       return Ext.merge(item, {
-        summary: (Object.prototype.hasOwnProperty.call(selectionSummary, item.id)) ? selectionSummary[item.id] : 0,
+        summary: (Object.hasOwn(selectionSummary, item.id)) ? selectionSummary[item.id] : 0,
       });
     }));
   },
@@ -376,7 +376,7 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         if(data.status){
           NOC.info(__("Escalated"));
         } else{
-          NOC.error(__("Escalate failed : ") + (Object.prototype.hasOwnProperty.call(data, "error") ? data.error : "unknowns error!"));
+          NOC.error(__("Escalate failed : ") + (Object.hasOwn(data, "error") ? data.error : "unknowns error!"));
         }
       },
       failure: function(){

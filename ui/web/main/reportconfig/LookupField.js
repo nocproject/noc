@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.reportconfig.LookupField");
 
 Ext.define("NOC.main.reportconfig.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.report.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.report.LookupField",
+  uiStyle: "medium-combo",
 });

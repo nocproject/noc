@@ -7,17 +7,17 @@
 console.debug("Defining NOC.peer.communitytype.Model");
 
 Ext.define("NOC.peer.communitytype.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/peer/communitytype/",
+  extend: "Ext.data.Model",
+  rest_url: "/peer/communitytype/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+  ],
 });

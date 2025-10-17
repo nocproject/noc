@@ -7,7 +7,7 @@
 console.debug("Defining NOC.gis.street.LookupField");
 
 Ext.define("NOC.gis.street.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.gis.street.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.gis.street.LookupField",
+  uiStyle: "medium-combo",
 });

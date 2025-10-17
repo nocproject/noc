@@ -1531,18 +1531,18 @@ Ext.define("NOC.sa.managedobject.form.View", {
                   text: __("Value"),
                   dataIndex: "value",
                   useModalEditor: true,
-                  width: 180,
+                  width: 280,
                   urlPrefix: "/sa/managedobject",
                 },
                 {
                   text: __("Scope"),
                   dataIndex: "scope",
-                  width: 50,
+                  width: 80,
                 },
                 {
                   text: __("Source"),
                   dataIndex: "source",
-                  width: 100,
+                  width: 80,
                 },
                 {
                   text: __("Description"),

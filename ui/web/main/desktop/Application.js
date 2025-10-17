@@ -314,9 +314,9 @@ Ext.define("NOC.main.desktop.Application", {
   getPermissions: function(tree){
     var result = [],
       children = function(leaf){
-        if(Object.prototype.hasOwnProperty.call(leaf, "launch_info")
-          && Object.prototype.hasOwnProperty.call(leaf.launch_info, "params")
-          && Object.prototype.hasOwnProperty.call(leaf.launch_info.params, "app_id")){
+        if(Object.hasOwn(leaf, "launch_info")
+          && Object.hasOwn(leaf.launch_info, "params")
+          && Object.hasOwn(leaf.launch_info.params, "app_id")){
           result.push(
             new NOC.core.ObservableModel({
               key: leaf.launch_info.params.app_id,
@@ -324,7 +324,7 @@ Ext.define("NOC.main.desktop.Application", {
             }),
           );
         }
-        if(Object.prototype.hasOwnProperty.call(leaf, "children") && leaf.children){
+        if(Object.hasOwn(leaf, "children") && leaf.children){
           Ext.Array.map(leaf.children, children);
         }
       };

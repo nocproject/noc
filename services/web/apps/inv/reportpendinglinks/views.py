@@ -128,6 +128,8 @@ class ReportPendingLinks(object):
                         }
                     if "Pending link:" in discovery["problems"]["lldp"][iface]:
                         pend_str = rg.search(discovery["problems"]["lldp"][iface])
+                        if not pend_str:
+                            continue
                         try:
                             rmo = ManagedObject.objects.get(name=pend_str.group("remote_mo"))
                         except ManagedObject.DoesNotExist:

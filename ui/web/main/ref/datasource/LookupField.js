@@ -7,7 +7,7 @@
 console.debug("Defining NOC.main.datasource.LookupField");
 
 Ext.define("NOC.main.ref.datasource.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.main.ref.datasource.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.main.ref.datasource.LookupField",
+  uiStyle: "medium-combo",
 });

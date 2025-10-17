@@ -7,7 +7,7 @@
 console.debug("Defining NOC.vc.l2domainprofile.LookupField");
 
 Ext.define("NOC.vc.l2domainprofile.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.vc.l2domainprofile.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.vc.l2domainprofile.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -14,6 +14,7 @@ from noc.models import is_document, get_model_id
 from noc.core.models.inputsources import InputSource
 from noc.core.change.policy import change_tracker
 from noc.core.change.model import ChangeField
+from noc.core.change.decorator import get_datastreams, get_domains
 from .types import CapsValue, CapsConfig
 
 caps_logger = logging.getLogger(__name__)
@@ -107,12 +108,33 @@ def save_document_caps(
     """"""
     from noc.inv.models.capsitem import CapsItem
 
-    self.caps = [
-        CapsItem(capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or "")
-        for c in caps
-    ]
+    prev_labels, caps_labels, new_caps = set(), set(), []
+    for c in self.iter_caps():
+        if c.config.set_label:
+            prev_labels |= set(c.get_labels()) | {c.config.set_label}
+
+    for c in caps:
+        new_caps.append(
+            CapsItem(
+                capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or ""
+            )
+        )
+        if c.config.set_label:
+            caps_labels |= set(c.get_labels()) | {c.config.set_label}
+    self.caps = new_caps
     if dry_run or self._created:
         return
+    set_op = {"caps": self.caps}
+    # Update database include effective labels directly
+    # to avoid full save
+    if hasattr(self, "effective_labels") and bool(caps_labels.symmetric_difference(prev_labels)):
+        obj_labels = set(self.effective_labels)
+        if obj_labels and prev_labels:
+            obj_labels -= set(prev_labels)
+        if caps_labels:
+            obj_labels.update(caps_labels)
+        changed_fields.append(ChangeField(field="effective_labels", new=sorted(obj_labels)))
+        set_op["effective_labels"] = sorted(obj_labels)
     # Register changes
     change_tracker.register(
         "update",
@@ -120,9 +142,11 @@ def save_document_caps(
         str(self.id),
         fields=changed_fields,
         audit=True,
+        datastreams=get_datastreams(self),
+        domains=get_domains(self, changed_fields),
         caps=[cf.field for cf in changed_fields or []],
     )
-    self.update(caps=self.caps)
+    self.update(**set_op)
 
 
 def save_model_caps(
@@ -133,17 +157,35 @@ def save_model_caps(
     changed_fields: Optional[List[ChangeField]] = None,
 ):
     """"""
-    self.caps = [
-        {
-            "capability": str(c.capability.id),
-            "value": c.value,
-            "source": c.source.value,
-            "scope": c.scope or "",
-        }
-        for c in caps
-    ]
+    prev_labels, caps_labels, new_caps = set(), set(), []
+    for c in self.iter_caps():
+        if c.config.set_label:
+            prev_labels |= set(c.get_labels()) | {c.config.set_label}
+    for c in caps:
+        new_caps.append(
+            {
+                "capability": str(c.capability.id),
+                "value": c.value,
+                "source": c.source.value,
+                "scope": c.scope or "",
+            }
+        )
+        if c.config.set_label:
+            caps_labels |= set(c.get_labels()) | {c.config.set_label}
+    self.caps = new_caps
     if dry_run or not self.id:
         return
+    set_op = {"caps": self.caps}
+    # Update database include effective labels directly
+    # to avoid full save
+    if hasattr(self, "effective_labels") and bool(caps_labels.symmetric_difference(prev_labels)):
+        obj_labels = set(self.effective_labels)
+        if obj_labels and prev_labels:
+            obj_labels -= set(prev_labels)
+        if caps_labels:
+            obj_labels.update(caps_labels)
+        changed_fields.append(ChangeField(field="effective_labels", new=sorted(obj_labels)))
+        set_op["effective_labels"] = sorted(obj_labels)
     # Register changes
     change_tracker.register(
         "update",
@@ -151,9 +193,11 @@ def save_model_caps(
         str(self.id),
         fields=changed_fields,
         audit=True,
+        datastreams=get_datastreams(self),
+        domains=get_domains(self, changed_fields),
         caps=[cf.field for cf in changed_fields or []],
     )
-    self.__class__.objects.filter(id=self.id).update(caps=self.caps)
+    self.__class__.objects.filter(id=self.id).update(**set_op)
     self.update_init()
     self._reset_caches(self.id, credential=True)
 
@@ -195,6 +239,8 @@ def set_caps(
     caps = Capability.get_by_name(key)
     if not caps:
         return
+
+    configs = self.get_caps_config()
     value = caps.clean_value(value)
     try:
         source = InputSource(source)
@@ -222,6 +268,7 @@ def set_caps(
                 value=value,
                 source=source,
                 scope=scope or "",
+                config=configs.get(str(caps.id), CapsConfig()),
             )
         ]
         changed |= True
@@ -293,7 +340,8 @@ def update_caps(
     changed = False
     changed_fields = []
     for ci in self.iter_caps():
-        seen.add(ci.name)
+        if not scope or (scope and scope == ci.scope):
+            seen.add(ci.name)
         if scope and scope != ci.scope:
             # For Separate scope - skipping update (ETL)
             logger.debug(
@@ -308,7 +356,7 @@ def update_caps(
                 "[%s] Not changing capability %s: Already set with source '%s'",
                 o_label,
                 ci.name,
-                ci.scope,
+                ci.source,
             )
         elif ci.name in caps:
             value = ci.capability.clean_value(caps[ci.name])
@@ -331,10 +379,10 @@ def update_caps(
                 changed |= True
             else:
                 logger.debug(
-                    "[%s] Not changing capability %s: Already set with source '%s'",
+                    "[%s] Caps value is same for '%s': Set with source '%s'",
                     o_label,
                     ci.name,
-                    ci.scope,
+                    ci.source,
                 )
         elif ci.name not in caps and scope == ci.scope:
             logger.info("[%s] Removing capability %s", o_label, ci)

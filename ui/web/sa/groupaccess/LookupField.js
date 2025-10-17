@@ -7,7 +7,7 @@
 console.debug("Defining NOC.sa.groupaccess.LookupField");
 
 Ext.define("NOC.sa.groupaccess.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.sa.groupaccess.LookupField",
-    uiStyle: "medium-combo"
+  extend: "NOC.core.ComboBox",
+  alias: "widget.sa.groupaccess.LookupField",
+  uiStyle: "medium-combo",
 });

@@ -16,6 +16,10 @@
         {
             "field_name": "object",
             "model": "inv.Object"
+        },
+        {
+            "field_name": "remote_system",
+            "model": "main.RemoteSystem"
         }
     ],
     "enable_timedelta": false,
@@ -39,6 +43,7 @@
             "store_column": "mountpoint"
         },
         {
+            "is_key_label": false,
             "is_order_key": false,
             "is_path": false,
             "is_primary_key": false,

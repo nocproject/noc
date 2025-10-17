@@ -1694,7 +1694,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
       me = this;
     
     me.initValues();
-    surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4,
+    surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4;
     containerHeight = me.drawPanel.getHeight() - me.legendHeight;
     if(surfaceHeight > containerHeight){
       me.surfaceHeight = me.maxPins * (me.boxHeight + me.gap) + me.gap + me.schemaPadding * 4;

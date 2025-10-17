@@ -7,25 +7,25 @@
 console.debug("Defining NOC.sa.profile.Model");
 
 Ext.define("NOC.sa.profile.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/sa/profile/",
+  extend: "Ext.data.Model",
+  rest_url: "/sa/profile/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "uuid",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "uuid",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+  ],
 });

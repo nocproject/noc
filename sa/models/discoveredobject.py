@@ -47,7 +47,12 @@ from noc.core.ip import IP
 from noc.main.models.pool import Pool
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
-from noc.main.models.modeltemplate import ResourceItem, DataItem as ResourceDataItem
+from noc.main.models.modeltemplate import (
+    ResourceItem,
+    DataItem as ResourceDataItem,
+    CapsItem as ResourceCapsItem,
+)
+from noc.inv.models.capability import Capability
 from noc.sa.models.objectdiscoveryrule import ObjectDiscoveryRule
 from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
@@ -85,6 +90,7 @@ class DataItem(EmbeddedDocument):
     service_groups: List[ObjectId] = ListField(ObjectIdField())
     client_groups: List[ObjectId] = ListField(ObjectIdField())
     data = DictField()
+    capabilities = DictField()
     event: str = StringField(required=False)
     is_delete: bool = BooleanField(default=False)  # Delete Flag
 
@@ -124,7 +130,7 @@ class DataItem(EmbeddedDocument):
 
 @bi_sync
 @workflow
-@on_delete_check(check=[("sa.DiscoveredObject", "origin")])
+@on_delete_check(clean=[("sa.DiscoveredObject", "origin")])
 class DiscoveredObject(Document):
     meta = {
         "collection": "discoveredobjects",
@@ -508,7 +514,7 @@ class DiscoveredObject(Document):
         Attrs:
             is_new: Flag create
         """
-        data, mappings, event = [], {}, None
+        data, mappings, caps, event = [], {}, [], None
         s_groups = set()
         for d in self.data:
             s = self.rule.get_sync_settings(d.source, d.remote_system)
@@ -524,6 +530,13 @@ class DiscoveredObject(Document):
                 mappings[d.remote_system] = d.remote_id
             if d.service_groups:
                 s_groups.update(set(d.service_groups))
+            if d.capabilities:
+                caps.append(
+                    ResourceCapsItem(
+                        capabilities=d.capabilities,
+                        remote_system=d.remote_system.name,
+                    )
+                )
             if s.sync_policy == "M" and not is_new:
                 continue
             for k, v in d.data.items():
@@ -549,6 +562,7 @@ class DiscoveredObject(Document):
             id=str(self.managed_object_id),
             labels=self.effective_labels,
             data=data,
+            caps=caps or None,
             event=event,
         )
         if mappings:
@@ -712,8 +726,10 @@ class DiscoveredObject(Document):
 
         rule = self.get_rule(list(self.sources))
         if not rule:
-            # Unsync object
             self.fire_event("expired")  # Remove
+            # Unsync object
+            if self.managed_object:
+                self.managed_object.fire_event("unmanaged")
             return
         if self.rule != rule:
             self.rule = rule
@@ -857,6 +873,7 @@ class DiscoveredObject(Document):
         labels: Optional[List[str]] = None,
         service_groups: Optional[List[ObjectId]] = None,
         client_groups: Optional[List[ObjectId]] = None,
+        capabilities: Optional[Dict[str, str]] = None,
         remote_system: Optional[str] = None,
         ts: Optional[datetime.datetime] = None,
         event: str = False,
@@ -871,6 +888,7 @@ class DiscoveredObject(Document):
             labels: label list
             service_groups: Service groups
             client_groups: Client groups
+            capabilities: Capabilities
             remote_system: Remote System from data
             ts: timestamp when data updated
             event: Workflow Event on RemoteSystem
@@ -891,6 +909,7 @@ class DiscoveredObject(Document):
             if set(client_groups or []) != set(d.client_groups or []):
                 d.client_groups = client_groups
             d.data = data
+            d.capabilities = capabilities
             d.labels = labels or []
             d.last_update = last_update
             d.is_delete = is_delete
@@ -907,6 +926,7 @@ class DiscoveredObject(Document):
                     service_groups=service_groups,
                     client_groups=client_groups,
                     data=data,
+                    capabilities=capabilities,
                     last_update=last_update,
                     is_delete=is_delete,
                     event=event,
@@ -969,6 +989,17 @@ class DiscoveredObject(Document):
             rs = None
             if d.remote_system:
                 rs = RemoteSystem.get_by_name(d.remote_system)
+            caps = {}
+            for c in d.caps or []:
+                c_o = Capability.get_by_name(c)
+                if not c_o:
+                    logger.warning("Unknown capability: %s", c)
+                    continue
+                try:
+                    caps[c] = c_o.clean_value(d.caps[c])
+                except ValueError:
+                    logger.warning("[%s] Bad value for caps: %s", c, caps[c])
+                    continue
             # Check Update ts, if deleted
             self.set_data(
                 d.source,
@@ -976,6 +1007,7 @@ class DiscoveredObject(Document):
                 d.labels,
                 d.service_groups,
                 d.client_groups,
+                capabilities=caps,
                 remote_system=rs,
                 ts=d.ts,
                 is_delete=d.is_delete,
@@ -1022,7 +1054,16 @@ class DiscoveredObject(Document):
             changed |= self.rule.default_template.update_instance_data(mo, ctx, dry_run=True)
             if changed:
                 logger.info("[%s] Update existing ManagedObject from data: %s", mo.name, ctx)
+        # Mappings
         changed |= mo.update_remote_mappings(ctx.mappings or {})
+        # Capabilities
+        for cc in ctx.caps or []:
+            mo.update_caps(
+                cc.capabilities,
+                source="etl",
+                scope=cc.remote_system or "discovered",
+                dry_run=False,
+            )
         if dry_run:
             logger.info("Send signal (managed_object): %s", ctx.event or "managed")
             return

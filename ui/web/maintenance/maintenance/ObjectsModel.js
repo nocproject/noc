@@ -7,36 +7,36 @@
 console.debug("Defining NOC.maintenance.maintenance.ObjectsModel");
 
 Ext.define("NOC.maintenance.maintenance.ObjectsModel", {
-    extend: "Ext.data.Model",
+  extend: "Ext.data.Model",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "is_managed",
-            type: "boolean"
-        },
-        {
-            name: "profile",
-            type: "string"
-        },
-        {
-            name: "address",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "labels",
-            type: "auto"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "is_managed",
+      type: "boolean",
+    },
+    {
+      name: "profile",
+      type: "string",
+    },
+    {
+      name: "address",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "labels",
+      type: "auto",
+    },
+  ],
 });

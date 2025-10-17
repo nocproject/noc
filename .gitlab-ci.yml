@@ -96,6 +96,8 @@ mypy:
     refs:
       - merge_requests
     changes:
+      - ".gitlab-ci.yml"
+      - "pyproject.toml"
       - "*.py"
       - "**/*.py"
   tags:
@@ -107,28 +109,21 @@ eslint:
   image: node:22-bookworm
   script:
     - set -x
-    - export ESLINT_USE_FLAT_CONFIG=false
-    # Get list of changed files
-    # @todo: Deprecated, remove in future
-    - FLIST=$(git --no-pager diff --diff-filter=d --name-only $(git merge-base --fork-point origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME) $CI_COMMIT_SHA  | egrep "\.js$" | grep -v ".docker/"|| true)
-    - >
-      if [ ! -z "$FLIST" ];
-      then
-        npm install -g eslint
-        eslint $FLIST
-      else
-        echo "No files to lint"
-        true;
-      fi
+    - npm install -g eslint@$(grep -oP '"eslint"\s*:\s*"\K[~^]?\K[0-9.]+(?=")' ui/package.json)
+    - cd ui/
+    - npm install
+    - eslint web --fix-dry-run
   only:
     refs:
       - merge_requests
     changes:
+      - ".gitlab-ci.yml"
+      - "ui/eslint.config.mjs"
       - "*.js"
       - "**/*.js"
   tags:
     - docker
-  allow_failure: true
+  allow_failure: false
 
 prettier:
   stage: Lint
@@ -190,7 +185,7 @@ py:test:
     - >
       docker cp
       "${DOCKER_COMPOSE_PROJECT}_pytests_1:/opt/noc/${JUNIT_XML_REPORT}"
-      "${JUNIT_XML_REPORT}"
+      "${JUNIT_XML_REPORT}" || true
     - mv .dockerignore.prod .dockerignore
     - >
       docker-compose

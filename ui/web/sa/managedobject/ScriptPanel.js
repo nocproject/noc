@@ -86,7 +86,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     me.loadMask = new Ext.LoadMask({target: me, msg: "Running task. Please wait ..."});
   },
   //
-  preview: function(record, backItem){
+  preview: function(record){
     var me = this;
     me.callParent(arguments);
     me.setTitle(record.get("name") + " scripts");
@@ -104,7 +104,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
     });
   },
   //
-  onRunScript: function(grid, td, cellIndex, record, tr, rowIndex, e, eOpts){
+  onRunScript: function(grid, td, cellIndex, record, tr, rowIndex, e){
     var me = this,
       hi = record.get("has_input"),
       ri = record.get("require_input");
@@ -149,7 +149,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
         script: name,
         result: result,
       });
-    Ext.each(me.scriptContainer.query('[itemId=sa-script-result]'), function(comp){
+    Ext.each(me.scriptContainer.query("[itemId=sa-script-result]"), function(comp){
       me.scriptContainer.remove(comp);
     })
     me.scriptContainer.add(preview);
@@ -164,7 +164,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
         script: name,
         result: result,
       });
-    Ext.each(me.scriptContainer.query('[itemId=sa-script-error]'), function(comp){
+    Ext.each(me.scriptContainer.query("[itemId=sa-script-error]"), function(comp){
       me.scriptContainer.remove(comp);
     })
     me.scriptContainer.add(preview);
@@ -172,7 +172,7 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
   },
   //
   showForm: function(name, items){
-    var me = this, queryResult;
+    var me = this;
     me.form = Ext.create("Ext.form.Panel", {
       itemId: "sa-script-form",
       items: items,
@@ -198,11 +198,11 @@ Ext.define("NOC.sa.managedobject.ScriptPanel", {
         },
       ],
     });
-    Ext.each(me.scriptContainer.query('[itemId=sa-script-form]'), function(comp){
+    Ext.each(me.scriptContainer.query("[itemId=sa-script-form]"), function(comp){
       me.scriptContainer.remove(comp);
     })
     me.scriptContainer.add(me.form);
-    me.scriptContainer.setActiveItem('sa-script-form');
+    me.scriptContainer.setActiveItem("sa-script-form");
   },
   //
   destroyForm: function(){

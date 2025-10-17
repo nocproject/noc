@@ -7,89 +7,89 @@
 console.debug("Defining NOC.inv.networksegment.EffectiveSettingsPanel");
 
 Ext.define("NOC.inv.networksegment.EffectiveSettingsPanel", {
-    extend: "NOC.core.ApplicationPanel",
-    app: null,
-    autoScroll: true,
-    historyHashPrefix: "effectivesettings",
+  extend: "NOC.core.ApplicationPanel",
+  app: null,
+  autoScroll: true,
+  historyHashPrefix: "effectivesettings",
 
-    initComponent: function() {
-        var me = this;
+  initComponent: function(){
+    var me = this;
 
-        me.currentObject = null;
+    me.currentObject = null;
 
-        me.refreshButton = Ext.create("Ext.button.Button", {
-            text: __("Refresh"),
-            glyph: NOC.glyph.refresh,
-            scope: me,
-            handler: me.onRefresh
-        });
+    me.refreshButton = Ext.create("Ext.button.Button", {
+      text: __("Refresh"),
+      glyph: NOC.glyph.refresh,
+      scope: me,
+      handler: me.onRefresh,
+    });
 
-        me.store = Ext.create("Ext.data.Store", {
-            fields: ["key", "value"],
-            data: []
-        });
+    me.store = Ext.create("Ext.data.Store", {
+      fields: ["key", "value"],
+      data: [],
+    });
 
-        me.grid = Ext.create("Ext.grid.Panel", {
-            store: me.store,
-            autoScroll: true,
-            columns: [
-                {
-                    dataIndex: "key",
-                    text: __("Key"),
-                    width: 150
-                },
-                {
-                    dataIndex: "value",
-                    text: __("Value"),
-                    flex: 1
-                }
-            ]
-        });
+    me.grid = Ext.create("Ext.grid.Panel", {
+      store: me.store,
+      autoScroll: true,
+      columns: [
+        {
+          dataIndex: "key",
+          text: __("Key"),
+          width: 150,
+        },
+        {
+          dataIndex: "value",
+          text: __("Value"),
+          flex: 1,
+        },
+      ],
+    });
 
-        //
-        Ext.apply(me, {
-            items: [
-                me.grid
-            ],
-            dockedItems: [
-                {
-                    xtype: "toolbar",
-                    dock: "top",
-                    items: [
-                        me.getCloseButton(),
-                        me.refreshButton,
-                    ]
-                }
-            ]
-        });
-        me.callParent();
-    },
     //
-    preview: function(record, backItem) {
-        var me = this;
-        me.callParent(arguments);
-        me.setTitle(record.get("name") + " interfaces");
-        Ext.Ajax.request({
-            url: "/inv/networksegment/" + record.get("id") + "/effective_settings/",
-            method: "GET",
-            scope: me,
-            success: function(response) {
-                var data = Ext.decode(response.responseText),
-                    r = [];
-                for(var k in data) {
-                    r.push({key: k, value: data[k]});
-                }
-                me.store.loadData(r);
-                me.store.sort("key", "ASC");
-            },
-            failure: function() {
-                NOC.error(__("Failed to load data"));
-            }
-        });
-    },
-    //
-    onRefresh: function() {
-        var me = this;
-        me.preview(me.currentRecord);
-    }
+    Ext.apply(me, {
+      items: [
+        me.grid,
+      ],
+      dockedItems: [
+        {
+          xtype: "toolbar",
+          dock: "top",
+          items: [
+            me.getCloseButton(),
+            me.refreshButton,
+          ],
+        },
+      ],
+    });
+    me.callParent();
+  },
+  //
+  preview: function(record){
+    var me = this;
+    me.callParent(arguments);
+    me.setTitle(record.get("name") + " interfaces");
+    Ext.Ajax.request({
+      url: "/inv/networksegment/" + record.get("id") + "/effective_settings/",
+      method: "GET",
+      scope: me,
+      success: function(response){
+        var data = Ext.decode(response.responseText),
+          r = [];
+        for(var k in data){
+          r.push({key: k, value: data[k]});
+        }
+        me.store.loadData(r);
+        me.store.sort("key", "ASC");
+      },
+      failure: function(){
+        NOC.error(__("Failed to load data"));
+      },
+    });
+  },
+  //
+  onRefresh: function(){
+    var me = this;
+    me.preview(me.currentRecord);
+  },
 });

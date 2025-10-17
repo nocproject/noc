@@ -61,6 +61,7 @@ MX_MESSAGE_TYPE = "Message-Type"
 MX_SHARDING_KEY = "Sharding-Key"
 MX_CHANGE_ID = "Change-Id"
 MX_DATA_ID = "Data-Id"
+MX_JOB_HANDLER = "Job-Handler"
 # Object data
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
@@ -75,6 +76,17 @@ MX_NOTIFICATION_CHANNEL = "Notification-Channel"
 MX_NOTIFICATION_METHOD = "Notification-Method"
 MX_NOTIFICATION_GROUP_ID = "Notification-Group-Id"
 MX_LANG = "Language"
+# WebHook
+MX_WH_API_URL = "WebHook-API-URL"
+MX_WH_API_METHOD = "WebHook-API-Method"
+MX_WH_API_AUTHORIZATION = "WebHook-API-Authorization"
+MX_WH_TO_PARAM_NAME = "WebHook-To-Param-Name"
+MX_WH_MESSAGE_PARAM_NAME = "WebHook-To-Param-Name"
+MX_WH_CONTENT_TYPE = "WebHook-API-Content-Type"
+MX_WH_SENDER_METHOD = "WebHook-Sender-Method"
+MX_WH_NOTIFICATION_PARAM_NAME = "WebHook-Notification-Param-Name"
+# ContentType - form-data/json
+# Kafka
 KAFKA_PARTITION = "Kafka-Partition"
 MX_H_VALUE_SPLITTER = ";"
 # Available message types
@@ -100,6 +112,7 @@ class MessageType(enum.Enum):
     ETL_SYNC_REPORT = "etl_sync_report"
     NOTIFICATION = "notification"
     SERVICE_STATUS_CHANGE = "service_status_change"
+    JOB = "job"
     OTHER = "other"
 
 
@@ -146,9 +159,20 @@ MESSAGE_HEADERS = {
     MX_LANG,
     KAFKA_PARTITION,
     MX_METRICS_SCOPE,
+    MX_NOTIFICATION_METHOD,
+    MX_WH_API_URL,
+    MX_WH_API_METHOD,
+    MX_WH_API_AUTHORIZATION,
+    MX_WH_TO_PARAM_NAME,
+    MX_WH_CONTENT_TYPE,
+    MX_WH_NOTIFICATION_PARAM_NAME,
 }
 # Method -> Sender stream map, ?autoregister
-NOTIFICATION_METHODS = {"mail": b"mailsender", "tg": b"tgsender"}
+NOTIFICATION_METHODS = {
+    "mail": b"mailsender",
+    "tg": b"tgsender",
+    "webhook": b"tgsender",
+}
 
 _mx_partitions: Optional[int] = None
 _mx_lock = Lock()

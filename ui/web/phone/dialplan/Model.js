@@ -7,25 +7,25 @@
 console.debug("Defining NOC.phone.dialplan.Model");
 
 Ext.define("NOC.phone.dialplan.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/phone/dialplan/",
+  extend: "Ext.data.Model",
+  rest_url: "/phone/dialplan/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "mask",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "mask",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+  ],
 });

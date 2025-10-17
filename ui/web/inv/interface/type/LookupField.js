@@ -17,36 +17,36 @@ Ext.define("NOC.inv.interface.type.LookupField", {
       {value: "physical", label: __("Physical")},
       {value: "SVI", label: __("SVI")},
       {value: "aggregated", label: __("Aggregated")},
-      {value: "loopback", label: __("Loopback")}
-    ]
+      {value: "loopback", label: __("Loopback")},
+    ],
   },
   triggers: {
     clear: {
       cls: "x-form-clean-trigger",
       hidden: true,
       weight: -1,
-      handler: function(field) {
+      handler: function(field){
         field.setValue(null);
         field.fireEvent("select", field);
-      }
-    }
+      },
+    },
   },
   listeners: {
-    change: function(field, value) {
+    change: function(field, value){
       this.showTriggers(value);
-    }
+    },
   },
 
-  initComponent: function() {
+  initComponent: function(){
     var me = this;
 
     me.showTriggers(null);
     this.callParent();
   },
-  showTriggers: function(value) {
+  showTriggers: function(value){
     this.getTrigger("clear").show();
-    if(value == null || value === "") {
+    if(value == null || value === ""){
       this.getTrigger("clear").hide();
     }
-  }
+  },
 });

@@ -7,12 +7,12 @@
 console.debug("Defining NOC.phone.phonenumber.LookupField");
 
 Ext.define("NOC.phone.phonenumber.LookupField", {
-    extend: "NOC.core.ComboBox",
-    alias: "widget.phone.phonenumber.LookupField",
-    listConfig: {
-        getInnerTpl: function() {
-            return "{label} <span style='float: right' class='x-display-tag'>{dialplan}</span>";
-        }
+  extend: "NOC.core.ComboBox",
+  alias: "widget.phone.phonenumber.LookupField",
+  listConfig: {
+    getInnerTpl: function(){
+      return "{label} <span style='float: right' class='x-display-tag'>{dialplan}</span>";
     },
-    uiStyle: "medium-combo"
+  },
+  uiStyle: "medium-combo",
 });

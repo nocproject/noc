@@ -448,9 +448,15 @@ class CorrelatorService(FastAPIService):
                     key=str(rule.id),
                     min_severity=rule.min_severity,
                     max_severity=rule.max_severity,
+                    policy=rule.severity_policy,
                 )
             else:
                 alarm.stop_watch(Effect.STOP_CLEAR, key=str(rule.id))
+                alarm.add_watch(
+                    Effect.SEVERITY,
+                    key=str(rule.id),
+                    policy=rule.severity_policy,
+                )
             if rule.rewrite_alarm_class and rule.rewrite_alarm_class.allow_rewrite(
                 alarm.alarm_class
             ):

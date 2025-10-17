@@ -8,15 +8,15 @@
 console.debug("Defining NOC.core.modelfilter.Boolean");
 
 Ext.define("NOC.core.modelfilter.Boolean", {
-    extend: "NOC.core.modelfilter.AbstractRadioButton",
+  extend: "NOC.core.modelfilter.AbstractRadioButton",
 
-    constructor: function(config) {
-        this.clsYes = "noc-yes";
-        this.clsNo = "noc-no";
-        this.toggleGroup = "boolgroup";
-        this.glyphYes = NOC.glyph.check;
-        this.glyphNo = NOC.glyph.times;
-        Ext.apply(this, config);
-        this.callParent();
-    }
+  constructor: function(config){
+    this.clsYes = "noc-yes";
+    this.clsNo = "noc-no";
+    this.toggleGroup = "boolgroup";
+    this.glyphYes = NOC.glyph.check;
+    this.glyphNo = NOC.glyph.times;
+    Ext.apply(this, config);
+    this.callParent();
+  },
 });
