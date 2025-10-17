@@ -2557,6 +2557,7 @@ class ManagedObject(NOCModel):
             ],
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
+            "remote_mappings": [],
         }
         if self.remote_system:
             r["remote_system"] = {
@@ -2570,6 +2571,16 @@ class ManagedObject(NOCModel):
                 "name": self.administrative_domain.remote_system.name,
             }
             r["administrative_domain"]["remote_id"] = self.administrative_domain.remote_id
+        for m in self.iter_remote_mappings():
+            r["remote_mappings"].append(
+                {
+                    "remote_system": {
+                        "id": str(m.remote_system.id),
+                        "name": m.remote_system.name,
+                    },
+                    "remote_id": m.remote_id,
+                }
+            )
         return r
 
     def is_enabled_diagnostic(self, diag: str) -> Tuple[bool, Optional[str]]:
