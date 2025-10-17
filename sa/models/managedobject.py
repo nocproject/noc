@@ -2367,6 +2367,9 @@ class ManagedObject(NOCModel):
                     [f"{DIAGNOCSTIC_LABEL_SCOPE}::{d.diagnostic}::{d.state}"],
                     ["sa.ManagedObject"],
                 )
+        for c in instance.iter_caps():
+            if c.config.set_label:
+                yield c.get_labels()
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:
@@ -2704,6 +2707,11 @@ class ManagedObject(NOCModel):
             "bi_id": mo.bi_id,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": sorted(mo.effective_labels),
+            "exposed_labels": [
+                ll
+                for ll in mo.effective_labels
+                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
+            ],
             "discovery_interval": mo.get_metric_discovery_interval(),
             "composed_metrics": [
                 mc.metric_type.field_name
@@ -2718,12 +2726,11 @@ class ManagedObject(NOCModel):
 
     @property
     def has_configured_metrics(self) -> bool:
-        """
-        Check configured collected metrics
-        :return:
-        """
+        """Check configured collected metrics"""
         if Interaction.ServiceActivation not in self.interactions:
             return False
+        if RemoteSystem.has_active_remote_collector():
+            return True
         if not self.object_profile.enable_metrics:
             return False
         return bool(self.get_metric_discovery_interval())

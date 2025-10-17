@@ -26,6 +26,7 @@ import cachetools
 from noc.core.caps.types import CapsConfig
 from noc.core.model.decorator import on_delete_check
 from noc.inv.models.capability import Capability
+from noc.main.models.label import Label
 
 id_lock = threading.Lock()
 
@@ -37,7 +38,10 @@ class CapsSettings(EmbeddedDocument):
     capability: Capability = ReferenceField(Capability, required=True)
     default_value = DynamicField()
     allow_manual = BooleanField(default=False)
-    # ref_scope = StringField(required=False)
+    # Add to Reference
+    ref_scope = StringField(required=False)
+    # Wildcard
+    set_label = ReferenceField(Label, required=False)
     # ref_remote_system
 
     def __str__(self):
@@ -47,13 +51,17 @@ class CapsSettings(EmbeddedDocument):
         super().clean()
         if self.default_value:
             self.capability.clean_value(self.default_value)
+        if self.set_label:
+            if not self.set_label.is_wildcard:
+                raise ValueError("Only wildcard label may by set")
 
     def get_config(self) -> CapsConfig:
         """"""
         return CapsConfig(
             default_value=self.default_value or None,
             allow_manual=self.allow_manual,
-            # ref_scope=self.ref_scope,
+            ref_scope=self.ref_scope,
+            set_label=self.set_label.name if self.set_label else None,
         )
 
 

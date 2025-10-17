@@ -121,6 +121,7 @@ class PrefixFilterItem(EmbeddedDocument):
         ("main.MessageRoute", "match__exclude_labels"),
         ("sa.ObjectDiagnosticConfig", "match__labels"),
         ("sa.ObjectDiagnosticConfig", "match__exclude_labels"),
+        ("sa.CapsProfile", "caps__set_label"),
         ("sa.CredentialCheckRule", "match__labels"),
         ("sa.CredentialCheckRule", "match__exclude_labels"),
         ("sa.ReactionRule", "conditions__labels"),
