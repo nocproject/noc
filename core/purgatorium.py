@@ -59,7 +59,6 @@ FROM (
      argMax(data, ts) as data, argMax(labels, ts) as labels, argMax(caps, ts) as caps,
      argMax(service_groups, ts) as service_groups, argMax(clients_groups, ts) as clients_groups,
      argMax(router_id, ts) as router_id, argMax(ts, ts) as max_ts, argMax(ts, ts) as last_ts,
-     argMax(refs, ts) as refs
     FROM noc.purgatorium
     WHERE date >= %s
     GROUP BY ip, pool, remote_system, source
