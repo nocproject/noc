@@ -11,6 +11,8 @@ Ext.define("NOC.sa.capsprofile.Application", {
   requires: [
     "NOC.sa.capsprofile.Model",
     "NOC.inv.capability.LookupField",
+    "NOC.main.label.LookupField",
+    "NOC.core.label.LabelField",
   ],
   model: "NOC.sa.capsprofile.Model",
   search: true,
@@ -308,6 +310,19 @@ Ext.define("NOC.sa.capsprofile.Application", {
               width: 150,
               editor: "checkbox",
               renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Set Label"),
+              dataIndex: "set_label",
+              width: 200,
+              editor: {
+                xtype: "main.label.LookupField",
+                // filterProtected: false,
+                query: {
+                  "set_wildcard": true,
+                }
+              },
+              renderer: NOC.render.Lookup("set_label"),
             },
           ],
         },

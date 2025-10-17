@@ -70,11 +70,12 @@ class SourceConfig(object):
     * sensor
     """
 
-    __slots__ = ("bi_id", "fm_pool", "items", "labels", "meta", "rules", "type")
+    __slots__ = ("bi_id", "exposed_labels", "fm_pool", "items", "labels", "meta", "rules", "type")
     type: Literal["managed_object", "sla_probe", "sensor", "agent"]
     bi_id: int
     fm_pool: str
     labels: Optional[Tuple[str, ...]]
+    exposed_labels: Optional[Tuple[str, ...]]
     items: Tuple[ItemConfig, ...]
     rules: List[str]
     meta: Dict[str, Any]
@@ -90,6 +91,8 @@ class SourceConfig(object):
         """
         r = []
         if set(self.labels).difference(sc.labels):
+            r += ["condition"]
+        if set(self.exposed_labels or []).difference(sc.exposed_labels or []):
             r += ["condition"]
         return r
 

@@ -206,6 +206,9 @@ class MetricsService(FastAPIService):
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
+            # Exposed labels
+            if card.config and card.config.metric_labels:
+                item["labels"] = labels + card.config.metric_labels
             state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
@@ -324,7 +327,8 @@ class MetricsService(FastAPIService):
         card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), config=source)
         metrics["project_cards"] += 1
         self.cards[k] = card
-        self.source_metrics[k[1][-1]].append(k)
+        for kk in k[1]:
+            self.source_metrics[kk].append(k)
         # Apply Rules
         self.apply_rules(k, labels)
         return card
@@ -524,7 +528,7 @@ class MetricsService(FastAPIService):
             return None
         composed_metrics = []
         rules = source.rules or []
-        metric_labels = []
+        metric_labels = list(source.exposed_labels or [])
         # Find matched item
         for item in source.items:
             if not item.is_match(k):
@@ -723,6 +727,7 @@ class MetricsService(FastAPIService):
             labels=tuple(
                 sys.intern(ll if isinstance(ll, str) else ll["label"]) for ll in data["labels"]
             ),
+            exposed_labels=tuple(sys.intern(ll) for ll in data.get("exposed_labels", [])),
             items=tuple(items),
             rules=data.get("rules"),
             meta=data.get("meta") if global_config.message.enable_metrics else None,
