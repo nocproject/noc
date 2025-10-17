@@ -20,6 +20,10 @@
         {
             "field_name": "cpe",
             "model": "inv.CPE"
+        },
+        {
+            "field_name": "remote_system",
+            "model": "main.RemoteSystem"
         }
     ],
     "enable_timedelta": true,
@@ -95,6 +99,60 @@
             "is_required": false,
             "label": "noc::tos::*",
             "store_column": "tos"
+        },
+        {
+            "is_key_label": false,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::radio::standart::*",
+            "view_column": "radio_standart"
+        },
+        {
+            "is_key_label": false,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::wlan::band::*",
+            "view_column": "wlan_band"
+        },
+        {
+            "is_key_label": true,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::wlan::channel::*",
+            "store_column": "wlan_channel"
+        },
+        {
+            "is_key_label": false,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::wlan::channel_width::*",
+            "view_column": "wlan_channel_width"
+        },
+        {
+            "is_key_label": true,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::wlan::client::*",
+            "store_column": "wlan_client"
+        },
+        {
+            "is_key_label": false,
+            "is_order_key": false,
+            "is_path": false,
+            "is_primary_key": false,
+            "is_required": false,
+            "label": "noc::wlan::client::name::*",
+            "view_column": "wlan_client_name"
         }
     ]
 }

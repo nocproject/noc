@@ -71,6 +71,9 @@ class LabelApplication(ExtDocApplication):
         if "is_matched" in q:
             q["name"] = self.matched_re if q["is_matched"] == "true" else self.not_matched_re
             del q["is_matched"]
+        if "set_wildcard" in q:
+            q["name__endswith"] = "*"
+            del q["set_wildcard"]
         return q
 
     def clean(self, data):
