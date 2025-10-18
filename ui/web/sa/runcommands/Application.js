@@ -300,6 +300,12 @@ Ext.define("NOC.sa.runcommands.Application", {
                   checked: true,
                 },
                 {
+                  xtype: "checkboxfield",
+                  reference: "dryRun",
+                  boxLabel: __("Dry Run (not execute command)"),
+                  checked: false,
+                },
+                {
                   xtype: "combo",
                   reference: "saRunCommandsMode",
                   fieldLabel: __("Mode"),

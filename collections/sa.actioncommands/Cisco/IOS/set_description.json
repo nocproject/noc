@@ -1,10 +1,15 @@
 {
     "name": "Cisco | IOS | set_description",
+    "$collection": "sa.actioncommands",
     "uuid": "3cc85c06-cead-4fc1-ad5d-d3b330ff4efc",
     "action__name": "set_interface_description",
     "description": "",
     "profile__name": "Cisco.IOS",
     "config_mode": true,
+    "preference": 1000,
     "match": [],
-    "commands": "interface {{interface}}\n    description \"{{description}}\""
+    "commands": "description \"{{description}}\"",
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }

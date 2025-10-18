@@ -566,12 +566,6 @@ Ext.define("NOC.sa.managedobject.Application", {
               },
               items: [
                 {
-                  xtype: "checkboxfield",
-                  reference: "ignoreCliErrors",
-                  boxLabel: __("Ignore CLI errors"),
-                  checked: true,
-                },
-                {
                   xtype: "combo",
                   reference: "saManagedobjectMode",
                   fieldLabel: __("Mode"),
@@ -593,6 +587,18 @@ Ext.define("NOC.sa.managedobject.Application", {
                       field.setValue("commands");
                     },
                   },
+                },
+                {
+                  xtype: "checkboxfield",
+                  reference: "ignoreCliErrors",
+                  boxLabel: __("Ignore CLI errors"),
+                  checked: true,
+                },
+                {
+                  xtype: "checkboxfield",
+                  reference: "dryRun",
+                  boxLabel: __("Dry Run (not execute command)"),
+                  checked: false,
                 },
               ],
             },

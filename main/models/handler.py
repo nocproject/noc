@@ -33,6 +33,7 @@ id_lock = Lock()
         ("sa.ManagedObject", "config_filter_handler"),
         ("sa.ManagedObject", "config_diff_filter_handler"),
         ("sa.ManagedObject", "config_validation_handler"),
+        ("sa.Action", "handler"),
         ("inv.InterfaceProfile", "ifdesc_handler"),
         ("inv.TechDomain", "controller_handler"),
         ("pm.ThresholdProfile", "umbrella_filter_handler"),
@@ -72,6 +73,7 @@ class Handler(Document):
     allow_event = BooleanField()
     allow_resource = BooleanField()
     allow_reaction = BooleanField()
+    allow_action = BooleanField()
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
@@ -104,6 +106,8 @@ class Handler(Document):
             "allow_diagnostics_checks": self.allow_diagnostics_checks,
             "allow_event": self.allow_event,
             "allow_resource": self.allow_resource,
+            "allow_reaction": self.allow_reaction,
+            "allow_action": self.allow_action,
         }
 
     def to_json(self) -> str:
