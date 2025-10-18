@@ -73,14 +73,14 @@ class TgSenderService(FastAPIService):
         if not address:
             self.logger.warning("[%s] Message without address", msg.offset)
             return
-        method = msg.headers[MX_NOTIFICATION_METHOD].decode()
-        if method == "webhook" and MX_WH_API_URL in msg.headers:
+        method = msg.headers.get(MX_NOTIFICATION_METHOD)
+        if method == b"webhook" and MX_WH_API_URL in msg.headers:
             # parse webhook_headers
             args = self.parse_webhook_headers(msg.headers)
             await self.send_webhook(msg.offset, address, data, **args)
-        elif method == "webhook":
+        elif method == b"webhook":
             self.logger.info("[%s] WebHook API is not set", msg.offset)
-        elif not method or method == "tg":
+        elif not method or method == b"tg":
             await self.send_tb(msg.offset, address, data)
         else:
             self.logger.info("[%s] Unknown notification method", msg.offset)
