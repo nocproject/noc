@@ -49,6 +49,14 @@ Ext.define("NOC.sa.actioncommands.Model", {
       type: "auto",
     },
     {
+      name: "scopes",
+      type: "auto",
+    },
+    {
+      name: "test_cases",
+      type: "auto",
+    },
+    {
       name: "config_mode",
       type: "boolean",
     },

@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | reboot",
+    "$collection": "sa.actioncommands",
     "uuid": "9097471e-f233-4981-8e87-eed887004025",
     "action__name": "reboot",
     "description": "",
@@ -8,5 +9,7 @@
     "preference": 1000,
     "match": [],
     "commands": "/system reboot",
-    "timeout": 60
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }

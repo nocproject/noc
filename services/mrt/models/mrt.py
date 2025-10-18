@@ -31,6 +31,7 @@ class MRTCommandsArgs(BaseModel):
     include_commands: bool = False
     config_mode: bool = False
     ignore_cli_errors: bool = False
+    dry_run: bool = False
 
 
 class MRTInterfaceArgs(BaseModel):

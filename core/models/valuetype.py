@@ -25,6 +25,7 @@ from noc.sa.interfaces.base import (
     VLANIDParameter,
 )
 from noc.core.validators import is_fqdn
+from noc.models import get_model, is_document
 
 BOOL_VALUES = frozenset(("t", "true", "yes"))
 REFERENCE_SCOPE_SPLITTER = "::"
@@ -156,6 +157,8 @@ class ValueType(enum.Enum):
 
     @staticmethod
     def decode_vrf(value):
+        if hasattr(value, "name"):
+            return str(value.name)
         return str(value)
 
     @staticmethod
@@ -201,4 +204,23 @@ class ValueType(enum.Enum):
         match self:
             case ValueType.IFACE_NAME:
                 return "inv.Interface"
+            case ValueType.VLAN:
+                return "vc.VLAN"
+            case ValueType.IP_VRF:
+                return "ip.VRF"
+            case ValueType.IPV4_ADDR:
+                return "ip.Address"
         return None
+
+    def get_resource_instance(self) -> Optional[Any]:
+        """Getting resource instance"""
+        m = self.resource_model
+        if not m:
+            raise AttributeError("Not resource model")
+        m = get_model(m)
+        # Get component?
+        if is_document(m) or isinstance(self.value, int):
+            return m.get_by_id(self.value)
+        if isinstance(self.value, str) and self.value.isdigit():
+            return m.get_by_id(int(self.value))
+        return m.get_by_name(self.value)

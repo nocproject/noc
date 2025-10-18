@@ -113,5 +113,10 @@ Ext.define("NOC.main.handler.Model", {
       name: "allow_reaction",
       type: "boolean",
     },
+    {
+      name: "allow_action",
+      type: "boolean",
+    },
   ],
 });
+

@@ -297,6 +297,7 @@ Ext.define("NOC.sa.runcommands.Controller", {
       var objects = [];
       var config = me.lookupReference("sa-run-commands-command-form").getValues();
       var ignore_cli_errors = JSON.stringify(me.lookupReference("ignoreCliErrors").getValue());
+      var dry_run = JSON.stringify(me.lookupReference("dryRun").getValue());
 
       me.getStore("selectedStore").each(function(record){
         objects.push(record.get("id"));
@@ -330,6 +331,7 @@ Ext.define("NOC.sa.runcommands.Controller", {
                   commands: obj[key].split("\n"),
                   include_commands: true,
                   ignore_cli_errors: ignore_cli_errors,
+                  dry_run: dry_run,
                 },
               });
             }
@@ -358,7 +360,8 @@ Ext.define("NOC.sa.runcommands.Controller", {
           "args": {
             "commands": this.lookupReference("sa-run-commands-command-form").getValues().cmd.split("\n"),
             "include_commands": "true",
-            "ignore_cli_errors": JSON.stringify(this.lookupReference("ignoreCliErrorss").getValue()),
+            "dry_run": JSON.stringify(this.lookupReference("dryRun").getValue()),
+            "ignore_cli_errors": JSON.stringify(this.lookupReference("ignoreCliErrors").getValue()),
           },
         });
         break;

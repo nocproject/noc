@@ -13,7 +13,11 @@ Ext.define("NOC.sa.actioncommands.Application", {
     "NOC.sa.actioncommands.Model",
     "NOC.sa.action.LookupField",
     "NOC.sa.profile.LookupField",
+    "NOC.core.ListFormField",
     "Ext.ux.form.GridField",
+    "Ext.ux.form.JSONField",
+    "Ext.ux.form.GridField",
+
   ],
   model: "NOC.sa.actioncommands.Model",
   search: true,
@@ -122,10 +126,60 @@ Ext.define("NOC.sa.actioncommands.Application", {
           ],
         },
         {
+          name: "scopes",
+          xtype: "gridfield",
+          fieldLabel: __("Scopes"),
+          columns: [
+            {
+              text: __("Scope"),
+              dataIndex: "scope",
+              editor: "textfield",
+            },
+            {
+              text: __("Enter Scope"),
+              dataIndex: "enter_scope",
+              editor: "combobox",
+            },
+            {
+              text: __("Command"),
+              dataIndex: "command",
+              editor: "textfield",
+            },
+            {
+              text: __("Exit Command"),
+              dataIndex: "exit_command",
+              editor: "textfield",
+            },
+          ],
+        },
+        {
           name: "commands",
           xtype: "textarea",
           fieldLabel: __("Commands"),
           allowBlank: false,
+        },
+        {
+          name: "test_cases",
+          xtype: "listform",
+          rows: 3,
+          fieldLabel: __("Test cases"),
+          labelAlign: "top",
+          items: [
+            {
+              xtype: "textarea",
+              name: "output",
+              width: 900,
+              fieldLabel: __("Output"),
+            },
+            {
+              xtype: "jsonfield",
+              name: "context",
+              fieldLabel: __("Context"),
+              width: 500,
+              editor: "jsonfield",
+              renderer: NOC.render.JSON,
+            },
+          ],
         },
       ],
       formToolbar: [
