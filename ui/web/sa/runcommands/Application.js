@@ -377,16 +377,37 @@ Ext.define('NOC.sa.runcommands.Application', {
             activeItem: 2,
             items: [
                 {
-                    xtype: 'grid',
-                    reference: 'sa-run-commands-selected-grid-3',
-                    region: 'center',
-                    width: '50%',
-                    border: false,
-                    scrollable: true,
-                    bind: '{selectedStore}',
-                    selModel: {
-                        mode: 'SINGLE',
-                        selType: 'checkboxmodel'
+                  xtype: "checkboxfield",
+                  reference: "ignoreCliErrors",
+                  boxLabel: __("Ignore CLI errors"),
+                  checked: true,
+                },
+                {
+                  xtype: "checkboxfield",
+                  reference: "dryRun",
+                  boxLabel: __("Dry Run (not execute command)"),
+                  checked: false,
+                },
+                {
+                  xtype: "combo",
+                  reference: "saRunCommandsMode",
+                  fieldLabel: __("Mode"),
+                  labelWidth: 50,
+                  queryMode: "local",
+                  displayField: "name",
+                  valueField: "value",
+                  editable: false,
+                  store: {
+                    data: [
+                      {value: "commands", name: __("Run Commands")},
+                      {value: "snippet", name: __("Run Snippet")},
+                      {value: "action", name: __("Run Action")},
+                    ],
+                  },
+                  listeners: {
+                    change: "onConfigModeChange",
+                    afterrender: function(field){
+                      field.setValue("commands");
                     },
                     listeners: {
                         afterrender: 'setStatusClass',

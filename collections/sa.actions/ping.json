@@ -1,40 +1,41 @@
 {
     "name": "ping",
+    "$collection": "sa.actions",
     "uuid": "ae01718b-f91e-4a6e-8b04-fd1b5b052967",
     "label": "Ping",
     "description": "Ping address",
     "access_level": 1,
     "params": [
         {
+            "name": "interface",
             "description": "Interface toping",
             "is_required": false,
-            "name": "interface",
-            "type": "interface"
+            "type": "interface_name"
         },
         {
+            "name": "source",
             "description": "Source address",
             "is_required": false,
-            "name": "source",
-            "type": "ip"
+            "type": "ipv4_address"
         },
         {
-            "default": "5",
-            "description": "Number of packets to send",
-            "is_required": false,
             "name": "count",
+            "description": "Number of packets to send",
+            "default": "5",
+            "is_required": false,
             "type": "int"
         },
         {
+            "name": "vrf",
             "description": "VRF to ping",
             "is_required": false,
-            "name": "vrf",
             "type": "vrf"
         },
         {
+            "name": "address",
             "description": "IP address to ping",
             "is_required": true,
-            "name": "address",
-            "type": "ip"
+            "type": "ipv4_address"
         }
     ]
 }

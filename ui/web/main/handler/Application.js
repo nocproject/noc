@@ -249,7 +249,12 @@ Ext.define("NOC.main.handler.Application", {
           name: "allow_reaction",
           xtype: "checkbox",
           boxLabel: __("Allow Reaction"),
-        }
+        },
+        {
+          name: "allow_action",
+          xtype: "checkbox",
+          boxLabel: __("Allow Action (Command)"),
+        },
       ],
       formToolbar: [
         {

@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | reboot",
+    "$collection": "sa.actioncommands",
     "uuid": "50a46974-cac5-444f-b371-3860706c77b0",
     "action__name": "reboot",
     "description": "",
@@ -8,5 +9,7 @@
     "preference": 1000,
     "match": [],
     "commands": "reload",
-    "timeout": 60
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }

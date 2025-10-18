@@ -1,0 +1,25 @@
+{
+    "name": "add_vlan",
+    "$collection": "sa.actions",
+    "uuid": "513196df-3de6-47fa-acba-d68989c494b5",
+    "label": "Adding vlan by Number",
+    "description": null,
+    "access_level": 15,
+    "params": [
+        {
+            "name": "vlan",
+            "description": "Vlan Number",
+            "is_required": true,
+            "scope": "vlan",
+            "scope_command": "vlan {{ vlan }}",
+            "scope_exit": "exit",
+            "type": "int"
+        },
+        {
+            "name": "name",
+            "description": "Vlan Name",
+            "is_required": false,
+            "type": "str"
+        }
+    ]
+}

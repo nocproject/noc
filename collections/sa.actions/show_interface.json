@@ -1,15 +1,16 @@
 {
     "name": "show_interface",
+    "$collection": "sa.actions",
     "uuid": "cab88660-9b7d-4859-ae47-2ad7c629a57f",
     "label": "Show interface",
     "description": "Show interface",
     "access_level": 15,
     "params": [
         {
+            "name": "interface",
             "description": "Show interface",
             "is_required": true,
-            "name": "interface",
-            "type": "interface"
+            "type": "interface_name"
         }
     ]
 }
