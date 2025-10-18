@@ -236,6 +236,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
       var objects = [];
       var config = me.lookupReference("saManagedobjectCommandForm").getValues();
       var ignore_cli_errors = JSON.stringify(me.lookupReference("ignoreCliErrors").getValue());
+      var dry_run = JSON.stringify(me.lookupReference("dryRun").getValue());
 
       me.getStore("selectedStore").each(function(record){
         objects.push(record.get("id"));
@@ -269,6 +270,7 @@ Ext.define("NOC.sa.managedobject.Controller", {
                   commands: obj[key].split("\n"),
                   include_commands: true,
                   ignore_cli_errors: ignore_cli_errors,
+                  dry_run: dry_run,
                 },
               });
             }

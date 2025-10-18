@@ -1,5 +1,6 @@
 {
     "name": "MikroTik | RouterOS | ping",
+    "$collection": "sa.actioncommands",
     "uuid": "ea73dc9f-c499-4513-b8a7-2d668d28e012",
     "action__name": "ping",
     "description": "",
@@ -8,5 +9,7 @@
     "preference": 1000,
     "match": [],
     "commands": "/ping {{address.address}} {% if vrf %}routing-table {{vrf.name}}{% endif %}{% if count %} count {{count}} {% endif %}",
-    "timeout": 60
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }

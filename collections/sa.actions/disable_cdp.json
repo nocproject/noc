@@ -1,15 +1,19 @@
 {
     "name": "disable_cdp",
+    "$collection": "sa.actions",
     "uuid": "7bcd40d5-2871-4038-876d-5ea9d4ddc1f7",
     "label": "Disable CDP",
     "description": "Disable CDP on port",
     "access_level": 15,
     "params": [
         {
+            "name": "interface",
             "description": "Interface name",
             "is_required": true,
-            "name": "interface",
-            "type": "interface"
+            "scope": "interface",
+            "scope_command": "interface {{interface}}",
+            "scope_exit": "exit",
+            "type": "interface_name"
         }
     ]
 }

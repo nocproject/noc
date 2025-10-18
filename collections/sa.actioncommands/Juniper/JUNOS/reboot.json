@@ -1,5 +1,6 @@
 {
     "name": "Juniper | JUNOS | reboot",
+    "$collection": "sa.actioncommands",
     "uuid": "6e88b42f-3813-4424-9e0b-5822b799606d",
     "action__name": "reboot",
     "description": "",
@@ -8,5 +9,7 @@
     "preference": 1000,
     "match": [],
     "commands": "request system reboot",
-    "timeout": 60
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }
