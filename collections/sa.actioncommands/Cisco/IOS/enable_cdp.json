@@ -1,10 +1,22 @@
 {
     "name": "Cisco | IOS | enable_cdp",
+    "$collection": "sa.actioncommands",
     "uuid": "a446d920-e9ca-4415-b5a5-2207f33af5f7",
     "action__name": "enable_cdp",
-    "description": "",
+    "description": null,
     "profile__name": "Cisco.IOS",
     "config_mode": true,
+    "preference": 1000,
     "match": [],
-    "commands": "interface {{interface}}\n    cdp enable"
+    "commands": "cdp enable",
+    "timeout": 60,
+    "test_cases": [
+        {
+            "context": {
+                "interface": "Fa 0/1"
+            },
+            "output": "interface Fa 0/1\ncdp enable\nexit"
+        }
+    ],
+    "scopes": []
 }

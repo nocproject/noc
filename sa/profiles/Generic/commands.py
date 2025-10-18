@@ -8,6 +8,7 @@
 # Python modules
 import re
 from threading import Lock
+from typing import List
 
 # NOC modules
 from noc.core.script.base import BaseScript
@@ -27,43 +28,68 @@ class Script(BaseScript):
     ERROR_PREFIX = "%ERROR: "
     CMD_SEP = "\n\n"
 
-    def execute(self, commands, ignore_cli_errors=False, include_commands=False, config_mode=False):
-        self.logger.info("[%s] Execute commands: %s", config_mode, commands)
-        if not config_mode:
+    def execute(
+        self,
+        commands: List[str],
+        ignore_cli_errors: bool = False,
+        include_commands: bool = False,
+        config_mode: bool = False,
+        dry_run: bool = False,
+    ):
+        if dry_run:
+            self.logger.info("[%s][DRY_RUN] Execute commands: %s", config_mode, commands)
+        else:
+            self.logger.info("[%s] Execute commands: %s", config_mode, commands)
+        if not config_mode or dry_run:
             return self.execute_commands(
                 commands,
                 ignore_cli_errors=ignore_cli_errors,
                 include_commands=include_commands,
+                dry_run=dry_run,
             )
         with self.configure():
             return self.execute_commands(
                 commands,
                 ignore_cli_errors=ignore_cli_errors,
                 include_commands=include_commands,
+                dry_run=dry_run,
             )
             # self.save_config()
 
-    def execute_commands(self, commands, ignore_cli_errors=False, include_commands=False):
+    def execute_commands(
+        self,
+        commands: List[str],
+        ignore_cli_errors=False,
+        include_commands=False,
+        dry_run: bool = False,
+    ):
         """"""
-        r = {"errors": False, "output": []}
+        r = {"errors": False, "output": [], "details": []}
         for cmd in self.format_multiline(commands):
+            d = {"command": cmd}
+            if dry_run:
+                r["output"] += [cmd]
+                d["skipped"] = True
+                r["details"] += [d]
+                continue
             try:
                 out = self.cli(cmd)
             except self.CLISyntaxError as e:
                 out = "%s%s" % (self.ERROR_PREFIX, str(e).strip())
+                d["error"] = str(e).strip()
+                d["code"] = getattr(e, "code", None)
                 if not ignore_cli_errors:
                     r["errors"] = True
                     break
             if include_commands:
                 out = "%s%s%s" % (cmd, self.CMD_SEP, out)
             r["output"] += [out]
+            r["details"] += [d]
         return r
 
     def format_multiline(self, commands):
         """
         Reformat commands according to Profile.pattern_multiline_commands
-        :param commands:
-        :return:
         """
         # No multiline commands support
         if not self.profile.pattern_multiline_commands:

@@ -1,10 +1,29 @@
 {
-    "name": "Mikrotik | RouterOS | set_description",
+    "name": "MikroTik | RouterOS | set_description",
+    "$collection": "sa.actioncommands",
     "uuid": "896bd858-bbdc-48cc-956a-4e719f97a237",
     "action__name": "set_interface_description",
-    "description": "",
+    "description": null,
     "profile__name": "MikroTik.RouterOS",
     "config_mode": true,
+    "preference": 1000,
     "match": [],
-    "commands": "/interface ethernet set {{interface}} comment=\"{{description}}\""
+    "commands": "/interface ethernet set {{interface}} comment=\"{{description}}\"",
+    "timeout": 60,
+    "test_cases": [
+        {
+            "context": {
+                "description": "1",
+                "interface": "ether1"
+            },
+            "output": "/interface ethernet set ether1 comment=\"1\""
+        }
+    ],
+    "scopes": [
+        {
+            "command": null,
+            "enter_scope": false,
+            "scope": "interface"
+        }
+    ]
 }

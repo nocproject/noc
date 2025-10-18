@@ -1,5 +1,6 @@
 {
     "name": "Cisco | IOS | ping",
+    "$collection": "sa.actioncommands",
     "uuid": "5cbc49be-9bde-440a-a909-95c92411101d",
     "action__name": "ping",
     "description": "",
@@ -8,5 +9,7 @@
     "preference": 1000,
     "match": [],
     "commands": "{% if address.afi == \"4\" %}\nping {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% else %}\nping6 {% if vrf %}vrf {{vrf.name}} {% endif %} {{address.address}}\n{% endif %}",
-    "timeout": 60
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
 }

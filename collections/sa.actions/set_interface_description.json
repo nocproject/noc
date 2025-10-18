@@ -1,21 +1,24 @@
 {
     "name": "set_interface_description",
+    "$collection": "sa.actions",
     "uuid": "3fcb1d7d-be8f-414d-95b0-40ecc99925bb",
     "label": "Set interface description",
     "description": "Set interface description",
     "access_level": 15,
     "params": [
         {
+            "name": "description",
             "description": "Interface description",
             "is_required": true,
-            "name": "description",
             "type": "str"
         },
         {
+            "name": "interface",
             "description": "Interface name",
             "is_required": true,
-            "name": "interface",
-            "type": "interface"
+            "scope": "interface",
+            "scope_command": "interface {{interface}}",
+            "type": "interface_name"
         }
     ]
 }

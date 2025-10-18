@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Third-party modules
-from django.template import Template
+import jinja2
 
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication
@@ -26,7 +26,7 @@ class ActionCommandsApplication(ExtDocApplication):
     def clean(self, data):
         data = super().clean(data)
         try:
-            Template(data["commands"])
+            jinja2.Template(data["commands"])
         except Exception as e:
             raise ValueError("Invalid template: %s", e)
         return data
