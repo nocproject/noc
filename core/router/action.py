@@ -137,7 +137,7 @@ class NotificationAction(Action):
             return
         yield (
             NOTIFICATION_METHODS[msg.headers[MX_NOTIFICATION_METHOD].decode()].decode(),
-            {},
+            msg.headers,
             msg.value,
         )
 
@@ -258,6 +258,9 @@ class MessageAction(Action):
                 }
             yield (
                 NOTIFICATION_METHODS[c.method].decode(),
-                {MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING)},
+                {
+                    MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING),
+                    MX_NOTIFICATION_METHOD: c.method.encode(),
+                },
                 body,
             )
