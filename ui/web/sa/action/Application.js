@@ -97,7 +97,7 @@ Ext.define("NOC.sa.action.Application", {
           xtype: "main.handler.LookupField",
           fieldLabel: __("Handler"),
           query: {
-            allow_action: true
+            allow_action: true,
           },
           allowBlank: true,
           uiStyle: "medium",
@@ -138,7 +138,7 @@ Ext.define("NOC.sa.action.Application", {
                   ["interface_name", "Interface"],
                   ["vlan", "Vlan Num"],
                   ["ip_address", "IP Address"],
-                  ["ip_vrf", "IP VRF"]
+                  ["ip_vrf", "IP VRF"],
                 ],
               },
             },

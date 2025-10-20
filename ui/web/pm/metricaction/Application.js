@@ -617,41 +617,12 @@ Ext.define("NOC.pm.metricaction.Application", {
   //
   saveRecord: function(data){
     var me = this,
-      save = {},
       inputs = Ext.Array.push([], {
         metric_type: data.metric_type0,
       }, Ext.Array.map(me.query("[name=metric_type]"), function(input){
         return {metric_type: input.getValue()}
       })),
-      set = function(path, value){
-        let keys = path.split("."),
-          curStep = save,
-          keysForSkipping = ["__proto__", "constructor", "prototype", "__label"],
-          isKeyForSkipping = keysForSkipping.some(function(key){
-            return path.indexOf(key) !== -1;
-          });
-        
-        if(isKeyForSkipping){
-          return;
-        }
-        for(var i = 0; i < keys.length - 1; i++){
-          var key = keys[i];
-
-          if(!curStep[key] && !Object.hasOwn(curStep, key)){
-            var nextKey = keys[i + 1];
-            var useArray = /^\+?(0|[1-9]\d*)$/.test(nextKey);
-            curStep[key] = useArray ? [] : {};
-          }
-          curStep = curStep[key];
-        }
-        var finalStep = keys[keys.length - 1];
-        curStep[finalStep] = value;
-      };
-
-    Ext.Object.each(data, set);
-    // set(key, value);
-    // });
-
+      save = me.transferFlatToNested(data);
     save["compose_inputs"] = inputs;
 
     me.mask("Saving ...");
@@ -660,7 +631,7 @@ Ext.define("NOC.pm.metricaction.Application", {
       url: me.base_url + (me.currentRecord ? me.currentRecord.id + "/" : ""),
       method: me.currentRecord ? "PUT" : "POST",
       scope: me,
-      jsonData: save,
+      jsonData: JSON.stringify(save),
       success: function(response){
         // Process result
         var data = Ext.decode(response.responseText);
@@ -692,6 +663,114 @@ Ext.define("NOC.pm.metricaction.Application", {
         me.unmask();
       },
     });
+  },
+  //
+  transferFlatToNested: function(flatData){
+    const result = Object.create(null),
+      DANGEROUS_KEYS = new Set([
+        "__proto__",
+        "constructor", 
+        "prototype",
+        "__defineGetter__",
+        "__defineSetter__",
+        "__lookupGetter__",
+        "__lookupSetter__",
+        "hasOwnProperty",
+        "isPrototypeOf",
+        "propertyIsEnumerable",
+        "toString",
+        "valueOf",
+      ]);
+    let isSafeKey = function(key){
+        return !DANGEROUS_KEYS.has(key) &&
+        typeof key === "string" &&
+        key.length > 0;
+      },
+      isSafePath = function(path){
+        if(typeof path !== "string" || path.length === 0){
+          return false;
+        }
+    
+        const segments = path.split(".");
+        return segments.every(segment => {
+          if(DANGEROUS_KEYS.has(segment)){
+            return false;
+          }
+
+          if(segment.includes("__")){ // Prevent double underscore in segment names
+            return false;
+          }
+      
+          return true;
+        });
+      },
+      safeSetProperty = function(obj, key, value){
+        if(!isSafeKey(key)){
+          console.warn(`Attempted to set dangerous property: ${key}`);
+          return;
+        }
+    
+        // Используем Object.defineProperty для большей безопасности
+        Object.defineProperty(obj, key, {
+          value: value,
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      },
+      setNestedValue = function(path, value, target){
+        if(!isSafePath(path)){ // Dangerous path detected and ignored
+          return;
+        }
+
+        const segments = path.split(".");
+        let current = target;
+
+        for(let i = 0; i < segments.length - 1; i++){
+          const segment = segments[i];
+      
+          if(!isSafeKey(segment)){ // Dangerous segment in path detected and ignored
+            return;
+          }
+
+          if(!Object.hasOwn(current, segment)){
+            const nextSegment = segments[i + 1],
+              isNumericIndex = /^\d+$/.test(nextSegment),
+              newContainer = isNumericIndex ? 
+                [] : 
+                Object.create(null);
+          
+            safeSetProperty(current, segment, newContainer);
+          }
+
+          current = current[segment];
+          if(current === null || typeof current !== "object"){
+            console.warn(`Invalid intermediate object at path: ${path}`);
+            return;
+          }
+        }
+
+        const finalSegment = segments[segments.length - 1];
+        if(isSafeKey(finalSegment)){
+          safeSetProperty(current, finalSegment, value);
+        }
+      };
+    if(!flatData || typeof flatData !== "object"){
+      return result;
+    }
+
+    for(const [key, value] of Object.entries(flatData)){
+      if(!isSafeKey(key) || key.endsWith("__label")){
+        continue;
+      }
+
+      if(key.includes(".")){
+        setNestedValue(key, value, result);
+      } else{
+        safeSetProperty(result, key, value);
+      }
+    }
+    return result;
   },
   //
   addInput: function(value){
