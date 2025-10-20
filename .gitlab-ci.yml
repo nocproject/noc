@@ -109,10 +109,9 @@ eslint:
   image: node:22-bookworm
   script:
     - set -x
-    - npm install -g eslint@$(grep -oP '"eslint"\s*:\s*"\K[~^]?\K[0-9.]+(?=")' ui/package.json)
     - cd ui/
     - npm install
-    - eslint web --fix-dry-run
+    - npx eslint web
   only:
     refs:
       - merge_requests

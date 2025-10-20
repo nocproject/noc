@@ -320,7 +320,7 @@ Ext.define("NOC.sa.capsprofile.Application", {
                 // filterProtected: false,
                 query: {
                   "set_wildcard": true,
-                }
+                },
               },
               renderer: NOC.render.Lookup("set_label"),
             },
