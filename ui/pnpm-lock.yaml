@@ -37,7 +37,7 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@types/node':
-        specifier: ^22.18.11
+        specifier: ^22.0.0
         version: 22.18.11
       astring:
         specifier: ^1.9.0
