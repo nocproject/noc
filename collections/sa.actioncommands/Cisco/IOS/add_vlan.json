@@ -1,21 +1,21 @@
 {
-    "name": "Cisco | IOS | disable_cdp",
+    "name": "Cisco | IOS | add_vlan",
     "$collection": "sa.actioncommands",
-    "uuid": "80276b39-2f50-4d89-bb9c-889065486c66",
-    "action__name": "disable_cdp",
+    "uuid": "13657bcc-ebe6-47af-a08a-37e6fb70fc53",
+    "action__name": "add_vlan",
     "description": null,
     "profile__name": "Cisco.IOS",
     "config_mode": true,
     "preference": 1000,
     "match": [],
-    "commands": "no cdp enable",
+    "commands": "{% if name %} name {{ name }}{% endif %}",
     "timeout": 60,
     "test_cases": [
         {
             "context": {
-                "interface": "Fa 0/1"
+                "vlan": 22
             },
-            "output": "interface Fa 0/1\nno cdp enable\nexit"
+            "output": "vlan 22\nexit"
         }
     ],
     "scopes": []

@@ -10,6 +10,7 @@ Ext.define("NOC.sa.action.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.JSONPreviewII",
+    "NOC.main.handler.LookupField",
     "NOC.sa.action.Model",
     "Ext.ux.form.GridField",
   ],
@@ -93,10 +94,13 @@ Ext.define("NOC.sa.action.Application", {
         },
         {
           name: "handler",
-          xtype: "textfield",
+          xtype: "main.handler.LookupField",
           fieldLabel: __("Handler"),
+          query: {
+            allow_action: true
+          },
           allowBlank: true,
-          uiStyle: "large",
+          uiStyle: "medium",
         },
         {
           name: "params",
@@ -126,14 +130,24 @@ Ext.define("NOC.sa.action.Application", {
               editor: {
                 xtype: "combobox",
                 store: [
-                  ["str", "str"],
-                  ["float", "float"],
-                  ["int", "int"],
-                  ["interface", "interface"],
-                  ["ip", "ip"],
-                  ["vrf", "vrf"],
+                  ["bool", "Boolean"],
+                  ["str", "String"],
+                  ["int", "Integer"],
+                  ["float", "Float"],
+                  ["mac", "MAC Address"],
+                  ["interface_name", "Interface"],
+                  ["vlan", "Vlan Num"],
+                  ["ip_address", "IP Address"],
+                  ["ip_vrf", "IP VRF"]
                 ],
               },
+            },
+            {
+              text: __("Multi"),
+              dataIndex: "multi",
+              width: 50,
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
             },
             {
               text: __("Default"),
@@ -142,9 +156,27 @@ Ext.define("NOC.sa.action.Application", {
               editor: "textfield",
             },
             {
+              text: __("Scope"),
+              dataIndex: "scope",
+              flex: 100,
+              editor: "textfield",
+            },
+            {
+              text: __("Scope Command"),
+              dataIndex: "scope_command",
+              flex: 200,
+              editor: "textfield",
+            },
+            {
+              text: __("Scope Exit"),
+              dataIndex: "scope_exit",
+              flex: 100,
+              editor: "textfield",
+            },
+            {
               text: __("Description"),
               dataIndex: "description",
-              flex: 1,
+              flex: 100,
               editor: "textfield",
             },
           ],

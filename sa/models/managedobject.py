@@ -3051,7 +3051,7 @@ class ManagedObject(NOCModel):
             state = self.object_profile.workflow.get_default_state()
         else:
             state = self.state
-        return {
+        r = {
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
@@ -3059,6 +3059,11 @@ class ManagedObject(NOCModel):
             "remote_system": str(self.remote_system.id) if self.remote_system else None,
             "state": str(state.id),
         }
+        if self.version:
+            r["version"] = self.version.version
+        if self.platform:
+            r["platform"] = self.platform.name
+        return r
 
     def get_effective_managed_object(self) -> Optional[Any]:
         """Return ManagedObject to upper level"""

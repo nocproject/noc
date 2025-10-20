@@ -1,9 +1,9 @@
 {
-    "name": "Bdcom | IOS | S2210PB",
+    "name": "Bdcom | xPON | P3600-08",
     "$collection": "inv.objectmodels",
-    "uuid": "dd106ca8-6bc3-4acc-ae71-59c783074e8b",
+    "uuid": "9cb24d08-f0af-44ec-8082-1a1a561801f6",
     "vendor__code": "BDCOM",
-    "description": "L2+ Managed Switch witch 8 ports 10/100BASE-T POE, 2 100/1000BASE-X SFP",
+    "description": "BDCOM P3600-08 GEPON OLT with 8 GEPON ports",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -16,221 +16,281 @@
     ],
     "connections": [
         {
-            "name": "1",
-            "description": "1",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "2",
-            "description": "2",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "3",
-            "description": "3",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "4",
-            "description": "4",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "5",
-            "description": "5",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "6",
-            "description": "6",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "7",
-            "description": "7",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "8",
-            "description": "8",
-            "direction": "s",
-            "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "10BASET"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "100BASETX"
-                },
-                {
-                    "direction": "<",
-                    "protocol__code": "POE"
-                }
-            ],
-            "type__name": "Electrical | RJ45"
-        },
-        {
-            "name": "sfp9",
-            "description": "Fiber port 9",
+            "name": "epon0/1",
+            "description": "EPON0/1",
             "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "sfp10",
-            "description": "Fiber port 10",
+            "name": "epon0/2",
+            "description": "EPON0/2",
             "direction": "i",
             "gender": "f",
             "protocols": [
                 {
                     "direction": "*",
-                    "protocol__code": "TransEth100M"
-                },
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
+                    "protocol__code": "GEPON"
                 }
             ],
             "type__name": "Transceiver | SFP"
         },
         {
-            "name": "console",
-            "description": "Console port",
+            "name": "epon0/3",
+            "description": "EPON0/3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "epon0/4",
+            "description": "EPON0/4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "epon0/5",
+            "description": "EPON0/5",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "epon0/6",
+            "description": "EPON0/6",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "epon0/7",
+            "description": "EPON0/7",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "epon0/8",
+            "description": "EPON0/8",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "GEPON"
+                }
+            ],
+            "type__name": "Transceiver | SFP"
+        },
+        {
+            "name": "g0/1",
+            "description": "GigaEthernet0/1",
             "direction": "s",
             "gender": "f",
-            "protocols": [{
-                "direction": ">",
-                "protocol__code": "RS232"
-            }],
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
             "type__name": "Electrical | RJ45"
         },
         {
-            "name": "power",
-            "description": "Power outlet",
+            "name": "g0/2",
+            "description": "GigaEthernet0/2",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "g0/3",
+            "description": "GigaEthernet0/3",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "g0/4",
+            "description": "GigaEthernet0/4",
+            "direction": "s",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "10BASET"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "100BASETX"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "1000BASETX"
+                }
+            ],
+            "type__name": "Electrical | RJ45"
+        },
+        {
+            "name": "tg0/1",
+            "description": "TGigaEthernet0/1",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "tg0/2",
+            "description": "TGigaEthernet0/2",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "tg0/3",
+            "description": "TGigaEthernet0/3",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "tg0/4",
+            "description": "TGigaEthernet0/4",
+            "direction": "i",
+            "gender": "f",
+            "protocols": [
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth1G"
+                },
+                {
+                    "direction": "*",
+                    "protocol__code": "TransEth10G"
+                }
+            ],
+            "type__name": "Transceiver | SFP+"
+        },
+        {
+            "name": "power1",
+            "description": "Power outlet 1",
+            "direction": "s",
+            "gender": "m",
+            "protocols": [
+                {
+                    "direction": ">",
+                    "protocol__code": "220VAC"
+                },
+                {
+                    "direction": ">",
+                    "protocol__code": "110VAC"
+                }
+            ],
+            "type__name": "Power | IEC 60320 C14"
+        },
+        {
+            "name": "power2",
+            "description": "Power outlet 2",
             "direction": "s",
             "gender": "m",
             "protocols": [
@@ -250,17 +310,17 @@
         {
             "attr": "width",
             "interface": "dimensions",
-            "value": 280
+            "value": 442.5
         },
         {
             "attr": "depth",
             "interface": "dimensions",
-            "value": 179
+            "value": 280
         },
         {
             "attr": "height",
             "interface": "dimensions",
-            "value": 45
+            "value": 44
         },
         {
             "attr": "managed",
@@ -275,12 +335,12 @@
         {
             "attr": "power",
             "interface": "power",
-            "value": 140.0
+            "value": 65.0
         },
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["S2210PB"]
+            "value": ["P3600-08"]
         }
     ]
 }

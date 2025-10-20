@@ -9,6 +9,7 @@
 from noc.services.web.base.extapplication import ExtApplication
 from noc.services.web.base.application import view
 from noc.core.translation import ugettext as _
+from noc.core.models.valuetype import ValueType
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.commandsnippet import CommandSnippet
 from noc.sa.models.action import Action
@@ -64,7 +65,7 @@ class RunCommandsApplication(ExtApplication):
                 "fieldLabel": p.description or p.name,
                 "allowBlank": not p.is_required,
             }
-            if p.type == "int":
+            if p.type in (ValueType.INTEGER, ValueType.VLAN):
                 cfg["xtype"] = "numberfield"
             else:
                 cfg["xtype"] = "textfield"
@@ -102,6 +103,10 @@ class RunCommandsApplication(ExtApplication):
     def api_render_action(self, request, action_id, objects, config):
         action = self.get_object_or_404(Action, id=action_id)
         r = {}
+        # as job - 202 Accepted
         for mo in objects:
-            r[mo.id] = action.expand(mo, **config)
+            match = mo.get_matcher_ctx()
+            _, commands = action.render_commands(mo.profile, match_ctx=match, **config)
+            r[mo.id] = "\n".join(commands)
+        # Register Audit
         return r
