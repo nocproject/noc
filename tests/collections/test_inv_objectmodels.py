@@ -13,9 +13,6 @@ from noc.inv.models.objectmodel import ObjectModel
 from noc.inv.models.protocol import ProtocolVariant
 from .utils import CollectionTestHelper
 
-from noc.core.mongo.connection import connect
-
-connect()
 
 helper = CollectionTestHelper(ObjectModel)
 

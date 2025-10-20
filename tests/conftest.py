@@ -11,6 +11,7 @@ from typing import DefaultDict, Dict, List, Any
 from time import perf_counter_ns
 import functools
 import os
+import sys
 
 # Third-party modules
 import pytest
@@ -18,13 +19,13 @@ from fs import open_fs
 import orjson
 from django.db import models
 
-
 # NOC modules
 from noc.config import config
 from noc.models import get_model, is_document
 from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 
 IN_GITHUB_ACTIONS = bool(os.getenv("GITHUB_ACTIONS", ""))
+IS_COLLECT_ONLY = any("--collect-only" in arg for arg in sys.argv)
 
 _stats = None
 _durations: DefaultDict[str, int] = defaultdict(int)
@@ -120,14 +121,19 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 @pytest.fixture(scope="session")
 def db_postgres(request):
     """Create and destroy postgres database."""
-    _create_pg_db()
+    if not IS_COLLECT_ONLY:
+        _create_pg_db()
     yield
 
 
 @pytest.fixture(scope="session")
 def db_mongo(request):
     """Create and destroy mongo database."""
-    _create_mongo_db()
+    if not IS_COLLECT_ONLY:
+        from noc.core.mongo.connection import connect
+
+        connect()
+        _create_mongo_db()
     yield
 
 
@@ -145,13 +151,14 @@ def db_kafka(request):
 
 @pytest.fixture(scope="session")
 def database(request, db_postgres, db_mongo, db_clickhouse, db_kafka):
-    _migrate_db()
-    _migrate_clickhouse()
-    _migrate_kafka()
-    _ensure_indexes()
-    _load_collections()
-    _load_mibs()
-    _load_fixtures()
+    if not IS_COLLECT_ONLY:
+        _migrate_db()
+        _migrate_clickhouse()
+        _migrate_kafka()
+        _ensure_indexes()
+        _load_collections()
+        _load_mibs()
+        _load_fixtures()
     yield
 
 
