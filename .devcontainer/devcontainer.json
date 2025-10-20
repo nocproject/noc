@@ -13,7 +13,6 @@
 		// Dockerfile target
 		"target": "devcontainer"
 	},
-	"postStartCommand": "/usr/local/bin/docker-entrypoint.sh bash",
 	// Environment
 	"containerEnv": {
 		"PYTHONPATH": "src"
@@ -48,7 +47,13 @@
 					"eslint.validate": [
 						"javascript"
 					]
-				}
+				},
+				"eslint.workingDirectories": [
+					{
+						"directory": "ui",
+						"changeProcessCWD": true
+					}
+				]
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [

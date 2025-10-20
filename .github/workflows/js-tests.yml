@@ -1,0 +1,35 @@
+name: Run JS Tests
+on:
+  push:
+    branches: [master]
+    paths: &changed-paths
+      - ".github/workflows/js-tests.yml"
+      - "ui/package.json"
+      - "ui/package-lock.json"
+      - "ui/**.js"
+  pull_request:
+    branches: [master]
+    paths: *changed-paths
+  release:
+    types: ["published"]
+jobs:
+  js-lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: "ui/package-lock.json"
+
+      - name: Filter package.json
+        run: npm install
+        working-directory: ui
+
+      - name: Run eslint
+        run: npx eslint web
+        working-directory: ui
