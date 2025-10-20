@@ -142,6 +142,7 @@ class CheckResult(object):
     skipped: bool = False  # Check was skipped (Example, no credential)
     error: Optional[CheckError] = None  # Set if fail
     data: Optional[List[DataItem]] = None  # Collected check data
+    remote_system: Optional[str] = None  # RemoteSystem
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
     # caps: Optional[List[CapsItem]] = None
     # Metrics collected
@@ -184,9 +185,10 @@ class CheckResult(object):
     @classmethod
     def from_dict(cls, v) -> "CheckResult":
         data = []
-        for d in v.pop("data") or []:
+        for d in v.pop("data", None) or []:
             data.append(DataItem(**d))
-        if v["error"]:
+        if v.get("error"):
+            # if False ?
             v["error"] = CheckError(**v["error"])
         v["data"] = data
         cred = v.pop("credential", None)

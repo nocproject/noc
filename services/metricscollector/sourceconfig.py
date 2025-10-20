@@ -16,6 +16,8 @@ class RemoteCollectors:
     api_key: str
     bi_id: Optional[int]
     enable_metrics: bool = False
+    enable_fmevent: bool = False
+    no_data_check: bool = False
 
     @classmethod
     def from_data(cls, data) -> "RemoteCollectors":
@@ -25,6 +27,8 @@ class RemoteCollectors:
             api_key=data["api_key"],
             bi_id=data.get("bi_id"),
             enable_metrics=bool(data.get("enable_metrics")),
+            enable_fmevent=bool(data.get("enable_fmevent")),
+            no_data_check=data.get("nodata_policy") == "C",
         )
 
 
@@ -42,12 +46,13 @@ class SourceConfig(object):
 
     @classmethod
     def from_data(cls, data) -> "SourceConfig":
-        mappings, collectors, keys = [], [], []
+        mappings, collectors, keys, no_data_check = [], [], [], False
         for rc in data.get("metric_collector") or []:
             rc = RemoteCollectors.from_data(rc)
             collectors.append(rc)
             if rc.api_key:
                 keys.append(rc.api_key)
+            no_data_check |= rc.no_data_check
         for m in data.get("mapping_refs") or []:
             mappings.append(m)
         return SourceConfig(
@@ -57,6 +62,7 @@ class SourceConfig(object):
             address=data["addresses"][0]["address"] if data["addresses"] else None,
             fm_pool=data["fm_pool"],
             api_keys=frozenset(keys),
+            no_data_check=no_data_check,
             mapping_refs=tuple(mappings),
             collectors=frozenset(collectors),
         )
