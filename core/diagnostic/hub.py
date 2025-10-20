@@ -875,3 +875,25 @@ class DiagnosticHub(object):
 
     def sync_diagnostic_data(self):
         """Synchronize object data with diagnostic"""
+
+
+def update_diagnostic_checks(results: Dict[str, Dict[str, Any]]):
+    """Update changed Diagnostic statuses"""
+    from noc.models import get_model
+
+    for sid, statuses in results.items():
+        obj_type, oid = sid.split(":", 1)
+        obj_type = get_model(obj_type)
+        if oid.startswith("bi_id"):
+            obj = obj_type.get_by_bi_id(int(oid[6:]))
+        else:
+            obj = obj_type.get_by_id(oid)
+        if not obj:
+            continue
+        statuses = [CheckResult.from_dict(c) for c in statuses]
+        try:
+            obj.diagnostic.update_checks(statuses)
+        except Exception as e:
+            # logger.error("[%s] Failed when update diagnostic Statuses: %s", obj, e)
+            print(f"[{obj}] Failed when update diagnostic Statuses: {e}")
+            continue

@@ -19,7 +19,7 @@ class SendMetric:
     metrics: Dict[str, Any]
     labels: Optional[List[str]] = None
     service: Optional[int] = None
-    remote_system: Optional[str] = None
+    remote_system: Optional[int] = None
 
     @property
     def key(self) -> int:
