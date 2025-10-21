@@ -9,8 +9,9 @@
 # Python modules
 import asyncio
 import operator
+import re
 from dataclasses import dataclass
-from typing import Any, Optional, Tuple, List, Dict, Set, Iterable, DefaultDict
+from typing import Any, Optional, Tuple, List, Dict, Set, Iterable, DefaultDict, FrozenSet
 from collections import defaultdict
 
 # Third-party modules
@@ -21,9 +22,9 @@ import orjson
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.perf import metrics
-from noc.core.hash import hash_int
 from noc.core.service.fastapi import FastAPIService
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.service.nodatachecker import NoDataChecker
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.models.sendmetric import SendMetric
 from noc.services.metricscollector.sourceconfig import SourceConfig
@@ -38,7 +39,8 @@ class CfgItem(object):
     ch_field: str
     collector: str
     coll_field: str
-    labels: List[str]
+    allow_partial_match: bool
+    labels: FrozenSet[str]
     aliases: List[str]
     preference: int
 
@@ -50,6 +52,7 @@ class CfgItem(object):
             ch_field=field,
             collector=data["collector"],
             coll_field=data["field"],
+            allow_partial_match=bool(data.get("allow_partial_match")),
             labels=data["labels"],
             aliases=data["aliases"],
             preference=data["preference"],
@@ -60,19 +63,27 @@ class MetricsCollectorService(FastAPIService):
     name = "metricscollector"
     # use_mongo = True
     traefik_routes_rule = "PathPrefix(`/api/metricscollector`)"
+    # Cache regex for partial match
+    _rx_name_cache = cachetools.LRUCache(500)
 
     def __init__(self):
         super().__init__()
-        self.cfg_data: List[CfgItem] = []
         self.mappings: DefaultDict[Tuple[str, str], List[CfgItem]] = defaultdict(list)
+        self.rx_mappings: DefaultDict[Tuple[str, re.Pattern], List[CfgItem]] = defaultdict(list)
         self.id_mappings: Dict[str, List[CfgItem]] = {}
         self.n_parts: int = 0
         self.add_sources = 0
         self.ready_event: Optional[asyncio.Event] = asyncio.Event()
         self.event_source_ready = asyncio.Event()
+        self.no_data_checker = NoDataChecker(
+            nodata_record_ttl=config.metricscollector.nodata_record_ttl,
+            nodata_round_duration=config.metricscollector.nodata_round_duration,
+            collector="metricscollector",
+        )
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.source_map: Dict[str, str] = {}
         self.invalid_sources = defaultdict(int)  # ip -> count
+        self.banned_rs = set()
         self.remote_system_map: Dict[str, str] = {}
 
     async def report_invalid_sources(self):
@@ -101,6 +112,10 @@ class MetricsCollectorService(FastAPIService):
         self.logger.info("Stating invalid sources reporting task")
         self.report_invalid_callback = PeriodicCallback(self.report_invalid_sources, 60000)
         self.report_invalid_callback.start()
+        if config.metricscollector.nodata_round_duration:
+            self.no_data_checker.initialize()
+        # For used MX service
+        self.mx_partitions = await self.get_stream_partitions("message") or 0
         # Process as usual
         await super().init_api()
 
@@ -233,6 +248,15 @@ class MetricsCollectorService(FastAPIService):
             return None
         return self.remote_system_map[code.lower()]
 
+    def is_rs_banned(self, code) -> bool:
+        """Check remote system is banned"""
+        return code in self.banned_rs
+
+    def ban_remote_system(self, code):
+        """Add Remote System code to banned"""
+        self.logger.warning("[%s] Add RemoteSystem code to banned", code)
+        self.banned_rs.add(code)
+
     @staticmethod
     def expand_rules(data: Dict[str, Any]) -> List[CfgItem]:
         return [
@@ -250,11 +274,13 @@ class MetricsCollectorService(FastAPIService):
         Insert new data into tables
         """
         items = self.expand_rules(data)
-        self.cfg_data += items
         self.id_mappings[data["id"]] = items
         affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
         for i in items:
-            self.mappings[i.collector, i.coll_field].append(i)
+            if i.allow_partial_match:
+                self.rx_mappings[i.collector, re.compile(i.coll_field)].append(i)
+            else:
+                self.mappings[i.collector, i.coll_field].append(i)
             for a in i.aliases or []:
                 self.mappings[i.collector, a].append(i)
         # Reorder mappings according the preference
@@ -287,39 +313,48 @@ class MetricsCollectorService(FastAPIService):
                 del self.mappings[k]
         del self.id_mappings[mt_id]
 
-    @cachetools.cached
-    def find_cfg_metric(self, name):
+    def find_metrics_by_name(self, collector: str, name: str) -> List[CfgItem]:
         """Find by name (rx)"""
+        if (collector, name) in self.mappings:
+            return self.mappings[(collector, name)]
+        if self.rx_mappings:
+            # Find partial match
+            return self.find_metrics_by_rx(collector, name)
+        return []
 
-    def get_cfg_metric(self, collector, name) -> List[CfgItem]:
-        """"""
-        if (collector, name) not in self.mappings:
-            # Not Mapped metric
-            self.logger.debug("[%s] Not mapped value: %s. Skipping", collector, name)
-            return []
-        return self.mappings[(collector, name)]
+    @cachetools.cachedmethod(operator.attrgetter("_rx_name_cache"))
+    def find_metrics_by_rx(self, collector: str, name: str) -> List[CfgItem]:
+        """Find metric by Alias rx"""
+        r = []
+        for (c, rx), cfgs in self.rx_mappings.items():
+            if c != collector or not rx.match(name):
+                continue
+            r += cfgs
+        return r
 
-    def send_metric_data(self):
-        """Send metric mapping"""
-        r: List[Dict[str, Any]] = []
-        # Split to partitions
-        parts = defaultdict(list)
-        for item in r:
-            key = hash_int(item["key"])
-            parts[key % self.n_parts].append(item)
-        # Spool data
-        for partition, items in parts.items():
-            self.publish(orjson.dumps(items), stream="metrics", partition=partition)
+    def get_cfg_metric(
+        self,
+        collector,
+        name,
+        labels: Optional[List[str]] = None,
+    ) -> Optional[CfgItem]:
+        """Get Metric config"""
+        if labels:
+            labels = frozenset(labels)
+        for m in self.find_metrics_by_name(collector, name):
+            # all(rl in item_labels for rl in rule_labels)
+            if labels and m.labels and labels - m.labels:
+                continue
+            return m
+        # Not Mapped metric
+        self.logger.debug("[%s] Not mapped value: %s. Skipping", collector, name)
+        return None
 
     def send_data(self, data: List[SendMetric]):
         """
         Apply mappings to the request item and spool the data
         """
-
-        def is_matched(rule_labels: List[str], item_labels: List[str]) -> bool:
-            return all(rl in item_labels for rl in rule_labels)
-
-        r: List[Dict[str, Any]] = []
+        parts = defaultdict(list)
         for item in data:
             metrics["items"] += 1
             out: Dict[str, Dict[str, Any]] = {}
@@ -327,34 +362,31 @@ class MetricsCollectorService(FastAPIService):
             for coll_field, value in item.metrics.items():
                 if coll_field == "_units":
                     continue
-                for map_item in self.get_cfg_metric(item.collector, coll_field):
-                    metrics["values"] += 1
-                    if not is_matched(map_item.labels, item.labels):
-                        self.logger.info("Labels %s is not match. Skipping metric", item.labels)
-                        continue
-                    # Matched rule found
-                    if map_item.ch_table not in out:
-                        out[map_item.ch_table] = {
-                            "ts": (item.ts.timestamp() + config.tz_utc_offset) * NS,
-                            "scope": map_item.ch_table,
-                            "labels": item.labels,
-                            "service": item.service,
-                            "managed_object": item.managed_object,
-                            "s_key": item.managed_object or item.service or 0,
-                            "_units": {},
-                        }
-                    out[map_item.ch_table][map_item.ch_field] = value
-                    if coll_field in units:
-                        out[map_item.ch_table]["_units"][map_item.ch_field] = units[coll_field]
-                    metrics["mapped_values"] += 1
-                    break
+                metrics["values"] += 1
+                cfg_metric = self.get_cfg_metric(item.collector, coll_field, labels=item.labels)
+                if not cfg_metric:
+                    # Unknown metric field
+                    continue
+                # Matched rule found
+                if cfg_metric.ch_table not in out:
+                    out[cfg_metric.ch_table] = {
+                        "ts": (item.ts.timestamp() + config.tz_utc_offset) * NS,
+                        "scope": cfg_metric.ch_table,
+                        "labels": item.labels,
+                        "service": item.service,
+                        "managed_object": item.managed_object,
+                        "s_key": item.key,
+                        "_units": {},
+                    }
+                    if item.remote_system:
+                        out[cfg_metric.ch_table]["remote_system"] = item.remote_system
+                out[cfg_metric.ch_table][cfg_metric.ch_field] = value
+                if coll_field in units:
+                    out[cfg_metric.ch_table]["_units"][cfg_metric.ch_field] = units[coll_field]
+                metrics["mapped_values"] += 1
             # Spool data
-            r += list(out.values())
-        # Split to partitions
-        parts = defaultdict(list)
-        for item in r:
-            key = hash_int(item.pop("s_key"))
-            parts[key % self.n_parts].append(item)
+            # Split to partitions
+            parts[item.key % self.n_parts] += out.values()
         # Spool data
         for partition, items in parts.items():
             self.publish(orjson.dumps(items), stream="metrics", partition=partition)
