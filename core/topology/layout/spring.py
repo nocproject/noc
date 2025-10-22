@@ -203,7 +203,7 @@ def _fruchterman_reingold(
         # Optimal bubble radius
         R = k / (math.sin(2.0 * math.pi / len(c)))
         # Indicator array
-        iset = set(int(x) for x in c)
+        iset = {int(x) for x in c}
         cp += [(R, list(iset), np.array([1.0 if i in iset else 0.0 for i in range(nnodes)]))]
     # the inscrutable (but fast) version
     # this is still O(V^2)

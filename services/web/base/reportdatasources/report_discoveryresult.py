@@ -117,7 +117,7 @@ class ReportDiscoveryResult(BaseReportColumn):
             )
             if not pool_ids:
                 continue
-            pid.update({mo_id: p.name for mo_id in pool_ids})
+            pid.update(dict.fromkeys(pool_ids, p.name))
             r[p.name] = self.convert(
                 get_db()[self.COLL_NAME % p.name]
                 .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)

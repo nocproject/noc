@@ -97,10 +97,8 @@ class Link(Document):
                 yield "managedobject", mo_id
 
     def clean(self):
-        self.linked_objects = list(sorted(set(i.managed_object.id for i in self.interfaces)))
-        self.linked_segments = list(
-            sorted(set(i.managed_object.segment.id for i in self.interfaces))
-        )
+        self.linked_objects = sorted({i.managed_object.id for i in self.interfaces})
+        self.linked_segments = sorted({i.managed_object.segment.id for i in self.interfaces})
         self.type = self.get_type()
 
     def contains(self, iface):

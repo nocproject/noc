@@ -16,9 +16,9 @@ from noc.core.model.fields import DocumentReferenceField
 class Migration(BaseMigration):
     def migrate(self):
         # Select profile names
-        profiles = set(
+        profiles = {
             r[0] for r in self.db.execute("SELECT DISTINCT profile_name FROM sa_managedobject")
-        )
+        }
         # Create profile records
         pcoll = self.mongo_db["noc.profiles"]
         for p in profiles:

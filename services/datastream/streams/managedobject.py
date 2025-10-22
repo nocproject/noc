@@ -192,11 +192,9 @@ class ManagedObjectDataStream(DataStream):
 
     @staticmethod
     def _apply_forwarding_instances(mo: ManagedObject, r):
-        instances = list(
-            sorted(
-                ForwardingInstance._get_collection().find({"managed_object": mo.id}),
-                key=operator.itemgetter("name"),
-            )
+        instances = sorted(
+            ForwardingInstance._get_collection().find({"managed_object": mo.id}),
+            key=operator.itemgetter("name"),
         )
         if not instances:
             return

@@ -142,32 +142,32 @@ class Script(BaseScript):
                 elif mbd == 10300 and nm == 0 and description.startswith("unkn"):
                     part_no = part_no + "10G | SFP+ Twinax"
                 elif mbd == 10300 and description.startswith("10G"):
-                    if description.endswith(tuple([" ER", "-ER"])):
+                    if description.endswith((" ER", "-ER")):
                         part_no = part_no + "10G | SFP+ ER"
-                    elif description.endswith(tuple([" LR", "-LR"])):
+                    elif description.endswith((" LR", "-LR")):
                         part_no = part_no + "10G | SFP+ LR"
-                    elif description.endswith(tuple([" SR", "-SR"])):
+                    elif description.endswith((" SR", "-SR")):
                         part_no = part_no + "10G | SFP+ SR"
-                    elif description.endswith(tuple([" ZR", "-ZR"])):
+                    elif description.endswith((" ZR", "-ZR")):
                         part_no = part_no + "10G | SFP+ ZR"
                     else:
                         part_no = part_no + "10G | SFP+"
                 elif mbd == 12000 and nm == 0:
                     part_no = part_no + "10G | SFP+ Twinax"
                 elif mbd >= 1000 and mbd <= 1300 and nm == 0:
-                    if description.endswith(tuple([" EX", "-EX"])):
+                    if description.endswith((" EX", "-EX")):
                         part_no = part_no + "1G | SFP EX"
-                    elif description.endswith(tuple([" LH", "-LH"])):
+                    elif description.endswith((" LH", "-LH")):
                         part_no = part_no + "1G | SFP LH"
-                    elif description.endswith(tuple([" LX", "-LX"])):
+                    elif description.endswith((" LX", "-LX")):
                         part_no = part_no + "1G | SFP LX"
-                    elif description.endswith(tuple([" SX", "-SX"])):
+                    elif description.endswith((" SX", "-SX")):
                         part_no = part_no + "1G | SFP SX"
-                    elif description.endswith(tuple([" T", "-T"])):
+                    elif description.endswith((" T", "-T")):
                         part_no = part_no + "1G | SFP T"
-                    elif description.endswith(tuple([" TX", "-TX"])):
+                    elif description.endswith((" TX", "-TX")):
                         part_no = part_no + "1G | SFP TX"
-                    elif description.endswith(tuple([" ZX", "-ZX"])):
+                    elif description.endswith((" ZX", "-ZX")):
                         part_no = part_no + "1G | SFP ZX"
                     else:
                         part_no = part_no + "1G | SFP"

@@ -17,7 +17,7 @@ class Script(BaseScript):
     requires = []
 
     def execute_snmp(self, **kwargs):
-        ifname = dict()
+        ifname = {}
         for oid, v in self.snmp.getnext("1.3.6.1.2.1.2.2.1.2", cached=True):
             sindex = oid[len("1.3.6.1.2.1.2.2.1.2") + 1 :]
 

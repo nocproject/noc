@@ -43,10 +43,10 @@ class ActivatorAPI(JSONRPCAPI):
     url_path = "/api/activator"
     auth_required = False
 
-    HTTP_CLIENT_DEFAULTS = dict(
-        connect_timeout=config.activator.http_connect_timeout,
-        request_timeout=config.activator.http_request_timeout,
-    )
+    HTTP_CLIENT_DEFAULTS = {
+        "connect_timeout": config.activator.http_connect_timeout,
+        "request_timeout": config.activator.http_request_timeout,
+    }
 
     @api
     @executor("script")

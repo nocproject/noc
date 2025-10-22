@@ -209,10 +209,8 @@ class FirmwarePolicy(Document):
         if platform:
             q |= Q(platform=platform.id)
         fps = FirmwarePolicy.objects.filter(q)
-        return list(
-            sorted(
-                [fp for fp in fps if fp.is_fw_match(version)], key=operator.attrgetter("firmware")
-            )
+        return sorted(
+            [fp for fp in fps if fp.is_fw_match(version)], key=operator.attrgetter("firmware")
         )
 
     @classmethod

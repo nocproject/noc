@@ -143,7 +143,7 @@ class Script(BaseScript):
         else:
             match = self.rx_lldp.search(v)
         if match:
-            r = {el for el in self.expand_rangelist(match.group("ports"))}
+            r = set(self.expand_rangelist(match.group("ports")))
         return r
 
     def get_switchport_cli(self):

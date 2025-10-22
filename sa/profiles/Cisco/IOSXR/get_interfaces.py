@@ -123,7 +123,7 @@ class Script(BaseScript):
             if rd:
                 rr["rd"] = rd
             # Get interface -> subinterfaces mapping
-            p_ifaces = {x: [] for x in set(i.split(".", 1)[0] for i in fi["interfaces"])}
+            p_ifaces = {x: [] for x in {i.split(".", 1)[0] for i in fi["interfaces"]}}
             for i in fi["interfaces"]:
                 p = i.split(".", 1)[0]
                 p_ifaces[p] += [i]

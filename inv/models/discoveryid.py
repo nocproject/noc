@@ -276,7 +276,7 @@ class DiscoveryID(Document):
             if mo:
                 return mo
         # Fallback to interface addresses
-        o = set(
+        o = {
             d["managed_object"]
             for d in SubInterface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -285,7 +285,7 @@ class DiscoveryID(Document):
                 {"_id": 0, "managed_object": 1, "ipv4_addresses": 1},
             )
             if has_ip(address, d["ipv4_addresses"])
-        )
+        }
         if len(o) != 1:
             return None
         return ManagedObject.get_by_id(next(iter(o)))
@@ -338,13 +338,13 @@ class DiscoveryID(Document):
         else:
             c_macs = []
         # Get interface macs
-        i_macs = set(
+        i_macs = {
             i.mac
             for i in Interface.objects.filter(managed_object=object.id, mac__exists=True).only(
                 "mac"
             )
             if i.mac
-        )
+        }
         # Enrich discovered macs with additional interface's ones
         c_macs += [(m, m) for m in i_macs if not any(1 for f, t in c_macs if f <= m <= t)]
         return c_macs
@@ -395,7 +395,7 @@ class DiscoveryID(Document):
 
     def on_delete(self):
         # Reset cache
-        macs = set(m.first_mac for m in self.chassis_mac)
+        macs = {m.first_mac for m in self.chassis_mac}
         if macs:
             cache.delete_many(["discoveryid-mac-%s" % m for m in macs])
 

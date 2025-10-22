@@ -335,7 +335,7 @@ class ReportConfig:
     dataretentiondays: int
 
     def __post_init__(self):
-        self.columns = [f for f in self.fields]
+        self.columns = list(self.fields)
 
 
 class ReportDataSource(object):
@@ -436,7 +436,7 @@ class ReportDataSource(object):
     def report_json(self, fmt: Optional[Callable] = None):
         import orjson
 
-        return orjson.dumps([row for row in self.extract()])
+        return orjson.dumps(list(self.extract()))
 
     def report_csv(self, fmt: Optional[Callable] = None) -> bytes:
         import csv

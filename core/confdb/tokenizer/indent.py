@@ -19,7 +19,7 @@ class IndentTokenizer(LineTokenizer):
 
     def iter_indent(self, iter):
         depths = [0]
-        contexts = [tuple()]
+        contexts = [()]
         last = None
         for tokens in iter:
             c_depth = len(tokens[0]) if tokens[0].startswith(" ") else 0
@@ -41,7 +41,7 @@ class IndentTokenizer(LineTokenizer):
 
     def iter_indent_explicit(self, iter):
         depts = [0]
-        contexts = [tuple()]
+        contexts = [()]
         last = None
         eoc = (self.end_of_context,)
         for tokens in iter:

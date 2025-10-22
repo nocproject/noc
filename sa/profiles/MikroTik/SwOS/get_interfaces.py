@@ -78,9 +78,9 @@ class Script(BaseScript):
             for vlan in vlans:
                 vid = int(vlan["vid"], 16)
                 if vlan.get("mbr"):
-                    ports = dict(
-                        (i, bool(int(vlan["mbr"], 16) & BITS[i])) for i in range(self.PORT_RANGE)
-                    )
+                    ports = {
+                        i: bool(int(vlan["mbr"], 16) & BITS[i]) for i in range(self.PORT_RANGE)
+                    }
                 else:
                     ports = {
                         i: bool(int(vlan["prt"][i], 16) & BITS[i]) for i in range(len(vlan["prt"]))

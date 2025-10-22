@@ -158,7 +158,7 @@ class UDPServer(object):
             # should bind on the same port on IPv4 and IPv6
             host, requested_port = sockaddr[:2]
             if requested_port == 0 and bound_port is not None:
-                sockaddr = tuple([host, bound_port, *list(sockaddr[2:])])
+                sockaddr = (host, bound_port, *list(sockaddr[2:]))
 
             sock.setblocking(False)
             self.setup_socket(sock)

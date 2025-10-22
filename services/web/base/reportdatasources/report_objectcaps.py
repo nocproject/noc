@@ -28,12 +28,10 @@ class ReportObjectCaps(BaseReportColumn):
 
     builtin_sorted = True
 
-    ATTRS = dict(
-        [
-            ("c_%s" % str(key), value)
-            for key, value in Capability.objects.filter().order_by("name").scalar("id", "name")
-        ]
-    )
+    ATTRS = {
+        "c_%s" % str(key): value
+        for key, value in Capability.objects.filter().order_by("name").scalar("id", "name")
+    }
     unknown_value = ([""] * len(ATTRS),)
     CHUNK_SIZE = 10000
 

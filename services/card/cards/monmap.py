@@ -228,9 +228,9 @@ class MonMapCard(BaseCard):
         os = set()
         kk = None
         for r in range(1, 9):
-            work_set = set(
+            work_set = {
                 o["_id"] for o in coll.find({"container": {"$in": list(work_set)}}, {"_id": 1})
-            )
+            }
             # work_set |= work_set.union(os)
             os |= work_set
             if len(work_set) == kk:

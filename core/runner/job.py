@@ -326,7 +326,7 @@ class Job(object):
                     msg = f"Invalid value for input {i.name}: '{i.value}' ({e})"
                     raise ValueError(msg) from e
             # Check all required inputs are set
-            missed = set(k for k, v in action.inputs.items() if not v) - seen_inputs
+            missed = {k for k, v in action.inputs.items() if not v} - seen_inputs
             if missed:
                 msg = f"Missed inputs: {', '.join(missed)}"
                 raise ValueError(msg)

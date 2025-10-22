@@ -120,11 +120,11 @@ class ConfiguredTopology(TopologyBase):
         # Bulk fetch all managed objects
         if self.cfgmap.add_linked_node:
             external_mos = list(
-                set(
+                {
                     i["managed_object"]
                     for i in self._interface_cache.values()
                     if "managed_object" in i
-                )
+                }
                 - object_ids
             )
             for mo in ManagedObject.objects.filter(id__in=external_mos):

@@ -100,10 +100,10 @@ class Profile(BaseProfile):
             pool = pool.replace(s, ":")
         pool_mask = key[-1:][0]
         if is_ipv6:
-            pool_ip = ".".join([c for c in key[-17:-1]])
+            pool_ip = ".".join(list(key[-17:-1]))
             pool_ip = IPv6(f"{self.ip_dec_to_hex(pool_ip)}/{pool_mask}").normalized
             pool_ip = str(pool_ip).split("/", 1)[0]
             pool_ip = pool_ip.replace("::", ";;")  # :: use in separate scope, dont show in card
         else:
-            pool_ip = ".".join([c for c in key[-5:-1]])
+            pool_ip = ".".join(list(key[-5:-1]))
         return pool, pool_ip, pool_mask

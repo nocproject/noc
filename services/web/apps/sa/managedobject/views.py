@@ -230,13 +230,13 @@ class ManagedObjectApplication(ExtModelApplication):
         if not mo_ids:
             return data
         ac = self.get_ac_object_down()
-        alarms = set(
+        alarms = {
             mo["managed_object"]
             for mo in ActiveAlarm._get_collection().find(
                 {"alarm_class": {"$ne": ac.id}, "managed_object": {"$in": mo_ids}},
                 {"managed_object": 1},
             )
-        )
+        }
         # Apply oper_state
         for x in data:
             if "oper_state" not in x or x["oper_state"] in {"failed", "disabled"}:
@@ -648,7 +648,7 @@ class ManagedObjectApplication(ExtModelApplication):
         """
 
         def sorted_iname(s):
-            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
+            return sorted(s, key=lambda x: alnum_key(x["name"]))
 
         def get_style(i):
             profile = i.profile
@@ -692,7 +692,7 @@ class ManagedObjectApplication(ExtModelApplication):
         if o.object_profile.enable_metrics:
             r, _ = get_interface_metrics(managed_objects=[o.bi_id], metrics=self.x_map)
             for iface in r[o.bi_id]:
-                ctx = {m: "--" for m in self.x_map}
+                ctx = dict.fromkeys(self.x_map, "--")
                 ctx.update(r[o.bi_id][iface])
 
                 load_in = r[o.bi_id][iface]["load_in"]
@@ -1218,7 +1218,7 @@ class ManagedObjectApplication(ExtModelApplication):
         """
 
         def sorted_iname(s):
-            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
+            return sorted(s, key=lambda x: alnum_key(x["name"]))
 
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(id))

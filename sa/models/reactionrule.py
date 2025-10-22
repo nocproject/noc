@@ -126,7 +126,7 @@ class Match(EmbeddedDocument):
         if self.labels:
             r["labels"] = {"$all": list(self.labels)}
         if self.groups:
-            r["service_groups"] = {"$all": [x for x in self.groups]}
+            r["service_groups"] = {"$all": list(self.groups)}
         if self.wf_states:
             r["state"] = {"$in": [str(x.id) for x in self.wf_states]}
         if self.remote_system:

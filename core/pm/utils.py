@@ -605,7 +605,7 @@ def get_objects_metrics(
     bi_map = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval = (
         ManagedObjectProfile.get_max_metrics_interval(
-            set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
+            {mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))}
         )
         * 2
     )
@@ -613,9 +613,9 @@ def get_objects_metrics(
     from_date = from_date.replace(microsecond=0)
 
     # @todo Left Join
-    object_profiles = set(
+    object_profiles = {
         mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))
-    )
+    }
     msd: Dict[str, str] = {}  # Map ScopeID -> TableName
     labels_table = set()
     for ms in MetricScope.objects.filter():
@@ -721,7 +721,7 @@ def get_interface_metrics(
     bi_map: Dict[str, Any] = {str(getattr(mo, "bi_id", mo)): mo for mo in managed_objects}
     query_interval: float = (
         ManagedObjectProfile.get_max_metrics_interval(
-            set(mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map)))
+            {mo.object_profile.id for mo in ManagedObject.objects.filter(bi_id__in=list(bi_map))}
         )
         * 1.5
     )

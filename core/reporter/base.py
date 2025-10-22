@@ -199,7 +199,7 @@ class ReportEngine(object):
             for name, bf in template.bands_format.items():
                 if not bf.columns or name == HEADER_BAND:
                     continue
-                fields |= set(c.name for c in bf.columns)
+                fields |= {c.name for c in bf.columns}
         r = defaultdict(list)
         for f in fields:
             f, *ds = f.split(".")

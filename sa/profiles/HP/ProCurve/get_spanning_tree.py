@@ -203,12 +203,12 @@ class Script(BaseScript):
 
         # Install interfaces
         for instance_id in instances:
-            instances[instance_id]["interfaces"] = list(
-                sorted(instance_ports[instance_id].values(), key=operator.itemgetter("port_id"))
+            instances[instance_id]["interfaces"] = sorted(
+                instance_ports[instance_id].values(), key=operator.itemgetter("port_id")
             )
 
         # Install instances
-        r["instances"] = list(sorted(instances.values(), key=operator.itemgetter["id"]))
+        r["instances"] = sorted(instances.values(), key=operator.itemgetter["id"])
         return r
 
     def process_rstp(self):

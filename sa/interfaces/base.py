@@ -426,7 +426,7 @@ class DictParameter(Parameter):
         self._defaults = {
             k: attrs[k].default for k in self.attrs if self.attrs[k].default is not None
         }
-        self._required_input = set(k for k in self.attrs if self.attrs[k].required)
+        self._required_input = {k for k in self.attrs if self.attrs[k].required}
 
     def clean(self, value):
         if value is None and self.default is not None:

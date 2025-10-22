@@ -22,7 +22,7 @@ class Script(BaseScript):
         n = self.profile.get_count_pon_ports(self)  # PON-ports
 
         # PON-port
-        ifstatus = dict()
+        ifstatus = {}
         for oid, v in self.snmp.getnext("1.3.6.1.4.1.35265.1.209.4.3.1.1.3", cached=True):
             sindex = oid[len("1.3.6.1.4.1.35265.1.209.4.3.1.1.3") + 1 :].split(".")[1]
             v = False

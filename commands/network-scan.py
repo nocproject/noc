@@ -509,7 +509,7 @@ class Command(BaseCommand):
                         try:
                             self.r = await snmp_get(
                                 address=a,
-                                oids=dict((k, k) for k in oid),
+                                oids={k: k for k in oid},
                                 community=c,
                                 version=ver,
                                 timeout=timeout,

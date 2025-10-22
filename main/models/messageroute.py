@@ -40,7 +40,7 @@ id_lock = threading.Lock()
 
 
 class HeaderMatch(EmbeddedDocument):
-    header = StringField(choices=list(sorted(MESSAGE_HEADERS)))
+    header = StringField(choices=sorted(MESSAGE_HEADERS))
     op = StringField(choices=["==", "!=", "regex"])
     value = StringField()
 
@@ -75,7 +75,7 @@ class MRMatch(EmbeddedDocument):
 
 
 class MRAHeader(EmbeddedDocument):
-    header = StringField(choices=list(sorted(MESSAGE_HEADERS)))
+    header = StringField(choices=sorted(MESSAGE_HEADERS))
     value = StringField(required=False)
     transparent = BooleanField(default=False)  # For set - headers translate to Consumer
 

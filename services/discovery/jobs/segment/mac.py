@@ -75,7 +75,7 @@ class MACDiscoveryCheck(TopologyDiscoveryCheck):
         # Filter out aged MACs
         mtable = [m for m in mtable if m[3] == last_ts[m[0]]]
         # Resolve objects
-        macs = set(x[1] for x in mtable)
+        macs = {x[1] for x in mtable}
         if not macs:
             self.logger.info("No MAC addresses collected. Stopping")
             return

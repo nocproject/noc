@@ -265,7 +265,7 @@ class BaseLoader(object):
                 self.logger.error("Failed to create directory: %s (%s)", self.archive_dir, e)
                 # @todo: Die
         if os.path.isdir(self.archive_dir):
-            fn = list(sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f)))
+            fn = sorted(f for f in os.listdir(self.archive_dir) if self.rx_archive.match(f))
         else:
             fn = []
         if not fn:
@@ -994,7 +994,7 @@ class BaseLoader(object):
             if not ls:
                 ls = line.get_current_state()
             ms = self.iter_jsonl(ls, data_model=line.data_model)
-            m_data[f] = set(row.id for row in ms)
+            m_data[f] = {row.id for row in ms}
         if (
             self.system.remote_system.managed_object_loader_policy == "D"
             and self.name == "managedobject"

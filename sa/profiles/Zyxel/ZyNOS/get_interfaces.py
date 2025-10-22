@@ -66,7 +66,7 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(match.group("ifaddr") for match in self.rx_ospf_status.finditer(v))
+        return {match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)}
 
     def get_rip_addresses(self):
         """
@@ -78,11 +78,11 @@ class Script(BaseScript):
             v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(
+        return {
             IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             for match in self.rx_rip_status.finditer(v)
             if match.group("direction").lower() != "none"
-        )
+        }
 
     def execute(self):
         interfaces = []

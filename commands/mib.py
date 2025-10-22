@@ -124,28 +124,26 @@ class Command(BaseCommand):
             mibs = MIB.objects.filter(name__in=mib_name)
         for mib in mibs:
             # Get MIB
-            mib_data = list(
-                sorted(
-                    [
-                        {
-                            "oid": dd.oid,
-                            "name": dd.name,
-                            "description": dd.description,
-                            "syntax": dd.syntax,
-                        }
-                        for dd in MIBData.objects.filter(mib=mib.id)
-                    ]
-                    + [
-                        {
-                            "oid": dd.oid,
-                            "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
-                            "description": dd.description,
-                            "syntax": dd.syntax,
-                        }
-                        for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
-                    ],
-                    key=lambda x: x["oid"],
-                )
+            mib_data = sorted(
+                [
+                    {
+                        "oid": dd.oid,
+                        "name": dd.name,
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(mib=mib.id)
+                ]
+                + [
+                    {
+                        "oid": dd.oid,
+                        "name": next((a for a in dd.aliases if a.startswith(mib.name + "::"))),
+                        "description": dd.description,
+                        "syntax": dd.syntax,
+                    }
+                    for dd in MIBData.objects.filter(aliases__startswith="%s::" % mib.name)
+                ],
+                key=lambda x: x["oid"],
             )
             # Prepare MIB
             if mib.last_updated:
@@ -212,11 +210,9 @@ class Command(BaseCommand):
             "# MIB Data: name -> oid",
             "MIB = {",
         ]
-        mib_data = list(
-            sorted(
-                MIBData.objects.filter(mib=mib.id),
-                key=lambda x: [int(y) for y in x.oid.split(".")],
-            )
+        mib_data = sorted(
+            MIBData.objects.filter(mib=mib.id),
+            key=lambda x: [int(y) for y in x.oid.split(".")],
         )
         r += ["\n".join('    "%s": "%s",' % (md.name, md.oid) for md in mib_data)]
         r += ["}", "", "DISPLAY_HINTS = {"]

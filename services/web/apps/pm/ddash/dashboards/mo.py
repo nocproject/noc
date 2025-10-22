@@ -102,7 +102,7 @@ class MODashboard(JinjaDashboard):
         selected_ifaces = set(self.extra_vars.get("var_ifaces", "").split(","))
         # Get all interface profiles with configurable metrics
         all_ifaces = list(Interface.objects.filter(managed_object=self.object.id))
-        iprof = set(i.profile for i in all_ifaces)
+        iprof = {i.profile for i in all_ifaces}
         # @todo: Order by priority
         profiles = [p for p in iprof if interface_profile_has_metrics(p)]
         # Create charts for configured interface metrics

@@ -297,7 +297,7 @@ class Scheduler(object):
         if not executor.may_submit():
             return 0
         jobs, self.jobs_burst = self.jobs_burst, []
-        burst_ids = set(j.attrs[Job.ATTR_ID] for j in jobs)
+        burst_ids = {j.attrs[Job.ATTR_ID] for j in jobs}
         if len(jobs) <= self.max_chunk // 2:
             jobs += [
                 j

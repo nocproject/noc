@@ -299,7 +299,7 @@ class ManagedObjectCard(BaseCard):
 
         # Maintenance
         maintenance = []
-        m_id = [am_id for am_id in self.object.affected_maintenances]
+        m_id = list(self.object.affected_maintenances)
         for m in Maintenance.objects.filter(
             id__in=m_id, is_completed=False, start__lte=now + datetime.timedelta(hours=1)
         ):

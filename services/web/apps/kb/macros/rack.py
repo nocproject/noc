@@ -46,9 +46,7 @@ class RackSet(object):
     # allocation is a tuple of: top position, height, is empty space, allocation
     #
     def compile_allocations(self, rack):
-        allocations = list(
-            sorted(rack.allocations, key=operator.attrgetter("position"), reverse=True)
-        )
+        allocations = sorted(rack.allocations, key=operator.attrgetter("position"), reverse=True)
         sp = []
         if len(allocations) == 0:
             sp += [(rack.height, rack.height, True, None)]

@@ -93,21 +93,21 @@ class Script(BaseScript):
             if vendor in ["NONAME", "OEM", "CISCO-FINISAR", "AODevices"]:
                 part_no = "NoName | Transceiver | "
                 description = match.group("type")
-                if description.endswith(tuple([" EX", "-EX"])):
+                if description.endswith((" EX", "-EX")):
                     part_no = part_no + "1G | SFP EX"
-                elif description.endswith(tuple([" LH", "-LH"])):
+                elif description.endswith((" LH", "-LH")):
                     part_no = part_no + "1G | SFP LH"
-                elif description.endswith(tuple([" LX", "-LX"])):
+                elif description.endswith((" LX", "-LX")):
                     part_no = part_no + "1G | SFP LX"
-                elif description.endswith(tuple([" SX", "-SX"])):
+                elif description.endswith((" SX", "-SX")):
                     part_no = part_no + "1G | SFP SX"
-                elif description.endswith(tuple([" T", "-T"])):
+                elif description.endswith((" T", "-T")):
                     part_no = part_no + "1G | SFP T"
-                elif description.endswith(tuple([" TX", "-TX"])):
+                elif description.endswith((" TX", "-TX")):
                     part_no = part_no + "1G | SFP TX"
-                elif description.endswith(tuple([" ZX", "-ZX"])):
+                elif description.endswith((" ZX", "-ZX")):
                     part_no = part_no + "1G | SFP ZX"
-                elif part_no_orig.endswith(tuple(["BX-U", "BX-1"])):
+                elif part_no_orig.endswith(("BX-U", "BX-1")):
                     part_no = part_no + "1G | SFP BXU"
                 elif part_no_orig.endswith("BX-D"):
                     part_no = part_no + "1G | SFP BXD"

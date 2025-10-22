@@ -311,7 +311,7 @@ class AlarmClass(Document):
             "is_unique": self.is_unique,
             "is_ephemeral": self.is_ephemeral,
             "by_reference": self.by_reference,
-            "reference": [d for d in self.reference],
+            "reference": list(self.reference),
             "user_clearable": self.user_clearable,
             "labels": self.labels,
         }
@@ -323,9 +323,9 @@ class AlarmClass(Document):
             r["components"] = [c.json_data for c in self.components]
         r["vars"] = [v.json_data for v in self.vars]
         if self.handlers:
-            r["handlers"] = [h for h in self.handlers]
+            r["handlers"] = list(self.handlers)
         if self.clear_handlers:
-            r["clear_handlers"] = [h for h in self.clear_handlers]
+            r["clear_handlers"] = list(self.clear_handlers)
         r["subject_template"] = self.subject_template
         r["body_template"] = self.body_template or ""
         r["symptoms"] = self.symptoms or ""

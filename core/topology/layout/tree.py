@@ -47,7 +47,7 @@ class TreeLayout(LayoutBase):
         for u in top:
             pos.update(self.get_tree_pos(G, u, x0, w))
             x0 += G.nodes[u]["tree_width"]
-        check = set(x[1] for x in pos.values())
+        check = {x[1] for x in pos.values()}
         if len(check) == 1:
             # If all y coordinates is same, mark nodes as isolated
             return {}
