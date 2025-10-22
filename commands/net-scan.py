@@ -219,7 +219,7 @@ class Command(BaseCommand):
             snmp_cred = None
             if snmp_checker:
                 # for r in snmp_checker.iter_result([Check(SUGGEST_CHECK, address=addr)]):
-                async for r in snmp_checker.iter_result_async([Check(SUGGEST_CHECK, address=addr)]):
+                async for r in snmp_checker.iter_result([Check(SUGGEST_CHECK, address=addr)]):
                     if r.status and not snmp_cred:
                         metrics["address_snmp_up"] += 1
                     if r.credential:
@@ -243,7 +243,7 @@ class Command(BaseCommand):
                 h = self.get_checker(c.name)
                 if not h or ICMP_DIAG in h.CHECKS:
                     continue
-                async for r in h.iter_result_async([c]):
+                async for r in h.iter_result([c]):
                     # print(f"[{c.name}] Result: {r}")
                     # self.stdout.write(f"{addr} Port {r.port} is open\n")
                     if r.skipped:
