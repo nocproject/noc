@@ -29,7 +29,7 @@ class Script(BaseScript):
     )
     rx_ip = re.compile(r"Internet Address is (?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\/\d{1,2})")
     rx_ospf = re.compile(
-        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+" r"\((?P<name>\S+)\)\s+",
+        r"^Interface:\s(?P<ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s+\((?P<name>\S+)\)\s+",
         re.MULTILINE,
     )
 

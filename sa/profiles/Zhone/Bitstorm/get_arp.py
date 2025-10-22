@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetARP
 
     rx_line = re.compile(
-        r"^\s*(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+" r"\S+\s+(?P<interface>\S*)",
+        r"^\s*(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+\S+\s+(?P<interface>\S*)",
         re.MULTILINE,
     )
 

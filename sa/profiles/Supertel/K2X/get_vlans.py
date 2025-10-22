@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+" r"(\S+ \S+|\S+)\s*$", re.MULTILINE
+        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(\S+|)\s+\S+\s+(\S+ \S+|\S+)\s*$", re.MULTILINE
     )
 
     def execute(self):

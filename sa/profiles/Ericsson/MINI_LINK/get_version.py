@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Active SBL\s+: CXP: \S+ MINI-LINK " r"(?P<platform>\S+) (?P<version>\S+)", re.MULTILINE
+        r"^Active SBL\s+: CXP: \S+ MINI-LINK (?P<platform>\S+) (?P<version>\S+)", re.MULTILINE
     )
 
     def execute(self):

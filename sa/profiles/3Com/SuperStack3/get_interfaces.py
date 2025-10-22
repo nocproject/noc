@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^(?P<port>\d+\:\d+)\s+(?P<status>Active|Inactive)\s+" r"(?P<stp>\S+)", re.MULTILINE
+        r"^(?P<port>\d+\:\d+)\s+(?P<status>Active|Inactive)\s+(?P<stp>\S+)", re.MULTILINE
     )
     rx_stp = re.compile(r"^StpState:\s+Enabled", re.MULTILINE)
     rx_lacp = re.compile(r"^LACP State:\s+Disabled", re.MULTILINE)

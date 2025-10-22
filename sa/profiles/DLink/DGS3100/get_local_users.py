@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "DLink.DGS3100.get_local_users"
     interface = IGetLocalUsers
     rx_line = re.compile(
-        r"^\s*(?P<username>\S+)\s+" r"(?P<privilege>Admin|Operator|User|Power_User)\s*$",
+        r"^\s*(?P<username>\S+)\s+(?P<privilege>Admin|Operator|User|Power_User)\s*$",
         re.MULTILINE,
     )
 

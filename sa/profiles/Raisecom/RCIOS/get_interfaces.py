@@ -35,7 +35,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_conf_iface = re.compile(
-        r"^interface (?P<iface>\S+)\s*\n" r"((?P<cfg>.*?)\n)?" r"^!\s*\n", re.MULTILINE | re.DOTALL
+        r"^interface (?P<iface>\S+)\s*\n((?P<cfg>.*?)\n)?^!\s*\n", re.MULTILINE | re.DOTALL
     )
     rx_trunk = re.compile(r"switchport trunk permit vlan (?P<vlan_id>\d+)")
 

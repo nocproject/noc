@@ -18,14 +18,14 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Model:\s+(?P<platform>\S+)\s*\n" r"^Junos: (?P<version>\S+[0-9])", re.MULTILINE
+        r"^Model:\s+(?P<platform>\S+)\s*\n^Junos: (?P<version>\S+[0-9])", re.MULTILINE
     )
     rx_ver2 = re.compile(
-        r"^Model:\s+(?P<platform>\S+)\s*\n" r"^JUNOS .*? \[(?P<version>\S+)\]", re.MULTILINE
+        r"^Model:\s+(?P<platform>\S+)\s*\n^JUNOS .*? \[(?P<version>\S+)\]", re.MULTILINE
     )
     # JUNOS .*? \[(?P<version>[^\]]+)\]",
     rx_snmp_ver = re.compile(
-        r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+" r"(?P<version>\S+[0-9])"
+        r"Juniper Networks, Inc.\s+(?P<platform>\S+).+?JUNOS\s+(?P<version>\S+[0-9])"
     )
     rx_serial = re.compile(r"Chassis\s+(?P<serial>\w+)\s", re.MULTILINE)
 

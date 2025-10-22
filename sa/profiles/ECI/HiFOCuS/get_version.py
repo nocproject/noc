@@ -45,7 +45,7 @@ class Script(BaseScript):
     rx_platform = re.compile(r"\|\|\s+0\s+\|\|\s+(?P<platform>.+)\s*\n")
 
     rx_ver = re.compile(
-        r"^\s*NI CARD TYPE\s+: (?P<cardtype>.+)\n" r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
+        r"^\s*NI CARD TYPE\s+: (?P<cardtype>.+)\n^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
         re.MULTILINE,
     )
 

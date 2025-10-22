@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_mac = re.compile(
-        r"\s+MAC\s+Addresses\s+:\s+(?P<base>\S+)\n" r"\s+Number\s+of\s+MACs\s+:\s+(?P<count>\d+)\n",
+        r"\s+MAC\s+Addresses\s+:\s+(?P<base>\S+)\n\s+Number\s+of\s+MACs\s+:\s+(?P<count>\d+)\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
 

@@ -20,7 +20,7 @@ class Script(BaseScript):
         r"(?:\S+\s+){0,2}(?P<interfaces>.*)$"
     )
     rx_line2 = re.compile(
-        r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+" r"(?P<interfaces>.*)$"
+        r"^(?P<mac>\S+)\s+(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<interfaces>.*)$"
     )  # Catalyst 3500XL
     ignored_interfaces = (
         "router",

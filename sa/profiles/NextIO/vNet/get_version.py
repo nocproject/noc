@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"Assembly Model Name\s+(?P<platform>.+?)$.*" r"Firmware Version\s+(?P<version>\S+)",
+        r"Assembly Model Name\s+(?P<platform>.+?)$.*Firmware Version\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 

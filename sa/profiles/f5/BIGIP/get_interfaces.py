@@ -21,7 +21,7 @@ class Script(BaseScript):
 
     rx_self = re.compile(r"^net self \S+ {", re.MULTILINE | re.DOTALL)
     rx_self_a = re.compile(
-        r"^\s+address\s+(?P<address>\S+).+" r"^\s+vlan\s+(?P<vlan>\S+)", re.DOTALL | re.MULTILINE
+        r"^\s+address\s+(?P<address>\S+).+^\s+vlan\s+(?P<vlan>\S+)", re.DOTALL | re.MULTILINE
     )
 
     def parse_kv(self, s):

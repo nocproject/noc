@@ -39,7 +39,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ip_host = re.compile(
-        r"^Host IP address\s+: (?P<ip>\S+)\s*\n" r"^Host IP mask\s+: (?P<mask>\S+)\s*\n",
+        r"^Host IP address\s+: (?P<ip>\S+)\s*\n^Host IP mask\s+: (?P<mask>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_sub = re.compile(r"^\s+(?P<ip>\d+\S+)\s+(?P<mask>\d+\S+)\s+(?P<vlan_id>\d+)", re.MULTILINE)

@@ -45,11 +45,11 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_iface3 = re.compile(
-        r"^\s+IPv6 address:\s*\n" r"^\s+\S+",
+        r"^\s+IPv6 address:\s*\n^\s+\S+",
         re.MULTILINE,
     )
     rx_iface4 = re.compile(
-        r"^\s+MTU\s+: (?P<mtu>\d+)\s*\n" r"^\s+HW address\s+: (?P<mac>\S+)",
+        r"^\s+MTU\s+: (?P<mtu>\d+)\s*\n^\s+HW address\s+: (?P<mac>\S+)",
         re.MULTILINE,
     )
     rx_switchport = re.compile(

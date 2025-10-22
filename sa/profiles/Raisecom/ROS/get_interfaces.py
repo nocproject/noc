@@ -69,14 +69,14 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_iface2 = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+" r"assigned\s+primary\s*\n",
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+assigned\s+primary\s*\n",
         re.MULTILINE,
     )
     rx_lldp = re.compile(
-        r"LLDP enable status:\s+enable.+\n" r"LLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE
+        r"LLDP enable status:\s+enable.+\nLLDP enable ports:\s+(?P<ports>\S+)\n", re.MULTILINE
     )
     rx_lldp_2924 = re.compile(
-        r"LLDP enable status:\s+enable.+\n" r"LLDP enable ports:\s+P:(?P<ports>\S+)\n", re.MULTILINE
+        r"LLDP enable status:\s+enable.+\nLLDP enable ports:\s+P:(?P<ports>\S+)\n", re.MULTILINE
     )
     rx_lldp_iscom2624g = re.compile(r"^(?P<ifname>\S+)\s+enable\s+\S+\s*\n", re.MULTILINE)
     rx_descr = re.compile(r"^\s*(?P<port>port\d+)\s+(?P<descr>.+)\n", re.MULTILINE)

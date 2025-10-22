@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_cg = re.compile(
-        r"^Channel group \d+\s*\n" r"^\s*Mode: (?P<mode>\S+)\s*\n" r"^(?P<members>.+)\s*\n",
+        r"^Channel group \d+\s*\n^\s*Mode: (?P<mode>\S+)\s*\n^(?P<members>.+)\s*\n",
         re.MULTILINE | re.DOTALL,
     )
     rx_iface = re.compile(r"^\s*Port\s*(?P<ifname>.+):", re.MULTILINE)

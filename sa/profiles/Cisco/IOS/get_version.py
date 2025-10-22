@@ -44,7 +44,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_7100 = re.compile(
-        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? " r"(?:Universal Broadband Router|chassis)"
+        r"^(?:uBR|CISCO)?71(?:20|40|11|14)(-\S+)? (?:Universal Broadband Router|chassis)"
     )
     rx_c4900m = re.compile(r"^Cisco Systems, Inc. (?P<part_no>\S+) \d+ slot switch")
     rx_ver = re.compile(
@@ -55,7 +55,7 @@ class Script(BaseScript):
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
     rx_ver1 = re.compile(
-        r"^cisco (?P<part_no>\S+) \(\S+\) processor( " r"\(revision(?P<revision>.+?)\))? with",
+        r"^cisco (?P<part_no>\S+) \(\S+\) processor( \(revision(?P<revision>.+?)\))? with",
         re.IGNORECASE | re.MULTILINE,
     )
     IGNORED_SERIAL = {"H22L714"}

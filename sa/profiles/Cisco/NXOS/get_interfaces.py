@@ -71,7 +71,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_ipv6 = re.compile(
-        r"\s+IPv6 address:\s+(?P<address>\S+)" r"\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
+        r"\s+IPv6 address:\s+(?P<address>\S+)\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
         re.MULTILINE | re.IGNORECASE,
     )
 

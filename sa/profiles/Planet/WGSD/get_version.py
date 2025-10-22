@@ -19,9 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_version1 = re.compile(r"^SW version+\s+(?P<version>\S+)", re.MULTILINE)
-    rx_version2 = re.compile(
-        r"^Active-image: \S+\s*\n" r"^\s+Version: (?P<version>\S+)", re.MULTILINE
-    )
+    rx_version2 = re.compile(r"^Active-image: \S+\s*\n^\s+Version: (?P<version>\S+)", re.MULTILINE)
     rx_bootprom = re.compile(r"^Boot version+\s+(?P<bootprom>\S+)", re.MULTILINE)
     rx_hardware = re.compile(r"^HW version+\s+(?P<hardware>\S+)$", re.MULTILINE)
 

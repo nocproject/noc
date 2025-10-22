@@ -83,12 +83,12 @@ class Script(BaseScript):
     # STP/RSTP Parsing
     #
     rx_pvst_root = re.compile(
-        r"^\s+Root ID\s+Priority\s+(?P<root_priority>\d+).\s+" r"Address\s+(?P<root_id>\S+)",
+        r"^\s+Root ID\s+Priority\s+(?P<root_priority>\d+).\s+Address\s+(?P<root_id>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 
     rx_pvst_bridge = re.compile(
-        r"^\s+Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).\s+" r"Address\s+(?P<bridge_id>\S+)",
+        r"^\s+Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).\s+Address\s+(?P<bridge_id>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 
@@ -173,12 +173,12 @@ class Script(BaseScript):
     )
 
     rx_mstp_root = re.compile(
-        r"^(CST |)Root ID\s+Priority\s+(?P<root_priority>\d+).\s+" r"Address\s+(?P<root_id>\S+)",
+        r"^(CST |)Root ID\s+Priority\s+(?P<root_priority>\d+).\s+Address\s+(?P<root_id>\S+)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 
     rx_mstp_bridge = re.compile(
-        r"^Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).\s+" r"Address\s+(?P<bridge_id>\S+)",
+        r"^Bridge ID\s+Priority\s+(?P<bridge_priority>\d+).\s+Address\s+(?P<bridge_id>\S+)",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 

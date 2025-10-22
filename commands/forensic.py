@@ -24,7 +24,7 @@ class Command(BaseCommand):
         r"\[>([^\|]+)\|([^\|]+)\|([^\]]+)\]\s*(.*)"
     )
     rx_close = re.compile(
-        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[noc\.core\.forensic\] " r"\[<([^\]]+)\]"
+        r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d+) \[noc\.core\.forensic\] \[<([^\]]+)\]"
     )
     show_mask = "%-23s %-25s %-15s %-30s %s"
     show_watch_mask = "%-23s %6s %-25s %-15s %-30s %s"

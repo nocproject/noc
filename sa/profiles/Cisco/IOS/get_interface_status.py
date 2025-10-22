@@ -13,7 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.igetinterfacestatus import IGetInterfaceStatus
 
 rx_interface_status = re.compile(
-    r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+" r"(?P<status>up|down).*$",
+    r"^(?P<interface>.+?)\s+is\s+\S+,\s+line\s+protocol\s+is\s+(?P<status>up|down).*$",
     re.IGNORECASE,
 )
 

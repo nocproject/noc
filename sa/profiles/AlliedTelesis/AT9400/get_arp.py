@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "AlliedTelesis.AT9400.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        r"^\S+\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+" r"(?P<interface>\S+)\s*",
+        r"^\S+\s+(?P<ip>[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\s+(?P<mac>\S+)\s+(?P<interface>\S+)\s*",
         re.MULTILINE,
     )
 

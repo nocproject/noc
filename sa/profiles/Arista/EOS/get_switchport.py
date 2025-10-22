@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Arista.EOS.get_switchport"
     interface = IGetSwitchport
 
-    rx_line = re.compile(r"^(?P<port>\S\S\d+)\s+" r"(?P<untagged>\d+|None)\s+" r"(?P<tagged>.+)$")
+    rx_line = re.compile(r"^(?P<port>\S\S\d+)\s+(?P<untagged>\d+|None)\s+(?P<tagged>.+)$")
 
     def execute(self):
         r = []

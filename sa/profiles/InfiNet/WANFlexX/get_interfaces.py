@@ -28,7 +28,7 @@ class Script(BaseScript):
     )
     rx_vlan3 = re.compile(r"svi(?P<vlan>\d+)(?:$|:)")
     rx_ipaddr = re.compile(
-        r"^(?P<ifname>\S+)\s+(?P<net>[0-9\./]+)\s+" r"(?P<ipaddr>[0-9\.]+)\s+", re.MULTILINE
+        r"^(?P<ifname>\S+)\s+(?P<net>[0-9\./]+)\s+(?P<ipaddr>[0-9\.]+)\s+", re.MULTILINE
     )
 
     TYPE_MAP = {

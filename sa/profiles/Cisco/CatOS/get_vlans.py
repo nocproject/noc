@@ -11,7 +11,7 @@ from noc.sa.interfaces.igetvlans import IGetVlans
 import re
 
 rx_vlan_line = re.compile(
-    r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+\S+\s+\d+" r"(?:\s+(?:\d|-|\/|,)+)?$"
+    r"^(?P<vlan_id>\d{1,4})\s+(?P<name>\S+)\s+\S+\s+\d+(?:\s+(?:\d|-|\/|,)+)?$"
 )
 
 

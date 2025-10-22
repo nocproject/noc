@@ -25,18 +25,18 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_port1 = re.compile(
-        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+" r"(?P<admin_status>Up|Down)",
+        r"^(?P<port>(?:Gi|Te|Po)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s+\S+\s+(?P<admin_status>Up|Down)",
         re.MULTILINE | re.IGNORECASE,
     )
     rx_descr = re.compile(
         r"^(?P<port>(?:Gi|Te|Po)\S+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
     )
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        r"^\s*(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+(?P<membership>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_vlan_ipif = re.compile(
-        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+" r"(?:Static|DHCP)\s+Valid"
+        r"^(?P<address>\S+)\s+vlan\s*(?P<vlan_id>\d+)\s+(?:Static|DHCP)\s+Valid"
     )
     rx_mac = re.compile(r"^System MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_enabled = re.compile(
