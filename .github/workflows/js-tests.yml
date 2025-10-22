@@ -12,6 +12,9 @@ on:
     paths: *changed-paths
   release:
     types: ["published"]
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   js-lint:
     runs-on: ubuntu-24.04

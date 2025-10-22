@@ -7,6 +7,9 @@ on:
       - tests/infra/docker/**
   pull_request:
     paths: *changed-paths
+permissions:
+  contents: read
+  pull-requests: write
 jobs:
   changes:
     runs-on: ubuntu-24.04

@@ -15,6 +15,10 @@ on:
     paths: *changed-paths
   release:
     types: ["published"]
+permissions:
+  contents: read
+  pull-requests: write
+  packages: read
 jobs:
   py-lint:
     runs-on: ubuntu-24.04

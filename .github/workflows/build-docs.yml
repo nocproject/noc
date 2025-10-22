@@ -16,6 +16,9 @@ on:
     paths: *on-paths
   release:
     types: ["published"]
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   build-push:
     name: "Build & Push Docs"
