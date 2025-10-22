@@ -65,7 +65,7 @@ docs = [
   "cachetools==5.5.2", # For {{ config_param() }}
 ]
 lint = [
-  "ruff==0.13.3",
+  "ruff==0.14.1",
   "mypy==1.10",
   "black==24.8.0",
   "mongo-types==0.15.1",
