@@ -473,6 +473,8 @@ class Config(BaseConfig):
 
     class metricscollector(ConfigSection):
         ds_limit = IntParameter(default=1000)
+        nodata_record_ttl = SecondsParameter(default="1h")
+        nodata_round_duration = SecondsParameter(default="1M")
 
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True, full_result=True)

@@ -7,12 +7,11 @@
 
 # Python modules
 import datetime
-import cachetools
 import logging
 import asyncio
 import enum
 from collections import defaultdict
-from typing import Optional, Set
+from typing import Optional
 from http import HTTPStatus
 
 # Third-party modules
@@ -33,6 +32,7 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 API_ACCESS_HEADER = "X-NOC-API-Access"
+ZABBIX_COLLECTOR = "zabbix"
 
 
 class ValueType(enum.Enum):
@@ -42,20 +42,6 @@ class ValueType(enum.Enum):
     UNSIGNED = 3
     TEXT = 4
     BINARY = 5
-
-
-@cachetools.cached(cachetools.TTLCache(maxsize=50, ttl=60))
-def get_format_role(ds, fmt):
-    return ds.get_format_role(fmt)
-
-
-def get_access_tokens_set(datastream, fmt: Optional[str] = None) -> Set[str]:
-    tokens = {"datastream:*", f"datastream:{datastream.name}"}
-    if fmt:
-        role = get_format_role(datastream, fmt)
-        if role:
-            tokens.add(f"datastream:{role}")
-    return tokens
 
 
 class ZabbixAPI(object):
@@ -78,11 +64,15 @@ class ZabbixAPI(object):
         if not authorization:
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
         _, key = authorization.split(" ")
-        metrics["msg_in", ("collector", "zabbix")] += 1
-        rs_name = self.service.get_remote_system_name(remote_system_code)
-        if not rs_name:
-            # raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
-            return ORJSONResponse({}, status_code=200)
+        metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
+        if self.service.is_rs_banned(remote_system_code):
+            # IP Address
+            return ORJSONResponse(
+                {
+                    "error": f"Unknown Remote System {remote_system_code}",
+                },
+                status_code=HTTPStatus.NOT_FOUND,
+            )
         received = defaultdict(dict)
         # Clock, Name
         # Log request
@@ -99,22 +89,35 @@ class ZabbixAPI(object):
             return ORJSONResponse({}, status_code=200)
         r = []
         for (clock, host_name), metric in received.items():
-            cfg = self.service.lookup_source_by_name(host_name, collector="zabbix")  # receiver
+            cfg = self.service.lookup_source_by_name(
+                host_name, collector=ZABBIX_COLLECTOR
+            )  # receiver
             if not cfg:
                 continue
-            # if not cfg.has_remote_system(remote_system_code):
-            # Optionally? Strict Mode, Pass Mode
-            # print("Remote System not supported on item: ", cfg.name, cfg.remote_systems)
-            #    continue
+            remote_system = cfg.get_remote_collector_by_key(key)
+            if not remote_system:
+                logger.warning(
+                    "Remote System not supported on item: %s",
+                    cfg.name,
+                )
+                # Optionally? Strict Mode, Pass Mode
+                # self.service.ban_remote_system(remote_system_code)
+                return ORJSONResponse({}, status_code=200)
+            ts = datetime.datetime.fromtimestamp(clock)
+            if cfg.no_data_check:
+                self.service.no_data_checker.register_data(
+                    str(cfg.bi_id),
+                    ts,
+                    collector="metricscollector",
+                    remote_system=remote_system.name,
+                )
             metric["_units"] = {}
             r.append(
                 SendMetric(
-                    ts=datetime.datetime.fromtimestamp(clock),
-                    collector="zabbix",
+                    ts=ts,
+                    collector=ZABBIX_COLLECTOR,
                     managed_object=cfg.bi_id,
-                    # replace to code
-                    # To labels ?
-                    remote_system=rs_name,
+                    remote_system=remote_system.bi_id,
                     metrics=metric,
                 )
             )
@@ -131,7 +134,7 @@ class ZabbixAPI(object):
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
         logger.debug("REQUEST: %r", req)
         _, key = authorization.split(" ")
-        metrics["msg_in", ("collector", "zabbix")] += 1
+        metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
         rs_name = self.service.get_remote_system_name(remote_system_code)
         if not rs_name:
             # raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
@@ -184,7 +187,7 @@ class ZabbixAPI(object):
             # response_model=sig.return_annotation,
             # response_model=,
             tags=self.openapi_tags,
-            name=f"{self.api_name}_zabbix_items",
+            name=f"{self.api_name}_zabbix_events",
             description="Integration with Zabbix Events Connector",
         )
         # AgentV1
