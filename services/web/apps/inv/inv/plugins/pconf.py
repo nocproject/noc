@@ -239,7 +239,7 @@ class PConfPlugin(InvPlugin):
         # Headless
         items = list(self.iter_headless(obj))
         return ParsedData(
-            groups=list(set(i.group or DEFAULT_GROUP for i in items)),
+            groups=list({i.group or DEFAULT_GROUP for i in items}),
             conf=[i for i in items if i.table == table and i.group == group],
         )
 
@@ -382,7 +382,7 @@ class PConfPlugin(InvPlugin):
             type=Type.ENUM,
             table=Table.CONFIG,
             read_only=False,
-            options={k: v for k, v in ADM200_VMAP.items()},
+            options=dict(ADM200_VMAP.items()),
         )
 
     def api_set(self, request, id: str, name: str, value: str):

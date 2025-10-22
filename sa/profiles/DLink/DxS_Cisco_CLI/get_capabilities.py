@@ -18,7 +18,7 @@ class Script(BaseScript):
 
     rx_lldp = re.compile(r"Global status of LLDP\s+: Enable$", re.MULTILINE)
     rx_cdp = re.compile(
-        r"Global status of LLDP\s+: Enable\n" r"Global cdp compliance\s+: YES", re.MULTILINE
+        r"Global status of LLDP\s+: Enable\nGlobal cdp compliance\s+: YES", re.MULTILINE
     )
 
     @false_on_cli_error

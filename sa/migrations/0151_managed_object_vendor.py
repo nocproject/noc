@@ -42,12 +42,12 @@ class Migration(BaseMigration):
         #
 
         # Select vendors
-        vendors = set(
+        vendors = {
             r[0]
             for r in self.db.execute(
                 "SELECT DISTINCT value FROM sa_managedobjectattribute WHERE key = 'vendor'"
             )
-        )
+        }
         pcoll = self.mongo_db["noc.vendors"]
         # Update inventory vendors records
         inventory_vendors = {}

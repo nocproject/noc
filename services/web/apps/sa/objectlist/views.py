@@ -149,7 +149,7 @@ class ObjectListApplication(ExtApplication):
                 nq["address__in"] = [nq["addresses"]]
             del nq["addresses"]
 
-        xf = list((set(nq.keys())) - set(f.name for f in self.model._meta.get_fields()))
+        xf = list((set(nq.keys())) - {f.name for f in self.model._meta.get_fields()})
         for x in xf:
             if x in ["address__in", "id__in", "administrative_domain__in"]:
                 continue

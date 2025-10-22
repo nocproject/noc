@@ -299,7 +299,7 @@ class PathAPI(NBIAPI):
                             "address": obj.address,
                             "bi_id": obj.bi_id,
                         },
-                        "interfaces": list(sorted(objects[obj], key=alnum_key)),
+                        "interfaces": sorted(objects[obj], key=alnum_key),
                     }
                     for obj in order
                 ]

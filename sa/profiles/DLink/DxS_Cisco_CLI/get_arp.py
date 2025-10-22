@@ -15,7 +15,7 @@ class Script(BaseScript):
     name = "DLink.DxS_Cisco_CLI.get_arp"
     interface = IGetARP
     rx_line = re.compile(
-        r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+" r"(?P<interface>.+)\s*$",
+        r"^Internet\s+(?P<ip>\S+)\s+(\d+|\-\-)\s+(?P<mac>\S+)\s+arpa\s+(?P<interface>.+)\s*$",
         re.MULTILINE,
     )
 

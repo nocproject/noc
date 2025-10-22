@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_port = re.compile(
-        r"^(?P<port>(?:Gi|2.5Gi|10Gi)\S+ \S+)\s+\S+\s+\S+\s+\d+\s+\S+\s+" r"(?P<oper_status>\S+)",
+        r"^(?P<port>(?:Gi|2.5Gi|10Gi)\S+ \S+)\s+\S+\s+\S+\s+\d+\s+\S+\s+(?P<oper_status>\S+)",
         re.MULTILINE,
     )
 

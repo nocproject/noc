@@ -39,12 +39,10 @@ def define_env(env):
         if scripts:
             return
         # Load list of all scripts
-        scripts = list(
-            sorted(
-                x.split(".", 1)[0]
-                for x in os.listdir(os.path.join(DOC_ROOT, "scripts-reference"))
-                if x.endswith(".md") and not x.startswith(".") and not x.startswith("index.")
-            )
+        scripts = sorted(
+            x.split(".", 1)[0]
+            for x in os.listdir(os.path.join(DOC_ROOT, "scripts-reference"))
+            if x.endswith(".md") and not x.startswith(".") and not x.startswith("index.")
         )
 
     @env.macro
@@ -88,7 +86,7 @@ def define_env(env):
                     with open(os.path.join(root, fn)) as f:
                         data = json.loads(f.read())
                     platforms[data["vendor__code"]].add(data["name"])
-        v_platforms = list(sorted(platforms[vendor]))
+        v_platforms = sorted(platforms[vendor])
         r = []
         if v_platforms:
             r += ["| Platform |", "| --- |"]

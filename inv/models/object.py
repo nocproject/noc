@@ -432,9 +432,7 @@ class Object(Document):
         coll = Object._get_collection()
         for _ in range(max_level):
             # Get next wave
-            wave = (
-                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
-            )
+            wave = {d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})} - seen
             if not wave:
                 break
             seen |= wave
@@ -478,7 +476,7 @@ class Object(Document):
         :return:
         """
         kset = set(keys)
-        r = {k: None for k in kset}
+        r = dict.fromkeys(kset)
         for item in self.data:
             if item.interface == interface and item.attr in kset:
                 if not scope or item.scope == scope:
@@ -523,19 +521,17 @@ class Object(Document):
             seen.add(k)
         # Sort according to interface
         sorting_keys: Dict[str, str] = {}
-        for ni, i in enumerate(sorted(set(x[0] for x in seen))):
+        for ni, i in enumerate(sorted({x[0] for x in seen})):
             mi = ModelInterface.get_by_name(i)
             if not mi:
                 continue
             for na, a in enumerate(mi.attrs):
                 sorting_keys["%s.%s" % (i, a.name)] = "%06d.%06d" % (ni, na)
         # Return sorted result
-        return list(
-            sorted(
-                r,
-                key=lambda oa: "%s.%s"
-                % (sorting_keys.get("%s.%s" % (oa.interface, oa.attr), "999999.999999"), oa.scope),
-            )
+        return sorted(
+            r,
+            key=lambda oa: "%s.%s"
+            % (sorting_keys.get("%s.%s" % (oa.interface, oa.attr), "999999.999999"), oa.scope),
         )
 
     def set_data(self, interface: str, key: str, value: Any, scope: Optional[str] = None) -> None:

@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetVlans
 
     rx_vlan_line_vrp3 = re.compile(
-        r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>.*?)\n.*?" r"(\n\n|$)",
+        r"^\sVLAN ID:\s+?(?P<vlan_id>\d{1,4})\n.*?Name:\s+(?P<name>.*?)\n.*?(\n\n|$)",
         re.IGNORECASE | re.DOTALL | re.MULTILINE,
     )
 

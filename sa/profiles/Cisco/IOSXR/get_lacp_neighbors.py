@@ -63,7 +63,7 @@ class Script(BaseScript):
             block = block.strip()
             bundle = []
             for sub_block in self.split_group3_re.split(block)[1:]:
-                dc_bundle = dict()
+                dc_bundle = {}
                 sub_block = sub_block.strip()
                 if not sub_block:
                     continue

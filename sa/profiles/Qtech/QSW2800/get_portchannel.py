@@ -19,10 +19,10 @@ class Script(BaseScript):
     cache = True
 
     rx_portgroup = re.compile(
-        r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+" r"\s+\S+\s*\n", re.MULTILINE
+        r"^(?P<pc>\d+)\s+(?P<mode>\S+)\s+(?:\S+\s+)?\S+\s+\S+\s*\n", re.MULTILINE
     )
     rx_interface = re.compile(
-        r"^\s+(?P<interface>\S+) is LAG member port, " r"LAG port:(?P<pc>\S+)", re.MULTILINE
+        r"^\s+(?P<interface>\S+) is LAG member port, LAG port:(?P<pc>\S+)", re.MULTILINE
     )
 
     def execute_cli(self):

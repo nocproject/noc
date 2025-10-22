@@ -19,11 +19,11 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_admin_status = re.compile(
-        r"Port No\s+:(?P<interface>\d+).\s*" r"Active\s+:(?P<admin>(Yes|No)).*$",
+        r"Port No\s+:(?P<interface>\d+).\s*Active\s+:(?P<admin>(Yes|No)).*$",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_ospf_status = re.compile(
-        r"^\s+Internet Address (?P<ifaddr>" r"\d+\.\d+\.\d+\.\d+\/\d+).+$", re.MULTILINE
+        r"^\s+Internet Address (?P<ifaddr>\d+\.\d+\.\d+\.\d+\/\d+).+$", re.MULTILINE
     )
     rx_rip_status = re.compile(
         r"^\s+(?P<ip>\d+\.\d+\.\d+\.\d+)\s+"
@@ -38,11 +38,11 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ctp = re.compile(
-        r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+" r"\s+\d+\s+\d+\s+.+$", re.MULTILINE
+        r"^\s+(?P<interface>\d+)\s+\S+\s+Enable\s+\d+\s+\d+\s+\d+\s+.+$", re.MULTILINE
     )
     rx_gvrp = re.compile(r"^Port\s+(?P<interface>\d+)$", re.MULTILINE)
     rx_lldp = re.compile(
-        r"^\s+(?P<interface>\d+)\s+(tx\-rx|rx\-only|tx\-only)" r"\s+\S+\s+\S+\s+\S+\s+\S+$",
+        r"^\s+(?P<interface>\d+)\s+(tx\-rx|rx\-only|tx\-only)\s+\S+\s+\S+\s+\S+\s+\S+$",
         re.MULTILINE,
     )
 
@@ -66,7 +66,7 @@ class Script(BaseScript):
             v = self.cli("show ip ospf interface", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(match.group("ifaddr") for match in self.rx_ospf_status.finditer(v))
+        return {match.group("ifaddr") for match in self.rx_ospf_status.finditer(v)}
 
     def get_rip_addresses(self):
         """
@@ -78,11 +78,11 @@ class Script(BaseScript):
             v = self.cli("show router rip", cached=True)
         except self.CLISyntaxError:
             return set()
-        return set(
+        return {
             IPv4(match.group("ip"), netmask=match.group("mask")).prefix
             for match in self.rx_rip_status.finditer(v)
             if match.group("direction").lower() != "none"
-        )
+        }
 
     def execute(self):
         interfaces = []

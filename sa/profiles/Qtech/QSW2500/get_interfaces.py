@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_port = re.compile(
-        r"^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s*" r"(?P<oper_status>up|down)",
+        r"^\s*(?P<port>\d+)\s*(?P<admin_status>enable|disable)\s*(?P<oper_status>up|down)",
         re.MULTILINE,
     )
     rx_vlan = re.compile(
@@ -40,7 +40,7 @@ class Script(BaseScript):
     )
     rx_descr = re.compile(r"^\s*(?P<port>\d+)\s*(?P<descr>.+)\n", re.MULTILINE)
     rx_ip_iface = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+" r"(?P<vlan_id>\d+)", re.MULTILINE
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+(?P<vlan_id>\d+)", re.MULTILINE
     )
 
     def execute_cli(self):

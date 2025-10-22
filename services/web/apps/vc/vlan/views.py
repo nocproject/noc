@@ -102,7 +102,7 @@ class VLANApplication(ExtDocApplication):
     def bulk_field_prefixes(self, data):
         if not data:
             return data
-        l2_domains = tuple(set(d["l2_domain"] for d in data if "l2_domain" in d))
+        l2_domains = tuple({d["l2_domain"] for d in data if "l2_domain" in d})
         if not l2_domains:
             return data
         objects = ManagedObject.get_by_l2_domains(l2_domains).values_list("id", flat=True)

@@ -263,7 +263,7 @@ class ConnectionType(Document):
         :param protocols:
         :return:
         """
-        return set(m.scope for m in self.matchers if m.protocol in protocols)
+        return {m.scope for m in self.matchers if m.protocol in protocols}
 
     def is_matched_scope(self, scope, protocols):
         """

@@ -243,7 +243,7 @@ class ObjectDiagnosticConfig(Document):
         First - diagnostic with checks only
         Second - Diagnostic with Dependency
         """
-        deferred = list()
+        deferred = []
         for odc in cls.get_active_diagnostics():
             if not odc.is_allowed(labels=getattr(object, "effective_labels", [])):
                 continue

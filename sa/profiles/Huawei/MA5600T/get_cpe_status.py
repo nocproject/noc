@@ -60,7 +60,7 @@ class Script(BaseScript):
                         # summary parts
                         continue
                     header = header.splitlines()
-                    if any([h.startswith(" " * 15) for h in header]):
+                    if any(h.startswith(" " * 15) for h in header):
                         self.fix_cpe_header(header)
                     if not header:
                         continue

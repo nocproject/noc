@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Catalog Number\.+\s+(?P<platform>\S+).+?" r"^Software Version\.+\s+(?P<version>\S+)",
+        r"^Catalog Number\.+\s+(?P<platform>\S+).+?^Software Version\.+\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 

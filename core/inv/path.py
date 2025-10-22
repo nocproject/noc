@@ -89,7 +89,7 @@ def find_path(
     if not oc:
         return None
     # Process starting connection
-    tp = set(ProtocolVariant.get_by_code(p) for p in target_protocols)
+    tp = {ProtocolVariant.get_by_code(p) for p in target_protocols}
     wave: Set[Object] = set()  # Search wave
     prev: Dict[PathItem, PathItem] = {}
     p0 = PathItem(obj=obj, connection=connection)

@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_version = re.compile(
-        r"Product\s+(?P<platform>\S+).+" r"Version\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL
+        r"Product\s+(?P<platform>\S+).+Version\s+(?P<version>\S+)", re.MULTILINE | re.DOTALL
     )
 
     def execute(self):

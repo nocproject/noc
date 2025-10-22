@@ -38,7 +38,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_fwt = re.compile(
-        r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*" r"(?P<fwt>\S+)\s*\n",
+        r"(?:Firmware Type|System [Ff]irmware [Vv]ersion)\s+:\s*(?P<fwt>\S+)\s*\n",
         re.MULTILINE | re.DOTALL,
     )
     rx_ser = re.compile(

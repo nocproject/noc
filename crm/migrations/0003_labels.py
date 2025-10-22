@@ -62,7 +62,7 @@ class Migration(BaseMigration):
                 bulk += [
                     UpdateOne(
                         {"_id": current_labels[label]},
-                        {"$set": {setting: True for setting in labels[label]}},
+                        {"$set": dict.fromkeys(labels[label], True)},
                     )
                 ]
             else:

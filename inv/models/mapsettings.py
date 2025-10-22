@@ -333,6 +333,6 @@ class MapSettings(Document):
             "width": settings.width or 0.0,
             "height": settings.height or 0.0,
             "caps": list(topology.caps),
-            "nodes": [x for x in topology.iter_nodes()],
-            "links": [ll for ll in topology.iter_edges()],
+            "nodes": list(topology.iter_nodes()),
+            "links": list(topology.iter_edges()),
         }

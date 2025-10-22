@@ -285,7 +285,7 @@ class MetricsCollectorService(FastAPIService):
                 self.mappings[i.collector, a].append(i)
         # Reorder mappings according the preference
         for k in affected:
-            self.mappings[k] = list(sorted(self.mappings[k], key=operator.attrgetter("preference")))
+            self.mappings[k] = sorted(self.mappings[k], key=operator.attrgetter("preference"))
 
     def update_data(self, data: Dict[str, Any]) -> None:
         """
@@ -303,11 +303,9 @@ class MetricsCollectorService(FastAPIService):
             return
         affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
         for k in affected:
-            self.mappings[k] = list(
-                sorted(
-                    (i for i in self.mappings[k] if i.id != mt_id),
-                    key=operator.attrgetter("preference"),
-                )
+            self.mappings[k] = sorted(
+                (i for i in self.mappings[k] if i.id != mt_id),
+                key=operator.attrgetter("preference"),
             )
             if not self.mappings[k]:
                 del self.mappings[k]

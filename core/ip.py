@@ -198,11 +198,11 @@ class IP(object):
             return list(s_first.iter_address(until=s_last))
         # Left only addresses remaining in prefix and convert them to
         # IP instances
-        addresses = set(
+        addresses = {
             a
             for a in [IP.prefix(a) if isinstance(a, str) else a for a in addresses]
             if self.contains(a)
-        )
+        }
         addresses = sorted(addresses)
         # Fill the spot
         spot = []

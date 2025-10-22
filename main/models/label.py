@@ -742,7 +742,7 @@ class Label(Document):
         :return:
         """
         r = self.get_match_regex_rules()
-        for model_id in set(mid for mid, _ in r):
+        for model_id in {mid for mid, _ in r}:
             # Skipping interface for poor performance for $pull operation
             # For 60 second over 12 million
             if model_id != "inv.Interface":
@@ -867,7 +867,7 @@ class Label(Document):
                 el = Label.build_effective_labels(instance, sender)
                 # Build and clean up effective labels. Filter can_set_labels
                 if not instance.effective_labels or el != set(instance.effective_labels):
-                    instance.effective_labels = list(sorted(el))
+                    instance.effective_labels = sorted(el)
             if instance._has_lazy_labels and instance.name != instance._last_name:
                 for label in Label.objects.filter(
                     name=re.compile(f"noc::.+::{instance._last_name}::[{''.join(MATCH_OPS)}]")

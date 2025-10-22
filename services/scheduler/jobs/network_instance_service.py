@@ -87,14 +87,13 @@ class NetworkInstanceDiscoveryJob(PeriodicJob):
                 for r in refs:
                     # Exclude duplicate
                     mac_iface_map.pop(r, None)
-        asset_services = [
-            svc
-            for svc in ServiceInstance.objects.filter(
+        asset_services = list(
+            ServiceInstance.objects.filter(
                 type=InstanceType.ASSET,
                 service__nin=list(processed),
                 asset_refs__exists=True,
             ).scalar("service")
-        ]
+        )
         # Removed All resources with Manual... ?
         # TTL last_seen/Move MAC
         for si in ServiceInstance.objects.filter(

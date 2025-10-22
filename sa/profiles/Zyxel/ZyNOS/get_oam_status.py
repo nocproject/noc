@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetOAMStatus
 
     rx_line = re.compile(
-        r"^(?P<interface>\S+)\s+\S+\s+(?P<mac>[0-9a-f:]+)\s+\S+\s+\S+\s*" r"(?P<caps>[RLU\s]*)$",
+        r"^(?P<interface>\S+)\s+\S+\s+(?P<mac>[0-9a-f:]+)\s+\S+\s+\S+\s*(?P<caps>[RLU\s]*)$",
         re.MULTILINE,
     )
 

@@ -148,12 +148,13 @@ class SegmentTopology(TopologyBase):
         :return:
         """
         s = next(
-            reversed(
-                sorted(
+            sorted(
+                (
                     (IP.prefix(self.G.nodes[i].get("address")), i)
                     for i in self.G.nodes
                     if self.G.nodes[i].get("role") == "segment"
-                )
+                ),
+                reverse=True,
             )
         )
         return [s[1]]
@@ -188,17 +189,15 @@ class SegmentTopology(TopologyBase):
         # Bulk fetch all managed objects
         segment_mos: Set[int] = set(self.segment.managed_objects.values_list("id", flat=True))
         all_mos: List[int] = list(
-            set(
-                i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
-            )
+            {i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i}
             | segment_mos
         )
         mos: Dict[int, "ManagedObject"] = {
             mo.id: mo for mo in ManagedObject.objects.filter(id__in=all_mos)
         }
-        self.segment_objects: Set[int] = set(
+        self.segment_objects: Set[int] = {
             mo_id for mo_id in all_mos if mos[mo_id].segment.id == self.segment.id
-        )
+        }
         for mo in mos.values():
             if mo.state.is_wiping:
                 continue
@@ -253,9 +252,9 @@ class SegmentTopology(TopologyBase):
             if self.G.nodes[o]["type"] == "cloud"
         }
         # All objects including neighbors
-        all_objects: Set[str] = set(
+        all_objects: Set[str] = {
             o for o in self.G.nodes if self.G.nodes[o]["type"] == "managedobject"
-        )
+        }
         # Get objects uplinks
         obj_uplinks: Dict[int, List[int]] = {}
         obj_downlinks: Dict[int, Set[int]] = defaultdict(set)
@@ -298,7 +297,7 @@ class SegmentTopology(TopologyBase):
             # Not including object itself
             if mo in neighbors:
                 neighbors.remove(mo)
-            rca_neighbors = list(sorted(neighbors))
+            rca_neighbors = sorted(neighbors)
             # Recalculated result
             yield ObjectUplinks(
                 object_id=mo,

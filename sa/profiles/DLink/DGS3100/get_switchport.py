@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+" r"(?P<rule>\S+)\s+(?P<type>\S+)\s*", re.IGNORECASE
+        r"^\s*(?P<vlan>\d+)\s+(?P<name>.+?)\s+(?P<rule>\S+)\s+(?P<type>\S+)\s*", re.IGNORECASE
     )
     rx_description = re.compile(
         r"^(?P<interface>(e|g|t)\S+)\s+((?P<description>\S+)|)$", re.MULTILINE

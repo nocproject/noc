@@ -40,7 +40,7 @@ class MACCheck(DiscoveryCheck):
         if_mac = defaultdict(set)  # interface -> [macs]
         # Collect and process MACs
         mac_direct_downlink: DefaultDict[str, List[MAC]] = defaultdict(list)
-        mac_downlink_policy: Tuple[str, ...] = tuple()
+        mac_downlink_policy: Tuple[str, ...] = ()
         if self.is_box and self.object.object_profile.enable_box_discovery_xmac:
             mac_downlink_policy = self.XMAC_POLICIES
         result = self.object.scripts.get_mac_address_table()
@@ -118,7 +118,7 @@ class MACCheck(DiscoveryCheck):
         # Bind resolved MACs to interfaces
         seen_objects = defaultdict(set)  # interface -> [ManagedObject]
         for iface in if_mac:
-            rr = set(mmap[m] for m in if_mac[iface] if m in mmap)
+            rr = {mmap[m] for m in if_mac[iface] if m in mmap}
             if rr:
                 seen_objects[iface] = rr
         # Update artifact

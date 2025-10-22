@@ -64,12 +64,11 @@ class DiscoveryIDCachePoisonDS(BaseDataSource):
                 # Empty DiscoveryID
                 continue
             reason, on_blacklist = "Other", False
-            data = [
-                mo
-                for mo in ManagedObject.objects.filter(id__in=row["_id"]).values(
+            data = list(
+                ManagedObject.objects.filter(id__in=row["_id"]).values(
                     "id", "name", "address", "profile", "pool", "is_managed"
                 )
-            ]
+            )
             if len(data) > 0:
                 if data[0]["address"] == data[1]["address"]:
                     reason = _("Duplicate MO")

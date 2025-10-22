@@ -22,13 +22,13 @@ logger = getLogger(__name__)
 def get_datastreams(instance, changed_fields=None) -> Optional[List[Tuple[str, str]]]:
     if not hasattr(instance, "iter_changed_datastream"):
         return None
-    return [item for item in instance.iter_changed_datastream(changed_fields=changed_fields or {})]
+    return list(instance.iter_changed_datastream(changed_fields=changed_fields or {}))
 
 
 def get_domains(instance, changed_fields=None) -> Optional[List[Tuple[str, str]]]:
     if not hasattr(instance, "iter_changed_domains"):
         return None
-    return [item for item in instance.iter_changed_domains(changed_fields=changed_fields or {})]
+    return list(instance.iter_changed_domains(changed_fields=changed_fields or {}))
 
 
 def change(model=None, *, audit=True):

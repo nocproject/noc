@@ -18,7 +18,7 @@ from noc.main.models.label import Label
 @pytest.mark.parametrize(
     "iter_labels,expected",
     [
-        (tuple(), []),
+        ((), []),
         (([],), []),
         (([], []), []),
         ((["x"],), ["x"]),

@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: NOC
+message: >-
+  If you use this software as part of a publication and wish to cite
+  it, please use the metadata from this file.
+type: software
+authors:
+  - name: Gufo Labs
+    website: https://gufolabs.com/
+  - name: Project's Contributors
+    website: https://github.com/gufolabs/noc
+license: Modified BSD-3-Clause

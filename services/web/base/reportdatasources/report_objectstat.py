@@ -117,11 +117,11 @@ class CapabilitiesIsolator(IsolatorClass):
         if index == "1":
             return set(d)
         if index == "2":
-            return set(dd for dd in d if d[dd] == 1)
+            return {dd for dd in d if d[dd] == 1}
         if index == "3":
-            return set(dd for dd in d if d[dd] == 2)
+            return {dd for dd in d if d[dd] == 2}
         if index == "4":
-            return set(dd for dd in d if d[dd] >= 3)
+            return {dd for dd in d if d[dd] >= 3}
 
     def _4_has(self, index):
         # Set has physical ifaces.
@@ -312,12 +312,12 @@ class StatusIsolator(IsolatorClass):
                 ]
             }
 
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if inverse:
             return set(ManagedObject.objects.filter().values_list("id", flat=True)) - c
         return c
@@ -330,12 +330,12 @@ class ProblemIsolator(IsolatorClass):
     def _0_isp(self, index):
         # Common Problem
         match = {"problems": {"$exists": True}}
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if index == "0":
             return self.common_filter - c
         return c
@@ -353,12 +353,12 @@ class ProblemIsolator(IsolatorClass):
                 {"problems.profile.": "Cannot fetch snmp data, check device for SNMP access"},
             ]
         }
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if index == "0":
             return self.common_filter - c
         return c
@@ -386,12 +386,12 @@ class ProblemIsolator(IsolatorClass):
                 },
             ]
         }
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if index == "0":
             return self.common_filter - c
         return c
@@ -410,12 +410,12 @@ class ProblemIsolator(IsolatorClass):
                 {"problems.profile.": "Cannot detect profile"},
             ]
         }
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if index == "0":
             return self.common_filter - c
         return c
@@ -423,12 +423,12 @@ class ProblemIsolator(IsolatorClass):
     def _4_isp(self, index):
         # Undefined profiles
         match = {"problems.profile.": {"$regex": r"Not find profile for OID"}}
-        c = set(
+        c = {
             int(r["_id"].rsplit("-")[-1])
             for r in get_db()["noc.joblog"]
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find(match)
-        )
+        }
         if index == "0":
             return self.common_filter - c
         return c

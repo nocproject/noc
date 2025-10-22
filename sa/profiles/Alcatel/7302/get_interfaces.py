@@ -364,7 +364,7 @@ class Script(BaseScript):
             oid, ifindex, vpi, vci = oid.rsplit(".", 3)
             ifindex, vpi, vci = int(ifindex), int(vpi), int(vci)
             port_id = self.get_port_id(ifindex)
-            name = "%d/%d/%d/%d:%d:%d" % tuple([*list(port_id), vpi, vci])
+            name = "%d/%d/%d/%d:%d:%d" % (*list(port_id), vpi, vci)
             sub = {
                 "name": name,
                 "vci": vci,

@@ -37,7 +37,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ip = re.compile(
-        r"^\s+IP Address\s*.+ (?P<ip>\S+)\s*\n" r"^\s+Net Mask\s*.+ (?P<mask>\S+)\n", re.MULTILINE
+        r"^\s+IP Address\s*.+ (?P<ip>\S+)\s*\n^\s+Net Mask\s*.+ (?P<mask>\S+)\n", re.MULTILINE
     )
 
     def execute_cli(self):

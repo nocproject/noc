@@ -34,7 +34,7 @@ class _VarVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def get_vars(self) -> List[str]:
-        return list(sorted(self.vars))
+        return sorted(self.vars)
 
 
 def get_vars(expr: str) -> List[str]:

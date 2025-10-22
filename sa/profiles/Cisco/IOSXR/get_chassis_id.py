@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_range = re.compile(
-        r"Base MAC Address\s*:\s*(?P<mac>\S+)\s+" r"MAC Address block size\s*:\s*(?P<count>\d+)",
+        r"Base MAC Address\s*:\s*(?P<mac>\S+)\s+MAC Address block size\s*:\s*(?P<count>\d+)",
         re.DOTALL | re.IGNORECASE,
     )
 

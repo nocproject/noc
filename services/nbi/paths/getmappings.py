@@ -162,7 +162,7 @@ class GetMappingsAPI(NBIAPI):
                 qs = model.objects.filter(remote_system=rs.id, remote_id__in=remote_ids)
             result += [format_obj(o) for o in qs]
         # Query local objects
-        seen = set(o["id"] for o in result)
+        seen = {o["id"] for o in result}
         # Skip already collected objects
         local_ids = local_ids or []
         local_ids = [o for o in local_ids if o not in seen]
@@ -175,7 +175,7 @@ class GetMappingsAPI(NBIAPI):
         # 404 if no objects found
         if not result:
             raise HTTPException(404, self.error_msg("Not found"))
-        return list(sorted(result, key=operator.itemgetter("id")))
+        return sorted(result, key=operator.itemgetter("id"))
 
 
 # Install router

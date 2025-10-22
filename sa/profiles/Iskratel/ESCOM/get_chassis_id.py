@@ -21,7 +21,7 @@ class Script(BaseScript):
     # Base ethernet MAC Address - ESCOM L
     rx_mac = re.compile(r"^(System|Base ethernet) MAC Address:\s+(?P<mac>\S+)", re.MULTILINE)
     rx_mac_oob = re.compile(
-        r"^System MAC Address:\s+(?P<mac>\S+)\s*\n" r"^OOB MAC Address:\s+(?P<oob>\S+)",
+        r"^System MAC Address:\s+(?P<mac>\S+)\s*\n^OOB MAC Address:\s+(?P<oob>\S+)",
         re.MULTILINE,
     )
 

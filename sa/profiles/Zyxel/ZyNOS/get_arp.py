@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Zyxel.ZyNOS.get_arp"
     interface = IGetARP
     rx_arp = re.compile(
-        r"^\s+\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+" r"(?P<interface>\d+).*$", re.MULTILINE
+        r"^\s+\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>\d+).*$", re.MULTILINE
     )
 
     def execute(self):

@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_ipif = re.compile(
-        r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\n" r"Subnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
+        r"IP Address\s+:\s+(?P<ip_address>\S+)\s*\nSubnet Mask\s+:\s+(?P<ip_subnet>\S+)\s*\n",
         re.IGNORECASE | re.MULTILINE | re.DOTALL,
     )
 

@@ -25,7 +25,7 @@ class Script(BaseScript):
     def execute_cli(self, interface=None, vlan=None, mac=None):
         r = []
         v = self.scripts.get_vlans()
-        vlans = dict()
+        vlans = {}
         for i in v:
             vlans[i["name"]] = i["vlan_id"]
         c = "show forward-entry"

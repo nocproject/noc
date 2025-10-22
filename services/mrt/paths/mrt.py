@@ -86,7 +86,7 @@ async def _iterdata(
     service = get_service()
     metrics["mrt_requests"] += 1
     # Object ids
-    ids = set(int(d.id) for d in req)
+    ids = {int(d.id) for d in req}
     logger.info(
         "Run task on parralels: %d (Max concurrent %d), for User: %s",
         len(req),

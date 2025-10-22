@@ -17,7 +17,7 @@ class Script(BaseScript):
     cache = True
     interface = IGetVersion
     rx_ver = re.compile(
-        r"^Model Name \.+ (?P<platform>AT[/\w-]+).+^Application \.+ " r"ATS62 v(?P<version>[\d.]+)",
+        r"^Model Name \.+ (?P<platform>AT[/\w-]+).+^Application \.+ ATS62 v(?P<version>[\d.]+)",
         re.MULTILINE | re.DOTALL,
     )
 

@@ -117,7 +117,7 @@ class ConduitsPlugin(InvPlugin):
         if not o.point:
             return []
         layers = list(map.get_conduits_layers())
-        connected = set(str(ro.id) for _, ro, _ in o.get_genderless_connections("ducts"))
+        connected = {str(ro.id) for _, ro, _ in o.get_genderless_connections("ducts")}
         if self.is_single_connection(o) and connected:
             # Connection limits exceed
             return []

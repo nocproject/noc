@@ -20,7 +20,7 @@ class Migration(BaseMigration):
         l_coll = self.mongo_db["labels"]
         bulk = []
         setting_map = {v: k for k, v in LABEL_MODELS.items()}
-        unset_s = {k: 1 for k in LABEL_MODELS.values()}
+        unset_s = dict.fromkeys(LABEL_MODELS.values(), 1)
         for ll in l_coll.find():
             allow_models = []
             for ff in setting_map:

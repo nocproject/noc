@@ -13,7 +13,7 @@ from noc.core.script.base import BaseScript
 from noc.sa.interfaces.isyncprefixlists import ISyncPrefixLists
 
 rx_pl = re.compile(
-    r"^set policy-options policy-statement \S+ term pass from route-filter " r"(\S+) (\S+)$"
+    r"^set policy-options policy-statement \S+ term pass from route-filter (\S+) (\S+)$"
 )
 
 

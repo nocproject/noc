@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_line = re.compile(
-        r"\w*=+\s+" r"(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE
+        r"\w*=+\s+(GigabitEthernet|TenGigabitEthernet|AggregatePort)", re.MULTILINE
     )
     rx_line_vlan = re.compile(r"\w*=+\s+VLAN", re.MULTILINE)
     rx_ifindex = re.compile(r"Index\(dec\):(?P<ifindex>\d+) \(hex\):\d+")

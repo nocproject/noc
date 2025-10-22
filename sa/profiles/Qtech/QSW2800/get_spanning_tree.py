@@ -29,7 +29,7 @@ class Script(BaseScript):
     )
     rx_edge = re.compile(r"^Edge port\s+: (?P<edge>\S+)$", re.MULTILINE)
     rx_p2p = re.compile(r"^Link type\s+: (?P<p2p>.+)$", re.MULTILINE)
-    rx_mst_conf = re.compile(r"Name\s+(?P<name>\S+)\n" r"Revision\s+(?P<rev>\d+)")
+    rx_mst_conf = re.compile(r"Name\s+(?P<name>\S+)\nRevision\s+(?P<rev>\d+)")
 
     def execute(self):
         def q_port(s):

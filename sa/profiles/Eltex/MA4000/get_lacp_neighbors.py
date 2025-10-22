@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Eltex.MA4000.get_lacp_neighbors"
     interface = IGetLACPNeighbors
 
-    rx_cg = re.compile(r"^Channel group \d+\s*\n" r"^\s*Mode: LACP\s*\n", re.MULTILINE)
+    rx_cg = re.compile(r"^Channel group \d+\s*\n^\s*Mode: LACP\s*\n", re.MULTILINE)
     rx_members = re.compile(
         r"^\s*Channel group.*\n"
         r"^\s*Actor System\s+Partner System\s*\n"

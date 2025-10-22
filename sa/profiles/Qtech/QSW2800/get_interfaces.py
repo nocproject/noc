@@ -47,7 +47,7 @@ class Script(BaseScript):
     rx_oam = re.compile(r"Doesn\'t (support efmoam|enable EFMOAM!)")
     rx_vid = re.compile(r"(?P<vid>\d+)")
     rx_interface_lag = re.compile(
-        r"^\s+(?P<interface>\S+) is LAG member port, " r"LAG port:(?P<pc>\S+)", re.MULTILINE
+        r"^\s+(?P<interface>\S+) is LAG member port, LAG port:(?P<pc>\S+)", re.MULTILINE
     )
     MAX_REPETITIONS = 10
     MAX_GETNEXT_RETIRES = 1

@@ -252,7 +252,7 @@ class SLAProbe(Document):
             "composed_metrics": [],
             "sharding_key": sla_probe.managed_object.bi_id if sla_probe.managed_object else None,
             "meta": sla_probe.get_message_context(),
-            "rules": [ma for ma in MetricRule.iter_rules_actions(sla_probe.effective_labels)],
+            "rules": list(MetricRule.iter_rules_actions(sla_probe.effective_labels)),
         }
 
     @property

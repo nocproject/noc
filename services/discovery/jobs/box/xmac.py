@@ -133,7 +133,7 @@ class XMACCheck(TopologyDiscoveryCheck):
                 return None
             levels[level] = ro
         # Arrange objects
-        chain = list(sorted(chain, key=lambda x: x.object_profile.level, reverse=True))
+        chain = sorted(chain, key=lambda x: x.object_profile.level, reverse=True)
         # Check uplinks/downlinks
         ports = self.find_direct_uplinks_downlinks(chain)
         ports[self.object] = ([], [iface])

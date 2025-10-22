@@ -185,7 +185,7 @@ class MIB(Document):
                     raise OIDCollision(oid, oid_name, o.name, "Equal preferences")
                 if mib_preference < o_preference:
                     # Replace existing
-                    o.aliases = list(sorted([*o.aliases, o.name]))
+                    o.aliases = sorted([*o.aliases, o.name])
                     o.name = oid_name
                     o.mib = self.id
                     if description:

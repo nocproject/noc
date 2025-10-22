@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_result1 = re.compile(
-        r"^\s*sent=(?P<sent>\d+) received=(?P<received>\d+) " r"packet-loss=\d+%", re.MULTILINE
+        r"^\s*sent=(?P<sent>\d+) received=(?P<received>\d+) packet-loss=\d+%", re.MULTILINE
     )
 
     def execute(self, address, count=None, source_address=None, size=None, df=None):

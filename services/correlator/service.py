@@ -875,7 +875,7 @@ class CorrelatorService(FastAPIService):
                 return de
         elif rule.combo_condition == "all":
             # All present
-            if not any([c for c in rule.combo_event_classes if c not in fe]):
+            if not any(c for c in rule.combo_event_classes if c not in fe):
                 return de
         elif rule.combo_condition == "any":
             # Any found
@@ -1632,15 +1632,13 @@ class CorrelatorService(FastAPIService):
                 return False
             # Get possible candidates
             t0 = ca.timestamp
-            candidates = list(
-                sorted(
-                    (
-                        neighbor_alarms[mo]
-                        for mo in dlm_candidates
-                        if (t0 - neighbor_alarms[mo].timestamp).total_seconds() <= dlm_neighbors[mo]
-                    ),
-                    key=operator.attrgetter("timestamp"),
-                )
+            candidates = sorted(
+                (
+                    neighbor_alarms[mo]
+                    for mo in dlm_candidates
+                    if (t0 - neighbor_alarms[mo].timestamp).total_seconds() <= dlm_neighbors[mo]
+                ),
+                key=operator.attrgetter("timestamp"),
             )
             if not candidates:
                 return False

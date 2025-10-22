@@ -197,7 +197,7 @@ class ObjectCard(BaseCard):
 
         # Object Metrics
         # object_profiles = set(mos.values_list("object_profile", flat=True))
-        object_profiles = set(mo.object_profile.id for mo in mos)
+        object_profiles = {mo.object_profile.id for mo in mos}
         mmm = set()
         op_fields_map = defaultdict(list)
         for op in ManagedObjectProfile.objects.filter(id__in=object_profiles):

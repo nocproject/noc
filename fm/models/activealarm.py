@@ -1535,7 +1535,7 @@ class ActiveAlarm(Document):
                 return {"resource_path": {"$elemMatch": {"c": code, "p": items[0]}}}
             return {"resource_path": {"$elemMatch": {"c": code, "p": {"$in": items}}}}
 
-        r = {x: False for x in iter}
+        r = dict.fromkeys(iter, False)
         if not r:
             return r
         by_codes: DefaultDict[str, List[str]] = defaultdict(list)

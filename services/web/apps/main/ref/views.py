@@ -80,7 +80,7 @@ class RefAppplication(ExtApplication):
         Profile names
         :return: (script name, script name)
         """
-        s = set(x.split(".")[-1] for x in script_loader.iter_scripts())
+        s = {x.split(".")[-1] for x in script_loader.iter_scripts()}
         return [{"id": n, "label": n} for n in sorted(s)]
 
     def build_stencil(self):
@@ -88,11 +88,9 @@ class RefAppplication(ExtApplication):
         Stencils
         :return:
         """
-        return list(
-            sorted(
-                ({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
-                key=lambda x: x["label"],
-            )
+        return sorted(
+            ({"id": s[0], "label": s[1]} for s in stencil_registry.choices),
+            key=lambda x: x["label"],
         )
 
     def build_model(self):
@@ -100,11 +98,9 @@ class RefAppplication(ExtApplication):
         Model Names
         :return:
         """
-        return list(
-            sorted(
-                ({"id": m._meta.db_table, "label": m._meta.db_table} for m in apps.get_models()),
-                key=lambda x: x["label"],
-            )
+        return sorted(
+            ({"id": m._meta.db_table, "label": m._meta.db_table} for m in apps.get_models()),
+            key=lambda x: x["label"],
         )
 
     def build_modcol(self):
@@ -131,7 +127,7 @@ class RefAppplication(ExtApplication):
             for n, c in _document_registry.items()
             if c._get_collection_name()
         ]
-        return list(sorted(r, key=lambda x: x["label"]))
+        return sorted(r, key=lambda x: x["label"])
 
     def build_ulanguage(self):
         """
@@ -163,22 +159,18 @@ class RefAppplication(ExtApplication):
         return r
 
     def build_unotificationmethod(self):
-        return list(
-            sorted(
-                ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
-                key=lambda x: x["label"],
-            )
+        return sorted(
+            ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
+            key=lambda x: x["label"],
         )
 
     def build_windowfunction(self):
         return [{"id": x[0], "label": x[1]} for x in sorted(wf_choices, key=operator.itemgetter(1))]
 
     def _build_report(self):
-        return list(
-            sorted(
-                ({"id": r_id, "label": r.title} for r_id, r in site.iter_predefined_reports()),
-                key=operator.itemgetter("label"),
-            )
+        return sorted(
+            ({"id": r_id, "label": r.title} for r_id, r in site.iter_predefined_reports()),
+            key=operator.itemgetter("label"),
         )
 
     def build_modelid(self):
@@ -194,21 +186,16 @@ class RefAppplication(ExtApplication):
         return [{"id": x.value, "label": x.name} for x in ShapeOverlayForm]
 
     def build_messagetype(self):
-        return [
-            {"id": x.value, "label": x.name}
-            for x in sorted([m for m in MessageType], key=lambda x: x.name)
-        ]
+        return [{"id": x.value, "label": x.name} for x in sorted(MessageType, key=lambda x: x.name)]
 
     def build_messageheader(self):
         return [{"id": x, "label": x} for x in sorted(MESSAGE_HEADERS)]
 
     def build_check(self):
         """Checkers names"""
-        return list(
-            sorted(
-                ({"id": s[0], "label": s[1]} for s in checker_loader.choices()),
-                key=lambda x: x["label"],
-            )
+        return sorted(
+            ({"id": s[0], "label": s[1]} for s in checker_loader.choices()),
+            key=lambda x: x["label"],
         )
 
     def build_topologygen(self):
@@ -298,7 +285,7 @@ class RefAppplication(ExtApplication):
             ql = query.lower()
             data = [x for x in self.refs[ref] if ql in x["label"].lower()]
         else:
-            data = [x for x in self.refs[ref]]
+            data = list(self.refs[ref])
         total = len(data)
         if start is not None and limit is not None:
             data = data[int(start) : int(start) + int(limit)]

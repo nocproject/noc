@@ -35,7 +35,7 @@ class Script(BaseScript):
     }
 
     rx_slot = re.compile(
-        r"^\s*Pcb\s+Version\s*:\s+(?P<part_no>\S+)\s+" r"VER (?P<revision>\S+)\s*\n",
+        r"^\s*Pcb\s+Version\s*:\s+(?P<part_no>\S+)\s+VER (?P<revision>\S+)\s*\n",
         re.MULTILINE | re.IGNORECASE,
     )
     rx_sub = re.compile(

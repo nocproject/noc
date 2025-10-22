@@ -56,9 +56,7 @@ class DictionaryMeta(object):
         Fill `ordered_fields`
         :return:
         """
-        self.ordered_fields = list(
-            sorted(self.fields.values(), key=operator.attrgetter("field_number"))
-        )
+        self.ordered_fields = sorted(self.fields.values(), key=operator.attrgetter("field_number"))
 
 
 class Dictionary(object, metaclass=DictionaryBase):

@@ -16,7 +16,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^\s*NI CARD TYPE\s+: (?P<platform>.+)\n" r"^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
+        r"^\s*NI CARD TYPE\s+: (?P<platform>.+)\n^\s*NI SW VERSION NAME\s+: (?P<version>.+)\n",
         re.MULTILINE,
     )
 

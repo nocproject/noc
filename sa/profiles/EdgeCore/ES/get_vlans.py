@@ -39,7 +39,7 @@ class Script(BaseScript):
         ):  # dot1qVlanStaticName
             o = oid.split(".")[-1]
             result += [{"vlan_id": int(o), "name": v.strip().rstrip(smart_text("\x00"))}]
-        return list(sorted(result, key=operator.itemgetter("vlan_id")))
+        return sorted(result, key=operator.itemgetter("vlan_id"))
 
     def execute_cli(self):
         r = []

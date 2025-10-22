@@ -335,14 +335,14 @@ class SAEAPI(JSONRPCAPI):
             }
         else:
             controller = None
-        return dict(
-            profile=Profile.get_by_id(profile).name,
-            pool_id=pool_id,
-            credentials=credentials,
-            capabilities=capabilities,
-            version=version,
-            controller=controller,
-        )
+        return {
+            "profile": Profile.get_by_id(profile).name,
+            "pool_id": pool_id,
+            "credentials": credentials,
+            "capabilities": capabilities,
+            "version": version,
+            "controller": controller,
+        }
 
 
 # Install endpoints
