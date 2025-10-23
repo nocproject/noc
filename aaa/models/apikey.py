@@ -1,16 +1,19 @@
 # ----------------------------------------------------------------------
 # APIKey model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
+import operator
+from threading import Lock
 from typing import Optional, Union
 
 # Third-party modules
 import bson
+import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -23,6 +26,8 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.acl import match
 from noc.core.model.decorator import on_delete_check
+
+id_lock = Lock()
 
 
 class APIAccess(EmbeddedDocument):
@@ -61,12 +66,19 @@ class APIKey(Document):
     # Address restrictions
     acl = ListField(EmbeddedDocumentField(APIAccessACL))
 
+    _api_key_cache = cachetools.TTLCache(maxsize=20, ttl=60)
+
     def __str__(self):
         return self.name
 
     @classmethod
     def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["APIKey"]:
         return APIKey.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_api_key_cache"), lock=lambda _: id_lock)
+    def get_by_api_key(cls, api_key: str) -> Optional["APIKey"]:
+        return APIKey.objects.filter(key=api_key).first()
 
     @classmethod
     def get_name_and_access(cls, key, ip=None):

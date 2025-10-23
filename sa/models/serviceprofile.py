@@ -470,6 +470,7 @@ class ServiceProfile(Document):
     labels = ListField(StringField())
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _code_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _alarm_rule_cache = cachetools.TTLCache(50, ttl=120)
 
     DEFAULT_PROFILE_NAME = "default"
@@ -482,6 +483,11 @@ class ServiceProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ServiceProfile"]:
         return ServiceProfile.objects.filter(id=oid).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_code_cache"), lock=lambda _: id_lock)
+    def get_by_code(cls, code: str) -> Optional["ServiceProfile"]:
+        return ServiceProfile.objects.filter(code=code).first()
 
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:
