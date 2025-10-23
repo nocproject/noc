@@ -282,7 +282,7 @@ class Command(BaseCommand):
         skip_fields = {"ts", "labels", "_units"}
         key_fields = set()
         for s in senders:
-            key_fields |= set(kf for kf in s.iter_unbound_inputs() if kf not in ("ts", "labels"))
+            key_fields |= {kf for kf in s.iter_unbound_inputs() if kf not in ("ts", "labels")}
         if f_output:
             f_output = open(f_output, "wb")
         for data in self.iter_metrics(f_input, metrics=list(probes), start=start, end=end):

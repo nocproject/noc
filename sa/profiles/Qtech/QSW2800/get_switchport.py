@@ -35,7 +35,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_qinq_port = re.compile(
-        r"^Interface (?P<interface>\S+):\n" r"\s+dot1q-tunnel is enable", re.MULTILINE
+        r"^Interface (?P<interface>\S+):\n\s+dot1q-tunnel is enable", re.MULTILINE
     )
 
     def execute_cli(self, **kwargs):

@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+" r"(?P<type>\S+)", re.MULTILINE
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+)\s+(?P<type>\S+)", re.MULTILINE
     )
 
     def execute_cli(self, interface=None, vlan=None, mac=None):

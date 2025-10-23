@@ -89,7 +89,7 @@ class MatchRule(EmbeddedDocument):
         if self.labels:
             r["labels"] = {"$all": list(self.labels)}
         if self.resource_groups:
-            r["service_groups"] = {"$all": [x for x in self.resource_groups]}
+            r["service_groups"] = {"$all": list(self.resource_groups)}
         if self.type:
             r["type"] = self.type
         # if self.name_patter:
@@ -204,12 +204,12 @@ class CPEProfile(Document):
         Get list of interface profile ids with status_discovery = True
         :return:
         """
-        return list(
+        return [
             x["_id"]
             for x in CPEProfile._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find({"cpe_status_discovery": {"$ne": "D"}}, {"_id": 1})
-        )
+        ]
 
     @classmethod
     def can_set_label(cls, label):

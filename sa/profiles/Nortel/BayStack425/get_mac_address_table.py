@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_dynamic = re.compile(
-        r"^(?P<mac1>\S+)\s+Port:\s+(?P<port1>\d+)\s*" r"((?P<mac2>\S+)\s+Port:\s+(?P<port2>\d+))*"
+        r"^(?P<mac1>\S+)\s+Port:\s+(?P<port1>\d+)\s*((?P<mac2>\S+)\s+Port:\s+(?P<port2>\d+))*"
     )
     rx_static = re.compile(r"^(?P<port>\d+)\s+(?P<mac>\S+)")
     rx_pvids = re.compile(r"^(?P<port>\S+)\s+(?P<vid>\d+)\s+")

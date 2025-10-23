@@ -81,7 +81,7 @@ class ReportLatestChangesApplication(SimpleReport):
         # Resolve names
         result = []
         if data:
-            seen_ids = list(set(d["_id"] for d in data))
+            seen_ids = list({d["_id"] for d in data})
             n_map = {}
             if repo == "config":
                 n_map = {

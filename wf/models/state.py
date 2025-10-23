@@ -180,11 +180,11 @@ class State(Document):
                 key: val.json_data() for key, val in self.interaction_settings.items()
             }
         if self.on_enter_handlers:
-            r["on_enter_handlers"] = [h for h in self.on_enter_handlers]
+            r["on_enter_handlers"] = list(self.on_enter_handlers)
         if self.job_handler:
             r["job_handler"] = self.job_handler
         if self.on_leave_handlers:
-            r["on_leave_handlers"] = [h for h in self.on_leave_handlers]
+            r["on_leave_handlers"] = list(self.on_leave_handlers)
         if self.labels:
             r["labels"] = list(self.labels)
         return r

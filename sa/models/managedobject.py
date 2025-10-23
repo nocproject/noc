@@ -2549,12 +2549,11 @@ class ManagedObject(NOCModel):
                 "id": str(self.profile.id),
                 "name": self.administrative_domain.name,
             },
-            "labels": [
-                ll
-                for ll in Label.objects.filter(
-                    name__in=self.labels, expose_datastream=True
-                ).values_list("name")
-            ],
+            "labels": list(
+                Label.objects.filter(name__in=self.labels, expose_datastream=True).values_list(
+                    "name"
+                )
+            ),
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
             "remote_mappings": [],
@@ -2703,9 +2702,7 @@ class ManagedObject(NOCModel):
                 {
                     "key_labels": [f"noc::interface::{iface['name']}"],
                     "labels": [],
-                    "rules": [
-                        ma for ma in MetricRule.iter_rules_actions(iface["effective_labels"])
-                    ],
+                    "rules": list(MetricRule.iter_rules_actions(iface["effective_labels"])),
                     "composed_metrics": [
                         mc.metric_type.field_name
                         for mc in ip.metrics
@@ -2729,7 +2726,7 @@ class ManagedObject(NOCModel):
                 for mc in s_metrics.values()
                 if bool(mc.metric_type.compose_expression)
             ],
-            "rules": [ma for ma in MetricRule.iter_rules_actions(mo.effective_labels)],
+            "rules": list(MetricRule.iter_rules_actions(mo.effective_labels)),
             "items": items,
             "sharding_key": mo.bi_id,
             "meta": mo.get_message_context(),
@@ -3368,7 +3365,7 @@ class InteractionHub(object):
 
     @staticmethod
     def load_supported_interactions():
-        return set(i for i in Interaction if "sa.ManagedObject" in i.config.models)
+        return {i for i in Interaction if "sa.ManagedObject" in i.config.models}
 
     def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional[Any]:
         if name not in self.__supported_interactions:

@@ -146,9 +146,7 @@ class IPAMApplication(ExtApplication):
         can_add_address = can_change
         # Bookmarks
         has_bookmark = prefix.has_bookmark(user)
-        bookmarks = set(
-            b.prefix for b in PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=prefix.afi)
-        )
+        bookmarks = {b.prefix for b in PrefixBookmark.user_bookmarks(user, vrf=vrf, afi=prefix.afi)}
         l_prefixes = sorted(
             (
                 [(IP.prefix(pp.prefix), pp, pp.prefix in bookmarks) for pp in prefixes]

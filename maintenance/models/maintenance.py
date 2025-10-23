@@ -280,7 +280,7 @@ def update_affected_objects(
 
     data = Maintenance.get_by_id(maintenance_id)
     # Calculate affected objects
-    affected: Set[int] = set(o.object.id for o in data.direct_objects if o.object)
+    affected: Set[int] = {o.object.id for o in data.direct_objects if o.object}
     for o in data.direct_segments:
         if o.segment:
             affected |= get_segment_objects(o.segment.id)

@@ -195,7 +195,7 @@ def main():
     for bucket in sorted(buckets):
         rel_path = bucket_path(bucket)
         nav[bucket] = rel_path
-        items = list(sorted(buckets[bucket], key=alnum_key))
+        items = sorted(buckets[bucket], key=alnum_key)
         out = BOOK / rel_path
         logging.debug("Rendering %s (%d items)", out, len(items))
         # with mkdocs_gen_files.open(out, "w") as fp:

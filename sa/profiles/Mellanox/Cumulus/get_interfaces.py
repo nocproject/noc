@@ -36,12 +36,10 @@ class Script(BaseScript):
     rx_ip = re.compile(r"^IP:\s+(?P<ip>[1-9:]\S+\d)\s*\n", re.MULTILINE)
     rx_vlan_id = re.compile(r"^\s+VLAN Id (?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_vlans = re.compile(
-        r"^All VLANs on L2 Port\s*\n" r"^--------------------\s*\n" r"^(?P<vlans>\d\S+)\s*\n",
+        r"^All VLANs on L2 Port\s*\n^--------------------\s*\n^(?P<vlans>\d\S+)\s*\n",
         re.MULTILINE,
     )
-    rx_untagged = re.compile(
-        r"^Untagged\s*\n" r"^--------\s*\n" r"^(?P<untagged>\d+)\s*\n", re.MULTILINE
-    )
+    rx_untagged = re.compile(r"^Untagged\s*\n^--------\s*\n^(?P<untagged>\d+)\s*\n", re.MULTILINE)
 
     INTERFACE_TYPES = {
         "Loopback": "loopback",

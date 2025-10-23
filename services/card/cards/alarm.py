@@ -76,7 +76,7 @@ class AlarmCard(BaseCard):
         }
         # Maintenance
         if self.object.managed_object:
-            m_id = [m for m in self.object.managed_object.affected_maintenances]
+            m_id = list(self.object.managed_object.affected_maintenances)
             mainteinance = Maintenance.objects.filter(
                 is_completed=False,
                 start__lte=datetime.datetime.now(),

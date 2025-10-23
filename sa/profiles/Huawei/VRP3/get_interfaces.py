@@ -22,7 +22,7 @@ class Script(BaseScript):
 
     rx_mac = re.compile(r"^\s*MAC address:\s+(?P<mac>\S+)")
     rx_ip = re.compile(
-        r"^\s*IP address\s*:\s+(?P<ip>\S+)\s*\n" r"^\s*Subnet mask\s*:\s+(?P<mask>\S+)\s*\n",
+        r"^\s*IP address\s*:\s+(?P<ip>\S+)\s*\n^\s*Subnet mask\s*:\s+(?P<mask>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_vlan = re.compile(r"^\s+Inband VLAN is\s+(?P<vlanid>\d+)")

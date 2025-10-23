@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "InfiNet.WANFlexX.get_arp"
     interface = IGetARP
     rx_arp = re.compile(
-        r"^(?P<ip>\S+)\s+at\s+(?P<mac>[0-9a-fA-F]+)\s+via\s+" r"(?P<interface>\S+)$", re.MULTILINE
+        r"^(?P<ip>\S+)\s+at\s+(?P<mac>[0-9a-fA-F]+)\s+via\s+(?P<interface>\S+)$", re.MULTILINE
     )
 
     def execute(self):

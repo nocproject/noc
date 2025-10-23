@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetIPv6Neighbor
 
     rx_line = re.compile(
-        r"^(?P<ip>[0-9a-fA-F:\.]+) via (?P<interface>\S+):\s+" r"(?P<mac>\S+)\s+(?P<state>\S+)\s*$"
+        r"^(?P<ip>[0-9a-fA-F:\.]+) via (?P<interface>\S+):\s+(?P<mac>\S+)\s+(?P<state>\S+)\s*$"
     )
 
     s_map = {

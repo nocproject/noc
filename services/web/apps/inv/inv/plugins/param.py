@@ -102,7 +102,7 @@ class ParamPlugin(InvPlugin):
         for p in o.get_effective_cfg_params():
             if not p.scopes:
                 continue
-            scopes |= set(s.code for s in p.scopes)
+            scopes |= {s.code for s in p.scopes}
         return [{"id": f"@{s}", "label": s} for s in scopes]
 
     # def api_get_schema(self, request, id, param=None, scope: Optional[str] = None):

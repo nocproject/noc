@@ -71,9 +71,7 @@ class ObjectGroupTopology(TopologyBase):
         }
         # Bulk fetch all managed objects
         all_mos: List[int] = list(
-            set(
-                i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
-            )
+            {i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i}
             | set(object_mos)
         )
         mos: Dict[int, "ManagedObject"] = {

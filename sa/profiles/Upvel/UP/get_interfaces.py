@@ -20,7 +20,7 @@ class Script(BaseScript):
 
     rx_stp = re.compile(r"^(?P<port>(?:Gi|2.5G|10G) \S+)\s+", re.MULTILINE)
     rx_ctp = re.compile(
-        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n" r"^\-+\s*\n" r"^\s+Loop protect mode is enabled",
+        r"^(?P<port>(?:Gi|2.5G|10G)\S+ \S+)\s*\n^\-+\s*\n^\s+Loop protect mode is enabled",
         re.MULTILINE,
     )
     rx_oam = re.compile(

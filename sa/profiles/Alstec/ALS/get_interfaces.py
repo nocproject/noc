@@ -31,7 +31,7 @@ class Script(BaseScript):
         r"^(?P<port>(?:Gi|Te|Po|g|e|ch)\S+)\s+(?P<descr>.+)$", re.MULTILINE | re.IGNORECASE
     )
     rx_vlan = re.compile(
-        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+" r"(?P<membership>\S+)\s*\n",
+        r"^\s+(?P<vlan_id>\d+)\s+\S+\s+(?P<type>Untagged|Tagged)\s+(?P<membership>\S+)\s*\n",
         re.MULTILINE,
     )
     rx_vlan_ipif = re.compile(

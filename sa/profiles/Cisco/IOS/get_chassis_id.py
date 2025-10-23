@@ -56,7 +56,7 @@ class Script(BaseScript):
         return [{"first_chassis_mac": base, "last_chassis_mac": MAC(base).shift(count - 1)}]
 
     rx_cat6000 = re.compile(
-        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+" r"(?P<to_id>\S+)", re.MULTILINE
+        r"chassis MAC addresses:.+from\s+(?P<from_id>\S+)\s+to\s+(?P<to_id>\S+)", re.MULTILINE
     )
 
     def execute_cat6000(self):
@@ -71,7 +71,7 @@ class Script(BaseScript):
         ]
 
     rx_iosxe = re.compile(
-        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+" r"MAC Address block size\s*:\s*(?P<count>\d+)"
+        r"Chassis MAC Address\s*:\s*(?P<mac>\S+)\s+MAC Address block size\s*:\s*(?P<count>\d+)"
     )
 
     def execute_IOSXE(self):

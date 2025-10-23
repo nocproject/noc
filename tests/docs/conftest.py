@@ -53,7 +53,7 @@ class ToC(object):
             for lkv in v:
                 self.add_item([*path, k], lkv)
         else:
-            self.items[tuple([*path, k])] = v
+            self.items[(*path, k)] = v
             s_path = os.path.join(DOCS_DIR, v)
             if os.path.isdir(s_path):
                 summary = [{sk: v + sv} for sk, sv in self.get_summary(v)]

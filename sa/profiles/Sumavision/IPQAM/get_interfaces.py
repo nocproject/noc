@@ -22,7 +22,7 @@ class Script(BaseScript):
     def execute_snmp(self):
         interfaces = []
 
-        v = dict((v[0], v[1]) for v in self.snmp.get_tables(["1.3.6.1.4.1.32285.2.2.10.3008.4.2"]))
+        v = {v[0]: v[1] for v in self.snmp.get_tables(["1.3.6.1.4.1.32285.2.2.10.3008.4.2"])}
         for moid, mindex in self.snmp.getnext("1.3.6.1.4.1.32285.2.2.10.3008.5.6.1.4"):
             channel = moid.split(".")[-2::][0]
             mname = self.snmp.get(

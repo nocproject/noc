@@ -19,7 +19,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"Arista\s+(?P<platform>\S+).+" r"Software image version:\s+(?P<version>\S+)",
+        r"Arista\s+(?P<platform>\S+).+Software image version:\s+(?P<version>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 

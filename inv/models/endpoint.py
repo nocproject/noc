@@ -57,7 +57,7 @@ class ConstraintItem(EmbeddedDocument):
         return f"{self.name} = [{', '.join(v for v in self.values)}]"
 
     def to_json(self) -> dict[str, Any]:
-        return {"name": self.name, "values": [x for x in self.values]}
+        return {"name": self.name, "values": list(self.values)}
 
 
 @on_delete

@@ -63,7 +63,7 @@ class Command(BaseCommand):
                     r += [(i["name"], rn, i.get("nri_name", "--"), status)]
                 r = [
                     ("Local", "Remote", "Interface NRI", "Status"),
-                    *list(sorted(r, key=lambda x: alnum_key(x[0]))),
+                    *sorted(r, key=lambda x: alnum_key(x[0])),
                 ]
                 self.stdout.write("%s\n" % format_table([0, 0, 0, 0], r, sep=" | ", hsep="-+-"))
 

@@ -44,7 +44,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_snmp_name_eth = re.compile(
-        r"Ethernet Port on unit\s+(?P<unit>[^\n]+?),\s+" r"port(\s+|\:)(?P<port>\d{1,2})",
+        r"Ethernet Port on unit\s+(?P<unit>[^\n]+?),\s+port(\s+|\:)(?P<port>\d{1,2})",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
 

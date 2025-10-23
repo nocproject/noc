@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetInterfaceStatus
 
     rx_interface_status = re.compile(
-        r"^(?P<interface>\S\S[\/\d]+).+?" r"(?P<status>connected|notconnect)"
+        r"^(?P<interface>\S\S[\/\d]+).+?(?P<status>connected|notconnect)"
     )
 
     def execute(self, interface=None):

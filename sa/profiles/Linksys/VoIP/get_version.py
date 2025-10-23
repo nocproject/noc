@@ -23,7 +23,7 @@ class Script(BaseScript):
         r"^Product Name:+(?P<platform>\S+)+Serial Number:+(?P<serial>\S+)$", re.MULTILINE
     )
     rx_version = re.compile(
-        r"^Software Version:+(?P<version>\S+)+Hardware Version:+" r"(?P<hardware>\S+)$",
+        r"^Software Version:+(?P<version>\S+)+Hardware Version:+(?P<hardware>\S+)$",
         re.MULTILINE,
     )
 

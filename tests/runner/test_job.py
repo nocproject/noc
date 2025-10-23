@@ -502,7 +502,7 @@ def test_scenario(req: JobRequest, expected: Dict[str, JobStatus]):
 )
 def test_job_env(req: JobRequest, expected: List[Tuple[str, str]]) -> None:
     job = list(Job.from_req(req))[-1]
-    r = list(sorted(job.environment.items()))
+    r = sorted(job.environment.items())
     assert r == expected
 
 
@@ -540,7 +540,7 @@ def test_job_env(req: JobRequest, expected: List[Tuple[str, str]]) -> None:
 )
 def test_iter_locks(req: JobRequest, expected: List[str]) -> None:
     job = list(Job.from_req(req))[-1]
-    r = list(sorted(job.iter_lock_names()))
+    r = sorted(job.iter_lock_names())
     assert r == expected
 
 

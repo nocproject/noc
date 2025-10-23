@@ -707,7 +707,7 @@ class Service(Document):
                     instance_status[aa.managed_object.id], status
                 )
             if instances is None:
-                instances = [si for si in ServiceInstance.objects.filter(service=self.id)]
+                instances = list(ServiceInstance.objects.filter(service=self.id))
                 max_weight = len(instances)
             for si in instances:
                 if si.is_match_alarm(aa):

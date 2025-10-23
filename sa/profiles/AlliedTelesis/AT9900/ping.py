@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "AlliedTelesis.AT9900.ping"
     interface = IPing
     rx_result = re.compile(
-        r"Echo reply (?P<count>\d+) from [\d\.]+ time delay " r"(?P<resp>\d+.\d+) ms",
+        r"Echo reply (?P<count>\d+) from [\d\.]+ time delay (?P<resp>\d+.\d+) ms",
         re.MULTILINE | re.DOTALL,
     )
 

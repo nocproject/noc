@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_mac = re.compile(
-        r"^MAC Address:\s+(?P<mac1>\S+).*" r"^Management Port MAC Address:\s+(?P<mac2>\S+)",
+        r"^MAC Address:\s+(?P<mac1>\S+).*^Management Port MAC Address:\s+(?P<mac2>\S+)",
         re.MULTILINE | re.DOTALL,
     )
 

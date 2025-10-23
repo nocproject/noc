@@ -61,9 +61,7 @@ class Script(BaseScript):
     rx_alias_and_index = re.compile(r" alias name is (?P<alias>.+), index is (?P<ifindex>\d+)")
     rx_mtu = re.compile(r"MTU (?P<mtu>\d+) bytes")
     rx_pvid = re.compile(r"PVID is (?P<pvid>\d+)")
-    rx_ip = re.compile(
-        r"^\s+IPv4 address is:\s*\n" r"^\s+(?P<ip>\S+)\s+(?P<mask>\S+)", re.MULTILINE
-    )
+    rx_ip = re.compile(r"^\s+IPv4 address is:\s*\n^\s+(?P<ip>\S+)\s+(?P<mask>\S+)", re.MULTILINE)
     rx_vlan = re.compile(
         r"^(?P<ifname>Ethernet\S+)\s*\n"
         r"^Type.+\s*\n"

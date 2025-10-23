@@ -205,8 +205,8 @@ class MetricPlugin(InvPlugin):
         r = []
         values = self.get_sensor_values()
         print(values)
-        for s in Sensor.objects.filter(object__in=[o.id] + [x for x in o.iter_children()]):
-            components = [ll for ll in s.labels]
+        for s in Sensor.objects.filter(object__in=[o.id, *list(o.iter_children())]):
+            components = list(s.labels)
             if s.object != o:
                 components.insert(0, f"object::{o.name}")
             thresholds = self.get_sensor_thresholds(o, s)

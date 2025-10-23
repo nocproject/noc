@@ -34,7 +34,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_status_tag = re.compile(
-        r"^Admin\s+State:\s+(?P<admin_status>\S+)\s+Tagging:(\s+)?" r"(?P<tagmode>.+?)$",
+        r"^Admin\s+State:\s+(?P<admin_status>\S+)\s+Tagging:(\s+)?(?P<tagmode>.+?)$",
         re.MULTILINE | re.DOTALL,
     )
     rx_tag = re.compile(r"^802.1Q\s+Tag\s+(?P<tag>\d+)\s*$", re.MULTILINE | re.IGNORECASE)

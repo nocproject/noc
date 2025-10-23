@@ -90,9 +90,7 @@ class ObjectLevelNeighborTopology(TopologyBase):
         }
         # Bulk fetch all managed objects
         all_mos: list[int] = list(
-            set(
-                i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i
-            )
+            {i["managed_object"] for i in self._interface_cache.values() if "managed_object" in i}
             | object_mos
         )
         mos: dict[int, ManagedObject] = {

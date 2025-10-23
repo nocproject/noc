@@ -123,10 +123,9 @@ class InterfaceProfileTarget(BaseModel):
         return [
             {"__text": ip.name, "__value": str(ip.id)}
             for ip in set(
-                ip
-                for ip in Interface.objects.filter(
-                    managed_object=self.mo, type="physical"
-                ).values_list("profile")
+                Interface.objects.filter(managed_object=self.mo, type="physical").values_list(
+                    "profile"
+                )
             )
         ]
 

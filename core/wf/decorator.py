@@ -209,7 +209,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
         obj_labels = set(self.effective_labels)
         if obj_labels and prev_labels:
             obj_labels -= set(prev_labels)
-        state_labels = set([ll for ll in state.labels if self.can_set_label(ll)])
+        state_labels = {ll for ll in state.labels if self.can_set_label(ll)}
         if state_labels:
             obj_labels.update(state_labels)
         set_op["effective_labels"] = list(obj_labels)

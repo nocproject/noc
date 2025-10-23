@@ -25,7 +25,7 @@ class Script(BaseScript):
     rx_adsl_state = re.compile(r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_vdsl_state = re.compile(r"^\s*(?P<port>Vdsl\d+/\d+/\d+)\s+(?P<state>up|down)", re.MULTILINE)
     rx_adsl_line = re.compile(
-        r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+\d+\s+\d+\s+" r"(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+",
+        r"^\s*(?P<port>Adsl\d+/\d+/\d+)\s+\d+\s+\d+\s+(?P<vpi>\d+|-)\s+(?P<vci>\d+|-)\s+",
         re.MULTILINE,
     )
     rx_vlan = re.compile(r"Vlan ID:\s+(?P<vlan_id>\d+)")

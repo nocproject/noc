@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetPortchannel
 
     rx_p = re.compile(
-        r"^(?P<iface>\d+/\d+).+?Static\s+(?P<port1>\d+/\d+).+?" r"(?P<port2>\d+/\d+)",
+        r"^(?P<iface>\d+/\d+).+?Static\s+(?P<port1>\d+/\d+).+?(?P<port2>\d+/\d+)",
         re.MULTILINE | re.DOTALL,
     )
 

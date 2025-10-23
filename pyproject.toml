@@ -82,15 +82,15 @@ lint.select = [
   # "C90", # mccabe
   # "I", # isort
   # "D", # Pydocstyle
-  # "YTT", # flake8-2020
+  "YTT", # flake8-2020
   # "ANN", # flake8-annotations
   # "S", # flake8-bandit
   # "BLE", # flake8-blind-except
   # "B", # flake8-bugbear
   "A", # flake8-builtins
-  # "C4", # flake8-comprehensions 
+  "C4", # flake8-comprehensions 
   # "EM", # flake8-errmsg
-  # "ISC", # flake8-implicit-str-concat
+  "ISC", # flake8-implicit-str-concat
   # "ICN", # flake8-import-conventions
   # "PT", # flake8-pytest-style
   "RET", # flake8-return

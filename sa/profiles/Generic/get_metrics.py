@@ -206,12 +206,11 @@ class MetricScriptBase(BaseScriptMetaclass):
 
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
-            paths = [
-                p
-                for p in config.get_customized_paths(
+            paths = list(
+                config.get_customized_paths(
                     os.path.join("sa", "profiles", "Generic", "snmp_metrics")
                 )
-            ]
+            )
         else:
             v, p = pp.split(".")
             paths = sorted(

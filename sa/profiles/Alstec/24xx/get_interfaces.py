@@ -68,7 +68,7 @@ class Script(BaseScript):
         :param interfaces:
         :return:
         """
-        for ifname in list(sorted(interfaces, reverse=True, key=alnum_key))[:3]:
+        for ifname in sorted(interfaces, reverse=True, key=alnum_key)[:3]:
             try:
                 v = self.cli("show port description %s" % ifname)
             except self.CLISyntaxError:

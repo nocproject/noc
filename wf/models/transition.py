@@ -51,8 +51,8 @@ class RequiredRule(EmbeddedDocument):
 
     def json_data(self) -> Dict[str, Any]:
         return {
-            "labels": [h for h in self.labels],
-            "exclude_labels": [e for e in self.exclude_labels],
+            "labels": list(self.labels),
+            "exclude_labels": list(self.exclude_labels),
         }
 
     def is_match(self, labels: List[str]):
@@ -153,7 +153,7 @@ class Transition(Document):
         if self.event:
             r["event"] = self.event
         if self.handlers:
-            r["handlers"] = [h for h in self.handlers]
+            r["handlers"] = list(self.handlers)
         if self.required_rules:
             r["required_rules"] = [r.json_data() for r in self.required_rules]
         if self.vertices:

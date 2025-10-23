@@ -46,7 +46,7 @@ class Script(GetMetricsScript):
     def collect_profile_metrics(self, metrics):
         if self.has_capability("OneAccess | IP | SLA | Probes"):
             self.logger.debug("Merics %s" % metrics)
-            if self.ALL_SLA_METRICS.intersection(set(m.metric for m in metrics)):
+            if self.ALL_SLA_METRICS.intersection({m.metric for m in metrics}):
                 self.collect_ip_sla_metrics(metrics)
 
     def collect_ip_sla_metrics(self, metrics):
@@ -56,7 +56,7 @@ class Script(GetMetricsScript):
         m = self.get_ip_sla_metrics()
         for bv in metrics:
             if bv.metric in self.ALL_SLA_METRICS:
-                id = tuple([*bv.labels, bv.metric])
+                id = (*bv.labels, bv.metric)
                 if id in m:
                     self.set_metric(
                         id=bv.id, metric=bv.metric, value=m[id], ts=ts, labels=bv.labels

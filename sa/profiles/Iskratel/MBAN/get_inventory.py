@@ -20,11 +20,11 @@ class Script(BaseScript):
     cache = True
 
     rx_inv1 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+" r"(?P<serial>[NZ]\S+)\s+",
+        r"^\s*(?P<number>\d+)\s+\S+\s+\S+\s+(?P<part_no>U\S+)\s+(?P<serial>[NZ]\S+)\s+",
         re.MULTILINE,
     )
     rx_inv2 = re.compile(
-        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+" r"(?P<serial>[0-9A-Z\/]+)\s+",
+        r"^\s*(?P<number>\d+)\s+\S+\s+(?P<part_no>U\S+)\s+[UN]\S+\s+(?P<serial>[0-9A-Z\/]+)\s+",
         re.MULTILINE,
     )
     rx_cpu = re.compile(

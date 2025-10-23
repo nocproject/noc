@@ -78,19 +78,19 @@ class Script(BaseScript):
             elif mbd >= 1200 and nm == 1490:
                 part_no = part_no + "1G | SFP BX10D"
             elif mbd >= 1000 and nm == 0:
-                if description.endswith(tuple([" EX", "-EX"])):
+                if description.endswith((" EX", "-EX")):
                     part_no = part_no + "1G | SFP EX"
-                elif description.endswith(tuple([" LH", "-LH"])):
+                elif description.endswith((" LH", "-LH")):
                     part_no = part_no + "1G | SFP LH"
-                elif description.endswith(tuple([" LX", "-LX"])):
+                elif description.endswith((" LX", "-LX")):
                     part_no = part_no + "1G | SFP LX"
-                elif description.endswith(tuple([" SX", "-SX"])):
+                elif description.endswith((" SX", "-SX")):
                     part_no = part_no + "1G | SFP SX"
-                elif description.endswith(tuple([" T", "-T"])):
+                elif description.endswith((" T", "-T")):
                     part_no = part_no + "1G | SFP T"
-                elif description.endswith(tuple([" TX", "-TX"])):
+                elif description.endswith((" TX", "-TX")):
                     part_no = part_no + "1G | SFP TX"
-                elif description.endswith(tuple([" ZX", "-ZX"])):
+                elif description.endswith((" ZX", "-ZX")):
                     part_no = part_no + "1G | SFP ZX"
                 else:
                     part_no = part_no + "1G | SFP"

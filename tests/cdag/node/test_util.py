@@ -82,7 +82,7 @@ def test_metrics(values, expected):
         node.add_input(k)
     inputs = set(node.iter_inputs())
     x_inputs = {"ts", "labels"}
-    x_inputs.update({x for x in values})
+    x_inputs.update(set(values))
     assert inputs == x_inputs
     # Activate dynamic inputs
     for k, v in values.items():

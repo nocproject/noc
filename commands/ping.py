@@ -73,7 +73,7 @@ class Command(BaseCommand):
                         addresses.update(line.strip() for line in f if is_ipv4(line.strip()))
                 except OSError as e:
                     self.die(f"Cannot read file {fn}: {e}\n")
-        return list(sorted(addresses))
+        return sorted(addresses)
 
 
 if __name__ == "__main__":

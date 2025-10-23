@@ -38,8 +38,8 @@ def update_uplinks(**kwargs):
                     up_links.append(
                         ObjectUplinks(
                             object_id=obj_id,
-                            uplinks=list(sorted(topo.get_uplinks(obj_id))),
-                            rca_neighbors=list(sorted(topo.get_rca_neighbors(obj_id))),
+                            uplinks=sorted(topo.get_uplinks(obj_id)),
+                            rca_neighbors=sorted(topo.get_rca_neighbors(obj_id)),
                         )
                     )
                 except KeyError:

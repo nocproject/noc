@@ -143,7 +143,7 @@ class BaseNormalizerMetaclass(type):
     @classmethod
     def parse_syntax(mcs, ncls, syntax):
         for t in syntax:
-            mcs.process_token(ncls, t, tuple())
+            mcs.process_token(ncls, t, ())
 
     @classmethod
     def process_token(mcs, ncls, sdef, path):

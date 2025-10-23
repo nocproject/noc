@@ -134,7 +134,8 @@ class CredentialCheckRule(Document):
 
     def get_suggest_cli(self, raise_privilege: bool = True) -> List[CLICredential]:
         r = []
-        proto = tuple(p.value for p in self.get_suggest_proto() if p.config.is_cli) or (1, 2)
+        sp = tuple(p.value for p in self.get_suggest_proto() if p.config.is_cli)
+        proto = sp or (1, 2)
         for ss in self.suggest_credential:
             r.append(
                 CLICredential(

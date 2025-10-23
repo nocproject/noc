@@ -363,7 +363,7 @@ class CPE(Document):
             "bi_id": cpe.bi_id,
             "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
             "labels": labels,
-            "rules": [ma for ma in MetricRule.iter_rules_actions(cpe.effective_labels)],
+            "rules": list(MetricRule.iter_rules_actions(cpe.effective_labels)),
             "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],
         }

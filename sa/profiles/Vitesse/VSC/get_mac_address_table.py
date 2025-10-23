@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetMACAddressTable
 
     rx_line = re.compile(
-        r"^\s*(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+" r"(?P<iface>\S+ \S+)\s*$",
+        r"^\s*(?P<type>\S+)\s+(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<iface>\S+ \S+)\s*$",
         re.MULTILINE,
     )
 

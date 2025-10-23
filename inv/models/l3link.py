@@ -49,5 +49,5 @@ class L3Link(Document):
         return "(%s)" % ", ".join([smart_text(i) for i in self.subinterfaces])
 
     def clean(self):
-        self.linked_objects = sorted(set(i.managed_object.id for i in self.subinterfaces))
+        self.linked_objects = sorted({i.managed_object.id for i in self.subinterfaces})
         super().clean()

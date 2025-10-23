@@ -120,7 +120,7 @@ class ReportProfileCheckSummary(ReportSource):
             title_map[key] = title
             condition_map[key] = condition
         condition = ",".join(f"sum({c}) as '{a}'" for a, c in condition_map.items())
-        pools = [p for p in Pool.objects.filter().order_by("name")] + ["Summary"]
+        pools = [*list(Pool.objects.filter().order_by("name")), "Summary"]
         # Main Loop
         for pool in pools:
             if pool != "Summary":

@@ -225,7 +225,7 @@ class DiscoveredObject(Document):
         changed |= bool(self.effective_data.keys() - data.keys())
         # Update Extra Labels
         if self.extra_labels:
-            labels += [ll for ll in Label.merge_labels(self.extra_labels.values())]
+            labels += list(Label.merge_labels(self.extra_labels.values()))
         if not changed and set(self.effective_labels) == set(labels):
             return
         self.address_bin = IP.prefix(self.address).d

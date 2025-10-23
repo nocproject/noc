@@ -24,12 +24,12 @@ class Migration(BaseMigration):
 
     def migrate(self):
         db = self.mongo_db
-        processed = set(
+        processed = {
             am
             for (am,) in self.db.execute(
                 "SELECT jsonb_object_keys(affected_maintenances) FROM sa_managedobject"
             )
-        )
+        }
         for ao in db.noc.affectedobjects.aggregate(
             [
                 {"$match": {"maintenance": {"$exists": True}}},

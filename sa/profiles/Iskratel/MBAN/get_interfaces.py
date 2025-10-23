@@ -34,7 +34,7 @@ class Script(BaseScript):
         r"^\s*(?P<vlan_id>\d+)\s+(?P<port>\S+?\d+)\s+keep\s+ingr\+egr\s*\n", re.MULTILINE
     )
     rx_vlan1 = re.compile(
-        r"^(?P<port>\S+)\s+(?P<vlan_id>\d+)\s+untagged\s+" r"(?P<mode>trunk|access)\s+",
+        r"^(?P<port>\S+)\s+(?P<vlan_id>\d+)\s+untagged\s+(?P<mode>trunk|access)\s+",
         re.MULTILINE,
     )
 

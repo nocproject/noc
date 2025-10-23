@@ -28,7 +28,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_sub_pvc = re.compile(
-        r"^\s*(?P<sub>\d+\-\d+)-(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+\S+\s+" r"(?P<pvid>\d+)\s+",
+        r"^\s*(?P<sub>\d+\-\d+)-(?P<vpi>\d+)/(?P<vci>\d+)\s+\S+\s+\S+\s+(?P<pvid>\d+)\s+",
         re.MULTILINE,
     )
     rx_sub_pvc1 = re.compile(
@@ -60,7 +60,7 @@ class Script(BaseScript):
     rx_ipif_mac = re.compile(r"^\s*(?P<ifname>\S+) mac\s+: (?P<mac>\S+)\s*\n", re.MULTILINE)
     rx_ipif_vlan = re.compile(r"^\s*host join vlan: (?P<vid>\d+)\s*\n", re.MULTILINE)
     rx_vlan = re.compile(
-        r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*" r"(?P<name>.*)$",
+        r"^\s*(?P<vlan_id>\d+)\s+(?P<ports>\S+)/(?P<mode>\S+)\s+\S+\s*(?P<name>.*)$",
         re.MULTILINE,
     )
     rx_vlan1 = re.compile(
@@ -78,7 +78,7 @@ class Script(BaseScript):
     rx_vlan6 = re.compile(r"^\s*Port\s+(?P<port>\d+):\s+(?P<vlan_id>\d+)\s*\n", re.MULTILINE)
     rx_mac = re.compile(r"^\s*mac address\s*: (?P<mac>\S+)\s*\n", re.MULTILINE | re.IGNORECASE)
     rx_ports = re.compile(
-        r"^Port\s+\d+\s+\((?P<port>ethernet|adsl\d+|gshdsl\d+)\): " r"(?:Enabled|Disabled)\s*\n",
+        r"^Port\s+\d+\s+\((?P<port>ethernet|adsl\d+|gshdsl\d+)\): (?:Enabled|Disabled)\s*\n",
         re.MULTILINE,
     )
     rx_stp = re.compile(r"^\s*(?P<port>\S+)\s+V\s+\d+\s+", re.MULTILINE)

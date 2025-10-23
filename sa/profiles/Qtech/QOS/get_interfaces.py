@@ -34,7 +34,7 @@ class Script(BaseScript):
         re.MULTILINE,
     )
     rx_ip_iface = re.compile(
-        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+" r"assigned\s+primary\s*\n",
+        r"^\s*(?P<iface>\d+)\s+(?P<ip>\d\S+)\s+(?P<mask>\d\S+)\s+assigned\s+primary\s*\n",
         re.MULTILINE,
     )
     rx_vlans_ip = re.compile(r"^\s*(?P<iface>\d+)\s+(?P<vlan_id>\d+|none)", re.MULTILINE)

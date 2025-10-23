@@ -18,14 +18,12 @@ class Script(BaseScript):
     interface = IGetSpanningTree
 
     rx_config = re.compile(
-        r"Configuration Name:\s+(?P<region>\S+)$\s+" r"Reve?ision Number:\s+(?P<revision>\d+)",
+        r"Configuration Name:\s+(?P<region>\S+)$\s+Reve?ision Number:\s+(?P<revision>\d+)",
         re.MULTILINE,
     )
     rx_inst_vlans = re.compile(r"^\s+(?P<id>\d+)\s+(?P<vlans>\S+)", re.MULTILINE)
-    rx_bridge = re.compile(
-        r"\(a\)BridgeID:\s+(?P<bridge_priority>[0-9a-f]+)" r"-(?P<bridge_id>\S+)"
-    )
-    rx_root = re.compile(r"\(e\)DesignatedRoot:\s+(?P<root_priority>\S+)" r"-(?P<root_id>\S+)")
+    rx_bridge = re.compile(r"\(a\)BridgeID:\s+(?P<bridge_priority>[0-9a-f]+)-(?P<bridge_id>\S+)")
+    rx_root = re.compile(r"\(e\)DesignatedRoot:\s+(?P<root_priority>\S+)-(?P<root_id>\S+)")
     rx_port = re.compile(
         r"Port \[(?P<iface>\d+)\] Info:."
         r"(?:\s+\(\S\)MSTID:\s+\d+.)?"

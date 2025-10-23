@@ -302,12 +302,12 @@ class InterfaceProfile(Document):
         Get list of interface profile ids with status_discovery = True
         :return:
         """
-        return list(
+        return [
             x["_id"]
             for x in InterfaceProfile._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
             .find({"status_discovery": {"$ne": "d"}}, {"_id": 1})
-        )
+        ]
 
     @staticmethod
     def config_from_settings(

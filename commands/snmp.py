@@ -86,7 +86,7 @@ class Command(BaseCommand):
             "--version",
             type=str,
             default="v2c",
-            choices=list(sorted(self.VERSION_MAP)),
+            choices=sorted(self.VERSION_MAP),
             help="version snmp check",
         )
 

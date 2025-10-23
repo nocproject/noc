@@ -455,7 +455,7 @@ class ObjectDiscoveryRule(Document):
         """
         address = IP.prefix(address)
         if self.network_ranges:
-            if not any([p for p in self.get_prefixes(pool) if address in p]):
+            if not any(p for p in self.get_prefixes(pool) if address in p):
                 return False
         if not self.conditions:
             return True

@@ -178,9 +178,7 @@ class BaseExtractor(object):
         if not os.path.isdir(archive_dir):
             return None  # No archive
         # Read list of archive files
-        fn = list(
-            sorted((f for f in os.listdir(archive_dir) if self.rx_archive.match(f)), reverse=True)
-        )
+        fn = sorted((f for f in os.listdir(archive_dir) if self.rx_archive.match(f)), reverse=True)
         if not fn:
             return None  # No files
         # Read file

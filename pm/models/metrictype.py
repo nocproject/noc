@@ -67,9 +67,9 @@ class CollectorMappingItem(EmbeddedDocument):
             "allow_partial_match": self.allow_partial_match,
         }
         if self.aliases:
-            r["aliases"] = [x for x in self.aliases]
+            r["aliases"] = list(self.aliases)
         if self.labels:
-            r["labels"] = [x for x in self.labels]
+            r["labels"] = list(self.labels)
         return r
 
     def get_config(self):

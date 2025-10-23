@@ -157,11 +157,9 @@ class Router(object):
                 chains[rt] = []
         for chain in chains:
             logger.info("[%s] Rebuild chain", chain)
-            self.chains[chain] = list(
-                sorted(
-                    [r for r in chains[chain]],
-                    key=operator.attrgetter("order"),
-                )
+            self.chains[chain] = sorted(
+                chains[chain],
+                key=operator.attrgetter("order"),
             )
 
     def iter_route(self, msg: Message, message_type: bytes) -> Iterator[Route]:

@@ -186,13 +186,13 @@ class InterfaceCheck(PolicyDiscoveryCheck):
                     self.logger.info(
                         "Interface '%s' has been changed: effective_labels = %s",
                         iface.name,
-                        list(sorted(el)),
+                        sorted(el),
                     )
                     iface.save()
                 changed = False
                 el = Label.build_effective_labels(iface)
                 if not iface.effective_labels or el != frozenset(iface.effective_labels):
-                    iface.effective_labels = list(sorted(el))
+                    iface.effective_labels = sorted(el)
                     changed = True
                 # Perform interface classification
                 self.interface_classification(iface)
@@ -442,10 +442,10 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         :param fi: generator yielding instance names
         :return:
         """
-        db_fi: Set[str] = set(
+        db_fi: Set[str] = {
             i["name"]
             for i in ForwardingInstance.objects.filter(managed_object=self.object.id).only("name")
-        )
+        }
         for i in db_fi - set(fi):
             self.logger.info("Removing forwarding instance %s", i)
             for dfi in ForwardingInstance.objects.filter(managed_object=self.object.id, name=i):
@@ -457,9 +457,9 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         Attrs:
             interfaces: generator yielding interfaces names
         """
-        db_iface: Set[str] = set(
+        db_iface: Set[str] = {
             i["name"] for i in Interface.objects.filter(managed_object=self.object.id).only("name")
-        )
+        }
         for i in db_iface - set(interfaces):
             self.logger.info("Removing interface %s", i)
             di = Interface.objects.filter(managed_object=self.object.id, name=i).first()
@@ -482,7 +482,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         qs = SubInterface.objects.filter(
             managed_object=self.object.id, interface=interface.id, forwarding_instance=fi
         )
-        db_siface: Set[str] = set(i["name"] for i in qs.only("name"))
+        db_siface: Set[str] = {i["name"] for i in qs.only("name")}
         for i in db_siface - set(subinterfaces):
             self.logger.info("Removing subinterface %s", i)
             dsi = SubInterface.objects.filter(

@@ -244,10 +244,9 @@ class Command(BaseCommand):
             if extractors and ldr.name not in extractors:
                 continue
             if os.path.isdir(ldr.archive_dir):
-                fn = list(
-                    reversed(
-                        sorted(f for f in os.listdir(ldr.archive_dir) if ldr.rx_archive.match(f))
-                    )
+                fn = sorted(
+                    (f for f in os.listdir(ldr.archive_dir) if ldr.rx_archive.match(f)),
+                    reverse=True,
                 )
             else:
                 self.die("No archived dir")
@@ -264,7 +263,7 @@ class Command(BaseCommand):
                     ):
                         continue
                     clean_files += [f]
-                clean_files = list(reversed(sorted(clean_files)))[CLEANUP_SAFE_FILES_COUNT:]
+                clean_files = sorted(clean_files, reverse=True)[CLEANUP_SAFE_FILES_COUNT:]
             if not clean_files:
                 self.print("Nothing to remove. Continue...")
             else:

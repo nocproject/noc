@@ -38,12 +38,12 @@ class SegmentCard(BaseCard):
             objects += [{"id": mo.id, "name": mo.name, "object": mo, "summary": ss}]
         # Update object statuses
         mos = [o["id"] for o in objects]
-        alarms = set(
+        alarms = {
             d["managed_object"]
             for d in ActiveAlarm._get_collection().find(
                 {"managed_object": {"$in": mos}}, {"_id": 0, "managed_object": 1}
             )
-        )
+        }
         o_status = ManagedObject.get_statuses(mos)
         for o in objects:
             if o["id"] in o_status:

@@ -213,7 +213,7 @@ def main():
     nav = mkdocs_gen_files.Nav()
     nav["Overview"] = Path("index.md")
     for scope in sorted(scopes.values()):
-        scope.metrics = list(sorted(scope.metrics, key=operator.attrgetter("field_name")))
+        scope.metrics = sorted(scope.metrics, key=operator.attrgetter("field_name"))
         rel_path = f"{canonical_name(scope.name)}.md"
         nav[scope.name] = rel_path
         out = BOOK / rel_path

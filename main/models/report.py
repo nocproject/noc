@@ -162,7 +162,7 @@ class BandFormat(EmbeddedDocument):
             "title_template": self.title_template,
         }
         if self.column_format:
-            r["column_format"] = [x for x in self.column_format]
+            r["column_format"] = list(self.column_format)
         if self.is_header:
             r["is_header"] = self.is_header
         return r
@@ -279,7 +279,7 @@ class Report(Document):
         if self.report_source:
             r["report_source"] = self.report_source
         if self.localization:
-            r["localization"] = {ll: dd for ll, dd in self.localization.items()}
+            r["localization"] = dict(self.localization.items())
         if self.parameters:
             r["parameters"] = [p.json_data for p in self.parameters]
         if self.templates:

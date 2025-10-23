@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_line_split = re.compile(r"^VRF-Name:\s+", re.MULTILINE)
     rx_line_name = re.compile(
-        r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+" r"State:\s+(?P<state>Up|Down)\s+",
+        r"^(?P<name>\S+),\s+VRF-ID:\s(?P<id>\d+),\s+State:\s+(?P<state>Up|Down)\s+",
         re.MULTILINE,
     )
     rx_line_rd = re.compile(r"^\s+RD:\s(?P<rd>\d\S*:\d)\s*", re.MULTILINE)
