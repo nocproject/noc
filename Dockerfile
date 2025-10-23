@@ -16,6 +16,19 @@ RUN \
     iproute2 \
     && (curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh)
 
+# Build web
+FROM node:22-trixie-slim AS build-ui
+COPY . /opt/noc
+WORKDIR /opt/noc
+RUN\
+    set -x\
+    && apt-get update\
+    && apt-get install -y --no-install-recommends \
+    bzip2 \
+    curl \
+    ca-certificates \
+    && ./scripts/build/build-ui
+
 # Base layer containing system packages and requirements
 FROM python AS code
 ENV\
@@ -25,14 +38,11 @@ ENV\
     NOC_LISTEN="auto:1200" \
     PROJ_DIR=/usr
 COPY . /opt/noc/
+COPY --from=build-ui /opt/noc/ui/dist/ /www/
 WORKDIR /opt/noc/
 RUN \
     set -x \
     && uv pip install --system -e .[bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping] \
-    && python3 ./scripts/deploy/install-packages requirements/web.json \
-    && python3 ./scripts/deploy/install-packages requirements/card.json \
-    && python3 ./scripts/deploy/install-packages requirements/bi.json \
-    && python3 ./scripts/deploy/install-packages requirements/theme-noc.json \
     && (curl -L https://get.static-web-server.net/ | sed 's/sudo //g' | sh) \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && uv cache clean \
