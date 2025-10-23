@@ -29,13 +29,13 @@ NETFLOW_V8 = 8
 NETFLOW_V9 = 9
 
 
-class Flows(Model):
+class Netflow(Model):
     """
     Netflow collector model
     """
 
     class Meta:
-        db_table = "flows"
+        db_table = "netflow"
         engine = MergeTree("date", ("date",), primary_keys=("date",))
 
     date = DateField(description=_("Date"))
@@ -51,11 +51,11 @@ class Flows(Model):
     protocol = UInt8Field(description=_("IP protocol type"))
     src_tos = UInt8Field(description=_("Type of Service byte"))
     tcp_flags = UInt8Field(description=_("TCP flags cumulative byte"))
-    l4_src_port = UInt8Field(description=_("TCP/UDP src port number"))
+    src_port = UInt16Field(description=_("TCP/UDP src port number"))
     ipv4_src_addr = IPv4Field(description=_("IPv4 source address"))
     src_mask = UInt8Field(description=_("Number of mask bits in src adr"))
     input_snmp = UInt16Field(description=_("Input interface index"))
-    ipv4_dst_port = UInt8Field(description=_("TCP/UDP dst port number"))
+    dst_port = UInt16Field(description=_("TCP/UDP dst port number"))
     ipv4_dst_addr = IPv4Field(description=_("IPv4 destination address"))
     dst_mask = UInt8Field(description=_("Number of mask bits in dst adr"))
     output_snmp = UInt16Field(description=_("Output interface index"))
@@ -211,3 +211,8 @@ class Flows(Model):
         )
     )
     replication_factor = UInt32Field(description=_("Multicast replication factor"))
+
+    src4_xlt_ip = IPv4Field(description=_("IPv4 post NAT src address"))
+    src_xlt_port = UInt16Field(description=_("TCP/UDP port NAT src port number"))
+    dst4_xlt_ip = IPv4Field(description=_("IPv4 post NAT dst address"))
+    dst_xlt_port = UInt16Field(description=_("TCP/UDP port NAT dst port number"))
