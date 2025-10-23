@@ -50,6 +50,7 @@ from noc.core.caps.types import CapsValue
 from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
+from noc.core.validators import is_objectid
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -808,12 +809,27 @@ class Service(Document):
         return self.calculate_status(r)
 
     @classmethod
+    def find_alarm_affected_services(cls, alarm) -> List[str]:
+        """Find affected services on topology"""
+        r = []
+        if "service" in alarm.vars and is_objectid(alarm.vars["service"]):
+            svc_id = alarm.vars["service"]
+        elif "service" in alarm.components and getattr(alarm.components, "service", None):
+            svc_id = alarm.components.service.id
+        else:
+            return r
+        for svc in Service.objects.filter(service_path=svc_id):
+            if svc.profile.get_rule_by_alarm(alarm):
+                r.append(svc.id)
+        return r
+
+    @classmethod
     def get_services_by_alarm(cls, alarm) -> List[str]:
         """Return service Ids for requested alarm"""
         if alarm.alarm_class.name == SVC_AC:
             return []
-        if hasattr(alarm.components, "service") and getattr(alarm.components, "service", None):
-            return [alarm.components.service.id]
+        if "service" in alarm.components or "service" in alarm.vars:
+            return cls.find_alarm_affected_services(alarm)
         q = m_q()
         if hasattr(alarm.components, "slaprobe") and getattr(alarm.components, "slaprobe", None):
             q |= m_q(sla_probe=alarm.components.slaprobe.id)
@@ -1012,9 +1028,22 @@ class Service(Document):
         return si
 
     @classmethod
-    def get_component(cls, managed_object, service, **kwargs) -> Optional["Service"]:
+    def get_component(
+        cls,
+        managed_object: Optional[str] = None,
+        service: Optional[str] = None,
+        remote_ref: Optional[str] = None,
+        **kwargs,
+    ) -> Optional["Service"]:
+        logger.debug("Getting service by component: %s", kwargs)
         if service:
             return Service.get_by_id(service)
+        if remote_ref:
+            try:
+                rs, rid = RemoteSystem.from_reference(remote_ref)
+                return Service.get_by_mapping(rs, rid)
+            except ValueError:
+                pass
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterable diagnostic Config"""
