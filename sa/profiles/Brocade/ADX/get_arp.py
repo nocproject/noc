@@ -15,9 +15,7 @@ class Script(BaseScript):
     name = "Brocade.ADX.get_arp"
     interface = IGetARP
 
-    rx_line = re.compile(
-        r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+\S+\s+\d+" r"(?:\s+(?P<interface>\S+))"
-    )
+    rx_line = re.compile(r"^\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+\S+\s+\d+(?:\s+(?P<interface>\S+))")
 
     def execute(self, vrf=None):
         s = self.cli("show arp")

@@ -19,7 +19,7 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^\s*\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))" r"\s+\S+$",
+        r"^\s*\d+\s+(?P<ip>\S+)\s+(?P<mac>\S+)\s+(?P<interface>(\S+ \d+|\S+))\s+\S+$",
         re.MULTILINE,
     )
 

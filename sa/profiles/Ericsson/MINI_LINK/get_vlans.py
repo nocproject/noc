@@ -17,7 +17,7 @@ class Script(BaseScript):
     name = "Ericsson.MINI_LINK.get_vlans"
     interface = IGetVlans
 
-    rx_vlan = re.compile(r"^vlan (?P<vlan_id>\d+)\s*\n" r"^ name (?P<name>\S+)\s*\n", re.MULTILINE)
+    rx_vlan = re.compile(r"^vlan (?P<vlan_id>\d+)\s*\n^ name (?P<name>\S+)\s*\n", re.MULTILINE)
 
     def execute(self):
         r = []

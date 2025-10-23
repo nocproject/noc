@@ -400,12 +400,11 @@ class ReportDsAlarms(BaseDataSource):
             ]
         subscribers_profile = []
         if not fields or "subscribers" in fields:
-            subscribers_profile = [
-                sp
-                for sp in SubscriberProfile.objects.filter(show_in_summary=True)
+            subscribers_profile = list(
+                SubscriberProfile.objects.filter(show_in_summary=True)
                 .values_list("name", "id")
                 .order_by("name")
-            ]
+            )
         for row_num, aa in enumerate(cls.iter_data(**kwargs), start=1):
             if "managed_object" not in aa:
                 continue

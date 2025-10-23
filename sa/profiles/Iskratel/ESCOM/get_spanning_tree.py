@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_mode = re.compile(r"^\s*Spanning tree enabled mode (?P<mode>\S+)")
     rx_mstp = re.compile(
-        r"^\s*Name: (?P<region>\S+)\s*\n" r"^\s*Revision: (?P<revision>\d+)", re.MULTILINE
+        r"^\s*Name: (?P<region>\S+)\s*\n^\s*Revision: (?P<revision>\d+)", re.MULTILINE
     )
     rx_inst = re.compile(
         r"MST (?P<id>\d+) Vlans Mapped: (?P<vlans>.+?)\n"

@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetSwitchport
 
     rx_body = re.compile(
-        r"^Port : .+" r"Port Mode: (?P<amode>\S+).+" r".+NATIVE[^\d]+(?P<nvlan>\d+).+",
+        r"^Port : .+Port Mode: (?P<amode>\S+).+.+NATIVE[^\d]+(?P<nvlan>\d+).+",
         re.MULTILINE | re.DOTALL | re.IGNORECASE,
     )
     rx_body2 = re.compile(
@@ -36,7 +36,7 @@ class Script(BaseScript):
     )
     rx_portmembers = re.compile(r"^\s*(?P<vid>\d+)\s+\S+\s+(?P<erule>\S+)\s+(?P<mtype>\S+)")
     rx_trunking = re.compile(
-        r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\n" r"General PVID:",
+        r"Trunking VLANs: (?P<vlans>.+?)( \(Inactive\))?\s*\nGeneral PVID:",
         re.MULTILINE | re.DOTALL,
     )
 

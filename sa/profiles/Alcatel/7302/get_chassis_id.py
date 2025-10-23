@@ -21,7 +21,7 @@ class Script(BaseScript):
     interface = IGetChassisID
 
     rx_id = re.compile(
-        r"\s+base-bdg-addr\s*:\s*(?P<basemac>\S+)\s*\n" r"^\s+sys-mac-addr\s*:\s*(?P<sysmac>\S+)",
+        r"\s+base-bdg-addr\s*:\s*(?P<basemac>\S+)\s*\n^\s+sys-mac-addr\s*:\s*(?P<sysmac>\S+)",
         re.MULTILINE,
     )
 

@@ -20,7 +20,7 @@ class CalculatorApplication(Application):
     @view(url=r"^$", url_name="index", menu="Calculators", access=HasPerm("view"))
     def view_index(self, request):
         r = [(cn, loader[cn].title) for cn in loader]
-        r = list(sorted(r, key=operator.itemgetter(1)))
+        r = sorted(r, key=operator.itemgetter(1))
         return self.render(request, "index.html", {"calculators": r})
 
     @view(url=r"^(?P<calculator>\S+)/$", url_name="calculate", access=HasPerm("view"))

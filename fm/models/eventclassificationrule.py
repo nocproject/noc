@@ -293,7 +293,7 @@ class EventClassificationRule(Document):
     @classmethod
     def get_rule_config(cls, rule: "EventClassificationRule"):
         """Return MetricConfig for Metrics service"""
-        rule_profiles = set(p.name for p in rule.profiles)
+        rule_profiles = {p.name for p in rule.profiles}
         for x in rule.patterns:
             # Store profile
             if x.key_re.strip("^$") != "profile":

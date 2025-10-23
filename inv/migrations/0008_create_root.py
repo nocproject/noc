@@ -51,9 +51,7 @@ class Migration(BaseMigration):
         m_c = {}
         containers = set()
         for m in db.noc.objectmodels.find():
-            m_c[m["_id"]] = set(
-                c["name"] for c in m.get("connections", []) if c["direction"] == "o"
-            )
+            m_c[m["_id"]] = {c["name"] for c in m.get("connections", []) if c["direction"] == "o"}
             if m.get("data", {}).get("container", {}).get("container", False):
                 containers.add(m["_id"])
         # Assign all unconnected objects to l&f

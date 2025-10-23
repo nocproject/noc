@@ -205,9 +205,7 @@ class ResourceGroup(Document):
         coll = ResourceGroup._get_collection()
         for _ in range(max_level):
             # Get next wave
-            wave = (
-                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
-            )
+            wave = {d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})} - seen
             if not wave:
                 break
             seen |= wave

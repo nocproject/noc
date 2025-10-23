@@ -24,7 +24,7 @@ class Script(BaseScript):
     rx_ver = re.compile(r"System.*?Description:\s+(?P<version>.+?)\s.*$", re.MULTILINE | re.DOTALL)
     rx_ser = re.compile(r"Serial Number:\s+(?P<serial>.+?),$", re.MULTILINE | re.DOTALL)
     rx_ver1 = re.compile(
-        r"System.*?Description:\s+Alcatel-Lucent\s+" r"(?P<ver1>\S+)\s+(?P<version>\S+)\s.*$",
+        r"System.*?Description:\s+Alcatel-Lucent\s+(?P<ver1>\S+)\s+(?P<version>\S+)\s.*$",
         re.MULTILINE | re.DOTALL,
     )
 

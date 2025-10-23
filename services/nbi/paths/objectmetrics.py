@@ -239,7 +239,7 @@ class ObjectMetricsAPI(NBIAPI):
             return item
 
         if not path:
-            return tuple()
+            return ()
         if len(path) >= 2 and path[0] == "[" and path[-1] == "]":
             path = path[1:-1]
         return tuple(q(x) for x in path.split(","))

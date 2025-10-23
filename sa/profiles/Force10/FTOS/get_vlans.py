@@ -30,7 +30,7 @@ class Script(BaseScript):
         ):  # dot1qVlanStaticName
             o = oid.split(".")[-1]
             result += [{"vlan_id": int(oids[o]), "name": v.strip()}]
-        return list(sorted(result, key=operator.itemgetter("vlan_id")))
+        return sorted(result, key=operator.itemgetter("vlan_id"))
 
     def execute_cli(self):
         return [{"vlan_id": x[0], "name": x[1]} for x in parse_table(self.cli("show vlan brief"))]

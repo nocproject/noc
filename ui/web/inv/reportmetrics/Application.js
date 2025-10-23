@@ -93,7 +93,6 @@ Ext.define("NOC.inv.reportmetrics.Application", {
           {boxLabel: "Interfaces", name: "reporttype", inputValue: "load_interfaces", checked: true},
           {boxLabel: "Objects", name: "reporttype", inputValue: "load_cpu"},
           {boxLabel: "Ping", name: "reporttype", inputValue: "ping"},
-          {boxLabel: "Other", name: "reporttype", inputValue: "other"},
         ],
         listeners: {
           change: "onChangeSource",

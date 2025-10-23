@@ -52,9 +52,9 @@ def _get_field_snapshot(sender, instance):
 def _on_model_save_handler(sender, instance, *args, **kwargs):
     if hasattr(instance, "initial_data"):
         ns = _get_field_snapshot(sender, instance)
-        instance.changed_fields = set(
+        instance.changed_fields = {
             f for f in instance.initial_data if instance.initial_data[f] != ns.get(f)
-        )
+        }
     else:
         instance.changed_fields = set()
     instance.on_save()

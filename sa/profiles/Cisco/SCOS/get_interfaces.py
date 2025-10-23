@@ -19,15 +19,15 @@ class Script(BaseScript):
     interface = IGetInterfaces
 
     rx_int = re.compile(
-        r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n" r"\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",
+        r"ifIndex.\d+\s+=\s+(?P<ifindex>\d+)\n\s*ifDescr.\d+\s+=\s+(?P<ifname>\S+)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_stat = re.compile(
-        r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\n" r"ifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n",
+        r"ifAdminStatus.\d+\s+=\s+(?P<a_stat>\d)\nifOperStatus.\d+\s+=\s+(?P<o_stat>\d)\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_mac = re.compile(
-        r"ifPhysAddress.\d+\s+=\s+" r"(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n",
+        r"ifPhysAddress.\d+\s+=\s+(?P<mac>\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2}\s\w{2})\s+\n",
         re.MULTILINE | re.IGNORECASE | re.DOTALL,
     )
     rx_ip = re.compile(

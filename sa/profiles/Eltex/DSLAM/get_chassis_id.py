@@ -18,7 +18,7 @@ class Script(BaseScript):
     interface = IGetChassisID
     cache = True
 
-    rx_mac1 = re.compile(r"^Unicast MAC table: port cpu\s*\n" r"^(?P<mac>\S+)", re.MULTILINE)
+    rx_mac1 = re.compile(r"^Unicast MAC table: port cpu\s*\n^(?P<mac>\S+)", re.MULTILINE)
     rx_mac2 = re.compile(r"(?P<mac>\S{17}) \[(?P<interface>.{4})\]")
     rx_mac3 = re.compile(r"MAC address: (?P<mac>\S{17})")
 

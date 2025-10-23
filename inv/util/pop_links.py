@@ -64,12 +64,12 @@ class LinkedPoP(object):
         ):
             r_ifaces |= set(ld.get("interfaces", []))
         r_ifaces -= self_interfaces
-        r_mos = set(
+        r_mos = {
             i["managed_object"]
             for i in Interface._get_collection().find(
                 {"_id": {"$in": list(r_ifaces)}}, {"_id": 0, "managed_object": 1}
             )
-        )
+        }
         for o in Object.objects.filter(
             data__match={
                 "interface": "management",

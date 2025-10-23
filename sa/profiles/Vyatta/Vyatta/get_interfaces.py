@@ -101,7 +101,7 @@ class Script(BaseScript):
             r += [i]
         # Set MAC addresses
         for i in r:
-            macs = set(si.get("mac") for si in i.get("subinterfaces", []))
+            macs = {si.get("mac") for si in i.get("subinterfaces", [])}
             if len(macs) == 1 and None not in macs:
                 i["mac"] = macs.pop()
         return [{"interfaces": r}]

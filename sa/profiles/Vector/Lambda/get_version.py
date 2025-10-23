@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"^Device: (?P<platform>.+)\n" r"FW ver: (?P<version>\S+)\n" r"SN: (?P<serial>\d+)$",
+        r"^Device: (?P<platform>.+)\nFW ver: (?P<version>\S+)\nSN: (?P<serial>\d+)$",
         re.MULTILINE,
     )
 

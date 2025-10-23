@@ -101,7 +101,7 @@ def test_contains(env: Environment, key: str, expected: bool) -> None:
     ],
 )
 def test_keys(env: Environment, expected: List[str]) -> None:
-    r = list(sorted(env.keys()))
+    r = sorted(env.keys())
     assert r == expected
 
 
@@ -118,7 +118,7 @@ def test_keys(env: Environment, expected: List[str]) -> None:
     ],
 )
 def test_iter(env: Environment, expected: List[str]) -> None:
-    r = list(sorted(env))
+    r = sorted(env)
     assert r == expected
 
 
@@ -135,7 +135,7 @@ def test_iter(env: Environment, expected: List[str]) -> None:
     ],
 )
 def test_values(env: Environment, expected: List[str]) -> None:
-    r = list(sorted(env.values()))
+    r = sorted(env.values())
     assert r == expected
 
 
@@ -152,5 +152,5 @@ def test_values(env: Environment, expected: List[str]) -> None:
     ],
 )
 def test_items(env: Environment, expected: List[str]) -> None:
-    r = list(sorted(env.items()))
+    r = sorted(env.items())
     assert r == expected

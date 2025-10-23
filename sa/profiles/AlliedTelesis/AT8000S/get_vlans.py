@@ -30,7 +30,7 @@ class Script(BaseScript):
         for oid, v in self.snmp.getnext("1.3.6.1.2.1.17.7.1.4.3.1.1"):  # dot1qVlanStaticName
             o = oid.split(".")[-1]
             result += [{"vlan_id": int(oids[o]), "name": v.strip()}]
-        return list(sorted(result, key=operator.itemgetter("vlan_id")))
+        return sorted(result, key=operator.itemgetter("vlan_id"))
 
     def execute_cli(self):
         vlans = self.cli("show vlan")

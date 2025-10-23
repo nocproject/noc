@@ -593,7 +593,7 @@ def test_ipv4_range_to_prefixes(p1, p2):
     ],
 )
 def test_ipv4_special_addresses(prefix, special):
-    assert IPv4.prefix(prefix).special_addresses == set(IPv4(a) for a in special)
+    assert IPv4.prefix(prefix).special_addresses == {IPv4(a) for a in special}
 
 
 @pytest.mark.parametrize(

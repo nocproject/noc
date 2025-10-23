@@ -150,7 +150,7 @@ class InvApplication(ExtApplication):
         # Build node interface
         for name, o in children:
             model_plugins = o.model.plugins or []
-            disabled_plugins = set(p[1:] for p in model_plugins if p.startswith("-"))
+            disabled_plugins = {p[1:] for p in model_plugins if p.startswith("-")}
             n = {
                 "id": str(o.id),
                 "name": name,
@@ -789,7 +789,7 @@ class InvApplication(ExtApplication):
                 },
             }
         ).values_list("id")
-        return [id for id in ids]
+        return list(ids)
 
     @view(
         "^search/$",

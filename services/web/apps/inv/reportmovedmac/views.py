@@ -104,7 +104,7 @@ DEVICE_MOVED_QUERY = """SELECT
 
 
 def get_interface(ifaces: str):
-    r = list(sorted(ast.literal_eval(ifaces), key=itemgetter(1)))
+    r = sorted(ast.literal_eval(ifaces), key=itemgetter(1))
     iface_from, iface_to = r[0][0], r[-1][0]
     if iface_from == iface_to:
         iface_from, iface_to = (

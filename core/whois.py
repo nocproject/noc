@@ -194,11 +194,11 @@ class WhoisCacheLoader(object):
         :return:
         """
         # Get AS with discovered routes
-        discoverable_as = set(
+        discoverable_as = {
             "AS%s" % a.asn
             for a in AS.objects.all()
             if a.profile.enable_discovery_prefix_whois_route and a.profile
-        )
+        }
         # as -> [(prefix, description)]
         as_routes = defaultdict(list)
         if discoverable_as:

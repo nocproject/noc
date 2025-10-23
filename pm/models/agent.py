@@ -130,11 +130,11 @@ class Agent(Document):
             self.serial = serial
             changed = True
         if mac:
-            if list(sorted(mac)) != list(sorted(x.mac for x in self.mac)):
+            if sorted(mac) != sorted(x.mac for x in self.mac):
                 self.mac = [AgentMAC(mac=x) for x in sorted(mac)]
                 changed = True
         if ip:
-            if list(sorted(ip)) != list(sorted(x.ip for x in self.ip)):
+            if sorted(ip) != sorted(x.ip for x in self.ip):
                 self.ip = [AgentIp(ip=x) for x in sorted(ip)]
                 changed = True
         if changed:

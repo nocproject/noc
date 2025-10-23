@@ -467,12 +467,12 @@ class NotificationGroup(NOCModel):
     @property
     def active_members(self) -> Set[Tuple[str, str, Optional[str]]]:
         """List of currently active members: (method, param, language)"""
-        return set((c.method, c.contact, c.language) for c in self.members)
+        return {(c.method, c.contact, c.language) for c in self.members}
 
     @property
     def languages(self) -> Set[str]:
         """List of preferred languages for users"""
-        return set(x.language for x in self.members)
+        return {x.language for x in self.members}
 
     @classmethod
     def get_effective_message(cls, messages, lang: str) -> str:

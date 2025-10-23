@@ -21,7 +21,7 @@ class Script(BaseScript):
     cache = True
 
     rx_line = re.compile(
-        r"^\s+(?P<vrf>.+?)\s+" r"(?P<rd>\S+:\S+|<not set>)\s+(?P<iface>.*?)\s*$", re.IGNORECASE
+        r"^\s+(?P<vrf>.+?)\s+(?P<rd>\S+:\S+|<not set>)\s+(?P<iface>.*?)\s*$", re.IGNORECASE
     )
     rx_cont = re.compile(r"^\s{6,}(?P<iface>.+?)\s*$")
     rx_portchannel = re.compile(r"^Po\s*\d+(?:A|B)?$")

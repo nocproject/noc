@@ -20,7 +20,7 @@ class Script(BaseScript):
     interface = IGetVersion
 
     rx_ver = re.compile(
-        r"Version (?P<version>\S+).+cisco (?P<platform>Catalyst \d+? \S+?" r" processor)",
+        r"Version (?P<version>\S+).+cisco (?P<platform>Catalyst \d+? \S+? processor)",
         re.MULTILINE | re.DOTALL,
     )
     rx_ver1 = re.compile(

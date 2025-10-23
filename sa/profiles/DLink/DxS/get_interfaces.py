@@ -111,11 +111,9 @@ class Script(BaseScript):
         r"(?:Disabled|Enabled)\s+(?:Disabled|Enabled)\s+Enabled\s*"
     )
     rx_ospf = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+\S+\s+Enabled\s+" r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE
+        r"(?P<ipif>\S+)\s+\S+\s+\S+\s+Enabled\s+Link (?:Up|DOWN)\s+\d+", re.IGNORECASE
     )
-    rx_ospfv3 = re.compile(
-        r"(?P<ipif>\S+)\s+\S+\s+Enabled\s+" r"Link (?:Up|DOWN)\s+\d+", re.IGNORECASE
-    )
+    rx_ospfv3 = re.compile(r"(?P<ipif>\S+)\s+\S+\s+Enabled\s+Link (?:Up|DOWN)\s+\d+", re.IGNORECASE)
     rx_lldp = re.compile(
         r"Port ID\s+:\s+(?P<port>\d+(?:[:/]\d+)?)\s*\n"
         r"\-+\s*\nAdmin Status\s+: (?:TX_and_RX|RX_Only|TX_Only)"

@@ -19,7 +19,7 @@ class Script(BaseScript):
 
     rx_search = re.compile(r"^Default domain:\s+(?P<search>\S+)\s*$", re.MULTILINE)
     rx_nameserver = re.compile(
-        r"^Name servers \(Preference order\):\s+" r"(?P<server>.+)\s*$", re.MULTILINE
+        r"^Name servers \(Preference order\):\s+(?P<server>.+)\s*$", re.MULTILINE
     )
 
     def execute(self):

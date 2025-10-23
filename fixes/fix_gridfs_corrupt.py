@@ -18,18 +18,18 @@ def fix():
 def fix_repo(repo):
     vcs = GridVCS(repo)
     # Get files without chunk 0
-    revs = set(d["_id"] for d in vcs.fs._GridFS__files.find({}, {"_id": 1}))
-    chunks = set(d["files_id"] for d in vcs.fs._GridFS__chunks.find({"n": 0}, {"files_id": 1}))
+    revs = {d["_id"] for d in vcs.fs._GridFS__files.find({}, {"_id": 1})}
+    chunks = {d["files_id"] for d in vcs.fs._GridFS__chunks.find({"n": 0}, {"files_id": 1})}
     corrupt_files = revs - chunks
     if not corrupt_files:
         return
     # Reduce to corrupt objects
-    corrupt_objects = set(
+    corrupt_objects = {
         d["object"]
         for d in vcs.fs._GridFS__files.find(
             {"_id": {"$in": list(corrupt_files)}}, {"_id": 0, "object": 1}
         )
-    )
+    }
     for obj in corrupt_objects:
         fix_object(vcs, obj, corrupt_files)
 

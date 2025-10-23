@@ -160,7 +160,7 @@ class InterfaceApplication(ExtDocApplication):
         """
 
         def sorted_iname(s):
-            return list(sorted(s, key=lambda x: alnum_key(x["name"])))
+            return sorted(s, key=lambda x: alnum_key(x["name"]))
 
         # Get object
         o = self.get_object_or_404(ManagedObject, id=int(managed_object))
@@ -285,7 +285,7 @@ class InterfaceApplication(ExtDocApplication):
             for i in Interface.objects.filter(managed_object=o.id, type="physical").order_by("name")
             if not i.link
         ]
-        return list(sorted(r, key=lambda x: alnum_key(x["label"])))
+        return sorted(r, key=lambda x: alnum_key(x["label"]))
 
     @view(
         url=r"^l1/(?P<iface_id>[0-9a-f]{24})/change_profile/$",

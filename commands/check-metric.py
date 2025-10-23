@@ -74,7 +74,7 @@ class Command(BaseCommand):
         if profile:
             profiles = self.parse_json(profile)
         else:
-            profiles = [x for x in profile_loader.iter_profiles()]
+            profiles = list(profile_loader.iter_profiles())
 
         if metric:
             metrics = self.parse_json(metric)

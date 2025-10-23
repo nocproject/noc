@@ -31,7 +31,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_vlan = re.compile(
-        r"^\s+vid = (?P<vlan_id>\d+)\s*\n" r"(?P<ports>.+?)\n" r"^\s+localPort",
+        r"^\s+vid = (?P<vlan_id>\d+)\s*\n(?P<ports>.+?)\n^\s+localPort",
         re.MULTILINE | re.DOTALL,
     )
     rx_vlan_port = re.compile(r"hwPort(?P<port>\d) = (?P<type>\S+)")

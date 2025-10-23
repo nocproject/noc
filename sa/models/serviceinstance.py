@@ -323,7 +323,7 @@ class ServiceInstance(Document):
         for ipv4_addrs in SubInterface.objects.filter(
             managed_object=managed_object.id, ipv4_addresses__exists=True, enabled_afi="IPv4"
         ).scalar("ipv4_addresses"):
-            addrs |= set(IP.prefix(x).address for x in ipv4_addrs)
+            addrs |= {IP.prefix(x).address for x in ipv4_addrs}
         if addrs:
             q |= Q(addresses__address__in=addrs)
         for si in ServiceInstance.objects.filter(q):

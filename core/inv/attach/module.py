@@ -92,7 +92,7 @@ def get_free(container: Object, obj: Object) -> Iterable[ModulePosition]:
                 continue
             # Process oversized modules
             if size > 1:
-                next_conns = set(cn.name for cn in m.model.iter_next_connections(cn.name, size - 1))
+                next_conns = {cn.name for cn in m.model.iter_next_connections(cn.name, size - 1)}
                 if len(next_conns) != size - 1 or next_conns.intersection(used_slots):
                     continue  # Cannot be placed here
             # Available

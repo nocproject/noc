@@ -69,7 +69,7 @@ class LdapBackend(BaseAuthBackend):
         # Default ldap3 convert user_dn:
         user_info["user_dn"] = escape_filter_chars(user_info.get("user_dn"))
         # Get user groups
-        user_groups = set(g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info))
+        user_groups = {g.lower() for g in self.get_user_groups(connect, ldap_domain, user_info)}
         if ldap_domain.require_any_group and not user_groups:
             self.logger.error("User %s in not a member of any mapped groups. Deny access", user)
             raise self.LoginError("No groups")

@@ -297,7 +297,7 @@ class Sensor(Document):
             "items": [],
             "composed_metrics": [],
             "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
-            "rules": [ma for ma in MetricRule.iter_rules_actions(sensor.effective_labels)],
+            "rules": list(MetricRule.iter_rules_actions(sensor.effective_labels)),
         }
 
     @classmethod

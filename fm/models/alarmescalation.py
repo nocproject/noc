@@ -101,7 +101,7 @@ class AlarmEscalation(Document):
     @property
     def delays(self):
         if not hasattr(self, "_delays"):
-            self._delays = sorted(set(e.delay for e in self.escalations))
+            self._delays = sorted({e.delay for e in self.escalations})
         return self._delays
 
     def get_pre_reason(self, tt_system):

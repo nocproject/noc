@@ -133,7 +133,7 @@ class MatchRule(BaseModel):
         if self.labels:
             r["labels"] = {"$all": list(self.labels)}
         if self.resource_groups:
-            r["service_groups"] = {"$all": [x for x in self.resource_groups]}
+            r["service_groups"] = {"$all": list(self.resource_groups)}
         # if self.name_patter:
         #     r["name"] = {"$regex": self.name_patter}
         # if self.description_patter:

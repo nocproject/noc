@@ -43,7 +43,7 @@ class MigrationRunner(object):
         :return:
         """
         self.convert_south_history()
-        return set(d["name"] for d in self.hist_coll.find({}, {"name": 1}))
+        return {d["name"] for d in self.hist_coll.find({}, {"name": 1})}
 
     def convert_south_history(self):
         """

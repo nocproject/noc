@@ -355,12 +355,12 @@ class NetworkSegment(Document):
         from noc.sa.models.administrativedomain import AdministrativeDomain
 
         # Get all own administrative domains
-        adm_domains = set(
+        adm_domains = {
             d["administrative_domain"]
             for d in self.managed_objects.values("administrative_domain")
             .annotate(count=Count("id"))
             .order_by("count")
-        )
+        }
         p = set()
         for a in adm_domains:
             a = AdministrativeDomain.get_by_id(a)
@@ -423,9 +423,7 @@ class NetworkSegment(Document):
         coll = NetworkSegment._get_collection()
         for _ in range(max_level):
             # Get next wave
-            wave = (
-                set(d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})) - seen
-            )
+            wave = {d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})} - seen
             if not wave:
                 break
             seen |= wave

@@ -94,7 +94,7 @@ class Facade(Document):
         # Calculate slots
         if self.data:
             svg = SVG.from_string(self.data)
-            self.slots = list(sorted(x[SLOT_PREFIX_LEN:] for x in svg.iter_id() if is_slot_id(x)))
+            self.slots = sorted(x[SLOT_PREFIX_LEN:] for x in svg.iter_id() if is_slot_id(x))
         super().save(*args, **kwargs)
 
     def has_slot(self, name: str) -> bool:

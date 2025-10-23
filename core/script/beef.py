@@ -104,7 +104,7 @@ class Beef(object):
         ]
         self.cli = [
             CLI(
-                names=[n for n in self.get_or_die(d, "names")],
+                names=list(self.get_or_die(d, "names")),
                 request=smart_bytes(self.get_or_die(d, "request")),
                 reply=[smart_bytes(n) for n in self.get_or_die(d, "reply")],
             )

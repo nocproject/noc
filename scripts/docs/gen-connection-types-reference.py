@@ -225,14 +225,14 @@ def main():
                     if g:
                         cgroups[g].append(item)
     for g in cgroups:
-        cgroups[g] = list(sorted(cgroups[g]))
+        cgroups[g] = sorted(cgroups[g])
     # Generate navigation and content
     nav = mkdocs_gen_files.Nav()
     nav["Overview"] = Path("index.md")
     for bucket in sorted(buckets):
         rel_path = bucket_path(bucket)
         nav[bucket] = rel_path
-        items = list(sorted(buckets[bucket], key=alnum_key))
+        items = sorted(buckets[bucket], key=alnum_key)
         out = BOOK / rel_path
         logging.debug("Rendering %s (%d items)", out, len(items))
         # with mkdocs_gen_files.open(out, "w") as fp:

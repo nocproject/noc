@@ -71,7 +71,7 @@ class Script(BaseScript):
         re.MULTILINE | re.IGNORECASE,
     )
     rx_ipv6 = re.compile(
-        r"\s+IPv6 address:\s+(?P<address>\S+)" r"\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
+        r"\s+IPv6 address:\s+(?P<address>\S+)\s+IPv6 subnet:\s+(?P<net>\S+)/(?P<mask>\d+)",
         re.MULTILINE | re.IGNORECASE,
     )
 
@@ -478,7 +478,7 @@ class Script(BaseScript):
 
         for i in interfaces:
             subs = i["subinterfaces"]
-            for vrf in set(imap.get(si["name"], "default") for si in subs):
+            for vrf in {imap.get(si["name"], "default") for si in subs}:
                 c = i.copy()
                 c["subinterfaces"] = [si for si in subs if imap.get(si["name"], "default") == vrf]
                 vrfs[vrf]["interfaces"] += [c]

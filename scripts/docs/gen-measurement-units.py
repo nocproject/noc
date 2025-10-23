@@ -111,7 +111,7 @@ def main():
     # Compile template
     tpl = jinja2.Template(TEMPLATE)
     # Load items
-    items = list(sorted(iter_data()))
+    items = sorted(iter_data())
     # Render table
     table = tpl.render(items=items)
     with open(DOCS / BOOK) as fp:

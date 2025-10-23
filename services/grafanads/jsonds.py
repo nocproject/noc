@@ -157,11 +157,9 @@ class JsonDSAPI(object):
         """
         self.logger.debug("Annotation Request: %s", req)
         start, end = self.convert_ts_range(req)
-        return list(
-            sorted(
-                self.iter_alarms_annotations(req.annotation, start, end, user),
-                key=operator.itemgetter("time"),
-            )
+        return sorted(
+            self.iter_alarms_annotations(req.annotation, start, end, user),
+            key=operator.itemgetter("time"),
         )
 
     @staticmethod

@@ -31,4 +31,4 @@ class Script(BaseScript):
         # Spanning Tree Enabled/Disabled : Enabled
         r = self.snmp.getnext(mib["BRIDGE-MIB::dot1dStpPortEnable"], bulk=False)
         # if value == 1:
-        return any([x[1] for x in r])
+        return any(x[1] for x in r)

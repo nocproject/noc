@@ -21,7 +21,7 @@ class Script(BaseScript):
     always_prefer = "S"
 
     rx_line = re.compile(
-        r"(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>Learnt|Static)\s+" r"(?P<interfaces>\S+)",
+        r"(?P<vlan_id>\d+)\s+(?P<mac>\S+)\s+(?P<type>Learnt|Static)\s+(?P<interfaces>\S+)",
         re.MULTILINE,
     )
     rx_line1 = re.compile(

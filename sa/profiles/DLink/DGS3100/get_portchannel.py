@@ -22,7 +22,7 @@ class Script(BaseScript):
         re.MULTILINE | re.DOTALL,
     )
     rx_type = re.compile(
-        r"create link_aggregation group_id (?P<group_id>\d+) " r"type (?P<type>\S+)\s+",
+        r"create link_aggregation group_id (?P<group_id>\d+) type (?P<type>\S+)\s+",
         re.MULTILINE | re.DOTALL,
     )
 

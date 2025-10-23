@@ -20,7 +20,7 @@ class Script(BaseScript):
     rx_uplink = re.compile(r"^\s+(?P<interface>\S+ \d+)$", re.MULTILINE)
 
     rx_status = re.compile(
-        r"^(?P<interface>\S+ \d+)\s+(?P<status>up|down)\s+\S+\s+\S+\s+\S+" r"(\s+\S+|)\s*$",
+        r"^(?P<interface>\S+ \d+)\s+(?P<status>up|down)\s+\S+\s+\S+\s+\S+(\s+\S+|)\s*$",
         re.MULTILINE,
     )
 
