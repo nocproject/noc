@@ -10,7 +10,7 @@ import itertools
 import logging
 import pytz
 from pathlib import Path
-from typing import Optional
+from typing import Optional, TypeVar, Generic, Any, Iterable, Dict, List, Union
 
 # NOC modules
 from noc.core.validators import is_int, is_ipv4, is_uuid
@@ -18,11 +18,13 @@ from noc.core.comp import smart_text, DEFAULT_ENCODING
 
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
 
-class BaseParameter(object):
+
+class BaseParameter(Generic[T]):
     PARAM_NUMBER = itertools.count()
 
-    def __init__(self, default=None, help=None):
+    def __init__(self, default: Optional[T] = None, help: Optional[str] = None):
         self.param_number = next(self.PARAM_NUMBER)
         if default is None:
             self.default = None
@@ -31,41 +33,48 @@ class BaseParameter(object):
             self.orig_value = default
             self.default = self.clean(default)
         self.help = help
-        self.name = None  # Set by metaclass
-        self.value = self.default  # Set by __set__ method
+        self.name: Optional[str] = None  # Set by metaclass
+        self.value: T = self.default  # Set by __set__ method
 
-    def __get__(self, instance, owner):
+    def __get__(self, _instance, _owner) -> T:
         return self.value
 
-    def __set__(self, instance, value):
+    def __set__(self, _instance, value: Any) -> None:
         self.set_value(value)
 
-    def set_value(self, value):
+    def set_value(self, value: Any) -> None:
         self.orig_value = value
         self.value = self.clean(value)
 
-    def clean(self, v):
+    def clean(self, v: Any) -> T:
         return v
 
-    def dump_value(self):
-        return self.value
+    def dump_value(self) -> str:
+        return str(self.value)
 
 
-class StringParameter(BaseParameter):
-    def __init__(self, default=None, help=None, choices=None):
-        self.choices = choices
+class StringParameter(BaseParameter[str]):
+    def __init__(
+        self,
+        default: Optional[str] = None,
+        help: Optional[str] = None,
+        choices: Optional[Iterable[str]] = None,
+    ):
+        self.choices = set(choices) if choices else None
         super().__init__(default=default, help=help)
 
-    def clean(self, v):
-        v = smart_text(v)
+    def clean(self, v: Any) -> str:
+        r = smart_text(v)
         if self.choices:
-            if v not in self.choices:
-                raise ValueError(f"Invalid value: {v}")
-        return v
+            if r not in self.choices:
+                raise ValueError(f"Invalid value: {r}")
+        return r
 
 
-class SecretParameter(BaseParameter):
-    def __init__(self, default=None, help=None, path: Optional[Path] = None):
+class SecretParameter(BaseParameter[str]):
+    def __init__(
+        self, default: Optional[str] = None, help: Optional[str] = None, path: Optional[Path] = None
+    ):
         if path and path.exists():
             # Read defaults from file
             with open(path) as fp:
@@ -74,89 +83,102 @@ class SecretParameter(BaseParameter):
                     default = data
         super().__init__(default=default, help=help)
 
-    def clean(self, v):
+    def clean(self, v: Any) -> str:
         return smart_text(v)
 
     def __repr__(self):
         return "****hidden****"
 
 
-class UUIDParameter(BaseParameter):
-    def clean(self, v):
+class UUIDParameter(BaseParameter[str]):
+    def clean(self, v: Any) -> str:
         if isinstance(v, bytes):
             v = v.decode(DEFAULT_ENCODING)
         if v and not is_uuid(v):
-            raise ValueError(f"Invalid UUID value: {v}")
+            msg = f"Invalid UUID value: {v}"
+            raise ValueError(msg)
         return v
 
 
-class TimeZoneParameter(BaseParameter):
-    def clean(self, v):
+class TimeZoneParameter(BaseParameter[pytz.BaseTzInfo]):
+    def clean(self, v: Any) -> pytz.BaseTzInfo:
         try:
             return pytz.timezone(v)
         except pytz.UnknownTimeZoneError:
-            raise ValueError(f"Invalid TimeZone value: {v}")
+            msg = f"Invalid TimeZone value: {v}"
+            raise ValueError(msg)
 
 
-class IntParameter(BaseParameter):
-    def __init__(self, default=None, help=None, min=None, max=None):
+class IntParameter(BaseParameter[int]):
+    def __init__(
+        self,
+        default: Optional[int] = None,
+        help: Optional[str] = None,
+        min: Optional[int] = None,
+        max: Optional[int] = None,
+    ):
         self.min = min
         self.max = max
         super().__init__(default=default, help=None)
 
-    def clean(self, v):
-        v = int(v)
+    def clean(self, v: Any) -> int:
+        r = int(v)
         if self.min is not None:
-            if v < self.min:
-                raise ValueError("Value is less than %d" % self.min)
+            if r < self.min:
+                msg = f"Value is less than {self.min}"
+                raise ValueError()
         if self.max is not None:
-            if v > self.max:
-                raise ValueError("Value is greater than %d" % self.max)
-        return v
+            if r > self.max:
+                msg = f"Value is greater than {self.max}"
+                raise ValueError(msg)
+        return r
 
 
-class BooleanParameter(BaseParameter):
-    def clean(self, v):
+class BooleanParameter(BaseParameter[bool]):
+    def clean(self, v: Any) -> bool:
         if isinstance(v, str):
             v = v.lower() in ["y", "t", "true", "yes"]
         return bool(v)
 
 
-class FloatParameter(BaseParameter):
-    def clean(self, v):
+class FloatParameter(BaseParameter[float]):
+    def clean(self, v: Any) -> float:
         return float(v)
 
 
-class MapParameter(BaseParameter):
-    def __init__(self, default=None, help=None, mappings=None):
+class MapParameter(BaseParameter[T], Generic[T]):
+    def __init__(
+        self, mappings: Dict[str, T], default: Optional[str] = None, help: Optional[str] = None
+    ):
         self.mappings = mappings or {}
         super().__init__(default=default, help=help)
 
-    def clean(self, v):
+    def clean(self, v: Any) -> T:
         try:
             return self.mappings[smart_text(v)]
         except KeyError:
-            raise ValueError("Invalid value %s" % v)
+            msg = f"Invalid value {v}"
+            raise ValueError(msg)
 
-    def dump_value(self):
+    def dump_value(self) -> str:
         if not self.mappings:
             return super().dump_value()
         for mv in self.mappings:
             if self.mappings[mv] == self.value:
                 return mv
-        return self.value
+        return str(self.value)
 
 
-class HandlerParameter(BaseParameter):
-    def clean(self, v):
+class HandlerParameter(BaseParameter[str]):
+    def clean(self, v: Any) -> str:
         # h = get_handler(v)
         # if not h:
         #     raise ValueError("Invalid handler: %s" % v)
         # return h
-        return v
+        return str(v)
 
 
-class SecondsParameter(BaseParameter):
+class SecondsParameter(BaseParameter[int]):
     SHORT_FORM = (
         (365 * 24 * 3600, "y"),
         (30 * 24 * 3600, "m"),
@@ -176,7 +198,7 @@ class SecondsParameter(BaseParameter):
         "y": 365 * 24 * 3600,
     }
 
-    def clean(self, v):
+    def clean(self, v: Any) -> int:
         if isinstance(v, int):
             return v
         m = self.SCALE.get(v[-1], None)
@@ -185,22 +207,22 @@ class SecondsParameter(BaseParameter):
         else:
             v = v[:-1]
         try:
-            v = int(v)
+            return int(v) * m
         except ValueError:
-            raise ValueError("Invalid value: %s" % v)
-        return v * m
+            msg = "Invalid value: {v}"
+            raise ValueError(msg)
 
-    def dump_value(self):
-        if not self.value > 0:
-            return 0
+    def dump_value(self) -> str:
+        if self.value <= 0:
+            return "0"
         for d, s in self.SHORT_FORM:
             n, r = divmod(self.value, d)
             if not r:
-                return "%d%s" % (n, s)
-        return "%ss" % self.value
+                return f"{n}{s}"
+        return f"{self.value}s"
 
 
-class BytesParameter(BaseParameter):
+class BytesSizeParameter(BaseParameter[int]):
     SHORT_FORM = (
         (1099511627776, "T"),
         (1073741824, "G"),
@@ -216,7 +238,7 @@ class BytesParameter(BaseParameter):
         "T": 1099511627776,
     }
 
-    def clean(self, v):
+    def clean(self, v: Any) -> int:
         if isinstance(v, int):
             return v
         m = self.SCALE.get(v[-1], None)
@@ -225,27 +247,27 @@ class BytesParameter(BaseParameter):
         else:
             v = v[:-1]
         try:
-            v = int(v)
+            return int(v) * m
         except ValueError:
-            raise ValueError("Invalid value: %s" % v)
-        return v * m
+            msg = f"Invalid value: {v}"
+            raise ValueError(msg)
 
-    def dump_value(self):
+    def dump_value(self) -> str:
         if not self.value > 0:
-            return 0
+            return "0"
         for d, s in self.SHORT_FORM:
             n, r = divmod(self.value, d)
             if not r:
-                return "%d%s" % (n, s)
-        return "%ss" % self.value
+                return f"{n}{s}"
+        return f"{self.value}s"
 
 
-class ListParameter(BaseParameter):
-    def __init__(self, default=None, help=None, item=None):
+class ListParameter(BaseParameter[List[T]], Generic[T]):
+    def __init__(self, item: BaseParameter[T], default: Any = None, help: Optional[str] = None):
         self.item = item
         super().__init__(default=default, help=help)
 
-    def clean(self, v):
+    def clean(self, v: Any) -> List[T]:
         if isinstance(v, str):
             # Alter format - [value1,value2]
             if v.startswith("[") and v.endswith("]"):
@@ -257,36 +279,46 @@ class ListParameter(BaseParameter):
 class ServiceItem(object):
     __slots__ = ["host", "port"]
 
-    def __init__(self, host, port):
+    def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
 
     def __str__(self):
-        return "%s:%s" % (self.host, self.port)
+        return f"{self.host}:{self.port}"
 
     def __repr__(self):
-        return "<ServiceItem %s:%s>" % (self.host, self.port)
+        return f"<ServiceItem {self.host}:{self.port}>"
 
-    def __contains__(self, item):
-        return item in "%s:%s" % (self.host, self.port)
+    def __contains__(self, item) -> bool:
+        # @todo: Strange
+        return item in f"{self.host}:{self.port}"
 
 
-class ServiceParameter(BaseParameter):
+class ServiceParameter(BaseParameter[List[ServiceItem]]):
     """
     Resolve external service location to a list of ServiceItem.
     Service resolved at startup,
     though in future implementation it can be changed during runtime
 
-    Resolves to empty list when service is not available
-    :param service: Service name
-    :param near: Resolve to nearest service
-    :param wait: Block and wait until at least one instance of
-       service will be available
+    Resolves to empty list when service is not available.
+
+    Arguments:
+        service: Service name
+        near: Resolve to nearest service
+        wait: Block and wait until at least one instance of service will be available
     """
 
     DEFAULT_RESOLUTION_TIMEOUT = 1
 
-    def __init__(self, service, near=False, wait=True, help=None, full_result=True, critical=True):
+    def __init__(
+        self,
+        service: Union[str, List[str]],
+        near: bool = False,
+        wait: bool = True,
+        help: Optional[str] = None,
+        full_result: bool = True,
+        critical: bool = True,
+    ):
         if isinstance(service, str):
             self.services = [service]
         else:
@@ -297,23 +329,23 @@ class ServiceParameter(BaseParameter):
         self.critical = critical
         super().__init__(default=[], help=help)
 
-    def __get__(self, instance, owner):
+    def __get__(self, _instance, _owner) -> List[ServiceItem]:
         if not self.value:
             from noc.core.ioloop.util import run_sync
 
             run_sync(self.resolve)
         return self.value
 
-    async def async_get(self):
+    async def async_get(self) -> List[ServiceItem]:
         if not self.value:
             await self.resolve()
         return self.value
 
-    def set_value(self, value):
+    def set_value(self, value: Any) -> None:
         self.value = None
         self.services = [smart_text(value)]
 
-    async def resolve(self):
+    async def resolve(self) -> None:
         from noc.core.dcs.util import resolve_async
         from noc.core.dcs.error import ResolutionError
 
@@ -347,7 +379,7 @@ class ServiceParameter(BaseParameter):
             if not self.wait or self.value:
                 break
 
-    def as_list(self):
+    def as_list(self) -> List[str]:
         """
         :return: List of <host>:<port>
         """
@@ -355,10 +387,10 @@ class ServiceParameter(BaseParameter):
             return [str(i) for i in self.value]
         return []
 
-    def dump_value(self):
+    def dump_value(self) -> str:
         if len(self.services) == 1:
             return self.services[0]
-        return self.services
+        return str(self.services)
 
     @staticmethod
     def is_static(svc):

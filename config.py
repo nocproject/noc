@@ -27,7 +27,7 @@ from noc.core.config.params import (
     BooleanParameter,
     HandlerParameter,
     SecondsParameter,
-    BytesParameter,
+    BytesSizeParameter,
     FloatParameter,
     ServiceParameter,
     SecretParameter,
@@ -40,7 +40,7 @@ SECRETS_BASE = Path("/", "run", "secrets")
 
 
 class Config(BaseConfig):
-    loglevel = MapParameter(
+    loglevel = MapParameter[int](
         default="info",
         mappings={
             # pylint: disable=used-before-assignment
@@ -105,7 +105,7 @@ class Config(BaseConfig):
         enable_reboots = BooleanParameter(default=False)
         enable_managedobjects = BooleanParameter(default=False)
         enable_alarms_archive = BooleanParameter(default=False)
-        alarms_archive_policy = MapParameter(
+        alarms_archive_policy = MapParameter[str](
             default="weekly",
             mappings={
                 "weekly": '{{doc["clear_timestamp"].strftime("y%Yw%W")}}',
@@ -305,7 +305,7 @@ class Config(BaseConfig):
             default=True, help="Permit consul self registration"
         )
         forensic = BooleanParameter(default=False)
-        gate = ListParameter(item=StringParameter(), default=[], help="Feature gates")
+        gate = ListParameter[str](item=StringParameter(), default=[], help="Feature gates")
 
     class fm(ConfigSection):
         active_window = SecondsParameter(default="1d")
@@ -337,15 +337,15 @@ class Config(BaseConfig):
         enable_tile1 = BooleanParameter(default=False)
         tile1_name = StringParameter(default="Custom 1")
         tile1_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile1_subdomains = ListParameter(item=StringParameter(), default=[])
+        tile1_subdomains = ListParameter[str](item=StringParameter(), default=[])
         enable_tile2 = BooleanParameter(default=False)
         tile2_name = StringParameter(default="Custom 2")
         tile2_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile2_subdomains = ListParameter(item=StringParameter(), default=[])
+        tile2_subdomains = ListParameter[str](item=StringParameter(), default=[])
         enable_tile3 = BooleanParameter(default=False)
         tile3_name = StringParameter(default="Custom 3")
         tile3_url = StringParameter(default="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
-        tile3_subdomains = ListParameter(item=StringParameter(), default=[])
+        tile3_subdomains = ListParameter[str](item=StringParameter(), default=[])
         yandex_supported = BooleanParameter(default=False)
         enable_yandex_roadmap = BooleanParameter(default=False)
         enable_yandex_hybrid = BooleanParameter(default=False)
@@ -392,10 +392,10 @@ class Config(BaseConfig):
         security_protocol = StringParameter(
             choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
         )
-        max_batch_size = BytesParameter(
+        max_batch_size = BytesSizeParameter(
             default=16384, help="Maximum size of buffered data per partition"
         )
-        max_request_size = BytesParameter(default=1048576, help="The maximum size of a request")
+        max_request_size = BytesSizeParameter(default=1048576, help="The maximum size of a request")
         compression_type = StringParameter(
             default="none",
             choices=["none", "gzip", "snappy", "lz4", "zstd"],
@@ -488,7 +488,7 @@ class Config(BaseConfig):
         enable_reboot = BooleanParameter(default=False)
         enable_metrics = BooleanParameter(default=False)
         # Comma-separated list of metric scopes
-        enable_metric_scopes = ListParameter(item=StringParameter(), default=[])
+        enable_metric_scopes = ListParameter[str](item=StringParameter(), default=[])
         enable_snmptrap = BooleanParameter(default=False)
         enable_syslog = BooleanParameter(default=False)
         enable_diagnostic_change = BooleanParameter(default=False)
@@ -589,14 +589,14 @@ class Config(BaseConfig):
         security_protocol = StringParameter(
             choices=["PLAINTEXT", "SASL_PLAINTEXT", "SSL", "SASL_SSL"], default="PLAINTEXT"
         )
-        max_batch_size = BytesParameter(
+        max_batch_size = BytesSizeParameter(
             default=16384, help="Maximum size of buffered data per partition"
         )
         retry_backoff_ms = SecondsParameter(
             default=3,
             help="The amount of time to wait before attempting to retry a failed request to a given topic partition",
         )
-        max_request_size = BytesParameter(default=1048576, help="The maximum size of a request")
+        max_request_size = BytesSizeParameter(default=1048576, help="The maximum size of a request")
         compression_type = StringParameter(
             default="lz4",
             choices=["none", "gzip", "snappy", "lz4", "zstd"],
@@ -676,7 +676,7 @@ class Config(BaseConfig):
                 default="24h",
                 help="FM events stream retention interval. If 0 use Liftbrdige setting value",
             )
-            retention_max_bytes = BytesParameter(
+            retention_max_bytes = BytesSizeParameter(
                 default=0,
                 help="FM events stream retention size (in bytes). If 0 use Liftbrdige setting value",
             )
@@ -684,7 +684,7 @@ class Config(BaseConfig):
                 default="1h",
                 help="FM events stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
             )
-            segment_max_bytes = BytesParameter(
+            segment_max_bytes = BytesSizeParameter(
                 default=0,
                 help="FM events stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
             )
@@ -698,7 +698,7 @@ class Config(BaseConfig):
                 default="24h",
                 help="FM alarms stream retention interval. If 0 use Liftbrdige setting value",
             )
-            retention_max_bytes = BytesParameter(
+            retention_max_bytes = BytesSizeParameter(
                 default=0,
                 help="FM alarms stream retention size (in bytes). If 0 use Liftbrdige setting value",
             )
@@ -706,7 +706,7 @@ class Config(BaseConfig):
                 default="1h",
                 help="FM alarms stream segment interval. Must be less retention age. If 0 use Liftbrdige setting value",
             )
-            segment_max_bytes = BytesParameter(
+            segment_max_bytes = BytesSizeParameter(
                 default=0,
                 help="FM alarms stream segment size. Must be less retention size. If 0 use Liftbrdige setting value",
             )
@@ -717,17 +717,17 @@ class Config(BaseConfig):
 
         class message(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
+            retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
+            segment_max_bytes = BytesSizeParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
             auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class ch(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default="100M")
+            retention_max_bytes = BytesSizeParameter(default="100M")
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default="50M")
+            segment_max_bytes = BytesSizeParameter(default="50M")
             auto_pause_time = SecondsParameter(default=0)
             auto_pause_disable_if_subscribers = BooleanParameter(default=False)
             replication_factor = IntParameter(
@@ -736,32 +736,32 @@ class Config(BaseConfig):
 
         class kafkasender(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
+            retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
+            segment_max_bytes = BytesSizeParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
             auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class metrics(ConfigSection):
             retention_max_age = SecondsParameter(default="1h")
-            retention_max_bytes = BytesParameter(default=0)
+            retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="30M")
-            segment_max_bytes = BytesParameter(default=0)
+            segment_max_bytes = BytesSizeParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
             auto_pause_disable_if_subscribers = BooleanParameter(default=False)
 
         class jobs(ConfigSection):
             retention_max_age = SecondsParameter(default="24h")
-            retention_max_bytes = BytesParameter(default=0)
+            retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="1h")
-            segment_max_bytes = BytesParameter(default=0)
+            segment_max_bytes = BytesSizeParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
 
         class submit(ConfigSection):
             retention_max_age = SecondsParameter(default="24h")
-            retention_max_bytes = BytesParameter(default=0)
+            retention_max_bytes = BytesSizeParameter(default=0)
             segment_max_age = SecondsParameter(default="1h")
-            segment_max_bytes = BytesParameter(default=0)
+            segment_max_bytes = BytesSizeParameter(default=0)
             auto_pause_time = SecondsParameter(default=0)
 
     class syslogcollector(ConfigSection):
@@ -776,7 +776,7 @@ class Config(BaseConfig):
         storm_threshold_reduction = FloatParameter(default=0.9)
         # time to live (rounds quantity) of records in storm protection addresses dictionary
         storm_record_ttl = IntParameter(default=10)
-        storm_min_severity = MapParameter(
+        storm_min_severity = MapParameter[int](
             default="error",
             mappings={
                 "emergency": 0,
@@ -796,8 +796,8 @@ class Config(BaseConfig):
         retry_timeout = IntParameter(default=2)
         use_proxy = BooleanParameter(default=False)
         proxy_address = StringParameter()
-        max_body_size = BytesParameter(default=3000)
-        max_file_size = BytesParameter(default=50000000)
+        max_body_size = BytesSizeParameter(default=3000)
+        max_file_size = BytesSizeParameter(default=50000000)
         http_connect_timeout = IntParameter(min=2, max=60, default=5)
         http_request_timeout = IntParameter(min=2, max=60, default=3)
 
@@ -848,7 +848,7 @@ class Config(BaseConfig):
         heatmap_zoom = StringParameter(default="4")
         map_lon = StringParameter(default="108.567849")
         map_lat = StringParameter(default="66.050063")
-        max_image_size = BytesParameter(default="2M")
+        max_image_size = BytesSizeParameter(default="2M")
         topology_map_grid_size = IntParameter(min=5, default=25)
         report_csv_delimiter = StringParameter(choices=[";", ","], default=";")
         enable_report_history = BooleanParameter(
@@ -856,7 +856,7 @@ class Config(BaseConfig):
         )
 
     class ui(ConfigSection):
-        max_avatar_size = BytesParameter(default="256K")
+        max_avatar_size = BytesSizeParameter(default="256K")
         max_rest_limit = IntParameter(default=100)
 
     class datasource(ConfigSection):
@@ -1009,11 +1009,11 @@ class Config(BaseConfig):
 
     class tests(ConfigSection):
         # List of pyfilesystem URLs holding intial data
-        fixtures_paths = ListParameter(item=StringParameter(), default=["tests/data"])
+        fixtures_paths = ListParameter[str](item=StringParameter(), default=["tests/data"])
         # List of pyfilesystem URLs holding event classification samples
-        events_paths = ListParameter(item=StringParameter())
+        events_paths = ListParameter[str](item=StringParameter())
         # List of pyfilesystem URLs holding beef test cases
-        beef_paths = ListParameter(item=StringParameter())
+        beef_paths = ListParameter[str](item=StringParameter())
         # SSHD hostname and port
         sshd_host = StringParameter(default="sshd")
         sshd_port = IntParameter(default=22)
@@ -1037,18 +1037,18 @@ class Config(BaseConfig):
         rpsl_inverse_pref_style = BooleanParameter(default=False)
 
     class perfomance(ConfigSection):
-        default_hist = ListParameter(
+        default_hist = ListParameter[float](
             item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
         )
         enable_mongo_hist = BooleanParameter(default=False)
-        mongo_hist = ListParameter(
+        mongo_hist = ListParameter[float](
             item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
         )
         enable_postgres_hist = BooleanParameter(default=False)
-        postgres_hist = ListParameter(
+        postgres_hist = ListParameter[float](
             item=FloatParameter(), default=[0.001, 0.005, 0.01, 0.05, 0.5, 1.0, 5.0, 10.0]
         )
-        default_quantiles = ListParameter(item=FloatParameter(), default=[0.5, 0.9, 0.95])
+        default_quantiles = ListParameter[float](item=FloatParameter(), default=[0.5, 0.9, 0.95])
         default_quantiles_epsilon = 0.01
         default_quantiles_window = 60
         default_quantiles_buffer = 100
