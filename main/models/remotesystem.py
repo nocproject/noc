@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from threading import Lock
 import operator
 import datetime
+from threading import Lock
 from typing import Optional, Union, List, Dict, Tuple, Any
 
 # Third-party modules
@@ -206,6 +206,7 @@ class RemoteSystem(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _api_key_cache = cachetools.TTLCache(maxsize=10, ttl=60)
     _active_collector = cachetools.TTLCache(maxsize=10, ttl=120)
 
     SCHEDULER = "scheduler"
@@ -229,6 +230,14 @@ class RemoteSystem(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["RemoteSystem"]:
         return RemoteSystem.objects.filter(bi_id=bi_id).first()
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_api_key_cache"), lock=lambda _: id_lock)
+    def get_by_api_key(cls, api_key: str) -> Optional["RemoteSystem"]:
+        api_key = APIKey.get_by_api_key(api_key)
+        if api_key:
+            return RemoteSystem.objects.filter(api_key=api_key).first()
+        return None
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_active_collector"), lock=lambda _: id_lock)
@@ -445,6 +454,16 @@ class RemoteSystem(Document):
     def clean_reference(cls, remote_system: "RemoteSystem", remote_id: str):
         """Build reference string. Maybe add aliases ?"""
         return f"{REFERENCE_CODE}:{remote_system.name}:{remote_id}"
+
+    @classmethod
+    def from_reference(cls, reference: str) -> Tuple["RemoteSystem", str]:
+        if not reference.startswith(REFERENCE_CODE):
+            raise ValueError("Unknown Reference format")
+        _, name, remote_id = reference.split(":")
+        rs = RemoteSystem.get_by_name(name)
+        if not rs:
+            raise ValueError("Unknown Remote System by name %s" % name)
+        return rs, remote_id
 
     def reset_lock(self):
         """"""
