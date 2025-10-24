@@ -11,7 +11,7 @@ import bisect
 import datetime
 from operator import itemgetter
 import re
-from typing import Optional, Iterable, Tuple, AsyncIterable
+from typing import Any, AsyncIterable, Dict, List, Optional, Iterable, Tuple
 
 # NOC modules
 from noc.config import config
@@ -20,6 +20,7 @@ from noc.core.mac import MAC
 from noc.core.translation import ugettext as _
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.macvendor import MACVendor
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
 from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
 
@@ -95,14 +96,29 @@ class MovedMACsDS(BaseDataSource):
     params = [
         ParamInfo(name="start", type="datetime", required=True),
         ParamInfo(name="end", type="datetime", required=True),
+        ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
+        ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
         ParamInfo(name="interface_profile", type="str", model="inv.InterfaceProfile"),
         ParamInfo(name="exclude_serial_change", type="bool", default=False),
     ]
+
+    @staticmethod
+    def get_filter(filters: Dict[str, Any]) -> Dict[str, Any]:
+        r = {}
+        if "resource_group" in filters:
+            r["effective_service_groups__overlap"] = ResourceGroup.get_nested_ids(
+                filters["resource_group"],
+                convert_oid=True,
+            )
+        if "segment" in filters:
+            r["segment__in"] = filters["segment"].get_nested_ids()
+        return r
 
     @classmethod
     async def iter_query(
         cls,
         fields: Optional[Iterable[str]] = None,
+        admin_domain_ads: Optional[List[int]] = None,
         start: datetime.datetime = None,
         end: datetime.datetime = None,
         interface_profile: Optional[InterfaceProfile] = None,
@@ -128,6 +144,11 @@ class MovedMACsDS(BaseDataSource):
             )
         ):
             serials_changed[int(row[0])] = row[1]
+        q_filter = cls.get_filter(kwargs)
+        mos = ManagedObject.objects.filter(**q_filter)
+        if admin_domain_ads:
+            mos = mos.filter(administrative_domain__in=admin_domain_ads)
+        mos_bi_id = set(mos.order_by("bi_id").values_list("bi_id", flat=True))
         num = 1
         for (
             mo_bi_id,
@@ -139,6 +160,8 @@ class MovedMACsDS(BaseDataSource):
             MAC_MOVED_QUERY % (iface_filter, start.date().isoformat(), end.date().isoformat())
         ):
             mo_bi_id = int(mo_bi_id)
+            if int(mo_bi_id) not in mos_bi_id:
+                continue
             if exclude_serial_change and mo_bi_id in serials_changed:
                 continue
             iface_from, iface_to, migrate = get_interface(ifaces)

@@ -10,11 +10,11 @@
             "orientation": "H",
             "queries": [
                 {
-                    "datasource": "managedobjectds",
+                    "datasource": "movedmacsds",
                     "json": null
                 },
                 {
-                    "datasource": "movedmacsds",
+                    "datasource": "managedobjectds",
                     "json": null
                 }
             ]
@@ -24,7 +24,7 @@
             "orientation": "H",
             "parent": "Root",
             "queries": [{
-                "ds_query": "select * from Root where managed_object_bi_id is not null"
+                "ds_query": "select * from Root"
             }]
         }
     ],
@@ -216,6 +216,14 @@
             "hide": false,
             "label": "Exclude Device if SerialNumber changed",
             "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.administrativedomain,event_type,sn_changed,vendor_mac,mac,migrate_ts,from_iface_name,from_iface_down,to_iface_name,to_iface_down",
+            "hide": true,
+            "label": "Fields",
+            "type": "fields_selector"
         }
     ],
     "templates": [
