@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Login window
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.desktop.About");
@@ -29,7 +29,7 @@ Ext.define("NOC.main.desktop.About", {
           height: 190,
           html: new Ext.XTemplate(
             '<div style="display: flex; flex-direction: row; padding: 20">\n' +
-              '<img src="{logo_url}" style="width: 100px; height: 100px">\n' +
+              '<img src="/ui/web/img/logo_black.svg" style="width: 100px; height: 100px">\n' +
               '<div style="padding-left: 10; display: flex; flex-direction: column; font-size: 16px">\n' +
               '<div style="font-size: 24px; font-weight: bold">{brand} {version}</div>\n' +
               '<div style="font-style: italic">{installation}</div>\n' +

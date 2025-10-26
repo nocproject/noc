@@ -239,10 +239,6 @@ class Config(BaseConfig):
         object_status_update_interval = SecondsParameter(default="2s")
 
     class customization(ConfigSection):
-        favicon_url = StringParameter(default="/ui/web/img/logo_24x24_deep_azure.png")
-        logo_url = StringParameter(default="/ui/web/img/logo_white.svg")
-        logo_width = IntParameter(default=24)
-        logo_height = IntParameter(default=24)
         branding_color = StringParameter(default="#ffffff")
         branding_background_color = StringParameter(default="#34495e")
         preview_theme = StringParameter(default="midnight")

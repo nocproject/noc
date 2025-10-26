@@ -1,3 +1,4 @@
+import * as crypto from "crypto";
 import type {Plugin} from "esbuild";
 import * as fs from "fs";
 import * as path from "path";
@@ -33,7 +34,7 @@ export class ExternalLibsPlugin{
   private async generateExternalLibsFile(): Promise<void>{
     try{
       const projectRoot = path.resolve(process.cwd());
-      const outputFile = path.join(projectRoot, this.options.outputDir, this.options.outputFileName);
+      let outputFile = path.join(projectRoot, this.options.outputDir, this.options.outputFileName);
       let libraryFiles = [
         // Base libs and ExtJS
         {name: "web/js/jsloader.js", format: "iife"},
@@ -109,6 +110,11 @@ export class ExternalLibsPlugin{
       
       // combinedLibraries += "\n})();";
       
+      if(!this.options.isDev){
+        const hash = crypto.createHash("md5").update(combinedLibraries).digest("hex").slice(0, 8);
+        outputFile = outputFile.replace(/(\.js)$/, `-${hash}$1`);
+      }
+
       if(!fs.existsSync(path.dirname(outputFile))){
         fs.mkdirSync(path.dirname(outputFile), {recursive: true});
       }

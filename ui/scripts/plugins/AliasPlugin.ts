@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import path from "path";
+import * as path from "path";
 
 export interface AliasPluginOptions {
   aliases: Record<string, string>;

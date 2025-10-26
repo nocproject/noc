@@ -1,7 +1,7 @@
 import * as esbuild from "esbuild";
 import type {Options} from "espree";
 import fs from "fs-extra";
-import path from "path";
+import * as path from "path";
 import {DependencyGraph} from "../DependencyGraph.ts";
 import {ExtJsParser} from "../ExtJsParser.ts";
 import {ExtApplicationVisitor} from "../visitors/ExtApplicationVisitor.ts";

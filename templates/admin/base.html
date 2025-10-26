@@ -1,59 +1,64 @@
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<html lang="{{ LANGUAGE_CODE|default:" en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl" {% endif %}>
+
 <head>
-<title>{% block title %}{% endblock %} | {{setup.installation_name}}</title>
-{% if setup.favicon_mime %}
-    <link rel="icon" type="{{setup.favicon_mime}}" href="{{setup.favicon_url}}" />
-{% endif %}
-<META NAME="Copyright" CONTENT="2007-2016, nocproject.org" />
-<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
-<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
-<META HTTP-EQUIV="Expires" CONTENT="0" />
-<link rel="stylesheet" type="text/css" href="{% block stylesheet %}/ui/pkg/django-media/admin/css/base.css{% endblock %}" />
-<link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css" />
-<link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
-<link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
-<link rel="stylesheet" type="text/css" href="/ui/web/css/print.css" />
-<script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
-{% block extrastyle %}{% endblock %}
-<!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}/ui/pkg/django-media/admin/css/ie.css{% endblock %}" /><![endif]-->
-{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}/ui/pkg/django-media/admin/css/rtl.css{% endblock %}" />{% endif %}
-<script type="text/javascript">window.__admin_media_prefix__ = "/ui/pkg/django-media/admin/";</script>
-<script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
-{% block extrahead %}{% endblock %}
-{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-{% load i18n %}
+    <title>{% block title %}{% endblock %} | {{setup.installation_name}}</title>
+    <META NAME="Copyright" CONTENT="2007-2016, nocproject.org" />
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache" />
+    <META HTTP-EQUIV="Expires" CONTENT="0" />
+    <link rel="stylesheet" type="text/css"
+        href="{% block stylesheet %}/ui/pkg/django-media/admin/css/base.css{% endblock %}" />
+    <link rel="stylesheet" type="text/css" href="/ui/web/css/django/main.css" />
+    <link rel="stylesheet" type="text/css" href="/ui/pkg/fontawesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="/ui/web/css/colors.css" />
+    <link rel="stylesheet" type="text/css" href="/ui/web/css/print.css" />
+    <script TYPE="text/javascript" SRC="/ui/pkg/jquery/jquery.min.js"></script>
+    {% block extrastyle %}{% endblock %}
+    <!--[if lte IE 7]><link rel="stylesheet" type="text/css" href="{% block stylesheet_ie %}/ui/pkg/django-media/admin/css/ie.css{% endblock %}" /><![endif]-->
+    {% if LANGUAGE_BIDI %}
+    <link rel="stylesheet" type="text/css"
+        href="{% block stylesheet_rtl %}/ui/pkg/django-media/admin/css/rtl.css{% endblock %}" />{% endif %}
+    <script type="text/javascript">window.__admin_media_prefix__ = "/ui/pkg/django-media/admin/";</script>
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    {% block extrahead %}{% endblock %}
+    {% block blockbots %}
+    <meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+    {% load i18n %}
 </head>
 
 <body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
-        onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
-        onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
-{% if messages %}
+    onmousemove="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();"
+    onkeydown="window.top && window.top.NOCIdleHandler && window.top.NOCIdleHandler();">
+    {% if messages %}
     <script>
         {% for message in messages %}
-            window.top.NOC.info("{{ message }}");
+        window.top.NOC.info("{{ message }}");
         {% endfor %}
     </script>
-{% endif %}
-<!-- Container -->
-<div id="container">
-    {% if not is_popup %}
-    <!-- Breadcrumbs -->
-    <div class="breadcrumbs"><ul>{% block breadcrumbs %}<li>{% trans 'Home' %}</li>{% endblock %}</ul></div>
-    <!-- END Breadcrumbs -->
     {% endif %}
-    <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-        {% block pretitle %}{% endblock %}
-        {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
-        {% block content %}
-        {% block object-tools %}{% endblock %}
-        {{ content }}
-        {% endblock %}
-        {% block sidebar %}{% endblock %}
+    <!-- Container -->
+    <div id="container">
+        {% if not is_popup %}
+        <!-- Breadcrumbs -->
+        <div class="breadcrumbs">
+            <ul>{% block breadcrumbs %}<li>{% trans 'Home' %}</li>{% endblock %}</ul>
+        </div>
+        <!-- END Breadcrumbs -->
+        {% endif %}
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            {% block sidebar %}{% endblock %}
+        </div>
+        <!-- END Content -->
     </div>
-    <!-- END Content -->
-</div>
-<!-- END Container -->
+    <!-- END Container -->
 </body>
+
 </html>

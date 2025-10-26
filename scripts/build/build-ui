@@ -45,5 +45,5 @@ cd ui/
 npm install
 npm run build:micromark
 npm run build:monaco
-npm run prod
 npm run vendor
+npm run prod

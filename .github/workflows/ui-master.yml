@@ -1,8 +1,15 @@
-name: Nightly UI Build
+name: Master UI Build
 on:
   schedule:
     - cron: "30 3 * * *"
   workflow_dispatch: # allows manual trigger
+  push:
+    branches:
+      - master
+    paths:
+      - "ui/**"
+      - ".github/workflows/ui-master.yml"
+      - "scripts/build/build-ui"
 permissions:
   contents: write
 jobs:
@@ -17,18 +24,19 @@ jobs:
         with:
           node-version: "22"
           cache: "npm"
+          cache-dependency-path: "ui/package-lock.json"
 
       - name: Build UI
         run: |
           set -eux
           ./scripts/build/build-ui
           mkdir -p dist/
-          tar czf dist/noc-ui-master.tar.gz -C ui/dist .
+          tar czf dist/ui_master.tar.gz -C ui/dist .
 
       - name: Publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view master > /den/null 2>&1 || \
+          gh release view master > /dev/null 2>&1 || \
             gh release create master --title "Master Build" --notes "Automated master builds"
-          gh release upload master dist/noc-ui-master.tar.gz --clobber
+          gh release upload master dist/ui_master.tar.gz --clobber

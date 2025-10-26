@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Header
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2019 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.main.desktop.HeaderPanel");
@@ -102,10 +102,10 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
         // NOC logo
         {
           xtype: "image",
-          src: NOC.settings.logo_url,
+          src: "/ui/web/img/logo_white.svg",
           style: {
-            width: NOC.settings.logo_width + "px",
-            height: NOC.settings.logo_height + "px",
+            width: "24px",
+            height: "24px",
             cursor: "pointer",
           },
           listeners: {

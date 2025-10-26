@@ -78,9 +78,6 @@ Ext.application({
           installation_name: setup.installation_name,
           preview_theme: setup.preview_theme,
           language: setup.language,
-          logo_url: setup.logo_url,
-          logo_width: setup.logo_width,
-          logo_height: setup.logo_height,
           branding_color: setup.branding_color,
           branding_background_color: setup.branding_background_color,
           enable_search: setup.enable_search,
@@ -137,18 +134,6 @@ Ext.application({
         NOC.templates = {};
         // Change title
         document.title = setup.brand + "|" + setup.installation_name;
-        // Add favicon
-        if(setup.favicon_mime){
-          let oldFavicon = document.getElementById("default-favicon"),
-            link = document.createElement("link");
-          if(oldFavicon){
-            oldFavicon.parentNode.removeChild(oldFavicon);
-          }
-          link.rel = "icon";
-          link.type = setup.favicon_mime;
-          link.href = setup.favicon_url + "?v=" + Date.now();
-          document.head.appendChild(link);
-        }
         this.app = Ext.create("NOC.main.desktop.Application", {
           listeners: {
             scope: this,

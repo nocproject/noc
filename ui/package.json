@@ -28,7 +28,7 @@
     "sync": "browser-sync start --proxy 'localhost:8080' --files 'dist/*.*' --no-open",
     "test": "vitest",
     "lint": "eslint scripts --fix",
-    "build": "pnpm run prod && pnpm run vendor",
+    "build": "pnpm run vendor && pnpm run prod",
     "build:micromark": "node --experimental-strip-types build-bundle.ts micromark",
     "build:monaco": "node --experimental-strip-types build-bundle.ts monaco"
   },
