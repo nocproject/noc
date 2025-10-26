@@ -20,6 +20,7 @@ Ext.define("NOC.core.InlineModelStore", {
     var me = this,
       model = Ext.create(config.model),
       fields = model.fields.items,
+      urlHasSuffix = !(model.rest_url.endsWith("{{parent}}/") || model.rest_url.endsWith("{{parent}}")),
       defaultValues = {};
 
     me.rootProperty = model.rootProperty ? model.rootProperty : "data";
@@ -41,6 +42,12 @@ Ext.define("NOC.core.InlineModelStore", {
       sortParam: "__sort",
       extraParams: {
         "__format": "ext",
+      },
+      actionMethods: {
+        create: urlHasSuffix ? "POST" : "PUT",
+        read: "GET",
+        update: "PUT",
+        destroy: "DELETE",
       },
       reader: {
         type: "json",
