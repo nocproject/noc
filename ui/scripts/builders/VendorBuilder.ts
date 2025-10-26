@@ -20,13 +20,41 @@ export class VendorBuilder extends BaseBuilder{
   }
 
   async clean(): Promise<void>{
-    const vendorBundlePath = path.join(this.options.buildDir, this.options.esbuildOptions.entryNames!);
     console.log("Cleaning vendor build directory...");
-    if(await fs.pathExists(vendorBundlePath)){
-      await fs.remove(vendorBundlePath);
-      console.log(`${vendorBundlePath} removed`);
+    
+    try{
+      const entryNames = this.options.esbuildOptions.entryNames!;
+      const basename = path.basename(entryNames);
+      const suffix = path.extname(basename);
+      const nameWithoutSuffix = path.basename(basename, suffix);
+      
+      console.log(`Looking for files: ${nameWithoutSuffix}*${suffix}`);
+      
+      const buildDir = this.options.buildDir;
+      if(await fs.pathExists(buildDir)){
+        const files = await fs.readdir(buildDir);
+        const matchingFiles = files.filter(file => {
+          const fileWithoutExt = path.basename(file, path.extname(file));
+          const fileExt = path.extname(file);
+          
+          return fileWithoutExt.startsWith(nameWithoutSuffix) && fileExt === suffix;
+        });
+        for(const file of matchingFiles){
+          const filePath = path.join(buildDir, file);
+          await fs.remove(filePath);
+          console.log(`${filePath} removed`);
+        }
+        
+        if(matchingFiles.length === 0){
+          console.log(`No files matching pattern "${nameWithoutSuffix}*${suffix}" found`);
+        } else{
+          console.log(`Removed ${matchingFiles.length} vendor files`);
+        }
+      }
+    } catch(error){
+      console.error("Error during clean:", error);
+      throw error;
     }
-
   }
 
   async stop(): Promise<void>{

@@ -72,14 +72,6 @@ class DesktopApplication(ExtApplication):
     @view(method=["GET"], url="^settings/$", access=True, api=True)
     def api_settings(self, request):
         cp = CPClient()
-        # Prepare settings
-        favicon_url = config.customization.favicon_url
-        if favicon_url.endswith(".png"):
-            favicon_mime = "image/png"
-        elif favicon_url.endswith(".jpg") or favicon_url.endswith(".jpeg"):
-            favicon_mime = "image/jpeg"
-        else:
-            favicon_mime = None
         if request.user.is_authenticated():
             enable_search = Permission.has_perm(request.user, "main:search:launch")
         else:
@@ -92,13 +84,8 @@ class DesktopApplication(ExtApplication):
             "installation_name": config.installation_name,
             "preview_theme": config.customization.preview_theme,
             "language": language,
-            "logo_url": config.customization.logo_url,
-            "logo_width": config.customization.logo_width,
-            "logo_height": config.customization.logo_height,
             "branding_color": config.customization.branding_color,
             "branding_background_color": config.customization.branding_background_color,
-            "favicon_mime": favicon_mime,
-            "favicon_url": favicon_url,
             "enable_search": enable_search,
             "collections": {
                 "allow_sharing": config.collections.allow_sharing,
@@ -325,11 +312,7 @@ class DesktopApplication(ExtApplication):
     @view(url="^about/", method=["GET"], access=True, api=True)
     def api_about(self, request):
         current_year = datetime.date.today().year
-        logo_url = config.customization.logo_url
-        if logo_url == "/ui/web/img/logo_white.svg":
-            logo_url = "/ui/web/img/logo_black.svg"
         data = {
-            "logo_url": logo_url,
             "brand": config.brand,
             "version": version.version,
             "installation": config.installation_name,

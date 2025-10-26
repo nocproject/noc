@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.inv application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.inv.Application");
@@ -195,11 +195,6 @@ Ext.define("NOC.inv.inv.Application", {
       dockedItems: [{
         xtype: "container",
         dock: "top",
-        style: {
-          borderColor: "red",
-          borderStyle: "solid",
-        },
-        border: 3,
         layout: {
           type: "vbox",
           align: "stretch",

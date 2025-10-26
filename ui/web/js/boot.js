@@ -17,9 +17,6 @@ if(httpRequest.status === 200){
     installation_name: setup.installation_name,
     preview_theme: setup.preview_theme,
     language: setup.language,
-    logo_url: setup.logo_url,
-    logo_width: setup.logo_width,
-    logo_height: setup.logo_height,
     branding_color: setup.branding_color,
     branding_background_color: setup.branding_background_color,
     enable_search: setup.enable_search,
@@ -76,12 +73,4 @@ if(httpRequest.status === 200){
   NOC.templates = {};
   // Change title
   document.title = setup.brand + "|" + setup.installation_name;
-  // Add favicon
-  if(setup.favicon_mime){
-    var link = document.createElement("link");
-    link.rel = "icon";
-    link.type = setup.favicon_mime;
-    link.href = setup.favicon_url;
-    document.head.appendChild(link);
-  }
 }
