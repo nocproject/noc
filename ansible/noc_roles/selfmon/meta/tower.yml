@@ -37,6 +37,10 @@ forms:
       label: "enable_liftbridge"
       type: bool
       default: False  # yamllint disable-line rule:truthy
+    enable_kafka:
+      label: "enable_kafka"
+      type: bool
+      default: False  # yamllint disable-line rule:truthy
     enable_managedobject:
       label: "enable_managedobject"
       type: bool
