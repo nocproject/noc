@@ -1273,10 +1273,12 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 labels=req.labels or [],
                 group_type=req.g_type,
+                severity=req.severity,
                 subject=req.name,
             )
         if req.g_type == GroupType.SERVICE and not req.alarms:
             # For auto groups not clear Group Alarm
+            self.resolve_deferred_groups(group_alarm.reference)
             return
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {
