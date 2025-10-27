@@ -356,6 +356,7 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
               uiStyle: "extra",
               query: {
                 "allow_matched": true,
+                "allow_wildcard": true,
               },
             },
             {
