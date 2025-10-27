@@ -12,7 +12,8 @@ from typing import Optional, List, Literal, Dict, Any
 from pydantic import BaseModel
 
 # NOC modules
-from .utils import DisposeTargetObject, DisposeResource
+from noc.core.models.valuetype import ValueType
+from .utils import DisposeAction
 
 
 class VarItem(BaseModel):
@@ -22,6 +23,16 @@ class VarItem(BaseModel):
     default: Optional[str] = None
     component: Optional[str] = None
     # resource_model: Optional[str] = None
+
+
+class VarTransformItem(BaseModel):
+    name: str
+    wildcard: Optional[str] = None  # set from label
+    required: bool = False
+    affected_model: Optional[str] = None
+    alias: Optional[str] = None
+    value_type: Optional[ValueType] = None
+    update_oper_status: Optional[str] = None
 
 
 class ComboCondition(BaseModel):
@@ -72,17 +83,17 @@ class DispositionRule(BaseModel):
     name: str
     is_active: bool
     preference: int
-    target: Optional[DisposeTargetObject] = None
-    resources: Optional[List[DisposeResource]] = None
     event_classes: Optional[List[str]] = None
     stop_processing: bool = False
     action: Literal["ignore", "raise", "clear", "drop", "drop_mx"] = "ignore"
     match_expr: Optional[Dict[str, Any]] = None
     vars_match_expr: Optional[Dict[str, Any]] = None
-    var_mapping: Optional[Dict[str, str]] = None
+    vars_transform: Optional[List[VarTransformItem]] = None
     combo_condition: Optional[ComboCondition] = None
     object_avail_condition: Optional[bool] = None
     reference_lookup: bool = False
+    # Target Actions
+    actions: Optional[List[DisposeAction]] = None
     # handlers
 
 

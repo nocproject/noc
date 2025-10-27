@@ -88,7 +88,7 @@ class ActionType(enum.Enum):
             case self.ACTION_COMMAND:
                 return partial(self.run_action_command, action_name=key)
             case self.AUDIT_COMMAND:
-                return None
+                return partial(self.interaction_audit, audit=int(key))
             case self.RUN_DISCOVERY:
                 return partial(self.run_discovery, **kwargs)
             case self.FIRE_WF_EVENT:
