@@ -101,6 +101,8 @@ class Capability(Document):
         if self.agent_collector and self.agent_param:
             r["agent_collector"] = self.agent_collector
             r["agent_param"] = self.agent_param
+        if self.values:
+            r["values"] = dict(self.values)
         return r
 
     def to_json(self) -> str:
