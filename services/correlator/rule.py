@@ -12,9 +12,47 @@ from dataclasses import dataclass
 # NOC modules
 from noc.core.fm.event import Event
 from noc.core.matcher import build_matcher
+from noc.core.models.valuetype import ValueType
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
 from noc.services.datastream.models.cfgalarm import DispositionRule
+from noc.models import get_model
+
+
+@dataclass
+class VarTransformRule:
+    """Transform variables by rule"""
+
+    name: str
+    wildcard: Optional[str] = None
+    required: bool = False
+    affected_model: Optional[Any] = None
+    alias: Optional[str] = None
+    value_type: Optional[ValueType] = None
+    update_oper_status: bool = False
+
+    @classmethod
+    def from_item(cls, item, alias: Optional[str] = None) -> "VarTransformRule":
+        """Create var transform rule from config item"""
+        if item.affected_model:
+            model = get_model(item.affected_model)
+            # hasattr component
+        else:
+            model = None
+        return VarTransformRule(
+            name=item.name,
+            wildcard=item.wildcard or None,
+            required=item.required,
+            affected_model=model,
+            alias=alias or item.alias,
+            value_type=item.value_type or None,
+            update_oper_status=item.update_oper_status,
+        )
+
+    def transform(self, v: Dict[str, Any], var_ctx: Dict[str, Any]):
+        """Transform vars"""
+        if self.value_type:
+            v[self.name] = self.value_type.clean_value(v[self.name])
 
 
 @dataclass
@@ -24,7 +62,8 @@ class EventAlarmRule:
     event_class: EventClass
     action: str
     unique: bool
-    var_mapping: Dict[str, Any]
+    vars_transform: List[VarTransformRule]
+    # component
     managed_object: str = "managed_object"
     match: Optional[Callable] = None
     match_vars: Optional[Callable] = None
@@ -48,12 +87,15 @@ class EventAlarmRule:
         event_class: Optional[EventClass] = None,
     ) -> "EventAlarmRule":
         """"""
-        a_vars = {v.name for v in alarm_class.vars}
-        if event_class:
-            e_vars = {v.name for v in event_class.vars}
-            var_mapping = {v: v for v in a_vars.intersection(e_vars)}
-        else:
-            var_mapping = {v: v for v in a_vars}
+        a_vars = {v.name: v for v in alarm_class.vars}
+        vars_transform = []
+        for t in rule.vars_transform:
+            vars_transform.append(VarTransformRule.from_item(t))
+            if t.name in a_vars:
+                a_vars.pop(t.name)
+        for v in a_vars:
+            vars_transform.append(VarTransformRule(name=v))
+        # ctx_transforms
         r = EventAlarmRule(
             name=rule.name,
             alarm_class=alarm_class,
@@ -62,7 +104,7 @@ class EventAlarmRule:
             unique=alarm_class.is_unique,
             stop_disposition=rule.stop_processing,
             combo_condition="none",
-            var_mapping=var_mapping,
+            vars_transform=vars_transform,
         )
         if rule.reference_lookup:
             r.reference_lookup = rule.reference_lookup
@@ -89,13 +131,31 @@ class EventAlarmRule:
         return not (self.match_vars and not self.match_vars(e.vars))
 
     def get_vars(self, e_vars: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        if not self.var_mapping:
+        if not self.vars_transform:
             return None
-        r = {}
-        # Map vars
-        for k, v in self.var_mapping.items():
-            try:
-                r[v] = e_vars[k]
-            except KeyError:
-                pass
-        return r
+        ctx: Dict[str, Any] = {}
+        # Transform
+        for k in self.vars_transform:
+            if k.name in e_vars:
+                v = e_vars[k.name]
+            elif k.alias and k.alias in e_vars:
+                v = e_vars[k.alias]
+            elif ctx and k.name in ctx:
+                v = ctx[k.name]
+            elif ctx and ctx.get(k.alias):
+                v = ctx[k.alias]
+            elif k.required:
+                raise ValueError("Not exists required var: %s" % k.name)
+            else:
+                continue
+            if k.value_type:
+                v = k.value_type.clean_value(v)
+            if k.affected_model:
+                v = k.affected_model.get_component(**ctx)
+                if v:
+                    v = str(v.id)
+            ctx[k.name] = v
+            # if k.name in alamr_vars:
+            #     r[k.name] = v
+            # Filter Ctx by Alarm vars
+        return ctx

@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Dict, Any
+from typing import Optional, Dict, Any
 
 # Third-party modules
 from pydantic import BaseModel
@@ -56,18 +56,9 @@ class DisposeAction(BaseModel):
 
     action: ActionType
     key: str
-    # checks
     args: Optional[Dict[str, Any]] = None
+    model_id: Optional[str] = None
 
-
-class DisposeTargetObject(BaseModel):
-    model: str = "sa.ManagedObject"
-    actions: Optional[List[DisposeAction]] = None
-    is_agent: bool = False
-    # CPE, Agent
-    # audit
-
-
-class DisposeResource(BaseModel):
-    model: str
-    actions: Optional[List[DisposeAction]]
+    @property
+    def is_target(self) -> bool:
+        return not self.model_id or self.model_id == "sa.ManagedObject"
