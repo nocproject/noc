@@ -85,17 +85,12 @@ Ext.define("NOC.fm.dispositionrule.Model", {
       type: "auto",
     },
     {
-      name: "vars_conditions",
+      name: "vars_op",
       type: "auto",
     },
     {
-      name: "object_actions",
+      name: "target_actions",
       type: "auto",
-    },
-    {
-      name: "update_oper_status",
-      type: "string",
-      defaultValue: "N",
     },
     {
       name: "vars_conditions_op",
@@ -103,22 +98,9 @@ Ext.define("NOC.fm.dispositionrule.Model", {
       defaultValue: "AND",
     },
     {
-      name: "root_cause",
-      type: "auto",
-    },
-    {
       name: "preference",
       type: "int",
       defaultValue: 1000,
-    },
-    {
-      name: "run_discovery",
-      type: "boolean",
-    },
-    {
-      name: "interaction_audit",
-      type: "int",
-      defaultValue: "-",
     },
     {
       name: "stop_processing",

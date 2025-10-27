@@ -10,10 +10,13 @@
     }],
     "default_action": "R",
     "stop_processing": true,
-    "vars_conditions": [{
-        "field": "to_state",
-        "op": "ne",
-        "value": "ESTABLISHED"
-    }],
+    "vars": [
+        {
+            "name": "to_state",
+            "condition": "eq",
+            "required": true,
+            "value": "ESTABLISHED"
+        }
+    ],
     "vars_conditions_op": "AND"
 }

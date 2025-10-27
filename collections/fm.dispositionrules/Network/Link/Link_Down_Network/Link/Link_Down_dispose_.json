@@ -10,5 +10,15 @@
     }],
     "default_action": "R",
     "stop_processing": false,
-    "update_oper_status": "D"
+    "vars": [
+        {
+            "name": "interface",
+            "affected_model": "inv.Interface",
+            "condition": "eq",
+            "required": true,
+            "update_oper_status": "D",
+            "value": null
+        }
+    ],
+    "vars_conditions_op": "AND"
 }

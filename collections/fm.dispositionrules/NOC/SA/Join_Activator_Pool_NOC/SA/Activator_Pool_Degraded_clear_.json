@@ -10,15 +10,17 @@
     }],
     "default_action": "C",
     "stop_processing": true,
-    "vars_conditions": [
+    "vars": [
         {
-            "field": "pool_sessions",
-            "op": "gte",
+            "name": "pool_sessions",
+            "condition": "eq",
+            "required": true,
             "value": "==min_sessions"
         },
         {
-            "field": "pool_members",
-            "op": "gte",
+            "name": "pool_members",
+            "condition": "eq",
+            "required": true,
             "value": "==min_members"
         }
     ],
