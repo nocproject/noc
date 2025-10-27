@@ -360,13 +360,13 @@ def update_caps(
             )
         elif ci.name in caps:
             value = ci.capability.clean_value(caps[ci.name])
-            if value != ci.value:
+            if ci.value != value:
                 logger.info(
                     "[%s] Changing capability %s: %s -> %s",
                     o_label,
                     ci.name,
                     ci.value,
-                    caps[ci.name],
+                    value,
                 )
                 changed_fields.append(
                     ChangeField(
@@ -375,7 +375,7 @@ def update_caps(
                         new=value,
                     )
                 )
-                ci = ci.set_value(caps[ci.name])
+                ci = ci.set_value(value)
                 changed |= True
             else:
                 logger.debug(
