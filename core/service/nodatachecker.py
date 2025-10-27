@@ -72,7 +72,7 @@ class DataSourceRecord:
         if self.remote_system:
             r["remote_system"] = self.remote_system
         if not status:
-            r["error"] = f"Not received data between {self.ttl}"
+            r["error"] = {"code": "1", "message": f"Not received data between {self.ttl}"}
         return r
 
 
@@ -154,7 +154,7 @@ class NoDataChecker(object):
 
     async def register_status_messages(self, records: Dict[str, Dict[str, Any]]):
         """Register status message"""
-        logger.info("Register status message on: %s", records)
+        logger.debug("Register status message on: %s", records)
         # id: str
         # target_type: Literal["managed_object", "service"] = "managed_object"
         # statuses: List[CheckResultItem]
