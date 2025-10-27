@@ -470,9 +470,7 @@ class AlarmClass(Document):
             "vars": [av.get_config() for av in alarm_class.vars],
         }
         for rule in DispositionRule.objects.filter(alarm_disposition=alarm_class, is_active=True):
-            cfg = DispositionRule.get_rule_config(rule)
-            if "alarm_class" in cfg:
-                del cfg["alarm_class"]
+            cfg = DispositionRule.get_event_alarm_rule_config(rule)
             r["dispositions"].append(cfg)
         for rule in AlarmRule.objects.filter(match__alarm_class=alarm_class):
             r["rules"].append(AlarmRule.get_config(rule))

@@ -25,7 +25,6 @@ from mongoengine.fields import (
     UUIDField,
     ReferenceField,
     EmbeddedDocumentListField,
-    EmbeddedDocumentField,
     EnumField,
     ObjectIdField,
 )
@@ -35,12 +34,15 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
+from noc.main.models.label import Label
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.action import Action
 from noc.fm.models.eventclass import EventClass
 from noc.fm.models.alarmclass import AlarmClass
+from noc.fm.models.enumeration import Enumeration
 from noc.sa.models.interactionlog import Interaction
 from noc.core.models.cfgactions import ActionType
+from noc.core.models.valuetype import ValueType
 from noc.core.fm.enum import EventAction
 from noc.core.matcher import build_matcher
 from noc.core.bi.decorator import bi_sync
@@ -52,14 +54,31 @@ from noc.core.text import quote_safe_path
 id_lock = Lock()
 
 
-class MatchData(EmbeddedDocument):
+class VarItem(EmbeddedDocument):
+    """
+    Variable Manipulation Structure.
+    Map variable to slot, resolve object and resources by set
+    Attributes:
+        name: Variable name
+        wildcard: wildcard label for set value
+        required: Required Fields
+        condition: Match condition
+        value: Match value by condition
+
+    """
+
     meta = {"strict": False, "auto_create_index": False}
 
-    field = StringField(required=True)
-    op = StringField(
+    # key
+    name = StringField(required=True)
+    wildcard = ReferenceField(Label, required=False)
+    required = BooleanField(default=True)
+    # Condition
+    condition = StringField(
         choices=[
             "regex",
             "contains",
+            "exists",
             "eq",
             "ne",
             "gte",
@@ -70,25 +89,74 @@ class MatchData(EmbeddedDocument):
         default="eq",
     )
     value = StringField(required=False)
-    choices = ListField(StringField(required=True))
+    choices = ListField(StringField(), required=False)
+    # Normalize
+    enum = PlainReferenceField(Enumeration)
+    value_type: ValueType = EnumField(ValueType, required=False)
+    alias = StringField(required=False)
+    # Affected
+    affected_model = StringField(required=False)
+    update_oper_status: str = StringField(
+        choices=[("N", "Disable"), ("U", "UP"), ("D", "Down"), ("V", "By Var")],
+        default="N",
+    )
 
     def __str__(self):
-        return f"{self.field} {self.op} {self.value}"
+        if self.condition:
+            return f"{self.name}: {self.condition} {self.value}"
+        return f"{self.name}: AL({self.alias}), A({self.affected_model})"
 
     def get_match_expr(self) -> Dict[str, Any]:
         """"""
-        if self.field == "vars":
-            return {self.field: {"$in": self.value}}
-        if self.choices:
-            # ?OR
-            return {self.field: {"$any": self.choices}}
-        return {self.field: {f"${self.op}": self.value}}
+        if self.condition == "exists" and self.value:
+            return {"vars": {"$in": [self.value]}}
+        if self.condition == "in" and self.choices:
+            return {self.name: {"$any": self.choices}}
+        if not self.value:
+            return {}
+        return {self.name: {f"${self.condition}": self.value}}
+
+    def get_config(self):
+        """Getting Mapping Config"""
+        r = {"name": self.name, "required": self.required}
+        if self.value_type:
+            r["value_type"] = self.value_type.value
+        if self.affected_model:
+            r |= {
+                "affected_model": self.affected_model,
+                "update_oper_status": self.update_oper_status,
+            }
+        if self.alias:
+            r["alias"] = self.alias
+        return r
+
+    def get_action_config(self) -> Optional[Dict[str, Any]]:
+        if self.update_oper_status in {"N", "V"}:
+            return None
+        return {
+            "action": ActionType.SET_OPER_STATE,
+            "key": "",
+            "args": {"status": self.update_oper_status == "U"},
+            "model_id": self.affected_model,
+        }
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        if self.choices:
-            return {"field": self.field, "op": self.op, "choices": self.choices}
-        return {"field": self.field, "op": self.op, "value": self.value}
+        r = {"name": self.name, "required": self.required}
+        if self.wildcard:
+            r["wildcard__name"] = self.wildcard.name
+        if self.condition:
+            r |= {"condition": self.condition, "value": self.value}
+        if self.enum:
+            r["enum__name"] = self.enum.name
+        if self.alias:
+            r["alias"] = self.alias
+        if self.affected_model:
+            r |= {
+                "affected_model": self.affected_model,
+                "update_oper_status": self.update_oper_status,
+            }
+        return r
 
 
 class Match(EmbeddedDocument):
@@ -142,7 +210,7 @@ class Match(EmbeddedDocument):
         if self.groups:
             r["service_groups"] = {"$all": [str(x.id) for x in self.groups]}
         if self.remote_system:
-            r["remote_system"] = str(self.remote_system.name)
+            r["remote_system"] = str(self.remote_system.id)
         if self.object_status in ("D", "U"):
             r["object_avail"] = {"$eq": {"U": True, "D": False}[self.object_status]}
         if self.reference_rx:
@@ -164,25 +232,46 @@ class AlarmRootCauseCondition(EmbeddedDocument):
     # affected_resource = BooleanField(default=False)
 
 
-class ObjectActionItem(EmbeddedDocument):
+class ActionItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
     # Action API ? by object, move to instance ?
+    action: ActionType = EnumField(ActionType, required=True)
     action_command: Optional["Action"] = ReferenceField(Action, required=False)
     interaction_audit: Optional[Interaction] = EnumField(Interaction, required=False)
-    run_discovery: bool = BooleanField(default=False)
-    update_avail_status = StringField(
-        choices=[("N", "Disable"), ("A", "Available"), ("U", "Unavail")],
-        default="N",
-    )
+    context: List[str] = ListField(StringField())
 
     def __str__(self):
-        return f"C: {self.action_command}; A: {self.interaction_audit}; D: {self.run_discovery}"
+        return f"C: {self.action}; A: {self.interaction_audit}; С: {self.action_command}"
 
-    # resource as context
-    # Set Diagnostic
-    # affected_service ?
-    # Update Resource State (workflow)
-    # TTL
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {"action": self.action.value}
+        if self.action_command:
+            r["action_command__name"] = self.action_command.name
+        if self.interaction_audit:
+            r["interaction_audit"] = self.interaction_audit.value
+        if self.context:
+            r["contex"] = list(self.context)
+        return r
+
+    def get_config(self) -> Dict[str, Any]:
+        """Get Action config"""
+        key, args = None, {}
+        match self.action:
+            case ActionType.ACTION_COMMAND:
+                key = self.action_command.name
+            case ActionType.AUDIT_COMMAND:
+                key = str(self.interaction_audit.value)
+                # "args": {"audit": self.interaction_audit.value},
+            # case ActionType.FIRE_WF_EVENT:
+            #    key = self.
+            case ActionType.RUN_DISCOVERY:
+                key = ""
+                if self.interaction_audit:
+                    args = {"audit": self.interaction_audit}
+        if key is not None:
+            return {"action": self.action.value, "key": key, "args": args}
+        return {}
 
 
 class HandlerItem(EmbeddedDocument):
@@ -217,7 +306,8 @@ class DispositionRule(Document):
     is_active = BooleanField(default=True)
     preference = IntField(required=True, default=1000)
     conditions: List[Match] = EmbeddedDocumentListField(Match)
-    vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
+    # vars_conditions: List[MatchData] = EmbeddedDocumentListField(MatchData)
+    vars_op: List[VarItem] = EmbeddedDocumentListField(VarItem)
     vars_conditions_op: str = StringField(
         choices=[
             ("AND", "Raise Disposition Alarm"),
@@ -275,18 +365,7 @@ class DispositionRule(Document):
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    object_actions: Optional["ObjectActionItem"] = EmbeddedDocumentField(
-        ObjectActionItem, required=False
-    )
-    update_oper_status = StringField(
-        choices=[
-            ("N", "Disable"),
-            ("D", "Set Down"),
-            ("U", "Set Up"),
-            ("V", "By Var (Enum)"),
-        ],
-        default="N",
-    )
+    target_actions: List[ActionItem] = EmbeddedDocumentListField(ActionItem)
     default_action = StringField(
         choices=[
             ("R", "Raise Disposition Alarm"),
@@ -356,26 +435,16 @@ class DispositionRule(Document):
         }
         if self.conditions:
             r["conditions"] = [m.json_data for m in self.conditions]
-        if self.vars_conditions:
-            r["vars_conditions"] = [m.json_data for m in self.vars_conditions]
+        if self.vars_op:
+            r["vars"] = [m.json_data for m in self.vars_op]
             r["vars_conditions_op"] = self.vars_conditions_op
-        if self.update_oper_status != "N":
-            r["update_oper_status"] = self.update_oper_status
         if self.replace_rule:
             r |= {
                 "replace_rule__name": self.replace_rule.name,
                 "replace_rule_policy": self.replace_rule_policy,
             }
-        if self.object_actions:
-            r["object_actions"] = {
-                "interaction_audit": (
-                    self.object_actions.interaction_audit.value
-                    if self.object_actions.interaction_audit
-                    else None
-                ),
-                "run_discovery": self.object_actions.run_discovery,
-                "update_avail_status": self.object_actions.update_avail_status,
-            }
+        if self.target_actions:
+            r["target_actions"] = [m.json_data for m in self.target_actions]
         if self.combo_condition and self.combo_event_classes:
             r |= {
                 "combo_condition": self.combo_condition,
@@ -436,22 +505,22 @@ class DispositionRule(Document):
         return build_matcher({"$or": expr})
 
     @classmethod
-    def get_actions(cls, event_class: Optional[EventClass] = None, event_config: bool = False):
-        """"""
+    def get_event_actions(cls, event_class: EventClass):
+        """Build Event action Rules"""
         r = []
         for rule in DispositionRule.objects.filter(
             conditions__event_class_re=event_class.name,
             is_active=True,
         ).order_by("preference"):
-            r.append(DispositionRule.get_rule_config(rule, event_config=event_config))
+            r.append(DispositionRule.get_event_rule_config(rule))
         return r
 
     @classmethod
-    def get_rule_config(cls, rule: "DispositionRule", event_config: bool = False) -> Dict[str, Any]:
-        """Generate DataStream Config from rule"""
+    def get_event_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
+        """Disposition Rule config"""
         if rule.replace_rule and rule.replace_rule_policy == "w":
             # Merge Rule ?
-            return DispositionRule.get_rule_config(rule.replace_rule)
+            return DispositionRule.get_event_rule_config(rule.replace_rule)
         r = {
             "name": rule.name,
             "is_active": rule.is_active,
@@ -461,75 +530,94 @@ class DispositionRule(Document):
             # disposition_var_map
             "match_expr": {},
             "vars_match_expr": {},
-            "event_classes": [],
-            "action": "ignore",
+            "action": EventAction.LOG.value,
             "target": {"model": "sa.ManagedObject"},
+            "actions": [],
         }
-        object_actions = []
+        if rule.default_action:
+            r["action"] = EventAction.from_rule(rule.default_action).value
         if rule.alarm_disposition and rule.default_action in "RC":
             r["alarm_class"] = rule.alarm_disposition.name
-        if rule.default_action and event_config:
-            r["action"] = EventAction.from_rule(rule.default_action).value
-        elif event_config:
-            r["action"] = EventAction.LOG.value
-        elif rule.default_action:
-            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
-                rule.default_action
-            ]
+        for ta in rule.target_actions:
+            ta = ta.get_config()
+            if ta:
+                r["actions"].append(ta)
+        or_condition = []
+        for c in rule.vars_op:
+            cfg = c.get_action_config()
+            if cfg:
+                r["actions"].append(cfg)
+            m = c.get_match_expr()
+            if not m:
+                continue
+            if rule.vars_conditions_op == "OR":
+                or_condition.append(m)
+            else:
+                r["vars_match_expr"] |= m
+        if or_condition:
+            r["vars_match_expr"]["$or"] = or_condition
         if rule.notification_group:
             r |= {
                 "notification_group": str(rule.notification_group.id),
                 "subject_template": rule.subject_template,
             }
-        if rule.combo_condition and rule.combo_event_classes and rule.combo_condition != "none":
-            r["combo_condition"] = {
-                "combo_condition": rule.combo_condition,
-                "combo_window": rule.combo_window,
-                "combo_count": rule.combo_count,
-                "combo_event_classes": [str(ec.id) for ec in rule.combo_event_classes],
-            }
         if rule.handlers:
             r["handlers"] = [str(h.handler.handler) for h in rule.handlers]
-        if rule.vars_conditions_op == "OR":
-            r["vars_match_expr"] = {"$or": [c.get_match_expr() for c in rule.vars_conditions]}
-        else:
-            for c in rule.vars_conditions or []:
-                r["vars_match_expr"] |= c.get_match_expr()
-        if rule.object_actions and rule.object_actions.interaction_audit:
-            object_actions.append(
-                {
-                    "action": ActionType.AUDIT_COMMAND.value,
-                    "key": "",
-                    "args": {"audit": rule.object_actions.interaction_audit.value},
-                },
-            )
-            if rule.object_actions.run_discovery:
-                object_actions.append(
-                    {
-                        "action": ActionType.RUN_DISCOVERY.value,
-                        "key": "",
-                        "args": {"audit": rule.object_actions.interaction_audit.value},
-                    },
-                )
-        elif rule.object_actions and rule.object_actions.run_discovery:
-            object_actions.append(
-                {"action": ActionType.RUN_DISCOVERY.value, "key": ""},
-            )
-        if object_actions:
-            r["target"]["actions"] = object_actions
-        if rule.update_oper_status in ["U", "D"]:
-            r["resources"] = [
-                {
-                    "model": "inv.Interface",
-                    "actions": [
-                        {
-                            "action": ActionType.SET_OPER_STATE.value,
-                            "key": "",
-                            "args": {"status": rule.update_oper_status == "U"},
-                        },
-                    ],
-                },
+        if not rule.conditions:
+            return r
+        rule_conditions = []
+        for c in rule.conditions:
+            if c.object_status in ("D", "U"):
+                r["object_avail_condition"] = {"U": True, "D": False}[c.object_status]
+                continue
+            expr = c.get_match_expr()
+            if not expr:
+                continue
+            rule_conditions.append(expr)
+        if len(rule_conditions) == 1:
+            r["match_expr"] = rule_conditions[0]
+        elif rule_conditions:
+            r["match_expr"] = {"$or": rule_conditions}
+        return r
+
+    @classmethod
+    def get_event_alarm_rule_config(cls, rule: "DispositionRule") -> Dict[str, Any]:
+        """Build Rule for Disposition processing"""
+        if rule.replace_rule and rule.replace_rule_policy == "w":
+            # Merge Rule ?
+            return DispositionRule.get_event_rule_config(rule.replace_rule)
+        r = {
+            "name": rule.name,
+            "is_active": rule.is_active,
+            "preference": rule.preference,
+            "stop_processing": rule.stop_processing,
+            # disposition_var_map
+            "match_expr": {},
+            "vars_match_expr": {},
+            "vars_transform": [],
+            "event_classes": [],
+            "action": "ignore",
+        }
+        if rule.default_action:
+            r["action"] = {"R": "raise", "C": "clear", "I": "ignore", "D": "drop", "F": "drop_mx"}[
+                rule.default_action
             ]
+        or_condition, vars_transform = [], []
+        for c in rule.vars_op:
+            cfg = c.get_config()
+            if cfg:
+                vars_transform.append(cfg)
+            m = c.get_match_expr()
+            if not m:
+                continue
+            if rule.vars_conditions_op == "OR":
+                or_condition.append(m)
+            else:
+                r["vars_match_expr"] |= m
+        if or_condition:
+            r["vars_match_expr"]["$or"] = or_condition
+        if vars_transform:
+            r["vars_transform"] = vars_transform
         if not rule.conditions:
             return r
         rule_conditions = []
@@ -546,4 +634,6 @@ class DispositionRule(Document):
         elif rule_conditions:
             r["match_expr"] = {"$or": rule_conditions}
         r["event_classes"] = [str(x.id) for x in rule.get_event_classes()]
+        if not r["event_classes"]:
+            r["reference_lookup"] = True
         return r
