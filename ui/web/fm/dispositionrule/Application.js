@@ -23,6 +23,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
     "NOC.main.handler.LookupField",
     "NOC.main.remotesystem.LookupField",
     "NOC.main.notificationgroup.LookupField",
+    "NOC.sa.action.LookupField",
     "Ext.ux.form.JSONField",
     "Ext.ux.form.GridField",
   ],
@@ -208,48 +209,72 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           ],
         },
         {
-          xtype: "fieldset",
-          layout: "hbox",
-          defaults: {
-            margin: 5,
-          },
-          title: __("Object Actions"),
-          items: [
+          name: "target_actions",
+          xtype: "gridfield",
+          fieldLabel: __("Run Actions"),
+          columns: [
             {
-              name: "run_discovery",
-              xtype: "checkbox",
-              boxLabel: __("Run Discovery"),
+              text: __("Action"),
+              dataIndex: "action",
+              width: 150,
+              allowBlank: false,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["action_command", __("Action Command")],
+                  ["audit_command", __("Audit")],
+                  ["run_discovery", __("Run Discovery")],
+                  ["fire_wf_event", __("Fire Event")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "action_command": __("Action Command"),
+                "audit_command": __("Audit"),
+                "run_discovery": __("Run Discovery"),
+                "fire_wf_event": __("Fire Event"),
+              }),
             },
             {
-              name: "interaction_audit",
-              xtype: "combobox",
-              fieldLabel: __("Audit"),
-              allowBlank: true,
-              store: [
-                ["99", __("Run Command")],
-                ["1", __("Login")],
-                ["2", __("LogOut")],
-                ["3", __("Reboot")],
-                ["4", __("Started")],
-                ["5", __("Halted")],
-                ["6", __("Config Changed")],
-              ],
-              value: null,
-              uiStyle: "medium",
+              text: __("Audit"),
+              dataIndex: "interaction_audit",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  [0, __("TTL")],
+                  [1, __("Login")],
+                  [2, __("LogOut")],
+                  [3, __("Reboot")],
+                  [4, __("Started")],
+                  [5, __("Halted")],
+                  [6, __("Config Changed")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                0: __("TTL"),
+                1: __("Login"),
+                2: __("LogOut"),
+                3: __("Reboot"),
+                4: __("Started"),
+                5: __("Halted"),
+                6: __("Config Changed"),
+              }),
             },
             {
-              name: "update_avail_status",
-              xtype: "combobox",
-              fieldLabel: __("Avail Status"),
-              allowBlank: true,
-              store: [
-                ["N", __("Not Update")],
-                ["A", __("Available")],
-                ["U", __("Unavailable")],
-              ],
-              value: null,
-              uiStyle: "medium",
-            }
+              text: __("Action Command"),
+              dataIndex: "action_command",
+              width: 300,
+              editor: {
+                xtype: "sa.action.LookupField",
+              },
+              renderer: NOC.render.Lookup("action_command"),
+            },
+            {
+              editor: "stringlistfield",
+              dataIndex: "context",
+              width: 400,
+              text: __("Context"),
+            },
           ],
         },
         {
@@ -269,18 +294,6 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
           ],
-        },
-        {
-          name: "update_oper_status",
-          xtype: "combobox",
-          fieldLabel: __("Update Resource Oper Status"),
-          store: [
-            ["N", __("Disable Update")],
-            ["D", __("Set Down")],
-            ["U", __("Set Up")],
-            ["V", __("Set Var")]
-          ],
-          uiStyle: "medium",
         },
         {
           xtype: "fieldset",
@@ -324,30 +337,38 @@ Ext.define("NOC.fm.dispositionrule.Application", {
           fieldLabel: __("Condition Op Vars"),
           store: [
             ["AND", __("AND")],
-            ["OR", __("OR")]
+            ["OR", __("OR")],
           ],
           uiStyle: "medium",
         },
         {
-          name: "vars_conditions",
+          name: "vars_op",
           xtype: "gridfield",
-          fieldLabel: __("Vars Conditions"),
+          fieldLabel: __("Vars Operations"),
           columns: [
             {
-              text: __("Field"),
-              dataIndex: "field",
+              text: __("Name"),
+              dataIndex: "name",
               editor: "textfield",
-              width: 250,
+              width: 150,
             },
             {
-              text: __("Op"),
-              dataIndex: "op",
+              text: __("Required"),
+              dataIndex: "required",
+              width: 50,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Cond."),
+              dataIndex: "condition",
               width: 100,
               editor: {
                 xtype: "combobox",
                 store: [
                   ["regex", __("Regex")],
                   ["contains", __("Contains")],
+                  ["exists", __("Exists")],
                   ["eq", __("Equal")],
                   ["ne", __("Not Equal")],
                   ["gte", __("Greater Equal")],
@@ -359,6 +380,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               renderer: NOC.render.Choices({
                 "regex": __("Regex"),
                 "contains": __("Contains"),
+                "exists": __("Exists"),
                 "eq": __("Equal"),
                 "ne": __("Not Equal"),
                 "gte": __("Greater Equal"),
@@ -371,14 +393,75 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               text: __("Value"),
               dataIndex: "value",
               editor: "textfield",
-              width: 100
+              width: 100,
             },
             {
               text: __("Choices (for multi)"),
               dataIndex: "choices",
-              flex: 1,
-              editor: "stringlistfield"
-            }
+              width: 100,
+              editor: "stringlistfield",
+            },
+            {
+              text: __("Value Type"),
+              dataIndex: "value_type",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  "str",
+                  "int", "float",
+                  "ipv4_address", "ipv6_address", "ip_address",
+                  "ipv4_prefix", "ipv6_prefix", "ip_prefix",
+                  "mac", "interface_name", "oid", "http_url",
+                ],
+              },
+            },
+            {
+              text: __("Alias"),
+              dataIndex: "alias",
+              editor: "textfield",
+              width: 100,
+            },
+            {
+              text: __("Affected"),
+              dataIndex: "affected_model",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["sa.ManagedObject", __("Managed Object")],
+                  ["sa.Service", __("Service")],
+                  ["inv.Interface", __("Interface")],
+                  ["peer.Peer", __("IP Peer")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "sa.ManagedObject": __("Managed Object"),
+                "sa.Service": __("Service"),
+                "inv.Interface": __("Interface"),
+                "peer.Peer": __("IP Peer"),
+              }),
+            },
+            {
+              text: __("Oper Status"),
+              dataIndex: "update_oper_status",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["N", __("Disable")],
+                  ["U", __("Up")],
+                  ["D", __("Down")],
+                  ["V", __("By Var")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "N": __("Disable"),
+                "U": __("Up"),
+                "D": __("Down"),
+                "V": __("By Var"),
+              }),
+            },
           ],
         },
         {
@@ -422,11 +505,11 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               allowBlank: true,
             },
             {
-                name: 'reference_rx',
-                xtype: 'textfield',
-                fieldLabel: __('Group Reference Regex'),
-                uiStyle: 'large',
-                allowBlank: true
+              name: "reference_rx",
+              xtype: "textfield",
+              fieldLabel: __("Group Reference Regex"),
+              uiStyle: "large",
+              allowBlank: true,
             },
             {
               name: "object_status",
@@ -435,10 +518,10 @@ Ext.define("NOC.fm.dispositionrule.Application", {
               store: [
                 ["A", __("Any")],
                 ["D", __("To DOWN")],
-                ["U", __("To UP")]
+                ["U", __("To UP")],
               ],
               uiStyle: "medium",
-            }
+            },
           ],
         },
 

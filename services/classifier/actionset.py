@@ -42,23 +42,6 @@ class Action:
     resource: Dict[str, Tuple[Callable, ...]] = None
     action: EventAction.LOG = EventAction.LOG
 
-    def run_actions(self, event: Event, target: Any, resources: List[Any]) -> Iterable[EventAction]:
-        """Run setting actions"""
-        # First Event Handler
-        for h in self.event:
-            yield h(event, target)
-        # Second - check object actions
-        for h in self.target:
-            yield h(target, event=event, ts=event.timestamp, **event.vars)
-        if not self.resource:
-            return
-        for r in resources:
-            mid = get_model_id(r)
-            if mid not in self.resource:
-                continue
-            for h in self.resource[mid]:
-                yield h(r, event=event, ts=event.timestamp, **event.vars)
-
 
 class ActionSet(object):
     def __init__(self, logger=None):
@@ -91,6 +74,32 @@ class ActionSet(object):
             yield a
             if a.stop_processing:
                 break
+
+    def run_action(
+        self,
+        action: Action,
+        event: Event,
+        target: Any,
+        resources: List[Any],
+    ) -> Iterable[EventAction]:
+        """Run setting actions"""
+        # First Event Handler
+        for h in action.event:
+            yield h(event, target)
+        # Second - check object actions
+        for h in action.target:
+            yield h(target, event=event, ts=event.timestamp, **event.vars)
+        if not action.resource:
+            return
+        for r in resources:
+            mid = get_model_id(r)
+            if mid not in action.resource:
+                continue
+            for h in action.resource[mid]:
+                yield h(r, event=event, ts=event.timestamp, **event.vars)
+            # Replace to interface method
+            if mid == "inv.Interface":
+                yield self.get_resource_action(r, event=event)
 
     def update_rule(self, rid: str, data):
         """Update rule from lookup"""
@@ -131,17 +140,16 @@ class ActionSet(object):
                 )
             ]
             self.add_notifications += 1
-        if rule.target:
-            for a in rule.target.actions or []:
-                args = a.args or {}
-                h = a.action.from_config(a.key, **args)
-                if h:
-                    target_actions.append(h)
-        # Resource action
-        for r in rule.resources or []:
-            for a in r.actions:
-                args = a.args or {}
-                resource_actions[r.model].append(a.action.from_config(key=a.key, **args))
+        for a in rule.actions or []:
+            args = a.args or {}
+            h = a.action.from_config(a.key, **args)
+            if not h:
+                continue
+            if a.is_target:
+                target_actions.append(h)
+            else:
+                # Resource action
+                resource_actions[a.model_id].append(h)
         return [
             Action(
                 name=data["name"],
@@ -165,7 +173,7 @@ class ActionSet(object):
         self.logger.info("Load Disposition Rule")
         for rule in DispositionRule.objects.filter(is_active=True).order_by("preference"):
             for ec in rule.get_event_classes():
-                actions[str(ec.id)] += self.from_config(DispositionRule.get_rule_config(rule))
+                actions[str(ec.id)] += self.from_config(DispositionRule.get_event_rule_config(rule))
         self.actions = actions
         self.logger.info("Handlers are loaded: %s", self.add_handlers)
 
@@ -189,31 +197,21 @@ class ActionSet(object):
             "service_groups": frozenset(target.effective_service_groups or []) if target else [],
             "remote_system": event.remote_system,
         }
-        action = None
+        action = EventAction.LOG
         # Event and Target action
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
             try:
-                for r in a.run_actions(event, target, resources):
+                for r in self.run_action(a, event, target, resources):
                     if not r:
                         continue
                     if r.is_drop:
                         return r
-                    if r.to_dispose:
-                        action = r
+                    action |= r
             except Exception as e:
                 self.logger.error("[%s] Error when execute action: %s", event.id, str(e))
             if a.action.is_drop:
                 return a.action
-            if a.action.to_dispose:
-                action = a.action
-        # Default resource action
-        for r in resources:
-            if get_model_id(r) == "inv.Interface":
-                action = (
-                    self.get_resource_action(r, event=event)
-                    or action
-                    or self.default_resource_action
-                )
+            action |= a.action
         return action
 
     @staticmethod

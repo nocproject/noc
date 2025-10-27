@@ -7,10 +7,9 @@
     "conditions": [{
         "event_class_re": "System | Halt"
     }],
-    "object_actions": {
-        "interaction_audit": 5,
-        "run_discovery": false,
-        "update_avail_status": "N"
-    },
-    "stop_processing": false
+    "stop_processing": false,
+    "target_actions": [{
+        "action": "audit_command",
+        "interaction_audit": 5
+    }]
 }

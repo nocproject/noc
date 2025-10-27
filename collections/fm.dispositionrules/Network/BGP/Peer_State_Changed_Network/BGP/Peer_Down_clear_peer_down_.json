@@ -10,10 +10,11 @@
     }],
     "default_action": "C",
     "stop_processing": false,
-    "vars_conditions": [
+    "vars": [
         {
-            "field": "to_state",
-            "op": "eq",
+            "name": "to_state",
+            "condition": "eq",
+            "required": true,
             "value": "ESTABLISHED"
         }
     ],
