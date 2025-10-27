@@ -85,6 +85,11 @@ class CapsItem(BaseModel):
     capabilities: Dict[str, Any]
     remote_system: Optional[str] = None  # Scope
 
+    def __str__(self):
+        if not self.remote_system:
+            return f"{self.capabilities}"
+        return f"[{self.remote_system}]{self.capabilities}"
+
 
 class ResourceItem(BaseModel):
     """
@@ -140,11 +145,19 @@ class ResourceItem(BaseModel):
         if not self.caps:
             self.caps = []
         if ri.caps:
-            self.caps += ri.caps
+            self.merge_caps(ri.caps)
 
     def has_rs_data(self) -> bool:
         """Check remote system data"""
         return any(d.remote_system for d in self.data)
+
+    def merge_caps(self, caps: List[CapsItem]):
+        """Merge Capabilities"""
+        rs_ids = {c.remote_system for c in self.caps if c.remote_system}
+        for c in caps:
+            if c.remote_system in c.remote_system in rs_ids:
+                continue
+            self.caps.append(c)
 
 
 class Result(BaseModel):
