@@ -234,7 +234,7 @@ class DiscoveredObject(Document):
         self.description = data.get("description")
         self.chassis_id = data.get("chassis_id")
         self.effective_data = data
-        self.effective_labels = [ll for ll in Label.merge_labels([labels], add_wildcard=True)]
+        self.effective_labels = list(Label.merge_labels([labels], add_wildcard=True))
         # ToDO Rule Settings
         if self.hostname:
             self.duplicate_keys = [self.address_bin, bi_hash(self.hostname), *list(rids)]
