@@ -198,6 +198,8 @@ class Target(
 
     def get_metrics_settings(self) -> Optional[List[Dict[str, Any]]]:
         """"""
+        if not RemoteSystem.has_active_remote_collector():
+            return None
         r = []
         for rs in RemoteSystem.objects.filter(remote_collectors_policy="E"):
             cgf = RemoteSystem.get_collector_config(rs)

@@ -34,6 +34,7 @@ from noc.core.ip import IPv4, IP
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.purgatorium import SOURCES, ETL_SOURCE
 from noc.core.prettyjson import to_json
+from noc.main.models.label import Label
 from noc.main.models.pool import Pool
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.modeltemplate import ModelTemplate
@@ -326,7 +327,7 @@ class ObjectDiscoveryRule(Document):
                     continue
                 r[key] = value
             if di.labels:
-                labels |= set(di.labels)
+                labels |= set(Label.merge_labels([di.labels], add_wildcard=True))
             if di.service_groups:
                 groups |= set(di.service_groups)
         return r, labels, groups
