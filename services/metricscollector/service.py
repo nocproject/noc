@@ -83,8 +83,14 @@ class MetricsCollectorService(FastAPIService):
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.source_map: Dict[str, str] = {}
         self.invalid_sources = defaultdict(int)  # ip -> count
+        self.unknown_metric_items = set()
         self.banned_rs = set()
         self.remote_system_map: Dict[str, str] = {}
+        if config.metricscollector.listen:
+            address, port = config.metricscollector.listen.split(":")
+            if address == "auto":
+                address = config.node
+            self.address, self.port = address, int(port)
 
     async def report_invalid_sources(self):
         """
@@ -99,6 +105,13 @@ class MetricsCollectorService(FastAPIService):
             ", ".join("%s: %s" % (s, self.invalid_sources[s]) for s in self.invalid_sources),
         )
         self.invalid_sources = defaultdict(int)
+        if self.unknown_metric_items:
+            self.logger.info(
+                "Dropping %d metric items with unknown name: %s",
+                len(self.unknown_metric_items),
+                ",".join(sorted(self.unknown_metric_items)),
+            )
+            self.unknown_metric_items = set()
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -221,11 +234,13 @@ class MetricsCollectorService(FastAPIService):
     ) -> Optional[SourceConfig]:
         """Lookup source by name"""
         # Clean domain part
-        name = name.split(".", 1)[0]
+        hostname = name.split(".", 1)[0]
         # Lowe
-        name = f"name:{name.lower()}"
-        if name in self.source_map:
-            return self.source_configs[self.source_map[name]]
+        hostname = f"name:{hostname.lower()}"
+        if hostname in self.source_map:
+            return self.source_configs[self.source_map[hostname]]
+        if f"name:{name.lower()}" in self.source_map:
+            return self.source_configs[self.source_map[f"name:{name.lower()}"]]
         # Register invalid event source
         if self.source_configs and collector:
             metrics["error", ("type", "object_not_found"), ("collector", collector)] += 1
@@ -357,6 +372,8 @@ class MetricsCollectorService(FastAPIService):
             metrics["items"] += 1
             out: Dict[str, Dict[str, Any]] = {}
             units = item.metrics.get("_units", {})
+            if item.managed_object == 1182228167894700459:
+                self.logger.info("Received by Host: %s", item)
             for coll_field, value in item.metrics.items():
                 if coll_field == "_units":
                     continue
@@ -364,6 +381,7 @@ class MetricsCollectorService(FastAPIService):
                 cfg_metric = self.get_cfg_metric(item.collector, coll_field, labels=item.labels)
                 if not cfg_metric:
                     # Unknown metric field
+                    self.unknown_metric_items.add(coll_field)
                     continue
                 # Matched rule found
                 if cfg_metric.ch_table not in out:
@@ -373,7 +391,7 @@ class MetricsCollectorService(FastAPIService):
                         "labels": item.labels,
                         "service": item.service,
                         "managed_object": item.managed_object,
-                        "s_key": item.key,
+                        # "s_key": item.key,
                         "_units": {},
                     }
                     if item.remote_system:
