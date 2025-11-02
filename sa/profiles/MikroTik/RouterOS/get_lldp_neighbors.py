@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_lldp_neighbors
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -93,6 +93,8 @@ class Script(BaseScript):
             }
             if r.get("address4"):
                 interface["neighbors"][0]["remote_mgmt_address"] = r["address4"]
+            if r.get("identity"):
+                interface["neighbors"][0]["remote_system_name"] = r["identity"]
             if "system-description" in r:
                 interface["neighbors"][0]["remote_system_description"] = r[
                     "system-description"

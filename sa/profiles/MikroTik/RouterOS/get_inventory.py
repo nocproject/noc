@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_inventory
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ class Script(BaseScript):
 
     rx_sfp = re.compile(
         r"(?:^\s+sfp-link-length-\d+um: (?P<ll>\d+)m\s*\n)?"
+        r"(?:^\s+sfp-link-length-sm: (?P<ll_k>\d+)km\s*\n)?"
         r"(?:^\s+sfp-link-length-copper: (?P<copper>\d+)m\s*\n)?"
         r"^\s+sfp-vendor-name: (?P<vendor>.+)\s*\n"
         r"^\s+sfp-vendor-part-number: (?P<part_no>.+)\s*\n"
@@ -36,7 +37,7 @@ class Script(BaseScript):
     def execute_cli(self):
         i = []
         v = self.scripts.get_version()
-        platform = v["platform"]
+        platform = v["platform"].strip()
         if platform not in ["x86", "CHR"]:
             serial = self.capabilities.get("Chassis | Serial Number")
             i += [
@@ -61,8 +62,8 @@ class Script(BaseScript):
                 match = self.rx_sfp.search(inv)
                 if match:
                     data = []
-                    vendor = match.group("vendor")
-                    description = match.group("part_no")
+                    vendor = match.group("vendor").strip()
+                    description = match.group("part_no").strip()
                     if vendor in ("", "OEM"):
                         vendor = "NONAME"
                         part = "NoName | Transceiver | "
@@ -72,6 +73,8 @@ class Script(BaseScript):
                             nm = 0
                         if match.group("ll"):
                             ll = int(match.group("ll"))
+                        elif match.group("ll_k"):
+                            ll = int(match.group("ll_k")) * 1000
                         else:
                             ll = 0
                         if match.group("copper"):
@@ -143,7 +146,7 @@ class Script(BaseScript):
                         part_no = description
                     x = {
                         "type": "XCVR",
-                        "vendor": match.group("vendor"),
+                        "vendor": match.group("vendor").strip(),
                         "serial": match.group("serial"),
                         "part_no": [part_no],
                         "number": eth[str(port)],

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # MikroTik.RouterOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,10 +34,10 @@ class Script(BaseScript):
         version = self.rx_ver.search(v).group("version")
         if " " in version:
             version = version.split(" ", 1)[0]
-        platform = self.rx_platform.search(v).group("platform")
+        platform = self.rx_platform.search(v).group("platform").strip()
         match = self.rx_arch.search(v)
         if match:
-            arch = match.group("arch")
+            arch = match.group("arch").strip()
             # platform = "%s (%s)" % (platform, arch)
         else:
             arch = None
