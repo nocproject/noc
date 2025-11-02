@@ -24,7 +24,7 @@ T = TypeVar("T")
 class BaseParameter(Generic[T]):
     PARAM_NUMBER = itertools.count()
 
-    def __init__(self, default: Optional[T] = None, help: Optional[str] = None):
+    def __init__(self, default: Optional[Union[T, str]] = None, help: Optional[str] = None):
         self.param_number = next(self.PARAM_NUMBER)
         if default is None:
             self.default = None
