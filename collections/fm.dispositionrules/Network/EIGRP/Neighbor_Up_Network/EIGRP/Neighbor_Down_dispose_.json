@@ -10,16 +10,18 @@
     }],
     "default_action": "C",
     "stop_processing": false,
-    "vars_conditions": [
+    "vars": [
         {
-            "field": "vars",
-            "op": "contains",
+            "name": "vars",
+            "condition": "exists",
+            "required": true,
             "value": "to_state"
         },
         {
-            "choices": ["FULL", "UP"],
-            "field": "to_state",
-            "op": "eq"
+            "name": "to_state",
+            "condition": "eq",
+            "required": true,
+            "value": null
         }
     ],
     "vars_conditions_op": "AND"

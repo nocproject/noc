@@ -1024,7 +1024,7 @@ class CorrelatorService(FastAPIService):
                 rules += self.object_avail_rules[object_avail]
         if alarm_class and alarm_class.id in self.disposition_rules:
             rules += self.disposition_rules[alarm_class.id]
-        if not alarm_class and not event_class:
+        if not alarm_class and not event_class and not object_avail:
             rules += self.reference_lookup_rules
         if not rules:
             self.logger.info("[%s] No disposition rules, skipping", reference)
@@ -1104,13 +1104,15 @@ class CorrelatorService(FastAPIService):
             event_class=event_class,
             r_vars=r_vars,
             labels=req.labels,
+            remote_system=remote_system,
         ):
+            a_vars = rule.get_vars(r_vars)
             if alarm_class and rule.alarm_class == alarm_class:
                 reference = req.reference
             else:
                 reference = self.get_disposition_reference(
                     alarm_class=rule.alarm_class,
-                    a_vars=r_vars,
+                    a_vars=a_vars,
                     managed_object=managed_object,
                 )
             try:
@@ -1118,7 +1120,7 @@ class CorrelatorService(FastAPIService):
                     await self.clear_alarm_from_rule(
                         rule,
                         managed_object=managed_object,
-                        r_vars=r_vars,
+                        r_vars=a_vars,
                         timestamp=ts,
                     )
                 elif req.event and req.event.severity == EventSeverity.CLEARED:
@@ -1133,7 +1135,7 @@ class CorrelatorService(FastAPIService):
                         managed_object=managed_object,
                         timestamp=ts,
                         alarm_class=rule.alarm_class,
-                        vars=r_vars,
+                        vars=a_vars,
                         reference=reference,
                         groups=groups,
                         labels=req.labels or [],
@@ -1271,10 +1273,12 @@ class CorrelatorService(FastAPIService):
                 reference=req.reference,
                 labels=req.labels or [],
                 group_type=req.g_type,
+                severity=req.severity,
                 subject=req.name,
             )
         if req.g_type == GroupType.SERVICE and not req.alarms:
             # For auto groups not clear Group Alarm
+            self.resolve_deferred_groups(group_alarm.reference)
             return
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {

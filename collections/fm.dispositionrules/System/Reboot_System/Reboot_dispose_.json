@@ -9,10 +9,9 @@
         "event_class_re": "System | Reboot"
     }],
     "default_action": "R",
-    "object_actions": {
-        "interaction_audit": 4,
-        "run_discovery": true,
-        "update_avail_status": "N"
-    },
-    "stop_processing": false
+    "stop_processing": false,
+    "target_actions": [{
+        "action": "audit_command",
+        "interaction_audit": 3
+    }]
 }
