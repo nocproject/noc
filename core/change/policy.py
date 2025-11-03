@@ -38,13 +38,15 @@ REACTION_MODELS = frozenset(
     [
         "sa.ManagedObject",
         "sa.Service",
-        "sla.Probe",
+        "sla.SLAProbe",
         "inv.Object",
         "inv.CPE",
+        "inv.Interface",
         "ip.Address",
         "ip.Prefix",
         "ip.VRF",
         "vc.VLAN",
+        "vc.L2Domain",
     ]
 )
 
