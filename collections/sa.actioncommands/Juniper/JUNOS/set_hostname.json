@@ -1,0 +1,15 @@
+{
+    "name": "Juniper | JUNOS | set_hostname",
+    "$collection": "sa.actioncommands",
+    "uuid": "590e8468-26f5-4632-a8de-2efb8b2f2371",
+    "action__name": "set_hostname",
+    "description": null,
+    "profile__name": "Juniper.JUNOS",
+    "config_mode": true,
+    "preference": 0,
+    "match": [],
+    "commands": "hostname {{ hostname }}",
+    "timeout": 0,
+    "test_cases": [],
+    "scopes": []
+}

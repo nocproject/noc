@@ -1,0 +1,33 @@
+{
+    "name": "Cisco | IOS | set_sla_probe",
+    "$collection": "sa.actioncommands",
+    "uuid": "7d50d722-c175-4aa2-8e1e-dd858cecf215",
+    "action__name": "set_sla_probe",
+    "description": null,
+    "profile__name": "Cisco.IOS",
+    "config_mode": true,
+    "preference": 1000,
+    "match": [],
+    "commands": "{{ type }} {{ target }} 0\n{% if owner %}owner {{ owner }}{% endif %}\n{% if tag %}tag {{ tag }}{% endif %}",
+    "timeout": 0,
+    "test_cases": [
+        {
+            "context": {
+                "name": "101",
+                "owner": "admin",
+                "tag": "tag2",
+                "target": "8.8.8.8",
+                "type": "udp-jitter"
+            },
+            "output": "ip sla 101\nudp-jitter 8.8.8.8 0\nowner admin\ntag tag2\nexit"
+        }
+    ],
+    "scopes": [
+        {
+            "command": "ip sla {{ name }}",
+            "enter_scope": true,
+            "exit_command": "exit",
+            "scope": "ip_sla"
+        }
+    ]
+}

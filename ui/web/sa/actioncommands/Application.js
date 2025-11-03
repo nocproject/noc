@@ -161,6 +161,9 @@ Ext.define("NOC.sa.actioncommands.Application", {
           xtype: "textarea",
           fieldLabel: __("Commands"),
           allowBlank: false,
+          grow: true,
+          growMin: 100, // Minimum height when growing
+          growMax: 200, // Maximum height when growing
         },
         {
           name: "test_cases",
