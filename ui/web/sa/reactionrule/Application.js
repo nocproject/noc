@@ -107,7 +107,10 @@ Ext.define("NOC.sa.reactionrule.Application", {
           store: [
             ["sa.ManagedObject", __("Managed Object")],
             ["sa.Service", __("Service")],
+            ["sla.SLAProbe", __("SLA Probe")],
+            ["inv.Interface", __("Network Interface")],
             ["inv.Object", __("Inventory object")],
+            ["vc.L2Domain", __("L2 Domain")],
             ["vc.VLAN", __("VLAN")],
           ],
           uiStyle: "medium",

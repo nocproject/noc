@@ -1073,7 +1073,7 @@ class Service(Document):
             "service_groups": list(self.effective_service_groups),
             "remote_system": str(self.remote_system.id) if self.remote_system else None,
             "caps": self.get_caps(),
-            "state": str(state),
+            "state": str(state.id),
         }
 
 
