@@ -1,0 +1,33 @@
+{
+    "name": "Huawei | VRP | set_sla_probe",
+    "$collection": "sa.actioncommands",
+    "uuid": "00e56ae3-af22-49af-95e5-9f3ab80062f3",
+    "action__name": "set_sla_probe",
+    "description": null,
+    "profile__name": "Huawei.VRP",
+    "config_mode": true,
+    "preference": 1000,
+    "match": [],
+    "commands": " test-type {{ type }}\n destination-address ipv4 {{ target }}\n{% if description %} description {{ description }}{% endif %}\n{% if frequency %} frequency {{ frequency }}{% endif %}\n start now",
+    "timeout": 0,
+    "test_cases": [
+        {
+            "context": {
+                "name": "test2",
+                "description": "fortest",
+                "frequency": 20,
+                "owner": "admin2",
+                "target": "8.8.8.8",
+                "type": "icmp"
+            },
+            "output": "nqa test-instance admin2 test2\n test-type icmp\n destination-address ipv4 8.8.8.8\n description fortest\n frequency 20\n start now"
+        }
+    ],
+    "scopes": [
+        {
+            "command": "nqa test-instance {{ owner }} {{ name }}",
+            "enter_scope": true,
+            "scope": "ip_sla"
+        }
+    ]
+}

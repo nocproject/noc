@@ -106,7 +106,17 @@ class RunCommandsApplication(ExtApplication):
         # as job - 202 Accepted
         for mo in objects:
             match = mo.get_matcher_ctx()
-            _, commands = action.render_commands(mo.profile, match_ctx=match, **config)
+            try:
+                _, commands = action.render_commands(
+                    mo.profile,
+                    match_ctx=match,
+                    managed_object=mo,
+                    **config,
+                )
+            except ValueError as e:
+                return self.render_json(
+                    {"status": False, "message": str(e)}, status=self.BAD_REQUEST
+                )
             r[mo.id] = "\n".join(commands)
         # Register Audit
         return r
