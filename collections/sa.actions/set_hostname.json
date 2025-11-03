@@ -1,0 +1,16 @@
+{
+    "name": "set_hostname",
+    "$collection": "sa.actions",
+    "uuid": "245f5055-064a-4978-9619-9ce0e3ef63bd",
+    "label": "Set Device Hostname",
+    "description": null,
+    "access_level": 15,
+    "params": [
+        {
+            "name": "hostname",
+            "description": null,
+            "is_required": true,
+            "type": "str"
+        }
+    ]
+}
