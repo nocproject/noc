@@ -1,0 +1,32 @@
+{
+    "name": "Juniper | JUNOS | set_sla_probe",
+    "$collection": "sa.actioncommands",
+    "uuid": "a012df85-81be-499c-a753-9256bbbd68db",
+    "action__name": "set_sla_probe",
+    "description": null,
+    "profile__name": "Juniper.JUNOS",
+    "config_mode": true,
+    "preference": 1000,
+    "match": [],
+    "commands": " set probe-type {{ type }}\n set target address {{ target }}\n set test-interval {{ frequency }}\n set probe-count 3\n set probe-interval 10\n set history-size 5",
+    "timeout": 0,
+    "test_cases": [
+        {
+            "context": {
+                "name": "test1",
+                "frequency": 180,
+                "owner": "o1",
+                "target": "8.8.8.8",
+                "type": "icmp-ping"
+            },
+            "output": "services rpm probe o1 test test1\n set probe-type icmp-ping\n set target address 8.8.8.8\n set test-interval 180\n set probe-count 3\n set probe-interval 10\n set history-size 5"
+        }
+    ],
+    "scopes": [
+        {
+            "command": "services rpm probe {{ owner }} test {{ name }}",
+            "enter_scope": true,
+            "scope": "ip_sla"
+        }
+    ]
+}

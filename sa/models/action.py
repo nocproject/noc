@@ -8,6 +8,7 @@
 # Python modules
 import threading
 import operator
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Union, List, Tuple
 
@@ -36,9 +37,10 @@ from noc.main.models.handler import Handler
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
 
 id_lock = threading.Lock()
+rx_empty_string = re.compile(r"\n{2,}")
 
 
-@dataclass(frozen=True)
+@dataclass
 class ScopeConfig:
     """
     Action Configuration Scope
@@ -68,7 +70,12 @@ class ActionCommandConfig:
     commands: str
     scopes: Optional[List[ScopeConfig]] = None
 
-    def render(self, ctx: Dict[str, Any], scope_prepend: str = " "):
+    def render(
+        self,
+        ctx: Dict[str, Any],
+        scope_prepend: str = " ",
+        clean_empty_string: bool = True,
+    ):
         r, exits = [], []
         inputs = {"scope_prefix": [], "scope_prepend": scope_prepend}
         inputs |= ctx
@@ -78,7 +85,7 @@ class ActionCommandConfig:
                 continue
             if s.enter:
                 r.append(s.command)
-            inputs["scope_prefix"] += s.command
+            inputs["scope_prefix"] += [s.command]
             if s.exit_command:
                 exits.append(s.exit_command)
         inputs["scope_prefix"] = " ".join(inputs["scope_prefix"])
@@ -86,6 +93,8 @@ class ActionCommandConfig:
         env = jinja2.Environment(loader=loader)
         template = env.get_template("tpl")
         command = template.render(**inputs)
+        if clean_empty_string:
+            command = rx_empty_string.sub("\n", command)
         if command:
             r.append(command)
         r += exits
@@ -360,7 +369,7 @@ class Action(Document):
     ) -> List[KVInputMapping]:
         """Cleanup action arguments"""
         r = []
-        args, _ = self.clean_args(managed_object.profile, **kwargs)
+        args, _ = self.clean_args(managed_object.profile, obj=managed_object, **kwargs)
         for k, v in args.items():
             if isinstance(v, list):
                 v = ValueType.convert_from_array(v)
@@ -371,7 +380,6 @@ class Action(Document):
         self,
         profile,
         command_scopes: Optional[Dict[str, ScopeConfig]] = None,
-        managed_object: Optional[Any] = None,
         **kwargs,
     ) -> Tuple[Dict[str, Any], List[ScopeConfig]]:
         args, scopes, command_scopes = {}, [], command_scopes or {}
@@ -382,6 +390,12 @@ class Action(Document):
             v = kwargs.get(p.name, p.default)
             if v is None:
                 continue
+            if isinstance(v, str):
+                try:
+                    tmpl = jinja2.Template(v)
+                    v = tmpl.render(**kwargs)
+                except jinja2.exceptions.TemplateError as e:
+                    raise ValueError("Parameter '%s', Render Error: %s" % (p.name, e))
             if p.type == ValueType.IFACE_NAME:
                 # Interface
                 try:
@@ -400,6 +414,7 @@ class Action(Document):
                 v = [p.type.clean_value(x) for x in ValueType.convert_to_array(str(v))]
             else:
                 v = p.type.clean_value(v)
+            # Render Action
             args[str(p.name)] = v
             if not p.scope:
                 continue
@@ -409,10 +424,6 @@ class Action(Document):
                 command = command_scopes[p.scope].command or p.scope_command
             else:
                 command = p.scope_command
-            # Enter command
-            if command:
-                tmpl = jinja2.Template(command)
-                command = tmpl.render(**args)
             # Scopes from commands?
             scopes.append(
                 ScopeConfig(
@@ -423,6 +434,12 @@ class Action(Document):
                     enter=ac_scope.enter if ac_scope else bool(command),
                 )
             )
+        # Render Scope command
+        for s in scopes:
+            # Enter command
+            if s.command:
+                tmpl = jinja2.Template(s.command)
+                s.command = tmpl.render(**args)
         return args, scopes
 
     def test(self):

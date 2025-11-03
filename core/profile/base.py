@@ -297,6 +297,11 @@ class BaseProfile(object, metaclass=BaseProfileMetaclass):
     Sequence to save configuration
     """
 
+    command_cancel_prefix = None
+    """
+    Sequence to cancel config string
+    """
+
     send_on_syntax_error = None
     """
     String or callable to send on syntax error to perform cleanup
