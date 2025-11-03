@@ -133,21 +133,25 @@ Ext.define("NOC.sa.actioncommands.Application", {
             {
               text: __("Scope"),
               dataIndex: "scope",
+              sortable: false,
               editor: "textfield",
             },
             {
               text: __("Enter Scope"),
               dataIndex: "enter_scope",
-              editor: "combobox",
+              sortable: false,
+              editor: "checkbox",
             },
             {
               text: __("Command"),
               dataIndex: "command",
+              sortable: false,
               editor: "textfield",
             },
             {
               text: __("Exit Command"),
               dataIndex: "exit_command",
+              sortable: false,
               editor: "textfield",
             },
           ],
