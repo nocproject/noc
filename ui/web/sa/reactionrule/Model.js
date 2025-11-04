@@ -80,7 +80,7 @@ Ext.define("NOC.sa.reactionrule.Model", {
       type: "auto",
     },
     {
-      name: "handlers",
+      name: "action_common",
       type: "auto",
     },
     {
@@ -88,9 +88,12 @@ Ext.define("NOC.sa.reactionrule.Model", {
       type: "auto",
     },
     {
-      name: "vars_conditions_op",
-      type: "string",
-      defaultValue: "AND",
+      name: "affected_domains",
+      type: "auto",
+    },
+    {
+      name: "action_command_set",
+      type: "auto",
     },
     {
       name: "preference",

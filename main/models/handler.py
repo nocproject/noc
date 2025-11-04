@@ -34,6 +34,7 @@ id_lock = Lock()
         ("sa.ManagedObject", "config_diff_filter_handler"),
         ("sa.ManagedObject", "config_validation_handler"),
         ("sa.Action", "handler"),
+        ("sa.ReactionRule", "action_common.handler"),
         ("inv.InterfaceProfile", "ifdesc_handler"),
         ("inv.TechDomain", "controller_handler"),
         ("pm.ThresholdProfile", "umbrella_filter_handler"),

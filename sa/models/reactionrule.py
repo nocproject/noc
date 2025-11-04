@@ -24,6 +24,7 @@ from mongoengine.fields import (
     IntField,
     UUIDField,
     ReferenceField,
+    EnumField,
     EmbeddedDocumentListField,
 )
 
@@ -32,13 +33,15 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
+from noc.main.models.label import Label
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.sa.models.action import Action
-from noc.fm.models.alarmclass import AlarmClass
+from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
 from noc.core.models.cfgactions import ActionType
 from noc.core.matcher import build_matcher
+from noc.core.runner.job import JobRequest
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.change.model import ChangeItem
@@ -49,15 +52,111 @@ from noc.core.text import quote_safe_path
 id_lock = Lock()
 
 
+class ActionCommands(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    action: Action = ReferenceField(Action)
+    allow_fail: bool = BooleanField(default=True)
+    clean_action: bool = BooleanField(default=False)
+    enable_scope_action = StringField(
+        choices=[
+            ("N", "Do Nothing"),
+            ("E", "Enable"),
+            ("D", "Disable"),
+            ("A", "Action"),
+        ],
+        default="A",
+    )
+    # topology_role
+    # run_all: bool = BooleanField()
+    # repeat: bool = BooleanField(default=True)
+    context = ListField(StringField())
+
+    def __str__(self):
+        return f"{self.action}: AF: {self.allow_fail}"
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {
+            "action__name": self.action.name,
+            "allow_fail": self.allow_fail,
+            "clean_action": self.clean_action,
+        }
+        if self.context:
+            r["context"] = list(self.context)
+        return r
+
+
+class ActionItem(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    action: ActionType = EnumField(ActionType, required=True)
+    run: str = StringField(
+        choices=[
+            ("A", "Always"),
+            ("F", "Commands Set Failed"),
+            ("S", "Commands Set Success"),
+        ],
+        default="A",
+    )
+    handler: "Handler" = ReferenceField(Handler, required=False)
+    wf_event = StringField(required=False)
+
+    def __str__(self):
+        return f"C: {self.action}; W: {self.wf_event}; H: {self.handler}"
+
+    @property
+    def json_data(self) -> Dict[str, Any]:
+        r = {"action": self.action.value, "run": self.run}
+        # if self.interaction_audit:
+        #    r["interaction_audit"] = self.interaction_audit.value
+        if self.handler:
+            r["handler__name"] = list(self.handler.name)
+        return r
+
+    def get_config(self) -> Dict[str, Any]:
+        """Get Action config"""
+        key, args = None, {}
+        match self.action:
+            case ActionType.FIRE_WF_EVENT:
+                args = {"wf_event": self.wf_event}
+                key = ""
+            case ActionType.HANDLER:
+                key = self.handler.handler
+            case ActionType.RUN_DISCOVERY:
+                key = ""
+                # if self.interaction_audit:
+                #    args = {"audit": self.interaction_audit}
+        if key is not None:
+            return {"action": self.action.value, "key": key, "cfg": args}
+        return {}
+
+
+class ConfigurationDomain(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
+    model_id: str = StringField(required=True)
+    rule: Optional["ReactionRule"] = PlainReferenceField("sa.ReactionRule", required=False)
+    change: str = StringField(default="topology")
+    reaction: str = StringField(choices=[("A", "Affected"), ("M", "Match")], default="A")
+    suppress_action: bool = BooleanField(default=False)
+    ctx: str = StringField(choices=[("D", "Domain"), ("L", "Local")])
+    # affected, match
+    # Affected_object
+    # name: str = StringField(required=False)
+    # topology_handler = StringField()
+
+
 class FieldData(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     field = StringField(required=False)
     capability: Optional[Capability] = ReferenceField(Capability)
+    wildcard = ReferenceField(Label, required=False)
     # operations: List[str] = ListField(StringField(
     #     choices=["create", "update", "delete", "topology", "any"], default="any"),
     # )
-    op = StringField(
+    condition = StringField(
         choices=[
             "regex",
             "contains",
@@ -78,7 +177,14 @@ class FieldData(EmbeddedDocument):
     set_context = StringField(required=False)
 
     def __str__(self):
-        return f"{self.field} {self.op} {self.value}"
+        field = self.field or self.capability
+        if self.condition and self.value:
+            r = f"{field} {self.condition} {self.value}"
+        else:
+            r = field
+        if self.set_context:
+            r = f"{r} (set: {self.set_context})"
+        return r
 
     def clean(self):
         super().clean()
@@ -90,11 +196,20 @@ class FieldData(EmbeddedDocument):
         if self.capability:
             return {"caps": {"$in": [self.capability.name]}}
         # Field matcher
-        return {self.field: {f"${self.op}": self.value}}
+        if self.condition and self.value:
+            return {self.field: {f"${self.condition}": self.value}}
+        return {}
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        return {"field": self.field, "op": self.op, "value": self.value}
+        r = {"field": self.field}
+        if self.capability:
+            r["capability__uuid"] = str(self.capability.uuid)
+        if self.condition and self.value:
+            r |= {"condition": self.condition, "value": self.value}
+        if self.set_context:
+            r["set_context"] = self.set_context
+        return r
 
 
 class Match(EmbeddedDocument):
@@ -132,18 +247,6 @@ class Match(EmbeddedDocument):
         if self.remote_system:
             r["remote_system"] = str(self.remote_system.name)
         return r
-
-
-class HandlerItem(EmbeddedDocument):
-    meta = {"strict": False, "auto_create_index": False}
-    # On Event, On Raise, On Close
-    handler: "Handler" = ReferenceField(Handler, required=True)
-
-    @property
-    def json_data(self) -> Dict[str, Any]:
-        if self.handler:
-            return {"handler__name": self.handler.name}
-        return {}
 
 
 @tree(field="replace_rule")
@@ -185,6 +288,14 @@ class ReactionRule(Document):
         required=True,
     )
     conditions: List["Match"] = EmbeddedDocumentListField(Match)
+    execute_policy = StringField(
+        choices=[
+            ("J", "As Job"),
+            ("A", "Job with Approve"),
+            ("R", "Immediate"),
+        ],
+        default="R",
+    )
     stop_processing = BooleanField(default=False)
     # Match Handler -> ChangedItem ->
     operations: List[str] = ListField(
@@ -202,10 +313,14 @@ class ReactionRule(Document):
             default="any",
         ),
     )
+    # Context
     field_data: List["FieldData"] = EmbeddedDocumentListField(FieldData)
-    # Action
-    # Handlers
-    handlers: List["HandlerItem"] = EmbeddedDocumentListField(HandlerItem)
+    affected_domains: List["ConfigurationDomain"] = EmbeddedDocumentListField(ConfigurationDomain)
+    # Controller, Scenario
+    # Action Commands Set
+    action_command_set: List["ActionCommands"] = EmbeddedDocumentListField(ActionCommands)
+    # Actions
+    action_common: List[ActionItem] = EmbeddedDocumentListField(ActionItem)
     # Notification
     notification_policy = StringField(
         choices=[("D", "disable"), ("R", "register"), ("G", "To Group")],
@@ -215,17 +330,8 @@ class ReactionRule(Document):
         NotificationGroup, required=False
     )
     subject_template = StringField()
-    # alarm
-    alarm_disposition: Optional["AlarmClass"] = PlainReferenceField(AlarmClass, required=False)
-    # Run Discovery
     # Validation
-    action_command: Optional["Action"] = ReferenceField(Action, required=False)
     action_script: Optional[str] = StringField(required=False)
-    # Controller, Scenario
-    # fire_event
-    # failed_event
-    # success_event
-    # ttl
     # Diagnostic, State Needed
     bi_id = LongField(unique=True)
 
@@ -276,7 +382,9 @@ class ReactionRule(Document):
             expr.append(mr.get_match_expr())
         # AND
         for mf in self.field_data or []:
-            expr.append(mf.get_match_expr())
+            e = mf.get_match_expr()
+            if e:
+                expr.append(e)
         if not expr:
             return None
         if len(expr) == 1:
@@ -307,6 +415,11 @@ class ReactionRule(Document):
     def get_action_ctx(self, o) -> Dict[str, Any]:
         """Create action context (to env)"""
         r = {"obj": o}
+        # managed_object
+        if isinstance(o, ManagedObject):
+            r["managed_object"] = o
+        elif hasattr(o, "managed_object"):
+            r["managed_object"] = o.managed_object
         caps = o.get_caps()
         for i in self.field_data:
             if i.field and hasattr(o, i.field):
@@ -317,18 +430,43 @@ class ReactionRule(Document):
                 r[name] = caps[i.capability.name]
         return r
 
-    def get_actions(self, o) -> List[Tuple[ActionType, str]]:
+    def get_action_commands_job(
+        self, managed_object, **kwargs
+    ) -> Tuple[ManagedObject, List[JobRequest]]:
+        """Return as Job Request"""
+        r = []
+        for a in self.action_command_set:
+            req = a.action.get_job_request(managed_object=managed_object, **kwargs)
+            if self.execute_policy == "A":
+                req.require_approval = True
+            r.append(req)
+        return managed_object, r
+
+    def get_action_commands(
+        self, managed_object: ManagedObject, **ctx
+    ) -> Tuple[ManagedObject, List[str], bool]:
+        """Return As Config"""
+        r, cfg_mode = [], False
+        for a in self.action_command_set:
+            commands, cfg = a.action.get_execute_commands(managed_object, dry_run=True, **ctx)
+            cfg_mode |= cfg.config_mode
+            # Exit from mode/Raise error when mode changed
+            r.append(commands)
+        return managed_object, r, cfg_mode
+
+    def iter_actions(self, o) -> List[Tuple[ActionType, Dict[str, Any], JobRequest]]:
         """
         1. Handler
         2. Script/Command Action
         3. Object Action
         4. Notify
         """
-        ctx = self.get_action_ctx(o)  # get_env, Processed Data
-        for h in self.handlers:
-            yield ActionType.HANDLER, str(h.handler.handler), {}
-        if self.action_command:
-            yield ActionType.ACTION_COMMAND, str(self.action_command.name), ctx
+        for a in self.action_common:
+            if not a.action.is_supported(o):
+                continue
+            cfg = a.get_config()
+            if cfg:
+                yield a.action, cfg, a.action.get_job(o, **cfg)
 
     def get_config(self):
         """Getting config for router"""
@@ -350,13 +488,33 @@ class ReactionRule(Document):
             rule.run(o)
         # Lookup Domain ?
 
-    def run(self, o):
+    def run(self, o, dry_run: bool = True):
         """Execute actions"""
-        for action, key, cfg in self.get_actions(o):
-            r = action.run_action(o, key, cfg)
+        # Mege Action by Managed Object -. Actions
+        # Run: As Command, As Job
+        for action, cfg, _ in self.iter_actions(o):
+            r = action.run_action(o, **cfg)
             # Processed result
             # Delayed processed
             self.processed_result(o, r)
+        # Action Command
+        ctx = self.get_action_ctx(o)  # get_env, Processed Data
+        if self.execute_policy == "R":
+            mo, commands, cfg_required = self.get_action_commands(**ctx)
+            mo.scripts.commands(
+                commands=[commands],
+                config_mode=cfg_required,
+                dry_run=dry_run,
+            )
+        else:
+            mo, jobs = self.get_action_commands_job(**ctx)
+            req = JobRequest(name=f"Reaction On {o} bu Rule {self.name}", jobs=jobs)
+            # Locks for ManagedObject
+            req.submit()
+        # Configuration Domain
+        # Configuration Domain Ctx
+        # iter_topology
+        # get_effective_path ? multiple path
         # Send Result
         # if self.notification_policy == "G" and self.notification_group:
         #    self.notification_group.render_message()
