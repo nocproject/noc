@@ -71,7 +71,7 @@ class SLAProfile(Document):
     meta = {"collection": "noc.sla_profiles", "strict": False, "auto_create_index": False}
     name = StringField(unique=True)
     description = StringField()
-    workflow = PlainReferenceField(
+    workflow: "Workflow" = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "sla.SLAProfile")
     )
     style = ForeignKeyField(Style, required=False)

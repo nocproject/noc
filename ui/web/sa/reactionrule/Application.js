@@ -24,6 +24,9 @@ Ext.define("NOC.sa.reactionrule.Application", {
     "NOC.main.remotesystem.LookupField",
     "NOC.main.notificationgroup.LookupField",
     "NOC.inv.capability.LookupField",
+    "NOC.sa.action.LookupField",
+    "NOC.sa.reactionrule.LookupField",
+    "NOC.main.ref.modelid.LookupField",
     "Ext.ux.form.JSONField",
     "Ext.ux.form.GridField",
   ],
@@ -52,7 +55,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
       text: __("Pref"),
       dataIndex: "preference",
       width: 50,
-    }
+    },
   ],
 
   initComponent: function(){
@@ -128,7 +131,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
             ["config_changed", __("Config Changed")],
             ["version_changed", __("Version Changed")],
             ["version_set", __("Version Set")],
-            ["any", __("Any")]
+            ["any", __("Any")],
           ],
           uiStyle: "medium",
         },
@@ -164,10 +167,164 @@ Ext.define("NOC.sa.reactionrule.Application", {
           ],
         },
         {
-          name: "handlers",
+          name: "field_data",
           xtype: "gridfield",
-          fieldLabel: __("Handlers"),
+          fieldLabel: __("Field Data"),
           columns: [
+            {
+              text: __("Field"),
+              dataIndex: "field",
+              editor: "textfield",
+              width: 250,
+            },
+            {
+              text: __("Capability"),
+              dataIndex: "capability",
+              renderer: NOC.render.Lookup("capability"),
+              width: 250,
+              editor: "inv.capability.LookupField",
+            },
+            {
+              text: __("Cond."),
+              dataIndex: "condition",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["regex", __("Regex")],
+                  ["contains", __("Contains")],
+                  ["exists", __("Exists")],
+                  ["eq", __("Equal")],
+                  ["ne", __("Not Equal")],
+                  ["gte", __("Greater Equal")],
+                  ["gt", __("Greater")],
+                  ["lte", __("Less Equal")],
+                  ["lt", __("Less")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "regex": __("Regex"),
+                "contains": __("Contains"),
+                "exists": __("Exists"),
+                "eq": __("Equal"),
+                "ne": __("Not Equal"),
+                "gte": __("Greater Equal"),
+                "gt": __("Greater"),
+                "lte": __("Less Equal"),
+                "lt": __("Less"),
+              }),
+            },
+            {
+              text: __("Value"),
+              dataIndex: "value",
+              editor: "textfield",
+              width: 100,
+            },
+            {
+              text: __("Set Context"),
+              dataIndex: "set_context",
+              editor: "textfield",
+              width: 100,
+            },
+          ],
+        },
+        {
+          name: "affected_domains",
+          xtype: "gridfield",
+          fieldLabel: __("Affected Rules"),
+          columns: [
+            {
+              text: __("ModelID"),
+              dataIndex: "model_id",
+              renderer: NOC.render.Lookup("model_id"),
+              editor: "main.ref.modelid.LookupField",
+              width: 150,
+            },
+            {
+              text: __("Rule"),
+              dataIndex: "rule",
+              renderer: NOC.render.Lookup("rule"),
+              editor: "sa.reactionrule.LookupField",
+              width: 150,
+            },
+            {
+              text: __("Reaction"),
+              dataIndex: "reaction",
+              width: 100,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["A", __("Affected")],
+                  ["M", __("Match")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "A": __("Affected"),
+                "M": __("Match"),
+              }),
+            },
+          ],
+        },
+        {
+          name: "action_command_set",
+          xtype: "gridfield",
+          fieldLabel: __("Action Commands"),
+          columns: [
+            {
+              text: __("Action"),
+              dataIndex: "action",
+              width: 300,
+              editor: {
+                xtype: "sa.action.LookupField",
+              },
+              renderer: NOC.render.Lookup("action"),
+            },
+            {
+              text: __("Allow Fail"),
+              dataIndex: "allow_fail",
+              width: 70,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Clean Action"),
+              dataIndex: "clean_action",
+              width: 70,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              editor: "stringlistfield",
+              dataIndex: "context",
+              width: 400,
+              text: __("Context"),
+            },
+          ],
+        },
+        {
+          name: "action_common",
+          xtype: "gridfield",
+          fieldLabel: __("Run Actions"),
+          columns: [
+            {
+              text: __("Action"),
+              dataIndex: "action",
+              width: 150,
+              allowBlank: false,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["handler", __("Handler")],
+                  ["run_discovery", __("Run Discovery")],
+                  ["fire_wf_event", __("Fire Event")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "handler": __("Handler"),
+                "run_discovery": __("Run Discovery"),
+                "fire_wf_event": __("Fire Event"),
+              }),
+            },
             {
               text: __("Handler"),
               dataIndex: "handler",
@@ -175,10 +332,16 @@ Ext.define("NOC.sa.reactionrule.Application", {
               editor: {
                 xtype: "main.handler.LookupField",
                 query: {
-                    allow_reaction: true
+                  allow_reaction: true,
                 },
               },
               renderer: NOC.render.Lookup("handler"),
+            },
+            {
+              editor: "textfield",
+              dataIndex: "wf_event",
+              width: 400,
+              text: __("WF Event"),
             },
           ],
         },
@@ -215,7 +378,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
               fieldLabel: __("Dispose Alarm"),
               uiStyle: "medium",
               allowBlank: true,
-            }
+            },
           ],
         },
         {
@@ -229,71 +392,9 @@ Ext.define("NOC.sa.reactionrule.Application", {
           fieldLabel: __("Condition Op Vars"),
           store: [
             ["AND", __("AND")],
-            ["OR", __("OR")]
+            ["OR", __("OR")],
           ],
           uiStyle: "medium",
-        },
-        {
-          name: "field_data",
-          xtype: "gridfield",
-          fieldLabel: __("Field Data"),
-          columns: [
-            {
-              text: __("Field"),
-              dataIndex: "field",
-              editor: "textfield",
-              width: 250,
-            },
-            {
-                text: __("Capability"),
-                dataIndex: "capability",
-                renderer: NOC.render.Lookup("capability"),
-                width: 250,
-                editor: "inv.capability.LookupField"
-            },
-            {
-              text: __("Op"),
-              dataIndex: "op",
-              width: 100,
-              editor: {
-                xtype: "combobox",
-                store: [
-                  ["regex", __("Regex")],
-                  ["contains", __("Contains")],
-                  ["exists", __("Exists")],
-                  ["eq", __("Equal")],
-                  ["ne", __("Not Equal")],
-                  ["gte", __("Greater Equal")],
-                  ["gt", __("Greater")],
-                  ["lte", __("Less Equal")],
-                  ["lt", __("Less")],
-                ],
-              },
-              renderer: NOC.render.Choices({
-                "regex": __("Regex"),
-                "contains": __("Contains"),
-                "exists": __("Exists"),
-                "eq": __("Equal"),
-                "ne": __("Not Equal"),
-                "gte": __("Greater Equal"),
-                "gt": __("Greater"),
-                "lte": __("Less Equal"),
-                "lt": __("Less"),
-              }),
-            },
-            {
-              text: __("Value"),
-              dataIndex: "value",
-              editor: "textfield",
-              width: 100
-            },
-            // {
-            //   text: __("Set Context"),
-            //   dataIndex: "value",
-            //   editor: "set_context",
-            //   width: 100
-            // }
-          ],
         },
         {
           name: "conditions",
