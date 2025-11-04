@@ -24,6 +24,7 @@ from mongoengine.fields import (
     LongField,
     IntField,
     DictField,
+    EmbeddedDocumentListField,
 )
 from pymongo import ReadPreference
 
@@ -35,6 +36,7 @@ from noc.sa.interfaces.igetslaprobes import IGetSLAProbes
 from noc.pm.models.agent import Agent
 from noc.pm.models.metricrule import MetricRule
 from noc.main.models.label import Label
+from noc.inv.models.capsitem import CapsItem
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.validators import is_ipv4
 from noc.core.change.decorator import change
@@ -43,6 +45,7 @@ from noc.core.wf.decorator import workflow
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.model.sql import SQL
 from noc.core.model.decorator import on_delete_check
+from noc.core.caps.decorator import capabilities
 from noc.config import config
 
 PROBE_TYPES = IGetSLAProbes.returns.element.attrs["type"].choices
@@ -54,6 +57,7 @@ _target_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 @Label.model
 @change
 @bi_sync
+@capabilities
 @workflow
 @on_delete_check(
     clean=[("sa.Service", "sla_probe")],
@@ -86,6 +90,8 @@ class SLAProbe(Document):
     # Probe type
     type = StringField(choices=[(x, x) for x in PROBE_TYPES])
     tos = IntField(min=0, max=64)
+    # Capabilities
+    caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     # IP address or URL, depending on type
     target = StringField()
     # Hardware timestamps
@@ -261,8 +267,8 @@ class SLAProbe(Document):
         Check configured collected metrics
         :return:
         """
-        config = self.get_metric_config(self)
-        return config.get("metrics") or config.get("items")
+        cfg = self.get_metric_config(self)
+        return cfg.get("metrics") or cfg.get("items")
 
     @classmethod
     def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:
@@ -306,3 +312,18 @@ class SLAProbe(Document):
         if self.service:
             r["service"] = self.service.get_message_context()
         return r
+
+    def get_matcher_ctx(self):
+        """"""
+        if not self.state:
+            state = self.profile.workflow.get_default_state()
+        else:
+            state = self.state
+        return {
+            "name": self.name,
+            "description": self.description,
+            "labels": list(self.effective_labels),
+            # "service_groups": list(self.effective_service_groups),
+            "caps": self.get_caps(),
+            "state": str(state.id),
+        }

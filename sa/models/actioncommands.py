@@ -31,6 +31,8 @@ from .action import Action, ScopeConfig
 
 
 class PlatformMatch(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     platform_re = StringField()
     version_re = StringField()
 
@@ -43,7 +45,8 @@ class PlatformMatch(EmbeddedDocument):
 
 
 class ActionCommandsTestCase(EmbeddedDocument):
-    meta = {"strict": False}
+    meta = {"strict": False, "auto_create_index": False}
+
     output = StringField()
     context = DictField()
 
@@ -56,8 +59,12 @@ class ActionCommandsTestCase(EmbeddedDocument):
 
 
 class Scope(EmbeddedDocument):
+    meta = {"strict": False, "auto_create_index": False}
+
     scope = StringField()
     command = StringField()
+    enable_scope_command = StringField()
+    disable_scope_command = StringField()
     enter_scope = BooleanField(default=False)
     exit_command = StringField()
 
@@ -78,6 +85,8 @@ class Scope(EmbeddedDocument):
             value="",
             command=self.command,
             enter=self.enter_scope,
+            enable_command=self.enable_scope_command,
+            disable_command=self.disable_scope_command,
             exit_command=self.exit_command,
         )
 
@@ -98,9 +107,12 @@ class ActionCommands(Document):
     profile: "Profile" = PlainReferenceField(Profile)
     # Config Scopes
     config_mode = BooleanField(default=False)
+    disable_when_change = BooleanField(default=False)
     scopes: List["Scope"] = EmbeddedDocumentListField(Scope)
     match: List[PlatformMatch] = EmbeddedDocumentListField(PlatformMatch)
     commands = StringField()
+    # backward_commands
+    # cancel_prefix
     preference = IntField(default=1000)
     timeout = IntField(default=60)
     test_cases: List[ActionCommandsTestCase] = EmbeddedDocumentListField(ActionCommandsTestCase)

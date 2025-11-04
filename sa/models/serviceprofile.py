@@ -314,6 +314,7 @@ class AlarmStatusRule(EmbeddedDocument):
     """
 
     alarm_class_template: Optional[str] = StringField(required=False)
+    allow_partial: bool = BooleanField(default=False)
     include_labels = ListField(StringField())
     exclude_labels = ListField(StringField())
     affected_instance = BooleanField(default=False)  # Include ServiceInstance to
@@ -331,8 +332,10 @@ class AlarmStatusRule(EmbeddedDocument):
             return False
         if self.max_severity and alarm.severity > self.max_severity.severity:
             return False
-        if self.alarm_class_template:
+        if self.allow_partial and self.alarm_class_template:
             return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
+        if self.alarm_class_template:
+            return self.alarm_class_template == alarm.alarm_class.name
         return not (self.include_labels and set(self.include_labels) - set(alarm.effective_labels))
 
 
