@@ -16,6 +16,8 @@ from noc.config import config
 from noc.core.hash import hash_int
 from noc.core.diagnostic.hub import SNMP_DIAG
 
+SNMP_FAILED_WINDOW = 600
+
 
 class UptimeCheck(DiscoveryCheck):
     """
@@ -30,12 +32,8 @@ class UptimeCheck(DiscoveryCheck):
         uptime = self.object.scripts.get_uptime()
         self.logger.debug("Received uptime: %s", uptime)
 
-        if uptime is None and self.object.diagnostic.has_active_diagnostic(SNMP_DIAG):
-            self.set_problem(
-                message="Failed getting uptime",
-                diagnostic=SNMP_DIAG,
-            )
-
+        if uptime is None:
+            self.register_diagnostic()
         if not uptime:
             return
         reboot_ts = Uptime.register(self.object, uptime)
@@ -45,6 +43,22 @@ class UptimeCheck(DiscoveryCheck):
         if config.message.enable_reboot:
             self.logger.info("Sending reboot message to mx")
             self.send_reboot_message(reboot_ts)
+
+    def register_diagnostic(self):
+        """Register uptime diagnostic"""
+        c_uptime = Uptime.objects.filter(object=self.object.id).first()
+        if (
+            not c_uptime
+            or not c_uptime.last
+            or not self.object.diagnostic.has_active_diagnostic(SNMP_DIAG)
+        ):
+            return
+        now = datetime.datetime.now()
+        if (now - c_uptime.last).total_seconds() > SNMP_FAILED_WINDOW:
+            self.set_problem(
+                message="Failed getting uptime",
+                diagnostic=SNMP_DIAG,
+            )
 
     def send_reboot_message(self, ts: datetime.datetime) -> None:
         mo = self.object
