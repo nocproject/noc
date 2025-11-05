@@ -968,6 +968,7 @@ class Service(Document):
             instance = ServiceInstance.ensure_instance(self, cfg, settings)
             # Update Data, Run sync
             instance.update_config(cfg)
+            instance.register_endpoint(source, cfg.addresses)
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()
