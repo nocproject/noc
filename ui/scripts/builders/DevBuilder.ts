@@ -1,5 +1,6 @@
 import type {ServeResult} from "esbuild";
 import * as esbuild from "esbuild";
+import {LanguagePlugin} from "../plugins/LanguagePlugin.ts";
 import {BaseBuilder} from "./BaseBuilder.ts";
 
 export class DevBuilder extends BaseBuilder{
@@ -36,6 +37,21 @@ export class DevBuilder extends BaseBuilder{
     const options = this.getBaseBuildOptions();
     this.context = await esbuild.context({
       ...options,
+      entryPoints: [
+        ...(Array.isArray(options.entryPoints) ? options.entryPoints : []),
+        "locale-en",
+        // `${this.options.cacheDir}/locale-en.js`,
+      ],
+      plugins: [
+        ...(options.plugins || []),
+        new LanguagePlugin({
+          debug: this.options.pluginDebug,
+          isDev: true,
+          outputDir: this.options.buildDir,
+          languages: ["en"],
+          cacheDir: this.options.cacheDir,
+        }).getPlugin(),
+      ],
     });
   }
 

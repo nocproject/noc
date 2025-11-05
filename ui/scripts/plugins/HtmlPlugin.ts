@@ -70,7 +70,7 @@ export class HtmlPlugin{
     const patternForReplace = {
       "app-prod": [".css"],
       "app": [".js"],
-      "ext-locale": [".js"],
+      "locale-": [".js"],
       "theme": [".js", ".css"],
       "external": [".js"],
     };
@@ -94,9 +94,8 @@ export class HtmlPlugin{
       for(const theme of this.options.themes){
         const outputFile = `${this.options.buildDir}/index.${theme}.${language}.html`;
         toReplaceFiles.push(this.searchFile(`theme-${theme}`, ".js") || "");
-        const files = toReplaceFiles.filter(file => !file.startsWith("theme-") || file.startsWith(`theme-${theme}-`));
+        const files = this.getFilesForThemeAndLanguage(toReplaceFiles, theme, language);
         let html = this.addThemeAttribute(htmlCache, theme);
-        html = this.setLanguage(html, language);
         for(const file of files){
           html =this.replaceHtmlAttributes(html, file.split("-")[0] + "-", path.extname(file), files);
         }
@@ -123,18 +122,11 @@ export class HtmlPlugin{
       : await fs.readFile(`${this.options.buildDir}/index.html`, "utf8");
 
     html = this.addThemeAttribute(html, this.options.theme);
-    html = this.setLanguage(html, this.options.language);
     
     for(const [pattern, exts] of Object.entries(this.options.patternForReplace)){
       for(const ext of exts){
         html = this.replaceHtmlAttributes(html, pattern, ext, toReplaceFiles);
       }
-    }
-
-    if(this.options.isDev && this.options.mode === "create"){
-      const liveReloadScript =
-        '  <script>new EventSource("/esbuild").addEventListener("change", () => location.reload());</script>';
-      html = html.replace("</head>", `${liveReloadScript}\n</head>`);
     }
 
     await fs.writeFile(`${this.options.buildDir}/index.html`, html);
@@ -162,35 +154,31 @@ export class HtmlPlugin{
     return html.replace(/data-theme=["'][^"']*["']/i, `data-theme="${theme}"`);
   }
 
-  private setLanguage(html: string, language: Language): string{
-    let jsonFile = `/ui/web/translations/${language}.json`;
-    if(!this.options.isDev){
-      jsonFile = this.searchLanguageFile(language);
-    }
-    return html.replace(/<html[^>]*lang=["'][^"']*["'][^>]*>/i, (match) => {
-      if(match.includes("lang=")){
-        return match.replace(/lang=["'][^"']*["']/i, `lang="${language}"`);
-      } else{
-        return match.replace("<html", `<html lang="${language}"`);
-      }
-    })
-      .replace(/<link[^>]*rel=["']gettext["'][^>]*>/i, `<link rel="gettext" href="${jsonFile}" lang="${language}">`);
-  }
-
-  private searchLanguageFile(language: Language): string{
-    if(language === "en"){
-      return "/ui/web/translations/en.json"; // default
-    }
-    const matchedFile = this.searchFile(language, ".json");
-    if(!matchedFile){
-      throw new Error(`Translation file for language "${language}" not found in ${this.options.buildDir}`);
-    }
-    return `/ui/${matchedFile}`;
-  }
-
   private searchFile(basename: string, suffix: string): string | undefined{
     const files = fs.readdirSync(this.options.buildDir);
-    const pattern = new RegExp(`^${basename}-[a-f0-9]{8}\\${suffix}$`);
+    const pattern = new RegExp(`^${basename}.*${suffix}$`);
     return files.find(file => pattern.test(file));
+  }
+
+  private getFilesForThemeAndLanguage(
+    toReplaceFiles: string[], 
+    theme: Theme, 
+    language: Language,
+  ): string[]{
+    return toReplaceFiles.filter(file => {
+      if(!file.startsWith("theme-") && !file.startsWith("locale-")){
+        return true;
+      }
+    
+      if(file.startsWith("theme-")){
+        return file.startsWith(`theme-${theme}-`);
+      }
+    
+      if(file.startsWith("locale-")){
+        return file.startsWith(`locale-${language}-`);
+      }
+    
+      return false;
+    });
   }
 }
