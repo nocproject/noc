@@ -87,7 +87,7 @@ def dynamic_profile(
             return None
         profile_id = profile_model.get_effective_profile(instance)
         if not profile_id:
-            logger.info("[%s] Nothing profile for match", instance.name)
+            logger.info("[%s] Nothing profile for match", str(instance))
             return None
         profile_field = profile_field or "profile"
         profile = getattr(instance, profile_field)
