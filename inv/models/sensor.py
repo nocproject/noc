@@ -10,7 +10,7 @@ import logging
 from threading import Lock
 import operator
 import datetime
-from typing import Dict, Optional, Iterable, List, Union
+from typing import Dict, Optional, Iterable, List, Union, Any
 
 # Third-party modules
 import bson
@@ -33,6 +33,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
+from noc.core.model.dynamicprofile import dynamic_profile
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.object import Object
@@ -56,7 +57,7 @@ for dt in ["i32", "u32", "f32"]:
         MODBUS_FORMAT.append(f"{dt}_{df}")
 
 
-@Label.dynamic_classification(profile_model_id="inv.SensorProfile")
+@dynamic_profile(profile_model_id="inv.SensorProfile", sync_profile=True)
 @Label.model
 @change(audit=False)
 @bi_sync
@@ -80,7 +81,7 @@ class Sensor(Document):
         SensorProfile, default=SensorProfile.get_default_profile
     )
     object: "Object" = PlainReferenceField(Object)
-    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject)
+    managed_object: "ManagedObject" = ForeignKeyField(ManagedObject, required=False)
     agent: "Agent" = PlainReferenceField(Agent)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
@@ -331,13 +332,20 @@ class Sensor(Document):
         config = self.get_metric_config(self)
         return config.get("metrics") or config.get("items")
 
+    def get_matcher_ctx(self) -> Dict[str, Any]:
+        r = {
+            "name": self.label,
+            "labels": list(self.effective_labels),
+            "service_groups": [],
+            "units": self.units,
+        }
+        if self.managed_object:
+            r["service_groups"] = self.managed_object.effective_service_groups
+        return r
+
 
 def sync_object(obj: "Object") -> None:
-    """
-    Synchronize sensors with object model
-    :param obj:
-    :return:
-    """
+    """Synchronize sensors with object model"""
     # Get existing sensors
     obj_sensors: Dict[str, Sensor] = {s.local_id: s for s in Sensor.objects.filter(object=obj.id)}
     logger.info("[%s] Sync sensor for ojbect", obj)
