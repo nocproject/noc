@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from threading import Lock
-from typing import Optional, Union
 import operator
+from threading import Lock
+from typing import Optional, Union, Dict, Any, Tuple, List, Callable
 from functools import partial
 
 # Third-party modules
+import cachetools
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -20,18 +21,22 @@ from mongoengine.fields import (
     LongField,
     BooleanField,
     EmbeddedDocumentField,
+    ObjectIdField,
     IntField,
 )
-import cachetools
+from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
 from noc.main.models.style import Style
 from noc.main.models.label import Label
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.wf.models.workflow import Workflow
+from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
+from noc.core.matcher import build_matcher
+from noc.core.change.model import ChangeField
 
 
 id_lock = Lock()
@@ -40,13 +45,28 @@ id_lock = Lock()
 class MatchRule(EmbeddedDocument):
     dynamic_order = IntField(default=0)
     labels = ListField(StringField())
-    handler = StringField()
+    resource_groups = ListField(ObjectIdField())
+    units = PlainReferenceField(MeasurementUnits)
+    name_pattern = StringField()
 
     def __str__(self):
         return ", ".join(self.labels)
 
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": list(self.resource_groups)}
+        if self.units:
+            r["units"] = self.units
+        if self.name_pattern:
+            r["name"] = {"$regex": self.name_pattern}
+        return r
+
 
 @bi_sync
+@change
 @Label.model
 @on_delete_check(check=[("inv.Sensor", "profile")])
 class SensorProfile(Document):
@@ -116,3 +136,53 @@ class SensorProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_sensorprofile")
+
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for mr in self.match_rules:
+            expr.append(mr.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = {}
+        for mop_id, rules in SensorProfile.objects.filter(
+            dynamic_classification_policy="R",
+        ).values_list("id", "match_rules"):
+            for mr in rules:
+                r[(str(mop_id), mr.dynamic_order)] = build_matcher(mr.get_match_expr())
+        return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
+
+    @classmethod
+    def get_effective_profile(cls, o) -> Optional["str"]:
+        policy = getattr(o, "get_dynamic_classification_policy", None)
+        if policy and policy() == "D":
+            # Dynamic classification not enabled
+            return None
+        ctx = o.get_matcher_ctx()
+        for profile_id, match in cls.get_profiles_matcher():
+            if match(ctx):
+                return profile_id
+        return None
+
+    def get_instance_affected_query(
+        self,
+        changes: Optional[List[ChangeField]] = None,
+        include_match: bool = False,
+    ) -> m_q:
+        """Return queryset for instance"""
+        q = m_q(profile=self.id)
+        if include_match and self.match_rules:
+            for mr in self.match_rules:
+                q |= mr.get_q()
+        return q

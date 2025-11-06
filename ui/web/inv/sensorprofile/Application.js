@@ -137,7 +137,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
               name: "labels",
               xtype: "labelfield",
               fieldLabel: __("Match Labels"),
-              allowBlank: false,
+              allowBlank: true,
               isTree: true,
               filterProtected: false,
               pickerPosition: "down",
@@ -147,18 +147,30 @@ Ext.define("NOC.inv.sensorprofile.Application", {
               }
               },
             {
-              name: "handler",
-              xtype: "main.handler.LookupField",
-              fieldLabel: __("Match Handler"),
+              xtype: "core.tagfield",
+              url: "/inv/resourcegroup/lookup/",
+              fieldLabel: __("Object Groups"),
+              name: "resource_groups",
+              allowBlank: true,
+              uiStyle: "extra",
+            },
+            {
+              name: "units",
+              xtype: "pm.measurementunits.LookupField",
+              fieldLabel: __("Match M Units"),
               allowBlank: true,
               uiStyle: "medium",
-              query: {
-                "allow_match_rule": true
-              }
-            }
-            ]
-        }
-      ]
+            },
+            {
+              name: "name_pattern",
+              xtype: "textfield",
+              fieldLabel: __("Label Pattern"),
+              allowBlank: true,
+              uiStyle: "medium",
+            },
+          ],
+        },
+      ],
     });
     me.callParent();
   }
