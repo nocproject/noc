@@ -1,0 +1,28 @@
+{
+    "name": "Zabbix | Internal Process | Utilization High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "af6241bc-a311-4091-8db8-c4d0a2ef588f",
+    "description": "Utilization zabbix Internal Process Utilization to high",
+    "event_class__name": "Zabbix | Internal Process | Utilization High",
+    "preference": 3000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "component::internal-process"
+        }
+    ],
+    "message_rx": "Utilization of (?P<process>.+) processes over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "component::internal-process"],
+            "message": "Utilization of history syncer processes over 75%",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Poller | Utilization High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "920fe1e2-f176-4451-b13c-1e401060b2b8",
+    "description": "Utilization zabbix poller process to high",
+    "event_class__name": "Zabbix | Poller | Utilization High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Utilization of poller processes over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Utilization of poller processes over 75%",
+            "raw_vars": []
+        }
+    ]
+}

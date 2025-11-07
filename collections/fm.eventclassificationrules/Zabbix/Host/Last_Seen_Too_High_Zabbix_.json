@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Host | Last Seen Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2e1dd2c0-ffbc-47a4-acd0-71bf9eee0eed",
+    "description": "Next to last in the chain. Catches all unclassified messages from Zabbix",
+    "event_class__name": "Zabbix | Zabbix Proxy | Last Seen | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Proxy \\[(?P<proxy>\\S+)\\]: Zabbix proxy last seen more than (?P<tvalue>\\d+) seconds ago",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Proxy [PRX-01]: Zabbix proxy last seen more than 600 seconds ago",
+            "raw_vars": []
+        }
+    ]
+}

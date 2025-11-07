@@ -1,0 +1,31 @@
+{
+    "name": "Zabbix | Proxy | Memory Buffer | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "1992992b-92f1-4887-8c3c-9e21eaf9780d",
+    "description": "Failed to ping Zabbix Host. Legacy class, should not be used.",
+    "action": "L",
+    "vars": [
+        {
+            "name": "tvalue",
+            "description": "",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Missing Data Item",
+    "body_template": "Failed to ping Zabbix Host {{event.target.name}} (IP: {{event.target.address}})",
+    "symptoms": "Cannot execute SA tasks on the object",
+    "probable_causes": "The object is not responding to ICMP echo-requests",
+    "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls"
+}

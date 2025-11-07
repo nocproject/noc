@@ -1,0 +1,31 @@
+{
+    "name": "Zabbix | Configuration Syncer | Utilization High",
+    "$collection": "fm.eventclasses",
+    "uuid": "aa3a3ad9-e24b-444d-8b08-527aa59c86bc",
+    "description": "Class for Internal-Zabbix event if unreachable poller process utilization too High",
+    "action": "L",
+    "vars": [
+        {
+            "name": "tvalue",
+            "description": "Threshold utilization value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Current utiliztion value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Utilization of Configuration syncer processes over {{ tvalue }}",
+    "body_template": "Utilization of Configuration syncer processes over {{ ovalue }}",
+    "symptoms": "Unreachable Poller queue too overload",
+    "probable_causes": "Too many items for collect",
+    "recommended_actions": "Check utilization graph for Zabbix system"
+}

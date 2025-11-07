@@ -1,0 +1,24 @@
+{
+    "name": "Zabbix | SNMP | Not Available",
+    "$collection": "fm.eventclasses",
+    "uuid": "24b9f5ac-5729-4ebc-91ea-e74ebb05fe14",
+    "description": "Class for Zabbix-based event if SNMP interface not available",
+    "action": "L",
+    "vars": [
+        {
+            "name": "address",
+            "description": "Interface Address",
+            "type": "ipv4_address",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "SNMP interface is not available",
+    "body_template": "SNMP interface is not available",
+    "symptoms": "Zabbix agent on Host not respond query",
+    "probable_causes": "Firewall rules not set",
+    "recommended_actions": "Check agent installed and firewall rules allowed connection"
+}

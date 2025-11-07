@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Proxy | Memory Buffer | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6a7a10a2-d452-422d-98e0-de78f710862c",
+    "event_class__name": "Zabbix | Proxy | Memory Buffer | Too High",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "More than (?P<tvalue>\\d+)% used in the proxy memory buffer",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "More than 75% used in the proxy memory buffer",
+            "raw_vars": []
+        }
+    ]
+}

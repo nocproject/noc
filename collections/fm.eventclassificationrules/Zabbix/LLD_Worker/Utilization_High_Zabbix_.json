@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | LLD Worker | Utilization High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cd728190-876d-43c5-bd8b-7c404258570c",
+    "description": "Utilization zabbix LLD Worker Utilization to high",
+    "event_class__name": "Zabbix | LLD Worker | Utilization High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Utilization of lld worker processes over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Utilization of lld worker processes over 75%",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Scenario Step | Failed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "b86b8010-49f7-493b-bc8d-b25012ec064f",
+    "event_class__name": "Zabbix | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Failed step of scenario",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Failed step of scenario",
+            "raw_vars": []
+        }
+    ]
+}
