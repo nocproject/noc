@@ -470,7 +470,7 @@ class BaseLoader(object):
         """
         self.logger.debug("Create object")
         if self.enable_labels and "labels" in v:
-            self.ensure_labels(v["labels"])
+            v["labels"] = self.ensure_labels(v["labels"])
         o = self.model(**v)
         if not self.workflow_state_sync or not state:
             pass
@@ -526,7 +526,7 @@ class BaseLoader(object):
             if k == self.checkpoint_field:
                 continue
             if self.enable_labels and k == "labels":
-                self.ensure_labels(nv)
+                nv = self.ensure_labels(nv)
             if inc_changes and k in inc_changes:
                 ov = getattr(o, k, [])
                 nv = list(set(ov).union(set(inc_changes[k]["add"])) - set(inc_changes[k]["remove"]))
@@ -677,9 +677,13 @@ class BaseLoader(object):
         from noc.main.models.label import Label
 
         if not labels:
-            return
+            return None
+        r = []
         for ll in set(labels or []) - self.ensured_labels:
-            Label.ensure_label(ll, [get_model_id(self.model)])
+            x = Label.ensure_label(ll, [get_model_id(self.model)])
+            if x:
+                r.append(ll)
+        return r
 
     def purge(self):
         """

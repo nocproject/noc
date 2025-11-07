@@ -157,7 +157,7 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
 MANAGEDOBJECT_CACHE_VERSION = 54
-CREDENTIAL_CACHE_VERSION = 10
+CREDENTIAL_CACHE_VERSION = 11
 
 
 @dataclass(frozen=True)
@@ -437,6 +437,7 @@ class ManagedObjectManager(Manager):
         ("maintenance.Maintenance", "direct_objects__object"),
         ("sa.DiscoveredObject", "managed_object_id"),
         ("sa.ServiceInstance", "managed_object"),
+        ("pm.Agent", "managed_object"),
         ("peer.Peer", "managed_object"),
     ],
 )

@@ -7,16 +7,15 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Annotated
+from typing import Optional, List
 from enum import Enum
-from pydantic import IPvAnyAddress, field_validator
 
 # Third-party modules
-from pydantic import ConfigDict, StringConstraints
+from pydantic import ConfigDict, IPvAnyAddress, field_validator
 
 # NOC modules
 from .base import BaseModel
-from .typing import Reference, MappingItem, CapsItem
+from .typing import Reference, MappingItem, CapsItem, DomainName
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
 from .object import Object
@@ -36,14 +35,6 @@ class SourceType(str, Enum):
     # Loopback address
     l = "l"  # noqa
     a = "a"  # All interface addresses
-
-
-DomainName = Annotated[
-    str,
-    StringConstraints(
-        pattern=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9].?$"
-    ),
-]
 
 
 class ManagedObject(BaseModel):
