@@ -51,7 +51,6 @@ from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
 from noc.core.comp import smart_text
 from noc.config import config
-from noc.pm.models.agent import Agent
 from noc.cm.models.configurationscope import ConfigurationScope
 from noc.cm.models.configurationparam import ConfigurationParam, ParamData, ScopeVariant
 from noc.inv.models.technology import Technology
@@ -1504,11 +1503,11 @@ class Object(Document):
             data__match={"interface": "management", "attr": "managed_object", "value": agent}
         )
 
-    def get_effective_agent(self) -> Optional[Agent]:
+    def get_effective_agent(self) -> Optional[Any]:
         """
         Find effective agent for object
-        :return:
         """
+        from noc.pm.models.agent import Agent
         from noc.core.inv.path import find_path
 
         agent = self.get_data("agent", "agent")

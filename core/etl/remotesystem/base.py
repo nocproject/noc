@@ -58,6 +58,7 @@ class BaseRemoteSystem(object):
         "ipprefix",
         "ipaddressprofile",
         "ipaddress",
+        "pmagent",
         "managedobject",
         "link",
         "sensor",

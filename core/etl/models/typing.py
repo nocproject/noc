@@ -6,11 +6,11 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Generic, TypeVar, Any, Optional, Union
+from typing import Generic, TypeVar, Any, Optional, Union, Annotated
 
 # Third-party modules
 from pydantic_core import CoreSchema, core_schema
-from pydantic import GetCoreSchemaHandler, BaseModel
+from pydantic import GetCoreSchemaHandler, BaseModel, StringConstraints
 
 
 T = TypeVar("T")
@@ -63,3 +63,11 @@ class Reference(Generic[T]):
         if isinstance(v, (RemoteReference, ETLMapping)):
             return v
         return str(v)
+
+
+DomainName = Annotated[
+    str,
+    StringConstraints(
+        pattern=r"^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9].?$"
+    ),
+]
