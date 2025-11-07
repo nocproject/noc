@@ -1,0 +1,53 @@
+{
+    "name": "Zabbix | Trigger",
+    "$collection": "fm.eventclasses",
+    "uuid": "6e6822ec-e4b6-401b-8b6f-f33755fcd879",
+    "description": "Event Class for Zabbix Trigger",
+    "action": "A",
+    "vars": [
+        {
+            "name": "triggerid",
+            "description": "Event trigger identifier",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "opdata",
+            "description": "Operational data with expanded macros",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "name",
+            "description": "Trigger name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "value",
+            "description": "Zabbx trigger value (1 - Problem, 0 - OK)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "interface_index",
+            "description": "Device interface snmp index (for snmp network devices)",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 0,
+    "suppression_window": 0,
+    "ttl": 0,
+    "subject_template": "{{name}}",
+    "body_template": "Trigger {{name}} ",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": []
+}
