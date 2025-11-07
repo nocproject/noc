@@ -95,6 +95,7 @@ class EnvItem(EmbeddedDocument):
         ("inv.Channel", "remote_system"),
         ("inv.ResourceGroup", "remote_system"),
         ("sa.Service", "remote_system"),
+        ("pm.Agent", "remote_system"),
         ("vc.VLAN", "remote_system"),
         ("vc.VLANProfile", "remote_system"),
         ("vc.VPN", "remote_system"),
@@ -151,6 +152,7 @@ class RemoteSystem(Document):
     enable_ipaddressprofile = BooleanField()
     enable_label = BooleanField()
     enable_discoveredobject = BooleanField()
+    enable_pmagent = BooleanField()
     enable_fmevent = BooleanField()
     enable_metrics = BooleanField()
     api_key: Optional[APIKey] = ReferenceField(APIKey)
@@ -211,6 +213,7 @@ class RemoteSystem(Document):
 
     SCHEDULER = "scheduler"
     JCLS = "noc.services.scheduler.jobs.remote_system.ETLSyncJob"
+    JCLS_EVENT = "noc.services.scheduler.jobs.remote_system.ETLEventSyncJob"
     # Sync Event
 
     def __str__(self):
@@ -288,10 +291,12 @@ class RemoteSystem(Document):
             raise ValueError
         return h(self)
 
-    def get_extractors(self) -> List[str]:
+    def get_extractors(self, exclude_fmevent: bool = False) -> List[str]:
         extractors = []
         for k in self._fields:
             if k.startswith("enable_") and getattr(self, k):
+                if exclude_fmevent and k == "enable_fmevent":
+                    continue
                 extractors += [k[7:]]
         return extractors
 
@@ -301,8 +306,9 @@ class RemoteSystem(Document):
         quiet: bool = False,
         incremental: bool = False,
         checkpoint: Optional[str] = None,
+        exclude_fmevent: Optional[bool] = False,
     ) -> List[StepResult]:
-        extractors = extractors or self.get_extractors()
+        extractors = extractors or self.get_extractors(exclude_fmevent=exclude_fmevent)
         error, results = None, []
         try:
             results = self.get_handler().extract(
@@ -344,9 +350,12 @@ class RemoteSystem(Document):
         return results
 
     def load(
-        self, extractors: Optional[List[str]] = None, quiet: bool = False
+        self,
+        extractors: Optional[List[str]] = None,
+        quiet: bool = False,
+        exclude_fmevent: bool = False,
     ) -> Optional[List[StepResult]]:
-        extractors = extractors or self.get_extractors()
+        extractors = extractors or self.get_extractors(exclude_fmevent=exclude_fmevent)
         error, r = None, []
         try:
             r = self.get_handler().load(extractors)
@@ -419,9 +428,12 @@ class RemoteSystem(Document):
 
     def on_save(self):
         self.ensure_job()
+        self.ensure_event_job()
 
     def on_delete(self):
-        self.ensure_job()
+        scheduler = Scheduler(self.SCHEDULER)
+        scheduler.remove_job(jcls=self.JCLS, key=self.id)
+        scheduler.remove_job(jcls=self.JCLS_EVENT, key=self.id)
 
     def ensure_job(self):
         """Create or remove scheduler job"""
@@ -432,6 +444,16 @@ class RemoteSystem(Document):
                 scheduler.submit(jcls=self.JCLS, key=self.id, ts=ts)
                 return
         scheduler.remove_job(jcls=self.JCLS, key=self.id)
+
+    def ensure_event_job(self):
+        """Create or remove scheduler job"""
+        scheduler = Scheduler(self.SCHEDULER)
+        if self.enable_sync and self.event_sync_interval:
+            ts = self.run_sync_at or datetime.datetime.now().replace(microsecond=0)
+            if ts:
+                scheduler.submit(jcls=self.JCLS_EVENT, key=self.id, ts=ts)
+                return
+        scheduler.remove_job(jcls=self.JCLS_EVENT, key=self.id)
 
     @classmethod
     def get_collector_config(cls, remote_system: "RemoteSystem") -> Dict[str, Any]:
