@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Host | Ping Loss Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "493a9a07-3e42-4557-95bb-e7b7db5a318f",
+    "description": "Next to last in the chain. Catches all unclassified messages from Zabbix",
+    "event_class__name": "Zabbix | Host | Ping Loss Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "High ICMP ping loss",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "High ICMP ping loss",
+            "raw_vars": []
+        }
+    ]
+}

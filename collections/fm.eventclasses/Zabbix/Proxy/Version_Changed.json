@@ -1,0 +1,24 @@
+{
+    "name": "Zabbix | Proxy | Version Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "860db418-20fc-4516-8471-c7200992d083",
+    "description": "Zabbix updated",
+    "action": "L",
+    "vars": [
+        {
+            "name": "version",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Zabbix Proxy version has changed (new version: {{ version }})",
+    "body_template": "Zabbix version has changed (new version: {{ version }})",
+    "symptoms": "Zabbix agent on Host not respond query",
+    "probable_causes": "Firewall rules not set",
+    "recommended_actions": "Check agent installed and firewall rules allowed connection"
+}

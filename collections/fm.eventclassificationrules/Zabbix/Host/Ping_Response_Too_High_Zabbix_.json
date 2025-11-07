@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Host | Ping Response Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "755d96ce-0a94-4bba-abb4-7c992022a3ec",
+    "description": "Next to last in the chain. Catches all unclassified messages from Zabbix",
+    "event_class__name": "Zabbix | Host | Ping Response Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "High ICMP ping response time",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "High ICMP ping response time",
+            "raw_vars": []
+        }
+    ]
+}

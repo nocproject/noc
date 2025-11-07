@@ -1,0 +1,29 @@
+{
+    "name": "Zabbix | Reboot",
+    "$collection": "fm.eventclasses",
+    "uuid": "aa7e39d3-70a6-4f26-85ef-63375f4b3ff9",
+    "description": "System rebooting",
+    "action": "A",
+    "vars": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_reboot",
+
+        "noc.fm.handlers.event.discovery.on_system_start"
+    ],
+    "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

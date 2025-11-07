@@ -1,0 +1,26 @@
+{
+    "name": "Zabbix | Host | Ping Failed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "37b3eee1-f4eb-4f64-adae-4f718ead0c61",
+    "event_class__name": "Zabbix | Host | Ping Failed",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "[Uu]navailable by (ICMP|ICMP ping)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "node-04 is unavailable by ICMP",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Unavailable by ICMP ping",
+            "raw_vars": []
+        }
+    ]
+}
