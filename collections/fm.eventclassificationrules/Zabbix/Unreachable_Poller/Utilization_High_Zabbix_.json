@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Unreachable Poller | Utilization High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2a4bfc09-d3f5-4484-81ec-4e85f1c90e96",
+    "description": "Utilization zabbix unreachable poller process to high",
+    "event_class__name": "Zabbix | Unreachable Poller | Utilization High",
+    "preference": 1500,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Utilization of unreachable poller processes over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Utilization of unreachable poller processes over 75%",
+            "raw_vars": []
+        }
+    ]
+}

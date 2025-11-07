@@ -1,0 +1,28 @@
+{
+    "name": "Zabbix | Reboot (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ab150de9-44da-46cb-af4d-e9e6c3c067e4",
+    "event_class__name": "Zabbix | Reboot",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^(Windows:|Linux:)?\\s*(?P<hostname>\\S+) has been restarted",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "HOST-3 has been restarted (uptime < 10m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: Host has been restarted (uptime < 10m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: HOST-01 has been restarted (uptime < 10m)",
+            "raw_vars": []
+        }
+    ]
+}

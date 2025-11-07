@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Proxy | Version Changed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "047ab063-9d1a-4b21-b7eb-c254d32d1da3",
+    "event_class__name": "Zabbix | Proxy | Version Changed",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Version has changed \\(new version: (?P<version>\\S+)\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Version has changed (new version: 7.2.5)",
+            "raw_vars": []
+        }
+    ]
+}
