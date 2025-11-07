@@ -33,6 +33,12 @@ _counts: DefaultDict[str, int] = defaultdict(int)
 _start_times: Dict[str, int] = {}
 
 
+def pytest_configure(config: pytest.Config) -> None:
+    """Register marters."""
+    config.addinivalue_line("markers", "run_on_setup")
+    config.addinivalue_line("markers", "fatal")
+
+
 def pytest_collection_modifyitems(
     session: pytest.Session, config: pytest.Config, items: List[pytest.Item]
 ):
