@@ -589,7 +589,7 @@ class Label(Document):
         fg_color2=0x000000,
         expose_metric=False,
         expose_datastream=False,
-    ) -> None:
+    ) -> Optional["Label"]:
         """
         Ensure label is exists, create when necessary
         :param name:
@@ -608,12 +608,12 @@ class Label(Document):
         #     return  # Exists
         label = Label.get_by_name(name)
         if label:
-            return  # Exists
+            return None  # Exists
         logger.info("[%s] Create label by ensure", name)
         settings = cls.get_effective_settings(name, include_current=True)
         if not settings.get("allow_auto_create"):
             logger.warning("[%s] Not allowed autocreate label", name)
-            return
+            return None
         settings["name"] = name
         settings["description"] = description or "Auto-created"
         settings["is_protected"] = settings.get("is_protected") or is_protected
@@ -631,7 +631,7 @@ class Label(Document):
             settings["expose_metric"] = expose_metric
         if expose_datastream:
             settings["expose_datastream"] = expose_datastream
-        Label(**settings).save()
+        return Label(**settings).save()
 
     @classmethod
     def ensure_labels(
