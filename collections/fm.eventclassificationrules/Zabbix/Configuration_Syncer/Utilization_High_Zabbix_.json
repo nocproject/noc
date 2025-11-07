@@ -1,0 +1,22 @@
+{
+    "name": "Zabbix | Configuration Syncer | Utilization High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e6e3730b-504b-4dde-ad2b-3c1432167e2d",
+    "description": "Utilization zabbix configuration syncer process to high",
+    "event_class__name": "Zabbix | Configuration Syncer | Utilization High",
+    "preference": 1500,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Utilization of configuration syncer processes over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Utilization of configuration syncer processes over 75%",
+            "raw_vars": []
+        }
+    ]
+}

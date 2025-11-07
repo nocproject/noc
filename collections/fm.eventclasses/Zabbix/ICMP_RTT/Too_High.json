@@ -1,0 +1,17 @@
+{
+    "name": "Zabbix | ICMP RTT | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "57f23555-88fc-45c0-814b-78342087b76a",
+    "action": "L",
+    "vars": [
+
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 3600,
+    "subject_template": "ICMP Ping RTT value too High",
+    "body_template": "ICMP Ping RTT value too High",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

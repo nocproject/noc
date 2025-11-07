@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Power | No Data (Zabbix, Power)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0dc2306c-3b14-4fca-8f1a-fb31d1d3fce8",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Total Apparent power is High",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Total Apparent power is High",
+            "raw_vars": []
+        }
+    ]
+}
