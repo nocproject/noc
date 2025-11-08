@@ -1,0 +1,19 @@
+{
+    "name": "DLink | DxS | Network | STP | STP Port Role Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ce63244b-8d05-4d2c-bb4f-d2876f68f4c7",
+    "description": "INFO(6) Spanning Tree port role changed (Instance:0, Port:28) DesignatedPort->AlternatePort",
+    "event_class__name": "Network | STP | STP Port Role Changed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Spanning Tree port role changed? \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<role>\\S+)$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "INFO(6) Spanning Tree port role changed (Instance:0, Port:28) DesignatedPort->AlternatePort",
+            "raw_vars": []
+        }
+    ]
+}

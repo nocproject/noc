@@ -7,7 +7,18 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "Spanning Tree port status change \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$",
+    "message_rx": "Spanning Tree port status changed? \\(Instance:\\d+, Port:(?P<interface>\\d+)\\) \\S+->(?P<state__enum__stp_state>\\S+)$",
     "profiles": ["DLink.DxS"],
-    "sources": ["syslog"]
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "NOTICE: Spanning Tree port status change (Instance:0, Port:14) Discarding->Learning",
+            "raw_vars": []
+        },
+        {
+            "message": "NOTI(5) Spanning Tree port status changed (Instance:0, Port:28) Discarding->Learning",
+            "raw_vars": []
+        }
+    ]
+
 }
