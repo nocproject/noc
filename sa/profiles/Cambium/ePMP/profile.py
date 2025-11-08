@@ -14,7 +14,6 @@ class Profile(BaseProfile):
     # pattern_username = "([Uu][Bb][Nn][Tt] login|[Ll]ogin):"
     # pattern_more = "CTRL\+C.+?a All"
     pattern_prompt = rb"^(?P<hostname>\S+)>"
-    # command_more = "a"
     # config_volatile = ["^%.*?$"]
 
     @classmethod

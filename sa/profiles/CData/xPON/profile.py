@@ -16,7 +16,7 @@ class Profile(BaseProfile):
     pattern_prompt = rb"^(?P<hostname>(?!#)\S+?)(?:-\d+)?(?:\(config[^\)]*\))?#"
     pattern_syntax_error = rb"Unknown command: \("
     # command_disable_pager = "vty output show-all"
-    command_super = "enable"
+    command_super = b"enable"
     command_enter_config = "config"
     command_leave_config = "exit"
     command_save_config = "save"
