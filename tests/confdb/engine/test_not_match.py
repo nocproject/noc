@@ -22,7 +22,7 @@ EMPTY_CONF = []
 
 
 @pytest.mark.parametrize(
-    "conf,query,output",
+    ("conf", "query", "output"),
     [
         # Match incomplete
         (CONF1, "NotMatch('interfaces', x, 'description')", []),

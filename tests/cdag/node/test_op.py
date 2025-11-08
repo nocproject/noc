@@ -13,7 +13,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize(
-    "op,x,y,expected",
+    ("op", "x", "y", "expected"),
     [
         # +
         ("add", 0, 0, 0),

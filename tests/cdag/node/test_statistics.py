@@ -43,7 +43,7 @@ SEQ_NORMAL_0_1 = [
 
 
 @pytest.mark.parametrize(
-    "op,config,measures,expected",
+    ("op", "config", "measures", "expected"),
     [
         # mean
         ("mean", {}, SEQ_CONST1, [None, None, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]),

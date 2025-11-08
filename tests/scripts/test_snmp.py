@@ -51,7 +51,7 @@ class GetDiagScript(BaseScript):
 
 
 @pytest.mark.parametrize(
-    "host,version,community,xcls",
+    ("host", "version", "community", "xcls"),
     [
         (SNMP_HOST, SNMP_v2c, SNMP_COMMUNITY, None),
         (SNMP_HOST, SNMP_v2c, SNMP_COMMUNITY + "X", SNMP.TimeOutError),

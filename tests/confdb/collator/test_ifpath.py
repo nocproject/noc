@@ -359,7 +359,7 @@ class MockInterface(object):
 
 
 @pytest.mark.parametrize(
-    "interfaces,paths",
+    ("interfaces", "paths"),
     [
         (INTERFACES1, PATHS1),
         (INTERFACES2, PATHS2),

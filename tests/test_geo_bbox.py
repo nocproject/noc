@@ -14,7 +14,7 @@ from noc.core.geo import get_bbox
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         ([0, 10, 0, 20], [[[0, 0], [10, 0], [10, 20], [0, 20], [0, 0]]]),
         ([10, 0, 0, 20], [[[0, 0], [10, 0], [10, 20], [0, 20], [0, 0]]]),

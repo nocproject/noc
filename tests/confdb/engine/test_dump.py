@@ -13,7 +13,7 @@ from noc.core.confdb.engine.base import Engine
 
 
 @pytest.mark.parametrize(
-    "input,query,output",
+    ("input", "query", "output"),
     [
         # Empty context
         ({}, "Dump()", [{}]),

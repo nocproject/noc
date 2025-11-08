@@ -14,7 +14,7 @@ from noc.core.script.http.middleware.loader import loader
 
 
 @pytest.mark.parametrize(
-    "body,config,request_id,expected",
+    ("body", "config", "request_id", "expected"),
     [
         ({}, {}, 123, {"request_id": 123}),
         ({"x": 1}, {}, 123, {"request_id": 123, "x": 1}),

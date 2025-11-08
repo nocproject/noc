@@ -12,11 +12,11 @@ import pytest
 from noc.core.convert.dbm import dbm2mw, mw2dbm
 
 
-@pytest.mark.parametrize("config, expected", [(0, 1.0), (10, 10.0)])
+@pytest.mark.parametrize(("config", "expected"), [(0, 1.0), (10, 10.0)])
 def test_dbm2mw(config, expected):
     assert dbm2mw(config) == expected
 
 
-@pytest.mark.parametrize("config, expected", [(1, 0.0), (10, 10.0), (0.0, 0.0)])
+@pytest.mark.parametrize(("config", "expected"), [(1, 0.0), (10, 10.0), (0.0, 0.0)])
 def test_mw2dbm(config, expected):
     assert mw2dbm(config) == expected

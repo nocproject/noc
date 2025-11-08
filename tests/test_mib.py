@@ -18,7 +18,7 @@ from noc.fm.models.mib import MIB
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         ("IF-MIB", "if_mib"),
         ("RFC1213-MIB", "rfc1213_mib"),
@@ -30,7 +30,7 @@ def test_mib_to_modname(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         ("IF-MIB::ifName", "1.3.6.1.2.1.31.1.1.1.1"),
         (("IF-MIB::ifName", 0), "1.3.6.1.2.1.31.1.1.1.1.0"),
@@ -76,7 +76,7 @@ def test_mib_loading(clean_mib, name):
 
 
 @pytest.mark.parametrize(
-    "name,oid",
+    ("name", "oid"),
     [
         ("IF-MIB::ifName", "1.3.6.1.2.1.31.1.1.1.1"),
         (("IF-MIB::ifName", 0), "1.3.6.1.2.1.31.1.1.1.1.0"),
@@ -107,7 +107,7 @@ def test_invalid_name(clean_mib, name):
 
 
 @pytest.mark.parametrize(
-    "mib_name,oid,value,display_hints,expected",
+    ("mib_name", "oid", "value", "display_hints", "expected"),
     [
         ("IF-MIB", "1.3.6.1.2.1.2.2.1.2.1", b"description", None, "description"),
         (
@@ -168,7 +168,7 @@ def test_mib_render(clean_mib, mib_name, oid, value, display_hints, expected):
 
 
 @pytest.mark.parametrize(
-    "oids,expected",
+    ("oids", "expected"),
     [
         (
             {

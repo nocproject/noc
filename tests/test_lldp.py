@@ -24,7 +24,7 @@ from noc.core.lldp import (
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         # Empty value
         ([], 0),
@@ -63,7 +63,7 @@ def test_lldp_caps_to_bits(value, expected):
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         # Empty value
         (0, []),

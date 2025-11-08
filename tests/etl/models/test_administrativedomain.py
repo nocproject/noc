@@ -14,7 +14,7 @@ from noc.core.etl.models.typing import Reference
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         # Incomplete items
         ((1,), ValueError),

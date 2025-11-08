@@ -13,7 +13,7 @@ from noc.dns.models.dnszone import DNSZone
 
 
 @pytest.mark.parametrize(
-    "zone,ztype",
+    ("zone", "ztype"),
     [
         ("example.com", "F"),
         ("z12.example.com", "F"),
@@ -32,7 +32,7 @@ def test_zone_type(zone, ztype):
 
 
 @pytest.mark.parametrize(
-    "zone,prefix",
+    ("zone", "prefix"),
     [
         ("0.0.10.in-addr.arpa", "10.0.0.0/24"),
         ("1.0.10.in-addr.arpa", "10.0.1.0/24"),

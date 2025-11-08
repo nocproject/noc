@@ -117,7 +117,7 @@ TOKENS2 = [
 
 
 @pytest.mark.parametrize(
-    "input,config,expected",
+    ("input", "config", "expected"),
     [
         # Raisecom
         (CFG1, {"contexts": [["interface", ANY, ANY]], "end_of_context": "!"}, TOKENS1),

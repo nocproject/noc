@@ -29,7 +29,7 @@ def dataframe_from(query):
 
 
 @pytest.mark.parametrize(
-    "queries, expected",
+    ("queries", "expected"),
     [
         ([], None),
         ([query1], dataframe_from(query1)),

@@ -97,7 +97,7 @@ TOKENS6 = [
 
 
 @pytest.mark.parametrize(
-    "input,config,expected",
+    ("input", "config", "expected"),
     [
         (CFG1, {}, TOKENS1),
         (CFG2, {"inline_comment": "#"}, TOKENS2),

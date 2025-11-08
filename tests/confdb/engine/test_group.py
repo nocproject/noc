@@ -30,7 +30,7 @@ CONF2 = [
 
 
 @pytest.mark.parametrize(
-    "conf,query,output",
+    ("conf", "query", "output"),
     [
         (
             CONF1,

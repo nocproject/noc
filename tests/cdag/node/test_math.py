@@ -16,7 +16,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize(
-    "fn,x,expected",
+    ("fn", "x", "expected"),
     [
         # neg
         ("neg", 0, 0),

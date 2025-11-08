@@ -12,18 +12,18 @@ import pytest
 from noc.core.matcher import match
 
 
-@pytest.mark.parametrize("raw,config,expected", [({}, {}, True), ({"k", "v"}, {}, True)])
+@pytest.mark.parametrize(("raw", "config", "expected"), [({}, {}, True), ({"k", "v"}, {}, True)])
 def test_zero(raw, config, expected):
     assert match(raw, config) is expected
 
 
-@pytest.mark.parametrize("raw,config,expected", [({"x": "y"}, {"x": "y"}, True)])
+@pytest.mark.parametrize(("raw", "config", "expected"), [({"x": "y"}, {"x": "y"}, True)])
 def test_eq(raw, config, expected):
     assert match(raw, config) is expected
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [({"x": "y"}, {"x": {"$ne": "y"}}, False), ({"x": "x"}, {"x": {"$ne": "y"}}, True)],
 )
 def test_ne(raw, config, expected):
@@ -31,7 +31,7 @@ def test_ne(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"x": "y", "m": "n"}, {"x": "y", "m": "k"}, False),
         ({"x": "y", "m": "n"}, {"x": "y", "m": "n"}, True),
@@ -42,7 +42,7 @@ def test_eq_and(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"platform": "S50N", "vendor": "Force10"}, {"platform": {"$regex": "^S"}}, True),
         ({"platform": "E600", "vendor": "Force10"}, {"platform": {"$regex": "^S"}}, False),
@@ -69,7 +69,7 @@ def test_regex(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"platform": "S50N", "vendor": "Force10"}, {"platform": {"$in": ["S50N", "S50P"]}}, True),
         (
@@ -104,7 +104,7 @@ def test_in(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"version": "12.2(50)SE"}, {"version": {"$gt": "12.2(48)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$gt": "12.2(50)SE"}}, False),
@@ -119,7 +119,7 @@ def test_gt(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"version": "12.2(50)SE"}, {"version": {"$gte": "12.2(48)SE"}}, True),
         ({"version": "12.2(50)SE"}, {"version": {"$gte": "12.2(50)SE"}}, True),
@@ -134,7 +134,7 @@ def test_gte(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"version": "12.2(50)SE"}, {"version": {"$lt": "12.2(48)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$lt": "12.2(50)SE"}}, False),
@@ -149,7 +149,7 @@ def test_lt(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"version": "12.2(50)SE"}, {"version": {"$lte": "12.2(48)SE"}}, False),
         ({"version": "12.2(50)SE"}, {"version": {"$lte": "12.2(50)SE"}}, True),
@@ -164,7 +164,7 @@ def test_lte(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"labels": ["tag1", "tag2", "tag4"]}, {"labels": {"$all": ["tag1", "tag5"]}}, False),
         ({"labels": ["tag2", "tag4"]}, {"labels": {"$all": ["tag4", "tag2"]}}, True),
@@ -175,7 +175,7 @@ def test_all(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         (
             {"version": "12.2(33)SE"},
@@ -209,7 +209,7 @@ def test_between(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         (
             {"version": "12.2(60)SE"},
@@ -238,7 +238,7 @@ def test_or(raw, config, expected):
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ({"x": "y", "y": "y"}, {"x": "==y"}, True),
         ({"x": "20", "y": "30"}, {"x": {"$lte": "==y"}}, True),

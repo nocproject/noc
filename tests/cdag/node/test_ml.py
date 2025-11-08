@@ -13,7 +13,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize(
-    "op,config,measures,expected",
+    ("op", "config", "measures", "expected"),
     [
         # gauss
         (

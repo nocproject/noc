@@ -16,7 +16,7 @@ from noc.core.timepattern import TimePattern, TimePatternList
 
 
 @pytest.mark.parametrize(
-    "config, year, month, day, expected",
+    ("config", "year", "month", "day", "expected"),
     [
         ("13", 2005, 3, 13, True),
         ("02", 2005, 3, 13, False),
@@ -43,7 +43,7 @@ def test_timepattern_error(config):
 
 
 @pytest.mark.parametrize(
-    "config, year, month, day, expected",
+    ("config", "year", "month", "day", "expected"),
     [
         (["13", "01-15"], 2005, 3, 13, True),
         (["13.03.2005", "01-15"], 2005, 3, 13, True),

@@ -13,7 +13,7 @@ from noc.core.url import URL
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [("https://user:password@www.www.ru/login", "https://user:password@www.www.ru/login")],
 )
 def test_url(config, expected):
@@ -21,7 +21,7 @@ def test_url(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [("https:///user::password@www.www.ru/login", "https://user:password@www.www.ru/login")],
 )
 def test_url_error(config, expected):

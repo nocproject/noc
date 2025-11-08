@@ -20,7 +20,7 @@ def find_record(records, name, type, content):
 
 
 @pytest.mark.parametrize(
-    "zone_id,masters,slaves,records",
+    ("zone_id", "masters", "slaves", "records"),
     [
         # zone_id, masters, slaves, records
         # example.com

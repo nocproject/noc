@@ -75,7 +75,9 @@ TOKENS2 = [
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [(CFG1, {}, TOKENS1), (CFG2, {}, TOKENS2)])
+@pytest.mark.parametrize(
+    ("input", "config", "expected"), [(CFG1, {}, TOKENS1), (CFG2, {}, TOKENS2)]
+)
 def test_tokenizer(input, config, expected):
     tokenizer = RouterOSTokenizer(input, **config)
     assert list(tokenizer) == expected

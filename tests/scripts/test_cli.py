@@ -55,7 +55,7 @@ class GetDiagScript(BaseScript):
 
 
 @pytest.mark.parametrize(
-    "proto,host,port,user,password,args,xcls",
+    ("proto", "host", "port", "user", "password", "args", "xcls"),
     [
         # Plain call (ssh)
         ("ssh", SSHD_HOST, SSHD_PORT, TEST_USER, TEST_PW, {}, None),

@@ -13,7 +13,7 @@ from noc.core.datastream.base import DataStream
 
 
 @pytest.mark.parametrize(
-    "meta,current_meta,expected",
+    ("meta", "current_meta", "expected"),
     [
         (
             {
@@ -79,7 +79,7 @@ def test_ds_clean_meta(meta, current_meta, expected):
 
 
 @pytest.mark.parametrize(
-    "meta,meta_filter,expected",
+    ("meta", "meta_filter", "expected"),
     [
         (
             {"servers": [["ns1.example.com", "ns2.example.com"]]},

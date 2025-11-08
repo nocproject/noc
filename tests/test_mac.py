@@ -13,42 +13,43 @@ from noc.core.mac import MAC
 
 
 @pytest.mark.parametrize(
-    "raw,expected",
+    ("raw", "expected"),
     [("12:34:56:78:9a:bc", "12:34:56:78:9A:BC"), ("12:34:56:78:9A:BC", "12:34:56:78:9A:BC")],
 )
 def test_mac_colon(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("0:13:46:50:87:5", "00:13:46:50:87:05")])
+@pytest.mark.parametrize(("raw", "expected"), [("0:13:46:50:87:5", "00:13:46:50:87:05")])
 def test_mac_colon_short(raw, expected):
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(
-    "raw,expected", [("aabbccddeeff", "AA:BB:CC:DD:EE:FF"), ("AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF")]
+    ("raw", "expected"),
+    [("aabbccddeeff", "AA:BB:CC:DD:EE:FF"), ("AABBCCDDEEFF", "AA:BB:CC:DD:EE:FF")],
 )
 def test_mac_nosep(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [(0xAABBCCDDEEFF, "AA:BB:CC:DD:EE:FF")])
+@pytest.mark.parametrize(("raw", "expected"), [(0xAABBCCDDEEFF, "AA:BB:CC:DD:EE:FF")])
 def test_mac_int(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("\xaa\xbb\xcc\xdd\xee\xff", "AA:BB:CC:DD:EE:FF")])
+@pytest.mark.parametrize(("raw", "expected"), [("\xaa\xbb\xcc\xdd\xee\xff", "AA:BB:CC:DD:EE:FF")])
 def test_mac_bin(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [(b"\xe0\xd9\xe3:\x07\xc0", "E0:D9:E3:3A:07:C0")])
+@pytest.mark.parametrize(("raw", "expected"), [(b"\xe0\xd9\xe3:\x07\xc0", "E0:D9:E3:3A:07:C0")])
 def test_mac_str_bin(raw, expected):
     assert MAC(raw) == expected
 
 
 @pytest.mark.parametrize(
-    "raw,expected",
+    ("raw", "expected"),
     [
         ("1234.5678.9ABC", "12:34:56:78:9A:BC"),
         ("1234.5678.9abc", "12:34:56:78:9A:BC"),
@@ -65,17 +66,17 @@ def test_mac_cisco_error(raw):
         MAC(raw)
 
 
-@pytest.mark.parametrize("raw,expected", [("123456-789abc", "12:34:56:78:9A:BC")])
+@pytest.mark.parametrize(("raw", "expected"), [("123456-789abc", "12:34:56:78:9A:BC")])
 def test_mac_dash1(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("aabb-ccdd-eeff", "AA:BB:CC:DD:EE:FF")])
+@pytest.mark.parametrize(("raw", "expected"), [("aabb-ccdd-eeff", "AA:BB:CC:DD:EE:FF")])
 def test_mac_dash3(raw, expected):
     assert MAC(raw) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("12-34-56-78-9A-BC", "12:34:56:78:9A:BC")])
+@pytest.mark.parametrize(("raw", "expected"), [("12-34-56-78-9A-BC", "12:34:56:78:9A:BC")])
 def test_mac_dash5(raw, expected):
     assert MAC(raw) == expected
 
@@ -87,7 +88,7 @@ def test_mac_dash5_error(raw):
 
 
 @pytest.mark.parametrize(
-    "raw,expected",
+    ("raw", "expected"),
     [
         (
             MAC("AABBCCDDEEFF") + " -- " + MAC("0011.2233.4455"),
@@ -99,13 +100,13 @@ def test_mac_str_op(raw, expected):
     assert raw == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("AA:BB:CC:DD:EE:FF", "aabb.ccdd.eeff")])
+@pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", "aabb.ccdd.eeff")])
 def test_mac_to_cisco(raw, expected):
     assert MAC(raw).to_cisco() == expected
 
 
 @pytest.mark.parametrize(
-    "raw,config,expected",
+    ("raw", "config", "expected"),
     [
         ("AA:BB:CC:DD:EE:FF", 0, "AA:BB:CC:DD:EE:FF"),
         ("AA:BB:CC:DD:EE:FF", 1, "AA:BB:CC:DD:EF:00"),
@@ -118,12 +119,12 @@ def test_mac_shift(raw, config, expected):
     assert MAC(raw).shift(config) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("AA:BB:CC:DD:EE:FF", 17)])
+@pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", 17)])
 def test_len(raw, expected):
     assert len(MAC(raw)) == expected
 
 
-@pytest.mark.parametrize("raw,expected", [("AA:BB:CC:DD:EE:FF", 0xAABBCCDDEEFF)])
+@pytest.mark.parametrize(("raw", "expected"), [("AA:BB:CC:DD:EE:FF", 0xAABBCCDDEEFF)])
 def test_int(raw, expected):
     assert int(MAC(raw)) == expected
 

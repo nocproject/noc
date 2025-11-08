@@ -13,7 +13,7 @@ from noc.core.confdb.normalizer.base import BaseNormalizer
 
 
 @pytest.mark.parametrize(
-    "name,args,paths",
+    ("name", "args", "paths"),
     [
         ("make_hostname", {"hostname": "test"}, ["system", "hostname", "test", {"replace": True}]),
         (

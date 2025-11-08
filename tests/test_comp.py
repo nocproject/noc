@@ -17,7 +17,7 @@ def bin(s):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (str("abc"), str("abc")),
         (bin("abc"), str("abc")),
@@ -35,7 +35,7 @@ def test_smart_text(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (str("abc"), bin("abc")),
         (bin("abc"), bin("abc")),

@@ -38,7 +38,7 @@ event_config = EventConfig(
 
 
 @pytest.mark.parametrize(
-    "events,expected",
+    ("events", "expected"),
     [
         (
             [
@@ -99,7 +99,7 @@ def test_dedup(events, expected):
 
 
 @pytest.mark.parametrize(
-    "events,expected",
+    ("events", "expected"),
     [
         (
             [

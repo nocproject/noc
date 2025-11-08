@@ -48,7 +48,7 @@ nodes:
 
 
 @pytest.mark.parametrize(
-    "configs,out_state", [([CONFIG1, CONFIG2, CONFIG3], {"n04": {"value": 3.0}})]
+    ("configs", "out_state"), [([CONFIG1, CONFIG2, CONFIG3], {"n04": {"value": 3.0}})]
 )
 def test_factory_chain(configs, out_state):
     # Empty graph with no state
@@ -96,7 +96,7 @@ nodes:
 
 
 @pytest.mark.parametrize(
-    "ctx,configs,out_state",
+    ("ctx", "configs", "out_state"),
     [
         (
             {"src": "ns2::n03"},

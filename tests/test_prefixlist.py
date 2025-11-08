@@ -13,7 +13,7 @@ from noc.core.prefixlist import optimize_prefix_list, optimize_prefix_list_maxle
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (["192.168.128.0/24", "192.168.0.0/16"], ["192.168.0.0/16"]),
         (["192.168.0.0/16", "192.168.128.0/24"], ["192.168.0.0/16"]),
@@ -32,7 +32,7 @@ def test_prefixlist(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (["192.168.128.0/24", "192.168.0.0/16"], "[(<IPv4 192.168.0.0/16>, 24)]"),
         (["192.168.0.0/16", "192.168.128.0/24"], "[(<IPv4 192.168.0.0/16>, 24)]"),

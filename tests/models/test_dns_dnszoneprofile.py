@@ -14,7 +14,7 @@ from noc.dns.models.dnsserver import DNSServer
 
 
 @pytest.mark.parametrize(
-    "zoneprofile,dns_server,is_authoritative",
+    ("zoneprofile", "dns_server", "is_authoritative"),
     [
         ("p1", "ns1.example.com", True),
         ("p1", "ns2.example.com", True),

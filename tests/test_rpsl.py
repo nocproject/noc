@@ -13,7 +13,7 @@ from noc.core.rpsl import rpsl_format, rpsl_multiple
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ([], "\n"),
         (["key1: value1", "key2"], "key1:value1\n"),
@@ -26,7 +26,7 @@ def test_rpsl_format(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config1, config2, config3, config4, expected",
+    ("config1", "config2", "config3", "config4", "expected"),
     [("key1", "value1", "key2", "value2", "key1:value1\nkey2:value2\n")],
 )
 def test_rpsl_multiple(config1, config2, config3, config4, expected):

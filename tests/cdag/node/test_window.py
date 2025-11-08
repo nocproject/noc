@@ -14,7 +14,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize(
-    "op,config,measures,expected",
+    ("op", "config", "measures", "expected"),
     [
         # nth
         ("nth", {}, [1, 2, 3, 4, 5], [None, 1, 2, 3, 4]),
@@ -66,7 +66,7 @@ W_SEQ = [(T0 + i * 10 * NS, i) for i in range(5)]
 
 
 @pytest.mark.parametrize(
-    "min_window,data,expected",
+    ("min_window", "data", "expected"),
     [
         (1, [], False),
         (1, W_SEQ[:1], True),
@@ -92,7 +92,7 @@ def test_window_filled_ticks(min_window, data, expected):
 
 
 @pytest.mark.parametrize(
-    "min_window,ts,data,expected",
+    ("min_window", "ts", "data", "expected"),
     [
         (0, T0, [], False),
         (10, T0 + 9 * NS, W_SEQ[:1], False),
@@ -114,7 +114,7 @@ def test_window_filled_seconds(min_window, ts, data, expected):
 
 
 @pytest.mark.parametrize(
-    "max_window,data,expected",
+    ("max_window", "data", "expected"),
     [
         (1, [], []),
         (1, W_SEQ[:1], W_SEQ[:1]),
@@ -145,7 +145,7 @@ def test_window_trim_ticks(max_window, data, expected):
 
 
 @pytest.mark.parametrize(
-    "max_window,data,expected",
+    ("max_window", "data", "expected"),
     [
         (1, [], []),
         (1, W_SEQ[:1], W_SEQ[:1]),
