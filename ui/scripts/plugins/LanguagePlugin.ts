@@ -1,4 +1,3 @@
-import * as crypto from "crypto";
 import type {Plugin} from "esbuild";
 import * as fs from "fs";
 import * as path from "path";
@@ -8,12 +7,15 @@ interface LanguagePluginOptions {
   debug: boolean;
   isDev: boolean;
   outputDir: string;
+  cacheDir: string;
   languages: Language[];
   language?: Language;
 }
 
 export class LanguagePlugin{
   private readonly options: LanguagePluginOptions;
+  private readonly translationsDir = "web/translations";
+  private readonly localeDir = "web/locale";
   
   constructor(options: LanguagePluginOptions){
     this.options = options;
@@ -21,44 +23,23 @@ export class LanguagePlugin{
   
   getPlugin(): Plugin{
     return {
-      name: "theme-plugin",
+      name: "language-plugin",
       setup: (build) => {
-        build.onStart(async() => {
-          await this.generateLanguageFiles();
+        build.onResolve({filter: /^locale-/}, (args) => ({
+          path: args.path,
+          namespace: "locale",
+        }));
+        build.onLoad({filter: /.*/, namespace: "locale"}, (args) => {
+          const lang = args.path.split("-")[1];
+          return {
+            contents: this.generateLocaleContent(lang),
+            loader: "js",
+          };
         });
       },
     };
   }
-  private async generateLanguageFiles(): Promise<void>{
-    try{
-      const languagesDir = "web/translations";
-      const languages = this.options.languages;
-      const projectRoot = path.resolve(process.cwd());
-      
-      this.log(`Minify translate files for : ${languages.join(",")}`);
-      for(const lang of languages){
-        try{
-          const filePath = this.translateFiles(projectRoot, languagesDir, lang);
-          
-          if(fs.existsSync(filePath)){
-            const json = JSON.parse(fs.readFileSync(filePath, "utf-8"));
-            const minified = JSON.stringify(json);
-            const hash = crypto.createHash("md5").update(minified).digest("hex").slice(0, 8);
-            const outputPath = `${this.options.outputDir}/${lang}-${hash}.json`;
-            fs.writeFileSync(outputPath, minified);
-            this.log(`${lang}  - ${outputPath}`);
-          } else{
-            console.warn(`Warning: File not found: ${filePath}`);
-          }
-        } catch(error){
-          this.logError(error as Error, `Error reading library file ${lang}:`);
-        }
-        this.log(`Minify successfully:`);
-      }
-    } catch(error){
-      this.logError(error as Error, "Failed to generate theme files");
-    }
-  }
+
   private log(...args: (string | number | boolean | object)[]): void{
     if(this.options.debug){
       console.log("[LanguagePlugin]", ...args);
@@ -74,5 +55,32 @@ export class LanguagePlugin{
 
   private translateFiles(root: string, languagesDir: string, language: string): string{
     return path.join(root,languagesDir, `${language}.json`);
+  }
+
+  private generateLocaleContent(lang: string): string{
+    try{
+      const projectRoot = path.resolve(process.cwd());
+      const translationPath = this.translateFiles(projectRoot, this.translationsDir, lang);
+      const gettextTemplatePath = path.join(projectRoot, this.localeDir, "gettext.js");
+      const templateContent = fs.readFileSync(gettextTemplatePath, "utf8");
+      const extLocalePath = path.join(projectRoot, this.localeDir, `${lang}/ext-locale-${lang}.js`);
+      const extLocale = fs.readFileSync(extLocalePath, "utf8") || "" + "\n";
+
+      let translations = {};
+      if(fs.existsSync(translationPath)){
+        const translationContent = fs.readFileSync(translationPath, "utf8");
+        translations = JSON.parse(translationContent);
+        translations = Object.entries(translations).reduce((acc: Record<string, any>, [key, value]: [string, any]) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+          acc[key] = Array.isArray(value) ? value[1] || "" : value;
+          return acc;
+        }, {});
+      }
+      return extLocale + templateContent
+        .replace(/{locale}/g, lang)
+        .replace(/"{translations}"/g, JSON.stringify(translations));
+    } catch(error){
+      this.logError(error as Error, `Failed to generate locale content for ${lang}`);
+      return "";
+    }
   }
 }

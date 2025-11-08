@@ -33,11 +33,12 @@ export class ProdBuilder extends BaseBuilder{
       ...buildOptions,
       entryPoints: [
         ...(Array.isArray(buildOptions.entryPoints) ? buildOptions.entryPoints : []),
-        "web/locale/en/ext-locale-en.js",
-        "web/locale/ru/ext-locale-ru.js",
-        "web/locale/pt_BR/ext-locale-pt_BR.js",
+        "locale-en",
+        "locale-ru",
+        "locale-pt_BR",
+        "pkg/extjs/classic/theme-noc/theme-noc.js",
+        "pkg/extjs/classic/theme-gray/theme-gray.js",
       ],
-
       plugins: [
         ...(buildOptions.plugins || []),
         new LanguagePlugin({
@@ -45,6 +46,7 @@ export class ProdBuilder extends BaseBuilder{
           isDev: false,
           outputDir: this.options.buildDir,
           languages: this.options.languages, 
+          cacheDir: this.options.cacheDir,
         }).getPlugin(),
       ],
     });

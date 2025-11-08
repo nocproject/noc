@@ -9,6 +9,7 @@
 import operator
 from threading import Lock
 from typing import Optional, Dict, Any
+from pathlib import Path
 
 # Third-party modules
 from django.db import models
@@ -20,7 +21,7 @@ import cachetools
 from noc.core.model.base import NOCModel
 from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.mx import MessageType
 from noc.settings import LANGUAGES
 
@@ -118,8 +119,8 @@ class Template(NOCModel):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return quote_safe_path(self.name.strip("*")) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

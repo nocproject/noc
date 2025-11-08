@@ -1,17 +1,17 @@
 # ---------------------------------------------------------------------
 # Platform
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import threading
 from typing import Optional, Union
 import operator
 import uuid
 import datetime
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -31,6 +31,7 @@ from noc.core.prettyjson import to_json
 from noc.core.change.decorator import change
 from noc.models import get_model
 from noc.main.models.label import Label
+from noc.core.path import safe_json_path
 from .vendor import Vendor
 
 id_lock = threading.Lock()
@@ -156,8 +157,8 @@ class Platform(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return os.path.join(self.vendor.code[0], "%s.json" % self.name.replace("/", "_"))
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.vendor.code[0], self.name)
 
     @classmethod
     @cachetools.cachedmethod(

@@ -1,16 +1,16 @@
 # ----------------------------------------------------------------------
 # State model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import operator
 import logging
 from threading import Lock
 from typing import Optional, Union, Iterable, Dict, Any
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -44,8 +44,7 @@ from noc.config import config
 from noc.models import get_model_id, get_model, is_document
 from noc.main.models.remotesystem import RemoteSystem
 from noc.main.models.label import Label
-
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 
 logger = logging.getLogger(__name__)
@@ -215,9 +214,8 @@ class State(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        name_coll = quote_safe_path(self.workflow.name + " " + self.name)
-        return os.path.join(name_coll) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.workflow.name, self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

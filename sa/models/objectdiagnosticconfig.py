@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # DiagnosticConfig model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import operator
 from threading import Lock
 from typing import Optional, Dict, Any, Iterable, List, Union
-
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -33,6 +33,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
 from noc.core.checkers.base import Check
+from noc.core.path import safe_json_path
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
@@ -206,8 +207,8 @@ class ObjectDiagnosticConfig(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return f"{self.name}.json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @property
     def d_config(self) -> "DiagnosticConfig":

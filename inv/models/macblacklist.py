@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MACBlacklist model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ import operator
 from threading import Lock
 from collections import namedtuple
 from typing import List
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -28,6 +29,7 @@ from noc.inv.models.platform import Platform
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
 from noc.core.mac import MAC
+from noc.core.path import safe_json_path
 
 _list_lock = Lock()
 ListItem = namedtuple("ListItem", ["from_mac", "to_mac", "is_duplicated", "is_ignored"])
@@ -108,8 +110,8 @@ class MACBlacklist(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.name
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_list_cache"), lock=lambda _: _list_lock)

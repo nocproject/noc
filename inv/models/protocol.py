@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # Protocol
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import re
-import os
+from pathlib import Path
 import operator
 from dataclasses import dataclass
 from threading import Lock
@@ -34,7 +34,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.discriminator import (
@@ -283,9 +283,8 @@ class Protocol(Document):
             order=["name", "code", "$collection", "uuid", "description", "technology", "data"],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     def get_variant_by_code(cls, code: str) -> "ProtocolVariant":

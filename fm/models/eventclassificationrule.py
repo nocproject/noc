@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import re
 from typing import Iterable, List, Dict, Any, Tuple, Union, Optional
 
@@ -36,7 +36,7 @@ from noc.core.fm.event import Event, MessageType, EventSource, Target
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.escape import fm_unescape
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 from noc.config import config
 
@@ -249,9 +249,8 @@ class EventClassificationRule(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @staticmethod
     def resolve_vars(data: List[Dict[str, Any]]) -> Dict[str, Any]:

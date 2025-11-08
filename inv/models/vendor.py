@@ -10,6 +10,7 @@ import threading
 from typing import Optional, Union
 import operator
 import uuid
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -23,6 +24,7 @@ from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.core.bi.decorator import bi_sync
+from noc.core.path import safe_json_path
 
 id_lock = threading.Lock()
 
@@ -128,8 +130,8 @@ class Vendor(Document):
             order=["name", "uuid", "full_name", "code", "site"],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.name
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_ensure_cache"), lock=lambda _: id_lock)

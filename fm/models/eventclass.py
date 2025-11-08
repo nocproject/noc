@@ -1,13 +1,13 @@
 # ---------------------------------------------------------------------
 # EventClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
-import os
+from pathlib import Path
 from threading import Lock
 from typing import Optional, Union, List
 import operator
@@ -35,7 +35,7 @@ import jinja2
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.escape import json_escape as q
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.handler import get_handler
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
@@ -409,9 +409,8 @@ class EventClass(Document):
         r += ["}", ""]
         return "\n".join(r)
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     def get_event_config(cls, event_class: "EventClass"):

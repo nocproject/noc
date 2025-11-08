@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # Facade
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import threading
 import operator
 from typing import Dict, Optional, Union, Any
@@ -21,7 +21,7 @@ import cachetools
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.main.models.doccategory import category
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.svg import SVG
 from noc.core.facade.utils import is_slot_id, slot_to_id, SLOT_PREFIX_LEN
 
@@ -86,9 +86,8 @@ class Facade(Document):
     def to_json(self) -> str:
         return to_json(self.json_data, order=["name", "$collection", "uuid", "description", "data"])
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def save(self, *args, **kwargs):
         # Calculate slots

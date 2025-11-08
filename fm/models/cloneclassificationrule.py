@@ -6,14 +6,14 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine import fields
 
 # NOC modules
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 
 
@@ -56,6 +56,5 @@ class CloneClassificationRule(Document):
             order=["name", "uuid", "re", "key_re", "value_re", "rewrite_from", "rewrite_to"],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)

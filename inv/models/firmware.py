@@ -1,16 +1,16 @@
 # ---------------------------------------------------------------------
 # Firmware
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import threading
 import operator
 import uuid
 from typing import Dict, Optional, Union
+from pathlib import Path
 
 # Third-party modules
 import bson
@@ -27,6 +27,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
+from noc.core.path import safe_json_path
 
 id_lock = threading.Lock()
 
@@ -139,10 +140,8 @@ class Firmware(Document):
             order=["profile__name", "vendor__code", "version", "uuid"],
         )
 
-    def get_json_path(self) -> str:
-        return os.path.join(
-            self.vendor.code[0], self.profile.name, "%s.json" % self.version.replace(os.sep, "_")
-        )
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.vendor.code[0], self.profile.name, self.version)
 
     @classmethod
     @cachetools.cachedmethod(

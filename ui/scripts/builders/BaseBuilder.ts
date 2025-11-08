@@ -51,7 +51,7 @@ export abstract class BaseBuilder{
   // this method shares ProdBuilder and DevBuilder classes 
   protected async clearBuildDir(): Promise<void>{
     const filePatterns = this.options.filePatterns.join("|");
-    const filePattern = new RegExp(`^(${filePatterns}).*\\.(js|css)$|.*\\.(json|html)$`);
+    const filePattern = new RegExp(`^(${filePatterns}).*\\.(js|css|map|html)$`);
     
     await fs.emptyDir(this.options.cacheDir!);
     console.log(`Cleaned ${this.options.cacheDir} directory`);
@@ -65,7 +65,7 @@ export abstract class BaseBuilder{
     console.log(`Cleaned ${this.options.assetsDir} directory`);
 
     for(const file of await fs.readdir(this.options.buildDir)){
-      if(filePattern.test(file) && !/^theme-.*\.js$/.test(file)){
+      if(filePattern.test(file)){
         const filePath = path.join(this.options.buildDir, file);
         await fs.remove(filePath);
         console.log(`Removed bundle: ${file}`);

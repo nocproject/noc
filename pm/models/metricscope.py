@@ -10,6 +10,7 @@ import operator
 from threading import Lock
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List, Callable, Union
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -28,6 +29,7 @@ from noc.config import config
 from noc.core.model.decorator import on_save
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
+from noc.core.path import safe_json_path
 from noc.core.clickhouse.error import ClickhouseError
 from noc.main.models.label import Label
 
@@ -187,8 +189,8 @@ class MetricScope(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return f"{self.name}.json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def iter_metrics_fields(self):
         """

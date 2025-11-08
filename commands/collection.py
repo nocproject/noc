@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # Collections manipulation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import os
 import argparse
+from pathlib import Path
 
 # Third-party modules
 import orjson
@@ -127,20 +128,20 @@ class Command(BaseCommand):
         if list_collection is not None:
             if list_collection is True:
                 for c in Collection.iter_collections():
-                    print("%s" % c.name, file=self.stdout)
+                    print(c.name, file=self.stdout)
             else:
                 if list_collection not in MODELS:
                     print("Collection not found", file=self.stdout)
                     return
                 objs = MODELS[list_collection].objects.all().order_by("name")
                 for o in objs:
-                    print('uuid:%s name:"%s"' % (o.uuid, o.name), file=self.stdout)
+                    print(f'uuid:{o.uuid} name:"{o.name}"', file=self.stdout)
         else:
             if not export_path or not export_collections:
                 return
-            if not os.path.isdir(export_path):
-                self.die("Path not found: %s" % export_path)
-
+            root = Path(export_path)
+            if not root.is_dir():
+                self.die(f"Path not found: {export_path}")
             for ecname in export_collections:
                 if ecname not in MODELS:
                     print("Collection not found", file=self.stdout)
@@ -152,8 +153,9 @@ class Command(BaseCommand):
                     kwargs["uuid__in"] = export_model_uuids
                 objs = MODELS[ecname].objects.filter(**kwargs).order_by("name")
                 for o in objs:
-                    path = os.path.join(export_path, ecname, o.get_json_path())
-                    print('export "%s" to %s' % (getattr(o, "name", o), path), file=self.stdout)
+                    path = root / ecname / o.get_json_path()
+                    x_name = getattr(o, "name", o)
+                    print(f'export "{x_name}" to {path}', file=self.stdout)
                     safe_rewrite(path, o.to_json(), mode=0o644)
 
 

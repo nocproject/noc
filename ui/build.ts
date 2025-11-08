@@ -1,4 +1,3 @@
-import {createHash} from "crypto";
 import fs from "fs-extra";
 import * as path from "path";
 import type {BuilderOptions, Language, Theme} from "./scripts/builders/BaseBuilder.ts";
@@ -44,7 +43,7 @@ const isDev = ["dev", "vendor-dev"].includes(mode);
 
 const commonOptions: BuilderOptions = {
   buildDir: "dist",
-  filePatterns: ["app", "theme", "ext-locale"], // files to clean in buildDir
+  filePatterns: ["app", "theme", "locale-", "index"], // files to clean in buildDir
   entryPoint: ["web/main/desktop/app.js"],
   cacheDir: ".cache",
   theme: theme,
@@ -104,6 +103,7 @@ const commonOptions: BuilderOptions = {
     minify: !isDev,
     keepNames: false,
     format: "esm",
+    charset: "utf8",
   },
   parserOptions: {
     ecmaVersion: "latest",
@@ -155,46 +155,13 @@ switch(mode){
   }
 }
 
-// Copy static assets & themes js-files
+// Copy static assets
 {
   fs.ensureDirSync(commonOptions.buildDir);
   const from = path.resolve("web/img");
   const to = path.join(commonOptions.buildDir, "web", "img");
   fs.copySync(from, to);
 
-  // Copy theme JS files to build dir with content hash in filename
-  const copyWithHash = (srcFile: string) => {
-    const content = fs.readFileSync(srcFile);
-    const hash = createHash("sha256").update(content).digest("hex").slice(0, 8);
-    const base = path.basename(srcFile, ".js");
-    const outFile = `${base}-${hash}.js`;
-    const outPath = path.join(commonOptions.buildDir, outFile);
-
-    // Remove previous versions of the same base (cleanup old hashed files)
-    try{
-      const entries = fs.readdirSync(commonOptions.buildDir);
-      for(const e of entries){
-        if(e.startsWith(`${base}-`) && e.endsWith(".js")){
-          try{ fs.removeSync(path.join(commonOptions.buildDir, e)); } catch{ /* noop */ }
-        }
-      }
-    } catch{ /* noop */ }
-
-    fs.writeFileSync(outPath, content);
-    console.log(`Copied ${path.relative(process.cwd(), srcFile)} -> ${path.relative(process.cwd(), outPath)}`);
-    return;
-  };
-
-  try{
-    const nocSrc = path.resolve("pkg/extjs/classic/theme-noc/theme-noc.js");
-    const graySrc = path.resolve("pkg/extjs/classic/theme-gray/theme-gray.js");
-
-    copyWithHash(nocSrc);
-    copyWithHash(graySrc);
-
-  } catch(e){
-    console.warn("Warning: failed to copy theme JS files:", (e as Error).message);
-  }
 }
 
 builder.start();

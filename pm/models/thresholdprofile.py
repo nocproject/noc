@@ -9,6 +9,7 @@
 import operator
 from threading import Lock
 from typing import Optional, Union
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -33,6 +34,7 @@ from noc.core.window import wf_choices
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.window import get_window_function
 from noc.core.prettyjson import to_json
+from noc.core.path import safe_json_path
 
 
 id_lock = Lock()
@@ -196,5 +198,5 @@ class ThresholdProfile(Document):
             order=["name", "uuid", "thresholds"],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.uuid
+    def get_json_path(self) -> Path:
+        return safe_json_path(str(self.uuid))

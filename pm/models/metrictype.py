@@ -6,7 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import operator
 from threading import Lock
 from typing import Any, Dict, Callable, Optional, Union, List
@@ -31,7 +31,7 @@ import cachetools
 # NOC Modules
 from noc.config import config
 from noc.core.mongo.fields import PlainReferenceField
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 from noc.core.defer import call_later
 from noc.core.model.decorator import on_save, on_delete_check
@@ -229,9 +229,8 @@ class MetricType(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

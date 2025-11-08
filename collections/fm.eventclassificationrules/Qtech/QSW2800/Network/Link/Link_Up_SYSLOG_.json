@@ -1,0 +1,19 @@
+{
+    "name": "Qtech | QSW2800 | Network | Link | Link Up (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d3388f99-2fce-43b3-bb8e-b4ad6b53b1a6",
+    "description": "Interface Ethernet0/0/6 has turned into UP state.",
+    "event_class__name": "Network | Link | Link Up",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Interface (?P<interface>\\S+) has turned into UP state.",
+    "profiles": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "Interface Ethernet0/0/6 has turned into UP state.",
+            "raw_vars": []
+        }
+    ]
+}

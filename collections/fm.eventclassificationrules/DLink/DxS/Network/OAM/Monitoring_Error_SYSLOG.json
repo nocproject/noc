@@ -1,0 +1,27 @@
+{
+    "name": "DLink | DxS | Network | OAM | Monitoring Error (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "02b653b2-f768-4da5-bb9b-e1cd78e47e9d",
+    "description": "WARN: Errored symbol period event received (Port 1)",
+    "event_class__name": "Network | OAM | Monitoring Error",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "WARN: Errored (?P<error>(?:symbol|frame)(?: (?:period|seconds summary))?) event received \\(Port (?P<interface>\\d+\\S*)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "WARN: Errored symbol period event received (Port 1)",
+            "raw_vars": []
+        },
+        {
+            "message": "WARN: Errored frame event received (Port 1)",
+            "raw_vars": []
+        },
+        {
+            "message": "WARN: Errored frame seconds summary event received (Port 15)",
+            "raw_vars": []
+        }
+    ]
+}

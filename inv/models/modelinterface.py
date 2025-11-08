@@ -1,15 +1,15 @@
 # ---------------------------------------------------------------------
 # ModelInterface model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 from threading import Lock
 import operator
 from typing import Optional, List, Dict, Any, Union
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -35,6 +35,7 @@ from noc.sa.interfaces.base import (
     IntParameter,
     StringListParameter,
 )
+from noc.core.path import safe_json_path
 
 id_lock = Lock()
 
@@ -173,9 +174,8 @@ class ModelInterface(Document):
         ]
         return "\n".join(r) + "\n"
 
-    def get_json_path(self) -> str:
-        p = [n.strip() for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     def clean_data(cls, data: List[Dict[str, str]]) -> List[Dict[str, Any]]:

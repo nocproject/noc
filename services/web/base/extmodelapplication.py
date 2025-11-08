@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # ExtModelApplication implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
-import os
+from pathlib import Path
 import uuid
 from collections import defaultdict
 from functools import reduce
@@ -807,7 +807,7 @@ class ExtModelApplication(ExtApplication):
         o = self.get_object_or_404(self.model, id=id)
         coll_name = self.model._json_collection["json_collection"]
         return {
-            "path": os.path.join("collections", coll_name, o.get_json_path()),
+            "path": str(Path("collections", coll_name) / o.get_json_path()),
             "title": "%s: %s" % (coll_name, str(o)),
             "content": o.to_json(),
             "description": "",

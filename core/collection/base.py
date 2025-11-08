@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 import zlib
 import csv
 import shutil
@@ -479,7 +478,7 @@ class Collection(object):
         # Format JSON
         json_data = o.to_json()
         # Write
-        path = os.path.join(cls.PREFIX, c.name, o.get_json_path())
+        path = Path(cls.PREFIX, c.name) / o.get_json_path()
         if "uuid" not in data:
             raise ValueError("Invalid JSON: No UUID")
         c.stdout.write("[%s|%s] Installing %s\n" % (c.name, data["uuid"], path))

@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # AlarmSeverity model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 from threading import Lock
 from typing import Optional, Union, List
 import operator
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -20,7 +21,7 @@ import cachetools
 from noc.main.models.style import Style
 from noc.core.model.decorator import on_delete_check
 from noc.core.mongo.fields import ForeignKeyField
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 import itertools
 
@@ -138,8 +139,8 @@ class AlarmSeverity(Document):
     def get_severity_css_class_name(cls, severity):
         return cls.get_severity(severity).style.css_class_name
 
-    def get_json_path(self) -> str:
-        return "%s.json" % quote_safe_path(self.name)
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def to_json(self) -> str:
         return to_json(

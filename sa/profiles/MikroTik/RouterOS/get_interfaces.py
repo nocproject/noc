@@ -6,6 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
+import re
 import time
 from typing import Optional
 
@@ -14,6 +15,7 @@ from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.core.validators import is_int
 from noc.core.mib import mib
+from noc.core.ip import IP
 
 
 class Script(BaseScript):
@@ -50,6 +52,9 @@ class Script(BaseScript):
 
     ignored_types = {"mesh", "traffic-eng", "vpls", "vrrp", "wds", "lte", "cap", "vrrp", "vif"}
     si = {}
+    rx_discover_interfaces = re.compile(
+        r"discover-interface-list: (?P<list>\S+)\s*\n", re.MULTILINE
+    )
 
     def get_tunnel(self, tun_type, f, afi, ipif):
         self.si["tunnel"] = {}
@@ -432,7 +437,7 @@ class Script(BaseScript):
                         i["subinterfaces"][0]["enabled_protocols"] += ["OSPF"]
         except self.CLISyntaxError:
             pass
-        # PIMm IGMP
+        # PIM IGMP
         try:
             cli_result = self.cli_detail("/routing pim interface print detail without-paging")
             for n, f, r in cli_result:
@@ -462,6 +467,47 @@ class Script(BaseScript):
         except self.CLISyntaxError:
             pass
 
+        if self.has_capability("Network | BGP"):
+            cli_result = self.cli_detail("/routing bgp instance print detail without-paging")
+            for n, f, r in cli_result:
+                self.si = {}
+                router_id = r["router-id"]
+                for i in ifaces:
+                    for si in ifaces[i].get("subinterfaces", []):
+                        if "IPv4" in si["enabled_afi"]:
+                            for addr in si["ipv4_addresses"]:
+                                if router_id == IP(addr).address:
+                                    si["enabled_protocols"] += ["BGP"]
+                                    break
+                        if "IPv6" in si["enabled_afi"]:
+                            for addr in si["ipv6_addresses"]:
+                                if router_id == IP(addr).address:
+                                    si["enabled_protocols"] += ["BGP"]
+                                    break
+        has_lldp = self.has_capability("Network | LLDP")
+        has_cdp = self.has_capability("Network | CDP")
+        if has_lldp or has_cdp:
+            c = self.cli("/ip neighbor discovery-settings print without-paging", cached=True)
+            discover_list = self.rx_discover_interfaces.search(c)["list"]
+            if discover_list != "all":
+                cli_result = self.cli_detail("/interface list member print detail without-paging")
+                for n, f, r in cli_result:
+                    if "X" in f:
+                        continue
+                    if r["list"] == discover_list:
+                        if r["interface"] in ifaces:
+                            i = ifaces[r["interface"]]
+                            if has_lldp:
+                                i["enabled_protocols"] += ["LLDP"]
+                            if has_cdp:
+                                i["enabled_protocols"] += ["CDP"]
+            else:
+                for i in ifaces:
+                    if has_lldp:
+                        ifaces[i]["enabled_protocols"] += ["LLDP"]
+                    if has_cdp:
+                        ifaces[i]["enabled_protocols"] += ["CDP"]
+
         return [{"interfaces": list(ifaces.values())}]
 
     INTERFACE_TYPES = {
@@ -473,6 +519,7 @@ class Script(BaseScript):
         117: "physical",  # gigabitEthernet
         131: "tunnel",  # tunnel
         135: "SVI",  # l2vlan
+        209: "SVI",  # bridge
         161: "aggregated",  # ieee8023adLag
         53: "SVI",  # propVirtual
         54: "physical",  # propMultiplexor

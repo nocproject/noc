@@ -29,12 +29,26 @@ export class ReplaceMethodsPlugin{
       name: "remove-methods-plugin",
       setup: (build) => {
         build.onLoad({filter: /\.js$/}, async(args) => {
-          const contents = await fs.readFile(args.path, "utf8");
+          let contents = await fs.readFile(args.path, "utf8");
           this.log(`Processed file: ${args.path}`);
+          if(new RegExp(/.*theme-.*\.js$/).test(args.path)){
+            contents = await this.removePolyfills(contents);
+          }
           return await this.processFile(contents);
         });
       },
     };
+  }
+
+  private async removePolyfills(content: string): Promise<string>{
+    // Looking for the end of polyfills by the first Ext.define
+    const extDefineIndex = content.indexOf("Ext.define('Ext.theme.neptune.Component'");
+    
+    if(extDefineIndex === -1){
+      return content;
+    }
+    
+    return content.substring(extDefineIndex);
   }
 
   private async processFile(contents: string): Promise<esbuild.OnLoadResult>{

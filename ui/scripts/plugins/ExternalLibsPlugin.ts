@@ -72,7 +72,6 @@ export class ExternalLibsPlugin{
         {name: "pkg/monaco/monaco.js", format: "iife"},
         
         // NOC modules
-        {name: "common/gettext.js", format: "iife"},
         {name: "web/js/colors.js", format: "iife"},
         {name: "web/js/glyph.js", format: "iife"},
         {name: "web/js/util.js", format: "iife"},
@@ -88,7 +87,6 @@ export class ExternalLibsPlugin{
         libraryFiles = [
           ...libraryFiles,
           {name: `pkg/extjs/classic/theme-${this.options.theme}/theme-${this.options.theme}.js`, format: "iife"},
-          {name: `web/locale/${this.options.language}/ext-locale-${this.options.language}.js`, format: "iife"},
         ];
       } 
       for(const libPath of libraryFiles){

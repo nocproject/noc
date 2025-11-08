@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ConfDBQuery model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import threading
 from typing import Optional, Union
 import operator
-import os
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -26,9 +26,9 @@ import cachetools
 # NOC modules
 from noc.core.ip import IP
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.sa.interfaces.base import StringParameter, IntParameter, BooleanParameter
+from noc.core.path import safe_json_path
 
 
 class IPParameter(object):
@@ -109,9 +109,8 @@ class ConfDBQuery(Document):
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ConfDBQuery"]:
         return ConfDBQuery.objects.filter(id=oid).first()
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def query(self, engine, **kwargs):
         """

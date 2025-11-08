@@ -6,11 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import uuid
 import threading
 from typing import Optional, Union
 import operator
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -23,6 +23,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
+from noc.core.path import safe_json_path
 from noc.core.profile.loader import loader, GENERIC_PROFILE
 from noc.core.profile.error import SANoProfileError
 
@@ -90,9 +91,9 @@ class Profile(Document):
             order=["name", "uuid", "description"],
         )
 
-    def get_json_path(self) -> str:
+    def get_json_path(self) -> Path:
         vendor, soft = self.name.split(".")
-        return os.path.join(vendor, "%s.json" % soft)
+        return safe_json_path(vendor, soft)
 
     def get_profile(self):
         try:

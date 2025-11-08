@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # TechDomain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 from threading import Lock
 from typing import Optional, Dict, Any, Union
 import operator
-
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -28,7 +28,7 @@ from mongoengine.fields import (
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.main.models.handler import Handler
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.channel.types import ChannelKind, ChannelTopology
@@ -163,8 +163,8 @@ class TechDomain(Document):
             order=["name", "$collection", "uuid", "description"],
         )
 
-    def get_json_path(self) -> str:
-        return f"{quote_safe_path(self.code)}.json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.code)
 
     def is_allowed_topology(self, topo: ChannelTopology) -> bool:
         """

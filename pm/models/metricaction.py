@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # MetricAction model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 from typing import Any, Dict, Optional, List, Union
 from collections import defaultdict
 
@@ -29,7 +29,7 @@ from mongoengine.errors import ValidationError
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.model.decorator import on_delete_check
 from noc.core.cdag.factory.config import NodeItem, InputItem, GraphConfig
 from noc.core.cdag.node.alarm import VarItem
@@ -251,9 +251,8 @@ class MetricAction(Document):
             order=["name", "$collection", "uuid", "description", "params", "compose_inputs"],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def get_config(
         self,

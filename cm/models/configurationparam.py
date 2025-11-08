@@ -1,17 +1,17 @@
 # ----------------------------------------------------------------------
 # ConfigurationParam model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import threading
 import operator
-import os
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Union, NoReturn, Any
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -28,9 +28,9 @@ import cachetools
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
 from noc.pm.models.metrictype import MetricType
+from noc.core.path import safe_json_path
 from .configurationscope import ConfigurationScope
 
 
@@ -271,9 +271,8 @@ class ConfigurationParam(Document):
     def get_by_code(cls, code) -> Optional["ConfigurationParam"]:
         return ConfigurationParam.objects.filter(code=code).first()
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def to_json(self) -> str:
         r = {
