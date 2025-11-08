@@ -133,22 +133,44 @@ Ext.define("NOC.sa.actioncommands.Application", {
             {
               text: __("Scope"),
               dataIndex: "scope",
+              sortable: false,
               editor: "textfield",
+              width: 100,
             },
             {
               text: __("Enter Scope"),
               dataIndex: "enter_scope",
-              editor: "combobox",
+              sortable: false,
+              editor: "checkbox",
+              width: 70,
             },
             {
               text: __("Command"),
               dataIndex: "command",
+              sortable: false,
               editor: "textfield",
+              width: 200,
+            },
+            {
+              text: __("Enable Scope"),
+              dataIndex: "enable_scope_command",
+              sortable: false,
+              editor: "textfield",
+              width: 150,
+            },
+            {
+              text: __("Disable Scope command"),
+              dataIndex: "disable_scope_command",
+              sortable: false,
+              editor: "textfield",
+              width: 150,
             },
             {
               text: __("Exit Command"),
               dataIndex: "exit_command",
+              sortable: false,
               editor: "textfield",
+              width: 100,
             },
           ],
         },
@@ -157,6 +179,9 @@ Ext.define("NOC.sa.actioncommands.Application", {
           xtype: "textarea",
           fieldLabel: __("Commands"),
           allowBlank: false,
+          grow: true,
+          growMin: 100, // Minimum height when growing
+          growMax: 200, // Maximum height when growing
         },
         {
           name: "test_cases",

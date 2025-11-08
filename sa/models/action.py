@@ -8,6 +8,7 @@
 # Python modules
 import threading
 import operator
+import re
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Union, List, Tuple
 
@@ -36,9 +37,10 @@ from noc.main.models.handler import Handler
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
 
 id_lock = threading.Lock()
+rx_empty_string = re.compile(r"\n{2,}")
 
 
-@dataclass(frozen=True)
+@dataclass
 class ScopeConfig:
     """
     Action Configuration Scope
@@ -51,6 +53,8 @@ class ScopeConfig:
     value: str
     command: Optional[str] = None
     exit_command: Optional[str] = None
+    disable_command: Optional[str] = None
+    enable_command: Optional[str] = None
     enter: bool = True
 
 
@@ -68,7 +72,14 @@ class ActionCommandConfig:
     commands: str
     scopes: Optional[List[ScopeConfig]] = None
 
-    def render(self, ctx: Dict[str, Any], scope_prepend: str = " "):
+    def render(
+        self,
+        ctx: Dict[str, Any],
+        scope_prepend: str = " ",
+        clean_empty_string: bool = True,
+        disable_when_change: bool = False,
+        cancel_prefix: Optional[str] = None,
+    ):
         r, exits = [], []
         inputs = {"scope_prefix": [], "scope_prepend": scope_prepend}
         inputs |= ctx
@@ -78,7 +89,13 @@ class ActionCommandConfig:
                 continue
             if s.enter:
                 r.append(s.command)
-            inputs["scope_prefix"] += s.command
+            inputs["scope_prefix"] += [s.command]
+            if disable_when_change and s.disable_command:
+                r.append(s.disable_command)
+                if s.enable_command:
+                    exits.append(s.enable_command)
+                elif cancel_prefix:
+                    exits.append(f"{cancel_prefix} {s.disable_command}")
             if s.exit_command:
                 exits.append(s.exit_command)
         inputs["scope_prefix"] = " ".join(inputs["scope_prefix"])
@@ -86,6 +103,8 @@ class ActionCommandConfig:
         env = jinja2.Environment(loader=loader)
         template = env.get_template("tpl")
         command = template.render(**inputs)
+        if clean_empty_string:
+            command = rx_empty_string.sub("\n", command)
         if command:
             r.append(command)
         r += exits
@@ -128,7 +147,7 @@ class ActionParameter(EmbeddedDocument):
 @on_delete_check(
     check=[
         ("sa.ActionCommands", "action"),
-        ("sa.ReactionRule", "action_command"),
+        ("sa.ReactionRule", "action_command_set.action"),
         ("fm.DispositionRule", "object_actions.action"),
         ("fm.AlarmDiagnosticConfig", "on_clear_action"),
         ("fm.AlarmDiagnosticConfig", "periodic_action"),
@@ -261,12 +280,17 @@ class Action(Document):
             managed_object=managed_object,
             **kwargs,
         )
+        profile = profile.get_profile()
         r = ActionCommandConfig(
             name=self.name,
             commands=ac.commands,
             scopes=scopes,
         )
-        return ac, r.render(args)
+        return ac, r.render(
+            args,
+            disable_when_change=ac.disable_when_change,
+            cancel_prefix=profile.command_cancel_prefix,
+        )
 
     def execute_handler(self, obj, **kwargs):
         """Execute handler"""
@@ -276,45 +300,38 @@ class Action(Document):
         req: Optional[JobRequest] = h(obj, **kwargs)
         req.submit()
 
-    def execute_commands(
+    def get_execute_commands(
         self,
-        obj,
-        dry_run: bool = False,
-        username: Optional[str] = None,
+        managed_object,
         **kwargs,
-    ):
+    ) -> Tuple[str, Any]:
         """Execute commands"""
-        match = obj.get_matcher_ctx()
+        match = managed_object.get_matcher_ctx()
         ac, commands = self.render_commands(
-            obj.profile,
+            managed_object.profile,
             match_ctx=match,
-            managed_object=obj,
+            managed_object=managed_object,
             **kwargs,
         )
         if ac is None:
-            return None
+            return "", None
         # Execute rendered commands
-        commands = "\n".join(commands)
-        return obj.scripts.commands(
-            commands=[commands],
-            config_mode=ac.config_mode,
-            dry_run=dry_run,
-        )
+        return "\n".join(commands), ac
 
-    def run_action_job(
+    def get_job_request(
         self,
-        obj,
+        managed_object,
         dry_run: bool = False,
         username: Optional[str] = None,
         **kwargs,
-    ):
+    ) -> JobRequest:
         """Run Action job"""
         inputs = [
-            InputMapping(name="managed_object", value=str(obj.id)),
+            InputMapping(name="managed_object", value=str(managed_object.id)),
             InputMapping(name="action", value=self.name),
         ]
         if kwargs:
-            inputs += self.clean_action_args(obj, **kwargs)
+            inputs += self.clean_action_args(managed_object, **kwargs)
         if dry_run:
             inputs.append(InputMapping(name="dry_run", value="true"))
         req = JobRequest(
@@ -326,7 +343,7 @@ class Action(Document):
         )
         if username:
             req.environment = {"username": username}
-        req.submit()
+        return req
 
     def register_audit_command(
         self,
@@ -349,9 +366,15 @@ class Action(Document):
         if self.handler:
             self.execute_handler(obj, dry_run=dry_run, **kwargs)
         elif as_job:
-            self.run_action_job(obj, dry_run=dry_run, username=username, **kwargs)
+            req = self.get_job_request(obj, dry_run=dry_run, username=username, **kwargs)
+            req.submit()
         else:
-            self.execute_commands(obj, dry_run=dry_run, **kwargs)
+            commands, cfg = self.get_execute_commands(obj, **kwargs)
+            obj.scripts.commands(
+                commands=[commands],
+                config_mode=cfg.config_mode,
+                dry_run=dry_run,
+            )
 
     def clean_action_args(
         self,
@@ -360,7 +383,7 @@ class Action(Document):
     ) -> List[KVInputMapping]:
         """Cleanup action arguments"""
         r = []
-        args, _ = self.clean_args(managed_object.profile, **kwargs)
+        args, _ = self.clean_args(managed_object.profile, managed_object=managed_object, **kwargs)
         for k, v in args.items():
             if isinstance(v, list):
                 v = ValueType.convert_from_array(v)
@@ -371,7 +394,6 @@ class Action(Document):
         self,
         profile,
         command_scopes: Optional[Dict[str, ScopeConfig]] = None,
-        managed_object: Optional[Any] = None,
         **kwargs,
     ) -> Tuple[Dict[str, Any], List[ScopeConfig]]:
         args, scopes, command_scopes = {}, [], command_scopes or {}
@@ -382,6 +404,12 @@ class Action(Document):
             v = kwargs.get(p.name, p.default)
             if v is None:
                 continue
+            if isinstance(v, str):
+                try:
+                    tmpl = jinja2.Template(v)
+                    v = tmpl.render(**kwargs)
+                except jinja2.exceptions.TemplateError as e:
+                    raise ValueError("Parameter '%s', Render Error: %s" % (p.name, e))
             if p.type == ValueType.IFACE_NAME:
                 # Interface
                 try:
@@ -400,6 +428,7 @@ class Action(Document):
                 v = [p.type.clean_value(x) for x in ValueType.convert_to_array(str(v))]
             else:
                 v = p.type.clean_value(v)
+            # Render Action
             args[str(p.name)] = v
             if not p.scope:
                 continue
@@ -409,10 +438,6 @@ class Action(Document):
                 command = command_scopes[p.scope].command or p.scope_command
             else:
                 command = p.scope_command
-            # Enter command
-            if command:
-                tmpl = jinja2.Template(command)
-                command = tmpl.render(**args)
             # Scopes from commands?
             scopes.append(
                 ScopeConfig(
@@ -423,6 +448,12 @@ class Action(Document):
                     enter=ac_scope.enter if ac_scope else bool(command),
                 )
             )
+        # Render Scope command
+        for s in scopes:
+            # Enter command
+            if s.command:
+                tmpl = jinja2.Template(s.command)
+                s.command = tmpl.render(**args)
         return args, scopes
 
     def test(self):

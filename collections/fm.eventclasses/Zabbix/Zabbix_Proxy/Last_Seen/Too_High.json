@@ -1,0 +1,18 @@
+{
+    "name": "Zabbix | Zabbix Proxy | Last Seen | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "1f875b6d-9781-4933-8a50-e54b65517e10",
+    "description": "Zabbix proxy last seen. Legacy class, should not be used.",
+    "action": "L",
+    "vars": [
+
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Ping Loss",
+    "body_template": "Zabbix proxy last seen {{event.target.name}} (IP: {{event.target.address}})",
+    "symptoms": "Cannot execute SA tasks on the object",
+    "probable_causes": "The object is not responding to ICMP echo-requests",
+    "recommended_actions": "Check object is alive. Check routing to this object. Check firewalls"
+}

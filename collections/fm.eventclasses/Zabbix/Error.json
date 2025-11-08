@@ -1,0 +1,23 @@
+{
+    "name": "Zabbix | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "43da0de8-62a9-4e90-9d7e-32d3a7b22235",
+    "description": "Error when zabbix execute",
+    "action": "A",
+    "vars": [
+
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_reboot",
+
+        "noc.fm.handlers.event.discovery.on_system_start"
+    ],
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

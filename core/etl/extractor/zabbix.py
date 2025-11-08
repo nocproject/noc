@@ -308,7 +308,7 @@ class ZabbixHostExtractor(ZabbixExtractor):
             ]:
                 continue
             labels = [t.tag for t in host.tags if t.tag != "mal"]
-            for hg in host.host_groups:
+            for hg in host.host_groups or []:
                 labels.append(f"zabbix::hg::{hg.hormalize_name}")
             yield ManagedObject(
                 id=str(host.host_id),
@@ -319,7 +319,7 @@ class ZabbixHostExtractor(ZabbixExtractor):
                 administrative_domain=ETLMapping(value="default", scope="adm_domain"),
                 descriptrion=host.description,
                 object_profile=ETLMapping(value="zabbix.network", scope="objectprofile"),
-                static_service_groups=[str(hg.group_id) for hg in host.host_groups],
+                static_service_groups=[str(hg.group_id) for hg in host.host_groups or []],
                 scheme="1",
                 address=h_iface.ip,
                 labels=labels,

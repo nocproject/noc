@@ -429,6 +429,7 @@ class ServiceInstance(Document):
         """
         processed = set()
         new_addresses = []
+        addresses = addresses or []
         changed = False
         for a in self.addresses:
             if a.address not in addresses and source in a.sources:
@@ -451,7 +452,8 @@ class ServiceInstance(Document):
             changed |= True
             self.port = port
         # Update instance
-        self.seen(source, last_seen=ts)
+        if InputSource == InputSource.DISCOVERY:
+            self.seen(source, last_seen=ts)
         return changed
 
     def deregister_endpoint(

@@ -733,11 +733,19 @@ class Interface(Document):
         return r.get("interval", 0)
 
     def get_matcher_ctx(self) -> Dict[str, Any]:
+        """"""
+        if not self.state:
+            state = self.profile.workflow.get_default_state()
+        else:
+            state = self.state
         return {
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
-            "service_groups": list(self.managed_object.effective_service_groups),
+            "object_groups": list(self.managed_object.effective_service_groups),
+            "service_groups": list(self.effective_service_groups),
+            "caps": self.get_caps(),
+            "state": str(state.id),
         }
 
 

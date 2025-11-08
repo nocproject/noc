@@ -98,7 +98,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         nv, nv_label = getattr(document, field_name), None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
-            nv_label = repr(ov)
+            nv_label = repr(nv)
         elif hasattr(nv, "_instance"):
             # Embedded field
             nv = [str(x) for x in nv]

@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Proxy | Missing Data Item | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ef18fa4a-18f2-4410-b396-7d72e5ffa10b",
+    "event_class__name": "Zabbix | Proxy | Missing Data Item | Too High",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "More than (?P<tvalue>\\d+) items having missing data for more than (?P<window>\\d+) minutes",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "More than 100 items having missing data for more than 10 minutes",
+            "raw_vars": []
+        }
+    ]
+}

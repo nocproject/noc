@@ -167,10 +167,16 @@ class NetworkChannelInstance(ServiceInstanceConfig):
         if not settings.refs_caps or settings.refs_caps.name not in caps:
             return []
         refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
-        if not refs:
+        addresses = []
+        if settings.refs_caps.type in [ValueType.IPV4_ADDR, ValueType.IP_ADDR]:
+            if settings.refs_caps.multi:
+                addresses = caps[settings.refs_caps.name]
+            else:
+                addresses = [caps[settings.refs_caps.name]]
+        elif not refs:
             return []
         if settings.only_one_instance:
-            cfg = cls.from_config(name=name, asset_refs=refs)
+            cfg = cls.from_config(name=name, asset_refs=refs, addresses=addresses or None)
             return [cfg]
         r = []
         for c in caps[settings.refs_caps.name]:

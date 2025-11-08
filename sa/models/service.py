@@ -968,6 +968,7 @@ class Service(Document):
             instance = ServiceInstance.ensure_instance(self, cfg, settings)
             # Update Data, Run sync
             instance.update_config(cfg)
+            instance.register_endpoint(source, cfg.addresses)
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()
@@ -1073,7 +1074,7 @@ class Service(Document):
             "service_groups": list(self.effective_service_groups),
             "remote_system": str(self.remote_system.id) if self.remote_system else None,
             "caps": self.get_caps(),
-            "state": str(state),
+            "state": str(state.id),
         }
 
 

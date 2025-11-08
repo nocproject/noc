@@ -32,7 +32,7 @@ class AgentProfile(Document):
     name = StringField(unique=True)
     description = StringField()
     zk_check_interval = IntField(default=60)
-    workflow = PlainReferenceField(
+    workflow: "Workflow" = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "pm.AgentProfile")
     )
     update_addresses = BooleanField(default=True)
