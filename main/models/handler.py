@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Approved handlers
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@
 from threading import Lock
 from typing import Optional, Union, Dict, Any
 import operator
+from pathlib import Path
 
 # Third-party modules
 import bson
@@ -20,7 +21,7 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 
 id_lock = Lock()
 
@@ -136,8 +137,8 @@ class Handler(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return quote_safe_path(self.name.strip("*")) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)

@@ -1,9 +1,12 @@
 # ----------------------------------------------------------------------
 # Dashboard Layout
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -11,6 +14,7 @@ from mongoengine.fields import StringField, UUIDField, IntField, ListField, Embe
 
 # NOC modules
 from noc.core.prettyjson import to_json
+from noc.core.path import safe_json_path
 
 
 class DashboardCell(EmbeddedDocument):
@@ -72,5 +76,5 @@ class DashboardLayout(Document):
             order=["name", "uuid", "description", "cells"],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.name
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)

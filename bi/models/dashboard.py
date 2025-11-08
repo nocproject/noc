@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 # Dashboard storage
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import datetime
 from base64 import b85encode
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document, EmbeddedDocument
@@ -27,6 +28,7 @@ from noc.aaa.models.group import Group
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.prettyjson import to_json
 from noc.core.comp import smart_text
+from noc.core.path import safe_json_path
 
 DAL_NONE = -1
 DAL_RO = 0
@@ -174,5 +176,5 @@ class Dashboard(Document):
             order=["title", "uuid", "description", "created"],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.uuid
+    def get_json_path(self) -> Path:
+        return safe_json_path(str(self.uuid))

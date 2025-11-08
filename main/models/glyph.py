@@ -1,15 +1,15 @@
 # ----------------------------------------------------------------------
 # Glyph Collection
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 from threading import Lock
 import operator
 from typing import Any, Dict, Optional, Union
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
@@ -19,7 +19,7 @@ import bson
 
 # NOC modules
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from .font import Font
@@ -70,9 +70,8 @@ class Glyph(Document):
     def to_json(self) -> str:
         return to_json(self.json_data, order=["name", "$collection", "uuid", "font__name", "code"])
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @property
     def css_class(self) -> Optional[str]:

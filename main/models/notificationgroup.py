@@ -11,6 +11,7 @@ import logging
 import operator
 from threading import Lock
 from typing import Tuple, Dict, Iterable, Optional, Any, Set, List, FrozenSet
+from pathlib import Path
 
 # Third-party modules
 from django.db.models import (
@@ -43,7 +44,7 @@ from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.aaa.models.user import User
 from noc.main.models.systemtemplate import SystemTemplate
 from noc.main.models.template import Template
@@ -813,8 +814,8 @@ class NotificationGroup(NOCModel):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return quote_safe_path(self.name.strip("*")) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
 
 class NotificationGroupUserSettings(NOCModel):

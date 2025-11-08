@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import re
 from typing import Any, Dict, Optional, List, Iterable, Tuple
 
@@ -25,7 +25,7 @@ from mongoengine.fields import (
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
 from noc.sa.models.profile import Profile
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 from .action import Action, ScopeConfig
 
@@ -108,9 +108,8 @@ class ActionCommands(Document):
     def __str__(self):
         return self.name
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @property
     def json_data(self) -> Dict[str, Any]:

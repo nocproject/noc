@@ -9,6 +9,7 @@
 import operator
 from threading import Lock
 from typing import Any, Dict, Optional, Union
+from pathlib import Path
 
 # Third-party modules
 import bson
@@ -25,8 +26,8 @@ import cachetools
 
 # NOC modules
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
 from noc.core.model.decorator import on_delete_check
+from noc.core.path import safe_json_path
 
 id_lock = Lock()
 
@@ -126,5 +127,5 @@ class Quiz(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return "%s.json" % quote_safe_path(self.name)
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)

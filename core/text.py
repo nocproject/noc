@@ -481,13 +481,6 @@ def str_dict(d):
     return ", ".join("%s=%s" % (k, d[k]) for k in d)
 
 
-rx_safe_path = re.compile(r"[^a-z0-9\-\+]+", re.IGNORECASE)
-
-
-def quote_safe_path(d):
-    return rx_safe_path.sub("_", cyr_to_lat(d))
-
-
 def to_seconds(v):
     """
     Convert string value to seconds.

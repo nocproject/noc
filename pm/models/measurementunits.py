@@ -9,6 +9,7 @@
 import operator
 from threading import Lock
 from typing import Any, Dict, Optional, Union
+from pathlib import Path
 
 # Third-party modules
 from bson import ObjectId
@@ -21,7 +22,7 @@ import cachetools
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.model.decorator import on_delete_check
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.expr import get_fn
 from noc.pm.models.scale import Scale
 
@@ -173,8 +174,8 @@ class MeasurementUnits(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        return f"{quote_safe_path(self.name)}.json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def humanize(self, value: Union[float, int], with_units: bool = False) -> str:
         if self.code == "1":

@@ -1,16 +1,19 @@
 # ---------------------------------------------------------------------
 # Enumeration model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
 from mongoengine.fields import StringField, DictField, UUIDField
 
 # Python modules
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 
 
@@ -30,8 +33,8 @@ class Enumeration(Document):
     def __str__(self):
         return self.name
 
-    def get_json_path(self) -> str:
-        return "%s.json" % quote_safe_path(self.name)
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def to_json(self) -> str:
         return to_json(

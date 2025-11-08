@@ -8,7 +8,7 @@
 # Python modules
 import uuid
 from functools import reduce
-import os
+from pathlib import Path
 
 # Third-party modules
 from django.http import HttpResponse
@@ -592,10 +592,10 @@ class ExtDocApplication(ExtApplication):
         Overwrite json
         """
         o = self.get_object_or_404(self.model, id=id)
-        path = os.path.join("collections", self.model._meta["json_collection"], o.get_json_path())
-        dn = os.path.dirname(path)
-        if dn and not os.path.exists(dn):
-            os.makedirs(dn, exist_ok=True)
+        path = Path("collections", self.model._meta["json_collection"]) / o.get_json_path()
+        d = path.parent
+        if d.name and not d.exists():
+            d.mkdir(parents=True)
         with open(path, "w") as fp:
             fp.write(o.to_json())
         return {"status": True}
@@ -608,10 +608,11 @@ class ExtDocApplication(ExtApplication):
         :return:
         """
         o = self.get_object_or_404(self.model, id=id)
+        path = Path("collections", self.model._meta["json_collection"]) / o.get_json_path()
         coll_name = self.model._meta["json_collection"]
         return {
-            "path": os.path.join("collections", coll_name, o.get_json_path()),
-            "title": "%s: %s" % (coll_name, str(o)),
+            "path": str(path),
+            "title": f"{coll_name}: {o!s}",
             "content": o.to_json(),
             "description": "",
         }

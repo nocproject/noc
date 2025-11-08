@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # Technology
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import operator
 import threading
 from typing import Optional, Union
@@ -21,7 +21,7 @@ import cachetools
 from noc.core.model.decorator import on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 
 id_lock = threading.Lock()
 
@@ -77,9 +77,8 @@ class Technology(Document):
     def get_by_name(cls, name: str) -> Optional["Technology"]:
         return Technology.objects.filter(name=name).first()
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def to_json(self) -> str:
         r = {

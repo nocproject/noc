@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # AlarmClass model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 import re
 from threading import Lock
 import operator
@@ -32,12 +32,12 @@ import cachetools
 import jinja2
 
 # NOC modules
-from noc.core.text import quote_safe_path
 from noc.core.handler import get_handler
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check
 from noc.core.change.decorator import change
 from noc.core.prettyjson import to_json
+from noc.core.path import safe_json_path
 from .datasource import DataSource
 from .alarmrootcausecondition import AlarmRootCauseCondition
 from .alarmclasscategory import AlarmClassCategory
@@ -391,9 +391,8 @@ class AlarmClass(Document):
             ],
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @property
     def config(self):

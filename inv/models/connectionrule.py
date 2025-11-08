@@ -1,12 +1,12 @@
 # ---------------------------------------------------------------------
 # ConnectionRule model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
+from pathlib import Path
 from typing import Any, Dict
 
 # Third-party modules
@@ -15,7 +15,7 @@ from mongoengine.fields import StringField, UUIDField, ListField, EmbeddedDocume
 
 # NOC modules
 from noc.core.prettyjson import to_json
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.model.decorator import on_delete_check
 
 
@@ -121,6 +121,5 @@ class ConnectionRule(Document):
             self.json_data, order=["name", "$collection", "uuid", "description", "context", "rules"]
         )
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)

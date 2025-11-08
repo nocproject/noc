@@ -6,10 +6,10 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import operator
 from threading import Lock
 from typing import Optional, List, Union, Dict, Any, Callable, Tuple, Iterable
+# from pathlib import Path
 
 # Third-party modules
 import cachetools
@@ -44,7 +44,6 @@ from noc.core.change.decorator import change
 from noc.core.change.model import ChangeItem
 from noc.core.change.policy import REACTION_MODELS
 from noc.core.model.decorator import tree, on_delete_check
-from noc.core.text import quote_safe_path
 
 id_lock = Lock()
 
@@ -265,9 +264,10 @@ class ReactionRule(Document):
             r[(str(rule.id), rule.preference)] = rule.get_matcher()
         return tuple((x[0], r[x]) for x in sorted(r, key=lambda i: i[1]))
 
-    def get_json_path(self) -> str:
-        p = [quote_safe_path(n.strip()) for n in self.name.split("|")]
-        return os.path.join(*p) + ".json"
+    # def get_json_path(self) -> Path:
+    #     return Path(*(quote_safe_path(n.strip()) for n in self.name.split("|"))).with_suffix(
+    #         ".json"
+    #     )
 
     def get_matcher(self) -> Optional[Callable]:
         """Build matcher structure"""

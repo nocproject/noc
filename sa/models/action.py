@@ -10,6 +10,7 @@ import threading
 import operator
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, Union, List, Tuple
+from pathlib import Path
 
 # Third-party modules
 import jinja2
@@ -27,7 +28,7 @@ from mongoengine.fields import (
 )
 
 # NOC modules
-from noc.core.text import quote_safe_path
+from noc.core.path import safe_json_path
 from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
@@ -169,8 +170,8 @@ class Action(Document):
     def get_by_name(cls, name: str) -> Optional["Action"]:
         return Action.objects.filter(name=name).first()
 
-    def get_json_path(self) -> str:
-        return "%s.json" % quote_safe_path(self.name)
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     @property
     def json_data(self) -> Dict[str, Any]:

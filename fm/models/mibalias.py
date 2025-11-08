@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # MIBAlias model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
@@ -11,6 +14,7 @@ from mongoengine.fields import StringField, UUIDField
 
 # NOC modules
 from noc.core.prettyjson import to_json
+from noc.core.path import safe_json_path
 
 
 class MIBAlias(Document):
@@ -49,8 +53,8 @@ class MIBAlias(Document):
             return "%s::%s" % (cls.cache.get(mib, mib), rest)
         return cls.cache.get(name, name)
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.rewrite_mib.replace(":", "_")
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.rewrite_mib)
 
     def to_json(self) -> str:
         return to_json(

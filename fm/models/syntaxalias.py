@@ -1,9 +1,12 @@
 # ---------------------------------------------------------------------
 # SyntaxAlias model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
+
+# Python modules
+from pathlib import Path
 
 # Third-party modules
 from mongoengine.document import Document
@@ -11,6 +14,7 @@ from mongoengine.fields import StringField, UUIDField, DictField
 
 # NOC modules
 from noc.core.prettyjson import to_json
+from noc.core.path import safe_json_path
 
 
 class SyntaxAlias(Document):
@@ -36,8 +40,8 @@ class SyntaxAlias(Document):
             cls.cache = {o.name: o.syntax for o in cls.objects.all()}
         return cls.cache.get(name, syntax)
 
-    def get_json_path(self) -> str:
-        return "%s.json" % self.name.replace(":", "_")
+    def get_json_path(self) -> Path:
+        return safe_json_path(self.name)
 
     def to_json(self) -> str:
         return to_json(
