@@ -1,0 +1,19 @@
+{
+    "name": "Qtech | QSW2800 | Security | Audit | Command (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "b668fadf-8f1b-4e0e-925e-cbb6058bc442",
+    "description": "Record command information. (Task=VT0 , Ip=88.147.128.54, User=admin, Command=\"display version\")",
+    "event_class__name": "Security | Audit | Command",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Record command information. \\(Task=\\S+ , Ip=(?P<ip>\\d\\S+), User=(?P<user>\\S+), Command=\\\"(?P<command>.+)\\\"\\)",
+    "profiles": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "Record command information. (Task=VT0 , Ip=88.147.128.54, User=admin, Command=\"display version\")",
+            "raw_vars": []
+        }
+    ]
+}

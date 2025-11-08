@@ -1,0 +1,17 @@
+{
+    "name": "Qtech | QSW2800 | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8f4ee93e-c68b-4ec0-915d-d0d07f6108d4",
+    "description": "Interface Ethernet0/0/6 has turned into DOWN state.",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Interface (?P<interface>\\S+) has turned into DOWN state.",
+    "profiles": ["Qtech.QSW2800"],
+    "sources": ["syslog"],
+    "test_cases": [{
+        "message": "Interface Ethernet0/0/6 has turned into DOWN state.",
+        "raw_vars": []
+    }]
+}
