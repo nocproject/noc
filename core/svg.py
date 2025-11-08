@@ -209,17 +209,17 @@ class SVG(object):
             return  # Should raise un error?
         # Find defs node
         defs = self.get_defs()
-        if defs and not self._defs:
-            # Index existing defs
-            self._defs = {c.get("id", ""): c for c in defs}
-        if defs:
-            # Check defs is already exists
-            if el_id in self._defs and self.is_equal(self._defs[el_id], el):
-                return  # Already exists
-        else:
+        if defs is None:
             # Create defs element
             defs = ET.Element(self.DEFS)
             self._tree.getroot().insert(0, defs)
+        else:
+            if not self._defs:
+                # Index existing defs
+                self._defs = {c.get("id", ""): c for c in defs}
+            # Check defs is already exists
+            if el_id in self._defs and self.is_equal(self._defs[el_id], el):
+                return  # Already exists
         # Append defs
         defs.append(el)
         self._defs[el_id] = el
@@ -254,7 +254,7 @@ class SVG(object):
         source = source.clone()
         # Merge defs
         src_defs = source.get_defs()
-        if src_defs:
+        if src_defs is not None:
             for c in src_defs:
                 self.append_def(c)
             # Remove defs from source
