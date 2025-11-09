@@ -35,7 +35,7 @@ jobs:
         uses: astral-sh/setup-uv@v1
 
       - name: Install Dependencies
-        run: uv pip install --upgrade -e .[lint]
+        run: uv pip install --system -e .[lint]
 
       - name: Check Formatting
         run: ruff format --check --diff .
