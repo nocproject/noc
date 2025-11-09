@@ -10,6 +10,7 @@ on:
       - "pyproject.toml"
       - "codecov.yml"
       - "**.py"
+      - "collections/**/*.json"
   pull_request:
     paths: *changed-paths
   release:
