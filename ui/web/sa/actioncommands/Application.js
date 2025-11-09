@@ -152,20 +152,6 @@ Ext.define("NOC.sa.actioncommands.Application", {
               width: 200,
             },
             {
-              text: __("Enable Scope"),
-              dataIndex: "enable_scope_command",
-              sortable: false,
-              editor: "textfield",
-              width: 150,
-            },
-            {
-              text: __("Disable Scope command"),
-              dataIndex: "disable_scope_command",
-              sortable: false,
-              editor: "textfield",
-              width: 150,
-            },
-            {
               text: __("Exit Command"),
               dataIndex: "exit_command",
               sortable: false,
