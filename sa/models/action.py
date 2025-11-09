@@ -34,8 +34,8 @@ from noc.core.prettyjson import to_json
 from noc.core.model.decorator import on_delete_check
 from noc.core.handler import get_handler
 from noc.core.models.valuetype import ValueType, ARRAY_ANNEX
-from noc.main.models.handler import Handler
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
+from noc.main.models.handler import Handler
 
 id_lock = threading.Lock()
 rx_empty_string = re.compile(r"\n{2,}")
@@ -321,16 +321,15 @@ class Action(Document):
 
     def get_job_request(
         self,
-        managed_object,
+        managed_object: Any,
         dry_run: bool = False,
         username: Optional[str] = None,
         **kwargs,
     ) -> JobRequest:
         """Run Action job"""
-        inputs = [
-            InputMapping(name="managed_object", value=str(managed_object.id)),
-            InputMapping(name="action", value=self.name),
-        ]
+        inputs = [InputMapping(name="action", value=self.name)]
+        if managed_object:
+            inputs += [InputMapping(name="managed_object", value=str(managed_object.id))]
         if kwargs:
             inputs += self.clean_action_args(managed_object, **kwargs)
         if dry_run:
@@ -353,9 +352,15 @@ class Action(Document):
     ):
         """Register run command on Audit"""
 
+    def run(self, **kwargs):
+        """Execute action by context"""
+        if "managed_object" not in kwargs:
+            return
+        self.execute(**kwargs)
+
     def execute(
         self,
-        obj,
+        managed_object: Any,
         as_job: bool = False,
         dry_run: bool = False,
         username: Optional[str] = None,
@@ -365,13 +370,13 @@ class Action(Document):
         # self.execute_handler(obj, **kwargs)
         # Process
         if self.handler:
-            self.execute_handler(obj, dry_run=dry_run, **kwargs)
+            self.execute_handler(managed_object, dry_run=dry_run, **kwargs)
         elif as_job:
-            req = self.get_job_request(obj, dry_run=dry_run, username=username, **kwargs)
+            req = self.get_job_request(managed_object, dry_run=dry_run, username=username, **kwargs)
             req.submit()
         else:
-            commands, cfg = self.get_execute_commands(obj, **kwargs)
-            obj.scripts.commands(
+            commands, cfg = self.get_execute_commands(managed_object, **kwargs)
+            managed_object.scripts.commands(
                 commands=[commands],
                 config_mode=cfg.config_mode,
                 dry_run=dry_run,

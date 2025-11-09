@@ -39,6 +39,7 @@ from noc.inv.models.capability import Capability
 from noc.sa.models.action import Action
 from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
+from noc.models import get_model
 from noc.core.models.cfgactions import ActionType
 from noc.core.matcher import build_matcher
 from noc.core.runner.job import JobRequest
@@ -137,6 +138,7 @@ class ConfigurationDomain(EmbeddedDocument):
     model_id: str = StringField(required=True)
     rule: Optional["ReactionRule"] = PlainReferenceField("sa.ReactionRule", required=False)
     change: str = StringField(default="topology")
+    # add context/
     reaction: str = StringField(choices=[("A", "Affected"), ("M", "Match")], default="A")
     suppress_action: bool = BooleanField(default=False)
     ctx: str = StringField(choices=[("D", "Domain"), ("L", "Local")])
@@ -375,6 +377,16 @@ class ReactionRule(Document):
     #         ".json"
     #     )
 
+    def get_domain(self, model_id: str, domain_id) -> Optional[Tuple[ConfigurationDomain, Any]]:
+        """"""
+        model = get_model(model_id)
+        domain = model.get_by_id(domain_id)
+        if not domain:
+            return None
+        for d in self.affected_domains:
+            if d.model_id == model_id:
+                return d, domain
+
     def get_matcher(self) -> Optional[Callable]:
         """Build matcher structure"""
         expr = []
@@ -420,7 +432,10 @@ class ReactionRule(Document):
             r["managed_object"] = o
         elif hasattr(o, "managed_object"):
             r["managed_object"] = o.managed_object
-        caps = o.get_caps()
+        if hasattr(o, "get_caps"):
+            caps = o.get_caps()
+        else:
+            caps = {}
         for i in self.field_data:
             if i.field and hasattr(o, i.field):
                 name = i.set_context or i.field
@@ -430,29 +445,20 @@ class ReactionRule(Document):
                 r[name] = caps[i.capability.name]
         return r
 
-    def get_action_commands_job(
-        self, managed_object, **kwargs
-    ) -> Tuple[ManagedObject, List[JobRequest]]:
+    def get_action_commands_job(self, **kwargs) -> List[JobRequest]:
         """Return as Job Request"""
         r = []
         for a in self.action_command_set:
-            req = a.action.get_job_request(managed_object=managed_object, **kwargs)
+            req = a.action.get_job_request(**kwargs)
             if self.execute_policy == "A":
                 req.require_approval = True
             r.append(req)
-        return managed_object, r
+        return r
 
-    def get_action_commands(
-        self, managed_object: ManagedObject, **ctx
-    ) -> Tuple[ManagedObject, List[str], bool]:
+    def run_action_commands(self, dry_run: bool = False, **ctx) -> None:
         """Return As Config"""
-        r, cfg_mode = [], False
         for a in self.action_command_set:
-            commands, cfg = a.action.get_execute_commands(managed_object, dry_run=True, **ctx)
-            cfg_mode |= cfg.config_mode
-            # Exit from mode/Raise error when mode changed
-            r.append(commands)
-        return managed_object, r, cfg_mode
+            a.action.run(**ctx, dry_run=dry_run)
 
     def iter_actions(self, o) -> List[Tuple[ActionType, Dict[str, Any], JobRequest]]:
         """
@@ -473,7 +479,7 @@ class ReactionRule(Document):
 
     @classmethod
     def register_change(cls, item: ChangeItem):
-        """Register change and apply rules"""
+        """Register Item change"""
         o = item.instance
         if not o:
             return
@@ -482,11 +488,24 @@ class ReactionRule(Document):
         else:
             ctx = {}
         # Getting rule
+        processed_rule = set()
         for rule_id in ReactionRule.iter_rules(item.model_id, item.op, ctx):
             rule = ReactionRule.get_by_id(rule_id)
-            # run actions
+            # Configuration Domain
+            # Configuration Domain Ctx
+            domain_ctx = {}
+            for d_model_id, d_id in item.domains or []:
+                cfg = rule.get_domain(d_model_id, d_id)
+                if not cfg:
+                    continue
+                cfg, domain = cfg
+                domain_ctx["domain"] = domain
+                if cfg.rule:
+                    domain_ctx |= cfg.rule.get_action_ctx(domain)
+                    cfg.rule.run(domain)
+                    processed_rule.add(cfg.rule.id)
+            # run instance actions
             rule.run(o)
-        # Lookup Domain ?
 
     def run(self, o, dry_run: bool = True):
         """Execute actions"""
@@ -497,22 +516,15 @@ class ReactionRule(Document):
             # Processed result
             # Delayed processed
             self.processed_result(o, r)
-        # Action Command
+        # Action Command, Required ManagedObject ? Process Topology
         ctx = self.get_action_ctx(o)  # get_env, Processed Data
         if self.execute_policy == "R":
-            mo, commands, cfg_required = self.get_action_commands(**ctx)
-            mo.scripts.commands(
-                commands=[commands],
-                config_mode=cfg_required,
-                dry_run=dry_run,
-            )
+            self.run_action_commands(**ctx, dry_run=dry_run)
         else:
             mo, jobs = self.get_action_commands_job(**ctx)
             req = JobRequest(name=f"Reaction On {o} bu Rule {self.name}", jobs=jobs)
             # Locks for ManagedObject
             req.submit()
-        # Configuration Domain
-        # Configuration Domain Ctx
         # iter_topology
         # get_effective_path ? multiple path
         # Send Result
