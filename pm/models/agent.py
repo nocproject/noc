@@ -169,7 +169,7 @@ class Agent(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricstarget:
-            yield "cfgmetricstarget", f"pm.Agent:{self.bi_id}"
+            yield "cfgmetricstarget", f"pm.Agent::{self.bi_id}"
 
     def update_addresses(
         self,

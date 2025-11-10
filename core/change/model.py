@@ -41,6 +41,7 @@ class ChangeItem(object):
             item_id=data["item_id"],
             changed_fields=[ChangeField(**cf) for cf in data.get("changed_fields") or []],
             changed_caps=data.get("changed_caps"),
+            domains=data.get("domains"),
             user=data.get("user"),
             ts=float(data["ts"]) if data.get("ts") else None,
         )

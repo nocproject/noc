@@ -5,6 +5,7 @@
     "description": "IF-MIB::linkUp",
     "event_class__name": "Network | Link | Link Up",
     "preference": 2000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
             "key_re": "^IF-MIB::(ifName|ifDescr)\\.\\d+$",
@@ -16,5 +17,5 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "test_cases": []
 }
