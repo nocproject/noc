@@ -717,7 +717,10 @@ class ActiveAlarm(Document):
                 continue
             if w.after and w.after > now:
                 continue
-            w.run(self, is_clear=is_clear, dry_run=dry_run)
+            try:
+                w.run(self, is_clear=is_clear, dry_run=dry_run)
+            except Exception as e:
+                print(f"Exception when run Watch Action: {e}")
 
     @property
     def duration(self) -> int:

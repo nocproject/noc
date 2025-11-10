@@ -279,7 +279,7 @@ class RemoteSystem(Document):
                 for mo_id in ManagedObject.objects.filter().values_list("id", flat=True):
                     yield "cfgtarget", mo_id
         if config.datastream.enable_cfgmetricstarget:
-            yield "cfgmetricstarget", f"main.RemoteSystem:{self.bi_id}"
+            yield "cfgmetricstarget", f"main.RemoteSystem::{self.bi_id}"
 
     def get_portmapper(self) -> "BasePortMapper":
         """Getting portmapper functions"""
