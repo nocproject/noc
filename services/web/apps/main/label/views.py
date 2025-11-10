@@ -27,6 +27,7 @@ class LabelApplication(ExtDocApplication):
     glyph = "tag"
     model = Label
     query_condition = "icontains"
+    query_fields = ["name__contains", "description__contains"]
 
     clean_fields = {
         "bg_color1": ColorParameter(),
