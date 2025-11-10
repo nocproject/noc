@@ -5,9 +5,10 @@
     "description": "IF-MIB::linkDown",
     "event_class__name": "Network | Link | Link Down",
     "preference": 2000,
+    "sources": ["SNMP Trap"],
     "patterns": [
         {
-            "key_re": "^IF-MIB::(ifName|ifDescr)\\.\\d+$",
+            "key_re": "^IF-MIB::(ifName|ifDescr)(:?\\.\\d+)?$",
             "value_re": "^(?P<interface>.+)$"
         },
         {
@@ -16,5 +17,67 @@
         }
     ],
     "labels": [],
-    "sources": ["SNMP Trap"]
+    "test_cases": [
+        {
+            "message": "",
+            "raw_vars": [
+                {
+                    "name": "source",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": false,
+                    "value": "SNMP Trap"
+                },
+                {
+                    "name": "collector",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": false,
+                    "value": "default"
+                },
+                {
+                    "name": "1.3.6.1.2.1.1.3.0",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "2376971101"
+                },
+                {
+                    "name": "1.3.6.1.6.3.1.1.4.1.0",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "1.3.6.1.6.3.1.1.5.3"
+                },
+                {
+                    "name": "1.3.6.1.2.1.2.2.1.1",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "18"
+                },
+                {
+                    "name": "1.3.6.1.2.1.2.2.1.7",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "1"
+                },
+                {
+                    "name": "1.3.6.1.2.1.2.2.1.8",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "2"
+                },
+                {
+                    "name": "1.3.6.1.2.1.2.2.1.2",
+                    "escaped": false,
+                    "scope": null,
+                    "snmp_raw": true,
+                    "value": "1/1/18"
+                }
+            ]
+        }
+    ]
 }
