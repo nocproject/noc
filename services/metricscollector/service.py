@@ -27,7 +27,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.models.sendmetric import SendMetric
-from noc.services.metricscollector.sourceconfig import SourceConfig
+from noc.services.metricscollector.sourceconfig import SourceConfig, RemoteSystemConfig
 
 NS = 1_000_000_000
 
@@ -85,6 +85,7 @@ class MetricsCollectorService(FastAPIService):
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.unknown_metric_items = set()
         self.banned_rs = set()
+        self.remote_system_config: Dict[str, RemoteSystemConfig] = {}
         self.remote_system_map: Dict[str, str] = {}
         if config.metricscollector.listen:
             address, port = config.metricscollector.listen.split(":")
@@ -154,7 +155,7 @@ class MetricsCollectorService(FastAPIService):
         Coroutine to request object mappings
         """
         self.logger.info("Starting to track object mappings")
-        client = SourceStreamClient("cfgtarget", service=self)
+        client = SourceStreamClient("cfgmetricstarget", service=self)
         # Track stream changes
         while True:
             try:
@@ -180,8 +181,23 @@ class MetricsCollectorService(FastAPIService):
     async def delete_metric_type(self, mt_id: str) -> None:
         self.delete_data(mt_id)
 
+    async def update_remote_system(self, data):
+        try:
+            cfg = RemoteSystemConfig.from_data(data)
+        except Exception:
+            return
+        self.remote_system_config[data["id"]] = cfg
+        self.remote_system_map[cfg.api_key] = cfg.id
+        self.remote_system_map[cfg.name.lower()] = cfg.id
+        self.logger.info("[%s] Adding for received", cfg.name)
+        # Update metrics
+        metrics["sources_changed"] += 1
+        self.add_sources += 1
+
     async def update_source(self, data):
         """Update Source config"""
+        if data["type"] == "remote_system":
+            return await self.update_remote_system(data)
         try:
             s = SourceConfig.from_data(data)
         except Exception as e:
@@ -197,10 +213,6 @@ class MetricsCollectorService(FastAPIService):
         # Update metrics
         metrics["sources_changed"] += 1
         self.add_sources += 1
-        for m in data.get("mapping_refs") or []:
-            code, *refs = m.split(":")
-            if code == "rs" and refs[0].lower() not in self.remote_system_map:
-                self.remote_system_map[refs[0].lower()] = refs[0]
 
     def update_mappings(self, sid, new: Iterable[str], old: Optional[Iterable[str]] = None):
         """"""
@@ -212,9 +224,20 @@ class MetricsCollectorService(FastAPIService):
         for m in set(new) - set(old or []):
             self.source_map[m] = sid
 
+    async def delete_remote_system_config(self, sid):
+        if sid not in self.remote_system_config:
+            return
+        cfg = self.remote_system_config.pop(sid)
+        if cfg.name.lower() in self.remote_system_map:
+            del self.remote_system_map[cfg.name.lower()]
+        if cfg.api_key in self.remote_system_map:
+            del self.remote_system_map[cfg.api_key]
+        metrics["sources_deleted"] += 1
+
     async def delete_source(self, sid):
+        await self.delete_remote_system_config(sid)
         if sid not in self.source_configs:
-            return False
+            return
         source = self.source_configs.pop(sid)
         for m in source.mapping_refs:
             if m in self.source_map:
@@ -257,20 +280,30 @@ class MetricsCollectorService(FastAPIService):
         self.invalid_sources[key] += 1
         return None
 
-    def get_remote_system_name(self, code, authorization: Optional[str] = None) -> Optional[str]:
+    def get_remote_system_by_code(
+        self,
+        code: str,
+        authorization: Optional[str] = None,
+    ) -> Optional[RemoteSystemConfig]:
         """Check Remote System"""
-        if code.lower() not in self.remote_system_map:
+        sid = self.remote_system_map.get(code.lower())
+        if not sid or sid not in self.remote_system_config:
             return None
-        return self.remote_system_map[code.lower()]
+        return self.remote_system_config[sid]
 
     def is_rs_banned(self, code) -> bool:
         """Check remote system is banned"""
-        return code in self.banned_rs
+        cfg = self.get_remote_system_by_code(code)
+        if cfg:
+            return cfg.is_banned
+        return False
 
     def ban_remote_system(self, code):
         """Add Remote System code to banned"""
         self.logger.warning("[%s] Add RemoteSystem code to banned", code)
-        self.banned_rs.add(code)
+        cfg = self.get_remote_system_by_code(code)
+        if cfg:
+            self.remote_system_config[cfg.id].is_banned = True
 
     @staticmethod
     def expand_rules(data: Dict[str, Any]) -> List[CfgItem]:

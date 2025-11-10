@@ -41,7 +41,7 @@ from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRules
 from noc.services.metrics.models.card import Card, ScopeInfo
 from noc.services.metrics.models.rule import Rule
 from noc.services.metrics.models.source import MetricKey, SourceConfig, SourceInfo, ItemConfig
-from noc.services.datastream.streams.cfgmetricsources import CfgMetricSourcesDataStream
+from noc.services.datastream.streams.cfgmetricstarget import CfgMetricsTargetDataStream
 from noc.config import config as global_config
 
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
@@ -139,7 +139,7 @@ class MetricsService(FastAPIService):
         Subscribe and track datastream changes
         """
         # Register RPC aliases
-        client = MetricsDataStreamClient("cfgmetricsources", service=self)
+        client = MetricsDataStreamClient("cfgmetricstarget", service=self)
         # coll = CfgMetricSourcesDataStream.get_collection()
         # r = next(coll.find({}).sort([("change_id", DESCENDING)]), None)
         # Track stream changes
@@ -481,7 +481,7 @@ class MetricsService(FastAPIService):
 
     @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
     def get_source_db(self, s_id):
-        coll = CfgMetricSourcesDataStream.get_collection().with_options(
+        coll = CfgMetricsTargetDataStream.get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED
         )
         data = coll.find_one({"_id": str(s_id)})
@@ -707,13 +707,13 @@ class MetricsService(FastAPIService):
 
     @staticmethod
     def get_source_config(data):
-        if "$deleted" in data:
+        if "$deleted" in data or data.get("type") == "remote_system":
             return None
         items = []
         for item in data.get("items", []):
             items.append(
                 ItemConfig(
-                    key_labels=tuple(sys.intern(ll) for ll in item["key_labels"]),
+                    key_labels=tuple(sys.intern(ll) for ll in item["key"]),
                     composed_metrics=tuple(
                         sys.intern(m) for m in item.get("composed_metrics") or []
                     ),
@@ -723,14 +723,14 @@ class MetricsService(FastAPIService):
         return SourceConfig(
             type=data["type"],
             bi_id=data["bi_id"],
-            fm_pool=data["fm_pool"] if data["fm_pool"] else None,
+            fm_pool=data["fm_pool"] if data.get("fm_pool") else None,
             labels=tuple(
                 sys.intern(ll if isinstance(ll, str) else ll["label"]) for ll in data["labels"]
             ),
             exposed_labels=tuple(sys.intern(ll) for ll in data.get("exposed_labels", [])),
             items=tuple(items),
             rules=data.get("rules"),
-            meta=data.get("meta") if global_config.message.enable_metrics else None,
+            meta=data.get("opaque_data") if global_config.message.enable_metrics else None,
             # Append meta if enable messages
         )
 

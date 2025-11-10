@@ -175,13 +175,13 @@ class MetricRule(Document):
             dq |= d_q(id__in=ids)
         if scopes or ids:
             for bi_id in ManagedObject.objects.filter(dq).values_list("bi_id", flat=True):
-                yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+                yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
         if scopes:
             for bi_id in CPE.objects.filter(mq).distinct(field="bi_id"):
-                yield "cfgmetricsources", f"inv.CPE::{bi_id}"
+                yield "cfgmetricstarget", f"inv.CPE::{bi_id}"
         if "sla" in scopes:
             for bi_id in SLAProbe.objects.filter(mq).distinct(field="bi_id"):
-                yield "cfgmetricsources", f"sla.SLAProbe::{bi_id}"
+                yield "cfgmetricstarget", f"sla.SLAProbe::{bi_id}"
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rules_cache"), lock=lambda _: rules_lock)

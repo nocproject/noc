@@ -126,8 +126,8 @@ class SLAProbe(Document):
         return Service.objects.filter(sla_probe=self).first()
 
     def iter_changed_datastream(self, changed_fields=None):
-        if config.datastream.enable_cfgmetricsources:
-            yield "cfgmetricsources", f"sla.SLAProbe::{self.bi_id}"
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"sla.SLAProbe::{self.bi_id}"
 
     def clean(self):
         if self.extra_labels:
@@ -252,12 +252,13 @@ class SLAProbe(Document):
         return {
             "type": "sla_probe",
             "bi_id": source.bi_id,
+            "name": source.name,
             "fm_pool": sla_probe.managed_object.get_effective_fm_pool().name,
             "labels": sorted(sla_probe.effective_labels),
             "items": [],
             "composed_metrics": [],
             "sharding_key": sla_probe.managed_object.bi_id if sla_probe.managed_object else None,
-            "meta": sla_probe.get_message_context(),
+            "opaque_data": sla_probe.get_message_context(),
             "rules": list(MetricRule.iter_rules_actions(sla_probe.effective_labels)),
         }
 

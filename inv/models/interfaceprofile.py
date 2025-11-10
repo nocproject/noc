@@ -253,7 +253,7 @@ class InterfaceProfile(Document):
     def iter_changed_datastream(self, changed_fields=None):
         from noc.inv.models.interface import Interface
 
-        if not config.datastream.enable_cfgmetricsources:
+        if not config.datastream.enable_cfgmetricstarget:
             return
         if (
             changed_fields
@@ -268,7 +268,7 @@ class InterfaceProfile(Document):
             ).scalar("managed_object")
         }
         for bi_id in mos:
-            yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+            yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
 
     def __str__(self):
         return self.name
