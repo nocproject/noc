@@ -224,6 +224,8 @@ class Agent(Document):
     @classmethod
     def get_metric_config(cls, agent: "Agent"):
         """Return MetricConfig for Target service"""
+        from noc.inv.models.sensor import Sensor
+
         if not agent.state.is_productive:
             return {}
         r = {
@@ -237,10 +239,14 @@ class Agent(Document):
             "enable_fmevent": False,
             "enable_metrics": True,
             "api_key": agent.key,
+            "exposed_labels": [
+                ll
+                for ll in agent.effective_labels
+                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
+            ],
             "labels": [],
-            "exposed_labels": [],
             "rules": [],
-            "items": [],
+            "sensors": [],
         }
         if agent.managed_object:
             r["managed_object"] = agent.managed_object.bi_id
@@ -248,4 +254,8 @@ class Agent(Document):
             r["mapping_refs"].append(RemoteSystem.clean_reference(m.remote_system, m.remote_id))
         for a in agent.ip or []:
             r["addresses"].append(a.ip)
+        for s in Sensor.objects.filter(agent=agent):
+            cfg = Sensor.get_metric_config(s)
+            if cfg:
+                r["sensors"].append(cfg)
         return r

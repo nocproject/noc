@@ -10,6 +10,7 @@
 import asyncio
 import operator
 import re
+import datetime
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, List, Dict, Set, Iterable, DefaultDict, FrozenSet
 from collections import defaultdict
@@ -27,7 +28,11 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.models.sendmetric import SendMetric
-from noc.services.metricscollector.sourceconfig import SourceConfig, RemoteSystemConfig
+from noc.services.metricscollector.sourceconfig import (
+    SourceConfig,
+    RemoteSystemConfig,
+    SensorConfig,
+)
 
 NS = 1_000_000_000
 
@@ -80,13 +85,17 @@ class MetricsCollectorService(FastAPIService):
             nodata_round_duration=config.metricscollector.nodata_round_duration,
             collector="metricscollector",
         )
+        # Source Configs: ManagedObject & Agent
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.source_map: Dict[str, str] = {}
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.unknown_metric_items = set()
+        # Remote Systems Config
         self.banned_rs = set()
         self.remote_system_config: Dict[str, RemoteSystemConfig] = {}
         self.remote_system_map: Dict[str, str] = {}
+        # Sensors
+        self.sensor_configs: Dict[str, SensorConfig] = {}
         if config.metricscollector.listen:
             address, port = config.metricscollector.listen.split(":")
             if address == "auto":
@@ -181,6 +190,69 @@ class MetricsCollectorService(FastAPIService):
     async def delete_metric_type(self, mt_id: str) -> None:
         self.delete_data(mt_id)
 
+    def insert_data(self, data: Dict[str, Any]) -> None:
+        """
+        Insert new data into tables
+        """
+        items = self.expand_rules(data)
+        self.id_mappings[data["id"]] = items
+        affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
+        for i in items:
+            if i.allow_partial_match:
+                self.rx_mappings[i.collector, re.compile(i.coll_field)].append(i)
+            else:
+                self.mappings[i.collector, i.coll_field].append(i)
+            for a in i.aliases or []:
+                self.mappings[i.collector, a].append(i)
+        # Reorder mappings according the preference
+        for k in affected:
+            self.mappings[k] = sorted(self.mappings[k], key=operator.attrgetter("preference"))
+
+    def update_data(self, data: Dict[str, Any]) -> None:
+        """
+        Update data into tables
+        """
+        self.delete_data(data["id"])
+        self.insert_data(data)
+
+    def delete_data(self, mt_id: str) -> None:
+        """
+        Delete data from tables
+        """
+        items = self.id_mappings.get(mt_id) or []
+        if not items:
+            return
+        affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
+        for k in affected:
+            self.mappings[k] = sorted(
+                (i for i in self.mappings[k] if i.id != mt_id),
+                key=operator.attrgetter("preference"),
+            )
+            if not self.mappings[k]:
+                del self.mappings[k]
+        del self.id_mappings[mt_id]
+
+    async def update_sensors(self, cfg: SourceConfig, sensors: List[Dict[str, Any]]):
+        """Update sensors Config"""
+        processed = set()
+        for data in sensors:
+            s = SensorConfig.from_data(data)
+            processed.add(s.id)
+            self.sensor_configs[s.id] = s
+            for m in s.get_mappings():
+                self.source_map[m] = s.id
+        if cfg.id not in self.source_configs:
+            return
+        for sid in self.source_configs[cfg.id].sensors or []:
+            # Deleted
+            if sid in processed or sid not in self.sensor_configs:
+                continue
+            # Clean mappings
+            for m in self.sensor_configs[sid].get_mappings():
+                if m in self.source_map:
+                    del self.source_map[m]
+            del self.sensor_configs[sid]
+
     async def update_remote_system(self, data):
         try:
             cfg = RemoteSystemConfig.from_data(data)
@@ -201,8 +273,10 @@ class MetricsCollectorService(FastAPIService):
         try:
             s = SourceConfig.from_data(data)
         except Exception as e:
-            print(f"{data['id']}Error when processed source: {e}")
+            print(f"{data['id']} Error when processed source: {e}")
             return False
+        if s.sensors or (s.id in self.sensor_configs and self.source_configs[s.id].sensors):
+            await self.update_sensors(s, data.get("sensors"))
         if s.id not in self.source_configs:
             self.update_mappings(s.id, s.get_mappings())
         else:
@@ -242,6 +316,13 @@ class MetricsCollectorService(FastAPIService):
         for m in source.mapping_refs:
             if m in self.source_map:
                 del self.source_map[m]
+        for sid in source.sensors or []:
+            cfg = self.sensor_configs.pop(sid, None)
+            if not cfg:
+                continue
+            for m in cfg.get_mappings():
+                if m in self.source_map:
+                    del self.source_map[m]
         metrics["sources_deleted"] += 1
 
     async def on_event_source_ready(self) -> None:
@@ -271,6 +352,14 @@ class MetricsCollectorService(FastAPIService):
             metrics["error", ("type", "object_not_found")] += 1
         self.invalid_sources[name] += 1
         return None
+
+    def lookup_remote_sensor(self, sid: str, remote_system: str) -> Optional[SensorConfig]:
+        """Lookup remote_sensor"""
+        if not self.sensor_configs:
+            return None
+        sid = f"rs:{remote_system}:{sid}"
+        if sid in self.source_map:
+            return self.sensor_configs[self.source_map[sid]]
 
     def lookup_agent_by_noc_key(self, key: str) -> Optional[SourceConfig]:
         """Lookup Agent by key"""
@@ -317,48 +406,6 @@ class MetricsCollectorService(FastAPIService):
             for item in data["rules"]
         ]
 
-    def insert_data(self, data: Dict[str, Any]) -> None:
-        """
-        Insert new data into tables
-        """
-        items = self.expand_rules(data)
-        self.id_mappings[data["id"]] = items
-        affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
-        for i in items:
-            if i.allow_partial_match:
-                self.rx_mappings[i.collector, re.compile(i.coll_field)].append(i)
-            else:
-                self.mappings[i.collector, i.coll_field].append(i)
-            for a in i.aliases or []:
-                self.mappings[i.collector, a].append(i)
-        # Reorder mappings according the preference
-        for k in affected:
-            self.mappings[k] = sorted(self.mappings[k], key=operator.attrgetter("preference"))
-
-    def update_data(self, data: Dict[str, Any]) -> None:
-        """
-        Update data into tables
-        """
-        self.delete_data(data["id"])
-        self.insert_data(data)
-
-    def delete_data(self, mt_id: str) -> None:
-        """
-        Delete data from tables
-        """
-        items = self.id_mappings.get(mt_id) or []
-        if not items:
-            return
-        affected: Set[Tuple[str, str]] = {(i.collector, i.coll_field) for i in items}
-        for k in affected:
-            self.mappings[k] = sorted(
-                (i for i in self.mappings[k] if i.id != mt_id),
-                key=operator.attrgetter("preference"),
-            )
-            if not self.mappings[k]:
-                del self.mappings[k]
-        del self.id_mappings[mt_id]
-
     def find_metrics_by_name(self, collector: str, name: str) -> List[CfgItem]:
         """Find by name (rx)"""
         if (collector, name) in self.mappings:
@@ -395,6 +442,28 @@ class MetricsCollectorService(FastAPIService):
         # Not Mapped metric
         self.logger.debug("[%s] Not mapped value: %s. Skipping", collector, name)
         return None
+
+    def send_sensors(
+        self, data: List[Tuple[Tuple[SensorConfig, int], Tuple[datetime.datetime, float]]]
+    ):
+        """Send Metric value for sensors"""
+        parts = defaultdict(list)
+        for (cfg, rs_id), (ts, value) in data:
+            parts[0].append(
+                {
+                    "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
+                    "scope": "sensor",
+                    "labels": [f"noc::sensor::{cfg.name}"],
+                    "sensor": cfg.bi_id,
+                    # "managed_object": item.managed_object,
+                    "_units": {"value_delta": cfg.units, "value": cfg.units},
+                    "remote_system": rs_id,
+                    "value": value,
+                    "value_delta": value,
+                }
+            )
+        for partition, items in parts.items():
+            self.publish(orjson.dumps(items), stream="metrics", partition=partition)
 
     def send_data(self, data: List[SendMetric]):
         """

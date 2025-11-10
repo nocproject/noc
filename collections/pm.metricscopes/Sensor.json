@@ -14,6 +14,10 @@
             "model": "sa.ManagedObject"
         },
         {
+            "field_name": "agent",
+            "model": "pm.Agent"
+        },
+        {
             "field_name": "object",
             "model": "inv.Object"
         },
