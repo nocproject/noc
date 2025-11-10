@@ -34,5 +34,8 @@ class Label(BaseModel):
     enable_service: Optional[bool] = None
     enable_serviceprofile: Optional[bool] = None
     enable_subscriber: Optional[bool] = None
+    expose_metric: bool = False
+    expose_datastream: bool = False
+    expose_alarm: bool = False
 
     _csv_fields = ["id", "name", "description"]
