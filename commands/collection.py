@@ -78,6 +78,13 @@ class Command(BaseCommand):
             nargs="+",
             help="Export model uuids",
         )
+        export_group_exp.add_argument(
+            "--filter-vendor",
+            dest="export_model_vendors",
+            metavar="vendor",
+            nargs="+",
+            help="Export model vendors",
+        )
 
     def handle(self, cmd, *args, **options):
         getattr(self, "handle_%s" % cmd)(*args, **options)
@@ -123,6 +130,7 @@ class Command(BaseCommand):
         export_collections=None,
         export_model_names=None,
         export_model_uuids=None,
+        export_model_vendors=None,
     ):
         connect()
         MODELS = {}
@@ -159,6 +167,14 @@ class Command(BaseCommand):
                     kwargs["name__in"] = export_model_names
                 elif export_model_uuids:
                     kwargs["uuid__in"] = export_model_uuids
+                elif export_model_vendors:
+                    vendors = (
+                        MODELS["inv.vendors"]
+                        .objects.filter(code__in=export_model_vendors)
+                        .order_by("name")
+                        .scalar("id")
+                    )
+                    kwargs["vendor__in"] = vendors
                 objs = MODELS[ecname].objects.filter(**kwargs).order_by("name")
                 for o in objs:
                     path = os.path.join(export_path, ecname, o.get_json_path())
