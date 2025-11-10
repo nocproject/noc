@@ -4,6 +4,7 @@
     "uuid": "c13e8435-29a2-47fe-a87a-b7ee982c9f5d",
     "vendor__code": "NOC",
     "description": "Regional level Point of Presence.",
+    "container_type": "pop",
     "plugins": ["-inventory"],
     "connections": [
         {
@@ -24,11 +25,6 @@
             "attr": "layer",
             "interface": "geopoint",
             "value": "pop_regional"
-        },
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
         },
         {
             "attr": "level",

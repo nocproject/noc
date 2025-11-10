@@ -4,6 +4,7 @@
     "uuid": "daa957c9-0b3e-45c0-b0a0-6d54c3617400",
     "vendor__code": "CISCO",
     "description": "Cisco 3800 Series Integrated Services Routers with 2 NME slots",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 3800",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

@@ -4,6 +4,7 @@
     "uuid": "b6dd7983-cb05-446d-be2f-d45baef9abb8",
     "vendor__code": "CISCO",
     "description": "Cisco Nexus C2232PP Fabric Extender Chassis. 1RU 1/10 Gigabit Ethernet and FCoE",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | Nexus",
     "cr_context": "CHASSIS",
     "connections": [

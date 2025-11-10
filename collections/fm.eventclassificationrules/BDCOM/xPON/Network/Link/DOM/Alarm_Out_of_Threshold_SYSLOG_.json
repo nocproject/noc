@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Network | Link | DOM | Alarm: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c5d142e7-7662-4348-8ad6-05841b1a8fb0",
+    "description": "SFP DDM Alarm Occured for Rx Power low on tg0/1",
+    "event_class__name": "Network | Link | DOM | Alarm: Out of Threshold",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SFP DDM Alarm Occured for (?P<sensor>.+) (?P<threshold>high|low) on (?P<interface>\\S+)",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "SFP DDM Alarm Occured for Rx Power low on tg0/1",
+            "raw_vars": []
+        }
+    ]
+}

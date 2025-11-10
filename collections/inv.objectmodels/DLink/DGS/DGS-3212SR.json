@@ -4,6 +4,7 @@
     "uuid": "f85ecb09-cc87-4b5f-8320-672cf2f83605",
     "vendor__code": "DLINK",
     "description": "DGS-3212SR L2 Managed Switch witch 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

@@ -4,6 +4,7 @@
     "uuid": "e624ed26-4313-4c4c-b8b2-b0ed8cc71603",
     "vendor__code": "DLINK",
     "description": "DGS-3200-10 xStackL2 Managed Switch witch 8 ports 10/100/1000BASE-T, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

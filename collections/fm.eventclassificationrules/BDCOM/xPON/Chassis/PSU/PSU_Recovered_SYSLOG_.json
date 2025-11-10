@@ -1,0 +1,23 @@
+{
+    "name": "BDCOM | xPON | Chassis | PSU | PSU Recovered (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c6dde241-32cf-4d52-afc9-6b7e8dc675be",
+    "description": "POWER B IS OK",
+    "event_class__name": "Chassis | PSU | PSU Recovered",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "(?P<name>POWER\\s*\\S) IS OK",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "POWER B IS OK",
+            "raw_vars": []
+        },
+        {
+            "message": "POWER1 IS OK",
+            "raw_vars": []
+        }
+    ]
+}

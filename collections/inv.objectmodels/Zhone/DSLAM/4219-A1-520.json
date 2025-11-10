@@ -4,6 +4,7 @@
     "uuid": "93824a1b-190f-4ef9-a459-92d159642551",
     "vendor__code": "DZS",
     "description": "GranDSLAM 4200 (24-Port) ReachDSL without POTS Splitter\n",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

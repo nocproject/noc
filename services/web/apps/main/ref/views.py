@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # main.ref application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -35,6 +35,7 @@ from noc.models import iter_model_id
 from noc import settings
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
+from noc.inv.models.objectmodel import ContainerType
 
 
 class RefAppplication(ExtApplication):
@@ -264,6 +265,10 @@ class RefAppplication(ExtApplication):
     def build_vlanrole(self):
         """Vlan Roles Lookup"""
         return sorted([{"id": x.value, "label": x.name} for x in VLANRole], key=lambda x: x["id"])
+
+    def build_containertype(self):
+        """Container type loolup"""
+        return [{"id": x.value, "label": x.name} for x in ContainerType]
 
     @view(url=r"^(?P<ref>\S+)/lookup/$", method=["GET"], access=True, api=True)
     def api_lookup(self, request, ref=None):

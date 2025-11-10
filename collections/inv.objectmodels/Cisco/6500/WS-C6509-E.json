@@ -4,6 +4,7 @@
     "uuid": "0d5ae327-cc0f-4568-8a2b-7ee0bb54896a",
     "vendor__code": "CISCO",
     "description": "Cisco C6509-E 9-slot Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 6500-E",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

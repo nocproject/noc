@@ -4,6 +4,7 @@
     "uuid": "19556207-b446-497d-af7b-6141a694305d",
     "vendor__code": "DCN",
     "description": "The WL8200-TL1 802.11abgn outdoor high-performance wireless AP (2.4 GHz, external antenna, 802.3at PoE) ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [

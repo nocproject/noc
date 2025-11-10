@@ -16,7 +16,7 @@ from noc.services.nbi.paths.getmappings import GetMappingsAPI
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         # Empty request must fail
         ({}, ValueError),

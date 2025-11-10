@@ -4,6 +4,7 @@
     "uuid": "6047ef6e-99cd-47ee-8172-129844a4d625",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-1500, 4 × Ethernet ports 10/100/1000BASE-T, 4 × Combo ports 10/100/1000BASE-T with 4 x SFP 1000BASE-X, 4 × 10GBASE-R SFP+, Console RS-232 (RJ-45), OOB, 4 GB RAM, 1 GB NAND-Flash, 2 slots for Power Supply 100–240 VAC or 36–72 VDC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

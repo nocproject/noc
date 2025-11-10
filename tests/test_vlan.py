@@ -13,7 +13,7 @@ from noc.core.vlan import has_vlan, optimize_filter
 
 
 @pytest.mark.parametrize(
-    "vlan_filter,vlan,result",
+    ("vlan_filter", "vlan", "result"),
     [
         # Empty filter
         ("", 1, False),
@@ -71,7 +71,7 @@ def test_has_vlan(vlan_filter, vlan, result):
 
 
 @pytest.mark.parametrize(
-    "vlan_filter,result",
+    ("vlan_filter", "result"),
     [
         # Empty filter
         ("", ""),

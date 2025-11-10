@@ -4,6 +4,7 @@
     "uuid": "8a11ff41-1430-451f-950d-d0a036384478",
     "vendor__code": "HUAWEI",
     "description": "CX600-X16 Integrated Chassis Components(Including 4 DC Power)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

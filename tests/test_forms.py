@@ -22,7 +22,7 @@ class Form(NOCForm):
 
 
 @pytest.mark.parametrize(
-    "charf, intf, expected",
+    ("charf", "intf", "expected"),
     [
         ("field1", 18, True),
         ("field2", 17, False),

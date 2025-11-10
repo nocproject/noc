@@ -4,6 +4,7 @@
     "uuid": "8d64d3e1-c998-4638-9d28-2581f30de45f",
     "vendor__code": "VMWARE",
     "description": null,
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [],
     "data": [

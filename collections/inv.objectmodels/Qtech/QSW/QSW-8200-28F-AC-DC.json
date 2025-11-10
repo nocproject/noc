@@ -4,6 +4,7 @@
     "uuid": "8d80b77c-1d75-40d8-9b03-745fed8e9964",
     "vendor__code": "QTECH",
     "description": "24x 1000Base-X (SFP),4x Combo 10/100/1000Base-T/1000Base-X",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

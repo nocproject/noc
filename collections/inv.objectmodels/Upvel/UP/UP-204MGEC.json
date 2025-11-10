@@ -4,6 +4,7 @@
     "uuid": "d9059552-232c-4a9b-90e0-aca698bef464",
     "vendor__code": "UPVEL",
     "description": "4x 10/100/1000Base-T/POE+, 2x Combo 10/100/1000Base-T/1000Base-X",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

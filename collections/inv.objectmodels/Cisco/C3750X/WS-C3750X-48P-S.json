@@ -4,6 +4,7 @@
     "uuid": "4e7acf0d-d17c-4506-a3a8-a31f80230974",
     "vendor__code": "CISCO",
     "description": "48 Ethernet 10/100/1000 PoE+ ports, with 715W AC power supply, IP Base feature set",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 3750X",
     "cr_context": "CHASSIS",
     "connections": [
@@ -1261,9 +1262,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": [
-                "WS-C3750X-48P-S"
-            ]
+            "value": ["WS-C3750X-48P-S"]
         },
         {
             "attr": "depth",

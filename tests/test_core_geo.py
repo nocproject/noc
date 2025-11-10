@@ -14,7 +14,7 @@ from noc.core.geo import _get_point, distance, bearing, bearing_sym
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ([55.754854, 37.618645], (37.618645, 55.754854, 0.0)),
         ([64.510929, 40.509504], (40.509504, 64.510929, 0.0)),
@@ -26,7 +26,7 @@ def test_geo_point(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, config1, expected",
+    ("config", "config1", "expected"),
     [
         ([37.618645, 55.754854], [37.621756, 55.753390], 254),
         ([64.510929, 40.509504], [64.548181, 40.561689], 6598),
@@ -38,7 +38,7 @@ def test_geo_distance(config, config1, expected):
 
 
 @pytest.mark.parametrize(
-    "config, config1, expected",
+    ("config", "config1", "expected"),
     [
         ([55.754854, 37.618645], [55.753390, 37.621756], 339),
         ([64.510929, 40.509504], [64.548181, 40.561689], 28),
@@ -50,7 +50,7 @@ def test_geo_bearing(config, config1, expected):
 
 
 @pytest.mark.parametrize(
-    "config, config1, expected",
+    ("config", "config1", "expected"),
     [
         ([55.754854, 37.618645], [55.753390, 37.621756], "N"),
         ([64.510929, 40.509504], [64.548181, 40.561689], "NE"),

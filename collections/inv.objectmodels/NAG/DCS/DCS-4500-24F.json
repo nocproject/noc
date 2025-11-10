@@ -4,6 +4,7 @@
     "uuid": "862e4489-bac1-4e4d-826f-de73a6fb6b7c",
     "vendor__code": "NAG",
     "description": "Full Gigabit switch. 12* GE SFP and 12 Gigabit Combo（SFP/GT）ports, AC power supply",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

@@ -4,6 +4,7 @@
     "uuid": "dfe86232-a75a-4ac4-9d16-0f097adb967e",
     "vendor__code": "CARELINK",
     "description": "8X 10/100/1000 copper + 2X 100/ 1G SFP DD ",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

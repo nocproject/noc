@@ -4,6 +4,7 @@
     "uuid": "253cb519-d35e-4945-9411-5675b8cd01e2",
     "vendor__code": "HUAWEI",
     "description": "S8508",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

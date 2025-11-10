@@ -4,6 +4,7 @@
     "uuid": "baf19c2f-5040-47ef-a1a7-7463263efb65",
     "vendor__code": "ALSTEC",
     "description": "24xFE, 2xGE SFP, alarm/sensor, AC 220 В, 0..60С",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": [
         "noc::inv::chassis",

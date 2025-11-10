@@ -4,6 +4,7 @@
     "uuid": "386c11a3-3d7e-4485-ab3a-d916e983ecb9",
     "vendor__code": "CISCO",
     "description": "8 10/100 Ethernet ports and 1 10/100/1000 Ethernet port",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

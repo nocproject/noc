@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.objectmodel Model
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2024 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.objectmodel.Model");
@@ -26,6 +26,10 @@ Ext.define("NOC.inv.objectmodel.Model", {
     },
     {
       name: "short_label",
+      type: "string",
+    },
+    {
+      name: "container_type",
       type: "string",
     },
     {

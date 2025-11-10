@@ -4,6 +4,7 @@
     "uuid": "bb09a5af-07b4-4dd2-9b22-733931e5615b",
     "vendor__code": "BDCOM",
     "description": "BDCOM P3600-04 GEPON OLT with 4 GEPON ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -20,12 +21,10 @@
             "description": "EPON0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -33,12 +32,10 @@
             "description": "EPON0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -46,12 +43,10 @@
             "description": "EPON0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -59,12 +54,10 @@
             "description": "EPON0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {

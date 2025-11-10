@@ -13,7 +13,7 @@ from .util import NodeCDAG
 
 
 @pytest.mark.parametrize(
-    "unit,data",
+    ("unit", "data"),
     [
         # (unit, [(ts, value, unit, expected, state), ...)
         # Plain measures

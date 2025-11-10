@@ -16,7 +16,7 @@ from noc.main.models.label import Label
 
 
 @pytest.mark.parametrize(
-    "iter_labels,expected",
+    ("iter_labels", "expected"),
     [
         ((), []),
         (([],), []),
@@ -38,7 +38,7 @@ def test_merge_labels(iter_labels: Tuple[List[str]], expected: List[str]):
 
 
 @pytest.mark.parametrize(
-    "label,expected",
+    ("label", "expected"),
     [
         ("mylabel", False),
         ("*", False),
@@ -54,7 +54,7 @@ def test_is_wildcard(label: str, expected: bool):
 
 
 @pytest.mark.parametrize(
-    "label,expected",
+    ("label", "expected"),
     [
         ("mylabel", []),
         ("myscope::mylabel", ["myscope"]),

@@ -26,7 +26,7 @@ def get_fields():
 
 
 @pytest.mark.parametrize(
-    "model_id,field_name,field", [x for x in get_fields() if isinstance(x[2], BooleanField)]
+    ("model_id", "field_name", "field"), [x for x in get_fields() if isinstance(x[2], BooleanField)]
 )
 def test_boolean_defaults(model_id, field_name, field):
     assert field.default is not None and field.default != NOT_PROVIDED, (

@@ -4,6 +4,7 @@
     "uuid": "8f6f99d5-4af6-4922-88da-24b95d90f96f",
     "vendor__code": "ELTEX",
     "description": "8 x Ethernet 10/100/1000BASE-T, 3xFXS,1xFXO",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

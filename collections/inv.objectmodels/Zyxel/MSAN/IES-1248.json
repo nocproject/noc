@@ -4,6 +4,7 @@
     "uuid": "73babfc7-40f5-4c55-88b2-7c203f70beca",
     "vendor__code": "ZYXEL",
     "description": "IES-1248 enclosure with 48-port Annex A ADSL2+ line and splitter over POTS,",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

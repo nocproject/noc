@@ -4,6 +4,7 @@
     "uuid": "aaac6dba-2a66-4b3e-a8cf-e30ff6a54694",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-1700, 4 × Combo ports 10/100/1000BASE-T with 4 x SFP 1000BASE-X, 8 × 10GBASE-R SFP+, Console RS-232 (RJ-45), OOB, 32 GB RAM, 1 GB SSD, slot for HDD , 2 x slots for Power Supply 176–264 VAC or 36–72В VDC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

@@ -4,6 +4,7 @@
     "uuid": "f4a68d1d-f6cc-4be3-b857-de6bd573e3e4",
     "vendor__code": "BROCADE",
     "description": "0 port management module\n",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::sup"],

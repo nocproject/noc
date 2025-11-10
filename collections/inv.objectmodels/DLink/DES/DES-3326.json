@@ -4,6 +4,7 @@
     "uuid": "30b3a8f1-06d3-4420-acf2-57f808a5d4f0",
     "vendor__code": "DLINK",
     "description": "DES-3326 L3 Managed Switch witch 24 ports 10/100BASE-TX and 1 expansion slots",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

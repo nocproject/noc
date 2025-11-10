@@ -1,0 +1,29 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Invalid Module #3 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e530b58f-a9b8-4fc5-9cb7-01c06bcae43f",
+    "description": "%PHY-4-UNSUPPORTED_TRANSCEIVER: Unsupported transceiver found in Gi1/0/10",
+    "event_class__name": "Chassis | Hardware | Module | Invalid Module",
+    "preference": 1000,
+    "vars": [
+        {
+            "name": "module",
+            "value": "SFP/GBIC"
+        },
+        {
+            "name": "reason",
+            "value": "module is not supported"
+        }
+    ],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%PHY-4-UNSUPPORTED_TRANSCEIVER: Unsupported transceiver found in (?P<interface>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%PHY-4-UNSUPPORTED_TRANSCEIVER: Unsupported transceiver found in Gi1/0/10",
+            "raw_vars": []
+        }
+    ]
+}

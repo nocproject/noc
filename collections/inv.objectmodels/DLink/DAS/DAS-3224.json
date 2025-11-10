@@ -4,6 +4,7 @@
     "uuid": "18fb9d01-7ccb-477e-88ce-4f1663da230e",
     "vendor__code": "DLINK",
     "description": "DAS-3224 24-Port IP DSLAM",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": [
         "noc::inv::chassis",

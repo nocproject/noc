@@ -4,6 +4,7 @@
     "uuid": "5545654c-19d5-4a3d-93cf-2abb83ab55ca",
     "vendor__code": "CISCO",
     "description": "Cisco 7600 4-slot Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 7600",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

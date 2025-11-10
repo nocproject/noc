@@ -4,6 +4,7 @@
     "uuid": "650e545e-262f-4a9f-8f5a-56aa7ffb4463",
     "vendor__code": "ELTEX",
     "description": "48x10GBASE-R(SFP+)/1000BASE-X (SFP), 4х40GBASE-SR4/LR4(QSFP)",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES5448",
     "cr_context": "CHASSIS",
     "labels": [

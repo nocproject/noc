@@ -4,6 +4,7 @@
     "uuid": "bcb39545-50a4-4841-96a3-ddb720618ac0",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5352C-EI,CX7Z152CM,S5352C-EI Mainframe(48 10/100/1000Base-T,Chassis,Dual Slots of power,Without Flexible Card and Power Module)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

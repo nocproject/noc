@@ -4,6 +4,7 @@
     "uuid": "56a47c98-344f-4eaa-a97a-66f1ef802842",
     "vendor__code": "HUAWEI",
     "description": "Quidway S2326TP-EI-CX4Z126DM-S2326TP-EI Mainframe(24 10/100 BASE-T ports and 2 Combo GE(10/100/1000 BASE-T+100/1000 Base-X) ports and DC -48V",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

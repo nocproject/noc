@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Chassis | CPU | CPU Usage Above Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c3412930-1424-44b7-9bab-654edd46df2a",
+    "description": "ALARM!!!, SLOT 0 CPURATE(97) IS NOT IN NORMAL RANGE",
+    "event_class__name": "Chassis | CPU | CPU Usage Above Threshold",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ALARM!!!, SLOT 0 CPURATE\\((?P<ovalue>\\d+)\\) IS NOT IN NORMAL RANGE",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "ALARM!!!, SLOT 0 CPURATE(97) IS NOT IN NORMAL RANGE",
+            "raw_vars": []
+        }
+    ]
+}

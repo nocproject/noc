@@ -4,6 +4,7 @@
     "uuid": "28a5ca92-78e4-46d8-ba8d-63f9b8409343",
     "vendor__code": "ELTEX",
     "description": "Route Eltex ESR-21, 8 x Ethernet ports 10/100/1000BASE-T, 4 x SPF 1000BASE-X , Console RS-232 (RJ-45), USB 2.0, USB 3.0, slot for SD-card, 3 ports Serial (RS-232), 4 GB RAM, 4 GB Flash, 100–264 VAC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

@@ -109,7 +109,7 @@ def test_keep_trial():
 
 
 @pytest.mark.parametrize(
-    "a_power,a_id,t_power,t_id,expected",
+    ("a_power", "a_id", "t_power", "t_id", "expected"),
     [
         (20, ns_id1, 10, ns_id2, "eat"),
         (10, ns_id1, 20, ns_id2, "feed"),
@@ -135,7 +135,7 @@ def test_merge_policy(a_power, a_id, t_power, t_id, expected):
 
 
 @pytest.mark.parametrize(
-    "match_type,is_persistent,outcome",
+    ("match_type", "is_persistent", "outcome"),
     [
         ("*", False, True),
         ("*", True, True),
@@ -151,7 +151,7 @@ def test_collision_policy_type(match_type, is_persistent, outcome):
 
 
 @pytest.mark.parametrize(
-    "match_level,attacker_level,target_level,outcome",
+    ("match_level", "attacker_level", "target_level", "outcome"),
     [
         # match -
         ("-", 10, 10, False),
@@ -191,7 +191,7 @@ def test_collision_policy_level(match_level, attacker_level, target_level, outco
 
 
 @pytest.mark.parametrize(
-    "attacker_policy,target_policy,expected",
+    ("attacker_policy", "target_policy", "expected"),
     [
         # Merge
         ("merge", "merge", "feed"),
@@ -235,7 +235,7 @@ def test_collision_persist(attacker_policy, target_policy, expected):
 
 
 @pytest.mark.parametrize(
-    "attacker_policy,target_policy,expected",
+    ("attacker_policy", "target_policy", "expected"),
     [
         # Merge
         ("merge", "merge", "merge"),

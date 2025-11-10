@@ -4,6 +4,7 @@
     "uuid": "7fc7d781-6b79-4bf9-be0c-1890f6f88e7e",
     "vendor__code": "AVAYA",
     "description": "ERS 5650TD with 48 x 10/100/1000Base-T ports, plus 2 x 10GBase-XFP Uplink ports, and 600W AC Integrated Power Supply",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

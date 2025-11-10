@@ -4,6 +4,7 @@
     "uuid": "c84c62c3-e81d-416a-ad09-8eb34b88906e",
     "vendor__code": "CISCO",
     "description": "50cm stacking cable for STACK-T1-50CM",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 3850",
     "cr_context": "CHASSIS",
     "connections": [
@@ -22,20 +23,6 @@
             "type__name": "Cisco | Electrical | StackWise 480"
         }
     ],
-    "data": [
-        {
-            "attr": "part_no",
-            "interface": "asset",
-            "value": [
-                "STACK-T1-50CM"
-            ]
-        },
-        {
-            "attr": "length",
-            "interface": "length",
-            "value": 0.5
-        }
-    ],
     "cross": [
         {
             "input": "0",
@@ -44,6 +31,18 @@
         {
             "input": "1",
             "output": "0"
+        }
+    ],
+    "data": [
+        {
+            "attr": "part_no",
+            "interface": "asset",
+            "value": ["STACK-T1-50CM"]
+        },
+        {
+            "attr": "length",
+            "interface": "length",
+            "value": 0.5
         }
     ]
 }

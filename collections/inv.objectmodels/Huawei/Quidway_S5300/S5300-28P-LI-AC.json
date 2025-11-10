@@ -4,6 +4,7 @@
     "uuid": "0a956219-19da-4c7b-b2ab-832b09521f5d",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5300-28P-LI-AC, S5300-28P-LI-AC, S5300-28P-LI-AC Mainframe(24 GE RJ45,4 GE SFP,AC 110/220V)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

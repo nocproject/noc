@@ -31,7 +31,7 @@ class MyModel(Model):
 
 
 @pytest.mark.parametrize(
-    "data,expected",
+    ("data", "expected"),
     [
         (
             {

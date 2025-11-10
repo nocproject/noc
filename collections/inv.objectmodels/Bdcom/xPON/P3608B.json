@@ -4,6 +4,7 @@
     "uuid": "962a4bd7-d28e-4fae-91e1-39aca30d46d4",
     "vendor__code": "BDCOM",
     "description": "BDCOM P3608B GEPON OLT with 8 GEPON ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -20,12 +21,10 @@
             "description": "EPON0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -33,12 +32,10 @@
             "description": "EPON0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -46,12 +43,10 @@
             "description": "EPON0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -59,12 +54,10 @@
             "description": "EPON0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -72,12 +65,10 @@
             "description": "EPON0/5",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -85,12 +76,10 @@
             "description": "EPON0/6",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -98,12 +87,10 @@
             "description": "EPON0/7",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -111,12 +98,10 @@
             "description": "EPON0/8",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -135,12 +120,10 @@
             "description": "GigaEthernet0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -148,12 +131,10 @@
             "description": "GigaEthernet0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -161,12 +142,10 @@
             "description": "GigaEthernet0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -174,12 +153,10 @@
             "description": "GigaEthernet0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -208,12 +185,10 @@
             "description": "GigaEthernet0/5 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -242,12 +217,10 @@
             "description": "GigaEthernet0/6 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -276,12 +249,10 @@
             "description": "GigaEthernet0/7 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -310,12 +281,10 @@
             "description": "GigaEthernet0/8 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {

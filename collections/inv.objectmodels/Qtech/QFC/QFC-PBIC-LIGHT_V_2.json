@@ -4,6 +4,7 @@
     "uuid": "d6a7ae5d-3c6c-4c4c-a145-33018aa1ac20",
     "vendor__code": "QTECH",
     "description": "Контроллер предназначен для охраны, мониторинга и управления оборудованием в электрических и телекоммуникационных шкафах. ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

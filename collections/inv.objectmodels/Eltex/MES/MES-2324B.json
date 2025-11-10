@@ -4,6 +4,7 @@
     "uuid": "306b6620-8c89-4645-98f8-4d608544d0af",
     "vendor__code": "ELTEX",
     "description": "24х10/100/1000BASE-T (RJ-45), 4х10GBASE-R (SFP+)/1000BASE-X (SFP) + 12VDC",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

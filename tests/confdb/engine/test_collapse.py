@@ -51,7 +51,7 @@ RESULT_JOINRANGE = """interfaces
 
 
 @pytest.mark.parametrize(
-    "conf,query,result",
+    ("conf", "query", "result"),
     [
         (CONF1, "Collapse('interfaces', X, 'tagged-vlans', join=',')", RESULT_JOIN),
         (CONF1, "Collapse('interfaces', X, 'tagged-vlans', joinrange=',')", RESULT_JOINRANGE),

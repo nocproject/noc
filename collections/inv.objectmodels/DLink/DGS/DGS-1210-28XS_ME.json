@@ -4,6 +4,7 @@
     "uuid": "b98e2a34-4467-4357-86e2-f896c42d890d",
     "vendor__code": "DLINK",
     "description": "DGS-1210-28XS/ME L2 Managed Switch with 20 SFP ports and 4 x 10 Gbps SFP+ ports",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

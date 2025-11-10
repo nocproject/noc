@@ -4,6 +4,7 @@
     "uuid": "0f1450b4-99cf-4590-b2fa-d16b133d08c2",
     "vendor__code": "ELTEX",
     "description": "Optical station terminal (OLT) LTP-16N for passive optical networks (PON). 16 x PON  ports (SFP), 8 x 10GBASE-X (SFP+)/1000BASE-Х(SFP) for Uplinks, console port(RS-232), OOB port, 2 x slots for Fan, 2 x slots for Power Supply 220 VAC (150-250 V) or 48 VDC (36-72 V).",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | LTP16N",
     "cr_context": "CHASSIS",
     "labels": [

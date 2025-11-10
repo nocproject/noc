@@ -4,6 +4,7 @@
     "uuid": "a36322b5-8649-4dea-b285-fc9bf69a734c",
     "vendor__code": "CISCO",
     "description": "Cisco SCE 8000 Service Control Engine",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | SCE",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

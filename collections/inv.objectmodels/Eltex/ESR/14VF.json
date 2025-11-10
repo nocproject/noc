@@ -4,6 +4,7 @@
     "uuid": "3fb28a99-23d0-43da-b368-d915593994cf",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-14VF, 8 x Ethernet ports 10/100/1000BASE-T, 1000BASE-X SFP port, Console RS-232 (RJ-45), 2 x USB 2.0, 4 x FXS, 1 GB RAM, 512 MB NAND-Flash, 100–264 VAC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

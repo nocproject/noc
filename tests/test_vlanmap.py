@@ -13,7 +13,7 @@ from noc.core.vlanmap import process_vlan_map, process_chain
 
 
 @pytest.mark.parametrize(
-    "input,expected,rules",
+    ("input", "expected", "rules"),
     [
         # >>> Ingress processing
         # Untagged vlan 10
@@ -51,7 +51,7 @@ def test_vlan_map(input, expected, rules):
 
 
 @pytest.mark.parametrize(
-    "input,expected,chain",
+    ("input", "expected", "chain"),
     [
         # untagged vlan 10 -- untagged vlan 10
         (

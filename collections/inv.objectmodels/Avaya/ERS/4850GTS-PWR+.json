@@ -4,6 +4,7 @@
     "uuid": "6abe8831-e7b5-4887-aa8d-daa81cc17e03",
     "vendor__code": "AVAYA",
     "description": "48 10/100/1000BASE-T ports supporting 802.3at PoE+, including 2 shared SFP Uplink ports, plus 2 additional SFP+ Uplink ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

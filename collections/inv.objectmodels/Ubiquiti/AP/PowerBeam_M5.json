@@ -4,6 +4,7 @@
     "uuid": "b7edc9e6-3d25-43a0-9a03-9c41e8ec1adf",
     "vendor__code": "UBIQUITI",
     "description": "High-Performance airMAX Bridge, PtP/PtMP, 5 GHz, 22-29 dBi,",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

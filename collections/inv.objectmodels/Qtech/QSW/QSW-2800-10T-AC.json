@@ -4,6 +4,7 @@
     "uuid": "0ba3a677-06bc-436c-b556-3ccd650bd8f8",
     "vendor__code": "QTECH",
     "description": "8 х 10/100Base-TX, 2 х 1000M/Gigabits Combo(SFP/GT) ",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

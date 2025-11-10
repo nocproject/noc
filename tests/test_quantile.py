@@ -49,20 +49,20 @@ def test_stream_f():
         stream.f(0, 100)
 
 
-@pytest.mark.parametrize("r,n,expected", [(0, 100, 0.0), (50, 100, 5.0), (100, 100, 10.0)])
+@pytest.mark.parametrize(("r", "n", "expected"), [(0, 100, 0.0), (50, 100, 5.0), (100, 100, 10.0)])
 def test_low_biased_f(r, n, expected):
     stream = LowBiasedStream(100, Q_DEFAULT_EPS)
     assert stream.f(r, n) == pytest.approx(expected)
 
 
-@pytest.mark.parametrize("r,n,expected", [(0, 100, 10.0), (50, 100, 5.0), (100, 100, 0.0)])
+@pytest.mark.parametrize(("r", "n", "expected"), [(0, 100, 10.0), (50, 100, 5.0), (100, 100, 0.0)])
 def test_high_biased_f(r, n, expected):
     stream = HighBiasedStream(100, Q_DEFAULT_EPS)
     assert stream.f(r, n) == pytest.approx(expected)
 
 
 @pytest.mark.parametrize(
-    "r,n,expected",
+    ("r", "n", "expected"),
     [
         (0, 100, 4.0),
         (45, 100, 2.2),
@@ -99,7 +99,7 @@ def test_targeted_f_extremums():
 
 
 @pytest.mark.parametrize(
-    "seq,expected",
+    ("seq", "expected"),
     [
         # Empty samples
         (seq_empty(), [0.0, 0.0, 0.0]),

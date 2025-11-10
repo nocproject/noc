@@ -16,7 +16,7 @@ from django.http import HttpResponse
 # NOC modules
 from noc.services.web.base.extdocapplication import ExtDocApplication, view
 from noc.main.models.doccategory import DocCategory
-from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem
+from noc.inv.models.objectmodel import ObjectModel, ProtocolVariantItem, ContainerType
 from noc.inv.models.modelinterface import ModelInterface
 from noc.inv.models.protocol import ProtocolVariant
 from noc.sa.interfaces.base import ListOfParameter, DocumentParameter
@@ -75,6 +75,12 @@ class ObjectModelApplication(ExtDocApplication):
         return r
 
     def clean(self, data):
+        def has_data(interface: str, attr: str) -> None:
+            return any(
+                x.get("interface", "") == interface and x.get("attr", "") == attr
+                for x in data.get("data", [])
+            )
+
         model_data = []
         connection_data = defaultdict(list)
         for d in data.get("data", []):
@@ -87,6 +93,23 @@ class ObjectModelApplication(ExtDocApplication):
             data["data"] = ModelInterface.clean_data(model_data)
         if "data" in data:
             data["data"] = ModelInterface.clean_data(data["data"])
+        # Check container.container is no longer used
+        if has_data("container", "container"):
+            raise ValueError("container.container should no longer be set")
+        # Check container_type
+        if (
+            data.get("cr_context", "") == "CHASSIS"
+            and data.get("container_type", "") != ContainerType.CHASSIS.value
+        ):
+            msg = f"Container type must be `{ContainerType.CHASSIS.name}`"
+            raise ValueError(msg)
+        container_type = data.get("container_type", "")
+        if has_data("rack", "units") and container_type != ContainerType.RACK.value:
+            msg = f"Container type should be set to `{ContainerType.RACK.name}"
+            raise ValueError(msg)
+        if has_data("pop", "level") and container_type != ContainerType.POP.value:
+            msg = f"Container type must be set to `{ContainerType.POP.name}`"
+            raise ValueError(msg)
         if "connections" in data:
             for c in data["connections"]:
                 if connection_data and c["name"] in connection_data:

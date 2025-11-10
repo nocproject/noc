@@ -1,6 +1,5 @@
 name: Run Python Tests
 env:
-  PIP_CACHE_DIR: .pip
   PYTHONPATH: src
   TEST_PYTHON_VERSION: "3.12"
 on:
@@ -11,6 +10,7 @@ on:
       - "pyproject.toml"
       - "codecov.yml"
       - "**.py"
+      - "collections/**/*.json"
   pull_request:
     paths: *changed-paths
   release:
@@ -31,17 +31,11 @@ jobs:
         with:
           python-version: ${{ env.TEST_PYTHON_VERSION }}
 
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ./.pip
-          key: ubuntu-24.04-py-lint-${{ env.TEST_PYTHON_VERSION }}-${{ hashFiles('pyproject.toml') }}
-
-      - name: Upgrade Pip
-        run: python -m pip install --upgrade pip
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v1
 
       - name: Install Dependencies
-        run: pip install -IU -e .[lint]
+        run: uv pip install --system -e .[lint]
 
       - name: Check Formatting
         run: ruff format --check --diff .
@@ -126,17 +120,11 @@ jobs:
         with:
           python-version: "${{ env.TEST_PYTHON_VERSION }}"
 
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ./.pip
-          key: ubuntu-24.04-py-test-${{ env.TEST_PYTHON_VERSION }}-${{ hashFiles('pyproject.toml') }}
-
-      - name: Upgrade Pip
-        run: python -m pip install --upgrade pip
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v1
 
       - name: Install Dependencies
-        run: pip install -IU -e .[node,test,bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]
+        run: uv pip install --system -e .[node,test,bh,activator,classifier,cache-redis,node,login-ldap,login-pam,login-radius,prod-tools,testing,sender-kafka,ping]
 
       - name: Run Tests (with coverage)
         run: pytest --maxfail=10 --cov --cov-branch --cov-report=xml tests/

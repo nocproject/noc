@@ -4,6 +4,7 @@
     "uuid": "b56894fa-dff4-43a5-b1bf-b57edbf73756",
     "vendor__code": "ANGTEL",
     "description": "8 х 10/100Base-TX, 2х 1000M/Gigabits Combo(SFP/GT) ",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

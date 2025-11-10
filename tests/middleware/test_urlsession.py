@@ -14,7 +14,7 @@ from noc.core.script.http.middleware.loader import loader
 
 
 @pytest.mark.parametrize(
-    "url,config,expected",
+    ("url", "config", "expected"),
     [
         # Default session parameter
         ("http://127.0.0.1", {}, "http://127.0.0.1?session_id={0}"),

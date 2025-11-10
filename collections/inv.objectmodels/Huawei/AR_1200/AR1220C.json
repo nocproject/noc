@@ -4,6 +4,7 @@
     "uuid": "9545089b-9919-4e4d-a6ac-7f96193541a9",
     "vendor__code": "HUAWEI",
     "description": "Assembling Components,AR1220C,AR1220C,8GE LAN,5GE WAN,2 USB,2 SIC",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

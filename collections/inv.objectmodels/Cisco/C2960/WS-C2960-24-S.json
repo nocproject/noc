@@ -4,6 +4,7 @@
     "uuid": "ab6cfe10-d8f4-4864-a56e-79f589c6c58b",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 2960 Series Switches, 24 Ethernet 10/100 ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

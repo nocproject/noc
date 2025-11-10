@@ -4,6 +4,7 @@
     "uuid": "0f041e95-2fba-4f71-aaf5-15bc6808a662",
     "vendor__code": "DLINK",
     "description": "DES-2108 L2 Managed Switch witch 8 ports 10/100BASE-TX",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

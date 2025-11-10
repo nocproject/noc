@@ -4,13 +4,9 @@
     "uuid": "b85ca077-991d-463c-97a3-64995f4148c8",
     "vendor__code": "NONAME",
     "description": "19\" 42U 1000mm depth shelf",
+    "container_type": "rack",
     "connections": [],
     "data": [
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
-        },
         {
             "attr": "part_no",
             "interface": "asset",

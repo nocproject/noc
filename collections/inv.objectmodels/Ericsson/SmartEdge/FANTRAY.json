@@ -4,6 +4,7 @@
     "uuid": "fc2b08fc-edd4-4da1-b980-8d8c37a3869a",
     "vendor__code": "ERICSSON",
     "description": "FANTRAY",
+    "container_type": "chassis",
     "connection_rule__name": "Ericsson | SmartEdge",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::fan"],

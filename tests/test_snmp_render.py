@@ -22,7 +22,7 @@ DEFAULT_OID = "1.3.6"
 
 
 @pytest.mark.parametrize(
-    "renderer,oid,value,expected",
+    ("renderer", "oid", "value", "expected"),
     [
         # render_bin
         (render_bin, None, b"", b""),

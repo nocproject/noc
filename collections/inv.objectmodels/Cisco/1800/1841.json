@@ -4,6 +4,7 @@
     "uuid": "a283d08a-65b9-4833-bc39-eee0e3043f83",
     "vendor__code": "CISCO",
     "description": "Cisco 1841 Series Integrated Services Routers",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 2800",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

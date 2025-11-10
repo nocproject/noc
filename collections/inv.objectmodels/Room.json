@@ -4,13 +4,9 @@
     "uuid": "c945e7dc-4c82-40c3-b8f9-65c62e85ed1d",
     "vendor__code": "NOC",
     "description": "Room",
+    "container_type": "group",
     "connections": [],
     "data": [
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
-        },
         {
             "attr": "has_contacts",
             "interface": "contacts",

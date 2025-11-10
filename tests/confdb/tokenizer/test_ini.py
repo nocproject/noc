@@ -28,7 +28,7 @@ TOKENS1 = [
 ]
 
 
-@pytest.mark.parametrize("input,config,expected", [(CFG1, {}, TOKENS1)])
+@pytest.mark.parametrize(("input", "config", "expected"), [(CFG1, {}, TOKENS1)])
 def test_tokenizer(input, config, expected):
     tokenizer = INITokenizer(input, **config)
     assert list(tokenizer) == expected

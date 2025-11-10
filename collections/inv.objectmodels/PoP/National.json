@@ -4,6 +4,7 @@
     "uuid": "242d2695-0be3-4be9-93b4-183a86aa252b",
     "vendor__code": "NOC",
     "description": "National level Point of Presence.",
+    "container_type": "pop",
     "plugins": ["-inventory"],
     "connections": [
         {
@@ -24,11 +25,6 @@
             "attr": "layer",
             "interface": "geopoint",
             "value": "pop_national"
-        },
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
         },
         {
             "attr": "level",

@@ -12,7 +12,7 @@ from noc.core.confdb.engine.base import Engine
 
 
 @pytest.mark.parametrize(
-    "input,query,output",
+    ("input", "query", "output"),
     [
         # Constants
         ({}, "MatchPrefix('10.216.0.0/24', '192.168.0.1')", []),

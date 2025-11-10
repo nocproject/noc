@@ -69,7 +69,7 @@ interface Gi0/2
 
 
 @pytest.mark.parametrize(
-    "dtype,src,delta,result",
+    ("dtype", "src", "delta", "result"),
     [
         ("F", SRC_F0, DELTA_F0, RESULT_F0),
         ("b", SRC_b1, DELTA_b1, RESULT_b1),
@@ -93,11 +93,11 @@ RESULT_z0 = (
 )
 
 
-@pytest.mark.parametrize("ctype,src,result", [("z", SRC_z0, RESULT_z0)])
+@pytest.mark.parametrize(("ctype", "src", "result"), [("z", SRC_z0, RESULT_z0)])
 def test_compress(ctype, src, result):
     assert GridVCS.compress(src, method=ctype) == result
 
 
-@pytest.mark.parametrize("ctype,src,result", [("z", SRC_z0, RESULT_z0)])
+@pytest.mark.parametrize(("ctype", "src", "result"), [("z", SRC_z0, RESULT_z0)])
 def test_decompress(ctype, src, result):
     assert GridVCS.decompress(result, method=ctype) == src

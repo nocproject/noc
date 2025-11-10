@@ -14,7 +14,7 @@ from noc.core.video.codecs import H264Profile, get_h264_profile_by_id, get_h264_
 
 
 @pytest.mark.parametrize(
-    "name,width,height,interlace",
+    ("name", "width", "height", "interlace"),
     [
         ("NTSC", 720, 480, True),
         ("480i", 720, 480, True),
@@ -44,7 +44,7 @@ def test_unknown_resolution():
 
 
 @pytest.mark.parametrize(
-    "id,constraint,name",
+    ("id", "constraint", "name"),
     [
         (66, 1, "CBP"),
         (66, None, "BP"),
@@ -67,7 +67,7 @@ def test_get_h264_profile_by_name(id, constraint, name):
 
 
 @pytest.mark.parametrize(
-    "id,constraint,name",
+    ("id", "constraint", "name"),
     [
         (66, 1, "CBP"),
         (66, None, "BP"),

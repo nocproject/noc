@@ -4,6 +4,7 @@
     "uuid": "75eae8c7-ba5b-485a-91fb-b878ec7149a0",
     "vendor__code": "ZYXEL",
     "description": "12-port Annex A ADSL2+ line card (over POTS) with splitters built-in",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

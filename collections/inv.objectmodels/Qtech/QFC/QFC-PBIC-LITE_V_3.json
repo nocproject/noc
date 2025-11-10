@@ -4,6 +4,7 @@
     "uuid": "76fa509b-2fd5-4c0a-8710-e744cfc3ca6b",
     "vendor__code": "QTECH",
     "description": "Контроллер мониторинга и управления ИБП, в комплекте блок питания, датчик температуры, кабель для подключения к порту RS232, корпус на din-рейку ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

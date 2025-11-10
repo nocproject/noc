@@ -4,6 +4,7 @@
     "uuid": "beabbb8b-446f-4590-83da-a60f0bf5e16b",
     "vendor__code": "HUAWEI",
     "description": "L3 switch with 48-Port 10G SFP+, 6-Port 40GE QSFP+",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CloudEngine",
     "cr_context": "CHASSIS",
     "connections": [

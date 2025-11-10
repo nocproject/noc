@@ -4,6 +4,7 @@
     "uuid": "0c20c072-8ec7-4cff-b587-7b7c88460dae",
     "vendor__code": "DLINK",
     "description": "DGS-1510-28XS/ME Gigabit Ethernet Switch",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

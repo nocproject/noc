@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Network | Link | Link Down (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "14510897-b512-4bed-904b-9eeab12e8dae",
+    "description": "%LINE-5-UPDOWN: Line on Interface TGigaEthernet0/1, changed state to down",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LINE-5-UPDOWN: Line on Interface (?P<interface>\\S+), changed state to down",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%LINE-5-UPDOWN: Line on Interface TGigaEthernet0/1, changed state to down",
+            "raw_vars": []
+        }
+    ]
+}

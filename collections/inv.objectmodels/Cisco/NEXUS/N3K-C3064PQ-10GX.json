@@ -4,6 +4,7 @@
     "uuid": "9b7948fa-94a9-4692-bdb1-fc200abb0dba",
     "vendor__code": "CISCO",
     "description": "Nexus3064-X Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | Nexus",
     "cr_context": "CHASSIS",
     "connections": [

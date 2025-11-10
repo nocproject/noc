@@ -13,7 +13,7 @@ from .util import NodeCDAG, publish_service
 
 
 @pytest.mark.parametrize(
-    "op,config,x,key,expected",
+    ("op", "config", "x", "key", "expected"),
     [
         # key
         ("key", {}, 1.0, 0.0, None),
@@ -31,7 +31,7 @@ def test_key_node(op, config, x, key, expected):
         assert value == pytest.approx(expected, rel=1e-4)
 
 
-@pytest.mark.parametrize("config,expected", [({"value": 1}, 1), ({"value": 1.0}, 1.0)])
+@pytest.mark.parametrize(("config", "expected"), [({"value": 1}, 1), ({"value": 1.0}, 1.0)])
 def test_value_node(config, expected):
     cdag = NodeCDAG("value", config=config)
     assert cdag.get_node().config.value == config["value"]
@@ -40,7 +40,7 @@ def test_value_node(config, expected):
 
 
 @pytest.mark.parametrize(
-    "op,x,expected",
+    ("op", "x", "expected"),
     [
         ("one", 0, 0),
         ("one", 1, 1),
@@ -63,7 +63,7 @@ LABELS = ["test"]
 
 
 @pytest.mark.parametrize(
-    "values,expected",
+    ("values", "expected"),
     [
         ({}, None),
         ({"m1": 1, "m2": 2}, {"date": TS_DATE, "ts": TS_STR, "labels": LABELS, "m1": 1, "m2": 2}),
@@ -96,7 +96,7 @@ def test_metrics(values, expected):
 
 
 @pytest.mark.parametrize(
-    "config,values,expected,state",
+    ("config", "values", "expected", "state"),
     [
         # Default levels
         (
@@ -162,7 +162,7 @@ def test_alarm(config, values, expected, state):
 
 
 @pytest.mark.parametrize(
-    "config,expected",
+    ("config", "expected"),
     [
         # No vars
         (None, None),
@@ -233,7 +233,7 @@ def test_alarm_vars(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config,values,expected,state",
+    ("config", "values", "expected", "state"),
     [
         # Default levels
         (

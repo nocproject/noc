@@ -4,6 +4,7 @@
     "uuid": "382e8dae-692a-4343-b24a-a4e8cc6a8604",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2600 series telecom MAN access Ethernet switch 8 10/100/1000 Mbit/s Ethernet electrical interfaces 2 Combo interfaces (four 1000 Mbit/s optical interfaces which support\n100/1000 Mbit/s SFP optical modules and four 10/100/1000 Mbit/s electrical interfaces)",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

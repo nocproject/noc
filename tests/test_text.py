@@ -31,7 +31,7 @@ from noc.core.text import (
 
 
 @pytest.mark.parametrize(
-    "value,kwargs,expected",
+    ("value", "kwargs", "expected"),
     [
         (
             "First Second Third\n----- ------ -----\na     b       c\nddd   eee     fff\n",
@@ -306,7 +306,7 @@ def test_strip_html_tags(expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (
             [
@@ -321,7 +321,7 @@ def test_xml_to_table(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ([], ""),
         ([1], "1"),
@@ -337,7 +337,7 @@ def test_list_to_ranges(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ("1", [1]),
         ("1, 2", [1, 2]),
@@ -350,7 +350,7 @@ def test_ranges_to_list(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ("nothing", "nothing"),
         ("the (?P<groupname>simple) test", "the groupvalue test"),
@@ -362,7 +362,7 @@ def test_replace_re_group_text(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (b"nothing", b"nothing"),
         (b"the (?P<groupname>simple) test", b"the groupvalue test"),
@@ -374,7 +374,7 @@ def test_replace_re_group_bytes(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ("", ""),
         (
@@ -388,7 +388,7 @@ def test_indent(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ("Fa 0/1", ["Fa ", 0, "/", 1]),
         ("Fa 0/1.15", ["Fa ", 0, "/", 1, ".", 15]),
@@ -401,7 +401,7 @@ def test_split_alnum(config, expected):
 
 
 @pytest.mark.parametrize(
-    "input, expected",
+    ("input", "expected"),
     [
         ("auto", "auto"),
         ("0", "000000000000"),
@@ -415,7 +415,7 @@ def test_alnum_key(input, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (
             "section0\nsection 1\n  line 1-1\n  line 1-2\n\n section 2\n  line 2-1\n  line 2-2",
@@ -428,7 +428,7 @@ def test_find_indented(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [("1h", 3600), ("1d", 86400), ("1w", 604800), ("1m", 2592000), ("1y", 31536000)],
 )
 def test_to_seconds(config, expected):
@@ -436,7 +436,7 @@ def test_to_seconds(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         (
             [["H1", "H2", "H3"], ["s1", "s2", "s3"], ["s1.1", "s2.1", "s3.1"]],
@@ -449,7 +449,7 @@ def test_format_table(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [("12w34r5t6y7", "1234567"), ("   223ssSSSf*3", "2233"), ("(032HDWeg sda^@3f ", "0323")],
 )
 def test_clean_number(config, expected):
@@ -457,7 +457,7 @@ def test_clean_number(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [(None, "None"), ("s", "******"), ("sssssss", "s******s"), ("1", "******"), ([1, 2], "******")],
 )
 def test_safe_shadow(config, expected):
@@ -465,7 +465,7 @@ def test_safe_shadow(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, expected",
+    ("config", "expected"),
     [
         ("aaaa\nbbbb\nssssss\n", "aaaa\\\\nbbbb\\\\nssssss\\\\n"),
         ("aaaa\nbbbb\nsss sss\n", "aaaa\\\\nbbbb\\\\nsss sss\\\\n"),
@@ -476,7 +476,7 @@ def test_ch_escape(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config, max_chunk, expected",
+    ("config", "max_chunk", "expected"),
     [
         (
             "sssssssssssssssssss\naaaaaaaaaaaaaaaaaaaaa\nsdasdasdasdsadasdasdsad",
@@ -495,7 +495,7 @@ def test_split_text(config, max_chunk, expected):
 
 
 @pytest.mark.parametrize(
-    ["s1", "s2", "expected"],
+    ("s1", "s2", "expected"),
     [
         # Empty
         ("", "", 0),

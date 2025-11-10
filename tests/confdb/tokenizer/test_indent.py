@@ -147,7 +147,7 @@ TOKENS4 = [
 
 
 @pytest.mark.parametrize(
-    "input,config,expected",
+    ("input", "config", "expected"),
     [
         (CFG1, {"line_comment": "#"}, TOKENS1),
         (CFG2, {"line_comment": "#", "end_of_context": "end"}, TOKENS2),

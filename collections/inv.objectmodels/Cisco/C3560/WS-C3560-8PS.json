@@ -4,6 +4,7 @@
     "uuid": "95f6174f-70d5-45e1-a610-1cc5af8912e9",
     "vendor__code": "CISCO",
     "description": "8 Ethernet 10/100 ports with PoE 1 dual-purpose 10/100/1000 and SFP port",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

@@ -4,6 +4,7 @@
     "uuid": "b7dea622-b6fd-4c4b-95a0-a56244d96dde",
     "vendor__code": "HUAWEI",
     "description": "S8505",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

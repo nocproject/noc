@@ -4,6 +4,7 @@
     "uuid": "4776ff7b-c997-41b8-8224-f1baa4d92090",
     "vendor__code": "ELTEX",
     "description": "8x10/100/1000BASE-T(PoE/PoE+, RJ-45), 2x10/100/1000BASE-T/1000BASE-X/100BASE-FXCombo",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

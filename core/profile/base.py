@@ -50,7 +50,7 @@ class BaseProfileMetaclass(type):
             )
         if isinstance(n.pattern_more, (str, bytes)):
             warnings.warn(
-                "%s: 'command_more' must be a list of (pattern, command). "
+                "%s: 'pattern_more' must be a list of (pattern, command). "
                 "Support for textual 'command_more' will be removed in NOC 20.3" % n.name,
                 RemovedInNOC2003Warning,
             )

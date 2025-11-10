@@ -4,6 +4,7 @@
     "uuid": "c5a6dd25-0764-4787-a14a-fd1af42231fa",
     "vendor__code": "HUAWEI",
     "description": "Assembling Components,AR1220F,AR1220F,1GE WAN,1GE COMBO,8FE LAN,2 USB,2 SIC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

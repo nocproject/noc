@@ -4,6 +4,7 @@
     "uuid": "ecd25d58-863e-40f3-a047-5cd01ef5a645",
     "vendor__code": "ZYXEL",
     "description": "Модульный IP xDSL-коммутатор\n17 slots for management and  line termination cards ",
+    "container_type": "chassis",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

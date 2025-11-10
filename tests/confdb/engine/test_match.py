@@ -20,7 +20,7 @@ CONF1 = [
 
 
 @pytest.mark.parametrize(
-    "conf,query,output",
+    ("conf", "query", "output"),
     [
         # Exact match
         (CONF1, "Match('interface')", [{}]),

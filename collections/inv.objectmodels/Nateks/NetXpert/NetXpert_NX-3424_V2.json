@@ -4,6 +4,7 @@
     "uuid": "c69d8e98-ec4f-4b94-a419-a8af308bcdb9",
     "vendor__code": "NATEKS",
     "description": "24 FastEthernet ports 10/100 Mb/s and 2 ports GE-Combo",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

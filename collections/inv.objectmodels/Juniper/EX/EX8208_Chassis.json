@@ -4,6 +4,7 @@
     "uuid": "3ac04b37-a6f7-43a4-acfb-6b95e1d50c59",
     "vendor__code": "JUNIPER",
     "description": "Base EX8208 system configuration:  8-slot chassis with passive backplane",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX8200",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

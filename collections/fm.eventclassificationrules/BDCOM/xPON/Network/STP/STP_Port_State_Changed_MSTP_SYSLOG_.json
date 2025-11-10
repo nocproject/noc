@@ -1,0 +1,23 @@
+{
+    "name": "BDCOM | xPON | Network | STP | STP Port State Changed MSTP #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d8244569-c1dc-4bd2-ad07-73b9fd4461f5",
+    "description": "Port tg0/5, mstID 0, transition to Blocking state",
+    "event_class__name": "Network | STP | STP Port State Changed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Port (?P<interface>\\S+), mstID \\d+, transition to (?P<state__enum__stp_state>\\S+) state",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "Port tg0/5, mstID 0, transition to Blocking state",
+            "raw_vars": []
+        },
+        {
+            "message": "Port tg0/5, mstID 0, transition to Learning state",
+            "raw_vars": []
+        }
+    ]
+}

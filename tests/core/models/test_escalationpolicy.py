@@ -20,7 +20,7 @@ def test_default():
 
 
 @pytest.mark.parametrize(
-    "label,expected",
+    ("label", "expected"),
     [
         ("xxx", None),
         ("noc::escalation::never", EscalationPolicy.NEVER),
@@ -35,7 +35,7 @@ def test_try_from_label(label: str, expected: Optional[EscalationPolicy]):
 
 
 @pytest.mark.parametrize(
-    "labels,expected",
+    ("labels", "expected"),
     [
         # Empty leads to defaults
         ([], EscalationPolicy.ROOT),

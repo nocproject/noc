@@ -4,6 +4,7 @@
     "uuid": "f683a705-0b68-4b8a-8b28-2307f9182462",
     "vendor__code": "DLINK",
     "description": "DGS-3426 xStack L2 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

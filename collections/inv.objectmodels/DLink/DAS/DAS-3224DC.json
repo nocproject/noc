@@ -4,6 +4,7 @@
     "uuid": "deb66a28-bffd-4230-bcb2-dd5d7b153b60",
     "vendor__code": "DLINK",
     "description": "24-port with built-in POTS-splitter ADSL/ADSL2/2+ module",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

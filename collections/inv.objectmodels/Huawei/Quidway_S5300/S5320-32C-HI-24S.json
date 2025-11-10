@@ -4,6 +4,7 @@
     "uuid": "d8c13ffb-d021-43a9-a7bb-c59cf4e5bad6",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5320-32C-HI-24S Bundle(24 Gig SFP,8 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,with 2 interface slots,with 350W DC power supply)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],

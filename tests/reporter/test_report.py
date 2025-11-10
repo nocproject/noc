@@ -17,7 +17,7 @@ from noc.core.mongo.connection import connect
 
 
 @pytest.mark.parametrize(
-    "report,params",
+    ("report", "params"),
     [
         ("report_simple_csv", {}),
         ("report_id_cache_poison", {}),

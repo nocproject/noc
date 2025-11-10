@@ -4,6 +4,7 @@
     "uuid": "ea7f1304-5af5-4ea7-b637-48109916706f",
     "vendor__code": "HUAWEI",
     "description": "L2 switch with 24 10/100 Base-TX ports, 2 100/1000 Base-X SFP ports, 2 10/100/1000 Base-T combo  ports",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::fan"],

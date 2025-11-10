@@ -4,6 +4,7 @@
     "uuid": "2ba852e9-d09e-4ec9-8096-a53f77765366",
     "vendor__code": "HUAWEI",
     "description": "S12700E-4 Chassis backplane",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | S12700E",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

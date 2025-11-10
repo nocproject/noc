@@ -4,6 +4,7 @@
     "uuid": "d303caaf-ffef-4220-9f9f-151ff68cdbeb",
     "vendor__code": "CISCO",
     "description": "Cisco 7206VXR, 6-slot chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 7200",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

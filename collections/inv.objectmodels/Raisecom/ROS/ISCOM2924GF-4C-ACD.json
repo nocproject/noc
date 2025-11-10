@@ -4,6 +4,7 @@
     "uuid": "969d3e74-fb29-4fdf-8bb2-7f0a8c9de5d0",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2924GF-4C is an aggregation layer switch and has 24 x 100/1000 Mbps optical SFP ports and 4 x 10GbE SFP+ ports for uplink. AC 220 Volt or DC -48 Volt power redundancy is supported.",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -489,12 +490,10 @@
             "description": "port 25 SFP+",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -502,12 +501,10 @@
             "description": "port 26 SFP+",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -515,12 +512,10 @@
             "description": "port 27 SFP+",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         },
         {
@@ -528,12 +523,10 @@
             "description": "port 28 SFP+",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth10G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth10G"
+            }],
             "type__name": "Transceiver | SFP+"
         }
     ],

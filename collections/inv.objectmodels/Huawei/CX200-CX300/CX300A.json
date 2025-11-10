@@ -4,6 +4,7 @@
     "uuid": "fb033ffd-8c1d-41b9-911c-ffd45e5a90bd",
     "vendor__code": "HUAWEI",
     "description": null,
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

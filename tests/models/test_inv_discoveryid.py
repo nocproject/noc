@@ -15,7 +15,7 @@ from noc.inv.models.discoveryid import DiscoveryID, MACRange
 
 
 @pytest.mark.parametrize(
-    "ranges,additional,result",
+    ("ranges", "additional", "result"),
     [
         (
             [MACRange(first_mac="01:02:03:25:6C:80", last_mac="01:02:03:25:6C:80")],
@@ -89,7 +89,7 @@ def test_macs_as_ints(ranges, additional, result):
 
 
 @pytest.mark.parametrize(
-    "macs,result",
+    ("macs", "result"),
     [
         (
             [

@@ -4,6 +4,7 @@
     "uuid": "4656d985-0faa-4b92-b81c-522e688968d1",
     "vendor__code": "EDGECORE",
     "description": "48 Ethernet 10/100 ports, 4 Combo Copper / SFP-based 10/100/1000 Ethernet ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "labels": [

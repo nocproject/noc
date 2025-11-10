@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | System | Started (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3955ff70-2ca5-484c-916f-5cad2892fa66",
+    "description": "GP3600-04 System Started --",
+    "event_class__name": "System | Started",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "\\S+ System Started --",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "GP3600-04 System Started --",
+            "raw_vars": []
+        }
+    ]
+}

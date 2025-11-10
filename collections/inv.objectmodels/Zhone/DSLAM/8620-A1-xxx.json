@@ -4,6 +4,7 @@
     "uuid": "304a35d3-9083-4ea8-8363-68d6fa90c0ba",
     "vendor__code": "DZS",
     "description": "8620 Broadband Access Concentrator",
+    "container_type": "chassis",
     "connection_rule__name": "Zhone | GranDSLAM",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

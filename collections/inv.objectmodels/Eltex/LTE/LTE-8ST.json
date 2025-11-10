@@ -4,6 +4,7 @@
     "uuid": "f63365d1-a06b-40bb-abf5-89c8fc3b5f9d",
     "vendor__code": "ELTEX",
     "description": "Оптический станционный терминал LTE-8ST",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

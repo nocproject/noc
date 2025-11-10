@@ -4,6 +4,7 @@
     "uuid": "395976d7-0f61-4b0b-ba63-813b935eb4cc",
     "vendor__code": "MAIPU",
     "description": "NSS3530 series switch is a high-performance stackable wirespeed nonblocking L3 MPLS access routing switch. 48*10/100/1000M Base-T 6*1/10G SFP+ interfaces",
+    "container_type": "chassis",
     "connection_rule__name": "Maipu | Switch",
     "cr_context": "CHASSIS",
     "labels": [

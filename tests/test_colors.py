@@ -13,7 +13,7 @@ from noc.core.colors import get_colors
 
 
 @pytest.mark.parametrize(
-    "config,expected",
+    ("config", "expected"),
     [
         (1, ["#ff0000"]),
         (2, ["#ff0000", "#00ffff"]),

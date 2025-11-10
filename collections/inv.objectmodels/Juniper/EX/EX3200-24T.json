@@ -4,6 +4,7 @@
     "uuid": "37c6c4bf-d884-43ba-b03e-c402aa838b66",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T (first 8 ports with POE) with 2/4 SFP uplink ports",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "connections": [

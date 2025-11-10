@@ -4,6 +4,7 @@
     "uuid": "b86525d4-3b4e-40d2-b48b-056810ad22d5",
     "vendor__code": "ERICSSON",
     "description": "6 slot chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Ericsson | SmartEdge",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

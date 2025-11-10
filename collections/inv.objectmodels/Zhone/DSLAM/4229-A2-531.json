@@ -4,6 +4,7 @@
     "uuid": "c8d052f4-c42b-4c9e-8c79-f11e164b2b36",
     "vendor__code": "DZS",
     "description": "GranDSLAM 4200 (24-Port) ADSL with 600-Ohm POTS Splitter",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

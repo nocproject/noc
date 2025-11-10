@@ -17,12 +17,12 @@ def char_range(start, stop, prefix=b""):
     return b"".join(prefix + smart_bytes(chr(i)) for i in range(start, stop + 1))
 
 
-@pytest.mark.parametrize("config,expected", [([0, 0], 0), ([1, 11], 27), ([15, 15], 255)])
+@pytest.mark.parametrize(("config", "expected"), [([0, 0], 0), ([1, 11], 27), ([15, 15], 255)])
 def test_c(config, expected):
     assert c(*config) == expected
 
 
-@pytest.mark.parametrize("config,expected", [(b"Lorem Ipsum", b"Lorem Ipsum")])
+@pytest.mark.parametrize(("config", "expected"), [(b"Lorem Ipsum", b"Lorem Ipsum")])
 def test_strip_normal(config, expected):
     """
     Normal text leaved untouched
@@ -31,7 +31,7 @@ def test_strip_normal(config, expected):
     assert strip_control_sequences(config) == expected
 
 
-@pytest.mark.parametrize("config,expected", [(char_range(0, 31), b"\t\n\r")])
+@pytest.mark.parametrize(("config", "expected"), [(char_range(0, 31), b"\t\n\r")])
 def test_control_survive(config, expected):
     """
     CR,LF and ESC survive from C0 set
@@ -40,7 +40,7 @@ def test_control_survive(config, expected):
     assert strip_control_sequences(config) == expected
 
 
-@pytest.mark.parametrize("config,expected", [(char_range(64, 95, b"\x1b"), b"\x1b[")])
+@pytest.mark.parametrize(("config", "expected"), [(char_range(64, 95, b"\x1b"), b"\x1b[")])
 def test_C1_stripped(config, expected):
     """
     C1 set stripped (ESC+[ survive)
@@ -49,7 +49,7 @@ def test_C1_stripped(config, expected):
     assert strip_control_sequences(config) == expected
 
 
-@pytest.mark.parametrize("config,expected", [(b"\x1b", b"\x1b")])
+@pytest.mark.parametrize(("config", "expected"), [(b"\x1b", b"\x1b")])
 def test_incomplete_C1(config, expected):
     """
     Incomplete C1 passed
@@ -59,7 +59,7 @@ def test_incomplete_C1(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config,expected",
+    ("config", "expected"),
     [
         (b"\x1b[@\x1b[a\x1b[~", b""),
         (b"\x1b[ @\x1b[/~", b""),
@@ -78,7 +78,7 @@ def test_CSI(config, expected):
     assert strip_control_sequences(config) == expected
 
 
-@pytest.mark.parametrize("config,expected", [(b"\x1b[", b"\x1b[")])
+@pytest.mark.parametrize(("config", "expected"), [(b"\x1b[", b"\x1b[")])
 def test_incomplete_CSI(config, expected):
     """
     Incomplete CSI passed
@@ -88,7 +88,7 @@ def test_incomplete_CSI(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config,expected",
+    ("config", "expected"),
     [
         (b"123\x084", b"124"),
         (b"123\x08\x08\x084", b"4"),
@@ -106,7 +106,7 @@ def test_backspace(config, expected):
 
 
 @pytest.mark.parametrize(
-    "config,expected",
+    ("config", "expected"),
     [
         (
             b"\x1b[2J\x1b[?7l\x1b[3;23r\x1b[?6l\x1b[24;27H\x1b[?25h\x1b[24;27H"

@@ -4,6 +4,7 @@
     "uuid": "d7fa2259-356d-4de8-9794-510c0fc31997",
     "vendor__code": "UBIQUITI",
     "description": "Powerful 2x2 MIMO airMAX BaseStation, 5170-5875 MHz, 27dBm, 24V-1A",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

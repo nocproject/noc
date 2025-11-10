@@ -4,6 +4,7 @@
     "uuid": "4a14215f-bc9a-4c08-bed3-2c1a6c0e22e1",
     "vendor__code": "DLINK",
     "description": "28-Port Gigabit L2+ Stackable Managed Switch including 4 x Combo 1000BASE-T/SFP ports and 4 x 10 Gbps SFP+ ports",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

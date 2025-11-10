@@ -4,6 +4,7 @@
     "uuid": "3573fd10-784c-4317-9530-d4c40e025052",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 2+, 20 портов 100/1000BaseX, 4 порта комбо 10/100/1000BaseT|100/1000BaseX SFP, 4 порта 1/10GE SFP+. Питание 100-240AC, 36-72VDC RPS",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],
@@ -781,9 +782,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": [
-                "SNR-S2990G-24FX"
-            ]
+            "value": ["SNR-S2990G-24FX"]
         },
         {
             "attr": "depth",

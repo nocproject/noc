@@ -4,6 +4,7 @@
     "uuid": "89b91567-817d-48a7-b2e7-8a1a09557cf4",
     "vendor__code": "HUAWEI",
     "description": "Huawei mini ADSL VDSL IP DSLAM  MA5616 (with H831MABA backplane) ",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

@@ -4,6 +4,7 @@
     "uuid": "b59a8743-9395-4f0a-b0af-83e930e85a7f",
     "vendor__code": "ZYXEL",
     "description": "ZyXEL MGS-3712F switch, 8 SFP, 4 Combo",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

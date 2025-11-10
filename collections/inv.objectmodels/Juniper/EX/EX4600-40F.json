@@ -4,6 +4,7 @@
     "uuid": "18a9c392-102e-4358-9b6b-3e004442d522",
     "vendor__code": "JUNIPER",
     "description": "24 SPF/SFP+ port and 4 QSFP port with 2 EM slot",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

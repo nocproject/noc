@@ -4,6 +4,7 @@
     "uuid": "129a5966-1bf9-43f1-b379-b09d9ac1c253",
     "vendor__code": "ZYXEL",
     "description": "L2+ switch with 8 ports 10/100Base-TX  PoE, 1 combo ports 100/1000Base-TX / SFP",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

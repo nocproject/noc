@@ -4,6 +4,7 @@
     "uuid": "19651867-ef51-4143-8b51-fce59afcce83",
     "vendor__code": "APC",
     "description": null,
+    "container_type": "chassis",
     "connection_rule__name": "APC | SmartUPS",
     "cr_context": "CHASSIS",
     "connections": [

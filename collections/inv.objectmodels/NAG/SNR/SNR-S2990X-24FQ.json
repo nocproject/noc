@@ -4,6 +4,7 @@
     "uuid": "84610a99-952d-4d01-93ea-7ef872e16b16",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 2, 24 x 1/10GbE SFP+, 2 x 40G QSFP+",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

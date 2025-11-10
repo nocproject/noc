@@ -43,7 +43,7 @@ def object_caps():
 
 
 @pytest.mark.parametrize(
-    "caps,update_caps,expected",
+    ("caps", "update_caps", "expected"),
     [
         ([], {"Cisco | IP | SLA | Probes": 1}, {"Cisco | IP | SLA | Probes": 1}),
         (
@@ -89,7 +89,7 @@ def test_set_caps(object_caps):
 
 
 @pytest.mark.parametrize(
-    "caps,update_caps,scope,expected_scope,expected",
+    ("caps", "update_caps", "scope", "expected_scope", "expected"),
     [
         (
             [],

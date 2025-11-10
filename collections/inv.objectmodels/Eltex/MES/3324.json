@@ -4,6 +4,7 @@
     "uuid": "4a20c9c6-8451-468a-a860-dd2c342c1e6c",
     "vendor__code": "ELTEX",
     "description": "20x10/100/1000BASE-T, 4x10GBASE-R (SFP+)/1000BASE-X (SFP), 4x10/100/1000BASE-T/1000BASE-X/100BASE-FXCombo",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

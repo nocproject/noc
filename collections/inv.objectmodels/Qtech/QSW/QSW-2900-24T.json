@@ -4,6 +4,7 @@
     "uuid": "df3b35f2-72c0-464d-99db-0a54ab16efab",
     "vendor__code": "QTECH",
     "description": "24 х 10/100Base-TX",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

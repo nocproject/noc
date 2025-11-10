@@ -13,7 +13,7 @@ from noc.core.expr import get_vars, get_fn
 
 
 @pytest.mark.parametrize(
-    "expr,expected",
+    ("expr", "expected"),
     [
         ("1", []),
         ("x", ["x"]),
@@ -30,7 +30,7 @@ def test_get_vars(expr, expected):
 
 
 @pytest.mark.parametrize(
-    "expr,args,expected",
+    ("expr", "args", "expected"),
     [
         ("1", {}, 1),
         ("x", {"x": 1}, 1),

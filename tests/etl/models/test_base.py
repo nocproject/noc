@@ -29,7 +29,8 @@ class Pile(BaseModel):
 
 
 @pytest.mark.parametrize(
-    "model,expected", [(Color, {}), (Pile, {"parent": "pile", "color": "color", "color2": "color"})]
+    ("model", "expected"),
+    [(Color, {}), (Pile, {"parent": "pile", "color": "color", "color2": "color"})],
 )
 def test_mapped_fields(model: BaseModel, expected: Dict[str, str]):
     assert model.get_mapped_fields() == expected

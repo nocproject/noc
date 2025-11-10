@@ -4,6 +4,7 @@
     "uuid": "10e533cf-4b3c-437f-a236-7fa3a303733e",
     "vendor__code": "UBIQUITI",
     "description": "Радиоустройство 2.4 ГГц (b/g/n), PtP/PtMP, airMAX, 28 дБм, 1x N-type, PoE-питание ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

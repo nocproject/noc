@@ -4,6 +4,7 @@
     "uuid": "8358ed2b-137f-49e3-b68f-943fe1892734",
     "vendor__code": "BDCOM",
     "description": "BDCOM P3310x GEPON OLT series with 4 GEPON ports, 2 AC PSU",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -20,12 +21,10 @@
             "description": "EPON0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -33,12 +32,10 @@
             "description": "EPON0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -46,12 +43,10 @@
             "description": "EPON0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -59,12 +54,10 @@
             "description": "EPON0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GEPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GEPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -114,12 +107,10 @@
             "description": "GigaEthernet0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -127,12 +118,10 @@
             "description": "GigaEthernet0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -161,12 +150,10 @@
             "description": "GigaEthernet0/5 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -195,12 +182,10 @@
             "description": "GigaEthernet0/6 SFP",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "TransEth1G"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "TransEth1G"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {

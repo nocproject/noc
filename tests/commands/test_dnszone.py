@@ -13,7 +13,7 @@ from noc.commands.dnszone import Command
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         # Empty value
         ("", 0),

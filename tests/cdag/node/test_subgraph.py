@@ -66,7 +66,7 @@ def test_config():
 
 
 @pytest.mark.parametrize(
-    "x,y,expected",
+    ("x", "y", "expected"),
     [(0, 0, 0), (1, 0, 2), (0, 1, 1), (2, 1, 5)],
 )
 def test_subgraph_node(x, y, expected):

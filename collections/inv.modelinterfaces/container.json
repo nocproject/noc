@@ -1,7 +1,7 @@
 {
     "name": "container",
     "uuid": "0aef5942-e41a-4acf-ab3e-5bc406aaee08",
-    "description": "Generic container properties",
+    "description": "DEPRECATED! Set container_type instead. Generic container properties",
     "attrs": [
         {
             "name": "container",

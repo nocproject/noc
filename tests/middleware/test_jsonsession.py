@@ -14,7 +14,7 @@ from noc.core.script.http.middleware.loader import loader
 
 
 @pytest.mark.parametrize(
-    "body,config,session_id,expected",
+    ("body", "config", "session_id", "expected"),
     [
         ({}, {}, None, {}),
         ({}, {}, 123, {"session_id": "123"}),

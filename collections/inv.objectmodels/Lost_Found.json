@@ -4,13 +4,8 @@
     "uuid": "b0fae773-b214-4edf-be35-3468b53b03f2",
     "vendor__code": "NOC",
     "description": "Lost&Found Storage",
+    "container_type": "group",
     "connections": [],
-    "data": [
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
-        }
-    ],
+    "data": [],
     "glyph__name": "FontAwesome | question-circle"
 }

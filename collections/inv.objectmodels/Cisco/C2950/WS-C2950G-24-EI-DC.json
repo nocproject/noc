@@ -4,6 +4,7 @@
     "uuid": "0d26d232-7d57-4eab-a1c1-633e64b03a3c",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 2950 with 24 10/100 + 2 1000BASE-X. DC power",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch GBIC Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

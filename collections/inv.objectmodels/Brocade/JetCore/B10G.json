@@ -4,6 +4,7 @@
     "uuid": "d2b8bfb6-c4e9-41b2-9dcd-2693859c6dad",
     "vendor__code": "BROCADE",
     "description": "B10G - 1 port 10G fiber module(XenPak)",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

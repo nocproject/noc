@@ -13,7 +13,7 @@ from .utils import check_query
 
 
 @pytest.mark.parametrize(
-    "input,query,output",
+    ("input", "query", "output"),
     [
         # Pass
         ({}, "Filter(True)", [{}]),

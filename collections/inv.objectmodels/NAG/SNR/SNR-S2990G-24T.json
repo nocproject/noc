@@ -4,6 +4,7 @@
     "uuid": "4cb2eec7-4759-4aa1-8248-089337c9b70d",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 2, 24 порта 10/100/1000Base-T, 4 порта 1/10G SFP+\nНапряжение питания ~220V AC\nПорт USB 2.0\nКонсольный порт RJ45",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

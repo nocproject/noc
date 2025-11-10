@@ -4,6 +4,7 @@
     "uuid": "60be7a86-03c1-47a8-a512-a3e2f90f45d3",
     "vendor__code": "CISCO",
     "description": "Cisco 1900 Series Integrated Services Routers with K9 Encryption",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 2900",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

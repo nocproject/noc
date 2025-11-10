@@ -4,6 +4,7 @@
     "uuid": "1268022c-d600-45c5-9cc3-65e8e296f5c7",
     "vendor__code": "CISCO",
     "description": "Cisco ASA5520 chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | ASA",
     "cr_context": "CHASSIS",
     "connections": [

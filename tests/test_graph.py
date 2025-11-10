@@ -14,7 +14,7 @@ from noc.core.graph.nexthop import iter_next_hops
 
 
 @pytest.mark.parametrize(
-    "edges,source,target,expected",
+    ("edges", "source", "target", "expected"),
     [
         # 1 - 2
         ([(1, 2)], 1, 2, [(2, 2)]),

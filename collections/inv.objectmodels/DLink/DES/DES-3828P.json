@@ -4,6 +4,7 @@
     "uuid": "2b41cf3a-79e6-4e40-9254-a0cf770172ae",
     "vendor__code": "DLINK",
     "description": "DES-3828P xStack L3 Managed Switch witch 24 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP, 2 10/100/1000BASE-T with PoE",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

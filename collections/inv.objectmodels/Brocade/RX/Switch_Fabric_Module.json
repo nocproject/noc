@@ -4,6 +4,7 @@
     "uuid": "bef27232-7085-450f-a5d1-02c5a84d93dc",
     "vendor__code": "BROCADE",
     "description": "RX-BI-SFM3 Switch Fabric Module",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::fabric"],

@@ -13,7 +13,7 @@ from noc.core.hash import hash_str, hash_int, dict_hash_int, dict_hash_int_args
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         (0, b"J^\xa04\xb0\x0b\xaf\xb6"),
         ("0", b"J^\xa04\xb0\x0b\xaf\xb6"),
@@ -26,7 +26,7 @@ def test_hash_str(value, expected):
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         (0, 5358896754769768374),
         ("0", 5358896754769768374),
@@ -39,7 +39,7 @@ def test_hash_int(value, expected):
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         ({}, -2954230017111125474),
         ({"k": 1}, -7829327169641555127),
@@ -54,7 +54,7 @@ def test_dict_hash_int(value, expected):
 
 
 @pytest.mark.parametrize(
-    "value,expected",
+    ("value", "expected"),
     [
         ({}, -2954230017111125474),
         ({"k": 1}, -7829327169641555127),

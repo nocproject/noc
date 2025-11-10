@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Network | LBD | Loop Cleared #1 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d72bb79f-8652-46a0-8e80-439caeea97c5",
+    "description": "%LOOPBACK-CLEAR: Line on Interface EPON0/1:26 onu uni 1, loopback is cleared",
+    "event_class__name": "Network | LBD | Loop Cleared",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LOOPBACK-CLEAR: Line on Interface (?P<interface>\\S+) onu uni \\d+, loopback is cleared",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%LOOPBACK-CLEAR: Line on Interface EPON0/1:26 onu uni 1, loopback is cleared",
+            "raw_vars": []
+        }
+    ]
+}

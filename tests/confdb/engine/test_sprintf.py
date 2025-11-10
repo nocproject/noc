@@ -13,7 +13,7 @@ from .utils import check_query
 
 
 @pytest.mark.parametrize(
-    "input,query,output",
+    ("input", "query", "output"),
     [
         # Empty context
         ({}, "Set(x=1) and Sprintf(y, 'x = %s', x)", [{"x": 1, "y": "x = 1"}]),

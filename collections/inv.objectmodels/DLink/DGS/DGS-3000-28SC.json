@@ -4,6 +4,7 @@
     "uuid": "7c461774-c8b1-42e9-ba2d-6261e81e7aed",
     "vendor__code": "DLINK",
     "description": "DGS-3000-28SC L2 Stackable Managed Switch with 20 SFP ports, 4 Combo 1000BASE-T/SFP ports and 4 x 10 Gbps SFP+ ports",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

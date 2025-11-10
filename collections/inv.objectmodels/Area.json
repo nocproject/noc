@@ -4,17 +4,13 @@
     "uuid": "73899565-8653-4920-8373-06ac2197d41d",
     "vendor__code": "NOC",
     "description": "Arbitraty map area",
+    "container_type": "group",
     "connections": [],
     "data": [
         {
             "attr": "layer",
             "interface": "geopoint",
             "value": "areas"
-        },
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
         }
     ]
 }

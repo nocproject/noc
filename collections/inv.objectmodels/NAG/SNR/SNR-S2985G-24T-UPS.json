@@ -4,6 +4,7 @@
     "uuid": "21579d79-44c8-4a05-8757-a8a501e192a2",
     "vendor__code": "NAG",
     "description": "Управляемый гигабитный коммутатор уровня 2, 24 порта 10/100/1000Base-T, 4 порта 100/1000Base-X (SFP), встроенный БП ~220V AC, разъем для АКБ 12V с возможностью заряда",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

@@ -4,6 +4,7 @@
     "uuid": "c6ff36d3-2984-4e3f-9152-0c9901eee39d",
     "vendor__code": "NAG",
     "description": "Управляемый Ethernet коммутатор, 6 x 10/100BaseT, 2 x 10/100/1000BaseT, 2 x 100/1000BaseX SFP.\nПитание: 220VAC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

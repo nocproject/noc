@@ -4,6 +4,7 @@
     "uuid": "cc2a63bd-3121-4608-9f45-1050e07cdc56",
     "vendor__code": "JUNIPER",
     "description": "48-port 1000BASE/10000BASE-F and 4 port 40G",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

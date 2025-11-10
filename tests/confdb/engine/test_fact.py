@@ -64,7 +64,7 @@ OUT3 = """interfaces
 
 
 @pytest.mark.parametrize(
-    "conf,input,query,out_conf,output",
+    ("conf", "input", "query", "out_conf", "output"),
     [
         # Fixed
         (CONF1, {}, "Fact('interfaces', 'Fa 0/4', 'admin-status', 'true')", OUT1, [{}]),

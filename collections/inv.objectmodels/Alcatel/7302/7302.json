@@ -4,6 +4,7 @@
     "uuid": "706299ec-6672-4743-9f11-1f1c6987660c",
     "vendor__code": "ALU",
     "description": "supporting 18 slots for DSL, P2P fiber, splitters, and voice line cards, and serving up to 3,456 subscribers",
+    "container_type": "chassis",
     "connection_rule__name": "Alcatel | 7302",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

@@ -4,6 +4,7 @@
     "uuid": "d226e43c-7353-43eb-a51e-b81b912c9038",
     "vendor__code": "HUAWEI",
     "description": "L3 switch with 20 ports 100/1000Base-X (SFP), 4 combo ports 10/100/1000Base-T/SFP, 2 extension slots",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

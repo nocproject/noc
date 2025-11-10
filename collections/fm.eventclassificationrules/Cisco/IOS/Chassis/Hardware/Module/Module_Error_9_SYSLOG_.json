@@ -1,0 +1,19 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #9 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "275c5ab6-cfb9-4315-be84-d5635eac595f",
+    "description": "%GBIC_SECURITY_CRYPT-4-VN_DATA_CRC_ERROR: GBIC in port Gi1/0/10 has bad crc",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%GBIC_SECURITY_CRYPT-4-VN_DATA_CRC_ERROR: (?P<module>\\S+) in port (?P<interface>\\S+) has (?P<reason>.+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%GBIC_SECURITY_CRYPT-4-VN_DATA_CRC_ERROR: GBIC in port Gi1/0/10 has bad crc",
+            "raw_vars": []
+        }
+    ]
+}

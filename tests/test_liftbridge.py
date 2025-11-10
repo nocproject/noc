@@ -13,7 +13,7 @@ from noc.core.msgstream.queuebuffer import QBuffer
 
 
 @pytest.mark.parametrize(
-    "input,output,size",
+    ("input", "output", "size"),
     [
         ([b"abc", b"def", b"ghi", b"klm"], [b"abc", b"def", b"ghi", b"klm"], 4),
         ([b"abc", b"def", b"ghi", b"klm"], [b"abc\ndef", b"ghi\nklm"], 7),

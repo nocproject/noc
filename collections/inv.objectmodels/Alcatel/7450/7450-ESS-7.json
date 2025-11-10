@@ -4,6 +4,7 @@
     "uuid": "6fb714a8-4025-4dfe-8d51-08177860630b",
     "vendor__code": "ALU",
     "description": "7450 ESS-7 7 ports commutator",
+    "container_type": "chassis",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

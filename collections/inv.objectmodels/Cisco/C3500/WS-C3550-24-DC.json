@@ -4,6 +4,7 @@
     "uuid": "8c6c6850-5b37-42cc-9af2-e4225c6d20e8",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 3550 24 10/100 baseT ports + 2 Gig uplinks fixed configuration Layer 2/3 Ethernet Switch with DC power",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch GBIC Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

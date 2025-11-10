@@ -4,6 +4,7 @@
     "uuid": "c6fa365a-f3b4-4ae5-b0cd-8d19eca82330",
     "vendor__code": "DLINK",
     "description": "DGS-3627 xStack L3 Managed Switch witch 20 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 3 module slot",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

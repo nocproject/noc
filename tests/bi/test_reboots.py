@@ -53,7 +53,7 @@ y Float64
 ) ENGINE = MergeTree() PARTITION BY toYYYYMM(date) PRIMARY KEY (ts,managed_object) ORDER BY (ts,managed_object) SETTINGS index_granularity = 8192 ;"""
 
 
-@pytest.mark.parametrize("name,db_type", FIELDS)
+@pytest.mark.parametrize(("name", "db_type"), FIELDS)
 def test_field_db_type(name, db_type):
     field_name, nested_name = BaseField.nested_path(name)
     assert MODEL._meta.fields[field_name].get_db_type(nested_name) == db_type

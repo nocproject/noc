@@ -1,6 +1,5 @@
 name: Build Docs
 env:
-  PIP_CACHE_DIR: .pip
   PYTHONPATH: src
 on:
   pull_request:
@@ -32,16 +31,12 @@ jobs:
         with:
           python-version: "3.12"
 
-      # Cache dependencies
-      - name: Cache Dependencies
-        uses: actions/cache@v4
-        with:
-          path: ./.pip
-          key: ${{ runner.os }}-docs-${{ hashFiles('pyproject.toml') }}
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v1
 
       # Install dependencies
       - name: Install Dependencies
-        run: pip install -IU -e .[docs]
+        run: uv pip install --system -e .[docs]
 
       - name: Build Docs
         run: mkdocs build

@@ -4,6 +4,7 @@
     "uuid": "16d91136-b5d8-42fb-89d8-6d4f7e34e2ad",
     "vendor__code": "BROCADE",
     "description": "4 XFP linecard",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

@@ -4,6 +4,7 @@
     "uuid": "c854ab97-df07-4496-a284-0e535a195b33",
     "vendor__code": "TPLINK",
     "description": "Управляемый коммутатор JetStream уровня 2+ с 24 гигабитными портами RJ45 и 4 портами SFP+\nTL-SG3428X ,AC power",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

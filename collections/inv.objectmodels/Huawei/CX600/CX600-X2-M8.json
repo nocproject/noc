@@ -4,6 +4,7 @@
     "uuid": "52891317-bd5c-4932-8206-1ef6b1ca4ea2",
     "vendor__code": "HUAWEI",
     "description": "CX600-X2-M8 Integrated Chassis Components",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

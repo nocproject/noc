@@ -4,6 +4,7 @@
     "uuid": "b505d15e-1388-4465-a6a7-4a1c6ed06cbe",
     "vendor__code": "DLINK",
     "description": "DGS-3650 xStack L3 Managed Switch witch 44 ports 10/100/1000BASE-T, 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 module slot",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

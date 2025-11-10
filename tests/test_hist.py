@@ -13,7 +13,7 @@ from noc.core.hist.base import Histogram
 
 
 @pytest.mark.parametrize(
-    "config,sample,expected",
+    ("config", "sample", "expected"),
     [
         # Empty config, all counts to +inf
         ([], [], [0]),
@@ -48,7 +48,7 @@ def test_hist_register(config, sample, expected):
 
 
 @pytest.mark.parametrize(
-    "config,sample,labels,expected",
+    ("config", "sample", "labels", "expected"),
     [
         # Empty config
         (

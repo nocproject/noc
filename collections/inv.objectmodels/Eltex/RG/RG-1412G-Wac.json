@@ -4,6 +4,7 @@
     "uuid": "337a0957-27d3-448e-ae02-2f7005dc2ffd",
     "vendor__code": "ELTEX",
     "description": "gateway with one FXS ports, two USB, a Wi-Fi module 2.4G|5G and an optical port for connecting to an external network",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

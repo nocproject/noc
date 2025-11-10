@@ -138,7 +138,7 @@ def test_telnet_scenario(scenario):
 
 
 @pytest.mark.parametrize(
-    "data,expected",
+    ("data", "expected"),
     [
         (b"", b""),
         (b"12345", b"12345"),
@@ -152,6 +152,6 @@ def test_telnet_escape(data, expected):
     assert MyTelnetStream().escape(data) == expected
 
 
-@pytest.mark.parametrize("cmd, opt, expected", [])
+@pytest.mark.parametrize(("cmd", "opt", "expected"), [])
 def test_telnet_iac_repr(cmd, opt, expected):
     assert MyTelnetStream().iac_repr(cmd, opt) == expected

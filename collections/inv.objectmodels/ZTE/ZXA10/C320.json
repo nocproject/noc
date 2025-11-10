@@ -4,6 +4,7 @@
     "uuid": "c4a60ab0-122d-429c-b71c-ca1263f2c73b",
     "vendor__code": "ZTE",
     "description": "ZTE XZA10 C320 Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "ZTE | ZXA10 | C3xx",
     "cr_context": "CHASSIS",
     "connections": [

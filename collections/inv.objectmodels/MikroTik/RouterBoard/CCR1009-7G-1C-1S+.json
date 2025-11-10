@@ -4,6 +4,7 @@
     "uuid": "3edb5de4-92e2-41a6-aacd-6217dae9867e",
     "vendor__code": "MIKROTIK",
     "description": null,
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

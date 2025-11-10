@@ -4,6 +4,7 @@
     "uuid": "5b4b3ef4-ddd9-4909-b3dd-29ede782a8e6",
     "vendor__code": "JUNIPER",
     "description": "Juniper MX80 chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | MX80",
     "cr_context": "CHASSIS",
     "connections": [

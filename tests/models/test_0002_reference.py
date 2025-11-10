@@ -59,7 +59,7 @@ def iter_referred_models():
         yield model, referred[model]
 
 
-@pytest.mark.parametrize("model,refs", iter_referred_models())
+@pytest.mark.parametrize(("model", "refs"), iter_referred_models())
 def test_on_delete_check(model, refs):
     assert hasattr(model, "_on_delete"), (
         "Must have @on_delete_check decorator (Referenced from %s)" % refs
@@ -79,7 +79,7 @@ def test_on_delete_check(model, refs):
             )
 
 
-@pytest.mark.parametrize("model,remote_model,remote_field", iter_references())
+@pytest.mark.parametrize(("model", "remote_model", "remote_field"), iter_references())
 def test_on_delete_check_reference(model, remote_model, remote_field):
     if not hasattr(model, "_on_delete"):
         pytest.skip("No @on_delete decorator")

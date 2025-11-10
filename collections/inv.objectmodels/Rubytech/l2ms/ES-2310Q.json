@@ -4,6 +4,7 @@
     "uuid": "6e0d7c91-66d9-4050-8767-cf873391c500",
     "vendor__code": "RUBYTECH",
     "description": "8-Port L2 Managed Fast Ethernet Switch with 2 100Base-FX Ports (SEP Module)",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

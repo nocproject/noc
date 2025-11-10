@@ -4,6 +4,7 @@
     "uuid": "4b063abd-6bdf-4ada-8272-f7c32d862729",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 3, 8 портов 10/100/1000Base-T, 24 порта 1/10G SFP+, 2 порта 40G QSFP+, встроенный БП ~220V AC, RPS 36-72V DC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

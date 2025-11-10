@@ -4,6 +4,7 @@
     "uuid": "0f98c9c0-728d-4127-b98d-9c8bf4328b19",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5300-28X-LI-24S-DC,S5300-28X-LI-24S-DC,S5300-28X-LI-24S-DC(24 Gig SFP,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,DC -48V,front access)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::sup", "noc::inv::fabric", "noc::inv::fan", "noc::inv::port"],

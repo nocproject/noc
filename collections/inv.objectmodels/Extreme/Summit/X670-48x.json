@@ -4,6 +4,7 @@
     "uuid": "4c104fbe-81cd-454b-821d-3d1fbebd8b35",
     "vendor__code": "EXTREME",
     "description": "48 10GBASE-X SFP+, ExtremeXOS Advanced Edge License,  unpopulated dual PSU power slot , and 3 unpopulated fan airflow slots",
+    "container_type": "chassis",
     "connection_rule__name": "Extreme | XOS",
     "cr_context": "CHASSIS",
     "connections": [

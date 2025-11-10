@@ -17,7 +17,7 @@ from noc.core.fileutils import safe_rewrite, safe_append, read_file, write_tempf
 
 
 @pytest.mark.parametrize(
-    "start,tail,expected",
+    ("start", "tail", "expected"),
     [
         ("lorem ipsum\n", "dorem sit amet", "lorem ipsum\ndorem sit amet"),
         ("Буря мглою ", "небо кроет", "Буря мглою небо кроет"),

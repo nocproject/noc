@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Network | DHCP | Untrusted Server (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "056d9e40-9dfb-46a2-ad79-6fd2a1caf011",
+    "description": "DHCPR: server DHCP packet received from untrusted server(Interface: epon0/1 ,IP: 192.168.50.1,MAC:04:42:1a:7b:a6:b8),dropped",
+    "event_class__name": "Network | DHCP | Untrusted Server",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "DHCPR: server DHCP packet received from untrusted server\\s*\\(Interface:\\s*(?P<interface>\\S+)\\s*,IP:\\s*(?P<ip>\\d\\S+)\\s*,\\s*MAC:(?P<mac>\\S+)\\),\\s*dropped",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "DHCPR: server DHCP packet received from untrusted server(Interface: epon0/1 ,IP: 192.168.50.1,MAC:04:42:1a:7b:a6:b8),dropped",
+            "raw_vars": []
+        }
+    ]
+}

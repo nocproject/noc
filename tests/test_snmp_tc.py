@@ -13,7 +13,7 @@ from noc.core.snmp.util import render_tc
 
 
 @pytest.mark.parametrize(
-    "value,base_type,format,expected",
+    ("value", "base_type", "format", "expected"),
     [
         # Integer32 formatting
         (1234, "Integer32", None, "1234"),

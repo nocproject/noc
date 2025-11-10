@@ -4,6 +4,7 @@
     "uuid": "5836110a-146e-44ed-ae88-8c2398424741",
     "vendor__code": "ZYXEL",
     "description": "IES-3000 main chassis with 16 slots, 1 for management and switching card (MSC) and 15 for line cards, or 2 slots for MSC cards with redundancy and 14 for line cards, DC power input",
+    "container_type": "chassis",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

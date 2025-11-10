@@ -4,6 +4,7 @@
     "uuid": "b6001e98-405c-43b9-818d-89ee8ecd67bb",
     "vendor__code": "ZYXEL",
     "description": "IES-2000 main chassis with 6 slots, 1 for management and switching card (MSC) and 5 for line cards, DC power input",
+    "container_type": "chassis",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

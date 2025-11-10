@@ -4,6 +4,7 @@
     "uuid": "587d0bee-ffc5-43c6-9cbc-58ebc22026ea",
     "vendor__code": "DLINK",
     "description": "DGS-3120-48PC L3 Managed Switch witch 44 ports 10/100/1000BASE-T and 4 combo 10/100/1000BASE-T/ 100/1000 SFP and 2 10G CX4 with PoE",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

@@ -12,11 +12,11 @@ import pytest
 from noc.core.escape import fm_escape, fm_unescape
 
 
-@pytest.mark.parametrize("value,expected", [(b"ab\xffcd", "ab=FFcd")])
+@pytest.mark.parametrize(("value", "expected"), [(b"ab\xffcd", "ab=FFcd")])
 def test_fm_escape(value, expected):
     assert fm_escape(value) == expected
 
 
-@pytest.mark.parametrize("value,expected", [("ab=FFcd", b"ab\xffcd")])
+@pytest.mark.parametrize(("value", "expected"), [("ab=FFcd", b"ab\xffcd")])
 def test_fm_unescape(value, expected):
     assert fm_unescape(value) == expected

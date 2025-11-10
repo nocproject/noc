@@ -4,6 +4,7 @@
     "uuid": "dff1e2ad-af2b-4445-a72c-4d9bb691a3bb",
     "vendor__code": "CISCO",
     "description": "Cisco C6513 13-slot Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 6500",
     "cr_context": "CHASSIS",
     "connections": [

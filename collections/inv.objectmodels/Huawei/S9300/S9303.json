@@ -4,6 +4,7 @@
     "uuid": "71b58e16-4354-4681-b552-9b6c8fbc2645",
     "vendor__code": "HUAWEI",
     "description": "S9303 Chassis backplane",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

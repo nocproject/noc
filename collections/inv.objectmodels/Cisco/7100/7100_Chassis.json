@@ -4,6 +4,7 @@
     "uuid": "9079b1d9-d724-463c-aebc-6a5f7c807293",
     "vendor__code": "CISCO",
     "description": "Cisco 7100 Series Integrated Services Routers",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 7100",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

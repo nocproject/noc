@@ -4,6 +4,7 @@
     "uuid": "758ff0dc-22a2-4a49-8330-a0122adcfdb2",
     "vendor__code": "HUAWEI",
     "description": null,
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

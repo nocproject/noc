@@ -4,6 +4,7 @@
     "uuid": "be6dea5e-3a7f-40dd-9cfe-2f00e2aa0217",
     "vendor__code": "HUAWEI",
     "description": "Quidway S2350-28TP-EI-AC(24 Ethernet 10/100 ports,2 Gig SFP and 2 dual-purpose 10/100/1000 or SFP,AC 110/220V,front access)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::port"],

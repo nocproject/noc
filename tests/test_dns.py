@@ -13,7 +13,7 @@ from noc.core.dns.encoding import from_idna, to_idna, is_idna
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (str("example.com"), False),
         (str("example.xn--p1ai"), True),
@@ -25,7 +25,7 @@ def test_is_idna(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (str("example.com"), str("example.com")),
         (str("example.xn--p1ai"), str("example.рф")),
@@ -37,7 +37,7 @@ def test_from_idna(input, expected):
 
 
 @pytest.mark.parametrize(
-    "input,expected",
+    ("input", "expected"),
     [
         (str("example.com"), str("example.com")),
         (str("example.рф"), str("example.xn--p1ai")),
