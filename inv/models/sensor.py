@@ -142,14 +142,14 @@ class Sensor(Document):
         return Sensor.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
-        if config.datastream.enable_cfgmetricsources:
-            yield "cfgmetricsources", f"inv.Sensor::{self.bi_id}"
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"inv.Sensor::{self.bi_id}"
             if self.managed_object:
-                yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
+                yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
             if self.object and self.object.get_data("management", "managed_object"):
                 mo = ManagedObject.get_by_id(self.object.get_data("management", "managed_object"))
                 if mo:
-                    yield "cfgmetricsources", f"sa.ManagedObject::{mo.bi_id}"
+                    yield "cfgmetricstarget", f"sa.ManagedObject::{mo.bi_id}"
 
     def clean(self):
         if self.extra_labels:
@@ -285,9 +285,11 @@ class Sensor(Document):
         """
         if not sensor.state.is_productive:
             return {}
-        return {
+        r = {
             "type": "sensor",
             "bi_id": sensor.bi_id,
+            "name": sensor.label,
+            "mapping_refs": [],
             "fm_pool": (
                 sensor.managed_object.get_effective_fm_pool().name
                 if sensor.managed_object
@@ -300,6 +302,11 @@ class Sensor(Document):
             "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
             "rules": list(MetricRule.iter_rules_actions(sensor.effective_labels)),
         }
+        if sensor.remote_system:
+            r["mapping_refs"] = [
+                RemoteSystem.clean_reference(sensor.remote_system, sensor.remote_id)
+            ]
+        return r
 
     @classmethod
     def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:

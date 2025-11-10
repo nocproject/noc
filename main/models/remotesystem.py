@@ -278,6 +278,8 @@ class RemoteSystem(Document):
             else:
                 for mo_id in ManagedObject.objects.filter().values_list("id", flat=True):
                     yield "cfgtarget", mo_id
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"main.RemoteSystem:{self.bi_id}"
 
     def get_portmapper(self) -> "BasePortMapper":
         """Getting portmapper functions"""
@@ -489,3 +491,25 @@ class RemoteSystem(Document):
 
     def reset_lock(self):
         """"""
+
+    @property
+    def has_configured_metrics(self) -> bool:
+        """Check configured collected metrics"""
+        return self.enable_metrics or self.enable_fmevent
+
+    @classmethod
+    def get_metric_config(cls, remote_system: "RemoteSystem"):
+        """Return MetricConfig for Target service"""
+        if not remote_system.enable_metrics and not remote_system.enable_fmevent:
+            return {}
+        return {
+            "type": "remote_system",
+            "name": remote_system.name,
+            "bi_id": remote_system.bi_id,
+            "sharding_key": 0,
+            "enable_fmevent": remote_system.enable_fmevent,
+            "enable_metrics": remote_system.enable_metrics,
+            "api_key": remote_system.api_key.key if remote_system.api_key else None,
+            "rules": [],
+            "items": [],
+        }
