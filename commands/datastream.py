@@ -37,7 +37,6 @@ class Command(BaseCommand):
         "cfgmetricstarget": (
             "sa.ManagedObject",
             "sla.SLAProbe",
-            "inv.Sensor",
             "main.RemoteSystem",
             "pm.Agent",
         ),
