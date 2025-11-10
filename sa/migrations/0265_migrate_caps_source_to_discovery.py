@@ -21,9 +21,11 @@ class Migration(BaseMigration):
             WHEN element @> '{"source": "sla"}' THEN element||'{"source": "database"}'
             WHEN element @> '{"source": "cpe"}' THEN element||'{"source": "database"}'
             WHEN element @> '{"source": "asset"}' THEN element||'{"source": "database"}'
+            WHEN element @> '{"source": "bgppeer"}' THEN element||'{"source": "database"}'
             ELSE element END)
             FROM jsonb_array_elements(caps) as x(element))
             WHERE caps @> '[{"source": "caps"}]' OR caps @> '[{"source": "interface"}]'
                   OR caps @> '[{"source": "asset"}]' OR caps @> '[{"source": "attributes"}]'
+                  OR caps @> '[{"source": "bgppeer"}]'
         """
         )

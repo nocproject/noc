@@ -468,6 +468,7 @@ class Config(BaseConfig):
         smtp_password = SecretParameter(path=SECRETS_BASE / "mailsender-smtp-password")
 
     class metricscollector(ConfigSection):
+        listen = StringParameter()
         ds_limit = IntParameter(default=1000)
         nodata_record_ttl = SecondsParameter(default="1h")
         nodata_round_duration = SecondsParameter(default="1M")
@@ -909,12 +910,12 @@ class Config(BaseConfig):
             default="0",
             help="Removing datastream CfgMetricRules records older days",
         )
-        enable_cfgmetricsources = BooleanParameter(default=True)
-        enable_cfgmetricsources_wait = BooleanParameter(
+        enable_cfgmetricstarget = BooleanParameter(default=True)
+        enable_cfgmetricstarget_wait = BooleanParameter(
             default=True,
             help="Activate Wait Mode for CfgMOMappingCollector datastream (Mongo greater 3.6 needed)",
         )
-        cfgmetricsources_ttl = SecondsParameter(
+        cfgmetricstarget_ttl = SecondsParameter(
             default="0",
             help="Removing datastream CfgMOMappingcollector records older days",
         )

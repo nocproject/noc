@@ -223,7 +223,7 @@ class Interface(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
-        yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
+        yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
 
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
