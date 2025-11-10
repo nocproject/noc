@@ -2685,6 +2685,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
         from noc.pm.models.metricrule import MetricRule
+        from noc.inv.models.sensor import Sensor
 
         if Interaction.ServiceActivation not in mo.interactions:
             return {}
@@ -2715,6 +2716,11 @@ class ManagedObject(NOCModel):
         refs = [f"name:{mo.name.lower()}"]
         for m in mo.iter_remote_mappings():
             refs.append(RemoteSystem.clean_reference(m.remote_system, m.remote_id))
+        sensors = []
+        for s in Sensor.objects.filter(managed_object=mo):
+            cfg = Sensor.get_metric_config(s)
+            if cfg:
+                sensors.append(cfg)
         return {
             "type": "managed_object",
             "bi_id": mo.bi_id,
@@ -2736,6 +2742,7 @@ class ManagedObject(NOCModel):
             ],
             "rules": list(MetricRule.iter_rules_actions(mo.effective_labels)),
             "items": items,
+            "sensors": sensors,
             "sharding_key": mo.bi_id,
             "opaque_data": mo.get_message_context(),
         }
