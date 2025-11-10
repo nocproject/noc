@@ -162,8 +162,8 @@ class CPE(Document):
         return CPE.objects.filter(bi_id=bi_id).first()
 
     def iter_changed_datastream(self, changed_fields=None):
-        if config.datastream.enable_cfgmetricsources:
-            yield "cfgmetricsources", f"inv.CPE::{self.bi_id}"
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"inv.CPE::{self.bi_id}"
 
     def clean(self):
         if self.extra_labels:

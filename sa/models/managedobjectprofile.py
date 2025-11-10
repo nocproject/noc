@@ -821,7 +821,7 @@ class ManagedObjectProfile(NOCModel):
                 "id", flat=True
             ):
                 yield "cfgtarget", mo_id
-        if config.datastream.enable_cfgmetricsources and (
+        if config.datastream.enable_cfgmetricstarget and (
             "metrics" in changed_fields
             or "enable_metrics" in changed_fields
             or "metrics_default_interval" in changed_fields
@@ -829,7 +829,7 @@ class ManagedObjectProfile(NOCModel):
             for mo_id in ManagedObject.objects.filter(object_profile=self).values_list(
                 "bi_id", flat=True
             ):
-                yield "cfgmetricsources", f"sa.ManagedObject::{mo_id}"
+                yield "cfgmetricstarget", f"sa.ManagedObject::{mo_id}"
 
     def iter_pools(self):
         """
