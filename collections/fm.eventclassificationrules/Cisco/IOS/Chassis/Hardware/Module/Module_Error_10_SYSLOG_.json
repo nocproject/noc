@@ -1,0 +1,19 @@
+{
+    "name": "Cisco | IOS | Chassis | Hardware | Module | Module Error #10 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d7d9facd-ebcc-408b-b6e1-a23f332dfced",
+    "description": "%GBIC_SECURITY_CRYPT-4-ID_MISMATCH: Identification check failed for GBIC in port Gi1/0/12",
+    "event_class__name": "Chassis | Hardware | Module | Module Error",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%GBIC_SECURITY_CRYPT-4-ID_MISMATCH: (?P<reason>.+) for (?P<module>\\S+) in port (?P<interface>\\S+)",
+    "profiles": ["Cisco.IOS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%GBIC_SECURITY_CRYPT-4-ID_MISMATCH: Identification check failed for GBIC in port Gi1/0/12",
+            "raw_vars": []
+        }
+    ]
+}
