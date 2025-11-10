@@ -5,7 +5,7 @@
     "$collection": "wf.states",
     "description": "Agent is approved for ready",
     "is_default": false,
-    "is_productive": false,
+    "is_productive": true,
     "is_wiping": false,
     "hide_with_state": false,
     "update_last_seen": false,
