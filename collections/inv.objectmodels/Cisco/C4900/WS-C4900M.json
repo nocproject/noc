@@ -4,6 +4,7 @@
     "uuid": "340cd488-5dbe-4433-a572-bbefdf5ffb11",
     "vendor__code": "CISCO",
     "description": "Cisco WS-C4900M Catalyst 4900M Switch base system with 8-Port X2 & 2 half slots",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | C4900",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

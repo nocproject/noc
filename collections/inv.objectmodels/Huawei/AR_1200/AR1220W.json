@@ -4,6 +4,7 @@
     "uuid": "948a93cf-594c-468d-a0d9-64bef9844387",
     "vendor__code": "HUAWEI",
     "description": "AR1220W,AR1220W Basic Configuration (Includes AR1220 Chassis,802.11b/g/n AP ETSI Complian, with Basic Software and Document),2GE WAN,8FE LAN,2 USB Interfaces,2 SIC Slots",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

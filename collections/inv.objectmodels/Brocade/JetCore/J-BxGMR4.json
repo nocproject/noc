@@ -4,6 +4,7 @@
     "uuid": "cf3cd4ac-4e7d-4d69-8dfc-30df613a6fab",
     "vendor__code": "BROCADE",
     "description": "J-BxGMR4 - 4 gen FastIron mgmt",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

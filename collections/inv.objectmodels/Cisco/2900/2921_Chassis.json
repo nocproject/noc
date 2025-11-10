@@ -4,6 +4,7 @@
     "uuid": "29e26060-1d0c-4c1d-809e-97c4c634f105",
     "vendor__code": "CISCO",
     "description": "Cisco 2900 Series Integrated Services Routers with 1 SM slot and K9 Encryption",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 2900",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

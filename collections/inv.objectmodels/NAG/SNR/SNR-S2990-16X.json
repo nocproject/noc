@@ -4,6 +4,7 @@
     "uuid": "22ca0b87-c544-4428-8487-c75a0b4700b5",
     "vendor__code": "NAG",
     "description": null,
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

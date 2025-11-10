@@ -4,6 +4,7 @@
     "uuid": "5730f562-2bae-46ba-9059-ba559414fc2d",
     "vendor__code": "DLINK",
     "description": "DES-3010FL L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 ports 10/100/1000BASE-T, 1 100Base-FL",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

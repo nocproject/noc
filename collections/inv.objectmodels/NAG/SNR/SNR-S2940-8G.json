@@ -4,6 +4,7 @@
     "uuid": "182d414e-a0db-4995-81e0-06df6ace5758",
     "vendor__code": "NAG",
     "description": "8 * 10/100M ports + 1 Gigabit Combo (SFP/GT) port.,AC power",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

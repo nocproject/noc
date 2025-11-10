@@ -4,6 +4,7 @@
     "uuid": "95b15bd1-54b2-4256-bf53-fb1c9731eece",
     "vendor__code": "HUAWEI",
     "description": "S5624P Layer 3 Ethernet switch with 24 10/100/1000 BASE-TX ports and 4*1000 BASE-X SFP(Combo) (AC 110/220V, RPS DC -48V)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

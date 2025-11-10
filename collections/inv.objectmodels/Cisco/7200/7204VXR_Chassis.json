@@ -4,6 +4,7 @@
     "uuid": "c2dfa7f6-8d46-4f17-84ca-76f678b00a1a",
     "vendor__code": "CISCO",
     "description": "Cisco 7204VXR, 4-slot chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 7200",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

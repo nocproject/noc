@@ -4,6 +4,7 @@
     "uuid": "45add20d-6aec-4cad-bab8-264626f83017",
     "vendor__code": "SUPERTEL",
     "description": "Supertel K21 24-port 10/100/1000 Ethernet Switch",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

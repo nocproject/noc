@@ -4,6 +4,7 @@
     "uuid": "5e1c95ae-790f-48a4-b132-781a366a933d",
     "vendor__code": "DLINK",
     "description": "DGS-1100-10/ME Gigabit Ethernet Switch",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

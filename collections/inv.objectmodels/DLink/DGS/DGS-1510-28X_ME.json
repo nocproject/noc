@@ -4,6 +4,7 @@
     "uuid": "b79e1df4-ad7e-4ee9-8461-bdb8c8593c2d",
     "vendor__code": "DLINK",
     "description": "DGS-1510-28XS/ME",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

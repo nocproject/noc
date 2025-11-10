@@ -4,6 +4,7 @@
     "uuid": "c5f934ef-4e3b-4263-971b-9a068081ac04",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst C2950 switch with 48 10/100 BaseTX ports and 2 1000 BASE-X GBIC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch GBIC Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

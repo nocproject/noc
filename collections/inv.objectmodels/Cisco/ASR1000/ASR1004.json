@@ -4,6 +4,7 @@
     "uuid": "5e74817f-9c1b-48c1-99a1-f1364bc9cc5e",
     "vendor__code": "CISCO",
     "description": "Cisco ASR1004 Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | ASR1000",
     "cr_context": "CHASSIS",
     "connections": [

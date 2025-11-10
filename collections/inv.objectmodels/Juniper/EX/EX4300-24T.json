@@ -4,6 +4,7 @@
     "uuid": "3036c71a-45b3-438d-8d16-51c4960ba1a6",
     "vendor__code": "JUNIPER",
     "description": "24-port 10/100/1000BASE-T with slot for uplink modules",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

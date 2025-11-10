@@ -4,6 +4,7 @@
     "uuid": "17edc5e8-15cf-4e58-8cbf-fa8fba6be867",
     "vendor__code": "BROCADE",
     "description": "24 SFP/SFP+ ports and 4 10/100/1000 Gigabit Ethernet ports",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": [

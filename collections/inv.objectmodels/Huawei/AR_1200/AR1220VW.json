@@ -4,6 +4,7 @@
     "uuid": "1fb36e37-e54c-4869-8048-83257fcaf572",
     "vendor__code": "HUAWEI",
     "description": "AR1220VW,AR0M12VWBA,AR1220VW Basic Configuration (Includes AR1220 Chassis,32-channel DSP,802.11b/g/n AP ETSI Complian,with Basic Software and Document),2GE WAN,8FE LAN,2 USB Interfaces,2 SIC Slots",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

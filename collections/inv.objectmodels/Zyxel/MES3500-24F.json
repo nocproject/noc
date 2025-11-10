@@ -4,6 +4,7 @@
     "uuid": "64287ebd-8c62-4d8e-aeec-4247cc9e48ee",
     "vendor__code": "ZYXEL",
     "description": "L2+ switch with 24 ports 100Base-FX, 4 combo ports 10/100/1000Base-TX / SFP",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

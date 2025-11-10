@@ -4,6 +4,7 @@
     "uuid": "18d4f6ff-9cf1-4a55-9ef3-7554254bb349",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-10, 4 x Ethernet 10/100/1000BASE-T ports, 2 x Ethernet 1000BASE-X SFP ports, Console RS-232 (RJ-45), 2 x USB 2.0, 1 GB RAM, 512 MB NAND-Flash, power 12 VDC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

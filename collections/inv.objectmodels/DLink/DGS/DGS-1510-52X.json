@@ -4,6 +4,7 @@
     "uuid": "30e7adf4-545a-4495-b51a-19a71030129f",
     "vendor__code": "DLINK",
     "description": "DGS-1510-52X Gigabit Ethernet Switch",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

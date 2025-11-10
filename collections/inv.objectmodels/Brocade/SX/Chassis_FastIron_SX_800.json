@@ -4,6 +4,7 @@
     "uuid": "c87721d2-ea1c-4523-bc1c-9c3748ced1b8",
     "vendor__code": "BROCADE",
     "description": "Chassis FastIron SX 800",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

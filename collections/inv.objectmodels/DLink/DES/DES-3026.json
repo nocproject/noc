@@ -4,6 +4,7 @@
     "uuid": "64d1c1a1-c7f6-4939-90dc-5a683ec4be91",
     "vendor__code": "DLINK",
     "description": "DES-3026 L2 Managed Switch witch 24 ports 10/100BASE-TX and 2 expansion slots",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

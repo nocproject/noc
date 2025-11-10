@@ -4,6 +4,7 @@
     "uuid": "1e18804c-7720-49f0-aa74-1853ef2bfe12",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5328C-HI, LS5ZD28CM0, S5328C-HI Mainframe (24 10/100/1000Base-T, Chassis, Dual Slots of power, Without Flexible Card and Power Module)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

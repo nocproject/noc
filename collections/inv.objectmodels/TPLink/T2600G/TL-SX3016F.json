@@ -4,6 +4,7 @@
     "uuid": "aa0cb74a-a530-4d57-802a-01e15072f5c0",
     "vendor__code": "TPLINK",
     "description": "Управляемый коммутатор JetStream уровня 2+ с 16 портами SFP+",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

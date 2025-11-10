@@ -4,6 +4,7 @@
     "uuid": "4cb56833-7467-4d39-8846-672b6c0b7944",
     "vendor__code": "NAG",
     "description": "24 порта 10/100/1000BASE-T с поддержкой POE 802.3at/af, 4 порта 100/1000BASE-X SFP\nБюджет POE 370W",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

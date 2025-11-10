@@ -4,6 +4,7 @@
     "uuid": "c0e165e9-e840-45d5-adc0-9cfbc00ec95c",
     "vendor__code": "QTECH",
     "description": "Управляемый коммутатор уровня L2+ с поддержкой PoE 802.3af/at, 24 порта 10/100/1000BASE-T PoE, 4 порта 100/1000BASE-X SFP, 16K MAC адресов, общая мощность PoE 370Вт, встроенный БП, 100-240В AC, размеры ШхГхВ (442x280x43.6  мм) ",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

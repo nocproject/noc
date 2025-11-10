@@ -4,13 +4,9 @@
     "uuid": "69e1bd1b-1271-43d2-bab6-2ec901ffe89e",
     "vendor__code": "NONAME",
     "description": "19\" 24 1000mm depth shelf",
+    "container_type": "rack",
     "connections": [],
     "data": [
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
-        },
         {
             "attr": "part_no",
             "interface": "asset",

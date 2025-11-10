@@ -4,6 +4,7 @@
     "uuid": "3f9d07ed-3bd3-40ac-bc86-d39ca0856a9b",
     "vendor__code": "ZYXEL",
     "description": "L2+ switch with 8 ports 10/100Base-TX, 1 combo ports 100/1000Base-TX / SFP, 1 port 100-Base FX",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

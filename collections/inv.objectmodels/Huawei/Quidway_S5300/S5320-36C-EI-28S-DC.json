@@ -4,6 +4,7 @@
     "uuid": "444fb4ce-7684-4425-9b6c-8b22099364a1",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5320-36C-EI-28S-DC(28 Gig SFP,4 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,with 1 interface slot,with 150W DC power supply)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

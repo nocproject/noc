@@ -4,6 +4,7 @@
     "uuid": "facb8dd5-4152-4a82-b039-f76c7625ad8b",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-100, 4 x Combo ports 10/100/1000BASE-T with 4 x SFP 1000BASE-X, Console RS-232 (RJ-45), USB 2.0, USB 3.0, slot for SD-card, 4 GB RAM, 1 GB NAND-Flash, 100–264 VAC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

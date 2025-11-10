@@ -4,6 +4,7 @@
     "uuid": "99007bb3-2c3f-4a5b-984b-2e0a2420c06e",
     "vendor__code": "ZYXEL",
     "description": "Zyxel ES-3124 switch, 24 10/100, 2 SFP, 2 Combo",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

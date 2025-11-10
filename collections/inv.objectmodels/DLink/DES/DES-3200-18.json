@@ -4,6 +4,7 @@
     "uuid": "9d89e5c0-a930-4adf-99a3-25b3ab0a0826",
     "vendor__code": "DLINK",
     "description": "DES-3200-18 xStack L2 Managed Switch witch 16 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

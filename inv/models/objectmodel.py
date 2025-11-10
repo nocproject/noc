@@ -12,6 +12,7 @@ import re
 from uuid import UUID
 from typing import Any, Optional, List, Tuple, Union, Iterable
 from pathlib import Path
+from enum import Enum
 
 # Third-party modules
 from bson import ObjectId
@@ -26,6 +27,7 @@ from mongoengine.fields import (
     ObjectIdField,
     FloatField,
     BooleanField,
+    EnumField,
 )
 from mongoengine.errors import ValidationError
 from pymongo import InsertOne, DeleteOne
@@ -53,6 +55,57 @@ from .facade import Facade
 id_lock = Lock()
 
 rx_composite_pins_validate = re.compile(r"\d+\-\d+")
+
+
+class ContainerType(Enum):
+    """
+    Container type.
+
+    Attributes:
+        NONE: Not a container.
+        GROUP: Groupping element with no additional logic.
+        LOCALITY: Inhabited locality.
+        POP: Point of presence (of any level).
+        RACK: Rack shelf.
+        SANDBOX: Inventory sandbox.
+        CHASSIS: Box chassis.
+    """
+
+    NONE = "none"
+    GROUP = "group"
+    LOCALITY = "locality"
+    POP = "pop"
+    RACK = "rack"
+    SANDBOX = "sandbox"
+    CHASSIS = "chassis"
+
+    def is_container(self) -> bool:
+        """Check if object is container."""
+        return self not in (ContainerType.NONE, ConnectionType.CHASSIS)
+
+    def is_group(self) -> bool:
+        """Check if object is group."""
+        return self == ContainerType.GROUP
+
+    def is_locality(self) -> bool:
+        """Check if object is inhabited locality."""
+        return self == ContainerType.LOCALITY
+
+    def is_pop(self) -> bool:
+        """Check if object is pop of any level."""
+        return self == ContainerType.POP
+
+    def is_rack(self) -> bool:
+        """Check if object is rack shelf."""
+        return self == ContainerType.RACK
+
+    def is_sandbox(self) -> bool:
+        """Check if object is group."""
+        return self == ContainerType.SANDBOX
+
+    def is_chassis(self) -> bool:
+        """Check if object is chassis."""
+        return self == ContainerType.CHASSIS
 
 
 class ModelAttr(EmbeddedDocument):
@@ -404,6 +457,7 @@ class ObjectModel(Document):
     description = StringField()
     short_label = StringField(required=False)
     vendor: "Vendor" = PlainReferenceField(Vendor)
+    container_type = EnumField(ContainerType, default=ContainerType.NONE, required=False)
     connection_rule: "ConnectionRule" = PlainReferenceField(ConnectionRule, required=False)
     configuration_rule: "ObjectConfigurationRule" = PlainReferenceField(
         ObjectConfigurationRule, required=False
@@ -658,6 +712,8 @@ class ObjectModel(Document):
             "data": [c.json_data for c in self.data],
             "connections": [c.json_data for c in self.connections],
         }
+        if self.container_type and self.container_type.is_container:
+            r["container_type"] = self.container_type.value
         if self.short_label:
             r["short_label"] = self.short_label
         if self.glyph:
@@ -693,6 +749,7 @@ class ObjectModel(Document):
                 "uuid",
                 "vendor__code",
                 "description",
+                "container_type",
                 "connection_rule__name",
                 "cr_context",
                 "plugins",
@@ -768,7 +825,7 @@ class ObjectModel(Document):
         if self.get_data("rack", "units"):
             return "fa fa-th-large"
         # Chassis
-        if self.cr_context == "CHASSIS":
+        if self.container_type and self.container_type.is_chassis():
             return "fa fa-square"
         # Linecard
         if self.cr_context == "LINECARD":

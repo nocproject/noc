@@ -4,6 +4,7 @@
     "uuid": "95e3c730-5330-4e4a-9838-046e83d9521b",
     "vendor__code": "NAG",
     "description": "20 x 10/100BaseT, 4 x 10/100/1000BaseT, 4 x 100/1000BaseX SFP.\nПитание: 220VAC, RPS 12V DC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

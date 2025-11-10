@@ -4,6 +4,7 @@
     "uuid": "ac02afea-1581-4cd2-9d11-ef3d4413cf0a",
     "vendor__code": "HUAWEI",
     "description": "Huawei Versatile Routing Platform Software",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | AR2200",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

@@ -4,6 +4,7 @@
     "uuid": "2c567f98-f9e6-4cf1-b108-fad03eb5a23c",
     "vendor__code": "CISCO",
     "description": "Управляемый коммутатор Layer2, 24 порта 10/100Base-TX, 2 комбинированных порта 10/100/1000Base-T/SFP, PoE стандарта IEEE 802.3af (24 порта до 15.4W), ПО LAN Lite",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

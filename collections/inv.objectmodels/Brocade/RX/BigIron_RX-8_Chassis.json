@@ -4,6 +4,7 @@
     "uuid": "7c6d03e9-9564-4cc7-a51b-01a2a8afaafc",
     "vendor__code": "BROCADE",
     "description": "BigIron RX-8 AC 8 slot chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

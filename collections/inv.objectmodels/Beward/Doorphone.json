@@ -4,20 +4,15 @@
     "uuid": "4aee0d90-5b63-479b-8633-03e195b4c373",
     "vendor__code": "BEWARD",
     "description": "Beward Doorphone DKS series",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
-    "labels": [
-        "noc::inv::chassis",
-        "noc::inv::psu",
-        "noc::inv::sup"
-    ],
+    "labels": ["noc::inv::chassis", "noc::inv::psu", "noc::inv::sup"],
     "connections": [],
     "data": [
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": [
-                "Beward IP Doorphone DKS850430"
-            ]
+            "value": ["Beward IP Doorphone DKS850430"]
         }
     ],
     "sensors": [

@@ -4,13 +4,9 @@
     "uuid": "f991e8b4-f1da-4661-9953-a1cdef3a59aa",
     "vendor__code": "NONAME",
     "description": "19\" 18U Wall-Mount Cabinet",
+    "container_type": "rack",
     "connections": [],
     "data": [
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
-        },
         {
             "attr": "part_no",
             "interface": "asset",

@@ -4,6 +4,7 @@
     "uuid": "210ca3e2-7b19-4201-8617-bcf3f1a38849",
     "vendor__code": "TFORTIS",
     "description": "Multifunction Gigabit Managed Switch for IP-video surveillance systems, PoE 802.3af, IP66",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

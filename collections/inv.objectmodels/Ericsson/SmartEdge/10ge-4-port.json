@@ -4,6 +4,7 @@
     "uuid": "73cc796e-828d-4346-aa3d-75de2a7934b6",
     "vendor__code": "ERICSSON",
     "description": "4 XFP Linecard",
+    "container_type": "chassis",
     "connection_rule__name": "Ericsson | SmartEdge",
     "cr_context": "CHASSIS",
     "connections": [

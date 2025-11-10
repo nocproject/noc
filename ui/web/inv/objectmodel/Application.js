@@ -24,6 +24,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
     "Ext.ux.form.GridField",
     "NOC.inv.facade.LookupField",
     "NOC.main.glyph.LookupField",
+    "NOC.main.ref.containertype.LookupField",
   ],
   model: "NOC.inv.objectmodel.Model",
   search: true,
@@ -39,6 +40,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
       name: "vendor",
       ftype: "lookup",
       lookup: "inv.vendor",
+    },
+    {
+      title: __("By Container Type"),
+      name: "container_type",
+      ftype: "lookup",
+      lookup: "main.ref.containertype",
     },
   ],
 
@@ -147,6 +154,11 @@ Ext.define("NOC.inv.objectmodel.Application", {
           width: 70,
         },
         {
+          text: __("Container Type"),
+          dataIndex: "container_type",
+          width: 70,
+        },
+        {
           text: __("Description"),
           dataIndex: "description",
           flex: 1,
@@ -181,6 +193,12 @@ Ext.define("NOC.inv.objectmodel.Application", {
           xtype: "inv.vendor.LookupField",
           fieldLabel: __("Vendor"),
           allowBlank: false,
+        },
+        {
+          name: "container_type",
+          xtype: "main.ref.containertype.LookupField",
+          fieldLabel: __("Container Type"),
+          allowBlank: true,
         },
         {
           xtype: "fieldset",

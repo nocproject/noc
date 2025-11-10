@@ -4,6 +4,7 @@
     "uuid": "0cef752b-e9f0-46fa-a822-82a5b33c82c9",
     "vendor__code": "JUNIPER",
     "description": "EX 2200, 48-port 10/100/1000BaseT with 4 SFP uplink ports\n",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

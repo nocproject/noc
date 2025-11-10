@@ -4,6 +4,7 @@
     "uuid": "ea7b1ae6-a6a4-4831-955e-f058e2c54a93",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 2+, 8 x 1/10GE SFP+. Питание: 220V AC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -199,9 +200,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": [
-                "SNR-S5210X-8F"
-            ]
+            "value": ["SNR-S5210X-8F"]
         },
         {
             "attr": "depth",

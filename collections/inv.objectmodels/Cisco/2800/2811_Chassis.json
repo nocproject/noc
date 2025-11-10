@@ -4,6 +4,7 @@
     "uuid": "8aee917d-8f69-470a-afd2-26502c0e10a3",
     "vendor__code": "CISCO",
     "description": "Cisco 2800 Series Integrated Services Routers with AC power, 1 NME",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 2800",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

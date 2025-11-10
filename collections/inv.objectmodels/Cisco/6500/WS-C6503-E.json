@@ -4,6 +4,7 @@
     "uuid": "28f94435-2eaf-437d-8230-f351756ea3cd",
     "vendor__code": "CISCO",
     "description": "Cisco Systems Cisco 6500 3-slot Chassis System",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 6500-E",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

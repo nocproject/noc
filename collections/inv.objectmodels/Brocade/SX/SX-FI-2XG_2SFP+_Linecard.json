@@ -4,6 +4,7 @@
     "uuid": "bcc931e4-58e6-45d0-926d-850db06186f0",
     "vendor__code": "BROCADE",
     "description": "SX-FI-2XG 2SFP+ Linecard",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

@@ -48,7 +48,7 @@ class LinkedPoP(object):
                 mo = o.get_data("management", "managed_object")
                 if mo:
                     mos.add(mo)
-            if o.get_data("container", "container"):
+            if o.is_container:
                 mos |= self.get_pop_managed_objects(o)
         return mos
 

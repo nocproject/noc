@@ -4,6 +4,7 @@
     "uuid": "0125d0b3-63b0-4d07-8c06-753a3eaa3484",
     "vendor__code": "MAIPU",
     "description": "NSS4330 series switch is a high-performance stackable L3 MPLS aggregation routing switch. 24*10/100/1000M Base-T 6*1/10G SFP+ interfaces",
+    "container_type": "chassis",
     "connection_rule__name": "Maipu | Switch",
     "cr_context": "CHASSIS",
     "labels": [

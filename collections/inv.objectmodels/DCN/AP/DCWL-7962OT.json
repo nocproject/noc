@@ -4,6 +4,7 @@
     "uuid": "3550ada5-2293-48c8-bb81-e4f0dff2aad4",
     "vendor__code": "DCN",
     "description": "The DCWL-7962OT 802.11abgn outdoor high-performance wireless AP (2.4 GHz & 5 GHz dual-channel dual-frequency, external antenna, 802.3at PoE) ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [

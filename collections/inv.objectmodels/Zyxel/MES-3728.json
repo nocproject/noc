@@ -4,6 +4,7 @@
     "uuid": "12274780-16df-499d-9b90-7e36420adb84",
     "vendor__code": "ZYXEL",
     "description": "Zyxel MES-3728 switch, 24 10/100, 2 SFP, 2 Combo",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

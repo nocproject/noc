@@ -4,6 +4,7 @@
     "uuid": "fb37bfc2-10e4-464f-a47b-42e3345a756a",
     "vendor__code": "DLINK",
     "description": "DES-3018 L2 Managed Switch witch 16 ports 10/100BASE-TX and 2 expansion slots",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

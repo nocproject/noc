@@ -4,6 +4,7 @@
     "uuid": "8889a66e-9b1c-4da0-8942-08fd0d700f86",
     "vendor__code": "DLINK",
     "description": "DES-3200-10/B1 xStack L2 Managed Switch witch 8 ports 10/100BASE-TX, 1 combo 10/100/1000BASE-T/ 100/1000 SFP, 1 100/1000 SFP",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

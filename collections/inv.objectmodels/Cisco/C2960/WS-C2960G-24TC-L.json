@@ -4,6 +4,7 @@
     "uuid": "61035350-cf7c-47d5-9181-a8c44f019234",
     "vendor__code": "CISCO",
     "description": "20 Ethernet 10/100/1000 ports and 4 dual-purpose uplinks",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

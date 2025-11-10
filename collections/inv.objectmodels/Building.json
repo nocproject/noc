@@ -4,17 +4,13 @@
     "uuid": "9e67029a-d694-41bb-b07c-b241a18c69b9",
     "vendor__code": "NOC",
     "description": "Building",
+    "container_type": "group",
     "connections": [],
     "data": [
         {
             "attr": "layer",
             "interface": "geopoint",
             "value": "addresses"
-        },
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
         },
         {
             "attr": "has_contacts",

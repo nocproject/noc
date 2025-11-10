@@ -4,6 +4,7 @@
     "uuid": "5a508071-7c17-4f0f-8b43-577804e0afe1",
     "vendor__code": "ELTEX",
     "description": "24x 1000Base-X (SFP),4x Combo 10/100/1000Base-T/1000Base-X",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

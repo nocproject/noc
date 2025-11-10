@@ -4,6 +4,7 @@
     "uuid": "140dea3d-d105-49b2-b193-4db6a73427e8",
     "vendor__code": "DLINK",
     "description": "DES-3016 L2 Managed Switch witch 16 ports 10/100BASE-TX",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

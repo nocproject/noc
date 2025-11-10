@@ -4,6 +4,7 @@
     "uuid": "f3f60e5b-3db3-497d-8ccc-2520f4baaf35",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5320-28X-LI-24S-DC(24 Gig SFP,8 of which are dual-purpose 10/100/1000 or SFP,4 10 Gig SFP+,DC -48V,front access)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

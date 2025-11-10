@@ -398,18 +398,6 @@ class Object(Document):
         )
 
     @property
-    def is_container(self) -> bool:
-        """
-        Check if object is container
-        """
-        return bool(self.get_data("container", "container"))
-
-    @property
-    def is_rack(self) -> bool:
-        """Check if object is rack."""
-        return bool(self.get_data("rack", "units"))
-
-    @property
     def is_rackmount(self) -> bool:
         """Check if object is rack-mountable"""
         return bool(self.get_data("rackmount", "units"))
@@ -1261,13 +1249,6 @@ class Object(Document):
                 c.connection = left
                 c.save()
 
-    @property
-    def is_pop(self) -> bool:
-        """
-        Check if object is point of presence
-        """
-        return bool(self.get_data("pop", "level"))
-
     def get_pop(self) -> Optional["Object"]:
         """
         Find enclosing PoP
@@ -1789,6 +1770,41 @@ class Object(Document):
             for p in cn.protocols:
                 if not p.modes:
                     yield p
+
+    @property
+    def is_container(self) -> bool:
+        """Check if object is container."""
+        return self.model.container_type and self.model.container_type.is_container()
+
+    @property
+    def is_group(self) -> bool:
+        """Check if object is group."""
+        return self.model.container_type and self.model.container_type.is_group()
+
+    @property
+    def is_locality(self) -> bool:
+        """Check if object is inhabited locality."""
+        return self.model.container_type and self.model.container_type.is_locality()
+
+    @property
+    def is_pop(self) -> bool:
+        """Check if object is pop of any level."""
+        return self.model.container_type and self.model.container_type.is_pop()
+
+    @property
+    def is_rack(self) -> bool:
+        """Check if object is rack shelf."""
+        return self.model.container_type and self.model.container_type.is_rack()
+
+    @property
+    def is_sandbox(self) -> bool:
+        """Check if object is group."""
+        return self.model.container_type and self.model.container_type.is_sandbox()
+
+    @property
+    def is_chassis(self) -> bool:
+        """Check if object is chassis."""
+        return self.model.container_type and self.model.container_type.is_chassis()
 
 
 signals.pre_delete.connect(Object.detach_children, sender=Object)

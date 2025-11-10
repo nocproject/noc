@@ -4,6 +4,7 @@
     "uuid": "098f74df-7944-47a2-9660-548eef0557c0",
     "vendor__code": "CISCO",
     "description": "24 SFP+ ports with optional module slot",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 3850",
     "cr_context": "CHASSIS",
     "connections": [

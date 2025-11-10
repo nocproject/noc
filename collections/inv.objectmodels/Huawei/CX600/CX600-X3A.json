@@ -4,6 +4,7 @@
     "uuid": "4716f9b9-b5b4-4e67-9c7c-01273d57af43",
     "vendor__code": "HUAWEI",
     "description": "CX600-X3A Integrated DC Chassis Components (Including Dual DC Power)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

@@ -4,6 +4,7 @@
     "uuid": "8d5c28a8-10af-4aec-a58c-a3fc0a7391f3",
     "vendor__code": "SIKLU",
     "description": "Siklu EH 1200F-H, 2 RJ-45 + 2 SFP slots, 71-76Ghz Rx / 81-86Ghz Tx, FDD, Antenna 1ft 43dBi, 16/8 non-overlapping channels, 250/500MHz wide",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [

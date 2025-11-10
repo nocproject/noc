@@ -4,6 +4,7 @@
     "uuid": "dd76312e-0cb9-4230-9856-ec8bba42b427",
     "vendor__code": "DLINK",
     "description": "DGS-1210-10P/ME Gigabit Ethernet Switch with PoE",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

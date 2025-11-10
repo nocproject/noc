@@ -4,6 +4,7 @@
     "uuid": "5cb74c9b-df1f-4021-a47d-cdb24e4d3a98",
     "vendor__code": "CISCO",
     "description": "Cisco ME3400 Series Metro Ethernet access switch with DC power supply, 24 FastEthernet + 2 SFP ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

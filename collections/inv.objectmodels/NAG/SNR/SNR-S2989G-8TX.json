@@ -4,6 +4,7 @@
     "uuid": "fa251517-d2b9-40ca-9ad4-7852befb3eee",
     "vendor__code": "NAG",
     "description": "Управляемый коммутатор уровня 2, 8 портов 10/100/1000Base-T, 4 порта 1/10G SFP+\nНапряжение питания ~220V AC\nПорт USB 2.0\nКонсольный порт RJ45",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [
@@ -291,9 +292,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": [
-                "SNR-S2989G-8TX"
-            ]
+            "value": ["SNR-S2989G-8TX"]
         },
         {
             "attr": "depth",

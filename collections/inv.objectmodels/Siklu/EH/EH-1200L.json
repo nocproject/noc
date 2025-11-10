@@ -4,6 +4,7 @@
     "uuid": "5d76a1e7-cdd0-404e-8c33-10f6a1ac0050",
     "vendor__code": "SIKLU",
     "description": "Siklu EH 1200L, 2 SFP slots, 71-76Ghz, TDD, Antenna 1ft 42dBi",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": [
         "noc::inv::chassis",

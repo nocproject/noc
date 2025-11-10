@@ -4,6 +4,7 @@
     "uuid": "5ffaf4f3-5d03-4931-b070-167f2bf60ac8",
     "vendor__code": "MAIPU",
     "description": "NSS5930-56SQFP is a new generation 25G Ethernet switch designed for enterprise data center and campus LAN networks, providing high-throughput, high-density 25GE interfaces, larger buffer and lower latency. The NSS5930-56SQFP adopts advanced hardware architecture with 48*10/25GE access ports and multiple 40/100GE uplinks.",
+    "container_type": "chassis",
     "connection_rule__name": "Maipu | Switch",
     "cr_context": "CHASSIS",
     "labels": [

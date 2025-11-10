@@ -4,6 +4,7 @@
     "uuid": "1efb27d1-36c8-4f38-b117-dd8eb94222d8",
     "vendor__code": "SKS",
     "description": "L2 Managed Switch witch 16 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP with PoE",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

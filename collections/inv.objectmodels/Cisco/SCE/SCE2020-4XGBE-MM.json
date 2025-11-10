@@ -4,6 +4,7 @@
     "uuid": "eae66cf8-f394-4c9d-a9d0-bb8bf5aa56f2",
     "vendor__code": "CISCO",
     "description": "Cisco SCE2020-4XGBE-MM Service Control Engine Platform",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | SCE",
     "cr_context": "CHASSIS",
     "connections": [

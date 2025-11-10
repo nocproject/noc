@@ -4,6 +4,7 @@
     "uuid": "178f5f78-2d47-475d-9085-01a8194b3c4b",
     "vendor__code": "NOC",
     "description": "Aggregation level Point of Presence.",
+    "container_type": "pop",
     "plugins": ["-inventory"],
     "connections": [
         {
@@ -24,11 +25,6 @@
             "attr": "layer",
             "interface": "geopoint",
             "value": "pop_aggregation"
-        },
-        {
-            "attr": "container",
-            "interface": "container",
-            "value": true
         },
         {
             "attr": "level",

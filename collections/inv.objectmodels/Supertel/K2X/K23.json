@@ -4,6 +4,7 @@
     "uuid": "9b91fce8-76dc-456d-ae11-e3a1bfab89fa",
     "vendor__code": "SUPERTEL",
     "description": "Supertel K23 22-port 1000 SFP; 2-port Combo 1000 SFP or 10/100/100 Ethernet Switch",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

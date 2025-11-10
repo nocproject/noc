@@ -4,6 +4,7 @@
     "uuid": "a113fda6-bbc9-4cd8-b43a-b34b804c37ba",
     "vendor__code": "HUAWEI",
     "description": "Quidway S5328C-HI-24S,CX7Z328CM,S5328C-EI-24S Mainframe(24 100/1000Base-X,4 Combo GE(10/100/1000 BASE-T),Chassis,Dual Slots of power,Without Flexible Card and Power Module), 2 extension slots",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | Quidway",
     "cr_context": "CHASSIS",
     "labels": [

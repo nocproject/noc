@@ -4,6 +4,7 @@
     "uuid": "a9c975ee-000b-4625-9330-1542bd96255c",
     "vendor__code": "NAG",
     "description": "20 портов 10/100Base-TX, 4 порта 10/100/1000Base-T, 4 порта 100/1000BASE-X (SFP), Питание: 220VAC",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

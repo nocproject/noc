@@ -4,6 +4,7 @@
     "uuid": "b01f3c8d-8856-4ea3-bd04-e07db36ffcb0",
     "vendor__code": "ALSTEC",
     "description": "16xGE, 4xGE Combo port (SFP)",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],
     "connections": [

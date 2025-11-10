@@ -4,6 +4,7 @@
     "uuid": "9ac4db8f-3421-4ff0-9378-e6dc87bfbd56",
     "vendor__code": "BROCADE",
     "description": "BigIron 8000 Router/FastIron 800 Router/Switch",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

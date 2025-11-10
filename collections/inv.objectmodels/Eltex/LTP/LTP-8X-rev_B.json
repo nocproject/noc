@@ -4,6 +4,7 @@
     "uuid": "5f2dfd61-c392-4d66-a694-e18287c23e15",
     "vendor__code": "ELTEX",
     "description": "Оптический станционный терминал LTP-8X",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

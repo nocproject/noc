@@ -4,6 +4,7 @@
     "uuid": "f1ea38df-f5b0-45da-96bd-0dc8bc098b1c",
     "vendor__code": "DCN",
     "description": "The WL8200-I2 802.11abgn indoor high-performance wireless AP (2.4 GHz & 5 GHz dual-channel dual-frequency, 802.3at PoE) ",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis", "noc::inv::sup", "noc::inv::psu", "noc::inv::port"],
     "connections": [

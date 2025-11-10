@@ -4,6 +4,7 @@
     "uuid": "885dbb2e-9141-4c49-878b-3ab162f988c0",
     "vendor__code": "JUNIPER",
     "description": "32-port 1000BASE-F with 4 builtin 1/10GE ports",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

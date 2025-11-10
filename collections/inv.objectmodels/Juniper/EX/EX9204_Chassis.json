@@ -4,6 +4,7 @@
     "uuid": "22616eec-d2fa-4b7e-b2ba-79b52a255c1d",
     "vendor__code": "JUNIPER",
     "description": "Juniper EX9204 chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

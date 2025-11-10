@@ -4,6 +4,7 @@
     "uuid": "41705e5d-bd22-4586-bbc7-03a0e965e8fe",
     "vendor__code": "CISCO",
     "description": "Cisco ASR 9010 DC Chassis with PEM Version 1",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | ASR9k",
     "cr_context": "CHASSIS",
     "connections": [

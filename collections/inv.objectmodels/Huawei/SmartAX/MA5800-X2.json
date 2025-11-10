@@ -4,6 +4,7 @@
     "uuid": "72214c24-e376-43a4-a144-79cb6f92f178",
     "vendor__code": "HUAWEI",
     "description": "Huawei SmartAX MA5800 X2 NG OLT, 19inch, with 2U height 2 service slots, 80G throughput per slot, support GPON, 10G PON, 40G/100G PON ready; H901BPSB subrack equipped with 2xH901MPSA, 1xH901PISB",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

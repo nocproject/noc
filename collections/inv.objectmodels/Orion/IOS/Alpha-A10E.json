@@ -4,6 +4,7 @@
     "uuid": "d231004d-8812-45bd-a649-0fffe8c50198",
     "vendor__code": "ORION",
     "description": "8  x 10/100 Base-TX RJ45 port, 2 x COMBO (2 x 100/1000Base-X SFP; 2 x 10/100/1000Base-T RJ45)",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

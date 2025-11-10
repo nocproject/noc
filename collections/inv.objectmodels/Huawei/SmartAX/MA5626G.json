@@ -4,6 +4,7 @@
     "uuid": "ea29d034-a72f-484e-b8b4-5535de85b90b",
     "vendor__code": "HUAWEI",
     "description": "GPON Remote Optical Access  Equipment(with 24-port FE Interface",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],
     "connections": [

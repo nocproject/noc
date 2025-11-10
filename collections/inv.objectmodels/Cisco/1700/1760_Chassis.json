@@ -4,6 +4,7 @@
     "uuid": "67eb0ce3-c4d2-4c0c-a309-2e8dcf369b3a",
     "vendor__code": "CISCO",
     "description": "Cisco 1760 Modular Access Router",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 2800",
     "cr_context": "CHASSIS",
     "connections": [

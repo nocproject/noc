@@ -4,6 +4,7 @@
     "uuid": "1d50c496-cf71-466a-867c-6f24d563b801",
     "vendor__code": "ZYXEL",
     "description": "12-port ADSL2+ Compact DSLAM",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

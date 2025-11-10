@@ -98,7 +98,6 @@ class LabelApplication(ExtDocApplication):
         allow_models, allow_matched, allow_wildcard, allow_user = [], False, False, True
         enable_models_map = {v: k for k, v in LABEL_MODELS.items()}
         for k, v in request.GET.lists():
-            print("K,v", k, v)
             if k == "allow_models":
                 allow_models += v
                 continue

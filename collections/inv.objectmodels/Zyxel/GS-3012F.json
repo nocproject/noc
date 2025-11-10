@@ -4,6 +4,7 @@
     "uuid": "6b2fca62-6b11-4b19-a3b9-fbc08cc52456",
     "vendor__code": "ZYXEL",
     "description": "ZyXEL GS-3012F switch, 8 SFP, 4 Combo",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

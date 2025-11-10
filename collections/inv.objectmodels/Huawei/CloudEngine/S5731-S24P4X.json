@@ -4,6 +4,7 @@
     "uuid": "5c087989-73aa-4778-9004-85323313aa75",
     "vendor__code": "HUAWEI",
     "description": "24*10/100/1000BASE-T ports,4*10GE SFP+ ports,PoE+,without power module",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CloudEngine",
     "cr_context": "CHASSIS",
     "connections": [

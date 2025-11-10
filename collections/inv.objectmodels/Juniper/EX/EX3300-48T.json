@@ -4,6 +4,7 @@
     "uuid": "ae566f15-6402-42dc-8ebc-50840e4476d1",
     "vendor__code": "JUNIPER",
     "description": "EX 3300, 48-port 10/100/1000BaseT with 4 SFP uplink ports\n",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX",
     "cr_context": "CHASSIS",
     "labels": [

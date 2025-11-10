@@ -4,6 +4,7 @@
     "uuid": "c69d8ee7-a292-48ca-9db4-bd64515c722b",
     "vendor__code": "BROCADE",
     "description": "BigIron 4000 Router/FastIron 400 Router/Switch",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

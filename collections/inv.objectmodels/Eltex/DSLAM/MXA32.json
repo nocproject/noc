@@ -4,6 +4,7 @@
     "uuid": "8f86624d-3c82-4f40-b163-42b12903ad6d",
     "vendor__code": "ELTEX",
     "description": "ADSL IP  DSLAM  MXA 32",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

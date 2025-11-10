@@ -4,6 +4,7 @@
     "uuid": "a285e256-0b9f-4206-9542-76bdcc4035af",
     "vendor__code": "ELTEX",
     "description": "Router Eltex ESR-200, 4 x Ethernet ports 10/100/1000BASE-T, 4 x Combo ports 10/100/1000BASE-T with 4 x SFP 1000BASE-X, Console RS-232 (RJ-45), USB 2.0,  USB 3.0, slot for SD-card, 4 GB RAM, 1 GB NAND-Flash, 100–264 VAC.",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

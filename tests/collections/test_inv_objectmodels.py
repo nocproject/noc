@@ -96,6 +96,36 @@ def test_connection_protocols(model: ObjectModel) -> None:
         pytest.fail("\n".join(fail))
 
 
+def test_container_container(model: ObjectModel) -> None:
+    assert not model.get_data("container", "container"), (
+        "container.container should not be used, set container_type instead"
+    )
+
+
+def test_pop(model: ObjectModel) -> None:
+    level = model.get_data("pop", "level")
+    if level is None:
+        pytest.skip("Not a PoP")
+    assert model.container_type.is_pop(), (
+        f"container_type should be set to POP when pop.level is set"
+    )
+
+
+def test_rack(model: ObjectModel) -> None:
+    units = model.get_data("rack", "units")
+    if units is None:
+        pytest.skip("Not a rack")
+    assert model.container_type.is_rack(), (
+        f"container_type should be set to RACK when rack.units is set"
+    )
+
+
+def test_chassis(model: ObjectModel) -> None:
+    if model.cr_context == "CHASSIS":
+        assert model.container_type
+        assert model.container_type.is_chassis(), "container_type should be set to CHASSIS"
+
+
 _CT_PROTOCOLS = {}
 
 # dict must have one or more keys:

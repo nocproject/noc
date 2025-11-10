@@ -4,6 +4,7 @@
     "uuid": "aa3d7a9d-ce2b-4c82-8ae5-81ad6149f950",
     "vendor__code": "UBIQUITI",
     "description": "Точка доступа (AP/CPE), 2.4 ГГц (b/g/n), airMAX, 7 км, MIMO 2x2, 28 дБм",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

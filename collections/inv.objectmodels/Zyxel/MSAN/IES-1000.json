@@ -4,6 +4,7 @@
     "uuid": "edbea52b-2835-45d9-9637-d5fab382ef52",
     "vendor__code": "ZYXEL",
     "description": "IES-1000 enclosure with two slide-in slots for DSL modules",
+    "container_type": "chassis",
     "connection_rule__name": "Zyxel | MSAN",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

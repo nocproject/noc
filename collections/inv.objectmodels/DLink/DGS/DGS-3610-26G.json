@@ -4,6 +4,7 @@
     "uuid": "5fcd7f59-d6cf-42f1-898b-0d385c9afbdc",
     "vendor__code": "DLINK",
     "description": "DGS-36210-26G L3 Managed Switch witch 24 1000M SFP ports and 12 multiplexing 10/100/1000M RJ-45 ports, 2 10G extention slots ",
+    "container_type": "chassis",
     "connection_rule__name": "DLink | DxS",
     "cr_context": "CHASSIS",
     "labels": [

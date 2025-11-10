@@ -4,6 +4,7 @@
     "uuid": "fa7af6b9-0fde-4398-9d7a-7d0ae71066db",
     "vendor__code": "PLANET",
     "description": "8-port 10/100, 2-port Gigabit (Combo port)",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

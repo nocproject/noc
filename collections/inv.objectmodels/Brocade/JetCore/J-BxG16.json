@@ -4,6 +4,7 @@
     "uuid": "66ba4a93-0eb3-4303-a888-48e9e4216c1a",
     "vendor__code": "BROCADE",
     "description": "16-sfp jetcore line card",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | JetCore",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::lc", "noc::inv::port"],

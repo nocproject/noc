@@ -4,6 +4,7 @@
     "uuid": "a847278c-38bf-4c14-a0f6-5a3eaa9de6c4",
     "vendor__code": "RAISECOM",
     "description": "The ISCOM2100 series offers 24 Fast Ethernet downlink access interfaces with 2/4 x Gigabit combo uplinks and a power supply for power demand (PD) devices",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

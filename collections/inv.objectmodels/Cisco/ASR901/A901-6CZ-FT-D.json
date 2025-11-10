@@ -4,6 +4,7 @@
     "uuid": "364b86ae-3515-4402-a708-077d3f4db80f",
     "vendor__code": "CISCO",
     "description": "A901-6CZ-FT-D with Built-in 12GE, 2 10GE, 1FE, 8T1E1",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

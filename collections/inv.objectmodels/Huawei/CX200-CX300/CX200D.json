@@ -4,6 +4,7 @@
     "uuid": "15334ab7-7fe3-4666-b58e-bec3aad4477a",
     "vendor__code": "HUAWEI",
     "description": "CX200D,CX2Z12DAM,CX200D Mainframe(24 10/100 Base-T,2 1000 Base-X SFP,Basic software,AC 110/220V)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | CX",
     "cr_context": "CHASSIS",
     "labels": [

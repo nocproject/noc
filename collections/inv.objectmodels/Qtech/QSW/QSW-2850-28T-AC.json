@@ -4,6 +4,7 @@
     "uuid": "c003f554-e733-4cd6-b8d5-326ea1d31913",
     "vendor__code": "QTECH",
     "description": "Управляемый коммутатор уровня L2+, 24 порта 10/100BASE-T, 2 комбо-порта 10/100/1000BASE-T или 100/1000BASE-X SFP, 2 порта 100/1000BASE-X SFP, 16K MAC-адресов, 4К VLAN, 220В А",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "connections": [

@@ -4,6 +4,7 @@
     "uuid": "4df22a3c-c9d6-4531-b3a3-ff45cbd3980a",
     "vendor__code": "BROCADE",
     "description": "PSU for RX8 chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Brocade | SX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::psu"],

@@ -4,6 +4,7 @@
     "uuid": "b50204ce-5d2a-41b4-be7c-5b51a2cfdcfe",
     "vendor__code": "CISCO",
     "description": "Cisco C6506 6-slot Chassis",
+    "container_type": "chassis",
     "connection_rule__name": "Cisco | 6500",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

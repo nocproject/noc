@@ -127,15 +127,7 @@ class InvApplication(ExtApplication):
                 cmodels = [
                     d["_id"]
                     for d in ObjectModel._get_collection().find(
-                        {
-                            "data": {
-                                "$elemMatch": {
-                                    "interface": "container",
-                                    "attr": "container",
-                                    "value": True,
-                                }
-                            }
-                        },
+                        {"container_type": {"$nin": [None, "none", "chassis"]}},
                         {"_id": 1},
                     )
                 ]
@@ -145,7 +137,6 @@ class InvApplication(ExtApplication):
                         __raw__={"parent": None, "model": {"$in": cmodels}}
                     )
                 ]
-
             else:
                 return self.response_bad_request()
         r = []
@@ -702,21 +693,14 @@ class InvApplication(ExtApplication):
             False: Otherwise.
         """
         # Is chassis
-        if o.model.cr_context == "CHASSIS":
+        if o.is_chassis:
             return True
         # Has outer connections
         if o.parent_connection:
             return True
         # Inside rack or PoP
         while o:
-            # Sandbox
-            if o.model.name == "Sandbox":
-                return True
-            # Rack
-            if o.is_rack:
-                return True
-            # PoP
-            if o.is_pop:
+            if o.is_sandbox or o.is_rack or o.is_pop:
                 return True
             o = o.parent
         return False

@@ -4,6 +4,7 @@
     "uuid": "13cd14fc-aaca-4e58-a9cc-2b97fd8cd084",
     "vendor__code": "CISCO",
     "description": "24 Ethernet 10/100 ports and 2 SFP-based Gigabit Ethernet ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

@@ -4,6 +4,7 @@
     "uuid": "8e14fd4c-2702-4c53-9fa9-c973ac68408e",
     "vendor__code": "HUAWEI",
     "description": "The SmartAX EA5801E-GP08 (MA5801-GP08) Optical Line Terminal (OLT) provides Gigabyte Passive Optical Networks (GPON) access, and supports Fiber To The Home (FTTH)",
+    "container_type": "chassis",
     "connection_rule__name": "Huawei | SmartAX",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis", "noc::inv::port"],

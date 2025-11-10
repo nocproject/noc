@@ -4,6 +4,7 @@
     "uuid": "10625c7f-c264-445e-ae78-2210cb6b31d0",
     "vendor__code": "JUNIPER",
     "description": "J2320, JUNOS, 3 PIM Slots, HW Encryption, AC Power Supply, 19\" Rack Mount\n",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | MX",
     "cr_context": "CHASSIS",
     "connections": [

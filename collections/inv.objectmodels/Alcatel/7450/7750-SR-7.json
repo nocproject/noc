@@ -4,6 +4,7 @@
     "uuid": "8610619a-e7b6-4f0d-ad0c-2be6ffac1dcf",
     "vendor__code": "ALU",
     "description": "7750 SR-7 7 ports router",
+    "container_type": "chassis",
     "connection_rule__name": "Alcatel | 7450",
     "cr_context": "CHASSIS",
     "labels": ["noc::inv::chassis"],

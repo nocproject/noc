@@ -4,6 +4,7 @@
     "uuid": "677fdbe2-02e5-4093-9eef-c9c0c41d17eb",
     "vendor__code": "CISCO",
     "description": "Cisco Catalyst 3750 switch with 48 Ethernet 10/100/1000 ports, 4 SFP-based Gigabit Ethernet ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP Prefixed",
     "cr_context": "CHASSIS",
     "connections": [

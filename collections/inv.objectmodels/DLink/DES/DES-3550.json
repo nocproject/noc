@@ -4,6 +4,7 @@
     "uuid": "b8b2e556-ecf7-42f9-92cd-9eef3357f10a",
     "vendor__code": "DLINK",
     "description": "DES-3550 L2 Managed Switch witch 48 ports 10/100BASE-TX, 2 combo 10/100/1000BASE-T/ 100/1000 SFP",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [

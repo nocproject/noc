@@ -4,6 +4,7 @@
     "uuid": "4de16482-ab79-482c-a971-7b67f5eb8033",
     "vendor__code": "JUNIPER",
     "description": "EX8216 system configuration: 16-slot chassis with passive midplane",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | EX8200",
     "cr_context": "CHASSIS",
     "labels": ["chasis"],

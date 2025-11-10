@@ -4,6 +4,7 @@
     "uuid": "27fed461-eabb-4de6-970a-5b2653b96f27",
     "vendor__code": "BDCOM",
     "description": "BDCOM GP3600-04 GPON OLT with 4 GPON ports",
+    "container_type": "chassis",
     "connection_rule__name": "Generic | Switch SFP",
     "cr_context": "CHASSIS",
     "labels": [
@@ -20,12 +21,10 @@
             "description": "GPON0/1",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -33,12 +32,10 @@
             "description": "GPON0/2",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -46,12 +43,10 @@
             "description": "GPON0/3",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {
@@ -59,12 +54,10 @@
             "description": "GPON0/4",
             "direction": "i",
             "gender": "f",
-            "protocols": [
-                {
-                    "direction": "*",
-                    "protocol__code": "GPON"
-                }
-            ],
+            "protocols": [{
+                "direction": "*",
+                "protocol__code": "GPON"
+            }],
             "type__name": "Transceiver | SFP"
         },
         {

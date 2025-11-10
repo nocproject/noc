@@ -4,6 +4,7 @@
     "uuid": "f05e4011-eec5-4e0d-b976-4359010754ed",
     "vendor__code": "ELTEX",
     "description": "24x 10/100/1000Base-T, 4x Combo 10/100/1000Base-T/1000Base-X",
+    "container_type": "chassis",
     "connection_rule__name": "Eltex | MES",
     "cr_context": "CHASSIS",
     "labels": [

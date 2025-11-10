@@ -4,6 +4,7 @@
     "uuid": "2497b4b3-a57e-4acc-8419-74d15e87ee4f",
     "vendor__code": "EXTREME",
     "description": "Управляемый коммутатор уровня 3, 12 портов 1000Base-X (SFP), 12 комбо-портов 1000Base-T/SFP, 2 порта 10G Base (XFP),1 слот для установки модулей",
+    "container_type": "chassis",
     "connection_rule__name": "Extreme | XOS",
     "cr_context": "CHASSIS",
     "labels": [

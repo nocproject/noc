@@ -4,6 +4,7 @@
     "uuid": "e23d8288-6e32-4642-ad25-45142c5ba60d",
     "vendor__code": "HUAWEI",
     "description": "AR1220,AR0M0012BA,AR1220,2GE WAN,8FE LAN,2 USB,2 SIC",
+    "container_type": "chassis",
     "cr_context": "CHASSIS",
     "connections": [
         {

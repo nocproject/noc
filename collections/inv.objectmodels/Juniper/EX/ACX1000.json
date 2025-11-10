@@ -4,6 +4,7 @@
     "uuid": "9c9da6b5-27a5-436a-b54b-ec15a0d9ddfc",
     "vendor__code": "JUNIPER",
     "description": "8-port T1/E1, 8-port 10/100/1000BaseT and 4 GbE combination fiber/copper ports",
+    "container_type": "chassis",
     "connection_rule__name": "Juniper | ACX",
     "cr_context": "CHASSIS",
     "labels": [
