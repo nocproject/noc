@@ -90,7 +90,7 @@ class Sensor(Document):
     )
     local_id = StringField()
     state: "State" = PlainReferenceField(State)
-    units = PlainReferenceField(
+    units: MeasurementUnits = PlainReferenceField(
         MeasurementUnits, default=MeasurementUnits.get_default_measurement_units
     )
     label = StringField()
@@ -104,7 +104,8 @@ class Sensor(Document):
     # Timestamp of first discovery
     first_discovered = DateTimeField(default=datetime.datetime.now)
     protocol = StringField(
-        choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi", "other"]
+        choices=["modbus_rtu", "modbus_ascii", "modbus_tcp", "snmp", "ipmi", "other"],
+        default="other",
     )
     modbus_register = IntField()
     modbus_format = StringField(choices=MODBUS_FORMAT)
@@ -143,9 +144,10 @@ class Sensor(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_cfgmetricstarget:
-            yield "cfgmetricstarget", f"inv.Sensor::{self.bi_id}"
             if self.managed_object:
                 yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
+            if self.agent:
+                yield "cfgmetricstarget", f"pm.Agent::{self.managed_object.bi_id}"
             if self.object and self.object.get_data("management", "managed_object"):
                 mo = ManagedObject.get_by_id(self.object.get_data("management", "managed_object"))
                 if mo:
@@ -278,34 +280,24 @@ class Sensor(Document):
 
     @classmethod
     def get_metric_config(cls, sensor: "Sensor"):
-        """
-        Return MetricConfig for Metrics service
-        :param sensor:
-        :return:
-        """
+        """Return MetricConfig for Metrics service"""
         if not sensor.state.is_productive:
             return {}
         r = {
-            "type": "sensor",
             "bi_id": sensor.bi_id,
             "name": sensor.label,
-            "mapping_refs": [],
-            "fm_pool": (
-                sensor.managed_object.get_effective_fm_pool().name
-                if sensor.managed_object
-                else None
-            ),
-            "labels": [],
+            "units": sensor.munits.code,
+            "protocol": sensor.protocol,
+            "exposed_labels": [
+                ll
+                for ll in sensor.effective_labels
+                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
+            ],
             "profile": sensor.profile.bi_id,
-            "items": [],
-            "composed_metrics": [],
-            "sharding_key": sensor.managed_object.bi_id if sensor.managed_object else None,
             "rules": list(MetricRule.iter_rules_actions(sensor.effective_labels)),
         }
         if sensor.remote_system:
-            r["mapping_refs"] = [
-                RemoteSystem.clean_reference(sensor.remote_system, sensor.remote_id)
-            ]
+            r["hints"] = [RemoteSystem.clean_reference(sensor.remote_system, sensor.remote_id)]
         return r
 
     @classmethod
