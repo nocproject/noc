@@ -10,6 +10,7 @@
 import asyncio
 import operator
 import re
+import datetime
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, List, Dict, Set, Iterable, DefaultDict, FrozenSet
 from collections import defaultdict
@@ -27,7 +28,11 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.models.sendmetric import SendMetric
-from noc.services.metricscollector.sourceconfig import SourceConfig
+from noc.services.metricscollector.sourceconfig import (
+    SourceConfig,
+    RemoteSystemConfig,
+    SensorConfig,
+)
 
 NS = 1_000_000_000
 
@@ -80,12 +85,17 @@ class MetricsCollectorService(FastAPIService):
             nodata_round_duration=config.metricscollector.nodata_round_duration,
             collector="metricscollector",
         )
+        # Source Configs: ManagedObject & Agent
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.source_map: Dict[str, str] = {}
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.unknown_metric_items = set()
+        # Remote Systems Config
         self.banned_rs = set()
+        self.remote_system_config: Dict[str, RemoteSystemConfig] = {}
         self.remote_system_map: Dict[str, str] = {}
+        # Sensors
+        self.sensor_configs: Dict[str, SensorConfig] = {}
         if config.metricscollector.listen:
             address, port = config.metricscollector.listen.split(":")
             if address == "auto":
@@ -154,7 +164,7 @@ class MetricsCollectorService(FastAPIService):
         Coroutine to request object mappings
         """
         self.logger.info("Starting to track object mappings")
-        client = SourceStreamClient("cfgtarget", service=self)
+        client = SourceStreamClient("cfgmetricstarget", service=self)
         # Track stream changes
         while True:
             try:
@@ -179,110 +189,6 @@ class MetricsCollectorService(FastAPIService):
 
     async def delete_metric_type(self, mt_id: str) -> None:
         self.delete_data(mt_id)
-
-    async def update_source(self, data):
-        """Update Source config"""
-        try:
-            s = SourceConfig.from_data(data)
-        except Exception as e:
-            print(f"{data['id']}Error when processed source: {e}")
-            return False
-        if s.id not in self.source_configs:
-            self.update_mappings(s.id, s.get_mappings())
-        else:
-            if not self.source_configs[s.id].is_diff(s):
-                return False
-            self.update_mappings(s.id, s.get_mappings(), self.source_configs[s.id].get_mappings())
-        self.source_configs[s.id] = s
-        # Update metrics
-        metrics["sources_changed"] += 1
-        self.add_sources += 1
-        for m in data.get("mapping_refs") or []:
-            code, *refs = m.split(":")
-            if code == "rs" and refs[0].lower() not in self.remote_system_map:
-                self.remote_system_map[refs[0].lower()] = refs[0]
-
-    def update_mappings(self, sid, new: Iterable[str], old: Optional[Iterable[str]] = None):
-        """"""
-        # Delete Old Mappings
-        for m in set(old or []) - set(new):
-            if m in self.source_map:
-                del self.source_map[m]
-        # Add new Mappings
-        for m in set(new) - set(old or []):
-            self.source_map[m] = sid
-
-    async def delete_source(self, sid):
-        if sid not in self.source_configs:
-            return False
-        source = self.source_configs.pop(sid)
-        for m in source.mapping_refs:
-            if m in self.source_map:
-                del self.source_map[m]
-        metrics["sources_deleted"] += 1
-
-    async def on_event_source_ready(self) -> None:
-        """
-        Called when all mappings are ready.
-        """
-        self.event_source_ready.set()
-        self.logger.info("%d Event Sources has been loaded", self.add_sources)
-        # calculate size
-
-    def lookup_source_by_name(
-        self, name: str, collector: Optional[str] = None
-    ) -> Optional[SourceConfig]:
-        """Lookup source by name"""
-        # Clean domain part
-        hostname = name.split(".", 1)[0]
-        # Lowe
-        hostname = f"name:{hostname.lower()}"
-        if hostname in self.source_map:
-            return self.source_configs[self.source_map[hostname]]
-        if f"name:{name.lower()}" in self.source_map:
-            return self.source_configs[self.source_map[f"name:{name.lower()}"]]
-        # Register invalid event source
-        if self.source_configs and collector:
-            metrics["error", ("type", "object_not_found"), ("collector", collector)] += 1
-        else:
-            metrics["error", ("type", "object_not_found")] += 1
-        self.invalid_sources[name] += 1
-        return None
-
-    def lookup_agent_by_noc_key(self, key: str) -> Optional[SourceConfig]:
-        """Lookup Agent by key"""
-        if key in self.source_map:
-            return self.source_configs[self.source_map[key]]
-        metrics["error", ("type", "agent_not_found")] += 1
-        self.invalid_sources[key] += 1
-        return None
-
-    def get_remote_system_name(self, code, authorization: Optional[str] = None) -> Optional[str]:
-        """Check Remote System"""
-        if code.lower() not in self.remote_system_map:
-            return None
-        return self.remote_system_map[code.lower()]
-
-    def is_rs_banned(self, code) -> bool:
-        """Check remote system is banned"""
-        return code in self.banned_rs
-
-    def ban_remote_system(self, code):
-        """Add Remote System code to banned"""
-        self.logger.warning("[%s] Add RemoteSystem code to banned", code)
-        self.banned_rs.add(code)
-
-    @staticmethod
-    def expand_rules(data: Dict[str, Any]) -> List[CfgItem]:
-        return [
-            CfgItem.from_data(
-                rid=data["id"],
-                table=data["table"],
-                field=data["field"],
-                data=item,
-            )
-            for item in data["rules"]
-        ]
 
     def insert_data(self, data: Dict[str, Any]) -> None:
         """
@@ -326,6 +232,180 @@ class MetricsCollectorService(FastAPIService):
                 del self.mappings[k]
         del self.id_mappings[mt_id]
 
+    async def update_sensors(self, cfg: SourceConfig, sensors: List[Dict[str, Any]]):
+        """Update sensors Config"""
+        processed = set()
+        for data in sensors:
+            s = SensorConfig.from_data(data)
+            processed.add(s.id)
+            self.sensor_configs[s.id] = s
+            for m in s.get_mappings():
+                self.source_map[m] = s.id
+        if cfg.id not in self.source_configs:
+            return
+        for sid in self.source_configs[cfg.id].sensors or []:
+            # Deleted
+            if sid in processed or sid not in self.sensor_configs:
+                continue
+            # Clean mappings
+            for m in self.sensor_configs[sid].get_mappings():
+                if m in self.source_map:
+                    del self.source_map[m]
+            del self.sensor_configs[sid]
+
+    async def update_remote_system(self, data):
+        try:
+            cfg = RemoteSystemConfig.from_data(data)
+        except Exception:
+            return
+        self.remote_system_config[data["id"]] = cfg
+        self.remote_system_map[cfg.api_key] = cfg.id
+        self.remote_system_map[cfg.name.lower()] = cfg.id
+        self.logger.info("[%s] Adding for received", cfg.name)
+        # Update metrics
+        metrics["sources_changed"] += 1
+        self.add_sources += 1
+
+    async def update_source(self, data):
+        """Update Source config"""
+        if data["type"] == "remote_system":
+            return await self.update_remote_system(data)
+        try:
+            s = SourceConfig.from_data(data)
+        except Exception as e:
+            print(f"{data['id']} Error when processed source: {e}")
+            return False
+        if s.sensors or (s.id in self.sensor_configs and self.source_configs[s.id].sensors):
+            await self.update_sensors(s, data.get("sensors"))
+        if s.id not in self.source_configs:
+            self.update_mappings(s.id, s.get_mappings())
+        else:
+            if not self.source_configs[s.id].is_diff(s):
+                return False
+            self.update_mappings(s.id, s.get_mappings(), self.source_configs[s.id].get_mappings())
+        self.source_configs[s.id] = s
+        # Update metrics
+        metrics["sources_changed"] += 1
+        self.add_sources += 1
+
+    def update_mappings(self, sid, new: Iterable[str], old: Optional[Iterable[str]] = None):
+        """"""
+        # Delete Old Mappings
+        for m in set(old or []) - set(new):
+            if m in self.source_map:
+                del self.source_map[m]
+        # Add new Mappings
+        for m in set(new) - set(old or []):
+            self.source_map[m] = sid
+
+    async def delete_remote_system_config(self, sid):
+        if sid not in self.remote_system_config:
+            return
+        cfg = self.remote_system_config.pop(sid)
+        if cfg.name.lower() in self.remote_system_map:
+            del self.remote_system_map[cfg.name.lower()]
+        if cfg.api_key in self.remote_system_map:
+            del self.remote_system_map[cfg.api_key]
+        metrics["sources_deleted"] += 1
+
+    async def delete_source(self, sid):
+        await self.delete_remote_system_config(sid)
+        if sid not in self.source_configs:
+            return
+        source = self.source_configs.pop(sid)
+        for m in source.mapping_refs:
+            if m in self.source_map:
+                del self.source_map[m]
+        for sid in source.sensors or []:
+            cfg = self.sensor_configs.pop(sid, None)
+            if not cfg:
+                continue
+            for m in cfg.get_mappings():
+                if m in self.source_map:
+                    del self.source_map[m]
+        metrics["sources_deleted"] += 1
+
+    async def on_event_source_ready(self) -> None:
+        """
+        Called when all mappings are ready.
+        """
+        self.event_source_ready.set()
+        self.logger.info("%d Event Sources has been loaded", self.add_sources)
+        # calculate size
+
+    def lookup_source_by_name(
+        self, name: str, collector: Optional[str] = None
+    ) -> Optional[SourceConfig]:
+        """Lookup source by name"""
+        # Clean domain part
+        hostname = name.split(".", 1)[0]
+        # Lowe
+        hostname = f"name:{hostname.lower()}"
+        if hostname in self.source_map:
+            return self.source_configs[self.source_map[hostname]]
+        if f"name:{name.lower()}" in self.source_map:
+            return self.source_configs[self.source_map[f"name:{name.lower()}"]]
+        # Register invalid event source
+        if self.source_configs and collector:
+            metrics["error", ("type", "object_not_found"), ("collector", collector)] += 1
+        else:
+            metrics["error", ("type", "object_not_found")] += 1
+        self.invalid_sources[name] += 1
+        return None
+
+    def lookup_remote_sensor(self, sid: str, remote_system: str) -> Optional[SensorConfig]:
+        """Lookup remote_sensor"""
+        if not self.sensor_configs:
+            return None
+        sid = f"rs:{remote_system}:{sid}"
+        if sid in self.source_map:
+            return self.sensor_configs[self.source_map[sid]]
+
+    def lookup_agent_by_noc_key(self, key: str) -> Optional[SourceConfig]:
+        """Lookup Agent by key"""
+        if key in self.source_map:
+            return self.source_configs[self.source_map[key]]
+        metrics["error", ("type", "agent_not_found")] += 1
+        self.invalid_sources[key] += 1
+        return None
+
+    def get_remote_system_by_code(
+        self,
+        code: str,
+        authorization: Optional[str] = None,
+    ) -> Optional[RemoteSystemConfig]:
+        """Check Remote System"""
+        sid = self.remote_system_map.get(code.lower())
+        if not sid or sid not in self.remote_system_config:
+            return None
+        return self.remote_system_config[sid]
+
+    def is_rs_banned(self, code) -> bool:
+        """Check remote system is banned"""
+        cfg = self.get_remote_system_by_code(code)
+        if cfg:
+            return cfg.is_banned
+        return False
+
+    def ban_remote_system(self, code):
+        """Add Remote System code to banned"""
+        self.logger.warning("[%s] Add RemoteSystem code to banned", code)
+        cfg = self.get_remote_system_by_code(code)
+        if cfg:
+            self.remote_system_config[cfg.id].is_banned = True
+
+    @staticmethod
+    def expand_rules(data: Dict[str, Any]) -> List[CfgItem]:
+        return [
+            CfgItem.from_data(
+                rid=data["id"],
+                table=data["table"],
+                field=data["field"],
+                data=item,
+            )
+            for item in data["rules"]
+        ]
+
     def find_metrics_by_name(self, collector: str, name: str) -> List[CfgItem]:
         """Find by name (rx)"""
         if (collector, name) in self.mappings:
@@ -362,6 +442,28 @@ class MetricsCollectorService(FastAPIService):
         # Not Mapped metric
         self.logger.debug("[%s] Not mapped value: %s. Skipping", collector, name)
         return None
+
+    def send_sensors(
+        self, data: List[Tuple[Tuple[SensorConfig, int], Tuple[datetime.datetime, float]]]
+    ):
+        """Send Metric value for sensors"""
+        parts = defaultdict(list)
+        for (cfg, rs_id), (ts, value) in data:
+            parts[0].append(
+                {
+                    "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
+                    "scope": "sensor",
+                    "labels": [f"noc::sensor::{cfg.name}"],
+                    "sensor": cfg.bi_id,
+                    # "managed_object": item.managed_object,
+                    "_units": {"value_delta": cfg.units, "value": cfg.units},
+                    "remote_system": rs_id,
+                    "value": value,
+                    "value_delta": value,
+                }
+            )
+        for partition, items in parts.items():
+            self.publish(orjson.dumps(items), stream="metrics", partition=partition)
 
     def send_data(self, data: List[SendMetric]):
         """

@@ -373,7 +373,7 @@ class Label(Document):
         if (not changed_fields and self.expose_metric) or (
             changed_fields and "expose_metric" in changed_fields
         ):
-            ds_changed.append("cfgmetricsources")
+            ds_changed.append("cfgmetricstarget")
         if (not changed_fields and self.expose_datastream) or (
             changed_fields and "expose_datastream" in changed_fields
         ):

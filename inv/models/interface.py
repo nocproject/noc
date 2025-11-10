@@ -223,7 +223,7 @@ class Interface(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_managedobject:
             yield "managedobject", self.managed_object.id
-        yield "cfgmetricsources", f"sa.ManagedObject::{self.managed_object.bi_id}"
+        yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
 
     def save(self, *args, **kwargs):
         if not hasattr(self, "_changed_fields") or "name" in self._changed_fields:
@@ -462,11 +462,11 @@ class Interface(Document):
         """
         if self.oper_status == status:
             return
-        now = timestamp or datetime.datetime.now()
-        if self.oper_status != status and (
-            not self.oper_status_change or self.oper_status_change < now
-        ):
-            self.update(oper_status=status, oper_status_change=now)
+        timestamp = timestamp or datetime.datetime.now().replace(microsecond=0)
+        if not self.oper_status_change or self.oper_status_change < timestamp:
+            self.oper_status = status
+            self.oper_status_change = timestamp
+            self.update(oper_status=status, oper_status_change=timestamp)
             if self.profile.is_enabled_notification:
                 logger.debug("Sending status change notification")
                 headers = self.managed_object.get_mx_message_headers(self.effective_labels)

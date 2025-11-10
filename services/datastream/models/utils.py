@@ -7,7 +7,7 @@
 
 # Python modules
 import datetime
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 # Third-party modules
 from pydantic import BaseModel
@@ -43,6 +43,18 @@ class RemoteMapItem(BaseModel):
     remote_id: str
 
 
+class AdministrativeDomain(BaseModel):
+    id: str
+    name: str
+    remote_system: Optional[RemoteSystemItem] = None
+    remote_id: Optional[str] = None
+
+
+class Service(BaseModel):
+    id: str
+    bi_id: str
+
+
 class DisposeAction(BaseModel):
     """
     # Action
@@ -62,3 +74,14 @@ class DisposeAction(BaseModel):
     @property
     def is_target(self) -> bool:
         return not self.model_id or self.model_id == "sa.ManagedObject"
+
+
+class ManagedObjectOpaque(BaseModel):
+    id: str
+    name: str
+    adm_path: List[int]
+    administrative_domain: AdministrativeDomain
+    remote_system: Optional[RemoteSystemItem] = None
+    remote_id: Optional[str] = None
+    mappings: Optional[List[RemoteMapItem]] = None
+    services: Optional[List[Service]] = None

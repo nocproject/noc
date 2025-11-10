@@ -225,7 +225,7 @@ class CPEProfile(Document):
     def iter_changed_datastream(self, changed_fields=None):
         from noc.inv.models.cpe import CPE
 
-        if not config.datastream.enable_cfgmetricsources:
+        if not config.datastream.enable_cfgmetricstarget:
             return
         if (
             changed_fields
@@ -240,9 +240,9 @@ class CPEProfile(Document):
                 # Check Active?
                 mos.add(controllers[0].managed_object.bi_id)
             if not changed_fields or "metrics" in changed_fields or "labels" in changed_fields:
-                yield "cfgmetricsources", f"inv.CPE::{bi_id}"
+                yield "cfgmetricstarget", f"inv.CPE::{bi_id}"
         for bi_id in mos:
-            yield "cfgmetricsources", f"sa.ManagedObject::{bi_id}"
+            yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
 
     def on_save(self):
         self._reset_caches(self.id)

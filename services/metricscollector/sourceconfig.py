@@ -7,29 +7,50 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Tuple, Optional, Iterable, FrozenSet
+from typing import Tuple, Optional, Iterable, List
+
+
+@dataclass
+class RemoteSystemConfig(object):
+    id: str
+    name: str
+    bi_id: int
+    api_key: Optional[str] = None
+    code: Optional[str] = None
+    is_banned: bool = False
+
+    @classmethod
+    def from_data(cls, data) -> "RemoteSystemConfig":
+        return RemoteSystemConfig(
+            id=str(data["id"]),
+            name=data["name"],
+            bi_id=int(data["bi_id"]),
+            api_key=data.get("api_key"),
+        )
 
 
 @dataclass(eq=True, frozen=True)
-class RemoteCollectors:
+class SensorConfig(object):
     name: str
-    api_key: str
-    bi_id: Optional[int]
-    enable_metrics: bool = False
-    enable_fmevent: bool = False
-    no_data_check: bool = False
+    bi_id: int
+    units: str = "1"
+    hints: Optional[Tuple[str, ...]] = None
 
     @classmethod
-    def from_data(cls, data) -> "RemoteCollectors":
-        """Build RemoteSystem from data"""
-        return RemoteCollectors(
+    def from_data(cls, data) -> "SensorConfig":
+        return SensorConfig(
             name=data["name"],
-            api_key=data["api_key"],
-            bi_id=data.get("bi_id"),
-            enable_metrics=bool(data.get("enable_metrics")),
-            enable_fmevent=bool(data.get("enable_fmevent")),
-            no_data_check=data.get("nodata_policy") == "C",
+            bi_id=data["bi_id"],
+            units=data["units"],
+            hints=data.get("hints"),
         )
+
+    @property
+    def id(self):
+        return str(self.bi_id)
+
+    def get_mappings(self) -> List[str]:
+        return self.hints or []
 
 
 @dataclass(eq=True, frozen=True)
@@ -39,32 +60,39 @@ class SourceConfig(object):
     bi_id: int
     address: str
     fm_pool: str
-    api_keys: FrozenSet[str]
+    api_key: str
+    managed_object: Optional[int] = None
+    enable_metrics: bool = False
+    enable_fmevent: bool = False
     no_data_check: bool = False
     mapping_refs: Optional[Tuple[str, ...]] = None
-    collectors: Optional[FrozenSet[RemoteCollectors]] = None
+    sensors: Optional[Tuple[str, ...]] = None
 
     @classmethod
     def from_data(cls, data) -> "SourceConfig":
-        mappings, collectors, keys, no_data_check = [], [], [], False
-        for rc in data.get("metric_collector") or []:
-            rc = RemoteCollectors.from_data(rc)
-            collectors.append(rc)
-            if rc.api_key:
-                keys.append(rc.api_key)
-            no_data_check |= rc.no_data_check
+        mappings, keys, sensors = [], [], []
         for m in data.get("mapping_refs") or []:
             mappings.append(m)
+        if data.get("api_key"):
+            keys.append(data["api_key"])
+        for s in data.get("sensors", []):
+            sensors.append(str(s["bi_id"]))
+        mo = None
+        if data["type"] == "managed_object":
+            mo = data["bi_id"]
         return SourceConfig(
             id=str(data["id"]),
             name=data["name"],
             bi_id=int(data["bi_id"]),
-            address=data["addresses"][0]["address"] if data["addresses"] else None,
-            fm_pool=data["fm_pool"],
-            api_keys=frozenset(keys),
-            no_data_check=no_data_check,
+            address=data["addresses"][0] if data.get("addresses") else None,
+            fm_pool=data.get("fm_pool"),
+            api_key=data.get("api_key"),
+            enable_metrics=bool(data.get("enable_metrics")),
+            enable_fmevent=bool(data.get("enable_fmevent")),
+            no_data_check=data.get("nodata_policy") == "C",
+            managed_object=mo,
             mapping_refs=tuple(mappings),
-            collectors=frozenset(collectors),
+            sensors=tuple(sensors),
         )
 
     def is_diff(self, cfg: "SourceConfig") -> bool:
@@ -76,16 +104,3 @@ class SourceConfig(object):
         if not self.mapping_refs:
             return []
         return self.mapping_refs
-
-    def get_remote_collector_by_key(self, key: str) -> Optional[RemoteCollectors]:
-        """Getting Remote Collector by key"""
-        if not self.collectors:
-            return None
-        for c in self.collectors:
-            if c.api_key == key:
-                return c
-        return None
-
-    def has_remote_system(self, name) -> bool:
-        """Check source on RemoteSystem"""
-        return any(rc.name == name for rc in self.collectors or [])

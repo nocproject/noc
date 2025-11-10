@@ -34,6 +34,12 @@ class Command(BaseCommand):
         "administrativedomain": "sa.AdministrativeDomain",
         "cfgmetrics": "pm.MetricType",
         "cfgmetricsources": ("sa.ManagedObject", "sla.SLAProbe", "inv.Sensor"),
+        "cfgmetricstarget": (
+            "sa.ManagedObject",
+            "sla.SLAProbe",
+            "main.RemoteSystem",
+            "pm.Agent",
+        ),
         "cfgping": "sa.ManagedObject",
         "cfgsyslog": "sa.ManagedObject",
         "cfgtrap": "sa.ManagedObject",
@@ -55,7 +61,7 @@ class Command(BaseCommand):
         "cfgtrap": "cfgtarget",
         "cfgping": "cfgtarget",
     }
-    BI_ID_DATASTREAM = {"cfgmetricsources"}  # DataStream that used bi_id as ID
+    BI_ID_DATASTREAM = {"cfgmetricsources", "cfgmetricstarget"}  # DataStream that used bi_id as ID
 
     def add_arguments(self, parser):
         subparsers = parser.add_subparsers(dest="cmd", required=True)

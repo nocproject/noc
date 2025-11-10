@@ -63,8 +63,6 @@ class Scope(EmbeddedDocument):
 
     scope = StringField()
     command = StringField()
-    enable_scope_command = StringField()
-    disable_scope_command = StringField()
     enter_scope = BooleanField(default=False)
     exit_command = StringField()
 
@@ -85,8 +83,6 @@ class Scope(EmbeddedDocument):
             value="",
             command=self.command,
             enter=self.enter_scope,
-            enable_command=self.enable_scope_command,
-            disable_command=self.disable_scope_command,
             exit_command=self.exit_command,
         )
 

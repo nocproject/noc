@@ -40,6 +40,7 @@ from noc.main.models.remotemappingsitem import RemoteMappingItem
 from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.state import State
 from noc.sa.models.managedobject import ManagedObject
+from noc.config import config
 from .agentprofile import AgentProfile
 
 id_lock = Lock()
@@ -166,6 +167,10 @@ class Agent(Document):
             self._id_cache[str(self.id)] = self
             self._bi_id_cache[self.bi_id] = self
 
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"pm.Agent::{self.bi_id}"
+
     def update_addresses(
         self,
         serial: Optional[str] = None,
@@ -210,3 +215,47 @@ class Agent(Document):
         state = instance.state or instance.profile.workflow.get_default_state()
         if state.labels:
             yield list(state.labels)
+
+    @property
+    def has_configured_metrics(self) -> bool:
+        """Check configured collected metrics"""
+        return self.state.is_productive
+
+    @classmethod
+    def get_metric_config(cls, agent: "Agent"):
+        """Return MetricConfig for Target service"""
+        from noc.inv.models.sensor import Sensor
+
+        if not agent.state.is_productive:
+            return {}
+        r = {
+            "type": "agent",
+            "name": agent.name,
+            "bi_id": agent.bi_id,
+            "mapping_refs": [f"name:{agent.name.lower()}"],
+            "addresses": [],
+            "sharding_key": agent.bi_id,
+            "managed_object": None,
+            "enable_fmevent": False,
+            "enable_metrics": True,
+            "api_key": agent.key,
+            "exposed_labels": [
+                ll
+                for ll in agent.effective_labels
+                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
+            ],
+            "labels": [],
+            "rules": [],
+            "sensors": [],
+        }
+        if agent.managed_object:
+            r["managed_object"] = agent.managed_object.bi_id
+        for m in agent.iter_remote_mappings():
+            r["mapping_refs"].append(RemoteSystem.clean_reference(m.remote_system, m.remote_id))
+        for a in agent.ip or []:
+            r["addresses"].append(a.ip)
+        for s in Sensor.objects.filter(agent=agent):
+            cfg = Sensor.get_metric_config(s)
+            if cfg:
+                r["sensors"].append(cfg)
+        return r

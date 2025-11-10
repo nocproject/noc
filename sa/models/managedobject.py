@@ -1036,10 +1036,8 @@ class ManagedObject(NOCModel):
             yield "managedobject", self.id
         if config.datastream.enable_cfgtarget:
             yield "cfgtarget", self.id
-        if config.datastream.enable_cfgmetricsources and changed_fields.intersection(
-            {"id", "bi_id", "state", "pool", "fm_pool", "labels", "effective_labels"}
-        ):
-            yield "cfgmetricsources", f"sa.ManagedObject::{self.bi_id}"
+        if config.datastream.enable_cfgmetricstarget:
+            yield "cfgmetricstarget", f"sa.ManagedObject::{self.bi_id}"
 
     def iter_changed_domains(self, changed_fields=None):
         """
@@ -2687,6 +2685,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interface import Interface
         from noc.inv.models.interfaceprofile import InterfaceProfile
         from noc.pm.models.metricrule import MetricRule
+        from noc.inv.models.sensor import Sensor
 
         if Interaction.ServiceActivation not in mo.interactions:
             return {}
@@ -2699,21 +2698,35 @@ class ManagedObject(NOCModel):
             ip = InterfaceProfile.get_by_id(iface["profile"])
             if not ip.metrics:
                 continue
+            rules = list(MetricRule.iter_rules_actions(iface["effective_labels"]))
+            c_metrics = [
+                mc.metric_type.field_name
+                for mc in ip.metrics
+                if bool(mc.metric_type.compose_expression)
+            ]
+            if not rules and not c_metrics:
+                continue
             items.append(
                 {
-                    "key_labels": [f"noc::interface::{iface['name']}"],
-                    "labels": [],
-                    "rules": list(MetricRule.iter_rules_actions(iface["effective_labels"])),
-                    "composed_metrics": [
-                        mc.metric_type.field_name
-                        for mc in ip.metrics
-                        if bool(mc.metric_type.compose_expression)
-                    ],
+                    "key": [f"noc::interface::{iface['name']}"],
+                    "composed_metrics": c_metrics,
+                    "rules": rules,
                 }
             )
+        refs = [f"name:{mo.name.lower()}"]
+        for m in mo.iter_remote_mappings():
+            refs.append(RemoteSystem.clean_reference(m.remote_system, m.remote_id))
+        sensors = []
+        for s in Sensor.objects.filter(managed_object=mo):
+            cfg = Sensor.get_metric_config(s)
+            if cfg:
+                sensors.append(cfg)
         return {
             "type": "managed_object",
             "bi_id": mo.bi_id,
+            "name": mo.name,
+            "addresses": [mo.address],
+            "mapping_refs": refs,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": sorted(mo.effective_labels),
             "exposed_labels": [
@@ -2729,8 +2742,9 @@ class ManagedObject(NOCModel):
             ],
             "rules": list(MetricRule.iter_rules_actions(mo.effective_labels)),
             "items": items,
+            "sensors": sensors,
             "sharding_key": mo.bi_id,
-            "meta": mo.get_message_context(),
+            "opaque_data": mo.get_message_context(),
         }
 
     @property
