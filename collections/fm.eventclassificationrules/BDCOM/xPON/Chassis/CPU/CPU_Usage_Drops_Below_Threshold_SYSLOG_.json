@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Chassis | CPU | CPU Usage Drops Below Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0579821c-23ee-4c06-b977-5e806d38fdef",
+    "description": "SLOT 0 CPURATE(78) IS NORMAL NOW!!!",
+    "event_class__name": "Chassis | CPU | CPU Usage Drops Below Threshold",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SLOT 0 CPURATE\\((?P<ovalue>\\d+)\\) IS NORMAL NOW!!!",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "SLOT 0 CPURATE(78) IS NORMAL NOW!!!",
+            "raw_vars": []
+        }
+    ]
+}

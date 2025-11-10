@@ -1,0 +1,17 @@
+{
+    "name": "BDCOM | xPON | Unknown | Ignore Line Protocol (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d090d53c-db04-4be4-9557-a523ff7195b5",
+    "description": "%LINEPROTO-5-UPDOWN",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%LINEPROTO-.*5-UPDOWN",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [{
+        "message": "%LINEPROTO-5-UPDOWN",
+        "raw_vars": []
+    }]
+}

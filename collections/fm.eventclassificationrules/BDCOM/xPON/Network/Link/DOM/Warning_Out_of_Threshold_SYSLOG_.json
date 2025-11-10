@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Network | Link | DOM | Warning: Out of Threshold (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "503e7b09-d3ea-460e-84e4-0669bbcd632a",
+    "description": "SFP DDM Warning Occured for Rx Power low on tg0/1",
+    "event_class__name": "Network | Link | DOM | Warning: Out of Threshold",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "SFP DDM Warning Occured for (?P<sensor>.+) (?P<threshold>high|low) on (?P<interface>\\S+)",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "SFP DDM Warning Occured for Rx Power low on tg0/1",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "name": "BDCOM | xPON | Chassis | PSU | PSU Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ff637018-dc65-4076-902d-204295005a1f",
+    "description": "ALARM!!!, POWER A IS WRONG",
+    "event_class__name": "Chassis | PSU | PSU Failed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "ALARM!!!, (?P<name>POWER\\s*\\S) IS WRONG",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "ALARM!!!, POWER A IS WRONG",
+            "raw_vars": []
+        },
+        {
+            "message": "ALARM!!!, POWER1 IS WRONG",
+            "raw_vars": []
+        }
+    ]
+}

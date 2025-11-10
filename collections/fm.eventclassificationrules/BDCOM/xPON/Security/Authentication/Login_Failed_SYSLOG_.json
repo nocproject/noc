@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Security | Authentication | Login Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "53bdbd2a-f452-43b5-a0bb-095013dc6f98",
+    "description": "%SYS-5-AUTH: User asd Authorization failed(from 10.118.0.2)",
+    "event_class__name": "Security | Authentication | Login Failed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-5-AUTH: User (?P<user>.*) Authorization failed\\(from (?P<ip>\\S+)\\)",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%SYS-5-AUTH: User asd Authorization failed(from 10.118.0.2)",
+            "raw_vars": []
+        }
+    ]
+}

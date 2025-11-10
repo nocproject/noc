@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Config | Config Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2564450c-1cba-4cde-aa65-acff824fdfc9",
+    "description": "%SYS-6-CONFIG: Configured from vty 2 by mitya(10.115.0.1)",
+    "event_class__name": "Config | Config Changed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%SYS-6-CONFIG: Configured from vty \\d by (?P<user>\\S+)\\s*\\((?P<ip>\\d\\S+)\\)",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%SYS-6-CONFIG: Configured from vty 2 by mitya(10.115.0.1)",
+            "raw_vars": []
+        }
+    ]
+}
