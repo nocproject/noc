@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 API_ACCESS_HEADER = "X-NOC-API-Access"
 
 
-@cachetools.cached
+@cachetools.cached(cachetools.TTLCache(maxsize=50, ttl=60))
 def get_format_role(ds, fmt):
     return ds.get_format_role(fmt)
 
