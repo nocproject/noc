@@ -18,7 +18,7 @@ from noc.aaa.models.user import User
 from .utils import get_alarm_mock, get_tt_system_mock, get_notification_group_mock
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def alarm():
     return get_alarm_mock()
 

@@ -17,7 +17,7 @@ from noc.fm.models.alarmwatch import Effect
 from .utils import get_alarm_mock, get_tt_system_mock, get_alarm_class_mock
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def alarm():
     return get_alarm_mock()
 
@@ -32,7 +32,7 @@ def tt_system():
     return get_tt_system_mock()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def alarm_class():
     return get_alarm_class_mock(name="System | Reboot")
 

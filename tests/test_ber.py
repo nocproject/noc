@@ -73,17 +73,17 @@ def test_decode_p_octetstring(raw, value):
     assert decoder.parse_p_octetstring(raw) == value
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_p_t61_string():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_c_octetstring():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_c_t61_string():
     raise NotImplementedError()
 
@@ -108,27 +108,27 @@ def test_decode_p_oid(raw, value):
     assert decoder.parse_p_oid(raw) == value
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_compressed_oid():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_sequence():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_implicit():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_set():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_utctime():
     raise NotImplementedError()
 

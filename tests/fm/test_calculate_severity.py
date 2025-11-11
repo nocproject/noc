@@ -14,7 +14,7 @@ from noc.fm.models.alarmwatch import Effect
 from .utils import get_alarm_mock
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def alarm():
     return get_alarm_mock()
 
