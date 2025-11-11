@@ -255,7 +255,7 @@ def test_instanceof_parameter(raw, config):
 @pytest.mark.parametrize(("raw", "config"), [(X(), {"cls": C}), (1, {"cls": C}), (1, {"cls": "C"})])
 def test_instanceof_parameter_error(raw, config):
     with pytest.raises(InterfaceTypeError):
-        assert InstanceOfParameter(**config).clean(raw) and "Ok"
+        assert InstanceOfParameter(**config).clean(raw)
 
 
 class C(object):

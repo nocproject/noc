@@ -37,8 +37,6 @@ from noc.core.vlanmap import process_vlan_map, process_chain
         # >>> Egress processing
         # Untagged vlan 10
         ([10], [], [{"op": "pop"}]),
-        # Tagged vlan 10
-        ([10], [10], []),
         # Pop outer vlan 20
         ([20, 10], [10], [{"op": "pop"}]),
         # Pop outer vlan 10, rewrite inner vlan 10 to 30

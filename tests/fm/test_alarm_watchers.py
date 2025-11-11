@@ -77,7 +77,8 @@ def test_subscribe(alarm, user):
     """Subscribe method"""
     alarm.subscribe(user)
     w = alarm.watchers[0]
-    assert w.effect == Effect.SUBSCRIPTION and w.key == str(user.id)
+    assert w.effect == Effect.SUBSCRIPTION
+    assert w.key == str(user.id)
     alarm.unsubscribe(user)
     assert len(alarm.watchers) == 0
 
@@ -88,13 +89,19 @@ def test_escalation(alarm):
     alarm.escalate(tt_id_1)
     w = alarm.watchers[0]
     assert len(alarm.watchers) == 1
-    assert w.effect == Effect.TT_SYSTEM and w.key == tt_id_1 and not w.clear_only and w.immediate
+    assert w.effect == Effect.TT_SYSTEM
+    assert w.key == tt_id_1
+    assert not w.clear_only
+    assert w.immediate
     # two
     tt_id_2 = "Stub:2"
     alarm.escalate(tt_id_2, close_tt=True)
     w = alarm.watchers[1]
     assert len(alarm.watchers) == 2
-    assert w.effect == Effect.TT_SYSTEM and w.key == tt_id_2 and w.clear_only and not w.immediate
+    assert w.effect == Effect.TT_SYSTEM
+    assert w.key == tt_id_2
+    assert w.clear_only
+    assert not w.immediate
 
 
 def test_wait_tt(alarm):

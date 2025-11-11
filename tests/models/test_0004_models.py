@@ -29,9 +29,8 @@ def get_fields():
     ("model_id", "field_name", "field"), [x for x in get_fields() if isinstance(x[2], BooleanField)]
 )
 def test_boolean_defaults(model_id, field_name, field):
-    assert field.default is not None and field.default != NOT_PROVIDED, (
-        "BooleanField default must be set to either True or False"
-    )
+    assert field.default is not None
+    assert field.default != NOT_PROVIDED, "BooleanField default must be set to either True or False"
 
 
 @pytest.mark.parametrize("model", get_models())

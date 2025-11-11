@@ -129,7 +129,6 @@ def db_postgres(request):
     """Create and destroy postgres database."""
     if not IS_COLLECT_ONLY:
         _create_pg_db()
-    yield
 
 
 @pytest.fixture(scope="session")
@@ -140,19 +139,18 @@ def db_mongo(request):
 
         connect()
         _create_mongo_db()
-    yield
 
 
 @pytest.fixture(scope="session")
 def db_clickhouse(request):
     """Create and destroy ClickHouse database."""
-    yield
+    return
 
 
 @pytest.fixture(scope="session")
 def db_kafka(request):
     """Create and destroy Kafka cluster."""
-    yield
+    return
 
 
 @pytest.fixture(scope="session")
@@ -165,7 +163,6 @@ def database(request, db_postgres, db_mongo, db_clickhouse, db_kafka):
         _load_collections()
         _load_mibs()
         _load_fixtures()
-    yield
 
 
 @with_timing("create_pg_db")
