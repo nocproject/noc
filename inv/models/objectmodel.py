@@ -81,7 +81,7 @@ class ContainerType(Enum):
 
     def is_container(self) -> bool:
         """Check if object is container."""
-        return self not in (ContainerType.NONE, ConnectionType.CHASSIS)
+        return self not in (ContainerType.NONE, ContainerType.CHASSIS)
 
     def is_group(self) -> bool:
         """Check if object is group."""
