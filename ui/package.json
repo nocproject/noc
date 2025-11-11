@@ -26,40 +26,43 @@
     "vendor": "node --experimental-strip-types build.ts vendor",
     "vendor-dev": "node --experimental-strip-types build.ts vendor-dev noc en",
     "sync": "browser-sync start --proxy 'localhost:8080' --files 'dist/*.*' --no-open",
-    "test": "vitest",
     "lint": "eslint scripts --fix",
     "build": "pnpm run vendor && pnpm run prod",
     "build:micromark": "node --experimental-strip-types build-bundle.ts micromark",
-    "build:monaco": "node --experimental-strip-types build-bundle.ts monaco"
+    "build:monaco": "node --experimental-strip-types build-bundle.ts monaco",
+    "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "type": "module",
   "devDependencies": {
-    "@eslint/js": "^9.37.0",
+    "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.56.1",
     "@types/espree": "^10.1.0",
     "@types/estree": "^1.0.8",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.19.0",
     "astring": "^1.9.0",
     "browser-sync": "^3.0.4",
-    "esbuild": "0.25.10",
-    "eslint": "^9.37.0",
+    "esbuild": "^0.27.0",
+    "eslint": "^9.39.1",
     "espree": "^10.4.0",
     "estree-walker": "^3.0.3",
     "fs-extra": "^11.3.2",
-    "globals": "^16.4.0",
+    "globals": "^16.5.0",
     "playwright": "^1.56.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.1",
-    "vitest": "^4.0.1"
+    "typescript-eslint": "^8.46.3",
+    "vitest": "^4.0.8"
   },
   "dependencies": {
     "dompurify": "^3.3.0",
     "micromark": "^4.0.2",
     "micromark-extension-gfm": "^3.0.0",
-    "monaco-editor": "^0.53.0"
+    "monaco-editor": "^0.54.0"
   }
 }

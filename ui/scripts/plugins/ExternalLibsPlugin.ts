@@ -53,6 +53,11 @@ export class ExternalLibsPlugin{
         // {name: "common/diff_match_patch.js", format: "iife"},
         // {name: "pkg/codemirror/addon/merge/merge.js", format: "iife"},
         
+        // Leaflet
+        {name: "pkg/leaflet/leaflet.js", format: "iife"},
+        {name: "pkg/leaflet/Yandex.js", format: "iife"},
+        {name: "pkg/leaflet/yapi.js", format: "iife"},
+
         // JointJS
         {name: "pkg/lodash/lodash.min.js", format: "iife"},
         {name: "pkg/backbone/backbone.min.js", format: "iife"},

@@ -91,6 +91,26 @@ const commonOptions: BuilderOptions = {
         prefix: true,
       },
     },
+    {
+      name: "NOC.core.ResourceLoader.loadSet",
+      replacement: {
+        type: "ExpressionStatement",
+        expression: {
+          type: "CallExpression",
+          callee: {
+            type: "MemberExpression",
+            object: {type: "ThisExpression"},
+            property: {type: "Identifier", name: "createMap"},
+            computed: false,
+            optional: false,
+          },
+          arguments: [
+            {type: "Identifier", name: "data"},
+          ],
+          optional: false,
+        },
+      },
+    },   
   ],
   esbuildOptions: {
     bundle: true,

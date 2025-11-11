@@ -2,6 +2,7 @@ import * as esbuild from "esbuild";
 import type {CallExpression, Expression} from "estree";
 import * as fs from "fs-extra";
 import * as path from "path";
+import {afterEach, beforeEach, describe, expect, it} from "vitest";
 import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
 
 describe("ReplaceMethodsPlugin", () => {
@@ -15,6 +16,72 @@ describe("ReplaceMethodsPlugin", () => {
     await fs.remove(testDir);
   });
 
+  it("should replace NOC.core.ResourceLoader.loadSet", async() => {
+    const inputCode = `
+    Ext.define("NOC.inv.channel.Application", {
+      extend: "NOC.core.ModelApplication",
+      preview: function(data){
+        var me = this;
+
+        this.currentId = data.id;
+        NOC.core.ResourceLoader.loadSet("leaflet", {
+          yandex: NOC.settings.gis.yandex_supported,
+        })
+        .then(() => {
+          me.createMap(data);
+        })
+        .catch(() => {
+          NOC.error(__("Failed to load map resources"));
+        });
+      },
+    });
+  `;
+    const inputFile = path.join(testDir, "input.js");
+    await fs.writeFile(inputFile, inputCode);
+
+    const plugin = new ReplaceMethodsPlugin({
+      toReplaceMethods: [
+        {
+          name: "NOC.core.ResourceLoader.loadSet",
+          replacement: {
+            type: "ExpressionStatement",
+            expression: {
+              type: "CallExpression",
+              callee: {
+                type: "MemberExpression",
+                object: {type: "ThisExpression"},
+                property: {type: "Identifier", name: "createMap"},
+                computed: false,
+                optional: false,
+              },
+              arguments: [
+                {type: "Identifier", name: "data"},
+              ],
+              optional: false,
+            },
+          },
+        },   
+      ],
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: "module",
+      },
+    });
+
+    const result = await esbuild.build({
+      entryPoints: [inputFile],
+      bundle: false,
+      write: false,
+      plugins: [plugin.getPlugin()],
+    });
+
+    const outputCode = result.outputFiles[0].text;
+    expect(outputCode).not.toContain("NOC.core.ResourceLoader.loadSet");
+    expect(outputCode).not.toContain(".then");
+    expect(outputCode).not.toContain(".catch");
+    expect(outputCode).toContain("this.createMap(data)");
+  });
+  
   it("should remove specified methods from JavaScript code", async() => {
     const inputCode = `
         console.debug("NOC.core.StateProvider");

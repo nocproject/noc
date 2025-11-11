@@ -1,3 +1,4 @@
+import {beforeEach, describe, expect, it} from "vitest";
 import {DependencyGraph} from "../DependencyGraph.ts";
 
 describe("DependencyGraph", () => {
