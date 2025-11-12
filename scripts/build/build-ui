@@ -8,6 +8,7 @@
 set -e -x
 
 URL="https://cdn.getnoc.com/npkg/noc-ui-pkg%401.0.tar.bz2"
+rm -rf ui/pkg/
 curl -L "$URL" | tar jxf -
 cd ui/
 npm install --no-save
