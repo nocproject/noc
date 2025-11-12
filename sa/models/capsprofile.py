@@ -25,6 +25,7 @@ import cachetools
 # NOC modules
 from noc.core.caps.types import CapsConfig
 from noc.core.model.decorator import on_delete_check
+from noc.core.change.decorator import change
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
 
@@ -65,7 +66,10 @@ class CapsSettings(EmbeddedDocument):
         )
 
 
-@on_delete_check(check=[("sa.ManagedObjectProfile", "caps_profile")])
+@change
+@on_delete_check(
+    check=[("sa.ManagedObjectProfile", "caps_profile"), ("sa.ServiceProfile", "caps_profile")]
+)
 class CapsProfile(Document):
     meta = {"collection": "capsprofiles", "strict": False, "auto_create_index": False}
 

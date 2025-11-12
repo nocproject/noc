@@ -7,149 +7,149 @@
 console.debug("Defining NOC.sa.serviceprofile.Model");
 
 Ext.define("NOC.sa.serviceprofile.Model", {
-    extend: "Ext.data.Model",
-    rest_url: "/sa/serviceprofile/",
+  extend: "Ext.data.Model",
+  rest_url: "/sa/serviceprofile/",
 
-    fields: [
-        {
-            name: "id",
-            type: "string"
-        },
-        {
-            name: "name",
-            type: "string"
-        },
-        {
-            name: "description",
-            type: "string"
-        },
-        {
-            name: "card_title_template",
-            type: "string"
-        },
-        {
-            name: "glyph",
-            type: "string"
-        },
-        {
-            name: "display_order",
-            type: "integer",
-            defaultValue: 100
-        },
-        {
-            name: "workflow",
-            type: "string"
-        },
-        {
-            name: "workflow__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "code",
-            type: "string"
-        },
-        {
-            name: "interface_profile",
-            type: "string"
-        },
-        {
-            name: "weight",
-            type: "int"
-        },
-        {
-            name: "show_in_summary",
-            type: "boolean"
-        },
-        {
-            name: "interface_profile__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "remote_system",
-            type: "string"
-        },
-        {
-            name: "remote_system__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "remote_id",
-            type: "string"
-        },
-        {
-            name: "bi_id",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "labels",
-            type: "auto"
-        },
-        {
-            name: "caps",
-            type: "auto"
-        },
-        {
-            name: "diagnostic_status",
-            type: "auto"
-        },
-        {
-            name: "status_transfer_policy",
-            type: "string",
-            defaultValue: "S"
-        },
-        {
-            name: "calculate_status_function",
-            type: "string",
-            defaultValue: "MN"
-        },
-        {
-            name: "calculate_status_rules",
-            type: "auto"
-        },
-        {
-            name: "alarm_affected_policy",
-            type: "string",
-            defaultValue: "A"
-        },
-        {
-            name: "alarm_status_rules",
-            type: "auto"
-        },
-        {
-            name: "instance_policy",
-            type: "string",
-            defaultValue: "D"
-        },
-        {
-            name: "instance_settings",
-            type: "auto"
-        },
-        {
-            name: "status_change_notification",
-            type: "string",
-            defaultValue: "d"
-        },
-        {
-            name: "raise_status_alarm_policy",
-            type: "string",
-            defaultValue: "R"
-        },
-        {
-            name: "raise_alarm_class",
-            type: "string"
-        },
-        {
-            name: "raise_alarm_class__label",
-            type: "string",
-            persist: false
-        },
-        {
-            name: "alarm_subject_template",
-            type: "string"
-        }
-    ]
+  fields: [
+    {
+      name: "id",
+      type: "string",
+    },
+    {
+      name: "name",
+      type: "string",
+    },
+    {
+      name: "description",
+      type: "string",
+    },
+    {
+      name: "card_title_template",
+      type: "string",
+    },
+    {
+      name: "glyph",
+      type: "string",
+    },
+    {
+      name: "display_order",
+      type: "integer",
+      defaultValue: 100,
+    },
+    {
+      name: "workflow",
+      type: "string",
+    },
+    {
+      name: "workflow__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "code",
+      type: "string",
+    },
+    {
+      name: "interface_profile",
+      type: "string",
+    },
+    {
+      name: "weight",
+      type: "int",
+    },
+    {
+      name: "show_in_summary",
+      type: "boolean",
+    },
+    {
+      name: "interface_profile__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "remote_system",
+      type: "string",
+    },
+    {
+      name: "remote_system__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "remote_id",
+      type: "string",
+    },
+    {
+      name: "bi_id",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "labels",
+      type: "auto",
+    },
+    {
+      name: "caps_profile",
+      type: "auto",
+    },
+    {
+      name: "diagnostic_status",
+      type: "auto",
+    },
+    {
+      name: "status_transfer_policy",
+      type: "string",
+      defaultValue: "S",
+    },
+    {
+      name: "calculate_status_function",
+      type: "string",
+      defaultValue: "MN",
+    },
+    {
+      name: "calculate_status_rules",
+      type: "auto",
+    },
+    {
+      name: "alarm_affected_policy",
+      type: "string",
+      defaultValue: "A",
+    },
+    {
+      name: "alarm_status_rules",
+      type: "auto",
+    },
+    {
+      name: "instance_policy",
+      type: "string",
+      defaultValue: "D",
+    },
+    {
+      name: "instance_settings",
+      type: "auto",
+    },
+    {
+      name: "status_change_notification",
+      type: "string",
+      defaultValue: "d",
+    },
+    {
+      name: "raise_status_alarm_policy",
+      type: "string",
+      defaultValue: "R",
+    },
+    {
+      name: "raise_alarm_class",
+      type: "string",
+    },
+    {
+      name: "raise_alarm_class__label",
+      type: "string",
+      persist: false,
+    },
+    {
+      name: "alarm_subject_template",
+      type: "string",
+    },
+  ],
 });
