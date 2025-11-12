@@ -8,5 +8,27 @@
     "description": "CPU Usage in percents",
     "measure": "%",
     "units__code": "%",
-    "scale__code": "1"
+    "scale__code": "1",
+    "collector_mappings": [
+        {
+            "aliases": ["Linux: CPU utilization"],
+            "allow_partial_match": false,
+            "collector": "zabbix",
+            "field": "system.cpu.util",
+            "sender": "zabbix"
+        },
+        {
+            "aliases": ["CPU usage in percent"],
+            "allow_partial_match": false,
+            "collector": "zabbix",
+            "field": "vmware.hv.cpu.usage.perf",
+            "sender": "zabbix"
+        },
+        {
+            "allow_partial_match": true,
+            "collector": "zabbix",
+            "field": "^Usage,CPU.+",
+            "sender": "zabbix"
+        }
+    ]
 }
