@@ -16,7 +16,7 @@ Ext.define("NOC.pm.agent.Application", {
     "NOC.pm.agentprofile.LookupField",
   ],
   model: "NOC.pm.agent.Model",
-
+  search: true,
   initComponent: function(){
     var me = this;
 
