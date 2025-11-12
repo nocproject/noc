@@ -89,7 +89,7 @@ Ext.define("NOC.sa.serviceprofile.Model", {
       type: "auto",
     },
     {
-      name: "caps",
+      name: "caps_profile",
       type: "auto",
     },
     {

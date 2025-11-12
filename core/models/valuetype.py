@@ -27,7 +27,7 @@ from noc.sa.interfaces.base import (
 from noc.core.validators import is_fqdn
 from noc.models import get_model, is_document
 
-BOOL_VALUES = frozenset(("t", "true", "yes"))
+BOOL_VALUES = frozenset(("t", "true", "yes", "on"))
 REFERENCE_SCOPE_SPLITTER = "::"
 ARRAY_ANNEX = "**"
 ARRAY_DELIMITER = " | "
