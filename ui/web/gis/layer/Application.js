@@ -9,7 +9,7 @@ console.debug("Defining NOC.gis.layer.Application");
 Ext.define("NOC.gis.layer.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.gis.layer.Model",
     "Ext.ux.form.ColorField",
   ],
@@ -19,7 +19,7 @@ Ext.define("NOC.gis.layer.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/gis/layer/{0}/json/",
       previewName: "Layer: {0}",

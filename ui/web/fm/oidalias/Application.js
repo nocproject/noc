@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.oidalias.Application");
 Ext.define("NOC.fm.oidalias.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.fm.oidalias.Model",
   ],
   model: "NOC.fm.oidalias.Model",
@@ -17,7 +17,7 @@ Ext.define("NOC.fm.oidalias.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/oidalias/{0}/json/",
       previewName: "OID Alias: {0}",

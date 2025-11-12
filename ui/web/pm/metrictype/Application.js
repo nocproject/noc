@@ -9,7 +9,7 @@ console.debug("Defining NOC.pm.metrictype.Application");
 Ext.define("NOC.pm.metrictype.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.pm.metrictype.Model",
     "NOC.core.tagfield.Tagfield",
     "NOC.pm.metricscope.LookupField",
@@ -23,7 +23,7 @@ Ext.define("NOC.pm.metrictype.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/pm/metrictype/{0}/json/",
       previewName: "Metric Type: {0}",

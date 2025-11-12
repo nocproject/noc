@@ -1591,7 +1591,7 @@ msgid "RPSL"
 msgstr ""
 
 #: ui/web/core/ApplicationPanel.js:38 ui/web/core/FormPanel.js:162
-#: ui/web/core/JSONPreviewII.js:20 ui/web/core/ModelApplication.js:542
+#: ui/web/core/JSONPreview.js:20 ui/web/core/ModelApplication.js:542
 #: ui/web/core/ModelApplication.js:1780 ui/web/core/MonacoPanel.js:30
 #: ui/web/core/RemoteMappingForm.js:55 ui/web/core/ShareWizard.js:211
 #: ui/web/core/SubscriptionPanel.js:51 ui/web/core/TemplatePreview.js:27
@@ -1633,7 +1633,7 @@ msgstr "Fechar"
 msgid "Failed add custom fields to form "
 msgstr ""
 
-#: ui/web/core/FormPanel.js:146 ui/web/core/JSONPreviewII.js:27
+#: ui/web/core/FormPanel.js:146 ui/web/core/JSONPreview.js:27
 #: ui/web/core/ModelApplication.js:521 ui/web/core/ModelApplication.js:1745
 #: ui/web/core/plugins/DynamicModalEditing.js:275
 #: ui/web/core/plugins/SubscriptionModalEditing.js:76
@@ -1896,29 +1896,29 @@ msgid "BI ID"
 msgstr ""
 
 # | msgid "Shape"
-#: ui/web/core/JSONPreviewII.js:33 ui/web/core/ShareWizard.js:161
+#: ui/web/core/JSONPreview.js:33 ui/web/core/ShareWizard.js:161
 #, fuzzy
 msgid "Share"
 msgstr "Formato"
 
-#: ui/web/core/JSONPreviewII.js:45
+#: ui/web/core/JSONPreview.js:45
 msgid "Share item?"
 msgstr ""
 
-#: ui/web/core/JSONPreviewII.js:46
+#: ui/web/core/JSONPreview.js:46
 msgid "Would you like to share item and contribute to Open-Source project?"
 msgstr ""
 
 # | msgid "Saved"
 # | msgid "Not saved"
-#: ui/web/core/JSONPreviewII.js:64
+#: ui/web/core/JSONPreview.js:64
 #, fuzzy
 msgid "JSON saved"
 msgstr "Salvos"
 
 # | msgid "Failed to get data"
 # | msgid "Failed to get JSON"
-#: ui/web/core/JSONPreviewII.js:67
+#: ui/web/core/JSONPreview.js:67
 #, fuzzy
 msgid "Failed to save JSON"
 msgstr "Falha ao carregar dados"

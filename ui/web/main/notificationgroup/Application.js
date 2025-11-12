@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.notificationgroup.Application");
 Ext.define("NOC.main.notificationgroup.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.ListFormField",
     "NOC.core.tagfield.Tagfield",
     "NOC.core.label.LabelField",
@@ -28,7 +28,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/main/notificationgroup/{0}/json/",
       previewName: "Notification Group: {0}",

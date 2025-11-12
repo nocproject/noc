@@ -11,7 +11,7 @@ Ext.define("NOC.pm.agent.Application", {
   requires: [
     "NOC.core.label.LabelField",
     "NOC.core.StateField",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.pm.agent.Model",
     "NOC.pm.agentprofile.LookupField",
   ],
@@ -21,7 +21,7 @@ Ext.define("NOC.pm.agent.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/pm/agent/{0}/config/",
       previewName: "Agent Config: {0}",

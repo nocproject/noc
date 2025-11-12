@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.profilecheckrule.Application");
 Ext.define("NOC.sa.profilecheckrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.sa.profilecheckrule.Model",
     "NOC.sa.profile.LookupField",
   ],
@@ -18,7 +18,7 @@ Ext.define("NOC.sa.profilecheckrule.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/profilecheckrule/{0}/json/",
       previewName: "Profile Check Rule: {0}",

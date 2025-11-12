@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.alarmseverity.Application");
 Ext.define("NOC.fm.alarmseverity.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.fm.alarmseverity.Model",
     "NOC.main.style.LookupField",
     "NOC.main.ref.sound.LookupField",
@@ -108,7 +108,7 @@ Ext.define("NOC.fm.alarmseverity.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/alarmseverity/{0}/json/",
       previewName: "Alarm Severity: {0}",

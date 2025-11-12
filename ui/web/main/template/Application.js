@@ -12,14 +12,14 @@ Ext.define("NOC.main.template.Application", {
     "NOC.main.template.Model",
     "NOC.main.ref.messagetype.LookupField",
     "NOC.main.ref.ulanguage.LookupField",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
   ],
   model: "NOC.main.template.Model",
   search: true,
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/main/template/{0}/json/",
       previewName: "Template: {0}",

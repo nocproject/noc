@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.connectiontype.Application");
 Ext.define("NOC.inv.connectiontype.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.TemplatePreview",
     "Ext.ux.form.ModelDataField",
     "NOC.inv.connectiontype.LookupField",
@@ -29,7 +29,7 @@ Ext.define("NOC.inv.connectiontype.Application", {
   initComponent: function(){
     var me = this;
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/connectiontype/{0}/json/",
       previewName: "Connection Type: {0}",

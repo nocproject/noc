@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.protocol.Application");
 Ext.define("NOC.inv.protocol.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.label.LabelField",
     "NOC.inv.protocol.Model",
     "NOC.inv.technology.LookupField",
@@ -30,7 +30,7 @@ Ext.define("NOC.inv.protocol.Application", {
     //     handler: me.onCard
     // });
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/protocol/{0}/json/",
       previewName: "Protocol: {0}",

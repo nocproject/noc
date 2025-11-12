@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.macblacklist.Application");
 Ext.define("NOC.inv.macblacklist.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.inv.macblacklist.Model",
     "NOC.inv.vendor.LookupField",
     "NOC.inv.platform.LookupField",
@@ -19,7 +19,7 @@ Ext.define("NOC.inv.macblacklist.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/macblacklist/{0}/json/",
       previewName: "MAC Blacklist: {0}",

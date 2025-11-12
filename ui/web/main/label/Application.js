@@ -15,7 +15,7 @@ Ext.define("NOC.main.label.Application", {
     "Ext.ux.form.GridField",
     "NOC.main.prefixtable.LookupField",
     "NOC.vc.vlanfilter.LookupField",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
   ],
   model: "NOC.main.label.Model",
   search: true,
@@ -38,7 +38,7 @@ Ext.define("NOC.main.label.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/main/label/{0}/json/",
       previewName: "Label: {0}",

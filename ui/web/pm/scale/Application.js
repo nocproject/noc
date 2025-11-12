@@ -9,14 +9,14 @@ console.debug("Defining NOC.pm.scale.Application");
 Ext.define("NOC.pm.scale.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.pm.scale.Model",
   ],
   model: "NOC.pm.scale.Model",
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/pm/scale/{0}/json/",
       previewName: "Scale: {0}",

@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.action.Application");
 Ext.define("NOC.sa.action.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.main.handler.LookupField",
     "NOC.sa.action.Model",
     "Ext.ux.form.GridField",
@@ -20,7 +20,7 @@ Ext.define("NOC.sa.action.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/action/{0}/json/",
       previewName: "Action: {0}",

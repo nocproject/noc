@@ -9,7 +9,7 @@ console.debug("Defining NOC.pm.measurementunits.Application");
 Ext.define("NOC.pm.measurementunits.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.pm.measurementunits.Model",
     "Ext.ux.form.ColorField",
     "NOC.pm.measurementunits.LookupField"],
@@ -19,7 +19,7 @@ Ext.define("NOC.pm.measurementunits.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/pm/measurementunits/{0}/json/",
       previewName: "Scope: {0}",

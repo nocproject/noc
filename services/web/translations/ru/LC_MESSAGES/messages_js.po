@@ -1485,7 +1485,7 @@ msgid "RPSL"
 msgstr ""
 
 #: ui/web/core/ApplicationPanel.js:38 ui/web/core/FormPanel.js:162
-#: ui/web/core/JSONPreviewII.js:20 ui/web/core/ModelApplication.js:542
+#: ui/web/core/JSONPreview.js:20 ui/web/core/ModelApplication.js:542
 #: ui/web/core/ModelApplication.js:1771 ui/web/core/MonacoPanel.js:30
 #: ui/web/core/RemoteMappingForm.js:55 ui/web/core/ShareWizard.js:211
 #: ui/web/core/SubscriptionPanel.js:51 ui/web/core/TemplatePreview.js:27
@@ -1527,7 +1527,7 @@ msgstr "Закрыть"
 msgid "Failed add custom fields to form "
 msgstr "Ошибка при добавлении custom поля в форму "
 
-#: ui/web/core/FormPanel.js:146 ui/web/core/JSONPreviewII.js:27
+#: ui/web/core/FormPanel.js:146 ui/web/core/JSONPreview.js:27
 #: ui/web/core/ModelApplication.js:521 ui/web/core/ModelApplication.js:1736
 #: ui/web/core/plugins/DynamicModalEditing.js:275
 #: ui/web/core/plugins/SubscriptionModalEditing.js:76
@@ -1762,23 +1762,23 @@ msgstr "Внешний ID"
 msgid "BI ID"
 msgstr ""
 
-#: ui/web/core/JSONPreviewII.js:33 ui/web/core/ShareWizard.js:161
+#: ui/web/core/JSONPreview.js:33 ui/web/core/ShareWizard.js:161
 msgid "Share"
 msgstr "Поделиться"
 
-#: ui/web/core/JSONPreviewII.js:45
+#: ui/web/core/JSONPreview.js:45
 msgid "Share item?"
 msgstr "Поделиться запись?"
 
-#: ui/web/core/JSONPreviewII.js:46
+#: ui/web/core/JSONPreview.js:46
 msgid "Would you like to share item and contribute to Open-Source project?"
 msgstr "Вы хотите поделиться записью и запросить добавление в Публичный проект?"
 
-#: ui/web/core/JSONPreviewII.js:64
+#: ui/web/core/JSONPreview.js:64
 msgid "JSON saved"
 msgstr "Сохранён"
 
-#: ui/web/core/JSONPreviewII.js:67
+#: ui/web/core/JSONPreview.js:67
 msgid "Failed to save JSON"
 msgstr "Ошибка при сохранении"
 

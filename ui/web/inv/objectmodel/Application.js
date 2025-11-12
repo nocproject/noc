@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.objectmodel.Application");
 Ext.define("NOC.inv.objectmodel.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.label.LabelField",
     "NOC.core.TemplatePreview",
     "NOC.inv.objectmodel.Model",
@@ -63,7 +63,7 @@ Ext.define("NOC.inv.objectmodel.Application", {
 
     me.emptyValue = "__empty";
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/objectmodel/{0}/json/",
       previewName: "Object Model: {0}",

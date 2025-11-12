@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.eventclass.Application");
 Ext.define("NOC.fm.eventclass.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.fm.eventclass.Model",
     "NOC.fm.eventclass.LookupField",
     "NOC.fm.alarmclass.LookupField",
@@ -284,7 +284,7 @@ Ext.define("NOC.fm.eventclass.Application", {
         },
       ],
     });
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/eventclass/{0}/json/",
       previewName: "Event Class: {0}",

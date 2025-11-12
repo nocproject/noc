@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.mibpreference.Application");
 Ext.define("NOC.fm.mibpreference.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.fm.mibpreference.Model",
   ],
   model: "NOC.fm.mibpreference.Model",
@@ -17,7 +17,7 @@ Ext.define("NOC.fm.mibpreference.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/mibpreference/{0}/json/",
       previewName: "MIB Preference: {0}",

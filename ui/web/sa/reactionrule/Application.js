@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.reactionrule.Application");
 Ext.define("NOC.sa.reactionrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.TemplatePreview",
     "NOC.core.ListFormField",
     "NOC.core.StringListField",
@@ -60,7 +60,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/reactionrule/{0}/json/",
       previewName: "Reaction Rule: {0}",

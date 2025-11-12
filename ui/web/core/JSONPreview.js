@@ -1,12 +1,12 @@
 //---------------------------------------------------------------------
-// NOC.core.JSONPreviewII monaco editor
+// NOC.core.JSONPreview monaco editor
 //---------------------------------------------------------------------
 // Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
-console.debug("Defining NOC.core.JSONPreviewII");
+console.debug("Defining NOC.core.JSONPreview");
 
-Ext.define("NOC.core.JSONPreviewII", {
+Ext.define("NOC.core.JSONPreview", {
   extend: "NOC.core.MonacoPanel",
   requires: [
     "NOC.core.ShareWizard",

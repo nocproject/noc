@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.vendor.Application");
 Ext.define("NOC.inv.vendor.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.TagsField",
     "NOC.inv.vendor.Model",
   ],
@@ -83,7 +83,7 @@ Ext.define("NOC.inv.vendor.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/vendor/{0}/json/",
       previewName: "Vendor: {0}",

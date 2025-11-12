@@ -9,7 +9,7 @@ console.debug("Defining NOC.dev.spec.Application");
 Ext.define("NOC.dev.spec.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.ListFormField",
     "NOC.dev.spec.Model",
     "NOC.dev.quiz.LookupField",
@@ -21,7 +21,7 @@ Ext.define("NOC.dev.spec.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/dev/spec/{0}/json/",
       previewName: "Spec: {0}",

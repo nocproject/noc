@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.firmware.Application");
 Ext.define("NOC.inv.firmware.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.inv.firmware.Model",
     "NOC.inv.vendor.LookupField",
     "NOC.sa.profile.LookupField",
@@ -27,7 +27,7 @@ Ext.define("NOC.inv.firmware.Application", {
       handler: me.onCard,
     });
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/firmware/{0}/json/",
       previewName: "Firmware: {0}",
