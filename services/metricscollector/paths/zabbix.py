@@ -57,15 +57,15 @@ class ZabbixAPI(object):
 
     async def send(
         self,
-        remote_system_code: str,
         req: bytes = Body(...),
+        remote_system_code: Optional[str] = None,
         authorization: Optional[str] = Header(None, alias="Authorization"),
     ) -> ORJSONResponse:
         if not authorization:
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
         _, key = authorization.split(" ")
         metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
-        rs_cfg = self.service.get_remote_system_by_code(remote_system_code)
+        rs_cfg = self.service.get_remote_system_by_key(key.strip())
         if not rs_cfg or rs_cfg.is_banned:
             # IP Address
             return ORJSONResponse(
@@ -147,7 +147,7 @@ class ZabbixAPI(object):
         logger.debug("REQUEST: %r", req)
         _, key = authorization.split(" ")
         metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
-        rs_cfg = self.service.get_remote_system_by_code(remote_system_code)
+        rs_cfg = self.service.get_remote_system_by_key(key.strip())
         if not rs_cfg or rs_cfg.is_banned:
             # IP Address
             return ORJSONResponse(
@@ -192,7 +192,7 @@ class ZabbixAPI(object):
     def setup_endpoints(self):
         # Items
         self.router.add_api_route(
-            path=f"/api/{self.api_name}/zabbix/items/{{remote_system_code}}/send",
+            path=f"/api/{self.api_name}/zabbix/items/send",
             endpoint=self.send,
             methods=["POST"],
             # dependencies=[Depends(self.get_verify_token_hander(ds))],
@@ -204,7 +204,7 @@ class ZabbixAPI(object):
         )
         # Event
         self.router.add_api_route(
-            path=f"/api/{self.api_name}/zabbix/events/{{remote_system_code}}/send",
+            path=f"/api/{self.api_name}/zabbix/events/send",
             endpoint=self.events,
             methods=["POST"],
             # dependencies=[Depends(self.get_verify_token_hander(ds))],
