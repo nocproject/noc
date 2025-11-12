@@ -309,7 +309,7 @@ class CfgTrapDataStream(DataStream):
         # Ping Settings
         if time_pattern:
             r["time_expr"] = TimePattern.get_code(time_pattern)
-        if not bool(r["ping"]) or bool(r["syslog"]) or bool(r["trap"]):
+        if not bool(r["ping"] or bool(r["syslog"]) or bool(r["trap"])):
             raise KeyError("Not enable collectors")
         addresses = {}
         # Process sources
