@@ -26,7 +26,6 @@ from mongoengine.fields import (
     LongField,
     ListField,
     EmbeddedDocumentListField,
-    DynamicField,
     EnumField,
 )
 from mongoengine.queryset.visitor import Q as m_q
@@ -53,6 +52,7 @@ from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
 from noc.main.models.handler import Handler
 from noc.inv.models.capability import Capability
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.sa.models.capsprofile import CapsProfile
 from noc.wf.models.workflow import Workflow
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.alarmclass import AlarmClass
@@ -93,33 +93,6 @@ class DiagnosticSettings(EmbeddedDocument):
             diagnostic_handler=self.handler.handler if self.handler else None,
             diagnostic_ctx=[CtxItem.from_string(c) for c in self.ctx or []],
             check_discovery_policy="L",
-        )
-
-
-class CapsSettings(EmbeddedDocument):
-    meta = {"strict": False, "auto_create_index": False}
-
-    # Required
-    capability: Capability = ReferenceField(Capability, required=True)
-    default_value = DynamicField()
-    allow_manual = BooleanField(default=False)
-    ref_scope = StringField(required=False)
-    # ref_remote_system
-
-    def __str__(self):
-        return f"{self.capability.name}: D:{self.default_value}; M: {self.allow_manual}"
-
-    def clean(self):
-        super().clean()
-        if self.default_value:
-            self.capability.clean_value(self.default_value)
-
-    def get_config(self) -> CapsConfig:
-        """"""
-        return CapsConfig(
-            default_value=self.default_value or None,
-            allow_manual=self.allow_manual,
-            ref_scope=self.ref_scope,
         )
 
 
@@ -461,7 +434,7 @@ class ServiceProfile(Document):
     # Diagnostics status
     diagnostic_status: List[DiagnosticSettings] = EmbeddedDocumentListField(DiagnosticSettings)
     # Capabilities
-    caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
+    caps_profile: Optional[CapsProfile] = ReferenceField(CapsProfile, required=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -523,7 +496,9 @@ class ServiceProfile(Document):
     def get_caps_config(self) -> Dict[str, CapsConfig]:
         """Local Capabilities Config (from Profile)"""
         r = {}
-        for c in self.caps:
+        if not self.caps_profile:
+            return r
+        for c in self.caps_profile.caps:
             r[str(c.capability.id)] = c.get_config()
         return r
 
