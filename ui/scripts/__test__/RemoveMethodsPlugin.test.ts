@@ -49,13 +49,44 @@ describe("ReplaceMethodsPlugin", () => {
               type: "CallExpression",
               callee: {
                 type: "MemberExpression",
-                object: {type: "ThisExpression"},
-                property: {type: "Identifier", name: "createMap"},
+                object: {
+                  type: "CallExpression",
+                  callee: {
+                    type: "MemberExpression",
+                    object: {type: "Identifier", name: "leafletAPI"},
+                    property: {type: "Identifier", name: "preload"},
+                    computed: false,
+                    optional: false,
+                  },
+                  arguments: [],
+                  optional: false,
+                },
+                property: {type: "Identifier", name: "then"},
                 computed: false,
                 optional: false,
               },
               arguments: [
-                {type: "Identifier", name: "data"},
+                {
+                  type: "ArrowFunctionExpression",
+                  params: [],
+                  body: {
+                    type: "CallExpression",
+                    callee: {
+                      type: "MemberExpression",
+                      object: {type: "ThisExpression"},
+                      property: {type: "Identifier", name: "createMap"},
+                      computed: false,
+                      optional: false,
+                    },
+                    arguments: [
+                      {type: "Identifier", name: "data"},
+                    ],
+                    optional: false,
+                  },
+                  generator: false,
+                  expression: true,
+                  async: false,
+                },
               ],
               optional: false,
             },
@@ -77,8 +108,8 @@ describe("ReplaceMethodsPlugin", () => {
 
     const outputCode = result.outputFiles[0].text;
     expect(outputCode).not.toContain("NOC.core.ResourceLoader.loadSet");
-    expect(outputCode).not.toContain(".then");
     expect(outputCode).not.toContain(".catch");
+    expect(outputCode).toContain("leafletAPI.preload()");
     expect(outputCode).toContain("this.createMap(data)");
   });
   

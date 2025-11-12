@@ -13,5 +13,6 @@ cd ui/
 npm install --no-save
 npm run build:micromark
 npm run build:monaco
+npm run build:leaflet
 npm run vendor
 npm run prod

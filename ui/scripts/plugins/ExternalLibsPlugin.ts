@@ -53,11 +53,6 @@ export class ExternalLibsPlugin{
         // {name: "common/diff_match_patch.js", format: "iife"},
         // {name: "pkg/codemirror/addon/merge/merge.js", format: "iife"},
         
-        // Leaflet
-        {name: "pkg/leaflet/leaflet.js", format: "iife"},
-        {name: "pkg/leaflet/Yandex.js", format: "iife"},
-        {name: "pkg/leaflet/yapi.js", format: "iife"},
-
         // JointJS
         {name: "pkg/lodash/lodash.min.js", format: "iife"},
         {name: "pkg/backbone/backbone.min.js", format: "iife"},
@@ -73,9 +68,10 @@ export class ExternalLibsPlugin{
         {name: "pkg/viz-js/viz-standalone.js", format: "iife"},
        
         // Self-made libraries
-        {name: "pkg/micromark/micromark.js", format: "iife"},
-        {name: "pkg/monaco/monaco.js", format: "iife"},
-        
+        {name: "scripts/bundles/dist/micromark.js", format: "iife"},
+        {name: "scripts/bundles/dist/monaco.js", format: "iife"},
+        {name: "scripts/bundles/dist/leaflet.js", format: "iife"},
+  
         // NOC modules
         {name: "web/js/colors.js", format: "iife"},
         {name: "web/js/glyph.js", format: "iife"},

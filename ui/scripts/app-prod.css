@@ -4,6 +4,6 @@
 @import "@cssWeb/colors.css";
 @import "@cssPkg/fontawesome/css/font-awesome.min.css";
 @import "@cssPkg/joint/joint.min.css";
-@import "@cssPkg/leaflet/leaflet.css";
+@import "../node_modules/leaflet/dist/leaflet.css";
 /* self made css */
 @import "@cssPkg/monaco/monaco.css";

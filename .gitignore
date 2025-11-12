@@ -53,5 +53,5 @@ ui/node_modules
 ui/dist
 ui/scripts/.env
 ui/scripts/nginx.conf
-ui/scripts/bundles/monaco.generated.ts
+ui/scripts/bundles/dist
 ui/playwright-report
