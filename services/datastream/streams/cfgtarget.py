@@ -72,9 +72,7 @@ class Target(
 
     @property
     def opaque_data(self):
-        """
-        ManagedObject Opaque Data
-        """
+        """ManagedObject Opaque Data"""
         r = {
             "id": str(self.mo_id),
             "bi_id": str(self.bi_id),
@@ -176,9 +174,7 @@ class Target(
         }
 
     def get_syslog_settings(self) -> Optional[Dict[str, Any]]:
-        """
-        Get effective event archiving policy
-        """
+        """Get effective event archiving policy"""
         if self.syslog_source_type == "d" or not self.is_process_event:
             return None
         return {
@@ -370,14 +366,12 @@ class CfgTrapDataStream(DataStream):
 
         if not addresses:
             raise KeyError(f"Unsupported Trap Source Type: {trap_source_type}")
-        refs = [f"name:{name.lower()}"]
-        for m in r["opaque_data"]["mappings"]:
-            rs = RemoteSystem.get_by_id(m["remote_system"]["id"])
-            refs.append(RemoteSystem.clean_reference(rs, m["remote_id"]))
         r |= {
             "addresses": list(addresses.values()),
-            "mapping_refs": refs,
+            "mapping_refs": [f"name:{name.lower()}"],
         }
+        for m in r["opaque_data"]["mappings"]:
+            r["mapping_refs"].append(f"rs:{m['remote_system']['name']}:{m['remote_id']}")
         return r
 
     @classmethod
