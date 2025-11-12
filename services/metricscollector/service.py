@@ -70,6 +70,7 @@ class MetricsCollectorService(FastAPIService):
     traefik_routes_rule = "PathPrefix(`/api/metricscollector`)"
     # Cache regex for partial match
     _rx_name_cache = cachetools.LRUCache(500)
+    _rs_key_cache = cachetools.TTLCache(10, ttl=120)
 
     def __init__(self):
         super().__init__()
@@ -372,13 +373,23 @@ class MetricsCollectorService(FastAPIService):
     def get_remote_system_by_code(
         self,
         code: str,
-        authorization: Optional[str] = None,
     ) -> Optional[RemoteSystemConfig]:
         """Check Remote System"""
         sid = self.remote_system_map.get(code.lower())
         if not sid or sid not in self.remote_system_config:
             return None
         return self.remote_system_config[sid]
+
+    @cachetools.cachedmethod(operator.attrgetter("_rs_key_cache"))
+    def get_remote_system_by_key(
+        self,
+        key: str,
+    ) -> Optional[RemoteSystemConfig]:
+        """Check Remote System"""
+        for rs in self.remote_system_config.values():
+            if rs.api_key == key:
+                return rs
+        return None
 
     def is_rs_banned(self, code) -> bool:
         """Check remote system is banned"""
@@ -474,8 +485,6 @@ class MetricsCollectorService(FastAPIService):
             metrics["items"] += 1
             out: Dict[str, Dict[str, Any]] = {}
             units = item.metrics.get("_units", {})
-            if item.managed_object == 1182228167894700459:
-                self.logger.info("Received by Host: %s", item)
             for coll_field, value in item.metrics.items():
                 if coll_field == "_units":
                     continue
