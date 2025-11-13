@@ -21,14 +21,14 @@ Ext.define("NOC.sa.objectdiscoveryrule.Application", {
     "NOC.main.remotesystem.LookupField",
     "Ext.ux.form.GridField",
     "NOC.core.ListFormField",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
   ],
   model: "NOC.sa.objectdiscoveryrule.Model",
 
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/objectdiscoveryrule/{0}/json/",
       previewName: "Model Template: {0}",

@@ -10,7 +10,7 @@ Ext.define("NOC.wf.transition.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.wf.transition.Model",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.wf.workflow.LookupField",
     "NOC.wf.state.LookupField",
     "NOC.main.remotesystem.LookupField",
@@ -21,7 +21,7 @@ Ext.define("NOC.wf.transition.Application", {
   model: "NOC.wf.transition.Model",
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/wf/transition/{0}/json/",
       previewName: "Workflow Transition: {0}",

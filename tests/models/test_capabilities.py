@@ -37,7 +37,7 @@ def get_object_caps_mock() -> "MockManagedObject":
     return MockManagedObject()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def object_caps():
     return get_object_caps_mock()
 

@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.glyph.Application");
 Ext.define("NOC.main.glyph.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.main.glyph.Model",
     "NOC.main.font.LookupField",
   ],
@@ -19,7 +19,7 @@ Ext.define("NOC.main.glyph.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/main/font/{0}/json/",
       previewName: "Font: {0}",

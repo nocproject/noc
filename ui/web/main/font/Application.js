@@ -9,7 +9,7 @@ console.debug("Defining NOC.main.font.Application");
 Ext.define("NOC.main.font.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.main.font.Model",
   ],
   model: "NOC.main.font.Model",
@@ -18,7 +18,7 @@ Ext.define("NOC.main.font.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/main/font/{0}/json/",
       previewName: "Font: {0}",

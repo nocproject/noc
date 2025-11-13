@@ -14,7 +14,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
     "NOC.core.ComboBox",
     "NOC.core.label.LabelField",
     "NOC.core.tagfield.Tagfield",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.ListFormField",
     "NOC.inv.configuredmap.Model",
     "NOC.inv.configuredmap.LookupField",
@@ -30,7 +30,7 @@ Ext.define("NOC.inv.configuredmap.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/configuredmap/{0}/json/",
       previewName: "Spec: {0}",

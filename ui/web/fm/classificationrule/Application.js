@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.classificationrule.Application");
 Ext.define("NOC.fm.classificationrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.TemplatePreview",
     "NOC.core.StringListField",
     "NOC.core.tagfield.Tagfield",
@@ -61,7 +61,7 @@ Ext.define("NOC.fm.classificationrule.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/classificationrule/{0}/json/",
       previewName: "Classification Rule: {0}",

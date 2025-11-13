@@ -1,5 +1,6 @@
 import {parse} from "espree";
 import type {Node} from "estree";
+import {describe, expect, it} from "vitest";
 import {ExtApplicationVisitor} from "../visitors/ExtApplicationVisitor.ts";
 
 describe("ExtApplicationVisitor", () => {

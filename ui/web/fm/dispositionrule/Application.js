@@ -9,7 +9,7 @@ console.debug("Defining NOC.fm.dispositionrule.Application");
 Ext.define("NOC.fm.dispositionrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.TemplatePreview",
     "NOC.core.ListFormField",
     "NOC.core.StringListField",
@@ -76,7 +76,7 @@ Ext.define("NOC.fm.dispositionrule.Application", {
 
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/fm/dispositionrule/{0}/json/",
       previewName: "Disposition Rule: {0}",

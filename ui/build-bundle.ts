@@ -12,10 +12,14 @@ const buildOption = {
   tsconfig: "tsconfig.json",
 };
 
-const generatedFile = "scripts/bundles/monaco.generated.ts";
+const outputDir = "scripts/bundles/dist";
+const generatedFile = `${outputDir}/monaco.generated.ts`;
 
 if(fs.existsSync(generatedFile)){
   fs.unlinkSync(generatedFile);
+}
+if(!fs.existsSync(outputDir)){
+  fs.mkdirSync(outputDir, {recursive: true});
 }
 
 async function buildMonacoWorkers(){
@@ -62,16 +66,14 @@ async function main(){
         ".ttf": "dataurl",
       },
       entryPoints: [generatedFile],
-      outfile: "pkg/monaco/monaco.js",
+      outfile: `${outputDir}/monaco.js`,
     });
 
     console.log("Monaco bundle built successfully!");
     return;
-  }
-  if(bundleName === "micromark"){
+  } else{
     const entryPoints = `scripts/bundles/${bundleName}.ts`;
-    const outfile = `pkg/${bundleName}/${bundleName}.js`;
-    // const globalName = bundleName;
+    const outfile = `${outputDir}/${bundleName}.js`;
 
     await build({
       entryPoints: [entryPoints],
@@ -83,10 +85,6 @@ async function main(){
     return;
   }
 
-  console.error(
-    `Usage: node build-bundle.ts <micromark|monaco>\nAvailable bundles: micromark, monaco`,
-  );
-  process.exit(1);
 }
 
 main().catch((e) => {

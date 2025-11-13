@@ -10,7 +10,7 @@ Ext.define("NOC.dev.quiz.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
     "NOC.core.ListFormField",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.dev.quiz.Model",
   ],
   model: "NOC.dev.quiz.Model",
@@ -19,7 +19,7 @@ Ext.define("NOC.dev.quiz.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/dev/quiz/{0}/json/",
       previewName: "Quiz: {0}",

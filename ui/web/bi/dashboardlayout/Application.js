@@ -9,14 +9,14 @@ console.debug("Defining NOC.bi.dashboardlayout.Application");
 Ext.define("NOC.bi.dashboardlayout.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.bi.dashboardlayout.Model",
     "Ext.ux.form.GridField",
   ],
   model: "NOC.bi.dashboardlayout.Model",
   initComponent: function(){
     var me = this;
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/bi/dashboardlayout/{0}/json/",
       previewName: "Vendor: {0}",

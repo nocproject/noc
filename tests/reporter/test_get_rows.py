@@ -47,6 +47,6 @@ def test_get_rows(queries, expected):
         if isinstance(expected, pl.DataFrame):
             assert_frame_equal(res[0].data, expected)
         else:
-            assert False
+            pytest.fail("pl.DataFrame expected")
     else:
-        assert False
+        pytest.fail("pl.DataFrame expected")

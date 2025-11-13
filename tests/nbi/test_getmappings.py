@@ -103,15 +103,6 @@ from noc.services.nbi.paths.getmappings import GetMappingsAPI
             },
         ),
         (
-            {"scope": "managedobject", "remote_id": "10", "remote_system": "abc"},
-            {
-                "scope": "managedobject",
-                "local_ids": None,
-                "remote_ids": ["10"],
-                "remote_system": "abc",
-            },
-        ),
-        (
             {"scope": "managedobject", "remote_id": [10, "11"], "remote_system": "abc"},
             {
                 "scope": "managedobject",

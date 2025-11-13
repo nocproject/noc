@@ -50,10 +50,6 @@ def test_try_from_label(label: str, expected: Optional[EscalationPolicy]):
             [["lorem", "noc::escalation::alwaysfirst", "ipsum"], ["dorem", "sit", "amet"]],
             EscalationPolicy.ALWAYS_FIRST,
         ),
-        (
-            [["lorem", "ipsum"], ["dorem", "noc::escalation::alwaysfirst", "sit", "amet"]],
-            EscalationPolicy.ALWAYS_FIRST,
-        ),
         # Multiple
         (
             [["lorem", "ipsum"], ["dorem", "noc::escalation::alwaysfirst", "sit", "amet"]],

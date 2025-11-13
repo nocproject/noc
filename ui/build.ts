@@ -91,6 +91,57 @@ const commonOptions: BuilderOptions = {
         prefix: true,
       },
     },
+    {
+      name: "NOC.core.ResourceLoader.loadSet",
+      replacement: {
+        type: "ExpressionStatement",
+        expression: {
+          type: "CallExpression",
+          callee: {
+            type: "MemberExpression",
+            object: {
+              type: "CallExpression",
+              callee: {
+                type: "MemberExpression",
+                object: {type: "Identifier", name: "leafletAPI"},
+                property: {type: "Identifier", name: "preload"},
+                computed: false,
+                optional: false,
+              },
+              arguments: [],
+              optional: false,
+            },
+            property: {type: "Identifier", name: "then"},
+            computed: false,
+            optional: false,
+          },
+          arguments: [
+            {
+              type: "ArrowFunctionExpression",
+              params: [],
+              body: {
+                type: "CallExpression",
+                callee: {
+                  type: "MemberExpression",
+                  object: {type: "ThisExpression"},
+                  property: {type: "Identifier", name: "createMap"},
+                  computed: false,
+                  optional: false,
+                },
+                arguments: [
+                  {type: "Identifier", name: "data"},
+                ],
+                optional: false,
+              },
+              generator: false,
+              expression: true,
+              async: false,
+            },
+          ],
+          optional: false,
+        },
+      },
+    },   
   ],
   esbuildOptions: {
     bundle: true,

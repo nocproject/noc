@@ -11,7 +11,7 @@ Ext.define("NOC.wf.workflow.Application", {
   requires: [
     "NOC.wf.workflow.Model",
     "NOC.wf.workflow.WFEditor",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.tagfield.Tagfield",
     "NOC.main.remotesystem.LookupField",
     "NOC.main.ref.modelid.LookupField",
@@ -24,7 +24,7 @@ Ext.define("NOC.wf.workflow.Application", {
     var me = this;
     me.WF_EDITOR = me.registerItem("NOC.wf.workflow.WFEditor");
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: new Ext.XTemplate("/wf/workflow/{0}/json/"),
       previewName: new Ext.XTemplate("Workflow: {0}"),

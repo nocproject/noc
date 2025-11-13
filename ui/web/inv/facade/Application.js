@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.facade.Application");
 Ext.define("NOC.inv.facade.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.SVGField",
     "NOC.inv.facade.Model",
   ],
@@ -26,7 +26,7 @@ Ext.define("NOC.inv.facade.Application", {
   initComponent: function(){
     var me = this;
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/facade/{0}/json/",
       previewName: "Facade: {0}",

@@ -1,6 +1,7 @@
 import type {ServeResult} from "esbuild";
 import * as esbuild from "esbuild";
 import {LanguagePlugin} from "../plugins/LanguagePlugin.ts";
+import {ReplaceMethodsPlugin} from "../plugins/ReplaceMethodsPlugin.ts";
 import {BaseBuilder} from "./BaseBuilder.ts";
 
 export class DevBuilder extends BaseBuilder{
@@ -50,6 +51,64 @@ export class DevBuilder extends BaseBuilder{
           outputDir: this.options.buildDir,
           languages: ["en"],
           cacheDir: this.options.cacheDir,
+        }).getPlugin(),
+        new ReplaceMethodsPlugin({
+          toReplaceMethods: [
+            {
+              name: "NOC.core.ResourceLoader.loadSet",
+              replacement: {
+                type: "ExpressionStatement",
+                expression: {
+                  type: "CallExpression",
+                  callee: {
+                    type: "MemberExpression",
+                    object: {
+                      type: "CallExpression",
+                      callee: {
+                        type: "MemberExpression",
+                        object: {type: "Identifier", name: "leafletAPI"},
+                        property: {type: "Identifier", name: "preload"},
+                        computed: false,
+                        optional: false,
+                      },
+                      arguments: [],
+                      optional: false,
+                    },
+                    property: {type: "Identifier", name: "then"},
+                    computed: false,
+                    optional: false,
+                  },
+                  arguments: [
+                    {
+                      type: "ArrowFunctionExpression",
+                      params: [],
+                      body: {
+                        type: "CallExpression",
+                        callee: {
+                          type: "MemberExpression",
+                          object: {type: "ThisExpression"},
+                          property: {type: "Identifier", name: "createMap"},
+                          computed: false,
+                          optional: false,
+                        },
+                        arguments: [
+                          {type: "Identifier", name: "data"},
+                        ],
+                        optional: false,
+                      },
+                      generator: false,
+                      expression: true,
+                      async: false,
+                    },
+                  ],
+                  optional: false,
+                },
+              },
+            },
+          ],
+          debug: this.options.pluginDebug,
+          parserOptions: this.options.parserOptions,
+          generateOptions: this.options.generateOptions,
         }).getPlugin(),
       ],
     });

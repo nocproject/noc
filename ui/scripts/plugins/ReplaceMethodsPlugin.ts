@@ -54,8 +54,8 @@ export class ReplaceMethodsPlugin{
   private async processFile(contents: string): Promise<esbuild.OnLoadResult>{
     let ast = espree.parse(contents, this.options.parserOptions) as Node;
 
-    this.options.toReplaceMethods?.map((methodName) => {
-      const visitor = new MethodReplaceVisitor(methodName.name, methodName.replacement, ast);
+    this.options.toReplaceMethods?.map((method) => {
+      const visitor = new MethodReplaceVisitor(method.name, method.replacement, ast);
       ast = visitor.getResults();
     });
 

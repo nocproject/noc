@@ -9,7 +9,7 @@ console.debug("Defining NOC.cm.configurationparam.Application");
 Ext.define("NOC.cm.configurationparam.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.cm.configurationparam.Model",
     "NOC.cm.configurationscope.LookupField",
     "NOC.pm.measurementunits.LookupField",
@@ -23,7 +23,7 @@ Ext.define("NOC.cm.configurationparam.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/cm/configurationparam/{0}/json/",
       previewName: "Configuration Scope: {0}",

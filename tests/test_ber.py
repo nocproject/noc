@@ -73,17 +73,17 @@ def test_decode_p_octetstring(raw, value):
     assert decoder.parse_p_octetstring(raw) == value
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_p_t61_string():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_c_octetstring():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_c_t61_string():
     raise NotImplementedError()
 
@@ -108,27 +108,27 @@ def test_decode_p_oid(raw, value):
     assert decoder.parse_p_oid(raw) == value
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_compressed_oid():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_sequence():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_implicit():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_set():
     raise NotImplementedError()
 
 
-@pytest.mark.xfail()
+@pytest.mark.xfail
 def test_decode_utctime():
     raise NotImplementedError()
 
@@ -234,7 +234,6 @@ def test_encode_null(value):
         ("1.3.6.256", b"\x06\x04+\x06\x82\x00"),
         ("1.3.6.16383", b"\x06\x04+\x06\xff\x7f"),
         ("1.3.6.16384", b"\x06\x05+\x06\x81\x80\x00"),
-        ("1.3.6.65535", b"\x06\x05+\x06\x83\xff\x7f"),
         ("1.3.6.65535", b"\x06\x05+\x06\x83\xff\x7f"),
         ("1.3.6.2097151", b"\x06\x05+\x06\xff\xff\x7f"),
         ("1.3.6.2097152", b"\x06\x06+\x06\x81\x80\x80\x00"),

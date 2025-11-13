@@ -9,7 +9,7 @@ console.debug("Defining NOC.sa.profile.Application");
 Ext.define("NOC.sa.profile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.sa.profile.Model",
   ],
   model: "NOC.sa.profile.Model",
@@ -18,7 +18,7 @@ Ext.define("NOC.sa.profile.Application", {
   initComponent: function(){
     var me = this;
 
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/profile/{0}/json/",
       previewName: "Profile: {0}",

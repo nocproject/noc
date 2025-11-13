@@ -9,7 +9,7 @@ console.debug("Defining NOC.inv.connectionrule.Application");
 Ext.define("NOC.inv.connectionrule.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "NOC.core.StringListField",
     "NOC.inv.connectionrule.Model",
     "Ext.ux.form.GridField",
@@ -30,7 +30,7 @@ Ext.define("NOC.inv.connectionrule.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/inv/connectionrule/{0}/json/",
       previewName: "Connection Rule: {0}",

@@ -12,7 +12,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
     "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
     "NOC.core.tagfield.Tagfield",
-    "NOC.core.JSONPreviewII",
+    "NOC.core.JSONPreview",
     "Ext.ux.form.GridField",
     "Ext.ux.form.StringsField",
     "NOC.main.ref.check.LookupField",
@@ -25,7 +25,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
     var me = this;
 
     // JSON Panel
-    me.jsonPanel = Ext.create("NOC.core.JSONPreviewII", {
+    me.jsonPanel = Ext.create("NOC.core.JSONPreview", {
       app: me,
       restUrl: "/sa/objectdiagnosticconfig/{0}/json/",
       previewName: "Object Diagnostic Config: {0}",

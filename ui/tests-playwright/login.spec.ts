@@ -1,26 +1,24 @@
-import {expect, selectors, test} from "@playwright/test";
+import {expect, test} from "@playwright/test";
 
-selectors.register("extjs", `{
-  query(root, selector) {
-    if (window.Ext && Ext.ComponentQuery) {
-      const component = Ext.ComponentQuery.query(selector)[0];
-      return component?.el?.dom || null;
-    }
-    return null;
-  },
-  queryAll(root, selector) {
-    if (window.Ext && Ext.ComponentQuery) {
-      const components = Ext.ComponentQuery.query(selector);
-      return components.map(c => c.el?.dom).filter(Boolean);
-    }
-    return [];
+declare global {
+  interface Window {
+    playwrightExtJSRegistered?: boolean;
   }
-}`);
+}
+
 const hostname = "localhost:8080";
 const extjsSelector = (selector: string) => `extjs=${selector}`;
 
 test.describe("Login page", () => {
   test.beforeEach(async({page}) => {
+    // Register custom selector for ExtJS components
+    await page.addInitScript(() => {
+      if(typeof window !== "undefined" && !window.playwrightExtJSRegistered){
+        window.playwrightExtJSRegistered = true;
+        // Custom selector will be registered by page context
+      }
+    });
+
     await page.route(/.*\/api\/login\/is_logged.*/, async route => {    
       await route.fulfill({
         status: 200,
