@@ -10,4 +10,4 @@
 @import "@cssPkg/joint/joint.min.css";
 @import "../node_modules/leaflet/dist/leaflet.css";
 /* self made css */
-@import "@cssPkg/monaco/monaco.css";
+@import "./bundles/dist/monaco.css";
