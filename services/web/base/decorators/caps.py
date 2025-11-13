@@ -23,7 +23,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             self.api_set_capabilities,
             method=["PUT"],
             url=r"^(?P<object_id>[^/]+)/capabilities/(?P<capabilities_id>[0-9a-f]{24})/$",
-            access="write",
+            access="capabilities",
             api=True,
             validate={
                 "value": StringListParameter(strict=True)
@@ -37,7 +37,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             self.api_reset_capabilities,
             method=["DELETE"],
             url=r"^(?P<object_id>[^/]+)/capabilities/(?P<capabilities_id>[0-9a-f]{24})/$",
-            access="write",
+            access="capabilities",
             api=True,
         )
         self.add_view(
@@ -87,7 +87,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
                 "object": str(o.id),
                 "description": capability.description,
                 "type": capability.type.value,
-                "value": value,
+                "value": capability.clean_value(value),
                 "source": "manual",
                 "scope": "",
                 "editor": capability.get_editor(),
@@ -104,7 +104,7 @@ class CapabilitiesHandlerDecorator(BaseAppDecorator):
             return self.app.render_json(
                 {"status": False, "message": "Not allowed manual edit"}, status=403
             )
-        o.reset_caps(capability.name)
+        o.reset_caps(capability.name, source="manual")
         return {"status": True}
 
 

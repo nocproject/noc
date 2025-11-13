@@ -69,7 +69,7 @@ def iter_document_caps(
     from noc.inv.models.capability import Capability
 
     configs = self.get_caps_config()
-
+    processed = set()
     for ci in self.caps or []:
         if scope and scope != ci.scope:
             continue
@@ -84,12 +84,15 @@ def iter_document_caps(
             value=cv,
             source=cs,
             scope=ci.scope,
-            config=configs.pop(str(ci.capability.id), CapsConfig()),
+            config=configs.get(str(ci.capability.id), CapsConfig()),
         )
+        processed.add(ci.capability.id)
     if not include_default:
         return
     for c, cfg in configs.items():
         c = Capability.get_by_id(c)
+        if c.id in processed:
+            continue
         yield CapsValue(
             capability=c,
             value=c.clean_value(cfg.default_value) if cfg.default_value else None,
@@ -252,6 +255,7 @@ def set_caps(
         if item.capability == caps:
             # Set found scope
             if is_new and item.scope == scope:
+                # Add Manual Source
                 is_new = False
             if item.scope == scope and item.value != value:
                 new_caps.append(item.set_value(value))
@@ -278,15 +282,23 @@ def set_caps(
         self.save_caps(new_caps, changed_fields=changed_fields)
 
 
-def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
+def reset_caps(
+    self,
+    caps: Optional[str] = None,
+    scope: Optional[str] = None,
+    source: Optional[str] = None,
+):
     """
     Remove caps from object
     Args:
         self: Object
         caps: Caps Name
         scope: Scope name
+        source: Source set
     """
     new_caps, changed_fields = [], []
+    if source:
+        source = InputSource(source)
     changed = False
     for item in self.iter_caps():
         if scope and scope == item.scope:
@@ -294,7 +306,7 @@ def reset_caps(self, caps: Optional[str] = None, scope: Optional[str] = None):
             caps_logger.info("Removing capability by scope: %s", scope)
             changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]
             continue
-        if caps and caps == item.name:
+        if caps and caps == item.name and (not source or source == item.source):
             changed |= True
             caps_logger.info("Removing capability by name: %s", caps)
             changed_fields += [ChangeField(field=item.name, old=str(item.value), new=None)]

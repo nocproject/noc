@@ -8,5 +8,14 @@
     "description": "Memory Usage in percents",
     "measure": "%",
     "units__code": "%",
-    "scale__code": "1"
+    "scale__code": "1",
+    "collector_mappings": [
+        {
+            "aliases": ["Linux: Available memory in %", "VMWare: Memory usage (%)"],
+            "allow_partial_match": false,
+            "collector": "zabbix",
+            "field": "vm.memory.size[pavailable]",
+            "sender": "zabbix"
+        }
+    ]
 }

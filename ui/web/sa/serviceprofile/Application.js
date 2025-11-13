@@ -12,6 +12,7 @@ Ext.define("NOC.sa.serviceprofile.Application", {
     "NOC.core.label.LabelField",
     "NOC.sa.serviceprofile.Model",
     "NOC.sa.serviceprofile.LookupField",
+    "NOC.sa.capsprofile.LookupField",
     "NOC.main.ref.glyph.LookupField",
     "NOC.main.remotesystem.LookupField",
     "NOC.main.handler.LookupField",
@@ -108,25 +109,45 @@ Ext.define("NOC.sa.serviceprofile.Application", {
           allowBlank: false,
         },
         {
-          name: "glyph",
-          xtype: "main.ref.glyph.LookupField",
-          fieldLabel: __("Icon"),
-          allowBlank: true,
-          uiStyle: "large",
+          xtype: "fieldset",
+          title: __("Display"),
+          layout: {
+            type: "vbox",
+          },
+          items: [
+            {
+              name: "show_in_summary",
+              xtype: "checkbox",
+              boxLabel: __("Show in summary"),
+              allowBlank: true,
+            },
+            {
+              name: "glyph",
+              xtype: "main.ref.glyph.LookupField",
+              fieldLabel: __("Icon"),
+              allowBlank: true,
+              uiStyle: "medium",
+            },
+            {
+              name: "display_order",
+              xtype: "numberfield",
+              fieldLabel: __("Display Order"),
+              uiStyle: "small",
+              minValue: 0,
+              allowBlank: false,
+            },
+          ],
         },
         {
-          name: "display_order",
-          xtype: "numberfield",
-          fieldLabel: __("Display Order"),
-          uiStyle: "small",
-          minValue: 0,
-          allowBlank: false,
-        },
-        {
-          name: "show_in_summary",
-          xtype: "checkbox",
-          boxLabel: __("Show in summary"),
+          name: "caps_profile",
+          xtype: "sa.capsprofile.LookupField",
+          tooltip: __("Set which CAPS will be check in Caps discovery. <br/>" +
+                                    "Service Activation -> Setup -> Caps Profiles"),
+          fieldLabel: __("Caps Profile"),
           allowBlank: true,
+          listeners: {
+            render: me.addTooltip,
+          },
         },
         {
           name: "interface_profile",
@@ -730,34 +751,6 @@ Ext.define("NOC.sa.serviceprofile.Application", {
           query: {
             "allow_models": ["sa.ServiceProfile", "sa.Service"],
           },
-        },
-        {
-          name: "caps",
-          xtype: "gridfield",
-          fieldLabel: __("Capabilities"),
-          allowBlank: true,
-          columns: [
-            {
-              text: __("Name"),
-              dataIndex: "capability",
-              renderer: NOC.render.Lookup("capability"),
-              width: 250,
-              editor: "inv.capability.LookupField",
-            },
-            {
-              text: __("Default Value"),
-              dataIndex: "default_value",
-              width: 150,
-              editor: "textfield",
-            },
-            {
-              text: __("Allow Manual"),
-              dataIndex: "allow_manual",
-              width: 150,
-              editor: "checkbox",
-              renderer: NOC.render.Bool,
-            },
-          ],
         },
       ],
     });
