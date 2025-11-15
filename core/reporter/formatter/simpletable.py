@@ -13,6 +13,7 @@ from xlsxwriter.workbook import Workbook
 
 # NOC modules
 from .base import DataFormatter
+from .utils import replace_nested_datatypes
 from ..types import OutputType, HEADER_BAND
 
 
@@ -63,7 +64,8 @@ class SimpleTableFormatter(DataFormatter):
         self.logger.debug("[SIMPLETABLE] Out columns: %s;;;%s", out_columns, HEADER_ROW)
         if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
             r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in out_columns) + "\n"
-            r += data.select(out_columns).write_csv(
+            data = replace_nested_datatypes(data.select(out_columns))
+            r += data.write_csv(
                 # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
                 # columns=out_columns,
                 separator=self.csv_delimiter,
