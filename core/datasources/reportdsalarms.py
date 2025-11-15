@@ -227,7 +227,6 @@ class ReportDsAlarms(BaseDataSource):
         elif not end:
             match = {"timestamp": {"$gte": start}}
         else:
-            star, end = cls.clean_interval(start, end)
             match = {"timestamp": {"$gte": start, "$lte": end}}
         match_middle, mos_filter, ex_resource_group = {}, {}, None
         datenow = datetime.datetime.now()
