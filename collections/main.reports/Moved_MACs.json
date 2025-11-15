@@ -1,0 +1,230 @@
+{
+    "name": "Moved MACs",
+    "$collection": "main.reports",
+    "uuid": "61f36f3f-dda2-48f0-85d1-1e672a8ce1cf",
+    "title": "Moved MACs (New)",
+    "description": "Перемещение MAC'ов",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "movedmacsds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Object Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Object  Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "administrativedomain",
+                    "title": "Object Adm. Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "event_type",
+                    "title": "Event Type (Migrate/Duplicate)",
+                    "format_type": "string"
+                },
+                {
+                    "name": "sn_changed",
+                    "title": "Device SN changed (by BI)",
+                    "format_type": "string"
+                },
+                {
+                    "name": "vendor_mac",
+                    "title": "Vendor MAC",
+                    "format_type": "string"
+                },
+                {
+                    "name": "mac",
+                    "title": "MAC",
+                    "format_type": "string"
+                },
+                {
+                    "name": "migrate_ts",
+                    "title": "Migrate TS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "from_iface_name",
+                    "title": "From Interface Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "from_iface_down",
+                    "title": "From Interface Down",
+                    "format_type": "string"
+                },
+                {
+                    "name": "to_iface_name",
+                    "title": "To Interface Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "to_iface_down",
+                    "title": "To Interface Down",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Перемещение MAC'ов (Новый)"
+        },
+        "columns.name": {
+            "ru": "Имя объекта"
+        },
+        "columns.address": {
+            "ru": "IP Адрес"
+        },
+        "columns.administrativedomain": {
+            "ru": "Зона ответственности"
+        },
+        "columns.event_type": {
+            "ru": "Замена устройства"
+        },
+        "columns.sn_changed": {
+            "ru": "Изменение серийного номера"
+        },
+        "columns.vendor_mac": {
+            "ru": "Производитель (по MAC адресу)"
+        },
+        "columns.mac": {
+            "ru": "MAC"
+        },
+        "columns.migrate_ts": {
+            "ru": "Время перемещения MACа"
+        },
+        "columns.from_iface_name": {
+            "ru": "Исходный интерфейс"
+        },
+        "columns.from_iface_down": {
+            "ru": "From Interface Down"
+        },
+        "columns.to_iface_name": {
+            "ru": "Конечный интерфейс"
+        },
+        "columns.to_iface_down": {
+            "ru": "To Interface Down"
+        },
+        "parameters.start": {
+            "ru": "С"
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.segment": {
+            "ru": "Сегмент"
+        },
+        "parameters.administrative_domain": {
+            "ru": "По З.О."
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств"
+        },
+        "parameters.interface_profile": {
+            "ru": "По Профилю интерфейса"
+        },
+        "parameters.exclude_serial_change": {
+            "ru": "Исключить устройства у которых менялся Серийный номер"
+        }
+    },
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "hide": false,
+            "label": "From",
+            "required": false,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "hide": false,
+            "label": "To",
+            "required": false,
+            "type": "date"
+        },
+        {
+            "name": "segment",
+            "description": null,
+            "hide": false,
+            "label": "Segment",
+            "model_id": "inv.NetworkSegment",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "interface_profile",
+            "description": null,
+            "hide": false,
+            "label": "By Interface Profile",
+            "model_id": "inv.InterfaceProfile",
+            "type": "model"
+        },
+        {
+            "name": "exclude_serial_change",
+            "description": null,
+            "hide": false,
+            "label": "Exclude Device if SerialNumber changed",
+            "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.administrativedomain,event_type,sn_changed,vendor_mac,mac,migrate_ts,from_iface_name,from_iface_down,to_iface_name,to_iface_down",
+            "hide": true,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
