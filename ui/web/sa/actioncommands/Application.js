@@ -97,6 +97,11 @@ Ext.define("NOC.sa.actioncommands.Application", {
           boxLabel: __("Config. Mode"),
         },
         {
+          name: "disable_when_change",
+          xtype: "checkbox",
+          boxLabel: __("Disable When Change"),
+        },
+        {
           name: "preference",
           xtype: "numberfield",
           fieldLabel: __("Preference"),
