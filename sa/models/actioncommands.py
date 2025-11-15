@@ -157,12 +157,21 @@ class ActionCommands(Document):
             ],
         )
 
-    def get_scope_configs(self) -> Dict[str, ScopeConfig]:
+    def get_scope_configs(
+        self,
+        enable_scope_commands: Optional[str] = None,
+        disable_scope_commands: Optional[str] = None,
+    ) -> Dict[str, ScopeConfig]:
         """Build local configs for Scope"""
         r = {}
         for sc in self.scopes:
             cfg = sc.config
             r[cfg.name] = cfg
+            # Replace to Scope Config
+            if enable_scope_commands:
+                cfg.enable_command = enable_scope_commands
+            if disable_scope_commands:
+                cfg.disable_command = disable_scope_commands
         return r
 
     def is_match(
