@@ -198,7 +198,7 @@
         {
             "attr": "part_no",
             "interface": "asset",
-            "value": ["ALS-24110LVT-03", "ALS24110LVT-03"]
+            "value": ["ALS-24100LVT-03", "ALS24100LVT-03"]
         },
         {
             "attr": "weight",
