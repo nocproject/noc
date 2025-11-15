@@ -41,6 +41,10 @@ Ext.define("NOC.sa.action.Model", {
       type: "auto",
     },
     {
+      name: "action_set",
+      type: "auto",
+    },
+    {
       name: "label",
       type: "string",
     },
