@@ -230,9 +230,9 @@ class Report(Document):
     time_params = StringField(
         choices=[
             ("N", "Nothing"),
-            ("D", "Include Date"),
-            ("T", "Include Time"),
-            ("A", "Include Date with Align"),
+            ("D", "Date Interval"),
+            ("T", "Time Interval"),
+            ("A", "Date Interval with Align"),
         ],
         default="N",
     )
