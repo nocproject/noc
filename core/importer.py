@@ -147,7 +147,7 @@ class NOCCustomLoader(NOCLoader):
         if os.path.exists(path):
             self.packages.add(fullname)
             return self.INIT_SOURCE
-        return None
+        raise ModuleNotFoundError(f"No module named '{fullname}'")
 
 
 def _get_loader():
