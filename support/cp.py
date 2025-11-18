@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # CustomerPortal client
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -11,10 +11,10 @@ import os
 from configparser import RawConfigParser
 
 # Third-party modules
-import requests
 import orjson
 
 # Python modules
+from noc.core.http.sync_client import HttpClient
 from noc.core.version import version
 from noc.core.comp import smart_text
 
@@ -117,18 +117,25 @@ class CPClient(object):
         """
         self.t_id += 1
         r = {"id": self.t_id, "method": method, "params": args}
-        auth = None
-        if self.account_name and self.account_password:
-            auth = (self.account_name, self.account_password)
-        r = smart_text(orjson.dumps(r))
-        logger.debug("JSON-RPC REQUEST: %s", r)
+        r = orjson.dumps(r)
+        logger.debug("JSON-RPC REQUEST: %s", smart_text(r))
         try:
-            req = requests.post(self.cp_url + service, data=r, auth=auth, verify=True)
+            with HttpClient(
+                user=self.account_name,
+                password=self.account_password,
+                validate_cert=True,
+                headers={"Content-Type": b"application/x-www-form-urlencoded"},
+            ) as client:
+                code, _, res = client.post(self.cp_url + service, r)
         except Exception as e:
             logger.error("JSON-RPC Error: %s", e)
             raise self.Error(str(e))
+        if code != 200:
+            err = f"Customer portal connection error: {code} {res.decode()}"
+            logger.error(err)
+            raise self.Error(err)
         try:
-            response = req.json()
+            response = orjson.loads(res)
             logger.debug("JSON-RPC RESPONSE: %s", response)
         except ValueError as e:
             logger.error("Invalid JSON-RPC response: %s", e)
