@@ -1,0 +1,147 @@
+{
+    "name": "Topology Problem",
+    "$collection": "main.reports",
+    "uuid": "7f0a5495-d915-4917-99d0-ef60c9444f4c",
+    "title": "Topology Problem (New)",
+    "description": "Отчёт по проблемам топологии",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "topologyproblemds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "master",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [{
+                "ds_query": "select * from Root"
+            }]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "name",
+                    "title": "Object Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "address",
+                    "title": "Object  Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "profile",
+                    "title": "Profile",
+                    "format_type": "string"
+                },
+                {
+                    "name": "model",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "segment",
+                    "title": "Segment",
+                    "format_type": "string"
+                },
+                {
+                    "name": "problem",
+                    "title": "Problem",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Отчёт по проблемам топологии (Новый)"
+        },
+        "columns.name": {
+            "ru": "Имя объекта"
+        },
+        "columns.address": {
+            "ru": "IP Адрес"
+        },
+        "columns.profile": {
+            "ru": "Профиль"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.segment": {
+            "ru": "Сегмент"
+        },
+        "columns.problem": {
+            "ru": "Проблема"
+        },
+        "parameters.pool": {
+            "ru": "Пул"
+        },
+        "parameters.mo_profile": {
+            "ru": "Профиль объекта"
+        },
+        "parameters.available_only": {
+            "ru": "Только доступные"
+        }
+    },
+    "parameters": [
+        {
+            "name": "pool",
+            "description": null,
+            "hide": false,
+            "label": "Pool",
+            "required": true,
+            "model_id": "main.Pool",
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "hide": false,
+            "label": "MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        },
+        {
+            "name": "available_only",
+            "description": null,
+            "hide": false,
+            "label": "Available only",
+            "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.profile,managedobjectds.model,managedobjectds.segment,problem",
+            "hide": true,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

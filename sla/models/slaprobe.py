@@ -314,7 +314,7 @@ class SLAProbe(Document):
             r["service"] = self.service.get_message_context()
         return r
 
-    def get_matcher_ctx(self):
+    def get_matcher_ctx(self) -> Dict[str, Any]:
         """"""
         if not self.state:
             state = self.profile.workflow.get_default_state()
@@ -327,4 +327,17 @@ class SLAProbe(Document):
             # "service_groups": list(self.effective_service_groups),
             "caps": self.get_caps(),
             "state": str(state.id),
+        }
+
+    def get_action_ctx(self) -> Dict[str, Any]:
+        """Context for running action"""
+        return {
+            "domain": None,
+            "name": self.name,
+            "target": self.target,
+            "target_object": self.get_target(),
+            "type": self.type,
+            "owner": self.group,
+            "managed_object": self.managed_object,
+            "description": self.description,
         }

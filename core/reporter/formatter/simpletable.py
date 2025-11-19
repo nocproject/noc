@@ -13,6 +13,7 @@ from xlsxwriter.workbook import Workbook
 
 # NOC modules
 from .base import DataFormatter
+from .utils import replace_nested_datatypes
 from ..types import OutputType, HEADER_BAND
 
 
@@ -60,12 +61,11 @@ class SimpleTableFormatter(DataFormatter):
         out_columns = sorted(
             out_columns, key=lambda x: sort_index.index(x) if x in sort_index else 200
         )
+        data = data.select(out_columns)
         self.logger.debug("[SIMPLETABLE] Out columns: %s;;;%s", out_columns, HEADER_ROW)
         if self.output_type in {OutputType.CSV, OutputType.SSV, OutputType.CSV_ZIP}:
             r = self.csv_delimiter.join(HEADER_ROW.get(cc, cc) for cc in out_columns) + "\n"
-            r += data.select(out_columns).write_csv(
-                # header=[self.HEADER_ROW.get(cc, cc) for cc in out_columns],
-                # columns=out_columns,
+            r += replace_nested_datatypes(data).write_csv(
                 separator=self.csv_delimiter,
                 quote_char='"',
                 include_header=False,
@@ -76,15 +76,14 @@ class SimpleTableFormatter(DataFormatter):
             worksheet = book.add_worksheet(
                 (self.report_template.output_name_pattern or "Sheet1")[: self.MAX_SHEET_NAME]
             )
-            data.select(out_columns).write_excel(
-                workbook=book,
-                worksheet=worksheet.name,
-                autofit=True,
-                position="A1",
-            )
             cf1 = book.add_format({"bottom": 1, "left": 1, "right": 1, "top": 1})
             for cn, col in enumerate(out_columns):
                 worksheet.write(0, cn, HEADER_ROW.get(col, col), cf1)
+            row_num = 1
+            for row in data.rows():
+                worksheet.write_row(row_num, 0, row)
+                row_num += 1
+            worksheet.autofit()
             book.close()
 
     @staticmethod

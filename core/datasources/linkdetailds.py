@@ -48,7 +48,7 @@ class LinkDetailDS(BaseDataSource):
         FieldInfo(name="object2_descr"),
         FieldInfo(name="object2_speed", type=FieldType.UINT),
         FieldInfo(name="link_proto"),
-        FieldInfo(name="last_seen"),
+        FieldInfo(name="last_seen", type=FieldType.DATETIME),
     ]
 
     @classmethod
@@ -162,4 +162,4 @@ class LinkDetailDS(BaseDataSource):
             )
             yield row_num, "object2_speed", s2.get("iface_speed")[0] if s2.get("iface_speed") else 0
             yield row_num, "link_proto", s2.get("dis_method", "")
-            yield row_num, "last_seen", s2.get("last_seen", "")
+            yield row_num, "last_seen", s2.get("last_seen")

@@ -61,6 +61,10 @@ Ext.define("NOC.sa.actioncommands.Model", {
       type: "boolean",
     },
     {
+      name: "disable_when_change",
+      type: "boolean",
+    },
+    {
       name: "preference",
       type: "integer",
     },

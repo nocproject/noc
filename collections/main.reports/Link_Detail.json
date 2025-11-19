@@ -1,0 +1,250 @@
+{
+    "name": "Link Detail",
+    "$collection": "main.reports",
+    "uuid": "a7290f95-53b2-498d-ae6b-799f589d268a",
+    "title": "Link Detail (New)",
+    "description": "Детализация по линкам",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "linkdetailds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "object1_admin_domain",
+                    "title": "Object1 Admin.Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_name",
+                    "title": "Object1 Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_address",
+                    "title": "Object1 IP-address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_platform",
+                    "title": "Object1 Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_segment",
+                    "title": "Object1 Segment",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_tags",
+                    "title": "Object1 Tags",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_iface",
+                    "title": "Interface1 ",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_descr",
+                    "title": "Interface1 Description",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object1_speed",
+                    "title": "Interface1 Speed",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_admin_domain",
+                    "title": "Object2 Admin.Domain",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_name",
+                    "title": "Object2 Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_address",
+                    "title": "Object2 IP-address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_platform",
+                    "title": "Object2 Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_segment",
+                    "title": "Object2 Segment",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_tags",
+                    "title": "Object2 Tags",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_iface",
+                    "title": "Interface2 ",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_descr",
+                    "title": "Interface2 Description",
+                    "format_type": "string"
+                },
+                {
+                    "name": "object2_speed",
+                    "title": "Interface2 Speed",
+                    "format_type": "string"
+                },
+
+                {
+                    "name": "link_proto",
+                    "title": "Link Proto",
+                    "format_type": "string"
+                },
+                {
+                    "name": "last_seen",
+                    "title": "Link Last Seen",
+                    "format_type": "string"
+                }
+
+
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Детализация по линкам (Новый)"
+        },
+        "columns.object1_admin_domain": {
+            "ru": "Зона ответственности устройства 1"
+        },
+        "columns.object1_name": {
+            "ru": "Имя устройства 1"
+        },
+        "columns.object1_address": {
+            "ru": "IP устройства 1"
+        },
+        "columns.object1_platform": {
+            "ru": "Платформа устройства 1"
+        },
+        "columns.object1_segment": {
+            "ru": "Сегмент устройства 1"
+        },
+        "columns.object1_tags": {
+            "ru": "Тэги устройства 1"
+        },
+        "columns.object1_iface": {
+            "ru": "Интерфейс устройства 1"
+        },
+        "columns.object1_descr": {
+            "ru": "Описание интерфейса устройства 1"
+        },
+        "columns.object1_speed": {
+            "ru": "Скорость интерфейса устройства 1"
+        },
+        "columns.object2_admin_domain": {
+            "ru": "Зона ответственности устройства 2"
+        },
+        "columns.object2_name": {
+            "ru": "Имя устройства 2"
+        },
+        "columns.object2_address": {
+            "ru": "IP устройства 2"
+        },
+        "columns.object2_platform": {
+            "ru": "Платформа устройства 2"
+        },
+        "columns.object2_segment": {
+            "ru": "Сегмент устройства 2"
+        },
+        "columns.object2_tags": {
+            "ru": "Тэги устройства 2"
+        },
+        "columns.object2_iface": {
+            "ru": "Интерфейс устройства 2"
+        },
+        "columns.object2_descr": {
+            "ru": "Описание интерфейса устройства 2"
+        },
+        "columns.object2_speed": {
+            "ru": "Скорость интерфейса устройства 2"
+        },
+        "columns.link_proto": {
+            "ru": "Протокол построения линка"
+        },
+        "columns.last_seen": {
+            "ru": "Время последнего считывания линка"
+        },
+        "parameters.segment": {
+            "ru": "Сегмент"
+        },
+        "parameters.administrative_domain": {
+            "ru": "По З.О."
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств"
+        }
+    },
+    "parameters": [
+        {
+            "name": "segment",
+            "description": null,
+            "hide": false,
+            "label": "Segment",
+            "model_id": "inv.NetworkSegment",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "object1_admin_domain,object1_name,object1_address,object1_iface,object2_admin_domain,object2_name,object2_address,object2_iface,link_proto",
+            "hide": false,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simpletable",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}
