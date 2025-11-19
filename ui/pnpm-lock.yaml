@@ -11,6 +11,9 @@ importers:
 
   .:
     dependencies:
+      color-input:
+        specifier: github:argyleink/css-color-component#cdn-latest
+        version: https://codeload.github.com/argyleink/css-color-component/tar.gz/27527a65f4809de3c67baf7eeeaa31dd4a542817
       dompurify:
         specifier: ^3.3.0
         version: 3.3.0
@@ -476,6 +479,9 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  '@preact/signals-core@1.12.1':
+    resolution: {integrity: sha512-BwbTXpj+9QutoZLQvbttRg5x3l5468qaV2kufh+51yha1c53ep5dY4kTuZR35+3pAZxpfQerGJiQqg34ZNZ6uA==}
+
   '@rollup/rollup-android-arm-eabi@4.53.1':
     resolution: {integrity: sha512-bxZtughE4VNVJlL1RdoSE545kc4JxL7op57KKoi59/gwuU5rV6jLWFXXc8jwgFoT6vtj+ZjO+Z2C5nrY0Cl6wA==}
     cpu: [arm]
@@ -839,8 +845,15 @@ packages:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
 
+  color-input@https://codeload.github.com/argyleink/css-color-component/tar.gz/27527a65f4809de3c67baf7eeeaa31dd4a542817:
+    resolution: {tarball: https://codeload.github.com/argyleink/css-color-component/tar.gz/27527a65f4809de3c67baf7eeeaa31dd4a542817}
+    version: 0.2.0
+
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
+
+  colorjs.io@0.5.2:
+    resolution: {integrity: sha512-twmVoizEW7ylZSN32OgKdXRmo1qg+wT5/6C3xu5b9QsWzSFAhHLn2xd8ro0diCsKfCj1RdaTP/nrcW+vAoQPIw==}
 
   commander@2.20.3:
     resolution: {integrity: sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==}
@@ -2075,6 +2088,8 @@ snapshots:
     dependencies:
       playwright: 1.56.1
 
+  '@preact/signals-core@1.12.1': {}
+
   '@rollup/rollup-android-arm-eabi@4.53.1':
     optional: true
 
@@ -2480,7 +2495,14 @@ snapshots:
     dependencies:
       color-name: 1.1.4
 
+  color-input@https://codeload.github.com/argyleink/css-color-component/tar.gz/27527a65f4809de3c67baf7eeeaa31dd4a542817:
+    dependencies:
+      '@preact/signals-core': 1.12.1
+      colorjs.io: 0.5.2
+
   color-name@1.1.4: {}
+
+  colorjs.io@0.5.2: {}
 
   commander@2.20.3: {}
 

@@ -62,6 +62,7 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
+    "color-input": "github:argyleink/css-color-component#cdn-latest",
     "dompurify": "^3.3.0",
     "leaflet": "^1.9.4",
     "micromark": "^4.0.2",
