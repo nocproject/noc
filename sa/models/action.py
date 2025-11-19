@@ -132,8 +132,9 @@ class ActionCommandConfig:
 class ActionSetItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
-    action: "Action" = PlainReferenceField("sa.Action")
+    action: "Action" = PlainReferenceField("sa.Action", required=True)
     execute: str = StringField(
+        # Success/Failed ?, from param
         choices=[
             ("D", "Disable"),
             ("E", "Enable"),
@@ -239,8 +240,10 @@ class Action(Document):
     access_level = IntField(default=15)
     # Optional handler for non-sa actions
     handler: "Handler" = ReferenceField(Handler, required=False)
+    action_job: str = StringField(default="action_commands")
+    # Job, Action cfg job, test SLA/ SLA by separate task
     action_set: List[ActionSetItem] = EmbeddedDocumentListField(ActionSetItem)
-    # rollback_prefix
+    # rollback_policy - disable, cancel, action
     #
     params: List[ActionParameter] = EmbeddedDocumentListField(ActionParameter)
 
@@ -432,6 +435,23 @@ class Action(Document):
             commands += enable_commands
         return ac, commands
 
+    def render_commands(
+        self,
+        profile,
+        match_ctx: Optional[Dict[str, Any]] = None,
+        managed_object: Optional[Any] = None,
+        ignore_scope: bool = False,
+        **kwargs,
+    ):
+        return Action.render_action_commands(
+            self,
+            profile,
+            match_ctx=match_ctx,
+            managed_object=managed_object,
+            ignore_scope=ignore_scope,
+            **kwargs,
+        )
+
     def execute_handler(self, obj, **kwargs):
         """Execute handler"""
         if not self.handler:
@@ -525,7 +545,7 @@ class Action(Document):
             ctx |= domain.get_domain_ctx()
         # Topology from args - effective topology
         if not hasattr(domain, "get_topology"):
-            yield domain, {}
+            yield domain, [], {}
             return
         topology = domain.get_topology()
         for mo, scopes, t_ctx in cls.iter_topology(topology, {"managed_object": managed_object}):
@@ -552,15 +572,40 @@ class Action(Document):
             for value in values:
                 yield {s.name: value}
 
-    def rollback(self, **kwargs):
-        """Run rollback option"""
+    def iter_action_ctxs(
+        self,
+        domain: Optional[Any] = None,
+        managed_object: Optional[Any] = None,
+        **kwargs,
+    ) -> Iterable[Tuple["Action", Any, Dict[str, Any]]]:
+        """Return action ctx"""
+        for mo, d_scopes, d_ctx in self.iter_domain_ctx(
+            domain, managed_object=managed_object, **kwargs
+        ):
+            # Scope Ctx
+            d_ctx |= kwargs
+            s_ctx, scopes = self.clean_args(mo.profile, **d_ctx)
+            scopes += d_scopes
+            for aa in self.action_set:
+                if aa.execute != "S":
+                    # Rollback, Cancel ?
+                    continue
+                if not aa.is_match(d_scopes):
+                    continue
+                for a_ctx in aa.action.iter_scopes_ctx(scopes):
+                    a_ctx |= aa.get_ctx(**d_ctx)
+                    a_ctx |= d_ctx
+                    yield aa.action, mo, a_ctx
+            if not self.action_set:
+                yield self, mo, d_ctx
 
     def run(
         self,
         domain: Optional[Any] = None,
         managed_object: Optional[Any] = None,
-        rollback: bool = False,
-        dry_run: bool = False,
+        as_job: bool = False,
+        dry_run: bool = True,
+        username: Optional[str] = None,
         **kwargs,
     ):
         """
@@ -575,43 +620,80 @@ class Action(Document):
         Args:
             domain: Configuration Domain
             managed_object: Execute Device param
-            rollback: Rollback actions
+            username: User for run
             dry_run: Do not execute on Device
         """
         r = defaultdict(list)
         domain = domain or managed_object
         # Domain Ctx
         ctx = kwargs.copy()
-        if hasattr(domain, "get_domain_ctx"):
-            ctx |= domain.get_domain_ctx()
-        for mo, d_scopes, d_ctx in self.iter_domain_ctx(
+        if hasattr(domain, "get_action_ctx"):
+            ctx |= domain.get_action_ctx()
+        for action, mo, a_ctx in self.iter_action_ctxs(
             domain, managed_object=managed_object, **ctx
         ):
-            # Scope Ctx
+            r[mo].append((action, a_ctx))
+        # Add Job to Settings
+        if as_job:
+            # Actions Job
+            req = self.get_job_by_actions(r, dry_run=dry_run)
+            req.submit()
+        else:
+            self.execute_actions(r, dry_run=dry_run)
+
+    def rollback(self, **kwargs):
+        """Run rollback option"""
+
+    def get_job_by_actions(
+        self,
+        actions: Dict[Any, List[Tuple["Action", Dict[str, Any]]]],
+        dry_run: bool = False,
+    ) -> "JobRequest":
+        """"""
+        action_jobs = []
+        for mo, aas in actions.items():
+            jobs = []
+            for action, ctx in aas:
+                req = action.get_job_request(mo, dry_run=dry_run, **ctx)
+                jobs.append(req)
+            action_jobs.append(
+                JobRequest(
+                    name=f"run_action{self.name}_by_topology_{mo.id}",
+                    description="Run Action commands by name",
+                    allow_fail=True,
+                    locks=[f"mo-{mo.id}"],
+                    jobs=jobs,
+                )
+            )
+        # username
+        return JobRequest(name=f"run_actions_by_topology_{self.id}", jobs=action_jobs)
+
+    def execute_actions(
+        self,
+        actions: Dict[Any, List[Tuple["Action", Dict[str, Any]]]],
+        dry_run: bool = False,
+        as_job: bool = False,
+    ):
+        """Execute actions over contexts"""
+        # Execute Commands
+        for mo, aas in actions.items():
+            commands = []
             match = mo.get_matcher_ctx()
-            d_ctx |= ctx
-            s_ctx, scopes = self.clean_args(mo.profile, **d_ctx)
-            scopes += d_scopes
-            for action in self.action_set:
-                if rollback and action.execute != "S":
-                    # Rollback, Cancel ?
-                    continue
-                if not action.is_match(d_scopes):
-                    continue
-                for a_ctx in action.action.iter_scopes_ctx(scopes):
-                    # key = str((mo, action, a_ctx))
-                    # Action Ctx
-                    a_ctx |= action.get_ctx(**d_ctx)
-                    a_ctx |= d_ctx
-                    _, c = Action.render_action_commands(
-                        action.action,
-                        mo.profile,
-                        match,
-                        managed_object=mo,
-                        **a_ctx,
-                    )
-                    r[mo] += c
-        return r
+            for action, ctx in aas:
+                # Improve configure script
+                _, c = Action.render_action_commands(
+                    action,
+                    mo.profile,
+                    match,
+                    managed_object=mo,
+                    **ctx,
+                )
+                commands.append(c)
+            mo.scripts.commands(
+                commands=[commands],
+                config_mode=True,
+                dry_run=dry_run,
+            )
 
     def execute(
         self,
