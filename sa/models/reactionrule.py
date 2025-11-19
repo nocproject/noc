@@ -427,6 +427,8 @@ class ReactionRule(Document):
     def get_action_ctx(self, o) -> Dict[str, Any]:
         """Create action context (to env)"""
         r = {"obj": o}
+        if hasattr(o, "get_action_ctx"):
+            r |= o.get_action_ctx()
         # managed_object
         if isinstance(o, ManagedObject):
             r["managed_object"] = o
