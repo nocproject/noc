@@ -59,6 +59,16 @@ class VLANProfile(Document):
     workflow = PlainReferenceField(Workflow, required=True)
     style = ForeignKeyField(Style)
     role: Optional[VLANRole] = EnumField(VLANRole, required=False)
+    provisioning_policy: str = StringField(
+        choices=[
+            ("P", "Domain"),
+            ("D", "Disable"),
+            ("E", "Enable"),
+            ("M", "Manual"),
+            ("A", "Add Only"),
+        ],
+        default="P",
+    )
     # Labels
     labels = ListField(StringField())
     # Integration with external NRI and TT systems

@@ -324,6 +324,7 @@ class SLAProbe(Document):
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
+            "provisioning_op": self.get_provisioning_op(),
             # "service_groups": list(self.effective_service_groups),
             "caps": self.get_caps(),
             "state": str(state.id),
@@ -340,4 +341,21 @@ class SLAProbe(Document):
             "owner": self.group,
             "managed_object": self.managed_object,
             "description": self.description,
+            "provisioning_op": self.get_provisioning_op(),
         }
+
+    def get_provisioning_op(self) -> str:
+        """
+        Return provisioning operation
+        * N - disable
+        * P - Provisioned
+        # R - Remove
+        """
+        if self.profile.provisioning_policy == "D":
+            return "N"
+        # policy = self.profile.provisioning_policy
+        if self.state.name == "Missed":
+            return "P"
+        # if self.state.name == "Free" and policy != "A":
+        #    return "R"
+        return "N"
