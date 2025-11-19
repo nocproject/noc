@@ -80,6 +80,10 @@ class L2DomainProfile(Document):
         default="E",
     )
     vlan_discovery_filter = ReferenceField(VLANFilter)  # local_filter
+    provisioning_policy: str = StringField(
+        choices=[("D", "Disable"), ("E", "Enable"), ("M", "Manual"), ("A", "Add Only")],
+        default="D",
+    )
     # local_filter
     # Labels
     labels = ListField(StringField())

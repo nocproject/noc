@@ -597,15 +597,14 @@ class Action(Document):
                     a_ctx |= aa.get_ctx(**d_ctx)
                     a_ctx |= d_ctx
                     yield aa.action, mo, a_ctx
-            if not self.action_set:
-                yield self, mo, d_ctx
+            yield self, mo, d_ctx
 
     def run(
         self,
         domain: Optional[Any] = None,
         managed_object: Optional[Any] = None,
         as_job: bool = False,
-        dry_run: bool = True,
+        dry_run: bool = False,
         username: Optional[str] = None,
         **kwargs,
     ):
@@ -628,7 +627,7 @@ class Action(Document):
         domain = domain or managed_object
         # Domain Ctx
         ctx = kwargs.copy()
-        if hasattr(domain, "get_action_ctx"):
+        if hasattr(domain, "get_domain_ctx"):
             ctx |= domain.get_action_ctx()
         for action, mo, a_ctx in self.iter_action_ctxs(
             domain, managed_object=managed_object, **ctx
@@ -689,9 +688,9 @@ class Action(Document):
                     managed_object=mo,
                     **ctx,
                 )
-                commands.append(c)
+                commands += c
             mo.scripts.commands(
-                commands=[commands],
+                commands=commands,
                 config_mode=True,
                 dry_run=dry_run,
             )

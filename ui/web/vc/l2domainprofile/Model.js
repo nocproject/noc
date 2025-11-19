@@ -55,6 +55,11 @@ Ext.define("NOC.vc.l2domainprofile.Model", {
       defaultValue: "E",
     },
     {
+      name: "provisioning_policy",
+      type: "string",
+      defaultValue: "D",
+    },
+    {
       name: "vlan_discovery_filter",
       type: "string",
     },
