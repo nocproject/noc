@@ -48,6 +48,11 @@ Ext.define("NOC.sla.slaprofile.Model", {
       defaultValue: false,
     },
     {
+      name: "provisioning_policy",
+      type: "string",
+      defaultValue: "D",
+    },
+    {
       name: "name",
       type: "string",
     },

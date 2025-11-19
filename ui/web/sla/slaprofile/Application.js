@@ -117,6 +117,19 @@ Ext.define("NOC.sla.slaprofile.Application", {
           allowBlank: true,
         },
         {
+          name: "provisioning_policy",
+          xtype: "combobox",
+          fieldLabel: __("VLAN Provisioning Policy"),
+          allowBlank: false,
+          uiStyle: "medium",
+          value: "N",
+          store: [
+            ["D", "Disable"],
+            ["E", "Enable"],
+            ["A", "Add Only"],
+          ],
+        },
+        {
           name: "test_packets_num",
           xtype: "numberfield",
           fieldLabel: __("Number Packets on Test"),

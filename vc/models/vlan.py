@@ -65,11 +65,11 @@ class VLAN(Document):
     }
 
     name = StringField(default="")
-    profile = PlainReferenceField(
+    profile: "VLANProfile" = PlainReferenceField(
         VLANProfile, required=True, default=VLANProfile.get_default_profile
     )
     vlan = IntField(min_value=1, max_value=4095)
-    l2_domain = PlainReferenceField(L2Domain, required=True)
+    l2_domain: "L2Domain" = PlainReferenceField(L2Domain, required=True)
     description = StringField()
     state = PlainReferenceField(State)
     project = ForeignKeyField(Project)
@@ -257,6 +257,7 @@ class VLAN(Document):
             "description": self.description,
             "labels": list(self.effective_labels),
             "state": str(state.id),
+            "provisioning_op": self.get_provisioning_op(),
         }
 
     @classmethod
@@ -266,3 +267,26 @@ class VLAN(Document):
     @property
     def vlan_role_label(self) -> Optional[str]:
         return self.profile.role_label
+
+    def get_provisioning_op(self) -> str:
+        """
+        Return provisioning operation
+        * N - disable
+        * P - Provisioned
+        # R - Remove
+        """
+        #             if vlan.state.name == "Approved":
+        #                 r["provisioned_vlans"].append(vlan.vlan)
+        #             if vlan.state.name == "Free":
+        #                 r["removed_vlans"].append(vlan.vlan)
+        if not self.l2_domain.enable_provisioning:
+            return "N"
+        policy = self.l2_domain.profile.provisioning_policy
+        if self.state.name == "Approve":
+            return "P"
+        if self.state.name == "Free" and policy != "A":
+            return "R"
+        return "N"
+
+    # def get_constraints()
+    # """Generate topology constraints"""
