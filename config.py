@@ -354,6 +354,15 @@ class Config(BaseConfig):
     class grafanads(ConfigSection):
         db_threads = IntParameter(default=10)
 
+    class home(ConfigSection):
+        enable_welcome = BooleanParameter(default=True)
+        enable_community = BooleanParameter(default=True)
+        enable_favorites = BooleanParameter(default=True)
+        enable_channels = BooleanParameter(default=True)
+        enable_inventory_summary = BooleanParameter(default=True)
+        enable_mo_summary = BooleanParameter(default=True)
+        enable_alarms = BooleanParameter(default=True)
+
     class http_client(ConfigSection):
         connect_timeout = SecondsParameter(default="10s")
         request_timeout = SecondsParameter(default="1h")

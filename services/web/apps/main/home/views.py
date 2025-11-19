@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Callable
 import importlib.resources
 
 # Third-party modules
@@ -39,17 +39,22 @@ class HomeAppplication(ExtApplication):
 
     @view("^dashboard/", access=True, api=True)
     def api_welcome(self, request):
-        user = request.user
-        widgets = [
-            self.get_welcome(user),
-            self.get_community(user),
-            self.get_favorites(user),
-            self.get_channels(user),
-            self.get_inventory_summary(user),
-            self.get_mo_summary(user),
-            self.get_alarms(user),
-        ]
-        return {"widgets": [x for x in widgets if x]}
+        def append_if(is_enabled: bool, h: Callable[[User], Optional[Dict[str, Any]]]) -> None:
+            if not is_enabled:
+                return
+            r = h(request.user)
+            if r:
+                widgets.append(r)
+
+        widgets = []
+        append_if(config.home.enable_welcome, self.get_welcome)
+        append_if(config.home.enable_community, self.get_community)
+        append_if(config.home.enable_favorites, self.get_favorites)
+        append_if(config.home.enable_channels, self.get_channels)
+        append_if(config.home.enable_inventory_summary, self.get_inventory_summary)
+        append_if(config.home.enable_mo_summary, self.get_mo_summary)
+        append_if(config.home.enable_alarms, self.get_alarms)
+        return {"widgets": widgets}
 
     def get_favorites(self, user: User) -> Optional[Dict[str, Any]]:
         """

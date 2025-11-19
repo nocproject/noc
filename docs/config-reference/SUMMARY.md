@@ -28,6 +28,7 @@
 * [[grafanads] section](grafanads.md)
 * [[help] section](help.md)
 * [[http_client] section](http_client.md)
+* [[home] section](home.md)
 * [[initial] section](initial.md)
 * [[kafkasender] section](kafkasender.md)
 * [[layout] section](layout.md)
