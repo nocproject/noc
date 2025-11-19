@@ -33,6 +33,9 @@ from noc.wf.models.state import State
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_delete_check, on_save
+from noc.core.change.decorator import change
+from noc.core.topology.base import TopologyBase
+from noc.core.topology.loader import loader
 from noc.inv.models.resourcepool import ResourcePool
 from .vlanprofile import VLANProfile
 from .vlanfilter import VLANFilter
@@ -56,6 +59,7 @@ class PoolItem(EmbeddedDocument):
 
 
 @Label.model
+@change
 @bi_sync
 @on_save
 @on_delete_check(
@@ -83,7 +87,7 @@ class L2Domain(Document):
     )
     description = StringField()
     # L2Domain workflow
-    state = PlainReferenceField(State)
+    state: State = PlainReferenceField(State)
     pools: List[PoolItem] = EmbeddedDocumentListField(PoolItem)
     vlan_template = ReferenceField(VLANTemplate)
     default_vlan_profile: "VLANProfile" = ReferenceField(VLANProfile, required=False)
@@ -98,6 +102,7 @@ class L2Domain(Document):
         default="P",
     )
     vlan_discovery_filter = ReferenceField(VLANFilter)  # local_filter
+    # Vlan deploy filter
     # Labels
     labels = ListField(StringField())
     effective_labels = ListField(StringField())
@@ -302,3 +307,32 @@ class L2Domain(Document):
             return 0.0
 
         return vlans * 100.0 / 4095
+
+    @property
+    def enable_provisioning(self) -> bool:
+        return self.profile.provisioning_policy != "D"
+
+    def get_topology(self) -> Optional[TopologyBase]:
+        """Getting effective topology"""
+        # Constraints
+        topo = loader["l2domain"]
+        return topo(self.id)
+
+    def get_domain_ctx(self) -> Dict[str, Any]:
+        """get_action_ctx"""
+        from noc.vc.models.vlan import VLAN
+
+        r = {
+            # Vlans on get_action_ctx ?
+            "vlans": [],
+            "provisioned_vlans": [],
+            "removed_vlans": [],
+        }
+        for vlan in VLAN.objects.filter(l2_domain=self):
+            r["vlans"].append(vlan.vlan)
+            op = vlan.get_provisioning_op()
+            if op == "P":
+                r["provisioned_vlans"].append(vlan.vlan)
+            elif op != "R":
+                r["removed_vlans"].append(vlan.vlan)
+        return r
