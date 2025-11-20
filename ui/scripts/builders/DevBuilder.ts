@@ -35,7 +35,79 @@ export class DevBuilder extends BaseBuilder{
   }
 
   private async createContext(): Promise<void>{
-    const options = this.getBaseBuildOptions();
+    const options = this.getBaseBuildOptions(),
+      replaceMethodsPlugin = new ReplaceMethodsPlugin({
+        debug: this.options.pluginDebug,
+        isDev: true,
+        parserOptions: {
+          ...this.options.parserOptions,
+          loc: true,
+          range: true,
+          comment: true,
+          tokens: true,
+        },
+        generateOptions: this.options.generateOptions,
+        toReplaceMethods: [
+          {
+            name: "NOC.core.ResourceLoader.loadSet",
+            replacement: {
+              type: "ExpressionStatement",
+              expression: {
+                type: "CallExpression",
+                callee: {
+                  type: "MemberExpression",
+                  object: {
+                    type: "CallExpression",
+                    callee: {
+                      type: "MemberExpression",
+                      object: {type: "Identifier", name: "leafletAPI"},
+                      property: {type: "Identifier", name: "preload"},
+                      computed: false,
+                      optional: false,
+                    },
+                    arguments: [],
+                    optional: false,
+                  },
+                  property: {type: "Identifier", name: "then"},
+                  computed: false,
+                  optional: false,
+                },
+                arguments: [
+                  {
+                    type: "ArrowFunctionExpression",
+                    params: [],
+                    body: {
+                      type: "CallExpression",
+                      callee: {
+                        type: "MemberExpression",
+                        object: {type: "ThisExpression"},
+                        property: {type: "Identifier", name: "createMap"},
+                        computed: false,
+                        optional: false,
+                      },
+                      arguments: [
+                        {type: "Identifier", name: "data"},
+                      ],
+                      optional: false,
+                    },
+                    generator: false,
+                    expression: true,
+                    async: false,
+                  },
+                ],
+                optional: false,
+              },
+            },
+          },
+        ],
+      }),
+      languagePlugin = new LanguagePlugin({
+        debug: this.options.pluginDebug,
+        isDev: true,
+        outputDir: this.options.buildDir,
+        languages: ["en"],
+        cacheDir: this.options.cacheDir,
+      });
     this.context = await esbuild.context({
       ...options,
       entryPoints: [
@@ -45,71 +117,8 @@ export class DevBuilder extends BaseBuilder{
       ],
       plugins: [
         ...(options.plugins || []),
-        new LanguagePlugin({
-          debug: this.options.pluginDebug,
-          isDev: true,
-          outputDir: this.options.buildDir,
-          languages: ["en"],
-          cacheDir: this.options.cacheDir,
-        }).getPlugin(),
-        new ReplaceMethodsPlugin({
-          toReplaceMethods: [
-            {
-              name: "NOC.core.ResourceLoader.loadSet",
-              replacement: {
-                type: "ExpressionStatement",
-                expression: {
-                  type: "CallExpression",
-                  callee: {
-                    type: "MemberExpression",
-                    object: {
-                      type: "CallExpression",
-                      callee: {
-                        type: "MemberExpression",
-                        object: {type: "Identifier", name: "leafletAPI"},
-                        property: {type: "Identifier", name: "preload"},
-                        computed: false,
-                        optional: false,
-                      },
-                      arguments: [],
-                      optional: false,
-                    },
-                    property: {type: "Identifier", name: "then"},
-                    computed: false,
-                    optional: false,
-                  },
-                  arguments: [
-                    {
-                      type: "ArrowFunctionExpression",
-                      params: [],
-                      body: {
-                        type: "CallExpression",
-                        callee: {
-                          type: "MemberExpression",
-                          object: {type: "ThisExpression"},
-                          property: {type: "Identifier", name: "createMap"},
-                          computed: false,
-                          optional: false,
-                        },
-                        arguments: [
-                          {type: "Identifier", name: "data"},
-                        ],
-                        optional: false,
-                      },
-                      generator: false,
-                      expression: true,
-                      async: false,
-                    },
-                  ],
-                  optional: false,
-                },
-              },
-            },
-          ],
-          debug: this.options.pluginDebug,
-          parserOptions: this.options.parserOptions,
-          generateOptions: this.options.generateOptions,
-        }).getPlugin(),
+        languagePlugin.getPlugin(),
+        replaceMethodsPlugin.getPlugin(),
       ],
     });
   }

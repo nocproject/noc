@@ -93,6 +93,7 @@ describe("ReplaceMethodsPlugin", () => {
           },
         },   
       ],
+      isDev: true,
       parserOptions: {
         ecmaVersion: 2020,
         sourceType: "module",
@@ -132,6 +133,7 @@ describe("ReplaceMethodsPlugin", () => {
     await fs.writeFile(inputFile, inputCode);
 
     const plugin = new ReplaceMethodsPlugin({
+      isDev: true,
       toReplaceMethods: [
         {
           name: "console.debug",
@@ -202,6 +204,7 @@ describe("ReplaceMethodsPlugin", () => {
     await fs.writeFile(inputFile, inputCode);
 
     const plugin = new ReplaceMethodsPlugin({
+      isDev: true,
       toReplaceMethods: [
         {
           name: "new_load_scripts",
@@ -250,6 +253,7 @@ describe("ReplaceMethodsPlugin", () => {
     await fs.writeFile(inputFile, inputCode);
 
     const plugin = new ReplaceMethodsPlugin({
+      isDev: true,
       toReplaceMethods: [
         {
           name: "console.debug",
