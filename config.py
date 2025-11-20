@@ -1193,8 +1193,7 @@ class Config(BaseConfig):
             files(cpath)
             if prefer_custom:
                 return [cpath, rpath]
-            else:
-                return [rpath, cpath]
+            return [rpath, cpath]
         except ModuleNotFoundError:
             return [rpath]
 
