@@ -1,0 +1,3606 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/internal-metrics-reference/">
+      
+      
+        <link rel="prev" href="../discovery-reference/segment/">
+      
+      
+        <link rel="next" href="../agent-reference/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Internal Metrics - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#noc-internal-metrics" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Internal Metrics
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../internal-metrics-reference/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            References
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/references/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../concepts/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../profiles-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Profiles
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../caps-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Capabilities
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../alarm-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Alarm Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../event-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Event Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../measurement-units-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measurement Units
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../metrics-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Metrics
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../mx-messages-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    MX Messages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technologies-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Technologies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../services-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../config-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../discovery-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Discovery
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Internal Metrics
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Internal Metrics
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#service-metrics" class="md-nav__link">
+    Service Metrics
+  </a>
+  
+    <nav class="md-nav" aria-label="Service Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-service-metrics" class="md-nav__link">
+    General Service Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-metrics" class="md-nav__link">
+    Cache metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-client-metrics" class="md-nav__link">
+    HTTP client metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#client-rpc-metrics" class="md-nav__link">
+    Client RPC Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcs-metrics" class="md-nav__link">
+    DCS metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threadpool-metrics" class="md-nav__link">
+    Threadpool metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduler-metrics" class="md-nav__link">
+    Scheduler metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activator" class="md-nav__link">
+    Activator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    Discovery
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sae" class="md-nav__link">
+    SAE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ping" class="md-nav__link">
+    Ping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectors" class="md-nav__link">
+    Collectors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classifier" class="md-nav__link">
+    Classifier
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlator" class="md-nav__link">
+    Correlator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escalator" class="md-nav__link">
+    Escalator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mailsender" class="md-nav__link">
+    Mailsender
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-wide-metrics-self-monitoring" class="md-nav__link">
+    System-wide metrics (self-monitoring)
+  </a>
+  
+    <nav class="md-nav" aria-label="System-wide metrics (self-monitoring)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    Task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inventory" class="md-nav__link">
+    Inventory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm" class="md-nav__link">
+    FM
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../agent-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    noc-agent
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mr-labels-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Merge Request Labels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../datastream-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    DataStream API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../nbi-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NBI API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../bi-dict-reference/administrativedomain/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Dictionaries
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../bi-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../confdb-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    ConfDB
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../scripts-reference/add_vlan/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Scripts Reference
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../handlers-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Handlers
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../object-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Object Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../model-interfaces-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Model Interfaces
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../connection-types-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Connection Types
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../inventory-protocols-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inventory Protocols
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../streams-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Streams
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-reference-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Reference Format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datetime-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and Time Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../man/about/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Man Pages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../feature-gates-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature Gates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../operational-alerts-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Operational Alerts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../supported-standards/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported Standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#service-metrics" class="md-nav__link">
+    Service Metrics
+  </a>
+  
+    <nav class="md-nav" aria-label="Service Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-service-metrics" class="md-nav__link">
+    General Service Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-metrics" class="md-nav__link">
+    Cache metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-client-metrics" class="md-nav__link">
+    HTTP client metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#client-rpc-metrics" class="md-nav__link">
+    Client RPC Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcs-metrics" class="md-nav__link">
+    DCS metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threadpool-metrics" class="md-nav__link">
+    Threadpool metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scheduler-metrics" class="md-nav__link">
+    Scheduler metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activator" class="md-nav__link">
+    Activator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discovery" class="md-nav__link">
+    Discovery
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sae" class="md-nav__link">
+    SAE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ping" class="md-nav__link">
+    Ping
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectors" class="md-nav__link">
+    Collectors
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#classifier" class="md-nav__link">
+    Classifier
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correlator" class="md-nav__link">
+    Correlator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escalator" class="md-nav__link">
+    Escalator
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mailsender" class="md-nav__link">
+    Mailsender
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-wide-metrics-self-monitoring" class="md-nav__link">
+    System-wide metrics (self-monitoring)
+  </a>
+  
+    <nav class="md-nav" aria-label="System-wide metrics (self-monitoring)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#task" class="md-nav__link">
+    Task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inventory" class="md-nav__link">
+    Inventory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm" class="md-nav__link">
+    FM
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/internal-metrics-reference/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="noc-internal-metrics">NOC Internal Metrics<a class="headerlink" href="#noc-internal-metrics" title="Permanent link">&para;</a></h1>
+<h2 id="service-metrics">Service Metrics<a class="headerlink" href="#service-metrics" title="Permanent link">&para;</a></h2>
+<p>Given to a separate service for reference to the link /mon/</p>
+<p>All metrics are tagged:</p>
+<ul>
+<li>service - the name of the service. It is fixed in the code</li>
+<li>pool - in the case of a sharded service, an indication of the pool</li>
+</ul>
+<h3 id="general-service-metrics">General Service Metrics<a class="headerlink" href="#general-service-metrics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>service</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Service (core.service.base)</td>
+<td>Service name</td>
+</tr>
+<tr>
+<td>status</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Service status - always returns True</td>
+</tr>
+<tr>
+<td>pid</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Service process number</td>
+</tr>
+<tr>
+<td>pool</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>The name of the pool with which the service works</td>
+</tr>
+<tr>
+<td>node</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>The server name is filled in config.node</td>
+</tr>
+<tr>
+<td>uptime</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Time since the service started (in seconds)</td>
+</tr>
+<tr>
+<td>mon_requests</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Number of requests by reference /mon/</td>
+</tr>
+<tr>
+<td>http_requests</td>
+<td>method (GET / POST / PUT)</td>
+<td>The number of calls to HTTP service</td>
+<td></td>
+</tr>
+<tr>
+<td>http_response</td>
+<td>status</td>
+<td>Number of responses returned by the service (by status)</td>
+<td></td>
+</tr>
+<tr>
+<td>spans</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>spans</td>
+<td>The number of requests for the return of telemetry to the service</td>
+</tr>
+<tr>
+<td>errors</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>debug</td>
+<td>The number of traces in the service</td>
+</tr>
+<tr>
+<td>unique_errors</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>debug</td>
+<td>The number of unique (new) errors in the service (counted from the moment of launch)</td>
+</tr>
+<tr>
+<td><code>err_&lt;code&gt;</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>error</td>
+<td>The number of errors by code</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cache-metrics">Cache metrics<a class="headerlink" href="#cache-metrics" title="Permanent link">&para;</a></h3>
+<p>Most services provide work with the cache.
+A separate component is responsible for this.
+The cache is divided into 2 types:</p>
+<ul>
+<li>internal (L1, internal) cache is represented by intra-service memory for a certain number of pieces of information</li>
+<li>
+<p>external ( L2, external) cache is organized by the cache service specified in the system settings. It can be located:</p>
+</li>
+<li>
+<p>mongodb (by default, unless otherwise specified)</p>
+</li>
+<li>memcached - external service memcached</li>
+<li>redis - external service redis</li>
+</ul>
+<p>Each element of the system that uses the cache is assigned a unique key - cache_key. It is used as tag.</p>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cache_requests</td>
+<td>cache_key</td>
+<td>cachedmethod</td>
+<td>The number of requests to the cache by key</td>
+</tr>
+<tr>
+<td>cache_hits</td>
+<td>cache_key</td>
+<td>cachedmethod</td>
+<td>The number of successful requests (hits) in the cache</td>
+</tr>
+<tr>
+<td>cache_hits</td>
+<td>cache_level: internal</td>
+<td>cachedmethod</td>
+<td>Number of queries processed (passed) by internal cache</td>
+</tr>
+<tr>
+<td>cache_hits</td>
+<td>cache_level: external</td>
+<td>cachedmethod</td>
+<td>Number of queries processed (passed) by external cache</td>
+</tr>
+<tr>
+<td>cache_misses</td>
+<td>cache_key</td>
+<td>cachedmethod</td>
+<td>The number of requests past the cache (missed)</td>
+</tr>
+<tr>
+<td>cache_locks_acquires</td>
+<td>cache_key</td>
+<td>cachedmethod</td>
+<td>Number of cache accesses</td>
+</tr>
+</tbody>
+</table>
+<h3 id="http-client-metrics">HTTP client metrics<a class="headerlink" href="#http-client-metrics" title="Permanent link">&para;</a></h3>
+<p>Built-in HTTP client supports metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>httpclient_requests</td>
+<td>method (method name)</td>
+<td>http_client.fetch</td>
+<td>Number of completed requests</td>
+</tr>
+<tr>
+<td>httpclient_timeouts</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>http_client.fetch</td>
+<td>Number of requests with an error timeout</td>
+</tr>
+<tr>
+<td>httpclient_proxy_timeouts</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>http_client.fetch</td>
+<td>The number of requests with a proxy error</td>
+</tr>
+</tbody>
+</table>
+<h3 id="client-rpc-metrics">Client RPC Metrics<a class="headerlink" href="#client-rpc-metrics" title="Permanent link">&para;</a></h3>
+<p>A client RPC used to interact with a part of system services that support the protocol JSON-RPC.
+Supports the following tags:</p>
+<ul>
+<li>called_service - the name of the called service</li>
+<li>method - the name of the called method in the service (the list depends on the called service)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>rpc_call</td>
+<td>method (method name), called_service (name of the service being called)</td>
+<td>http_client.fetch</td>
+<td>The number of calls to a specific method in a given service</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dcs-metrics">DCS metrics<a class="headerlink" href="#dcs-metrics" title="Permanent link">&para;</a></h3>
+<p>DCS client is used to work with the services service Consul.
+Consul is used for:</p>
+<ul>
+<li>Search services. A request is made to search for a service by name, the IP address is returned: the port of the nearest service</li>
+<li>To register yourself (at startup)</li>
+<li>For unregistration (at a stop)</li>
+<li>For blocking (if the launched service can work in a single copy)</li>
+<li>To get a slot (in the case of sharding by objects)</li>
+</ul>
+<p>The client provides the following metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>dcs_resolver_activeservices</td>
+<td>name (service name)</td>
+<td>ResolverBase</td>
+<td>Request for exhibiting active service.</td>
+</tr>
+<tr>
+<td>dcs_resolver_requests</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ResolverBase</td>
+<td>The total number of requests for the nearest service</td>
+</tr>
+<tr>
+<td>dcs_resolver_hints</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ResolverBase</td>
+<td></td>
+</tr>
+<tr>
+<td>dcs_resolver_success</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ResolverBase</td>
+<td>The number of requests for service, completed success</td>
+</tr>
+<tr>
+<td>errors</td>
+<td>type: dcs_resolver_timeout</td>
+<td>ResolverBase</td>
+<td>The number of service requests that failed</td>
+</tr>
+</tbody>
+</table>
+<h3 id="threadpool-metrics">Threadpool metrics<a class="headerlink" href="#threadpool-metrics" title="Permanent link">&para;</a></h3>
+<p>In system services using multi-thread processing is used pool of threads( threadpool).
+This component is responsible for managing flows and provides the following metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><th_name>_max_workers</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>Maximum number of threads</td>
+</tr>
+<tr>
+<td><th_name>_idle_workers</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>Number of idle threads</td>
+</tr>
+<tr>
+<td><th_name>_running_workers</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>The number of busy threads</td>
+</tr>
+<tr>
+<td><th_name>_submitted_tasks</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>Number of completed tasks</td>
+</tr>
+<tr>
+<td><th_name>_queued_jobs</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>Number of jobs waiting (in the queue)</td>
+</tr>
+<tr>
+<td><th_name>_uptime</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ThreadPoolExecutor</td>
+<td>Flow time</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><th_name> - The name of the threadpool. The following items are available:</p>
+</li>
+<li>
+<p>script - used by the Activator service to run scripts</p>
+</li>
+<li>query - used by the service BI</li>
+<li>max - use services Web,NBI</li>
+</ul>
+<h3 id="scheduler-metrics">Scheduler metrics<a class="headerlink" href="#scheduler-metrics" title="Permanent link">&para;</a></h3>
+<p>In system services using work with tasks, the scheduler component ( scheduler) is used.
+It is responsible for working with tasks (planning, sending for execution ...).
+Provides the following metrics:</p>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;service&gt;_jobs_started</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>The total number of running tasks (during operation)</td>
+</tr>
+<tr>
+<td><code>&lt;service&gt;_jobs_retries_exceeded</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>Number of tasks exceeding the maximum number of executions</td>
+</tr>
+<tr>
+<td><code>&lt;service&gt;_jobs_burst</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>The number of tasks exceeding the maximum</td>
+</tr>
+<tr>
+<td><code>&lt;service&gt;_bulk_failed</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>The number of update status errors in the collection</td>
+</tr>
+<tr>
+<td><code>&lt;service&gt;_cache_set_requests</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>Number of Scheduler Cache Saves</td>
+</tr>
+<tr>
+<td><code>&lt;service&gt;_cache_set_errors</code></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Scheduler</td>
+<td>The number of errors while saving the scheduler cache</td>
+</tr>
+</tbody>
+</table>
+<h3 id="activator">Activator<a class="headerlink" href="#activator" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>error</td>
+<td>type:invalid_script</td>
+<td>ActivatorAPI.script</td>
+<td>The number of calls to a non-existent script</td>
+</tr>
+<tr>
+<td></td>
+<td>type:script_error</td>
+<td>ActivatorAPI.script</td>
+<td>The number of errors during the execution of the script</td>
+</tr>
+<tr>
+<td></td>
+<td>type:snmp_v1_error</td>
+<td>ActivatorAPI.snmp_v1_get</td>
+<td>The number of SNMP V1 request errors</td>
+</tr>
+<tr>
+<td></td>
+<td>type:snmp_v2_error</td>
+<td>ActivatorAPI.snmp_v2c_get</td>
+<td>Number of SNMP V2 Request Errors</td>
+</tr>
+<tr>
+<td></td>
+<td><code>type:http_error_&lt;code&gt;</code></td>
+<td>ActivatorAPI.http_get</td>
+<td>The number of HTTP request errors (divided by code)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="discovery">Discovery<a class="headerlink" href="#discovery" title="Permanent link">&para;</a></h3>
+<p>todo</p>
+<h3 id="sae">SAE<a class="headerlink" href="#sae" title="Permanent link">&para;</a></h3>
+<p>todo</p>
+<h3 id="ping">Ping<a class="headerlink" href="#ping" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ignorable_ping_errors</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>PingSocket.ping</td>
+<td>The number of ignored errors when the collector receives an ICMP message</td>
+</tr>
+<tr>
+<td>ping_recvfrom_errors</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>PingSocket.ping</td>
+<td>The number of errors when the collector receives an ICMP message</td>
+</tr>
+<tr>
+<td>ping_unknown_icmp_packets</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>PingSocket.ping</td>
+<td>ICMP packet belonging to another service</td>
+</tr>
+<tr>
+<td>ping_time_stepbacks</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>PingSocket.ping</td>
+<td>The number of packages containing more time system</td>
+</tr>
+<tr>
+<td>ping_check_recover</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>PingSocket.ping</td>
+<td>Number of IP address availability recoveries</td>
+</tr>
+<tr>
+<td>ping_objects</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of objects checked by the sample</td>
+</tr>
+<tr>
+<td>down_objects</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>Number of unavailable objects</td>
+</tr>
+<tr>
+<td>ping_probe_create</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>Number of samples (one object = one sample)</td>
+</tr>
+<tr>
+<td>ping_probe_update</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of updates in the samples</td>
+</tr>
+<tr>
+<td>ping_probe_delete</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>Number of samples removed</td>
+</tr>
+<tr>
+<td>ping_check_total</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of checks performed</td>
+</tr>
+<tr>
+<td>ping_check_skips</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of missed checks</td>
+</tr>
+<tr>
+<td>ping_check_success</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of successful checks</td>
+</tr>
+<tr>
+<td>ping_check_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Pingservice</td>
+<td>The number of failed checks</td>
+</tr>
+</tbody>
+</table>
+<h3 id="collectors">Collectors<a class="headerlink" href="#collectors" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>trap_msg_in</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>TrapServer.on_read</td>
+<td>The number of incoming UPD SNMP Trap packets</td>
+</tr>
+<tr>
+<td>events_out</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>TrapCollectorService.register_message</td>
+<td>The number of events in the direction of the classifier</td>
+</tr>
+<tr>
+<td>sources_changed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>TrapCollectorService.update_source, SyslogCollectorService.update_source</td>
+<td>Updating information on source IP addresses</td>
+</tr>
+<tr>
+<td>sources_deleted</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>TrapCollectorService.sources_deleted, SyslogCollectorService</td>
+<td>Deleting information by IP address</td>
+</tr>
+<tr>
+<td>error</td>
+<td>type:decode_failed</td>
+<td>TrapServer.on_read</td>
+<td></td>
+</tr>
+<tr>
+<td>error</td>
+<td>type:socket_listen_error</td>
+<td>on_activate</td>
+<td></td>
+</tr>
+<tr>
+<td>error</td>
+<td>type:object_not_found</td>
+<td>TrapCollectorService.lookup_config</td>
+<td></td>
+</tr>
+<tr>
+<td>syslog_msg_in</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>SyslogServer.on_read</td>
+<td>The number of incoming UPD syslog packages</td>
+</tr>
+</tbody>
+</table>
+<h3 id="classifier">Classifier<a class="headerlink" href="#classifier" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lag_us</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService.on_event</td>
+<td>Delay versus message creation time at source</td>
+</tr>
+<tr>
+<td>events_preprocessed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events classified by pre-processing</td>
+</tr>
+<tr>
+<td>events_processed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events received for processing</td>
+</tr>
+<tr>
+<td>events_unk_object</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events from an unknown object</td>
+</tr>
+<tr>
+<td>events_unk_duplicated</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>Number of duplicate events detected by <em>codebook</em></td>
+</tr>
+<tr>
+<td>events_duplicated</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of classified events that have a duplicate detected.</td>
+</tr>
+<tr>
+<td>events_disposed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of classified events sent to the correlator</td>
+</tr>
+<tr>
+<td>events_classified</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of classified events (there was a match with the classification rule)</td>
+</tr>
+<tr>
+<td>events_unknown</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>Number of unclassified (no rule found) events</td>
+</tr>
+<tr>
+<td>events_suppressed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>Number of events suppressed due to replay</td>
+</tr>
+<tr>
+<td>events_deleted</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>Number of events deleted based on classification rule</td>
+</tr>
+<tr>
+<td>events_failed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events that fell under the preprocessing with an invalid class</td>
+</tr>
+<tr>
+<td>events_syslog</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events from the Syslog collector</td>
+</tr>
+<tr>
+<td>events_snmp_trap</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events from the SNMP Trap collector</td>
+</tr>
+<tr>
+<td>events_system</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events from system services</td>
+</tr>
+<tr>
+<td>events_other</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>ClassifierService</td>
+<td>The number of events from unknown sources</td>
+</tr>
+<tr>
+<td>rules_checked</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>RuleSet.find_rule</td>
+<td>The number of checked rules</td>
+</tr>
+<tr>
+<td>esm_lookups</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>XRuleLookup.lookup_rules</td>
+<td>The number of checked rules XRules</td>
+</tr>
+</tbody>
+</table>
+<h3 id="correlator">Correlator<a class="headerlink" href="#correlator" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>alarm_correlated_rule</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.set_root_cause</td>
+<td>The number of accidents with the root cause</td>
+</tr>
+<tr>
+<td>alarm_change_mo</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.raise_alarm</td>
+<td>Number of ManagedObject changes in crash with eval_expression</td>
+</tr>
+<tr>
+<td>alarm_reopen</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.raise_alarm</td>
+<td>Number of reopen accidents</td>
+</tr>
+<tr>
+<td>alarm_contribute</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.raise_alarm</td>
+<td>The number of events involved in accidents</td>
+</tr>
+<tr>
+<td>alarm_raise</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.raise_alarm</td>
+<td>Number of alarms raised</td>
+</tr>
+<tr>
+<td>alarm_drop</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.correlate</td>
+<td>Chilo missed accidents (executed if the handler returned Severity 0)</td>
+</tr>
+<tr>
+<td>unknown_object</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.clear_alarm</td>
+<td>Number of failed crash closures due to lack of ManagedObject</td>
+</tr>
+<tr>
+<td>alarm_clear</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.clear_alarm</td>
+<td>Number of closed accidents</td>
+</tr>
+<tr>
+<td>alarm_dispose</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.dispose_worker</td>
+<td>The number of received events</td>
+</tr>
+<tr>
+<td>alarm_dispose_error</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.dispose_worker</td>
+<td>The number of errors when processing received events</td>
+</tr>
+<tr>
+<td>event_lookup_failed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.lookup_event</td>
+<td>The number of errors when searching for events by ID</td>
+</tr>
+<tr>
+<td>event_lookups</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.dispose_worker</td>
+<td>The number of searches for events in the database by ID</td>
+</tr>
+<tr>
+<td>event_hints</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.get_event_from_hint</td>
+<td>Number of use of information on the event from the message</td>
+</tr>
+<tr>
+<td>alarm_correlated_topology</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>CorrelatorService.topology_rca</td>
+<td>The number of primed causes</td>
+</tr>
+<tr>
+<td>detached_root</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>check.check_close_consequence</td>
+<td>The number of trips of the root cause (in case of closing the main accident and the remaining subordinates)</td>
+</tr>
+<tr>
+<td>errors</td>
+<td>type: alarm_handler</td>
+<td>CorrelatorService.correlate</td>
+<td>Runtime Handler Errors</td>
+</tr>
+</tbody>
+</table>
+<h3 id="escalator">Escalator<a class="headerlink" href="#escalator" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>escalation_missed_alarm</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>At the time of the escalation, the accident was removed.</td>
+</tr>
+<tr>
+<td>escalation_already_closed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>At the time of the escalation, the accident was closed</td>
+</tr>
+<tr>
+<td>escalation_alarm_is_not_root</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>At the time of the escalation, the root cause of the accident was exposed (in this case, the accident is escalated as part of the parent)</td>
+</tr>
+<tr>
+<td>escalation_not_found</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>Escalation was removed (checked during escalation)</td>
+</tr>
+<tr>
+<td>escalation_throttled</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The escalation was stopped because triggered check for exceeding the escalation limit</td>
+</tr>
+<tr>
+<td>escalation_stop_on_maintenance</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The escalation was stopped because equipment covered with Maintanance Window</td>
+</tr>
+<tr>
+<td>escalation_tt_retry</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>During the creation of the TT (Incident, Trouble ticket) in the external system was detected Temporary Error, the escalation went to repeat later</td>
+</tr>
+<tr>
+<td>escalation_tt_create</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The number of generated incidents in the external system</td>
+</tr>
+<tr>
+<td>escalation_tt_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The number of errors when creating incidents in the external system</td>
+</tr>
+<tr>
+<td>escalation_tt_comment</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>Number of comments added to events in the external system</td>
+</tr>
+<tr>
+<td>escalation_tt_comment_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The number of errors when commenting comments on the incidents in the external system</td>
+</tr>
+<tr>
+<td>escalation_notify</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>The number of sent notifications</td>
+</tr>
+<tr>
+<td>escalation_closed_while_escalated</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.escalate</td>
+<td>Number of closed accidents detected during escalation</td>
+</tr>
+<tr>
+<td>escalation_already_deescalated</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.notify_close</td>
+<td>De-escalation (incident closing) for an accident has already been made</td>
+</tr>
+<tr>
+<td>escalation_tt_close</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.notify_close</td>
+<td>The number of incidents closed in the external system</td>
+</tr>
+<tr>
+<td>escalation_tt_close_retry</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.notify_close</td>
+<td>The number of repetitions of closing incidents in the external system</td>
+</tr>
+<tr>
+<td>escalation_tt_close_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.notify_close</td>
+<td>The number of errors when closing incidents in the external system</td>
+</tr>
+<tr>
+<td>maintenance_tt_create</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.maintenance</td>
+<td></td>
+</tr>
+<tr>
+<td>maintenance_tt_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.maintenance</td>
+<td></td>
+</tr>
+<tr>
+<td>maintenance_tt_close</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.maintenance</td>
+<td></td>
+</tr>
+<tr>
+<td>maintenance_tt_close_fail</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>escalator.maintenance</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="mailsender">Mailsender<a class="headerlink" href="#mailsender" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>smtp_response</td>
+<td>code (SMTP code)</td>
+<td>MailSenderService.send_mail</td>
+<td>Number of sent messages (divided by SMTP server response codes)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="system-wide-metrics-self-monitoring">System-wide metrics (self-monitoring)<a class="headerlink" href="#system-wide-metrics-self-monitoring" title="Permanent link">&para;</a></h2>
+<p>Subsystem metrics are calculated based on information from the database ( Postgres or MongoDB) and require an installed service seflmon.</p>
+<h3 id="task">Task<a class="headerlink" href="#task" title="Permanent link">&para;</a></h3>
+<p>In many services of the system, tasks are performed with time reference. It is responsible for this scheduler.
+Technically, it is implemented as a queue of tasks in MongoDB.
+Collection of tasks with which it works is called a template: <code>noc.scheduler.&lt;scheduler_name&gt;.&lt;shard&gt;</code>.
+The tasks themselves are one-time and periodical. One-time after execution</p>
+<p>Tags are added to all metrics:</p>
+<ul>
+<li>scheduler_name - name of the scheduler, usually the same as the name of the service</li>
+<li>pool - the name of the shard</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>task_pool_total</td>
+<td>scheduler_name, pool</td>
+<td>selfmon.task</td>
+<td>Total number of tasks</td>
+</tr>
+<tr>
+<td>task_exception_count</td>
+<td>-</td>
+<td></td>
+<td>Number of tasks with execution error</td>
+</tr>
+<tr>
+<td>task_running_count</td>
+<td>-</td>
+<td></td>
+<td>The number of tasks in the state запущено</td>
+</tr>
+<tr>
+<td>task_late_count</td>
+<td>-</td>
+<td></td>
+<td>The number of <em>delayed</em> tasks (start time later than the current)</td>
+</tr>
+<tr>
+<td>task_lag_seconds</td>
+<td>-</td>
+<td></td>
+<td>In case of delayed tasks, the delay value of the task (in seconds)</td>
+</tr>
+<tr>
+<td>task_box_time_avg_seconds</td>
+<td>-</td>
+<td></td>
+<td>Average task completion time (counted for equipment survey service (discovery))</td>
+</tr>
+<tr>
+<td>task_periodic_time_avg_seconds</td>
+<td>-</td>
+<td></td>
+<td>Average lead time</td>
+</tr>
+</tbody>
+</table>
+<h3 id="inventory">Inventory<a class="headerlink" href="#inventory" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>inventory_iface_count</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.inventory</td>
+<td>The total number of interfaces in the system (calculated from the collection of inv.interfaces)</td>
+</tr>
+<tr>
+<td>inventory_iface_physical_count</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>The total number of physical interfaces in the system (calculated from the collection of inv.interfaces)</td>
+</tr>
+<tr>
+<td>inventory_link_count</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Total number of links in the system (calculated from the inv.links collection)</td>
+</tr>
+<tr>
+<td>inventory_subinterface_count</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>Total number of subinterfaces in the system (calculated from the collection of inv.interfaces)</td>
+</tr>
+<tr>
+<td>inventory_managedobject_total</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.managedobject</td>
+<td></td>
+</tr>
+<tr>
+<td>inventory_managedobject_managed</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td></td>
+<td>The total number of management objects (ManagedObject) in the active state (ticked is_managed)</td>
+</tr>
+<tr>
+<td>inventory_managedobject_unmanaged</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.managedobject</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="fm">FM<a class="headerlink" href="#fm" title="Permanent link">&para;</a></h3>
+<p>For part of the metrics tags are added:</p>
+<ul>
+<li>
+<p>ac_group - group of accidents. Present:</p>
+</li>
+<li>
+<p>availablility- NOC | Managed Object | Ping FailedICMP accessibility crashes</p>
+</li>
+<li>discovery- System crashes (class Discovery | ..) generated by survey issues</li>
+<li>
+<p>other - The rest of the accident (Syslog / SNMP Trap)</p>
+</li>
+<li>
+<p>pool - a pool of services which practiced an accident (this includes pinger, classifier, correlator)</p>
+</li>
+<li>shard - analogue of the pool for the external system</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Metric name</th>
+<th>Tag value</th>
+<th>A place</th>
+<th>Physical meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>fm_events_active_total</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The total number of active events (calculated from the fm.events.active collection)</td>
+</tr>
+<tr>
+<td>fm_events_active_last_lag_seconds</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The difference (in seconds) between the current time and the time of the last message creation (counted according to the fm.events.active collection)</td>
+</tr>
+<tr>
+<td>fm_alarms_active_total</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The total number of active alarms (calculated from the fm.alarms.active collection)</td>
+</tr>
+<tr>
+<td>fm_alarms_archived_total</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The total number of archived accidents (counted in the fm.alarms.archived collection)</td>
+</tr>
+<tr>
+<td>fm_alarms_active_last_lag_seconds</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The difference (in seconds) between the current time and the time of the last crash creation (calculated from the fm.alarms.active collection)</td>
+</tr>
+<tr>
+<td>fm_alarms_active_late_count</td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>selfmon.fm</td>
+<td>The number of events due to equipment unavailability (class NOC</td>
+</tr>
+<tr>
+<td>fm_alarms_active_pool_count</td>
+<td>ac_group, pool</td>
+<td>selfmon.fm</td>
+<td>Number of active alarms with splitting in pool and class</td>
+</tr>
+<tr>
+<td>fm_alarms_active_withroot_pool_count</td>
+<td>ac_group, pool</td>
+<td>selfmon.fm</td>
+<td>The number of active accidents with the underlying cause with splitting into pool and class</td>
+</tr>
+<tr>
+<td>fm_alarms_active_withoutroot_pool_count</td>
+<td>ac_group, pool</td>
+<td>selfmon.fm</td>
+<td>Number of active accidents without root cause with splitting by pool and class</td>
+</tr>
+<tr>
+<td>fm_escalation_pool_count</td>
+<td>shard</td>
+<td>selfmon.fm</td>
+<td>The number of escalations in the queue</td>
+</tr>
+<tr>
+<td>fm_escalation_first_lag_seconds</td>
+<td>shard</td>
+<td>selfmon.fm</td>
+<td>The difference (in seconds) between the current time and the time of the first escalation in the queue</td>
+</tr>
+<tr>
+<td>fm_escalation_lag_seconds</td>
+<td>shard</td>
+<td>selfmon.fm</td>
+<td>The difference (in seconds) between the current time and the time of the last escalation in the queue</td>
+</tr>
+</tbody>
+</table>
+<p>For each of the groups of metrics there are settings in the section config.selfmon:</p>
+<ul>
+<li>enable_managedobject - enable metrics collection by managedobject</li>
+<li>managedobject_ttl - metrics update interval for managedobject</li>
+</ul>
+<p>Similar settings are for each section:</p>
+<ul>
+<li>enable_task</li>
+<li>task_ttl</li>
+<li>enable_inventory</li>
+<li>inventory_ttl</li>
+<li>enable_fm</li>
+<li>fm_ttl</li>
+</ul>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../discovery-reference/segment/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Segment Discovery" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Segment Discovery
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../agent-reference/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Обзор" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Обзор
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

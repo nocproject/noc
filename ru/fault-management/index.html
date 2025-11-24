@@ -1,0 +1,1999 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/fault-management/">
+      
+      
+        <link rel="prev" href="../host-discovery-network/">
+      
+      
+        <link rel="next" href="../alarm-escalation-reference/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Fault Management - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fault-management" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Fault Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../fault-management/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/background/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-type-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Type Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topology-processing-features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Topology Processing Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host-discovery-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Host Discovery Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Сбор событий
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Обработка событий
+  </a>
+  
+    <nav class="md-nav" aria-label="Обработка событий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Класс События
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Классификация событий
+  </a>
+  
+    <nav class="md-nav" aria-label="Классификация событий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Структура правила классификации
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Фильтрация событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Дедупликация событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Повторы событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl" class="md-nav__link">
+    Время жизни события (TTL)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disposition-rule" class="md-nav__link">
+    Правила размещения (Disposition Rule)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Классы аварий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Корреляция аварий
+  </a>
+  
+    <nav class="md-nav" aria-label="Корреляция аварий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Корреляция по правилам
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Корреляция по топологии
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Серьёзность и Вес
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Эскалация и уведомления
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    Группировка
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    Визуализация
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-escalation-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Escalation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../performance-management/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Performance Management
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference-report-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../peering-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Peering Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-status-monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring by Service Operation Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../message-notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Message Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../card/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storm-protection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storm Protection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui-guideline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UI Guideline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../highlights/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC Products Highlights
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Сбор событий
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Обработка событий
+  </a>
+  
+    <nav class="md-nav" aria-label="Обработка событий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Класс События
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Классификация событий
+  </a>
+  
+    <nav class="md-nav" aria-label="Классификация событий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Структура правила классификации
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Фильтрация событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Дедупликация событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Повторы событий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl" class="md-nav__link">
+    Время жизни события (TTL)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#disposition-rule" class="md-nav__link">
+    Правила размещения (Disposition Rule)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Классы аварий
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Корреляция аварий
+  </a>
+  
+    <nav class="md-nav" aria-label="Корреляция аварий">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Корреляция по правилам
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Корреляция по топологии
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Серьёзность и Вес
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Эскалация и уведомления
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    Группировка
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    Визуализация
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/fault-management/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="fault-management">Fault Management<a class="headerlink" href="#fault-management" title="Permanent link">&para;</a></h1>
+<p>Основная задача <code>Fault Management</code> приём, обработка и реакция на события. 
+События (<code>Event</code>) могут в результате работы оборудования, действий пользователя, ошибок оборудования и других. 
+Работающая сеть может создавать тысячи событий в минуту. Модуль <code>FM</code> позволяет в режиме реального времени:</p>
+<ul>
+<li>Приём сообщений о событиях из различных источников:<ul>
+<li>ICMP - проверка доступности устройства</li>
+<li>SNMP - приём <code>SNMP Trap</code></li>
+<li>Syslog - приём <code>Syslog</code> с устройства</li>
+<li>Пороги по метрикам (<code>Metric Threshold</code>)</li>
+<li>Результаты опроса устройства (<code>Discovery</code>)  </li>
+<li>Синхронизация сообщений с устройством</li>
+</ul>
+</li>
+<li>Классификация событий на основе правил</li>
+<li>Обогащение событий данными из системы</li>
+<li>Создание на основе событий аварийного сообщения</li>
+<li>Корреляция аварий и автоматическое определение первопричины (<code>Root Cause</code>)</li>
+<li>Реакция на аварию:<ul>
+<li>Отправка уведомления</li>
+<li>Запуск диагностики</li>
+<li>Эскалация</li>
+</ul>
+</li>
+<li>Группировка аварий</li>
+<li>Работа с авариями в интерфейсе пользователя</li>
+<li>Аналитика по авариям на основе подсистемы BI</li>
+</ul>
+<p>При работе с событиями используются термины:</p>
+<ul>
+<li>Событие (<code>Event</code>) - </li>
+<li>Класс события <code>Event Class</code> - значение события</li>
+<li>Классификация события (<code>Event Classification</code>) - процесс анализа события, завершается присвоением класса</li>
+<li>Авария (<code>Alarm</code>) - Событие, требующее реакции</li>
+<li>Класс аварии <code>Alarm Class</code> - значение аварии</li>
+<li>Корреляция аварии <code>Alarm Correlation</code> - процесс определение первопричины аварии</li>
+<li>Определение первопричины (<code>RCS</code>, <code>Root-cause analyses</code>)</li>
+</ul>
+<h2 id="_1">Сбор событий<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>События поступают в систему различными путями. Источниками могут быть отдельные как сервисы (коллекторы) так и 
+внутренни события системы. Рассмотрим доступные источники событий:</p>
+<table>
+<thead>
+<tr>
+<th>Источник</th>
+<th>Активный</th>
+<th>Протокол</th>
+<th>Класс события</th>
+<th>класс аварии</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../services-reference/ping/">ping</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td>ICMP</td>
+<td>-</td>
+<td><code>NOC  |  | Managed Object |  | Ping Failed</code></td>
+</tr>
+<tr>
+<td><a href="../services-reference/trapcollector/">trapcollector</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>SNMP</td>
+<td>By Rule</td>
+<td>By Rule</td>
+</tr>
+<tr>
+<td><a href="../services-reference/syslogcollector/">syslogcollector</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg></span></td>
+<td>Syslog</td>
+<td>By Rule</td>
+<td>By Rule</td>
+</tr>
+<tr>
+<td><a href="../discovery-reference/periodic/metrics/">Metric Threshold</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td>-</td>
+<td><a href="../concepts/threshold-profile/">Threshold Profile</a></td>
+<td><a href="../concepts/threshold-profile/">Threshold Profile</a></td>
+</tr>
+<tr>
+<td><a href="../discovery-reference/box/config/">Config Validation</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td>-</td>
+<td><a href="../configuration-management/#Создание%20политики%20валидации%20на%20основе%20запросов%20ConfDB">Config Validation Rules</a></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="../discovery-reference/periodic/alarms/">Alarm Discovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td>CLI</td>
+<td>By Rule</td>
+<td>By Rule</td>
+</tr>
+<tr>
+<td><a href="../discovery-reference/box/">Discovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 7 9 19l-5.5-5.5 1.41-1.41L9 16.17 19.59 5.59 21 7Z"/></svg></span></td>
+<td>CLI</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_2">Обработка событий<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Дальнейшая обработка события может пойти двумя путями:</p>
+<ol>
+<li>Для событий из устройств это <code>Классификатор</code> -&gt; <code>Коррелятор</code></li>
+<li>Внутренние события системы направляются непосредственно в <code>Коррелятор</code></li>
+</ol>
+<h3 id="_3">Класс События<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>Для работы с событием системе важно понимать его значение. Традиционно, для этого используется Класс События <a href="../concepts/event-class/">Event Class</a>. 
+Также к классу события привязываются настройки касательно дальнейшей работы с событием. В системе предусмотрены 
+несколько специальных классов:</p>
+<ul>
+<li><code>Unknown | Default</code> - класс по умолчанию для событий (выставлено правило <code>Drop</code>)</li>
+</ul>
+<h3 id="_4">Классификация событий<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>Задача этапа классификации определить какому классу <a href="../concepts/event-class/">Event Class</a> 
+принадлежит поступившее событие и действовать согласно указанным в нём настройкам. Для определения класса события 
+используется набор правил классификации <a href="../concepts/event-classification-rule/">Event Classification Rule</a>, 
+расположенных в меню <code>Управление авариями (Fault Management) -&gt; Настройка (Setup) -&gt; Правила классификации (Classification Rule)</code>.</p>
+<p>События в классификатор поступают по очереди <a href="../streams-reference/events/">events</a>. Передаются в формате <code>JSON</code> 
+и отличаются содержимым поля <code>data</code>, заполняемым на источнике:</p>
+<ul>
+<li><code>source</code>- источник события:<ul>
+<li><code>syslog</code> - коллектор <code>Syslog</code></li>
+<li><code>SNMP Trap</code> - коллектор <code>SNMP Trap</code></li>
+<li><code>system</code> - некоторые системные сервисы (<code>ping</code>, <code>discovery</code>)</li>
+<li><code>other</code> - неизвестный источник</li>
+</ul>
+</li>
+<li><code>collector</code> - пул <a href="../concepts/pool/">Pool</a></li>
+<li>Специфичные данные (зависят от источника):<ul>
+<li><code>message</code> - содержит сообщение <code>syslog</code></li>
+<li><code>1.3.6.1.6.3.1.1.4.1.0</code> (<code>snmpTrapOID</code>) - OID </li>
+<li><code>...</code></li>
+</ul>
+</li>
+</ul>
+<p>Пример события <code>Syslog</code>:
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;ts&quot;</span><span class="p">:</span><span class="mi">1637243036</span><span class="p">,</span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="s2">&quot;61088&quot;</span><span class="p">,</span><span class="nt">&quot;data&quot;</span><span class="p">:{</span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="s2">&quot;syslog&quot;</span><span class="p">,</span><span class="nt">&quot;collector&quot;</span><span class="p">:</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="nt">&quot;message&quot;</span><span class="p">:</span><span class="s2">&quot;%AAA-I-DISCONNECT: User CLI session for user user1 over telnet , source Y.Y.Y.Y destination  X.X.XX.X  TERMINATED.&quot;</span><span class="p">}}</span>
+</code></pre></div></p>
+<p>Пример события <code>SNMP Trap</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="nt">&quot;ts&quot;</span><span class="p">:</span><span class="mi">1637243038</span><span class="p">,</span><span class="nt">&quot;object&quot;</span><span class="p">:</span><span class="s2">&quot;45324&quot;</span><span class="p">,</span><span class="nt">&quot;data&quot;</span><span class="p">:{</span><span class="nt">&quot;source&quot;</span><span class="p">:</span><span class="s2">&quot;SNMP Trap&quot;</span><span class="p">,</span><span class="nt">&quot;collector&quot;</span><span class="p">:</span><span class="s2">&quot;default&quot;</span><span class="p">,</span><span class="nt">&quot;1.3.6.1.2.1.1.3.0&quot;</span><span class="p">:</span><span class="s2">&quot;973858&quot;</span><span class="p">,</span><span class="nt">&quot;1.3.6.1.6.3.1.1.4.1.0&quot;</span><span class="p">:</span><span class="s2">&quot;1.0.8802.1.1.2.0.0.1&quot;</span><span class="p">,</span><span class="nt">&quot;1.0.8802.1.1.2.1.2.2&quot;</span><span class="p">:</span><span class="s2">&quot;3&quot;</span><span class="p">,</span><span class="nt">&quot;1.0.8802.1.1.2.1.2.3&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">,</span><span class="nt">&quot;1.0.8802.1.1.2.1.2.4&quot;</span><span class="p">:</span><span class="s2">&quot;0&quot;</span><span class="p">,</span><span class="nt">&quot;1.0.8802.1.1.2.1.2.5&quot;</span><span class="p">:</span><span class="s2">&quot;1&quot;</span><span class="p">}}</span>
+</code></pre></div>
+<p>Для поступившего события происходит поиск подходящего правила путём сравнения <code>data</code> с шаблоном. 
+Обход правил идёт в порядке возрастания приоритета. Важно учитывать, что при наличии в системе соответствующих <code>MIB</code> 
+в правилах, вместо <code>OID</code> можно использовать их текстовые представления.</p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>В отсутствии MIB в правилах необходимо использовать числовые представление OID</p>
+</div>
+<h4 id="_5">Структура правила классификации<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h4>
+<p>Основная рабочая часть правила классификации <a href="../concepts/event-classification-rule/">Classification Rule</a> 
+это набор шаблонов, по которым идёт сравнение сообщения. Представляют собой набор регулярных выражений 
+для наложения на название поля и его значение в <code>data</code> сообщения. Правило считается совпавшим если 
+совпали все регулярные выражения. <em>Именованные группы</em> становятся переменными события.</p>
+<p>Например, рассмотрим правило классификации для <code>SNMP Trap</code> класса <code>Link Down</code>.</p>
+<p>Событие выглядит следующим образом:</p>
+<p><img alt="" src="../../fault-management/event_class_rules_snmp_net_link_down_eltex.png" /></p>
+<ul>
+<li><code>Raw Variables</code> - переменные пришедшие из коллектора в поле <code>data</code></li>
+<li><code>Resolved Variables</code> - переменные для которых нашёлся соответствующий <a href="../glossary/#mib">MIB</a> и добавленные классификатором. Например, переменная <code>profile</code> была добавлена классификатором (<code>classifier</code>) из данных устройства (<code>ManagedObject</code>)</li>
+<li><code>Event Variables</code> - переменные попавшие в событие (настраиваются в классе)</li>
+</ul>
+<p>Рассмотрим правило, под которое попало данное событие (его можно увидеть на вкладке История <code>History</code>):</p>
+<p><img alt="" src="../../fault-management/event_snmp_net_link_down_eltex.png" /></p>
+<ol>
+<li>Источник (<code>source</code>) соответствует <code>SNMP Trap</code>. Фиксирует что правило написано только для событий пришедших по <code>SNMP</code></li>
+<li><code>profile</code> фиксирует что правило только для устройств с адаптером <code>Eltex.MES</code></li>
+<li>Правило для конкретного <code>Trap</code> фиксируем через <code>Trap OID</code></li>
+<li>Дальше идут поля специфичные для конкретного <code>Trap</code>, из поля <code>IF-MIB::ifIndex.\d+</code> извлекается индекс интерфейса.</li>
+<li>Использование конструкции <code>interface__ifindex</code> говорит системе, что переменную <code>interface</code> необходимо найти на основе <code>ifindex</code> интерфейса </li>
+<li>Через <code>IF-MIB::ifOperStatus</code> фиксируем что нас интересует падение интерфейса - <code>down</code>.</li>
+</ol>
+<p>В случае <code>Syslog</code> основной переменной будет <code>message</code>, в которой будет содержаться сообщение</p>
+<h4 id="_6">Фильтрация событий<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>Для ограждения системы от особо разговорчивых устройств можно настроить правила фильтрации событий. 
+Они бывают 2 видов:</p>
+<ul>
+<li>Шаблоны игнорирования (<code>Ignored Patterns</code>). <code>Fault Management -&gt; Setup -&gt; Ignored Patterns</code></li>
+<li>Правила игнорирования (<code>Ignored Rules</code>). <code>Fault Management -&gt; Setup -&gt; Ignored Rules</code></li>
+</ul>
+<p>Правила игнорирования на текущий момент не используются и не работают.</p>
+<p>Шаблоны работают только с событиями <code>Syslog</code> и <code>SNMP Trap</code>. Сразу после приёма сообщения 
+происходит проверка значений полей <code>message</code> или <code>1.3.6.1.6.3.1.1.4.1.0</code> на соответствие указанному 
+в шаблоне регулярному выражению. При совпадении событие отбрасывается</p>
+<h4 id="_7">Дедупликация событий<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<p>Механизм позволяет исключать повторы событий в рамках заданного интервала времени. Сам интервал настраивается 
+в Классе События <a href="../concepts/event-class/">Event Class</a> и действует следующим образом:</p>
+<ol>
+<li>Если настройка <code>Deduplication Window</code> больше 0</li>
+<li>Для каждого входящего события считается отпечаток (<code>fingerprint</code>), входит устройство, класс события и переменные</li>
+<li>Если в интервале <code>Deduplication Window</code> от времени текущего события есть зарегистрированный отпечаток <code>fingerprint</code>, то прекращаем обработку события</li>
+</ol>
+<p>? <code>allowed_time_drift</code></p>
+<h4 id="_8">Повторы событий<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<p>Механизм позволяет учитывать повторы события со стороны оборудования. При обнаружении повтора вместо заведения 
+нового события увеличивает счётчик повторов (<code>repeats</code>) в событии. Для работы необходимо отметить переменные, 
+на основе которых будет считаться повтор:</p>
+<ol>
+<li>Если настройка <code>Suppression Window</code> больше 0</li>
+<li>Для каждого входящего события считается отпечаток (<code>fingerprint</code>), входит устройство, класс события и переменные, отмеченные <code>Match Suppress</code></li>
+<li>Если в интервале <code>Deduplication Window</code> от времени текущего события есть зарегистрированный отпечаток <code>fingerprint</code>, то для события увеличивается счётчик <code>repeats</code></li>
+</ol>
+<h4 id="ttl">Время жизни события (TTL)<a class="headerlink" href="#ttl" title="Permanent link">&para;</a></h4>
+<p>Механизм удаления событий спустя какое-то время. По прошествии времени, указанного в настройке <code>TTL</code> класса события <a href="../concepts/event-class/">Event Class</a> 
+событие будет удалено из системы. Если произошла передача события в коррелятор, то устаревание отменяется.</p>
+<h4 id="disposition-rule">Правила размещения (Disposition Rule)<a class="headerlink" href="#disposition-rule" title="Permanent link">&para;</a></h4>
+<p>Дальнейшая судьба события определяется в настройках <code>Disposition Rule</code> класса события <a href="../concepts/event-class/">Event Class</a>. 
+Это своего рода таблица маршрутизации. После сопоставления события с классом начинается последовательный обход правил размещения 
+и при совпадении условия (<code>condition</code>) выполняется указанное действие.</p>
+<h3 id="_9">Классы аварий<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>События, требующие реакции называются <em>аварийными</em> или <strong>Авариями</strong>. Для них существуют отдельные Классы Аварий (<code>Alarm Class</code>), 
+описывающие их значение для системы с отдельным набором настроек. Для аварий поддерживается эскалация во внешние системы ТТ, аналитика и уведомления.</p>
+<h3 id="_10">Корреляция аварий<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>Основная задача коррелятора, это сокращение числа событий путём установления первопричины (корреляции) и группировки. 
+Это позволяет сигнализировать оператору только о том, на что стоит обратить внимание, отсеивая менее важное путём выставление важности (<code>severity</code>). </p>
+<p>События в коррелятор <a href="../services-reference/correlator/">correlator</a> поступают по
+очереди <a href="../streams-reference/dispose/">dispose</a> </p>
+<p>Коррелятор ищет связи между событиями их разных источников, осуществляет их корреляцию и группировку, 
+получая на выходе аварийные события - <strong>Аварии</strong>.</p>
+<h4 id="_11">Корреляция по правилам<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
+<p>Таблица с правилами корреляции размещаются в Классе аварии <a href="../concepts/alarm-class/">Alarm Class</a> в разделе <code>Root Cause</code>:</p>
+<ul>
+<li><strong>Имя</strong> (<code>Name</code>) - название правила</li>
+<li><strong>Первопричина</strong> (<code>Root</code>) - ссылка на класс аварии первопричины</li>
+<li><strong>Окно</strong> (<code>Window</code>) - интервал, внутри которого производится поиск первопричины</li>
+<li><strong>Условие</strong> (<code>Condition</code>) - условия проверки применимости правила. Выражение <code>Python</code>, доступ к аварии через переменную <code>alarm</code>. Например <code>alarm.vars.get('link') is not None</code></li>
+<li><strong>Критерий совпадения</strong> (<code>Match Condition</code>) - дополнительные критерии совпадения с первопричиной (<code>Root</code>). Выражение для запроса текущая авария доступна через переменную <code>alarm</code>. Например поиск аварий по тому же устройству - <code>{"managed_object":"alarm.managed_object.id"}</code></li>
+</ul>
+<p>После создания аварии коррелятор последовательно проходит записи из таблицы при успешной проверке условия (<code>Condition</code>), производится 
+поиск активной аварии внутри окна (<code>Window</code>), классом аварии указанным в первопричине (<code>Root</code>)  и критериями совпадения (<code>Match Condition</code>). 
+Найденная авария указывается как первопричина, после этого поиск прекращается.</p>
+<p>Для примера рассмотрим возможные первопричины недоступности оборудования (<code>NOC | Managed Object | Ping Failed</code>)</p>
+<p>Указано 3 возможных варианта - <code>Power Failed</code>, <code>Total Power Loss</code> и <code>System Reboot</code>. Условие сделано в виде выражения <code>Python</code> - 
+всегда возвращает истину. Критерий совпадения ограничивает поиск аварий по тому же устройству (<code>managed_object</code>). </p>
+<h4 id="_12">Корреляция по топологии<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<p>Корреляция по топологии использует собранную топологию сети <a href="../topology-processing-features/">Topology</a> для определения первопричины аварии. 
+Она производится в пределах одного класса аварии и только по топологии устройств (<code>ManagedObject</code>). 
+Включается настройкой <code>Topology RCA</code> в классе аварии. На текущий момент активирована только для класса <code>NOC | Managed Object | Ping Failed</code>, описывающий 
+недоступность устройства по <code>ICMP</code> со стороны системы.</p>
+<p>Алгоритм достаточно прост, при построении топологии устройств для них высчитываются направление вверх 
+<a href="../topology-processing-features/#Расчёт%20направления%20вверх">Uplink</a>. Происходит поиск аварии <code>NOC | Managed Object | Ping Failed</code> 
+на вышестоящем устройстве. Если она найдена, то считается первопричиной для текущей</p>
+<!-- prettier-ignore -->
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>уточнить вначале корреляция по топологии или правилам</p>
+</div>
+<h3 id="_13">Серьёзность и Вес<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>После обнаружения аварии на конкретном оборудовании, система вычисляет вес <strong>Weight</strong> аварии и в какой интервал базовых значений важности <strong>Severity</strong> попадает авария. 
+Вес рассчитывается по формуле, в которой учитывается влияние на связанных с устройством компонент через <em>весовые коэффициенты</em>: </p>
+<ul>
+<li>Устройство <a href="../concepts/managed-object/">ManagedObject</a>. Весовой коэффициент выставляется в профиле объекта <a href="../concepts/managed-object-profile/#FM">Managed Object Profile</a></li>
+<li>Интерфейсы устройства <a href="../concepts/interface/">Interface</a>. Весовой коэффициент выставляется в профиле интерфейса <a href="../concepts/interface-profile/">Interface Profile</a></li>
+<li>Сервисы связанные с устройством <a href="../concepts/service/">Service</a>. Весовой коэффициент выставляется в профиле сервиса <a href="../concepts/service-profile/">Service Profile</a></li>
+<li>Абоненты связанные с устройством <a href="../concepts/subscriber/">Subscribers</a>. Весовой коэффициент выставляется в профиле абонента <a href="../concepts/subscriber-profile/">Subscriber Profile</a></li>
+</ul>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>К весу первопричины аварии помимо собственного добавляются веса подчинённых.</p>
+</div>
+<p>Уровни важности <a href="../concepts/alarm-severity/">Severity</a> аварии 
+настраиваются в меню <code>Управление авариями (Fault Management) -&gt; Настройки (Setup) -&gt; Важность аварии (Alarm Severities)</code>. 
+В ней указывается минимальный вес необходимые для выставления соответствующей важности. По умолчанию представлены следующие уровни:</p>
+<ul>
+<li><code>CRITICAL</code> - Наивысший уровень важности аварии.</li>
+<li><code>MAJOR</code> - Крупная авария.</li>
+<li><code>MINOR</code> - Авария.</li>
+<li><code>WARNING</code> - Событие, требующее обратить внимание оператора.</li>
+<li><code>INFO</code> - Информирование.</li>
+<li><code>IGNORE</code> - Штатное событие, не влияющее на состояние сети.</li>
+</ul>
+<h3 id="_14">Эскалация и уведомления<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<!-- prettier-ignore -->
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+</div>
+<h3 id="_15">Группировка<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<!-- prettier-ignore -->
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+</div>
+<h2 id="_16">Визуализация<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<!-- prettier-ignore -->
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+</div>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../host-discovery-network/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Host Discovery Network" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Host Discovery Network
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../alarm-escalation-reference/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Alarm Escalation" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Alarm Escalation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

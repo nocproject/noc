@@ -1,0 +1,6031 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/alarm-classes-reference/network/">
+      
+      
+        <link rel="prev" href="../multicast/">
+      
+      
+        <link rel="next" href="../noc/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Network - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#network" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Network
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ru/alarm-classes-reference/network/" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../installation-guide/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            References
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sections-overview/references/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../concepts/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../profiles-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Profiles
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../caps-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Capabilities
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" checked>
+        
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Alarm Classes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            Alarm Classes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Classes Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../chassis/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Chassis
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../config/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../discovery/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Discovery
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../environment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Environment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Group
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multicast/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Multicast
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Network
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Network
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#network-bfd-session-down" class="md-nav__link">
+    Network | BFD | Session Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-bgp-peer-down" class="md-nav__link">
+    Network | BGP | Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-bgp-prefix-limit-exceeded" class="md-nav__link">
+    Network | BGP | Prefix Limit Exceeded
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-cef-resource-failure" class="md-nav__link">
+    Network | CEF | Resource Failure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-dhcp-untrusted-server" class="md-nav__link">
+    Network | DHCP | Untrusted Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-dns-bad-query" class="md-nav__link">
+    Network | DNS | Bad Query
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-bpi-unautorized" class="md-nav__link">
+    Network | DOCSIS | BPI Unautorized
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-bad-timing-offset" class="md-nav__link">
+    Network | DOCSIS | Bad Timing Offset
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-cos" class="md-nav__link">
+    Network | DOCSIS | Invalid CoS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-docsis-message" class="md-nav__link">
+    Network | DOCSIS | Invalid DOCSIS Message
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-qos" class="md-nav__link">
+    Network | DOCSIS | Invalid QoS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-shared-secret" class="md-nav__link">
+    Network | DOCSIS | Invalid Shared Secret
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-max-cpe-reached" class="md-nav__link">
+    Network | DOCSIS | Max CPE Reached
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-maximum-capacity-reached" class="md-nav__link">
+    Network | DOCSIS | Maximum Capacity Reached
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-maximum-sids" class="md-nav__link">
+    Network | DOCSIS | Maximum SIDs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-eigrp-neighbor-down" class="md-nav__link">
+    Network | EIGRP | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-impb-unauthenticated-ip-mac" class="md-nav__link">
+    Network | IMPB | Unauthenticated IP-MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-arp-moved" class="md-nav__link">
+    Network | IP | ARP Moved
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-address-conflict" class="md-nav__link">
+    Network | IP | Address Conflict
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-ip-flap" class="md-nav__link">
+    Network | IP | IP Flap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-is-is-adjacency-down" class="md-nav__link">
+    Network | IS-IS | Adjacency Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-lbd-loop-detected" class="md-nav__link">
+    Network | LBD | Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-lbd-vlan-loop-detected" class="md-nav__link">
+    Network | LBD | Vlan Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-dom-alarm-out-of-threshold" class="md-nav__link">
+    Network | Link | DOM | Alarm: Out of Threshold
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-dom-warning-out-of-threshold" class="md-nav__link">
+    Network | Link | DOM | Warning: Out of Threshold
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-duplex-mismatch" class="md-nav__link">
+    Network | Link | Duplex Mismatch
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-err-disable" class="md-nav__link">
+    Network | Link | Err-Disable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-half-duplex" class="md-nav__link">
+    Network | Link | Half-Duplex
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-link-down" class="md-nav__link">
+    Network | Link | Link Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-duplicate-mac" class="md-nav__link">
+    Network | MAC | Duplicate MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-invalid-mac" class="md-nav__link">
+    Network | MAC | Invalid MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-link-mac-exceed" class="md-nav__link">
+    Network | MAC | Link MAC Exceed
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-mac-flap" class="md-nav__link">
+    Network | MAC | MAC Flap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-mac-flood" class="md-nav__link">
+    Network | MAC | MAC Flood
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-ldp-neighbor-down" class="md-nav__link">
+    Network | MPLS | LDP Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-ldp-session-down" class="md-nav__link">
+    Network | MPLS | LDP Session Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-lsp-down" class="md-nav__link">
+    Network | MPLS | LSP Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-path-down" class="md-nav__link">
+    Network | MPLS | Path Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-tdp-neighbor-down" class="md-nav__link">
+    Network | MPLS | TDP Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-msdp-peer-down" class="md-nav__link">
+    Network | MSDP | Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-monitor-crc-error-detected" class="md-nav__link">
+    Network | Monitor | CRC Error Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ospf-neighbor-down" class="md-nav__link">
+    Network | OSPF | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-dr-change" class="md-nav__link">
+    Network | PIM | DR Change
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-invalid-rp" class="md-nav__link">
+    Network | PIM | Invalid RP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-msdp-peer-down" class="md-nav__link">
+    Network | PIM | MSDP Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-neighbor-down" class="md-nav__link">
+    Network | PIM | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-port-security-port-security-violation" class="md-nav__link">
+    Network | Port Security | Port Security Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-port-loss-of-signal" class="md-nav__link">
+    Network | Port | Loss of Signal
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-rsvp-neighbor-down" class="md-nav__link">
+    Network | RSVP | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-bpdu-guard-violation" class="md-nav__link">
+    Network | STP | BPDU Guard Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-root-guard-violation" class="md-nav__link">
+    Network | STP | Root Guard Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-stp-loop-detected" class="md-nav__link">
+    Network | STP | STP Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-stp-vlan-loop-detected" class="md-nav__link">
+    Network | STP | STP Vlan Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-broadcast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Broadcast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-multicast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Multicast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-storm-detected" class="md-nav__link">
+    Network | Storm Control | Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-unicast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Unicast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-udld-udld-protocol-error-detected" class="md-nav__link">
+    Network | UDLD | UDLD Protocol Error Detected
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../noc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Security
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vendor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vendor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../event-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Event Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../measurement-units-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measurement Units
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../metrics-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Metrics
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../mx-messages-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    MX Messages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technologies-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Technologies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../services-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../config-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../discovery-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Discovery
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../internal-metrics-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Internal Metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../agent-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    noc-agent
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mr-labels-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Merge Request Labels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../datastream-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    DataStream API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../nbi-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NBI API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-dict-reference/administrativedomain/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Dictionaries
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../confdb-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    ConfDB
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../scripts-reference/add_vlan/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Scripts Reference
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../handlers-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Handlers
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../object-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Object Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../model-interfaces-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Model Interfaces
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../connection-types-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Connection Types
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inventory-protocols-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inventory Protocols
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../streams-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Streams
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../alarm-reference-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Reference Format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datetime-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and Time Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../man/about/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Man Pages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-gates-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature Gates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../operational-alerts-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Operational Alerts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supported-standards/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported Standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#network-bfd-session-down" class="md-nav__link">
+    Network | BFD | Session Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-bgp-peer-down" class="md-nav__link">
+    Network | BGP | Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-bgp-prefix-limit-exceeded" class="md-nav__link">
+    Network | BGP | Prefix Limit Exceeded
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-cef-resource-failure" class="md-nav__link">
+    Network | CEF | Resource Failure
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-dhcp-untrusted-server" class="md-nav__link">
+    Network | DHCP | Untrusted Server
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-dns-bad-query" class="md-nav__link">
+    Network | DNS | Bad Query
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-bpi-unautorized" class="md-nav__link">
+    Network | DOCSIS | BPI Unautorized
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-bad-timing-offset" class="md-nav__link">
+    Network | DOCSIS | Bad Timing Offset
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-cos" class="md-nav__link">
+    Network | DOCSIS | Invalid CoS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-docsis-message" class="md-nav__link">
+    Network | DOCSIS | Invalid DOCSIS Message
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-qos" class="md-nav__link">
+    Network | DOCSIS | Invalid QoS
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-invalid-shared-secret" class="md-nav__link">
+    Network | DOCSIS | Invalid Shared Secret
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-max-cpe-reached" class="md-nav__link">
+    Network | DOCSIS | Max CPE Reached
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-maximum-capacity-reached" class="md-nav__link">
+    Network | DOCSIS | Maximum Capacity Reached
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-docsis-maximum-sids" class="md-nav__link">
+    Network | DOCSIS | Maximum SIDs
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-eigrp-neighbor-down" class="md-nav__link">
+    Network | EIGRP | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-impb-unauthenticated-ip-mac" class="md-nav__link">
+    Network | IMPB | Unauthenticated IP-MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-arp-moved" class="md-nav__link">
+    Network | IP | ARP Moved
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-address-conflict" class="md-nav__link">
+    Network | IP | Address Conflict
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ip-ip-flap" class="md-nav__link">
+    Network | IP | IP Flap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-is-is-adjacency-down" class="md-nav__link">
+    Network | IS-IS | Adjacency Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-lbd-loop-detected" class="md-nav__link">
+    Network | LBD | Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-lbd-vlan-loop-detected" class="md-nav__link">
+    Network | LBD | Vlan Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-dom-alarm-out-of-threshold" class="md-nav__link">
+    Network | Link | DOM | Alarm: Out of Threshold
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-dom-warning-out-of-threshold" class="md-nav__link">
+    Network | Link | DOM | Warning: Out of Threshold
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-duplex-mismatch" class="md-nav__link">
+    Network | Link | Duplex Mismatch
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-err-disable" class="md-nav__link">
+    Network | Link | Err-Disable
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-half-duplex" class="md-nav__link">
+    Network | Link | Half-Duplex
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-link-link-down" class="md-nav__link">
+    Network | Link | Link Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-duplicate-mac" class="md-nav__link">
+    Network | MAC | Duplicate MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-invalid-mac" class="md-nav__link">
+    Network | MAC | Invalid MAC
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-link-mac-exceed" class="md-nav__link">
+    Network | MAC | Link MAC Exceed
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-mac-flap" class="md-nav__link">
+    Network | MAC | MAC Flap
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mac-mac-flood" class="md-nav__link">
+    Network | MAC | MAC Flood
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-ldp-neighbor-down" class="md-nav__link">
+    Network | MPLS | LDP Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-ldp-session-down" class="md-nav__link">
+    Network | MPLS | LDP Session Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-lsp-down" class="md-nav__link">
+    Network | MPLS | LSP Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-path-down" class="md-nav__link">
+    Network | MPLS | Path Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-mpls-tdp-neighbor-down" class="md-nav__link">
+    Network | MPLS | TDP Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-msdp-peer-down" class="md-nav__link">
+    Network | MSDP | Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-monitor-crc-error-detected" class="md-nav__link">
+    Network | Monitor | CRC Error Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-ospf-neighbor-down" class="md-nav__link">
+    Network | OSPF | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-dr-change" class="md-nav__link">
+    Network | PIM | DR Change
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-invalid-rp" class="md-nav__link">
+    Network | PIM | Invalid RP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-msdp-peer-down" class="md-nav__link">
+    Network | PIM | MSDP Peer Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-pim-neighbor-down" class="md-nav__link">
+    Network | PIM | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-port-security-port-security-violation" class="md-nav__link">
+    Network | Port Security | Port Security Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-port-loss-of-signal" class="md-nav__link">
+    Network | Port | Loss of Signal
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-rsvp-neighbor-down" class="md-nav__link">
+    Network | RSVP | Neighbor Down
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-bpdu-guard-violation" class="md-nav__link">
+    Network | STP | BPDU Guard Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-root-guard-violation" class="md-nav__link">
+    Network | STP | Root Guard Violation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-stp-loop-detected" class="md-nav__link">
+    Network | STP | STP Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-stp-stp-vlan-loop-detected" class="md-nav__link">
+    Network | STP | STP Vlan Loop Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-broadcast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Broadcast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-multicast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Multicast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-storm-detected" class="md-nav__link">
+    Network | Storm Control | Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-storm-control-unicast-storm-detected" class="md-nav__link">
+    Network | Storm Control | Unicast Storm Detected
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-udld-udld-protocol-error-detected" class="md-nav__link">
+    Network | UDLD | UDLD Protocol Error Detected
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/alarm-classes-reference/network.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="network">Network<a class="headerlink" href="#network" title="Permanent link">&para;</a></h1>
+<h2 id="network-bfd-session-down">Network | BFD | Session Down<a class="headerlink" href="#network-bfd-session-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>BFD interface</td>
+<td></td>
+</tr>
+<tr>
+<td>peer</td>
+<td>BFD Peer</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bfd-session-down">Network | BFD | Session Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bfd-session-up">Network | BFD | Session Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-bgp-peer-down">Network | BGP | Peer Down<a class="headerlink" href="#network-bgp-peer-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peer</td>
+<td>BGP Peer</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+<tr>
+<td>as</td>
+<td>BGP Peer AS</td>
+<td></td>
+</tr>
+<tr>
+<td>local_as</td>
+<td>Local AS</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>BGP Peer Description</td>
+<td></td>
+</tr>
+<tr>
+<td>import_filter</td>
+<td>BGP Import Filter</td>
+<td></td>
+</tr>
+<tr>
+<td>export_filter</td>
+<td>BGP Export Filter</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-backward-transition">Network | BGP | Backward Transition</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-established">Network | BGP | Established</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-peer-down">Network | BGP | Peer Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-peer-state-changed">Network | BGP | Peer State Changed</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-peer-state-changed">Network | BGP | Peer State Changed</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-bgp-prefix-limit-exceeded">Network | BGP | Prefix Limit Exceeded<a class="headerlink" href="#network-bgp-prefix-limit-exceeded" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peer</td>
+<td>BGP Peer</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>as</td>
+<td>BGP Peer AS</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-established">Network | BGP | Established</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-peer-state-changed">Network | BGP | Peer State Changed</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-bgp-prefix-limit-exceeded">Network | BGP | Prefix Limit Exceeded</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-cef-resource-failure">Network | CEF | Resource Failure<a class="headerlink" href="#network-cef-resource-failure" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peer</td>
+<td>BFD Peer</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason failed</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-cef-resource-failure">Network | CEF | Resource Failure</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-dhcp-untrusted-server">Network | DHCP | Untrusted Server<a class="headerlink" href="#network-dhcp-untrusted-server" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip</td>
+<td>Source IP</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Source interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-dhcp-untrusted-server">Network | DHCP | Untrusted Server</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-dns-bad-query">Network | DNS | Bad Query<a class="headerlink" href="#network-dns-bad-query" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip</td>
+<td>Source IP</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-dns-bad-query">Network | DNS | Bad Query</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-bpi-unautorized">Network | DOCSIS | BPI Unautorized<a class="headerlink" href="#network-docsis-bpi-unautorized" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>An unauthorized cable modem has been deleted to enforce BPI authorization for the specified cable modem. The specified cable modem was not performing BPI negotiation.</p>
+<h3>Recommended Actions</h3>
+<p>Check the modem interface configuration for privacy mandatory, or check for errors in the TFTP configuration file.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-bpi-unautorized">Network | DOCSIS | BPI Unautorized</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-bad-timing-offset">Network | DOCSIS | Bad Timing Offset<a class="headerlink" href="#network-docsis-bad-timing-offset" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The cable modem is not using the correct starting offset during initial ranging, causing a zero, negative timing offset to be recorded by the CMTS for this modem. The CMTS internal algorithms that rely on the timing offset parameter will not analyze any modems that do not use the correct starting offset. The modems may not be able to function, depending on their physical location on the cable plant.</p>
+<h3>Recommended Actions</h3>
+<p>Locate the cable modem based on the MAC address and report the initial timing offset problem to the cable modem vendor.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>offset</td>
+<td>Time offset</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-bad-timing-offset">Network | DOCSIS | Bad Timing Offset</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-invalid-cos">Network | DOCSIS | Invalid CoS<a class="headerlink" href="#network-docsis-invalid-cos" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The registration of the specified modem has failed because of an invalid or unsupported CoS setting.</p>
+<h3>Recommended Actions</h3>
+<p>Ensure that the CoS fields in the configuration file are set correctly.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-invalid-cos">Network | DOCSIS | Invalid CoS</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-invalid-docsis-message">Network | DOCSIS | Invalid DOCSIS Message<a class="headerlink" href="#network-docsis-invalid-docsis-message" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>A cable modem that is not DOCSIS-compliant has attempted to send an invalid DOCSIS message.</p>
+<h3>Recommended Actions</h3>
+<p>Locate the cable modem that sent this message and replace it with DOCSIS-compliant modem.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-invalid-docsis-message">Network | DOCSIS | Invalid DOCSIS Message</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-invalid-qos">Network | DOCSIS | Invalid QoS<a class="headerlink" href="#network-docsis-invalid-qos" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The registration of the specified modem has failed because of an invalid or unsupported QoS setting.</p>
+<h3>Recommended Actions</h3>
+<p>Ensure that the QoS fields in the configuration file are set correctly.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-invalid-qos">Network | DOCSIS | Invalid QoS</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-invalid-shared-secret">Network | DOCSIS | Invalid Shared Secret<a class="headerlink" href="#network-docsis-invalid-shared-secret" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The registration of this modem has failed because of an invalid MIC string.</p>
+<h3>Recommended Actions</h3>
+<p>Ensure that the shared secret that is in the configuration file is the same as the shared secret that is configured in the cable modem.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-invalid-shared-secret">Network | DOCSIS | Invalid Shared Secret</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-max-cpe-reached">Network | DOCSIS | Max CPE Reached<a class="headerlink" href="#network-docsis-max-cpe-reached" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The maximum number of devices that can be attached to the cable modem has been exceeded. Therefore, the device with the specified IP address will not be added to the modem with the specified SID.</p>
+<h3>Recommended Actions</h3>
+<p>Locate the specified device and place the device on a different cable modem with another SID.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>CPE MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>ip</td>
+<td>CPE IP</td>
+<td></td>
+</tr>
+<tr>
+<td>modem_mac</td>
+<td>Cable Modem MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>sid</td>
+<td>Cable Modem SID</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-max-cpe-reached">Network | DOCSIS | Max CPE Reached</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-maximum-capacity-reached">Network | DOCSIS | Maximum Capacity Reached<a class="headerlink" href="#network-docsis-maximum-capacity-reached" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The currently reserved capacity on the upstream channel already exceeds its virtual reservation capacity, based on the configured subscription level limit. Increasing the subscription level limit on the current upstream channel will place you at risk of being unable to guarantee the individual reserved rates for modems since this upstream channel is already oversubscribed.</p>
+<h3>Recommended Actions</h3>
+<p>Load-balance the modems that are requesting the reserved upstream rate on another upstream channel.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+<tr>
+<td>upstream</td>
+<td>Upstream</td>
+<td></td>
+</tr>
+<tr>
+<td>cur_bps</td>
+<td>Current bps reservation</td>
+<td></td>
+</tr>
+<tr>
+<td>res_bps</td>
+<td>Reserved bps</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-maximum-capacity-reached">Network | DOCSIS | Maximum Capacity Reached</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-docsis-maximum-sids">Network | DOCSIS | Maximum SIDs<a class="headerlink" href="#network-docsis-maximum-sids" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The maximum number of SIDs has been allocated to the specified line card.</p>
+<h3>Recommended Actions</h3>
+<p>Assign the cable modem to another line card.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Cable interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-docsis-maximum-sids">Network | DOCSIS | Maximum SIDs</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-eigrp-neighbor-down">Network | EIGRP | Neighbor Down<a class="headerlink" href="#network-eigrp-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Routing table changes and possible lost of connectivity</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>as</td>
+<td>EIGRP autonomus system</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>neighbor</td>
+<td>Neighbor's Router ID</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Adjacency lost reason</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-eigrp-neighbor-down">Network | EIGRP | Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-eigrp-neighbor-up">Network | EIGRP | Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-impb-unauthenticated-ip-mac">Network | IMPB | Unauthenticated IP-MAC<a class="headerlink" href="#network-impb-unauthenticated-ip-mac" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Discard user connection attempts</p>
+<h3>Recommended Actions</h3>
+<p>Check user IP and MAC, check IMPB entry, check topology</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip</td>
+<td>User IP</td>
+<td></td>
+</tr>
+<tr>
+<td>mac</td>
+<td>User MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Affected interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-impb-recover-impb-stop-learning-state">Network | IMPB | Recover IMPB stop learning state</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-impb-unauthenticated-ip-mac">Network | IMPB | Unauthenticated IP-MAC</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-ip-arp-moved">Network | IP | ARP Moved<a class="headerlink" href="#network-ip-arp-moved" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>BFD interface</td>
+<td></td>
+</tr>
+<tr>
+<td>ip</td>
+<td>IP</td>
+<td></td>
+</tr>
+<tr>
+<td>from_mac</td>
+<td>From MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>to_mac</td>
+<td>To MAC</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-ip-arp-moved">Network | IP | ARP Moved</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-ip-address-conflict">Network | IP | Address Conflict<a class="headerlink" href="#network-ip-address-conflict" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip</td>
+<td>Conflicting IP</td>
+<td></td>
+</tr>
+<tr>
+<td>mac</td>
+<td>MAC</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-ip-address-conflict">Network | IP | Address Conflict</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-ip-ip-flap">Network | IP | IP Flap<a class="headerlink" href="#network-ip-ip-flap" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ip</td>
+<td>Flapped IP</td>
+<td></td>
+</tr>
+<tr>
+<td>from_interface</td>
+<td>From interface</td>
+<td></td>
+</tr>
+<tr>
+<td>to_interface</td>
+<td>To interface</td>
+<td></td>
+</tr>
+<tr>
+<td>mac</td>
+<td>MAC</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-ip-ip-flap">Network | IP | IP Flap</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-is-is-adjacency-down">Network | IS-IS | Adjacency Down<a class="headerlink" href="#network-is-is-adjacency-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Routing table changes and possible lost of connectivity</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>neighbor</td>
+<td>Neighbor's NSAP or name</td>
+<td></td>
+</tr>
+<tr>
+<td>level</td>
+<td>Level</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Adjacency lost reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-is-is-adjacency-down">Network | IS-IS | Adjacency Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-is-is-adjacency-up">Network | IS-IS | Adjacency Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-lbd-loop-detected">Network | LBD | Loop Detected<a class="headerlink" href="#network-lbd-loop-detected" title="Permanent link">&para;</a></h2>
+<h3>Recommended Actions</h3>
+<p>Check hardware link and topology</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-lbd-loop-cleared">Network | LBD | Loop Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-lbd-loop-detected">Network | LBD | Loop Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-lbd-vlan-loop-detected">Network | LBD | Vlan Loop Detected<a class="headerlink" href="#network-lbd-vlan-loop-detected" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Lost traffic on specific vlan</p>
+<h3>Recommended Actions</h3>
+<p>Check topology or use STP to avoid loops</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan</td>
+<td>Vlan</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_name</td>
+<td>Vlan name</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_description</td>
+<td>Vlan description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_l2_domain</td>
+<td>L2 domain</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-lbd-vlan-loop-cleared">Network | LBD | Vlan Loop Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-lbd-vlan-loop-detected">Network | LBD | Vlan Loop Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-dom-alarm-out-of-threshold">Network | Link | DOM | Alarm: Out of Threshold<a class="headerlink" href="#network-link-dom-alarm-out-of-threshold" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Connection lost</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Physical port</td>
+<td></td>
+</tr>
+<tr>
+<td>threshold</td>
+<td>Threshold type</td>
+<td></td>
+</tr>
+<tr>
+<td>sensor</td>
+<td>Measured name</td>
+<td></td>
+</tr>
+<tr>
+<td>ovalue</td>
+<td>Operating value</td>
+<td></td>
+</tr>
+<tr>
+<td>tvalue</td>
+<td>Threshold value</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-dom-alarm:-out-of-threshold">Network | Link | DOM | Alarm: Out of Threshold</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-dom-alarm:-out-of-threshold-recovered">Network | Link | DOM | Alarm: Out of Threshold Recovered</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-dom-warning-out-of-threshold">Network | Link | DOM | Warning: Out of Threshold<a class="headerlink" href="#network-link-dom-warning-out-of-threshold" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Connection lost</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Physical port</td>
+<td></td>
+</tr>
+<tr>
+<td>threshold</td>
+<td>Threshold type</td>
+<td></td>
+</tr>
+<tr>
+<td>sensor</td>
+<td>Measured name</td>
+<td></td>
+</tr>
+<tr>
+<td>ovalue</td>
+<td>Operating value</td>
+<td></td>
+</tr>
+<tr>
+<td>tvalue</td>
+<td>Threshold value</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-dom-warning:-out-of-threshold">Network | Link | DOM | Warning: Out of Threshold</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-dom-warning:-out-of-threshold-recovered">Network | Link | DOM | Warning: Out of Threshold Recovered</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-duplex-mismatch">Network | Link | Duplex Mismatch<a class="headerlink" href="#network-link-duplex-mismatch" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-duplex-mismatch">Network | Link | Duplex Mismatch</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-err-disable">Network | Link | Err-Disable<a class="headerlink" href="#network-link-err-disable" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>err-disable reason</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-err-disable">Network | Link | Err-Disable</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-flap-error-detected">Network | Link | Link Flap Error Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-flap-error-recovery">Network | Link | Link Flap Error Recovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-up">Network | Link | Link Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-half-duplex">Network | Link | Half-Duplex<a class="headerlink" href="#network-link-half-duplex" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-full-duplex">Network | Link | Full-Duplex</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-half-duplex">Network | Link | Half-Duplex</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-link-link-down">Network | Link | Link Down<a class="headerlink" href="#network-link-link-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Connection lost</p>
+<h3>Probable Causes</h3>
+<p>Administrative action, cable damage, hardware or software error either from this or from another side</p>
+<h3>Recommended Actions</h3>
+<p>Check configuration, both sides of links and hardware</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>link</td>
+<td>Link ID</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-down">Network | Link | Link Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-up">Network | Link | Link Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mac-duplicate-mac">Network | MAC | Duplicate MAC<a class="headerlink" href="#network-mac-duplicate-mac" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>MAC Address</td>
+<td></td>
+</tr>
+<tr>
+<td>one_interface</td>
+<td>First interface</td>
+<td></td>
+</tr>
+<tr>
+<td>two_interface</td>
+<td>Second interface</td>
+<td></td>
+</tr>
+<tr>
+<td>one_description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>two_description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mac-duplicate-mac">Network | MAC | Duplicate MAC</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mac-invalid-mac">Network | MAC | Invalid MAC<a class="headerlink" href="#network-mac-invalid-mac" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>MAC Address</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Affected interface</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan</td>
+<td>Affected vlan</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mac-invalid-mac">Network | MAC | Invalid MAC</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mac-link-mac-exceed">Network | MAC | Link MAC Exceed<a class="headerlink" href="#network-mac-link-mac-exceed" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac_limit</td>
+<td>MAC Address Limit</td>
+<td></td>
+</tr>
+<tr>
+<td>utilization</td>
+<td>Utilization</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mac-link-mac-exceed">Network | MAC | Link MAC Exceed</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mac-mac-flap">Network | MAC | MAC Flap<a class="headerlink" href="#network-mac-mac-flap" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>The system found the specified host moving between the specified ports.</p>
+<h3>Recommended Actions</h3>
+<p>Examine the network for possible loops.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>MAC Address</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan</td>
+<td>VLAN</td>
+<td></td>
+</tr>
+<tr>
+<td>from_interface</td>
+<td>From interface</td>
+<td></td>
+</tr>
+<tr>
+<td>to_interface</td>
+<td>To interface</td>
+<td></td>
+</tr>
+<tr>
+<td>from_description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>to_description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_name</td>
+<td>Vlan name</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_description</td>
+<td>Vlan description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_l2_domain</td>
+<td>L2 domain</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mac-mac-flap">Network | MAC | MAC Flap</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mac-mac-flood">Network | MAC | MAC Flood<a class="headerlink" href="#network-mac-mac-flood" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>mac</td>
+<td>MAC Address</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan</td>
+<td>VLAN</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_name</td>
+<td>Vlan name</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_description</td>
+<td>Vlan description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_l2_domain</td>
+<td>L2 domain</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mac-mac-flood">Network | MAC | MAC Flood</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mpls-ldp-neighbor-down">Network | MPLS | LDP Neighbor Down<a class="headerlink" href="#network-mpls-ldp-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>neighbor</td>
+<td>LDP Neighbor</td>
+<td></td>
+</tr>
+<tr>
+<td>state</td>
+<td>State</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-ldp-neighbor-down">Network | MPLS | LDP Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-ldp-neighbor-up">Network | MPLS | LDP Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mpls-ldp-session-down">Network | MPLS | LDP Session Down<a class="headerlink" href="#network-mpls-ldp-session-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>state</td>
+<td>State</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-ldp-session-down">Network | MPLS | LDP Session Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-ldp-session-up">Network | MPLS | LDP Session Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mpls-lsp-down">Network | MPLS | LSP Down<a class="headerlink" href="#network-mpls-lsp-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>LSP name</td>
+<td></td>
+</tr>
+<tr>
+<td>state</td>
+<td>State</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-lsp-down">Network | MPLS | LSP Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-lsp-up">Network | MPLS | LSP Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mpls-path-down">Network | MPLS | Path Down<a class="headerlink" href="#network-mpls-path-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>Path name</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-path-down">Network | MPLS | Path Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-path-up">Network | MPLS | Path Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-mpls-tdp-neighbor-down">Network | MPLS | TDP Neighbor Down<a class="headerlink" href="#network-mpls-tdp-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>neighbor</td>
+<td>TDP Neighbor</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-tdp-neighbor-down">Network | MPLS | TDP Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-mpls-tdp-neighbor-up">Network | MPLS | TDP Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-msdp-peer-down">Network | MSDP | Peer Down<a class="headerlink" href="#network-msdp-peer-down" title="Permanent link">&para;</a></h2>
+<h3>Recommended Actions</h3>
+<p>Check msdp peer aviability, check msdp peer configuration changes</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peer</td>
+<td>Peer's IP</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-msdp-peer-down">Network | MSDP | Peer Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-msdp-peer-up">Network | MSDP | Peer Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-monitor-crc-error-detected">Network | Monitor | CRC Error Detected<a class="headerlink" href="#network-monitor-crc-error-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-monitor-crc-error-cleared">Network | Monitor | CRC Error Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-monitor-crc-error-detected">Network | Monitor | CRC Error Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-ospf-neighbor-down">Network | OSPF | Neighbor Down<a class="headerlink" href="#network-ospf-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Routing table changes and possible lost of connectivity</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>area</td>
+<td>OSPF area</td>
+<td></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>neighbor</td>
+<td>Neighbor's Router ID</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Adjacency lost reason</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-ospf-neighbor-down">Network | OSPF | Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-ospf-neighbor-up">Network | OSPF | Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-pim-dr-change">Network | PIM | DR Change<a class="headerlink" href="#network-pim-dr-change" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Some multicast flows lost</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>from_dr</td>
+<td>From DR</td>
+<td></td>
+</tr>
+<tr>
+<td>to_dr</td>
+<td>To DR</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-dr-change">Network | PIM | DR Change</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-pim-invalid-rp">Network | PIM | Invalid RP<a class="headerlink" href="#network-pim-invalid-rp" title="Permanent link">&para;</a></h2>
+<h3>Probable Causes</h3>
+<p>A PIM router received a register message from another PIM router that identifies itself as the rendezvous point. If the router is not configured for another rendezvous point, it will not accept the register message.</p>
+<h3>Recommended Actions</h3>
+<p>Configure all leaf routers (first-hop routers to multicast sources) with the IP address of the valid rendezvous point.</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pim_router</td>
+<td>PIM router IP</td>
+<td></td>
+</tr>
+<tr>
+<td>invalid_rp</td>
+<td>Invalid RP IP</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-invalid-rp">Network | PIM | Invalid RP</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-pim-msdp-peer-down">Network | PIM | MSDP Peer Down<a class="headerlink" href="#network-pim-msdp-peer-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Multicast flows lost</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>peer</td>
+<td>Peer's IP</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-msdp-peer-down">Network | PIM | MSDP Peer Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-msdp-peer-up">Network | PIM | MSDP Peer Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-pim-neighbor-down">Network | PIM | Neighbor Down<a class="headerlink" href="#network-pim-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Multicast flows lost</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>neighbor</td>
+<td>Neighbor's IP</td>
+<td></td>
+</tr>
+<tr>
+<td>vrf</td>
+<td>VRF</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Reason</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-neighbor-down">Network | PIM | Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-pim-neighbor-up">Network | PIM | Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-port-security-port-security-violation">Network | Port Security | Port Security Violation<a class="headerlink" href="#network-port-security-port-security-violation" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>mac</td>
+<td>MAC Address</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-port-security-port-security-violation">Network | Port Security | Port Security Violation</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-port-loss-of-signal">Network | Port | Loss of Signal<a class="headerlink" href="#network-port-loss-of-signal" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Connection lost</p>
+<h3>Probable Causes</h3>
+<p>Administrative action, cable damage, hardware or software error either from this or from another side</p>
+<h3>Recommended Actions</h3>
+<p>Check configuration, both sides of links and hardware</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface name</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>slot</td>
+<td>Slot name</td>
+<td></td>
+</tr>
+<tr>
+<td>catrd</td>
+<td>Card name</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-port-loss-of-signal">Network | Port | Loss of Signal</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-port-loss-of-signal-resume">Network | Port | Loss of Signal Resume</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-rsvp-neighbor-down">Network | RSVP | Neighbor Down<a class="headerlink" href="#network-rsvp-neighbor-down" title="Permanent link">&para;</a></h2>
+<h3>Symptoms</h3>
+<p>Routing table changes and possible lost of connectivity</p>
+<h3>Probable Causes</h3>
+<p>Link failure or protocol misconfiguration</p>
+<h3>Recommended Actions</h3>
+<p>Check links and local and neighbor router configuration</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>Interface</td>
+<td></td>
+</tr>
+<tr>
+<td>neighbor</td>
+<td>Neighbor's NSAP or name</td>
+<td></td>
+</tr>
+<tr>
+<td>reason</td>
+<td>Neighbor lost reason</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-rsvp-neighbor-down">Network | RSVP | Neighbor Down</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-rsvp-neighbor-up">Network | RSVP | Neighbor Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-stp-bpdu-guard-violation">Network | STP | BPDU Guard Violation<a class="headerlink" href="#network-stp-bpdu-guard-violation" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-up">Network | Link | Link Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-bpdu-guard-recovery">Network | STP | BPDU Guard Recovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-bpdu-guard-violation">Network | STP | BPDU Guard Violation</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-stp-root-guard-violation">Network | STP | Root Guard Violation<a class="headerlink" href="#network-stp-root-guard-violation" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-link-link-up">Network | Link | Link Up</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-bpdu-root-violation">Network | STP | BPDU Root Violation</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-root-guard-recovery">Network | STP | Root Guard Recovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-stp-stp-loop-detected">Network | STP | STP Loop Detected<a class="headerlink" href="#network-stp-stp-loop-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-stp-loop-cleared">Network | STP | STP Loop Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-stp-loop-detected">Network | STP | STP Loop Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-stp-stp-vlan-loop-detected">Network | STP | STP Vlan Loop Detected<a class="headerlink" href="#network-stp-stp-vlan-loop-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan</td>
+<td>vlan</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_name</td>
+<td>Vlan name</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_description</td>
+<td>Vlan description</td>
+<td></td>
+</tr>
+<tr>
+<td>vlan_l2_domain</td>
+<td>L2 domain</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-stp-vlan-loop-cleared">Network | STP | STP Vlan Loop Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-stp-stp-vlan-loop-detected">Network | STP | STP Vlan Loop Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-storm-control-broadcast-storm-detected">Network | Storm Control | Broadcast Storm Detected<a class="headerlink" href="#network-storm-control-broadcast-storm-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-broadcast-storm-cleared">Network | Storm Control | Broadcast Storm Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-broadcast-storm-detected">Network | Storm Control | Broadcast Storm Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-storm-control-multicast-storm-detected">Network | Storm Control | Multicast Storm Detected<a class="headerlink" href="#network-storm-control-multicast-storm-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-multicast-storm-cleared">Network | Storm Control | Multicast Storm Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-multicast-storm-detected">Network | Storm Control | Multicast Storm Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-storm-control-storm-detected">Network | Storm Control | Storm Detected<a class="headerlink" href="#network-storm-control-storm-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-storm-cleared">Network | Storm Control | Storm Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-storm-detected">Network | Storm Control | Storm Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-storm-control-unicast-storm-detected">Network | Storm Control | Unicast Storm Detected<a class="headerlink" href="#network-storm-control-unicast-storm-detected" title="Permanent link">&para;</a></h2>
+<h3>Recommended Actions</h3>
+<p>Enable DLF (destination lookup failure) filter</p>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-unicast-storm-cleared">Network | Storm Control | Unicast Storm Cleared</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-storm-control-unicast-storm-detected">Network | Storm Control | Unicast Storm Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+</tbody>
+</table>
+<h2 id="network-udld-udld-protocol-error-detected">Network | UDLD | UDLD Protocol Error Detected<a class="headerlink" href="#network-udld-udld-protocol-error-detected" title="Permanent link">&para;</a></h2>
+<h3>Variables</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Defaults</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>interface</td>
+<td>interface</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>Interface description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3>Related Events</h3>
+<table>
+<thead>
+<tr>
+<th>Event Class</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-udld-udld-protocol-error-detected">Network | UDLD | UDLD Protocol Error Detected</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg></span> opening event</td>
+</tr>
+<tr>
+<td><a href="../../event-classes-reference/network/#network-udld-udld-protocol-recovery">Network | UDLD | UDLD Protocol Recovery</a></td>
+<td><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"/></svg></span> closing event</td>
+</tr>
+</tbody>
+</table>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../multicast/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Multicast" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Multicast
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../noc/" class="md-footer__link md-footer__link--next" aria-label="Next: NOC" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                NOC
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

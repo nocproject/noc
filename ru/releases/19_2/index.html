@@ -1,0 +1,3859 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/releases/19_2/">
+      
+      
+        <link rel="prev" href="../19_3_2/">
+      
+      
+        <link rel="next" href="../19_2_1/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>NOC 19.2 - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#noc-192" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              NOC 19.2
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../releases/19_2/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Releases
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-policy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC Release and Tagging Policy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../25_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 25.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../24_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 24.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../23_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 23.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../22_2/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 22.2 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../22_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 22.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../20_4/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 20.4 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../20_3/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 20.3 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../20_2/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 20.2 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../20_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 20.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../19_4/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 19.4 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../19_3/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 19.3 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_13" checked>
+        
+          <label class="md-nav__link" for="__nav_8_13" id="__nav_8_13_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    NOC 19.2 Generation
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8_13">
+            <span class="md-nav__icon md-icon"></span>
+            NOC 19.2 Generation
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    NOC 19.2
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    NOC 19.2
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#highlights" class="md-nav__link">
+    Highlights
+  </a>
+  
+    <nav class="md-nav" aria-label="Highlights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confdb" class="md-nav__link">
+    ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headless-mode" class="md-nav__link">
+    Headless Mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-fetch-policy" class="md-nav__link">
+    Config fetch policy
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ipam" class="md-nav__link">
+    IPAM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ethernet-services" class="md-nav__link">
+    Ethernet services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gridvcs-improvements" class="md-nav__link">
+    GridVCS improvements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-profiles" class="md-nav__link">
+    New profiles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profilechecker" class="md-nav__link">
+    ProfileChecker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-zone-expiration-checks" class="md-nav__link">
+    DNS Zone expiration checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-improvements" class="md-nav__link">
+    API Improvements
+  </a>
+  
+    <nav class="md-nav" aria-label="API Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script-http-client" class="md-nav__link">
+    Script http client
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nbi-telemetry-api" class="md-nav__link">
+    nbi telemetry API
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    Code quality
+  </a>
+  
+    <nav class="md-nav" aria-label="Code quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pep8" class="md-nav__link">
+    PEP8
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python3-compatibility" class="md-nav__link">
+    Python3 compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    Breaking Changes
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#igetconfig" class="md-nav__link">
+    IGetConfig
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    Migration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    New features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improvements" class="md-nav__link">
+    Improvements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bugfixes" class="md-nav__link">
+    Bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-cleanup" class="md-nav__link">
+    Code cleanup
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19_2_1/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC 19.2.1
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19_2_2/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC 19.2.2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../19_2_3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC 19.2.3
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../19_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 19.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../18_1A1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 18 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../15_05/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 15 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_7_1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.7 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_6/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.6 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_5/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.5 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_4/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.4 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_3/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.3 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_2/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.2 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../0_1rc1/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC 0.1 Generation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#highlights" class="md-nav__link">
+    Highlights
+  </a>
+  
+    <nav class="md-nav" aria-label="Highlights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#confdb" class="md-nav__link">
+    ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#headless-mode" class="md-nav__link">
+    Headless Mode
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-fetch-policy" class="md-nav__link">
+    Config fetch policy
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ipam" class="md-nav__link">
+    IPAM
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ethernet-services" class="md-nav__link">
+    Ethernet services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gridvcs-improvements" class="md-nav__link">
+    GridVCS improvements
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#new-profiles" class="md-nav__link">
+    New profiles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profilechecker" class="md-nav__link">
+    ProfileChecker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-zone-expiration-checks" class="md-nav__link">
+    DNS Zone expiration checks
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#api-improvements" class="md-nav__link">
+    API Improvements
+  </a>
+  
+    <nav class="md-nav" aria-label="API Improvements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#script-http-client" class="md-nav__link">
+    Script http client
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nbi-telemetry-api" class="md-nav__link">
+    nbi telemetry API
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    Code quality
+  </a>
+  
+    <nav class="md-nav" aria-label="Code quality">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pep8" class="md-nav__link">
+    PEP8
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests" class="md-nav__link">
+    Tests
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python3-compatibility" class="md-nav__link">
+    Python3 compatibility
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    Breaking Changes
+  </a>
+  
+    <nav class="md-nav" aria-label="Breaking Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#igetconfig" class="md-nav__link">
+    IGetConfig
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#migration" class="md-nav__link">
+    Migration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#new-features" class="md-nav__link">
+    New features
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#improvements" class="md-nav__link">
+    Improvements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bugfixes" class="md-nav__link">
+    Bugfixes
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-cleanup" class="md-nav__link">
+    Code cleanup
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/releases/19_2.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="noc-192">NOC 19.2<a class="headerlink" href="#noc-192" title="Permanent link">&para;</a></h1>
+<p>In accordance to our <code>Release Policy &lt;releases-policy&gt;</code>
+<a href="https://getnoc.com/devteam/">we're</a> proudly present release
+<a href="https://code.getnoc.com/noc/noc/tags/19.2">19.2</a>.</p>
+<p>19.2 release contains of
+<a href="https://code.getnoc.com/noc/noc/merge_requests?scope=all&amp;state=merged&amp;milestone_title=19.2">337</a>
+bugfixes, optimisations and improvements.</p>
+<h2 id="highlights">Highlights<a class="headerlink" href="#highlights" title="Permanent link">&para;</a></h2>
+<h3 id="confdb">ConfDB<a class="headerlink" href="#confdb" title="Permanent link">&para;</a></h3>
+<p><code>19.2</code> introduces new configuration processing framework, the ConfDB.
+ConfDB is the crystallisation of our over decade experience of
+configuration processing. Set of carefully designed tools, clean API and
+flexible query language offer the unified way of configuration parsing,
+validation, processing and converting. Target area covers data
+extraction (without complex scripts), config validation, querying and
+inter-vendor configuration conversions.</p>
+<p>We built ConfDB around idea of abstract intermediate config
+representation, somewhat similar with programming languages’ virtual
+machines, query language with Prolog-like logical programming
+capabilities, and common pipeline for config parsing.</p>
+<p>Key features comparison against existing config processing models:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Old Model</th>
+<th>ConfDB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configuration fetching</td>
+<td>Via get_config script</td>
+<td>get_config script, external storage download</td>
+</tr>
+<tr>
+<td>Configuration storing</td>
+<td>GridVCS</td>
+<td>GridVCS with compression</td>
+</tr>
+<tr>
+<td>Configuration parsing</td>
+<td>pyparsing parsers</td>
+<td>2-stage, tokenization and normalization</td>
+</tr>
+<tr>
+<td>Parser complexity</td>
+<td>High</td>
+<td>tokenizers are reused between profiles, normalizers - easy</td>
+</tr>
+<tr>
+<td>Parser performance</td>
+<td>Low</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Config model</td>
+<td>Plain list of predefined facts</td>
+<td>tree-like structure</td>
+</tr>
+<tr>
+<td>Custom facts</td>
+<td>Almost impossible</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Query language syntax</td>
+<td>CLIPS</td>
+<td>Python</td>
+</tr>
+<tr>
+<td>Query debugging</td>
+<td>shell</td>
+<td>Built-in IDE</td>
+</tr>
+<tr>
+<td>Discovery integration</td>
+<td>None</td>
+<td>Config-driven discovery checks</td>
+</tr>
+</tbody>
+</table>
+<p>19.2 contains ConfDB support for EdgeCore.ES, Eltex.MES, Huawei.VRP,
+Juniper.JUNOS, MikroTik.RouterOS and Qtech.QSW2800 profiles.</p>
+<p><a href="../../confdb-reference/">Read more</a></p>
+<h4 id="headless-mode">Headless Mode<a class="headerlink" href="#headless-mode" title="Permanent link">&para;</a></h4>
+<p>ConfDB allows the headless mode of operations, where “headless” means no
+direct access to equipment. Instead, configuration files are downloaded
+from external storage via FTP, SFTP or S3 API, stored to GridVCS and
+processed via ConfDB. Discovery can extract capabilities, interfaces and
+vlans directly from config. IPAM is also integrated with ConfDB,
+allowing to track vpns, address and prefixes usage.</p>
+<p>Headed/Headless mode may be selected on per-device or per-profile basics
+via appropriate policies.</p>
+<p>Headless mode is a valuable tool for due diligencies, security audits and
+forensics.</p>
+<h4 id="config-fetch-policy">Config fetch policy<a class="headerlink" href="#config-fetch-policy" title="Permanent link">&para;</a></h4>
+<p>NOC got additional configuration to select, which configuration to
+prefer - startup or running. Config fetch policy may be applied on
+per-profile or per-object level.</p>
+<h3 id="ipam">IPAM<a class="headerlink" href="#ipam" title="Permanent link">&para;</a></h3>
+<p>IPAM got various improvements, including:</p>
+<ul>
+<li>separate calculation of address and prefix usage</li>
+<li>prefix profile’s setting to allow reuse of special addresses
+  (network and broadcast)</li>
+</ul>
+<h3 id="ethernet-services">Ethernet services<a class="headerlink" href="#ethernet-services" title="Permanent link">&para;</a></h3>
+<p><strong>IGetInterfaces</strong> got the <strong>ES</strong> address family, allowing to describe
+complex vlan tag manipulations, often referred as Ethernet Services,
+Q-in-Q and so on.</p>
+<h3 id="gridvcs-improvements">GridVCS improvements<a class="headerlink" href="#gridvcs-improvements" title="Permanent link">&para;</a></h3>
+<p><strong>19.2</strong> contains simple Mercurial’s mpatch implementation to read old
+deltas. So NOC is no longer depends on Mercurial.</p>
+<h3 id="new-profiles">New profiles<a class="headerlink" href="#new-profiles" title="Permanent link">&para;</a></h3>
+<p><strong>19.2</strong> brings support for various IP-cams, including video-specific
+metrics. Hikvision.DSKV8, Dahua.DH, Axis.VAPIX profiles support lots of
+IP-cams out-of-the-box.</p>
+<p>In addition, GWD.GFA profile has been added.</p>
+<h3 id="profilechecker">ProfileChecker<a class="headerlink" href="#profilechecker" title="Permanent link">&para;</a></h3>
+<p>Profile checking engine (discovery’s profile check) has been refactored
+to separate class available both for discovery and for custom scripting.</p>
+<h3 id="dns-zone-expiration-checks">DNS Zone expiration checks<a class="headerlink" href="#dns-zone-expiration-checks" title="Permanent link">&para;</a></h3>
+<p><strong>19.2</strong> restores DNS Zone expiration check, regressed long ago in
+microservices branch.</p>
+<h3 id="api-improvements">API Improvements<a class="headerlink" href="#api-improvements" title="Permanent link">&para;</a></h3>
+<h4 id="script-http-client">Script http client<a class="headerlink" href="#script-http-client" title="Permanent link">&para;</a></h4>
+<p>Scripts’ http client has been reworked and got middleware support,
+allowing various wierd authentication schemes. Integration with web-only
+managed devices became easier.</p>
+<h4 id="nbi-telemetry-api">nbi telemetry API<a class="headerlink" href="#nbi-telemetry-api" title="Permanent link">&para;</a></h4>
+<p>NBI service got a <code>telemetry API &lt;api-nbi-telemetry&gt;</code> for metrics
+pushing from remote agents, making the NOC full-blown telemetry
+collection and processing system for custom
+<a href="https://en.wikipedia.org/wiki/Internet_of_things">IoT</a> applications.</p>
+<h3 id="code-quality">Code quality<a class="headerlink" href="#code-quality" title="Permanent link">&para;</a></h3>
+<h4 id="pep8">PEP8<a class="headerlink" href="#pep8" title="Permanent link">&para;</a></h4>
+<p>Code Quality always has been one of the major priorities. 19.2 contains
+lots of code cleaning, improving overall code quality and
+<a href="https://www.python.org/dev/peps/pep-0008/">PEP8</a> compliance.</p>
+<h4 id="tests">Tests<a class="headerlink" href="#tests" title="Permanent link">&para;</a></h4>
+<p>Testing infrastructure has been improved and we’d reached 100% test
+suite passing. Tests passing made the requirement for merge request
+acceptance.</p>
+<h4 id="python3-compatibility">Python3 compatibility<a class="headerlink" href="#python3-compatibility" title="Permanent link">&para;</a></h4>
+<p>Python 2.7 will reach end-of-life at 2020-01-01, so we started complex
+porting project. Additional py3 compatibility linter has been added to
+the testing lint stage. Python3 compatibility became the requirement for
+merge request acceptance.</p>
+<p>Additional py3 infrastructure for test suite running is ready and we’re
+working on 100% tests passing.</p>
+<h3 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h3>
+<h4 id="igetconfig">IGetConfig<a class="headerlink" href="#igetconfig" title="Permanent link">&para;</a></h4>
+<p>IGetConfig interface got additional policy input parameter. get_config
+scripts should recognize it and behave accordingly.</p>
+<p>Possible values:</p>
+<ul>
+<li><strong>r</strong> - prefer running config</li>
+<li><strong>s</strong> - prefer startup config</li>
+</ul>
+<h2 id="migration">Migration<a class="headerlink" href="#migration" title="Permanent link">&para;</a></h2>
+<p>Migration from 19.2 release is straightforward. Just deploy <strong>19.2</strong> or
+<strong>stable-19.2</strong> tags from Tower.</p>
+<h2 id="new-features">New features<a class="headerlink" href="#new-features" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>MR</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1568">MR1568</a></td>
+<td>IGetInterfaces: ethernet services</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1582">MR1582</a></td>
+<td>Config tokenizers</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1608">MR1608</a></td>
+<td>#980 Config normalizers</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1647">MR1647</a></td>
+<td>ConfDB: Database and logic inference engine</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1661">MR1661</a></td>
+<td>Juniper.JUNOS: ConfDB tokenizer</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1696">MR1696</a></td>
+<td>Discovery: Headless config check</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1706">MR1706</a></td>
+<td>nbi: telemetry API</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1776">MR1776</a></td>
+<td>discovery: ConfDB methods</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1783">MR1783</a></td>
+<td>ConfDB: Applicators</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1800">MR1800</a></td>
+<td>Config Fetch Policy</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1811">MR1811</a></td>
+<td>ConfDB: query frontend</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1837">MR1837</a></td>
+<td>discovery: Running policy</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1855">MR1855</a></td>
+<td>Domain expiration check handlers</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1872">MR1872</a></td>
+<td>Bye-bye HG</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1894">MR1894</a></td>
+<td>#38 Add prefix_special_address_policy to Prefix Profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1926">MR1926</a></td>
+<td>ProfileChecker class</td>
+</tr>
+</tbody>
+</table>
+<h2 id="improvements">Improvements<a class="headerlink" href="#improvements" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>MR</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1505">MR1505</a></td>
+<td>fm.alarm: Check alarm is not already acknowledged/unacknowledged</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1506">MR1506</a></td>
+<td>Update AuditTrail funcional</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1520">MR1520</a></td>
+<td>Optimize IPv4 to integer conversion</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1521">MR1521</a></td>
+<td>Header panel: add last update button</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1542">MR1542</a></td>
+<td>Add support for ISCOM2608G</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1545">MR1545</a></td>
+<td>Report control initial commit</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1550">MR1550</a></td>
+<td>Patch uncol fm alarm sort</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1551">MR1551</a></td>
+<td>Update Managed Object profile form</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1553">MR1553</a></td>
+<td>Add 40G interfaces support to Cisco.IOS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1554">MR1554</a></td>
+<td>ManagedObjectProfile: Refer to default caps profile by default</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1558">MR1558</a></td>
+<td>Update HP.ProCurve profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1559">MR1559</a></td>
+<td>fm-alarm i18n</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1562">MR1562</a></td>
+<td>Add hasAny and hasAll function to BI query language.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1564">MR1564</a></td>
+<td>Add basic authentication to script.http methods.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1570">MR1570</a></td>
+<td>Add initial support for GWD.GFA profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1574">MR1574</a></td>
+<td>Add pattern_unprivileged_prompt to Iskratel.MSAN.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1575">MR1575</a></td>
+<td>Add http/https proto to script command.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1583">MR1583</a></td>
+<td>Set enable datasource default settings to False.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1587">MR1587</a></td>
+<td>pytest 4.1.1</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1588">MR1588</a></td>
+<td>HTTP Client auto JSON requests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1585">MR1585</a></td>
+<td>Update GWD.GFA profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1592">MR1592</a></td>
+<td>Move FM reportalarmdetail application to ControlReport.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1594">MR1594</a></td>
+<td>Add Interface Errors BIP metric to Huawei.MA5600T.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1596">MR1596</a></td>
+<td>Script: http sessions, headers and cookies control</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1609">MR1609</a></td>
+<td>Add interval to PM scale function.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1611">MR1611</a></td>
+<td>Add Hikvision.DSKV8 profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1612">MR1612</a></td>
+<td>Move isInMaintenance field on fm.alarm to bulk.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1613">MR1613</a></td>
+<td>fm.alarm: alarm_class multi-select</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1630">MR1630</a></td>
+<td>combotree: reset pageSize limit</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1634">MR1634</a></td>
+<td>#980 noc.core.confdb package</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1645">MR1645</a></td>
+<td>Digest middleware</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1655">MR1655</a></td>
+<td>Update SKS.SKS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1648">MR1648</a></td>
+<td>Huawei ma5600t</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1660">MR1660</a></td>
+<td>parse_table: Mixed tabs/space processing</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1662">MR1662</a></td>
+<td>NetworkSegment.get_nested_ids: Rewrite to fix out-of-memory condition</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1663">MR1663</a></td>
+<td>Update BDCOM.xPON profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1664">MR1664</a></td>
+<td>Add more d-link switches support</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1666">MR1666</a></td>
+<td>i18n: inv.reportifacestatus</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1667">MR1667</a></td>
+<td>Add more models to Eltex.MES profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1669">MR1669</a></td>
+<td>Add Dahua.DH profile for IP cam.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1671">MR1671</a></td>
+<td>Add “port id subtype” to Huawei.VRP.get_lldp_neighbors.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1680">MR1680</a></td>
+<td>header panel: hide last update, when don’t use</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1681">MR1681</a></td>
+<td>Add initial support for ZTE.ZXA10 profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1684">MR1684</a></td>
+<td>BEREncoder/BERDecoder singleton</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1687">MR1687</a></td>
+<td>BER: Opaque/float/double type decoders</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1691">MR1691</a></td>
+<td>Add patch attribute to Huawei.VRP.get_version.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1692">MR1692</a></td>
+<td>Add CFP TransEth40G in verify-model.py for Finistar FTLQ8181EBLM</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1693">MR1693</a></td>
+<td>remote sync date</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1694">MR1694</a></td>
+<td>Add base implementation TCP RTSP client.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1695">MR1695</a></td>
+<td>Catch RPC Error on STP discovery.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1698">MR1698</a></td>
+<td>Add capabilities to script matchers.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1705">MR1705</a></td>
+<td>Add BRAS capabilities to Juniper.JUNOS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1711">MR1711</a></td>
+<td>ClickHouse client: Allow empty passwords</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1716">MR1716</a></td>
+<td>Add group by slot to `Memory</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1721">MR1721</a></td>
+<td>MikroTik.RouterOS: Match multi-line prompts</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1733">MR1733</a></td>
+<td>Add matchers to Alstec.24xx.get_metrics.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1737">MR1737</a></td>
+<td>Update ZTE.ZXA10 profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1738">MR1738</a></td>
+<td>discovery: Split config fetching and config validation stages</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1742">MR1742</a></td>
+<td>Add state decorator to ip.vrf API.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1743">MR1743</a></td>
+<td>Add ack_ts, ack_user field to Alarms BI model</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1750">MR1750</a></td>
+<td>Add serials number field to managed_object BI models and extractor.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1753">MR1753</a></td>
+<td>Check handler permission before call.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1758">MR1758</a></td>
+<td>Add ManagedObjectAttribute to card template.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1761">MR1761</a></td>
+<td>Add initial support for Axis.VAPIX profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1762">MR1762</a></td>
+<td>Add Dahua.DH.get_local_version script.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1763">MR1763</a></td>
+<td>Add Beward.BD.get_local_users script.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1767">MR1767</a></td>
+<td>ConfDB: Customized syntax</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1774">MR1774</a></td>
+<td>Profile’s confdb package</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1775">MR1775</a></td>
+<td>Update Ericsson SEOS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1779">MR1779</a></td>
+<td>Migrate NBI loader to BaseLoader.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1781">MR1781</a></td>
+<td>Normalizer: defer() and RouterOS normalizer skeleton</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1784">MR1784</a></td>
+<td>Add datastream meta field to ensure-indexes command.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1791">MR1791</a></td>
+<td>Update Juniper.JUNOS.get_interfaces script to support tunnels</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1794">MR1794</a></td>
+<td>Add operation error in Huawei.MA5600T profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1796">MR1796</a></td>
+<td>Do not expand tabs in parse_table() on some rotten devices</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1814">MR1814</a></td>
+<td>ConfDB: VRF configuration</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1820">MR1820</a></td>
+<td>Eltex.MES: MES-2324B/MES-2348B platforms</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1822">MR1822</a></td>
+<td>ConfDB: RebaseApplicator</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1833">MR1833</a></td>
+<td>Update get_portchannel.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1835">MR1835</a></td>
+<td>Show service’s startup time</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1836">MR1836</a></td>
+<td>discovery: Load ConfDB on demand even if config check is disabled</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1858">MR1858</a></td>
+<td>Nocmc integration</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1859">MR1859</a></td>
+<td>add lldp zyxel interface</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1860">MR1860</a></td>
+<td>External Storage: Check directory is not exists before creation</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1865">MR1865</a></td>
+<td>Add Jiniper.JunOS confdb normalizer.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1868">MR1868</a></td>
+<td>ConfDB tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1873">MR1873</a></td>
+<td>Docker CODEOWNERS</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1877">MR1877</a></td>
+<td>Split docker-compose projects</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1878">MR1878</a></td>
+<td>Profile: Show DeprecationWarning when profile is not in profile.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1879">MR1879</a></td>
+<td>Optimize custom field loading</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1881">MR1881</a></td>
+<td>pymongo 3.8, mongoengine 0.17.0</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1883">MR1883</a></td>
+<td>Add mongodb rs init info. Pretty hacky</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1884">MR1884</a></td>
+<td>Add future 2 stage. Make it mandatory</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1887">MR1887</a></td>
+<td>Add Address Usage column to IPAM.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1896">MR1896</a></td>
+<td>VC.VLAN: add Description column, add interface name to L3 interfaces list</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1907">MR1907</a></td>
+<td>Add future to docker requirements.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1910">MR1910</a></td>
+<td>test: Report empty module’s docstrings</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1911">MR1911</a></td>
+<td>#996 Add project field to Subscriber and Supplier.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1913">MR1913</a></td>
+<td>Exclude self when AddressRange overlaps check when save.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1914">MR1914</a></td>
+<td>Getting vrf_id when confdb interface discovery.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1916">MR1916</a></td>
+<td>ConfDB: vpn-id</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1919">MR1919</a></td>
+<td>Add type field to Qtech.QSW2800 memory_usage metric.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1921">MR1921</a></td>
+<td>Deny move cpestatus to anothet managed_object when it inactive</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1922">MR1922</a></td>
+<td>Clean etl mapping key when load.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1923">MR1923</a></td>
+<td>Qtech.QSW2800 more more patterns</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1924">MR1924</a></td>
+<td>Replace generic profile getting method in report_objectstat.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1925">MR1925</a></td>
+<td>Reorganize model tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1927">MR1927</a></td>
+<td>Add support for SWA-2200-16P-AC device</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1935">MR1935</a></td>
+<td>Add Patch Version column and autowidth option to Object Detail Repport.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1936">MR1936</a></td>
+<td>Remove volumes also when down tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1949">MR1949</a></td>
+<td>Add export_beef parameter to script.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1955">MR1955</a></td>
+<td>Add Eltex.MES confdb normalizer.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1959">MR1959</a></td>
+<td>Move MongoCache index creation into ensure-indexes</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1960">MR1960</a></td>
+<td>Replace ensure_index with create_index</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1964">MR1964</a></td>
+<td>.to_json() and .get_json_path() tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1978">MR1978</a></td>
+<td>ipam: Policy defaults in “New Prefix” form</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1992">MR1992</a></td>
+<td>Add SNMP method to Huawei.MA5600T.get_metrics.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1995">MR1995</a></td>
+<td>#1030 Add DataSourceCache to ensure-index.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bugfixes">Bugfixes<a class="headerlink" href="#bugfixes" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>MR</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1495">MR1495</a></td>
+<td>Fix Rotek.RTBSv1 cli errors</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1496">MR1496</a></td>
+<td>Fix Rotek.RTBS cli errors</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1504">MR1504</a></td>
+<td>Fix interfaceattributes datasource filter.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1509">MR1509</a></td>
+<td>Fix Qtech.QSW.get_switchport script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1511">MR1511</a></td>
+<td>Fix match trace on SKS.SKS profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1513">MR1513</a></td>
+<td>Fix MACDB circular references.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1517">MR1517</a></td>
+<td>Fix is_builtin field</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1519">MR1519</a></td>
+<td>Fix threshold profile label in managed object profile metrics view.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1524">MR1524</a></td>
+<td>Fix Eltex.MES Lldp by snmp</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1526">MR1526</a></td>
+<td>#998 Send bi_id field to frontend as string.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1528">MR1528</a></td>
+<td>Fix noc script command. Clean update-spec collect command.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1530">MR1530</a></td>
+<td>Fix TFortis.get_version script.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1531">MR1531</a></td>
+<td>Revert DLink.DxS.get_spanning_tree changes.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1533">MR1533</a></td>
+<td>Fix Alcatel.TIMOS.get_interfaces empty mac.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1536">MR1536</a></td>
+<td>Fix translation command BI model path</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1540">MR1540</a></td>
+<td>Fm alarm fix</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1541">MR1541</a></td>
+<td>localization fix (min)</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1543">MR1543</a></td>
+<td>Fix Extreme.XOS.get_lldp_neighbors script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1544">MR1544</a></td>
+<td>Fix Detail Alarm report</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1546">MR1546</a></td>
+<td>Fix convert interface name for Qtech.QSW</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1547">MR1547</a></td>
+<td>Fix Juniper.JUNOS.get_mac_address_table script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1548">MR1548</a></td>
+<td>Fix clean thresholdprofile migration</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1549">MR1549</a></td>
+<td>Fix get_lldp_neighbors script for Juniper.Junos</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1552">MR1552</a></td>
+<td>Fix Cisco.ASA parse config</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1555">MR1555</a></td>
+<td>Fix Time Pattern</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1557">MR1557</a></td>
+<td>Cisco.SMB</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1566">MR1566</a></td>
+<td>Fix DCN.DCWL.get_interfaces typo.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1569">MR1569</a></td>
+<td>fm-alarm save filters in local store</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1571">MR1571</a></td>
+<td>Fix Qtech.QSW profile for lldp</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1576">MR1576</a></td>
+<td>Fix Control translation.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1577">MR1577</a></td>
+<td>Fix Siklu.EH.get_lldp_neighbors.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1586">MR1586</a></td>
+<td>Fix Alcatel.AOS.get_switchport script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1597">MR1597</a></td>
+<td>#1006 Fix wipe user</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1598">MR1598</a></td>
+<td>Fix detect snmp v1 for profile check rule.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1601">MR1601</a></td>
+<td>Fix error in reporting ifSpeed on some D-Link devices</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1603">MR1603</a></td>
+<td>Fix syslog CH Model message field description.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1610">MR1610</a></td>
+<td>#1009 Fix Add/Insert object in inventory tree.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1614">MR1614</a></td>
+<td>fm.alarm: view recent alarms fixed</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1615">MR1615</a></td>
+<td>Fix Raisecom.ROS.get_interfaces trace.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1617">MR1617</a></td>
+<td>Add metrics to selfmon fm collector.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1619">MR1619</a></td>
+<td>Fix Huawei.MA5600T.get_interfaces get vlans.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1623">MR1623</a></td>
+<td>Fix Raisecom.ROS.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1624">MR1624</a></td>
+<td>Fix DLink.DxS_Smart.get_lldp_neighbors script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1625">MR1625</a></td>
+<td>Fix Eltex.MES5448.get_version script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1626">MR1626</a></td>
+<td>Fix Interfaces status ex for physical interfaces</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1627">MR1627</a></td>
+<td>use ExtJS .endsWith for IE compatibility</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1632">MR1632</a></td>
+<td>Some fixes for Huawei.MA5600T profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1636">MR1636</a></td>
+<td>Fix import</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1637">MR1637</a></td>
+<td>beward_profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1638">MR1638</a></td>
+<td>Fix Eltex.MES.get_spanning_tree script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1639">MR1639</a></td>
+<td>Fix for Oob and Stack-port interfaces</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1641">MR1641</a></td>
+<td>#990 grid.column, override formatter to ‘htmlEncode’</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1642">MR1642</a></td>
+<td>Fix Eltex.MES.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1643">MR1643</a></td>
+<td>Fix Cisco.IOSXR.get_inventory script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1644">MR1644</a></td>
+<td>Fix discovery cpe</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1649">MR1649</a></td>
+<td>Change replace character for Grafana PM Dashboard</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1652">MR1652</a></td>
+<td>Add fix_cpe_header function to Huawei.MA5600T profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1654">MR1654</a></td>
+<td>grid.column, override formatter fix</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1656">MR1656</a></td>
+<td>Fix DLink.DxS_Industrial_CLI interface naming</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1657">MR1657</a></td>
+<td>Fix DLink.DxS.get_mac_address_table script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1658">MR1658</a></td>
+<td>sova/rtk#671</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1659">MR1659</a></td>
+<td>#1018</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1670">MR1670</a></td>
+<td>Fix snmp_metrics_get_chunk on Rotek.BT profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1677">MR1677</a></td>
+<td>Fix stupid copy/paste error</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1683">MR1683</a></td>
+<td>Config MUST NOT match re validation policy</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1689">MR1689</a></td>
+<td>Fix DCN.DCWL.get_metrics scale and type Interface metrics.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1697">MR1697</a></td>
+<td>fix juniper.junos metric Subscribers (for version &gt;16) and Temperature</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1700">MR1700</a></td>
+<td>Fix Raisecom.ROS.get_inventory trace when Unknown SFP.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1702">MR1702</a></td>
+<td>Fix Siklu.EH.get_lldp_neighbors empty section trace.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1712">MR1712</a></td>
+<td>Fix Rotek RTBSv1 profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1718">MR1718</a></td>
+<td>Fix CPU, Memory, Temperature metrics for Huawei.VRP</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1722">MR1722</a></td>
+<td>Some fixes on IP Cam profiles Dahua.DH, Beward.BD, Hikvision.DSKV8</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1723">MR1723</a></td>
+<td>juniper.junos metric Subscribers without caps</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1726">MR1726</a></td>
+<td>Huawei.MA5600T move profile settings to profile.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1728">MR1728</a></td>
+<td>juniper.junos metric Subscribers without caps</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1731">MR1731</a></td>
+<td>Alstec.24xx.get_metrics fix trace when no controller module.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1734">MR1734</a></td>
+<td>Fix matchers when check string in iter.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1735">MR1735</a></td>
+<td>Fix clickhouse backend IPv4 displayed field.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1741">MR1741</a></td>
+<td>#977 Fix collect SLA metrics in Cisco.IOS.get_metrics.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1745">MR1745</a></td>
+<td>Fix Huawei.MA5600T.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1747">MR1747</a></td>
+<td>#939 Fix Huawei.VPR profile system patter_prompt</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1749">MR1749</a></td>
+<td>Fix chwriter channels_active metric trace.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1751">MR1751</a></td>
+<td>#973 Fix managed_object two in card path exception.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1752">MR1752</a></td>
+<td>Fix CursorTimeout when execute datastream rebuild command on large collection.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1754">MR1754</a></td>
+<td>Fix previous commit</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1755">MR1755</a></td>
+<td>Fix Cisco.IOS.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1756">MR1756</a></td>
+<td>Fix Orion.NOS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1757">MR1757</a></td>
+<td>Fix Juniper.JUNOS.get_version script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1760">MR1760</a></td>
+<td>Fix fm models. add json_unique_fields</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1780">MR1780</a></td>
+<td>Fix exception in DLink.DxS_Smart profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1788">MR1788</a></td>
+<td>Fix metrics in card</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1789">MR1789</a></td>
+<td>Fix MikroTik.RouterOS.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1793">MR1793</a></td>
+<td>Fix low privelegies error in DLink.DxS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1799">MR1799</a></td>
+<td>fix</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1802">MR1802</a></td>
+<td>Fix box.job typo.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1805">MR1805</a></td>
+<td>Fix Cisco.NXOS.get_inventory script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1817">MR1817</a></td>
+<td>Fix DLink.DxS clean_lldp_neighbor() function</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1838">MR1838</a></td>
+<td>Fix Eltex.MES.get_lldp_neighbors script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1839">MR1839</a></td>
+<td>Fix MikroTik.RouterOS.get_lldp_neighbors script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1840">MR1840</a></td>
+<td>Fix Eltex.RG.get_version script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1841">MR1841</a></td>
+<td>Fix Eltex.DSLAM profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1842">MR1842</a></td>
+<td>Fix Hiawei.MA5300. Disable session use.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1844">MR1844</a></td>
+<td>Fix Qtech.QSW2500 script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1852">MR1852</a></td>
+<td>Fix ManagedObject card not shows interfaces without metrics.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1857">MR1857</a></td>
+<td>#1014 Fix ‘Config MUST NOT match string’ validator</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1861">MR1861</a></td>
+<td>Fix row_limit in web app.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1864">MR1864</a></td>
+<td>Fix ch-policy dot name on command.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1867">MR1867</a></td>
+<td>Fix ManagedObject vendor migration.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1869">MR1869</a></td>
+<td>Fix wrong scripts name</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1871">MR1871</a></td>
+<td>Fix tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1874">MR1874</a></td>
+<td>py3: Fix threadpool</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1875">MR1875</a></td>
+<td>fix get_config tplink t2600 confdb</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1876">MR1876</a></td>
+<td>Fix tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1889">MR1889</a></td>
+<td>Fix MikroTik.RouterOS profile</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1890">MR1890</a></td>
+<td>Fix SKS.SKS.get_spanning_tree script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1897">MR1897</a></td>
+<td>fix get_inv for X650</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1899">MR1899</a></td>
+<td>Fix to_python method for Clickhouse nested field.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1901">MR1901</a></td>
+<td>Fix SKS.SKS convert_interface_name() function</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1902">MR1902</a></td>
+<td>Fix SKS.SKS.get_spanning_tree script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1903">MR1903</a></td>
+<td>Fix Iskratel.ESCOM.get_spanning_tree script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1904">MR1904</a></td>
+<td>fix_metric_memory</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1905">MR1905</a></td>
+<td>Fix Nateks.FlexGain.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1908">MR1908</a></td>
+<td>Fix limit check on extapplication.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1928">MR1928</a></td>
+<td>Fix DLink.DxS.get_interface_status_ex script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1929">MR1929</a></td>
+<td>Revert “Merge branch ‘qsw2800-more-patterns’ into ‘master’”</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1930">MR1930</a></td>
+<td>Fix Alstec.24xx.get_interfaces script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1931">MR1931</a></td>
+<td>Catch SNMP Error when Huawei.VRP SNMP worked.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1938">MR1938</a></td>
+<td>Fix classifier rule cleanup code.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1939">MR1939</a></td>
+<td>Some fixes for Hikvision.DSKV8 profile.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1940">MR1940</a></td>
+<td>Fix get_handler error message typo.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1942">MR1942</a></td>
+<td>Fix CPEStatus discovery when calculate diff for new cpe.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1943">MR1943</a></td>
+<td>Fix Huawei.MA5600T pattern more for Honet.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1946">MR1946</a></td>
+<td>Fix multiple jobs on master branch conflict. Prettify a little bit.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1950">MR1950</a></td>
+<td>Fix Huawei.VRP.get_capabilities snmp check when get.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1954">MR1954</a></td>
+<td>Some fixes in Generic snmp scripts.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1961">MR1961</a></td>
+<td>Fix choices attribute in StringList interface parameter.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1966">MR1966</a></td>
+<td>Fix Juniper.JunOS confdb normalizer.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1967">MR1967</a></td>
+<td>Fix job_handler validator in Workflow editor backend.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1979">MR1979</a></td>
+<td>Fix Cisco.IOS.get_version script</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1986">MR1986</a></td>
+<td>LineTokenizer: Fix string_quote processing</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1987">MR1987</a></td>
+<td>Fix Qtech.QSW2800.get_inventory datetime import.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1989">MR1989</a></td>
+<td>Fix help command execute on custom.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1991">MR1991</a></td>
+<td>Fix get_config script on profiles for policy.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1993">MR1993</a></td>
+<td>#1041 Fix segment update_summary fix.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1994">MR1994</a></td>
+<td>#1039 Make IPAM VRF search ungrouped VRF.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1996">MR1996</a></td>
+<td>Fix calculate address and prefix usage.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/2001">MR2001</a></td>
+<td>Fix reportdatasource backend.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/2003">MR2003</a></td>
+<td>#1044 Fix import error on reportoverlappedoids.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/2004">MR2004</a></td>
+<td>#981 Fix Cisco.ASA pattern_username match to Last login message.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="code-cleanup">Code cleanup<a class="headerlink" href="#code-cleanup" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>MR</th>
+<th>Title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1591">MR1591</a></td>
+<td>Remove wildcard imports</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1604">MR1604</a></td>
+<td>DocInline code cleanup</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1605">MR1605</a></td>
+<td>Remove inv and fm monitor deprecated API</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1606">MR1606</a></td>
+<td>Remove cocomo report</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1771">MR1771</a></td>
+<td>fix_YAMLLoad_safe_load</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1792">MR1792</a></td>
+<td>Set yapf column limit to 120</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1797">MR1797</a></td>
+<td>flake8: Disable W605</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1808">MR1808</a></td>
+<td>cm_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1809">MR1809</a></td>
+<td>crm_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1810">MR1810</a></td>
+<td>dns_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1812">MR1812</a></td>
+<td>fm_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1813">MR1813</a></td>
+<td>gis_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1815">MR1815</a></td>
+<td>inv_migrations. code refactoring.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1818">MR1818</a></td>
+<td>ip_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1819">MR1819</a></td>
+<td>kb_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1821">MR1821</a></td>
+<td>main_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1823">MR1823</a></td>
+<td>peer_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1824">MR1824</a></td>
+<td>phone_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1825">MR1825</a></td>
+<td>pm_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1826">MR1826</a></td>
+<td>project_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1828">MR1828</a></td>
+<td>sa_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1829">MR1829</a></td>
+<td>sla_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1830">MR1830</a></td>
+<td>vc_migrations. code refactoring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1831">MR1831</a></td>
+<td>wf_migrations. code refactoring.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1832">MR1832</a></td>
+<td>Update init.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1850">MR1850</a></td>
+<td>flake8: Fix tests/</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1851">MR1851</a></td>
+<td>Remove lib/tt.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1856">MR1856</a></td>
+<td>Remove obsolete periodics</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1870">MR1870</a></td>
+<td>Cleanup noc.settings import.</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1880">MR1880</a></td>
+<td>py3: Rename izip_longest</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1882">MR1882</a></td>
+<td>Cleanup init.py</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1891">MR1891</a></td>
+<td>flake8_E2_E3_ver2 without sa_profiles, services, tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1892">MR1892</a></td>
+<td>fix_migrations. DeprecationWarning pymongo</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1898">MR1898</a></td>
+<td>flake8_E2_E3_ver2. services</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1909">MR1909</a></td>
+<td>flake8_E2_E3_ver2. sa_profiles</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1915">MR1915</a></td>
+<td>Fix @on_delete_check decorators</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1918">MR1918</a></td>
+<td>Code cleanup</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1958">MR1958</a></td>
+<td>Cleanup DeprecationWarnings</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1962">MR1962</a></td>
+<td>Remove socketKeepAlive option</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1968">MR1968</a></td>
+<td>flake8_f401_webapp_cm</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1969">MR1969</a></td>
+<td>flake8_f401_webapp_crm</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1970">MR1970</a></td>
+<td>flake8_f401_webapp_dns</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1971">MR1971</a></td>
+<td>flake8_f401_webapp_fm</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1972">MR1972</a></td>
+<td>flake8_f401_webapp_gis</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1973">MR1973</a></td>
+<td>flake8_f401_webapp_inv</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1974">MR1974</a></td>
+<td>flake8_f401_webapp_main</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1975">MR1975</a></td>
+<td>flake8_f401_webapp_maintenance</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1976">MR1976</a></td>
+<td>lib.app cleanup</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1980">MR1980</a></td>
+<td>2to3 idioms</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1981">MR1981</a></td>
+<td>del_with_statement</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1982">MR1982</a></td>
+<td>2to3 basestring</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1983">MR1983</a></td>
+<td>2to3 set literal</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1984">MR1984</a></td>
+<td>Port legacy tests</td>
+</tr>
+<tr>
+<td><a href="https://code.getnoc.com/noc/noc/merge_requests/1985">MR1985</a></td>
+<td>2to3 metaclass</td>
+</tr>
+</tbody>
+</table>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../19_3_2/" class="md-footer__link md-footer__link--prev" aria-label="Назад: NOC 19.3.2" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                NOC 19.3.2
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../19_2_1/" class="md-footer__link md-footer__link--next" aria-label="Вперед: NOC 19.2.1" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                NOC 19.2.1
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

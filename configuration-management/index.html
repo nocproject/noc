@@ -1,0 +1,1940 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/configuration-management/">
+      
+      
+        <link rel="prev" href="../topology-processing-features/">
+      
+      
+        <link rel="next" href="../host-discovery-network/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Configuration Management - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#configuration-management" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../ru/configuration-management/" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/background/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-type-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Type Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topology-processing-features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Topology Processing Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-collection" class="md-nav__link">
+    Configuration Collection
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processing" class="md-nav__link">
+    Processing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-storage" class="md-nav__link">
+    Configuration Storage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-configuration-confdb" class="md-nav__link">
+    Working with Configuration - ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Configuration - ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-the-facts-tree" class="md-nav__link">
+    Building the Facts Tree
+  </a>
+  
+    <nav class="md-nav" aria-label="Building the Facts Tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokenization" class="md-nav__link">
+    Tokenization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#normalization" class="md-nav__link">
+    Normalization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application" class="md-nav__link">
+    Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-syntax" class="md-nav__link">
+    Query Syntax
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-testing" class="md-nav__link">
+    Query Testing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-validation" class="md-nav__link">
+    Configuration Validation
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preparing-queries" class="md-nav__link">
+    Preparing Queries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-validation-policies-based-on-confdb-queries" class="md-nav__link">
+    Creating Validation Policies Based on ConfDB Queries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-the-policy" class="md-nav__link">
+    Enabling the Policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-validation-handler" class="md-nav__link">
+    Config Validation Handler
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host-discovery-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Host Discovery Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fault-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-escalation-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Escalation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../performance-management/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Performance Management
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference-report-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../peering-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Peering Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-status-monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring by Service Operation Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../message-notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Message Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../card/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storm-protection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storm Protection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui-guideline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UI Guideline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../highlights/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC Products Highlights
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-collection" class="md-nav__link">
+    Configuration Collection
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Collection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#processing" class="md-nav__link">
+    Processing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-storage" class="md-nav__link">
+    Configuration Storage
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#working-with-configuration-confdb" class="md-nav__link">
+    Working with Configuration - ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="Working with Configuration - ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-the-facts-tree" class="md-nav__link">
+    Building the Facts Tree
+  </a>
+  
+    <nav class="md-nav" aria-label="Building the Facts Tree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tokenization" class="md-nav__link">
+    Tokenization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#normalization" class="md-nav__link">
+    Normalization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application" class="md-nav__link">
+    Application
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-syntax" class="md-nav__link">
+    Query Syntax
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-testing" class="md-nav__link">
+    Query Testing
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration-validation" class="md-nav__link">
+    Configuration Validation
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#preparing-queries" class="md-nav__link">
+    Preparing Queries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#creating-validation-policies-based-on-confdb-queries" class="md-nav__link">
+    Creating Validation Policies Based on ConfDB Queries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enabling-the-policy" class="md-nav__link">
+    Enabling the Policy
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-validation-handler" class="md-nav__link">
+    Config Validation Handler
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/configuration-management/index.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="configuration-management">Configuration Management<a class="headerlink" href="#configuration-management" title="Permanent link">&para;</a></h1>
+<p>Working with equipment configuration is one of NOC's most developed components. It allows you to:</p>
+<ul>
+<li>Collect configuration from equipment</li>
+<li>Versioned storage of changes (ability to view change history with differences)</li>
+<li>Full-text search through configurations</li>
+<li>Data export to a disk storage</li>
+<li>Provides a common structure for storing facts for all manufacturers (requires implementation of a normalizer)</li>
+<li>Configuration validation (checking configuration for errors)</li>
+<li>Notifications of changes</li>
+</ul>
+<p>The functionality is accessible through the web interface of the system. In the following sections, we will describe the mechanisms and operation of this functionality. The implementation details of scripts and parsers are documented in the developer's section and are available for review by users.</p>
+<p>All configuration work takes place within the framework of the <a href="../discovery-reference/box/config/">Config Discovery</a>, which is activated by the "config" checkbox in the <a href="../concepts/managed-object-profile/#Box(Full_Discovery)">settings</a>. The sequence of the discovery process is as follows:</p>
+<ol>
+<li>Collection</li>
+<li>Calculation of differences between the latest and collected configuration</li>
+<li>Saving configuration to the database</li>
+<li>Mirroring (if configured)</li>
+<li>Validation (handlers)</li>
+</ol>
+<h2 id="configuration-collection">Configuration Collection<a class="headerlink" href="#configuration-collection" title="Permanent link">&para;</a></h2>
+<p>During the initial stage of discovery (<code>Discovery</code>), the current configuration is collected. Depending on the <a href="../concepts/managed-object-profile/#Config(Configuration)">configuration</a> setting, the collection can occur from the device (<code>Script</code>) or from an external storage (<code>Download</code>). The following policies are available:</p>
+<ul>
+<li><code>Script</code>: Request configuration from the device.</li>
+<li><code>Script, Download</code>: First attempt to retrieve the configuration from the device, and in case of failure, try to download it from storage.</li>
+<li><code>Download, Script</code>: First attempt to retrieve the configuration from storage, and in case of failure, try to download it from the device.</li>
+<li><code>Download</code>: Request configuration from an external storage.</li>
+</ul>
+<p>To implement configuration retrieval from an external storage, you need to configure:</p>
+<ul>
+<li>External file storage (<code>Storage</code>): A link to the <a href="../concepts/external-storage/">file storage</a>.</li>
+<li>Path template (<code>Path template</code>): A link to the <a href="../concepts/template/">template</a> for the configuration file path.</li>
+</ul>
+<p>The <code>Config Fetch Policy</code> setting allows you to specify preferences when collecting configuration from the device (requires adapter support):</p>
+<ul>
+<li><code>Prefer Running</code>: Prefer the current running configuration.</li>
+<li><code>Prefer Startup</code>: Prefer the saved startup configuration.</li>
+</ul>
+<p>The action of the mechanism depends on the implementation on the script side of the <code>get_config</code> profile (<code>SA Profile</code>) for the equipment.</p>
+<h3 id="processing">Processing<a class="headerlink" href="#processing" title="Permanent link">&para;</a></h3>
+<p>After successfully retrieving the configuration from the device, it is compared to the last saved configuration in the system. If there is a difference, the collected configuration will be written to the database (becomes the latest). If there is no difference, it will not be saved to the database. This prevents storage space from being used to store identical data.</p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Customization of the processing procedure is available:</p>
+<ul>
+<li><code>Config Filter Handler</code>: Allows excluding lines from the configuration.</li>
+<li><code>Config Diff Handler</code>: Allows implementing a custom configuration difference calculation mechanism.</li>
+</ul>
+</div>
+<p>When <code>Mirror Policy</code> is set, the mirroring mechanism (<code>Config Mirroring</code>) is activated, which saves a copy of the collected configuration to an external file system. For its operation:</p>
+<ul>
+<li>Mirroring Policy (<code>Mirror Policy</code>):<ul>
+<li>Disable: Disable mirroring.</li>
+<li>On Change: Run only if the configuration has changed.</li>
+<li>Always: Always run.</li>
+</ul>
+</li>
+<li>Storage (<code>Storage</code>): A link to the <a href="../concepts/external-storage/">storage</a>.</li>
+<li>Path Template (<code>Path Template</code>): A link to the <a href="../concepts/template/">template</a> for the save path.</li>
+</ul>
+<p>Variables available in the path template:</p>
+<ul>
+<li><code>object</code>: A link to the device (<code>ManagedObject</code>).</li>
+<li><code>datetime</code>: The <code>datetime</code> module.</li>
+</ul>
+<p>[Link to template examples]</p>
+<h2 id="configuration-storage">Configuration Storage<a class="headerlink" href="#configuration-storage" title="Permanent link">&para;</a></h2>
+<p>Our own implementation of versioned storage, known as <code>GridVCS</code>, is used for configuration storage. It is based on an extension of MongoDB for file storage called <code>GridFS</code>. It serves as the foundation for...</p>
+<h2 id="working-with-configuration-confdb">Working with Configuration - ConfDB<a class="headerlink" href="#working-with-configuration-confdb" title="Permanent link">&para;</a></h2>
+<p>To interact with configurations, we've implemented the <code>ConfDB</code> mechanism—a comprehensive solution for configuration management. It can be described as:</p>
+<ul>
+<li>Vendor-agnostic representation of configuration in the form of a facts tree.</li>
+<li>Extension of the facts tree with manufacturer-specific fields.</li>
+<li>A unified query language—<code>ConfDB Query</code>.</li>
+<li>Enrichment of facts with data collected by other methods.</li>
+</ul>
+<p>The result of <code>ConfDB</code>'s work is a facts tree. For a device, you can see it in the <code>ConfDB</code> section on the device's form (<code>ManagedObject</code>). The main sections visible at the top level are:</p>
+<ul>
+<li><code>meta</code>: Data collected by the system.</li>
+<li><code>raw</code>: The configuration representation before normalization (splitting into facts). By default, it is deleted from the database.</li>
+<li><code>hints</code>: Hints for populating facts. Deleted from the database.</li>
+<li><code>system</code>: Device's general settings.</li>
+<li><code>interfaces</code>: Interface settings.</li>
+<li><code>protocols</code>: Protocol settings.</li>
+<li><code>virtual-router</code>: VRF, IP, subinterface settings.</li>
+<li><code>media</code>: Video and audio settings (used for video surveillance representation).</li>
+</ul>
+<p>Each item expands into a tree filled with the results of the mechanism's work. The completeness depends on the implementation of parsers for specific profiles (<code>SA Profile</code>). You can see the full set of available facts by using the <code>./noc confdb syntax</code> command. The completeness of <code>ConfDB</code> is not an end in itself; the most important thing is having the necessary parameters. Let's take a closer look at the tree items and query syntax.</p>
+<p>[Link to screenshots]</p>
+<h3 id="building-the-facts-tree">Building the Facts Tree<a class="headerlink" href="#building-the-facts-tree" title="Permanent link">&para;</a></h3>
+<p>While the detailed mechanism is described in the <a href="../confdb-reference/">ConfDB Overview</a> for developers, we will cover the basics to understand where to navigate.</p>
+<p>To build the <code>ConfDB</code>, the configuration goes through several sequential stages, each responsible for specific transformations. This prevents overcomplicating the implementation of functions responsible for a given stage. Let's go through the stages in the order of their execution and the transformations they perform.</p>
+<h4 id="tokenization">Tokenization<a class="headerlink" href="#tokenization" title="Permanent link">&para;</a></h4>
+<p>The tokenizer receives a text file as input. Its task is to obtain a list of lines split into individual words—tokens. The main complexity here is dealing with sections. For example, we have an interface section:</p>
+<div class="highlight"><pre><span></span><code>interface gigabitethernet1/0/23
+ description Description 1
+exit
+!
+interface gigabitethernet1/0/24
+ description Description-2
+exit
+</code></pre></div>
+<p>If we convert it into a string, we should get:</p>
+<div class="highlight"><pre><span></span><code>interface gigabitethernet1/0/23
+interface gigabitethernet1/0/23 description Description 1
+interface gigabitethernet1/0/24
+interface gigabitethernet1/0/24 description Description 2
+</code></pre></div>
+<p>Here, <code>exit</code> is the section termination, and <code>!</code> is a comment. You can see examples of output for different devices with the <code>./noc confdb tokenizer --object &lt;MONAME&gt;</code> command. The following tokenizers are available in the basic NOC package:</p>
+<ul>
+<li><code>indent</code>: Sections are indicated by indentation—Cisco-like syntax.</li>
+<li><code>curly</code>: Sections are enclosed in curly braces. Found in Juniper devices.</li>
+<li><code>ini</code>: Sections are separated by an empty line and a title with hashtags.</li>
+<li><code>line</code>: Simple line-by-line syntax—example from D-Link.</li>
+<li><code>routeros</code>: Used for MikroTik devices.</li>
+</ul>
+<p>The result of the tokenizer's work can be seen in the <code>raw</code> section. By default, it is removed from the final representation, but you can enable it with the <a href="../concepts/managed-object-profile/#Config(Конфигурация)">Raw Policy</a> setting.</p>
+<h4 id="normalization">Normalization<a class="headerlink" href="#normalization" title="Permanent link">&para;</a></h4>
+<p>At this stage, the facts tree is populated based on the work with tokenized lines. To work, a normalizer (<code>normalizer</code>) is required for the <a href="../concepts/sa-profile/">SA Profile</a>. Additionally, the hints section - <code>hints</code> is formed at this stage, which is used in the next stage.</p>
+<p>If normalizers are absent, only the <code>raw</code> and <code>meta</code> sections will be available in the tree. You can view the result obtained after normalization with the <code>./noc confdb normalizer --object &lt;MONAME&gt;</code> command.</p>
+<h4 id="application">Application<a class="headerlink" href="#application" title="Permanent link">&para;</a></h4>
+<p>At the application stage, the tree takes on its final form through manipulation:</p>
+<ul>
+<li>the <code>meta</code> section is filled with data from the system</li>
+<li>defaults are filled based on settings</li>
+<li>branch movement is performed</li>
+<li>branches are enriched with information based on data from the system</li>
+</ul>
+<p>You can see the final result in the <code>ConfDB</code> menu or with the <code>./noc confdb dump --object &lt;MONAME&gt;</code> command.</p>
+<h3 id="query-syntax">Query Syntax<a class="headerlink" href="#query-syntax" title="Permanent link">&para;</a></h3>
+<p>Queries are a standardized way of working with the <code>ConfDB</code> structure. In terms of syntax, they are somewhat reminiscent of <a href="https://en.wikipedia.org/wiki/Prolog">Prolog</a> (in this case, execution proceeds one after the other) and/or <code>or</code> (executed together). For simplicity, you can think of a query as a "pipeline" with data at the input and query results or emptiness at the output. Execution proceeds from left to right, with each stage passing the results to the next.</p>
+<ul>
+<li><strong>Predicate</strong> - a construct of the form <code>&lt;FUNC_NAME&gt;(args)</code>, where <code>FUNC_NAME</code> is the name of the applied function, and <code>args</code> is a list of arguments. In the example: <code>Match</code>, <code>Filter</code>, <code>Del</code>.</li>
+<li><strong>Path</strong> (<code>confdb path</code>) - the contents of the predicate (specified in parentheses). It consists of a list of tree elements. If it is specified in quotes (<code>'interfaces'</code>, <code>'description'</code>), an exact match is sought. If it is without quotes (<code>X</code>, <code>Y</code>), it denotes a variable to which an element is assigned.</li>
+<li><strong>Context</strong> - where variables are stored. After all the predicates in a query have been executed, the query becomes the <em>result</em>. You can view the result with the <code>Dump</code> predicate.</li>
+</ul>
+<p>You can work with queries in the <code>ConfDB</code> interface (button <code>Query</code>) or with the <code>./noc confdb query</code> command.</p>
+<p>For example, let's query the interface with the name <code>GigabitEthernet0/0/1</code> that has a <code>description</code>:</p>
+<div class="highlight"><pre><span></span><code>Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y) and Filter(X==&quot;GigabitEthernet0/0/1&quot;)
+</code></pre></div>
+<p>Let's break down the execution of the query step by step:</p>
+<p>1) At the beginning of the query, the <em>context</em> is empty. Executing it will result in emptiness. Therefore, the first predicates are usually:</p>
+<ul>
+<li><code>Match</code> and <code>NotMatch</code>: These queries are executed in <code>ConfDB</code>. If there are variables in the path, they are filled with values.</li>
+<li><code>Set</code>: It sets the specified value to a variable.</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y)&quot;
+</code></pre></div>
+the result:
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_11_2.1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/1&#39;</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_AGG1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/2&#39;</span><span class="p">}</span>
+</code></pre></div></p>
+<p>In this case, we obtained a list of interfaces with descriptions filled in. Their names are in the variable <code>X</code>, and the descriptions are in the variable <code>Y</code>.</p>
+<p>2) Context Operations:</p>
+<ul>
+<li><code>Filter</code> - checking the context against certain conditions.</li>
+<li><code>Re</code> - checking for compliance with a regular expression.</li>
+<li><code>HasVLAN</code> - checking if a VLAN is in the filter.</li>
+<li><code>Group</code> - collapsing contexts.</li>
+<li><code>Collapse</code> - expanding the context into multiple.</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y) and Filter(X==&#39;GigabitEthernet0/0/1&#39;)&quot;
+</code></pre></div>
+the result:
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_11_2.1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/1&#39;</span><span class="p">}</span>
+</code></pre></div></p>
+<p>We have retained only the interface with the name <code>GigabitEthernet0/0/1</code>.</p>
+<p>3) Context Output:</p>
+<ul>
+<li><code>Dump</code> - print the context. Convenient for debugging queries, but you can also execute them step by step.</li>
+<li><code>Fact</code> - set a value in the database.</li>
+<li><code>Sprintf</code> - print a variable.</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y) and Dump(&quot;Stage2&quot;) and Filter(X==&#39;GigabitEthernet0/0/1&#39;)&quot; 
+Stage2: {&#39;Y&#39;: &#39;description to_SSNSK_60OKTBR_11_2.1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/1&#39;}
+{&#39;Y&#39;: &#39;description to_SSNSK_60OKTBR_11_2.1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/1&#39;}
+</code></pre></div>
+the result:
+<div class="highlight"><pre><span></span><code>Stage2: {&#39;Y&#39;: &#39;description to_SSNSK_AGG1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/2&#39;}
+</code></pre></div></p>
+<p>Full description is available in <a href="../confdb-reference/">ConfDB Query</a>.</p>
+<h3 id="query-testing">Query Testing<a class="headerlink" href="#query-testing" title="Permanent link">&para;</a></h3>
+<p>In addition to the CLI for queries, there is also the ability to execute queries in the graphical web interface in the <code>ManagedObject</code> form via the <code>ConfDB</code> button.</p>
+<p>Writing and testing queries is convenient in the device interface: <code>Service Activation (Object Management)</code> -&gt; <code>Managed Object (List of Objects)</code> -&gt; Select the object of interest. In it, go to <code>ConfDB</code>.</p>
+<p>On the left side, the <code>ConfDB</code> tree will be displayed. By clicking the <code>Query</code> button, a text field with the <code>Run</code> button will open. You can enter the query text into it and view the results (at the bottom after clicking <code>Run</code>).</p>
+<p><img alt="ConfDB Query Form" src="confdb-mo-tree-query-form-scr.png" /></p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>To execute queries on the <code>raw</code> section, you need to enable it in the <a href="../concepts/managed-object-profile/#Config(Configuration)">ManagedObjectProfile</a> settings.</p>
+</div>
+<p>For example, a query to display interfaces and their types looks like: <code>Match('interfaces', X, 'type', Y)</code>.</p>
+<p>Queries in the <code>raw</code> section to display all <code>Huawei</code> syslog server addresses: <code>Match('raw', X, 'info-center', 'loghost', Y)</code>
+<img alt="ConfDB Raw Syslog Query" src="confdb-mo-tree-query-raw-syslog-scr.png" /></p>
+<p>Since the content of the <code>raw</code> section depends on the configuration format (i.e., the equipment manufacturer), queries to it work within the scope of one profile. However, the configuration syntax is practically identical. In contrast, queries in the main section will be the same for all.</p>
+<h2 id="configuration-validation">Configuration Validation<a class="headerlink" href="#configuration-validation" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Validation policy: a set of rules used to compare facts obtained by parsing equipment configuration with a standard. In case of a discrepancy between a fact and the standard, an alert is raised.</li>
+<li>Facts database query: a text string created according to specific rules that allows operations to be performed on facts.</li>
+<li>Facts Database (ConfDB): an entity containing data (facts) obtained by parsing equipment configuration.</li>
+</ul>
+<h3 id="preparing-queries">Preparing Queries<a class="headerlink" href="#preparing-queries" title="Permanent link">&para;</a></h3>
+<p>Queries must be created in advance for use in the system. Query management can be found in the menu "Configuration Management" -&gt; "Settings" -&gt; "ConfDB Queries." Here, you can add a new query or modify an existing one. The query editing form consists of the following fields:</p>
+<p><img alt="ConfDB Query Edit Form" src="confdb-query-edit-form-ntp-scr.png" /></p>
+<ul>
+<li>Query Name (<code>Name</code>): unique name</li>
+<li>Description (<code>Description</code>)</li>
+<li>Source (<code>Source</code>): query text</li>
+<li>Parameters (<code>Parameters</code>): a list of variables for passing to the query. Variables are accessible in the query by their names.</li>
+<li>Name (<code>Name</code>): variable name. It will be accessible in the query by this name.</li>
+<li>Type (<code>Type</code>): variable type, used for proper condition handling.</li>
+<li>Default (<code>Default</code>): variable value if not set by the user.</li>
+<li>Description (<code>Description</code>): brief description.</li>
+<li>Allowed Usage (<code>Allow</code>): how the query can be used:</li>
+<li><code>Object Filter</code>: for device filtering</li>
+<li><code>Object Validation</code>: for fact validation by object</li>
+<li><code>Interface Filter</code>: for interface filtering</li>
+<li><code>Interface Validation</code>: for fact validation by interface</li>
+<li><code>Require RAW</code>: raw section is required for the query (facts before normalization)</li>
+</ul>
+<p>The result of filter queries (<code>Object Filter</code>, <code>Interface Filter</code>) must be a non-empty context. An empty context is considered as <code>False</code>, meaning the device does not meet the condition. For interface-related queries, the <code>ifname</code> variable is passed in the context, representing the interface name.</p>
+<p>A validation query <strong>looks for errors in the configuration</strong>. If a discrepancy is found, the <code>error</code> variable must be set with a description of the detected error. If the <code>error</code> variable is found as a result of the query, it is considered that the configuration did not pass the validation.</p>
+<p>For example:</p>
+<ul>
+<li>A query to validate an NTP server address might look like this: <code>Match('raw', 'ntp',  'server', address)) and Filter(address != ntp_server_address) and Set(error="NTP server error")</code>.</li>
+<li>A query to check the SSH version: <code>Match('raw', 'ip', 'ssh', 'version', ssh)) and Filter(ssh != ssh_just) and Set(error="Version SSH error")</code>.</li>
+</ul>
+<h3 id="creating-validation-policies-based-on-confdb-queries">Creating Validation Policies Based on ConfDB Queries<a class="headerlink" href="#creating-validation-policies-based-on-confdb-queries" title="Permanent link">&para;</a></h3>
+<p>The interface for working with validation policies is located in the menu "Configuration Management" -&gt; "Setup" -&gt; "Object Validation Policies." The form for adding/editing a policy looks like this:</p>
+<p><img alt="Validation Policy Edit Form" src="confdb-validation-policy-edit-form-eltex-scr.png" /></p>
+<ul>
+<li>Name: a descriptive name for the policy.</li>
+<li>Description: text description.</li>
+<li>Filter Query: the overall policy filter query (must be marked as <code>Object Filter</code>).</li>
+<li>Rules: a list of validation rules, consisting of:</li>
+<li>Query: the validation query (must be marked for use in Object Validation).</li>
+<li>Query Parameters: values of parameters passed to the query as variables (the list is taken from the query settings).</li>
+<li>Rule Filter: a filter query for the rule (must be marked as Object Filter). It is used when the rule needs to be applied to a limited set of objects (e.g., specific models).</li>
+<li>Active: whether the rule is active or not.</li>
+<li>Code: an alert code used when handling alerts by an external system.</li>
+<li>Error Template: a reference to the error message <a href="../concepts/template/">template</a>.</li>
+<li>Alarm Class: a reference to the alarm class triggered when the rule is violated.</li>
+<li><code>Fatal</code>: in case of violation, stop polling the device.</li>
+</ul>
+<h3 id="enabling-the-policy">Enabling the Policy<a class="headerlink" href="#enabling-the-policy" title="Permanent link">&para;</a></h3>
+<p>Validation policies are executed as part of the <a href="../discovery-reference/box/config/">configvalidation</a> discovery. It is triggered if a policy is associated with the Managed Object Profile. The settings can be found in the Managed Object Profile on the "Config" tab under "Config Validation":</p>
+<ul>
+<li>Validation Policy: Configuration of the validation policy:</li>
+<li>Always: The policy will be checked with every poll.</li>
+<li>Validate on Change: It will be applied only if there is a change in the configuration.</li>
+<li>Disable: Validation is turned off.</li>
+<li>Action: The selected policy.</li>
+</ul>
+<p>To test the policy's functionality, you need to initiate a full discovery on the device. To do this without waiting for the scheduled polling time, you can force it. In the Managed Object interface, navigate to "Service Activation" -&gt; "Managed Objects" -&gt; select the object. Use the "Discovery" button in the top panel.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>By default, the policy is applied only when there is a change in the configuration. The behavior is determined by the setting in "Managed Object Profile -&gt; Config Tab -&gt; Validation Policy: Always."</p>
+</div>
+<p>When you select the row with the device, a log of the discovery will appear on the right. Click the "Run" button to start it. After the discovery is complete, you should refresh the log. Entries about problems found will be in the [configvalidation] section, and records about raised alarms will be at the bottom.</p>
+<h3 id="config-validation-handler">Config Validation Handler<a class="headerlink" href="#config-validation-handler" title="Permanent link">&para;</a></h3>
+<p>It is possible to implement custom validation logic with your own validation approaches. This is done by writing a handler and binding it in the "ManagedObject" form. The configuration is passed to the handler, and it returns any errors found.</p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../topology-processing-features/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Topology Processing Features" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Topology Processing Features
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../host-discovery-network/" class="md-footer__link md-footer__link--next" aria-label="Next: Host Discovery Network" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Host Discovery Network
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "24.1"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

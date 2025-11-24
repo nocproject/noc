@@ -1,0 +1,2961 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/confdb-reference/query/">
+      
+      
+        <link rel="prev" href="../normalizer/">
+      
+      
+        <link rel="next" href="../../scripts-reference/add_vlan/">
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Query - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#confdb-query-language" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Query
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../../confdb-reference/query/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            References
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sections-overview/references/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../concepts/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../profiles-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Profiles
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../caps-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Capabilities
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../alarm-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Alarm Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../event-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Event Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../measurement-units-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measurement Units
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../metrics-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Metrics
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../mx-messages-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    MX Messages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technologies-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Technologies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../services-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../config-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../discovery-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Discovery
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../internal-metrics-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Internal Metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../agent-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    noc-agent
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mr-labels-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Merge Request Labels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../datastream-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    DataStream API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../nbi-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NBI API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-dict-reference/administrativedomain/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Dictionaries
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_21" checked>
+        
+          <label class="md-nav__link" for="__nav_4_21" id="__nav_4_21_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    ConfDB
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_21_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_21">
+            <span class="md-nav__icon md-icon"></span>
+            ConfDB
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fetching/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Config Fetching
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tokenizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Tokenizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../normalizer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Normalizer
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Query
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-concepts" class="md-nav__link">
+    Common Concepts
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contexts" class="md-nav__link">
+    Contexts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predicates" class="md-nav__link">
+    Predicates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipelining" class="md-nav__link">
+    Pipelining
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    Query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    Syntax
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variable" class="md-nav__link">
+    Variable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predicate" class="md-nav__link">
+    Predicate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequential-chain" class="md-nav__link">
+    Sequential chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-chain" class="md-nav__link">
+    Parallel chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-grouping" class="md-nav__link">
+    Chain Grouping
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-predicates" class="md-nav__link">
+    Built-in predicates
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in predicates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-logic" class="md-nav__link">
+    Simple Logic
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#true" class="md-nav__link">
+    True()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#false" class="md-nav__link">
+    False()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-manipulation" class="md-nav__link">
+    Context Manipulation
+  </a>
+  
+    <nav class="md-nav" aria-label="Context Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setkwargs" class="md-nav__link">
+    Set(**kwargs)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delargs" class="md-nav__link">
+    Del(*args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb-matching" class="md-nav__link">
+    ConfDB Matching
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB Matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matchargs" class="md-nav__link">
+    Match(*args)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notmatchself-_input-args" class="md-nav__link">
+    NotMatch(self, _input, *args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb-manipulation" class="md-nav__link">
+    ConfDB Manipulation
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factargs" class="md-nav__link">
+    Fact(*args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-and-checking" class="md-nav__link">
+    Filtering and Checking
+  </a>
+  
+    <nav class="md-nav" aria-label="Filtering and Checking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filterexpr" class="md-nav__link">
+    Filter(expr):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repattern-name-ignore_casenone" class="md-nav__link">
+    Re(pattern, name, ignore_case=None):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasvlanvlan_filter-vlan_id" class="md-nav__link">
+    HasVLAN(vlan_filter, vlan_id):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregation" class="md-nav__link">
+    Aggregation
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#groupstacknone-args-kwargs" class="md-nav__link">
+    Group(stack=None, args, kwargs):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collapseargs-kwargs" class="md-nav__link">
+    Collapse(args, *kwargs):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    Debugging
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dumpmessagenone" class="md-nav__link">
+    Dump(message=None):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sprintfname-fmt-args" class="md-nav__link">
+    Sprintf(name, fmt, *args):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../scripts-reference/add_vlan/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Scripts Reference
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../handlers-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Handlers
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../object-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Object Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../model-interfaces-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Model Interfaces
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../connection-types-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Connection Types
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inventory-protocols-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inventory Protocols
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../streams-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Streams
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../alarm-reference-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Reference Format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datetime-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and Time Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../man/about/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Man Pages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-gates-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature Gates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../operational-alerts-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Operational Alerts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supported-standards/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported Standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#common-concepts" class="md-nav__link">
+    Common Concepts
+  </a>
+  
+    <nav class="md-nav" aria-label="Common Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contexts" class="md-nav__link">
+    Contexts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predicates" class="md-nav__link">
+    Predicates
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipelining" class="md-nav__link">
+    Pipelining
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query" class="md-nav__link">
+    Query
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#syntax" class="md-nav__link">
+    Syntax
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#variable" class="md-nav__link">
+    Variable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#predicate" class="md-nav__link">
+    Predicate
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sequential-chain" class="md-nav__link">
+    Sequential chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#parallel-chain" class="md-nav__link">
+    Parallel chain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chain-grouping" class="md-nav__link">
+    Chain Grouping
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#built-in-predicates" class="md-nav__link">
+    Built-in predicates
+  </a>
+  
+    <nav class="md-nav" aria-label="Built-in predicates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-logic" class="md-nav__link">
+    Simple Logic
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple Logic">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#true" class="md-nav__link">
+    True()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#false" class="md-nav__link">
+    False()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#context-manipulation" class="md-nav__link">
+    Context Manipulation
+  </a>
+  
+    <nav class="md-nav" aria-label="Context Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setkwargs" class="md-nav__link">
+    Set(**kwargs)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delargs" class="md-nav__link">
+    Del(*args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb-matching" class="md-nav__link">
+    ConfDB Matching
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB Matching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#matchargs" class="md-nav__link">
+    Match(*args)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#notmatchself-_input-args" class="md-nav__link">
+    NotMatch(self, _input, *args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb-manipulation" class="md-nav__link">
+    ConfDB Manipulation
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfDB Manipulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#factargs" class="md-nav__link">
+    Fact(*args)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-and-checking" class="md-nav__link">
+    Filtering and Checking
+  </a>
+  
+    <nav class="md-nav" aria-label="Filtering and Checking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filterexpr" class="md-nav__link">
+    Filter(expr):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#repattern-name-ignore_casenone" class="md-nav__link">
+    Re(pattern, name, ignore_case=None):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasvlanvlan_filter-vlan_id" class="md-nav__link">
+    HasVLAN(vlan_filter, vlan_id):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregation" class="md-nav__link">
+    Aggregation
+  </a>
+  
+    <nav class="md-nav" aria-label="Aggregation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#groupstacknone-args-kwargs" class="md-nav__link">
+    Group(stack=None, args, kwargs):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collapseargs-kwargs" class="md-nav__link">
+    Collapse(args, *kwargs):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    Debugging
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dumpmessagenone" class="md-nav__link">
+    Dump(message=None):
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sprintfname-fmt-args" class="md-nav__link">
+    Sprintf(name, fmt, *args):
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    Examples
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/confdb-reference/query.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="confdb-query-language">ConfDB Query Language<a class="headerlink" href="#confdb-query-language" title="Permanent link">&para;</a></h1>
+<p>ConfDB offers flexible query language based on predicate logic. ConfDB
+queries may be used for config processing, including fetching, classification
+and validation.</p>
+<h2 id="common-concepts">Common Concepts<a class="headerlink" href="#common-concepts" title="Permanent link">&para;</a></h2>
+<h3 id="contexts">Contexts<a class="headerlink" href="#contexts" title="Permanent link">&para;</a></h3>
+<p>Query context is the couple of variables and their values. It is
+a simple key-value structure implemented over python's <code>dict</code>.
+Context represents a <code>possible state</code> of pipeline. Contexts are
+grouped together representing <code>possibilities</code> on each stage of pipeline.
+Within the possibilities, each context is independent on each other.</p>
+<p>Variables can be either <code>bound</code> (known values) or <code>unbound</code> (superposition
+of possible values).</p>
+<h3 id="predicates">Predicates<a class="headerlink" href="#predicates" title="Permanent link">&para;</a></h3>
+<p><code>Predicate</code> is the logic function, defined by its arguments and accepting
+<code>possibilities</code> on input, evaluating them and passing <code>outcomes</code> as output.
+Predicates evaluate input context independently. Each input context
+may be evaluated to one or more output context.</p>
+<pre class="mermaid"><code>graph LR
+    Possibilities --&gt; Predicate
+    Predicate --&gt; Outcomes</code></pre>
+<h3 id="pipelining">Pipelining<a class="headerlink" href="#pipelining" title="Permanent link">&para;</a></h3>
+<p><code>Predicates</code> may be combined together into sequential (<code>and</code>) and
+parallel (<code>or</code>) chains. Chains can be grouped together by bracket
+operator. Resulting chains build <code>pipeline</code> which is valid predicate too.</p>
+<h3 id="query">Query<a class="headerlink" href="#query" title="Permanent link">&para;</a></h3>
+<p>Query is the pipeline, which can be applied to exact ConfDB state and
+input context to produce output contexts with possible <code>outcomes</code></p>
+<h3 id="syntax">Syntax<a class="headerlink" href="#syntax" title="Permanent link">&para;</a></h3>
+<p>Query is the <a href="https://docs.python.org/2/reference/expressions.html">Python expression</a></p>
+<h3 id="variable">Variable<a class="headerlink" href="#variable" title="Permanent link">&para;</a></h3>
+<p>Variable is coded as plain python variables</p>
+<h3 id="predicate">Predicate<a class="headerlink" href="#predicate" title="Permanent link">&para;</a></h3>
+<p>Predicate is coded as python function call</p>
+<div class="highlight"><pre><span></span><code><span class="n">Match</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+</code></pre></div>
+<p>See <a href="#built-in-predicates">Query Builtin-predicates</a> for possible predicates and examples</p>
+<h3 id="sequential-chain">Sequential chain<a class="headerlink" href="#sequential-chain" title="Permanent link">&para;</a></h3>
+<p>Sequential chain is the combination of two predicates when output of
+first predicate serves as input to the second one</p>
+<pre class="mermaid"><code>graph LR
+    Input --&gt; P1
+    P1 --&gt; P2
+    P2 --&gt; Output</code></pre>
+<p>Sequential chain is coded by boolean <code>and</code> operator</p>
+<div class="highlight"><pre><span></span><code><span class="n">P1</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P2</span><span class="p">()</span>
+</code></pre></div>
+<p>Sequential chain can contain more than two operators like</p>
+<div class="highlight"><pre><span></span><code><span class="n">P1</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P2</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P3</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P4</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="parallel-chain">Parallel chain<a class="headerlink" href="#parallel-chain" title="Permanent link">&para;</a></h3>
+<p>Parallel chain consists of two or more predicates independentently accepting
+same input and combining and deduplicating resulting outputs</p>
+<pre class="mermaid"><code>graph LR
+    Input --&gt; P1
+    Input --&gt; P2
+    P1 --&gt; Output
+    P2 --&gt; Output</code></pre>
+<p>Parallel chains are coded by <code>or</code> operator</p>
+<div class="highlight"><pre><span></span><code><span class="n">P1</span><span class="p">()</span> <span class="ow">or</span> <span class="n">P2</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="chain-grouping">Chain Grouping<a class="headerlink" href="#chain-grouping" title="Permanent link">&para;</a></h3>
+<p>Chains can be grouped using brackets</p>
+<div class="highlight"><pre><span></span><code><span class="p">(</span><span class="n">P1</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P2</span><span class="p">())</span> <span class="ow">or</span> <span class="n">P3</span><span class="p">()</span> <span class="ow">or</span> <span class="p">(</span><span class="n">P4</span><span class="p">()</span> <span class="ow">and</span> <span class="n">P5</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="built-in-predicates">Built-in predicates<a class="headerlink" href="#built-in-predicates" title="Permanent link">&para;</a></h2>
+<h3 id="simple-logic">Simple Logic<a class="headerlink" href="#simple-logic" title="Permanent link">&para;</a></h3>
+<h4 id="true">True()<a class="headerlink" href="#true" title="Permanent link">&para;</a></h4>
+<p>Always True, pass context unmodified</p>
+<h4 id="false">False()<a class="headerlink" href="#false" title="Permanent link">&para;</a></h4>
+<p>Always False, breaks predicate chain</p>
+<h3 id="context-manipulation">Context Manipulation<a class="headerlink" href="#context-manipulation" title="Permanent link">&para;</a></h3>
+<h4 id="setkwargs">Set(**kwargs)<a class="headerlink" href="#setkwargs" title="Permanent link">&para;</a></h4>
+<p>Add or modify variables of context. If variable value is a list,
+expand the list and apply production</p>
+<div class="highlight"><pre><span></span><code><span class="n">Set</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">Set</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</code></pre></div>
+<h4 id="delargs">Del(*args)<a class="headerlink" href="#delargs" title="Permanent link">&para;</a></h4>
+<p>Delete variables from context. Deduplicate contexts when necessary</p>
+<div class="highlight"><pre><span></span><code><span class="n">Del</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="confdb-matching">ConfDB Matching<a class="headerlink" href="#confdb-matching" title="Permanent link">&para;</a></h3>
+<h4 id="matchargs">Match(*args)<a class="headerlink" href="#matchargs" title="Permanent link">&para;</a></h4>
+<p>Match <code>*args</code> against ConfDB. Bind unbound variables on match</p>
+<dl>
+<dt>*args</dt>
+<dd>ConfDB path</dd>
+</dl>
+<div class="highlight"><pre><span></span><code><span class="n">Match</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">Y</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="notmatchself-_input-args">NotMatch(self, _input, *args)<a class="headerlink" href="#notmatchself-_input-args" title="Permanent link">&para;</a></h4>
+<p>Pass only if <code>*args</code> is not matched against ConfDB. Bind unbound
+variables when possible</p>
+<dl>
+<dt>*args</dt>
+<dd>ConfDB path</dd>
+</dl>
+<div class="highlight"><pre><span></span><code><span class="n">NotMatch</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="confdb-manipulation">ConfDB Manipulation<a class="headerlink" href="#confdb-manipulation" title="Permanent link">&para;</a></h3>
+<h4 id="factargs">Fact(*args)<a class="headerlink" href="#factargs" title="Permanent link">&para;</a></h4>
+<pre><code>Set Fact to database
+
+:param *args: ConfDB path of fact, eigther constants or bound variables
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Fact</span><span class="p">(</span><span class="s1">&#39;interface&#39;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s1">&#39;hints&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="filtering-and-checking">Filtering and Checking<a class="headerlink" href="#filtering-and-checking" title="Permanent link">&para;</a></h3>
+<h4 id="filterexpr">Filter(expr):<a class="headerlink" href="#filterexpr" title="Permanent link">&para;</a></h4>
+<pre><code>Pass context only if `expr` is evaluated as True
+</code></pre>
+<p>:param expr: Python expression</p>
+<div class="highlight"><pre><span></span><code><span class="n">Filter</span><span class="p">(</span><span class="n">X</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="repattern-name-ignore_casenone">Re(pattern, name, ignore_case=None):<a class="headerlink" href="#repattern-name-ignore_casenone" title="Permanent link">&para;</a></h4>
+<p>Match variable <em>name</em> against regular expression pattern.
+Pass context further if matched. If regular expression contains
+named groups, i.e. (?P<group_name>....), apply them as context variables</p>
+<pre><code>:param pattern: Regular expression pattern
+:param name: Variable name
+:param ignore_case: Ignore case during match
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Re</span><span class="p">(</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+<span class="n">Re</span><span class="p">(</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">ignore_case</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">Re</span><span class="p">(</span><span class="s2">&quot;-(?P&lt;abs&gt;\d+)&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="hasvlanvlan_filter-vlan_id">HasVLAN(vlan_filter, vlan_id):<a class="headerlink" href="#hasvlanvlan_filter-vlan_id" title="Permanent link">&para;</a></h4>
+<pre><code>Check `vlan_id` is within `vlan_filter` expression
+
+:param vlan_filter: VC Filter expression
+:param vlan_id: Vlan Id or bound variable
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">HasVlan</span><span class="p">(</span><span class="s2">&quot;1-99,200-299&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="aggregation">Aggregation<a class="headerlink" href="#aggregation" title="Permanent link">&para;</a></h3>
+<h4 id="groupstacknone-args-kwargs">Group(stack=None, <em>args, </em><em>kwargs):</em><a class="headerlink" href="#groupstacknone-args-kwargs" title="Permanent link">&para;</a></h4>
+<pre><code>Group input context on given variables
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="p">(</span>
+    <span class="n">Match</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="n">Match</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="n">Match</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">description</span><span class="p">)</span>
+    <span class="ow">or</span> <span class="n">Match</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;admin-status&quot;</span><span class="p">,</span> <span class="n">admin_status</span><span class="p">)</span>
+<span class="p">)</span> <span class="ow">and</span> <span class="n">Group</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="collapseargs-kwargs">Collapse(<em>args, </em>*kwargs):<a class="headerlink" href="#collapseargs-kwargs" title="Permanent link">&para;</a></h4>
+<pre><code>Collapse multiple keys to a single one following rules
+
+:param kwargs: One of collapse operation should be specified
+    * join=&lt;sep&gt; -- join lines with separator sep
+    * joinrange=&lt;sep&gt; -- join lines with separator sep and apply range optimization
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Collapse</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s2">&quot;tagged-vlans&quot;</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+<span class="n">Collapse</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="s2">&quot;tagged-vlans&quot;</span><span class="p">,</span> <span class="n">joinrange</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="debugging">Debugging<a class="headerlink" href="#debugging" title="Permanent link">&para;</a></h3>
+<h4 id="dumpmessagenone">Dump(message=None):<a class="headerlink" href="#dumpmessagenone" title="Permanent link">&para;</a></h4>
+<pre><code>Dump current context to stdout and pass unmodified
+
+:param message: Optional message
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Dump</span><span class="p">()</span>
+<span class="n">Dump</span><span class="p">(</span><span class="s2">&quot;Point1&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="sprintfname-fmt-args">Sprintf(name, fmt, *args):<a class="headerlink" href="#sprintfname-fmt-args" title="Permanent link">&para;</a></h4>
+<p>Perform string formatting and apply result to context variable</p>
+<pre><code>:param name: Target variable name
+:param fmt: String format
+:param args: Values or bound variables
+</code></pre>
+<div class="highlight"><pre><span></span><code><span class="n">Sprintf</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;x = </span><span class="si">%s</span><span class="s1">, y = </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s1">&#39;2&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<p>Fetch all interfaces descriptions</p>
+<div class="highlight"><pre><span></span><code><span class="n">Match</span><span class="p">(</span><span class="s2">&quot;interfaces&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">descr</span><span class="p">)</span>
+</code></pre></div>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../normalizer/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Normalizer" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Normalizer
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../scripts-reference/add_vlan/" class="md-footer__link md-footer__link--next" aria-label="Вперед: add_vlan" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                add_vlan
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1948 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/configuration-management/">
+      
+      
+        <link rel="prev" href="../topology-processing-features/">
+      
+      
+        <link rel="next" href="../host-discovery-network/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Configuration Management - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Configuration Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../configuration-management/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/background/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-type-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Type Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topology-processing-features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Topology Processing Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Сбор конфигурации
+  </a>
+  
+    <nav class="md-nav" aria-label="Сбор конфигурации">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Обработка
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Хранение конфигурации
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-confdb" class="md-nav__link">
+    Работа с конфигурацией - ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="Работа с конфигурацией - ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Формирование дерева фактов
+  </a>
+  
+    <nav class="md-nav" aria-label="Формирование дерева фактов">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Токенизация
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Нормализация
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Применение
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Синтаксис запросов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Тестирование запросов
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Валидация конфигурации
+  </a>
+  
+    <nav class="md-nav" aria-label="Валидация конфигурации">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Подготовка запросов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb" class="md-nav__link">
+    Создание политики валидации на основе запросов ConfDB
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Включение политики в работу
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-validation-handler" class="md-nav__link">
+    Обработчик Config Validation Handler
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host-discovery-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Host Discovery Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fault-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-escalation-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Escalation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../performance-management/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Performance Management
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference-report-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../peering-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Peering Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-status-monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring by Service Operation Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../message-notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Message Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../card/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storm-protection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storm Protection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui-guideline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UI Guideline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../highlights/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC Products Highlights
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Сбор конфигурации
+  </a>
+  
+    <nav class="md-nav" aria-label="Сбор конфигурации">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Обработка
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Хранение конфигурации
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-confdb" class="md-nav__link">
+    Работа с конфигурацией - ConfDB
+  </a>
+  
+    <nav class="md-nav" aria-label="Работа с конфигурацией - ConfDB">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Формирование дерева фактов
+  </a>
+  
+    <nav class="md-nav" aria-label="Формирование дерева фактов">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Токенизация
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Нормализация
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Применение
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Синтаксис запросов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Тестирование запросов
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Валидация конфигурации
+  </a>
+  
+    <nav class="md-nav" aria-label="Валидация конфигурации">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Подготовка запросов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#confdb" class="md-nav__link">
+    Создание политики валидации на основе запросов ConfDB
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Включение политики в работу
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-validation-handler" class="md-nav__link">
+    Обработчик Config Validation Handler
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/configuration-management/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="_1">Управление конфигурацией<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
+<p>Работа с конфигурацией оборудования один из самых развитых компонентов НОКа. Он позволяет:</p>
+<ul>
+<li>Сбор конфигурации с оборудования</li>
+<li>Версионированное хранение изменений (возможность посмотреть историю изменений с получением разницы)</li>
+<li>Полнотекстовый поиск по конфигурации</li>
+<li>Выгрузка информации на дисковое хранилище</li>
+<li>Предоставляет общую для всех производителей структуру хранения фактов (необходима реализация нормализоватора)</li>
+<li>Валидация конфигурации (проверка конфигурации на наличие ошибок)</li>
+<li>Уведомления об изменениях</li>
+</ul>
+<p>Управление функционалом доступно через веб интерфейс системы. В следующих пунктах раскроем механизмы, работы функционала. Описание реализации скриптов и парсеров раскрывается в разделе документации для разработчиков и пользователям доступно для ознакомления.</p>
+<p>Вся работа с конфигурацией происходит в рамках опроса <a href="../discovery-reference/box/config/">Config Discovery</a>, он активируется галочкой <code>config</code> в <a href="../concepts/managed-object-profile/#Box(Полный_опрос)">настройках</a>. Порядок прохождения опроса следующий:</p>
+<ol>
+<li>Сбор</li>
+<li>Расчёт разницы между последним и собранным конфигом</li>
+<li>Сохранение конфигурации в базу</li>
+<li>Зеркалирование (если настроено)</li>
+<li>Валидация (handlers)</li>
+</ol>
+<h2 id="_2">Сбор конфигурации<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>На первом этапе опроса (<code>Discovery</code>) происходит сбор текущей конфигурации. В зависимости от <a href="../concepts/managed-object-profile/#Config(Конфигурация)">настройки</a> <code>Config Policy</code> сбор может происходить с устройства (<code>Script</code>), либо с внешнего хранилища (<code>Download</code>). Доступны следующие политики:</p>
+<ul>
+<li><code>Script</code> - запрашивать конфигурацию с устройства</li>
+<li><code>Script, Download</code> - вначале пробуем получить конфигурация с устройства, в случае провала пробуем загрузить с хранилища</li>
+<li><code>Download, Script</code> - вначале пробуем получить конфигурация с хранилища, в случае провала пробуем загрузить с устройства </li>
+<li><code>Download</code> - запрашивать конфигурацию с внешнего хранилища</li>
+</ul>
+<p>Для реализации запроса конфигурации с внешнего хранилища необходимо задать настройки:</p>
+<ul>
+<li>Внешнее хранилище файлов <code>(</code>Storage`) - ссылка на <a href="../concepts/external-storage/">хранилище</a> файлов </li>
+<li>Шаблон пути (<code>Path template</code>) - ссылка на <a href="../concepts/template/">шаблон</a> пути к файлу конфигурации</li>
+</ul>
+<p>Через настройку <code>Config Fetch Policy</code> можно указать предпочтения при сборе конфигурации с устройства (<code>требуется поддержка со стороны адаптера оборудования</code>):</p>
+<ul>
+<li><code>Prefer Running</code> (Предпочитать текущий)</li>
+<li><code>Prefer Startup</code> (Предпочитать сохранённый)</li>
+</ul>
+<p>Действие механизма зависит от реализации на стороне скрипта <code>get_config</code> профиля (<code>SA Profile</code>) оборудования.</p>
+<h3 id="_3">Обработка<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>После успешного получения конфигурации с устройства, происходит её сравнение с последней сохранённой в системе. При наличии разницы - собранная конфигурация запишется в базу (станет последней), если разницы нет, то сохранения в базу не произойдёт. Это позволяет не тратить место, храня одинаковые данные.</p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Доступна возможность кастомизации процедуры обработки:</p>
+<ul>
+<li><code>Config Filter Handler</code> - позволяет исключать строки из конфигурации</li>
+<li><code>Config Diff Handler</code> - позволяет реализовать собственный механизм расчёта разницы конфигурации</li>
+</ul>
+</div>
+<p>При выставленной <code>Mirror Policy</code> запускается механизм зеркалирования (<code>Config Mirroring</code>), он сохраняет копию собранной конфигурации на внешнюю файловую систему. Для его работы </p>
+<ul>
+<li>Политика зеркалирования (<code>Mirror Policy</code>)<ul>
+<li>Отключить (<code>Disable</code>) - отключить зеркалирование</li>
+<li>При изменении (<code>On Change</code>) - запускать только если конфигурация менялась</li>
+<li>Всегда (<code>Always</code>) - всегда запускать</li>
+</ul>
+</li>
+<li>Хранилище (<code>Storage</code>) - ссылка на <a href="../concepts/external-storage/">хранилище</a></li>
+<li>Шаблон пути (<code>Path Template</code>) - ссылка на <a href="../concepts/template/">шаблон</a> пути для сохранения.</li>
+</ul>
+<p>В шаблоне пути доступны переменные:</p>
+<ul>
+<li><code>object</code> - ссылка на устройство (<code>ManagedObject</code>)</li>
+<li><code>datetime</code> - модуль <code>datetime</code></li>
+</ul>
+<p>[Ссылка на примеры шаблонов]</p>
+<h2 id="_4">Хранение конфигурации<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>Для хранения конфигурации используется собственная реализация версионированного хранилища - <code>GridVCS</code>. Оно основано на расширении MongoDB для хранения файлов - <code>GridFS</code>. Поверх него построена </p>
+<h2 id="-confdb">Работа с конфигурацией - ConfDB<a class="headerlink" href="#-confdb" title="Permanent link">&para;</a></h2>
+<p>Для взаимодействия с конфигурацией реализован механизм <code>ConfDB</code> - комплексное решение для работы с конфигурацией. Описывается как:</p>
+<ul>
+<li>Вендоронезависимое представление конфигурации в виде дерева фактов</li>
+<li>Расширение дерева фактов специфичными для производителя полями</li>
+<li>Единый язык запросов - <code>ConDB Query</code></li>
+<li>Обогащение фактами собранными другими методами</li>
+</ul>
+<p>Результатом работы <code>ConfDB</code> является дерево фактов. Для устройства его можно увидеть в пункте <code>ConfDB</code> на панели инструментов формы устройства (<code>ManagedObject</code>). Основные секции, которые можно увидеть на верхнем уровне:</p>
+<ul>
+<li><code>meta</code> - данные, собранные системой</li>
+<li><code>raw</code> - представление конфигурации до нормализации (разбиения по фактам). По умолчанию удаляется из базы</li>
+<li><code>hints</code> - подсказки для заполнения фактов. Удаляется из базы</li>
+<li><code>system</code> - общесистемные настройки устройства</li>
+<li><code>interfaces</code> - настройки интерфейсов</li>
+<li><code>protocols</code> - настройки протоколов</li>
+<li><code>virtual-router</code> - настройки VRF, IP, сабинтерфейсов</li>
+<li><code>media</code> - настройки видео и аудио (используется для представления видеонаблюдения)</li>
+</ul>
+<p><img alt="" src="../../configuration-management/confdb-mo-tree-query-collapsed-scr.png" /></p>
+<p>Каждый пункт раскрывается в дерево заполненное результатами работы механизма. Полнота зависит от реализации парсеров для конкретных профилей (<code>SA Profile</code>). Полный набор доступных фактов можно посмотреть командой <code>./noc confdb syntax</code>. Полнота заполнения <code>ConfDB</code> не является самоцелью, главное - это наличие необходимых параметров. Рассмотрим подробнее пункты дерева и синтаксис запросов</p>
+<p><img alt="" src="../../configuration-management/confdb-mo-tree-query-expanded-scr.png" /></p>
+<h3 id="_5">Формирование дерева фактов<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>Подробно механизм описан в документации для разработчиков <a href="../confdb-reference/">ConfDB Overview</a>, мы же ознакомимся с основами, чтобы понимать куда тыкать.</p>
+<p>Для формирования <code>ConfDB</code> конфигурация проходит несколько последовательных этапов, каждый из них отвечает строго за один тип преобразований. Это позволяет не переусложнять реализацию отвечающих за данный этап функций. Рассмотрим этапы в последовательности их выполнения и реализуемых ими преобразований.</p>
+<h4 id="_6">Токенизация<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>На вход токенизатору подаётся текстовый файл. Его задача получить список строк, разбитых на отдельные слова - токены. Основная сложность здесь в преобразовании секций. Например, у нас есть секция интерфейсов:</p>
+<p><div class="highlight"><pre><span></span><code>interface gigabitethernet1/0/23
+ description Description 1
+exit
+!
+interface gigabitethernet1/0/24
+ description Description-2
+exit
+</code></pre></div>
+Если преобразовать его в строку, должны получить:</p>
+<p><div class="highlight"><pre><span></span><code>interface gigabitethernet1/0/23
+interface gigabitethernet1/0/23 description Description 1
+interface gigabitethernet1/0/24
+interface gigabitethernet1/0/24 description Description 2
+</code></pre></div>
+Здесь <code>exit</code> - это обозначение окончания секции, а <code>!</code> - комментарий. Посмотреть примеры вывода для разных устройств можно командой <code>./noc confdb tokenizer --object &lt;MONAME&gt;</code>. В базовой поставке НОКа доступны токенизаторы для следующих синтаксисов:</p>
+<ul>
+<li><code>indent</code> - Секции выделяются отступами - Cisco-like синтаксис.</li>
+<li><code>curly</code> - Секции выделены фигурными скобками. Встречается у <code>Juniper</code></li>
+<li><code>ini</code> - Секции выделены пустой строкой и заголовком с решётками. </li>
+<li><code>line</code> - Простой построчный синтаксис - пример <code>Dlink</code></li>
+<li><code>routeros</code> - устройства <code>Mikrotik</code></li>
+</ul>
+<p>Результат работы токенизатора можно увидеть в секции <code>raw</code>. По умолчанию она удаляется из итогового представления. Включить её можно настройкой <a href="../concepts/managed-object-profile/#Config(Конфигурация)">Raw Policy</a></p>
+<h4 id="_7">Нормализация<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<p>На этом этапе происходит наполнение дерева фактами на основе работы с токенизированными строками. Для работы необходим написанный нормализатор (<code>normalizer</code>) для профиля <a href="../concepts/sa-profile/">SA Profile</a>. Также на этом этапе формируется секция подсказок - <code>hints</code>, которая используется на следующем этапе.</p>
+<p>Если нормализаторы отсутствуют, то в дереве будут доступны только секции <code>raw</code> и <code>meta</code>. Просмотреть результат полученный после нормализации можно командой <code>./noc confdb normalizer --object &lt;MONAME&gt;</code></p>
+<h4 id="_8">Применение<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<p>На этапе применение дерево приобретает законченный вид. Путём выполнения с ним манипуляций:</p>
+<ul>
+<li>секция <code>meta</code> заполняется данными из системы</li>
+<li>на основе настроек заполняются умолчания</li>
+<li>производится перемещение веток</li>
+<li>ветки обогащаются информацией по данным из системы</li>
+</ul>
+<p>Увидеть окончательный результат можно в меню <code>ConfDB</code> или командой <code>./noc confdb dump --object &lt;MONAME&gt;</code>.</p>
+<h3 id="_9">Синтаксис запросов<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>Запросы представляют собой унифицированный способ работы со структурой <code>ConfDB</code>. По синтаксису они чем-то напоминают <a href="https://ru.wikipedia.org/wiki/Пролог_(язык_программирования)">Prolog</a>. Сам запрос состоит из <strong>Цепочки предикатов</strong>, разделённых словами <code>and</code> (в этом случае исполнение идёт друг за другом) и/или <code>or</code> (исполняются вместе). Для простоты запрос можно представить в виде <code>конвеера</code> на входе которого данные, на выходе результат запросов, либо пустота. Выполнение проходит слева направо, каждая стадия передаёт результаты работы следующей.</p>
+<ul>
+<li><strong>Предикат</strong> - конструкция вида <code>&lt;FUNC_NAME&gt;(agrs)</code>, где <code>FUNC_NAME</code> - название применяемой функции, <code>args</code> - список аргументов. В примере: <code>Match</code>, <code>Filter</code>, <code>Del</code></li>
+<li><strong>Путь</strong> (<code>confdb path</code>) - содержимое предиката (указывается в скобках). Состоит из списка элементов дерева. Если оный указан в кавычках (<code>'interfaces'</code>, <code>'description'</code>) - то ищется точное совпадение, а если без (<code>X</code>, <code>Y</code>) обозначает переменную, которой присваивается элемент</li>
+<li><strong>Контекст</strong> - место хранения переменных. После выполнения всех предикатов в запросе становится <em>результатом</em>. Можно посмотреть предикатом <code>Dump</code>.</li>
+</ul>
+<p>Работать с запросами можно в интерфейсе <code>ConfDB</code> (кнопка <code>Query</code>) или командой <code>./noc confdb query</code></p>
+<p><img alt="" src="../../configuration-management/confdb-mo-tree-query-form-scr.png" /></p>
+<p>Для примера запросим интерфейс с именем <code>GigabitEthernet0/0/1</code> у которого есть <code>description</code>:</p>
+<p><code>Match('interfaces', X, 'description', Y) and Filter(X=="GigabitEthernet0/0/1")</code></p>
+<p>Разберём выполнение запроса шаг за шагом:</p>
+<p>1) В самом начале запроса <em>контекст</em> пуст. И если выполнить, получим пустоту в результате. Поэтому с первым предикатом, обычно, идут:</p>
+<ul>
+<li><code>Match</code> и <code>NotMatch</code>. Выполняется запрос к <code>ConfDB</code>. Если в пути есть переменные - они заполняются значениями.</li>
+<li><code>Set</code> - устанавливает переменной указанное значение</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y)&quot;
+</code></pre></div>
+Результат:
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_11_2.1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/1&#39;</span><span class="p">}</span>
+<span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_AGG1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/2&#39;</span><span class="p">}</span>
+</code></pre></div>
+В данном случае мы получили список интерфейсов у которых заполнено описание. Их имена в переменной <code>X</code>, а описания в переменной <code>Y</code></p>
+<p>2) Операции над контекстом:</p>
+<ul>
+<li><code>Filter</code> - проверка контекста над определёнными условием</li>
+<li><code>Re</code> - проверка на соответствие регулярному выражению</li>
+<li><code>HasVLAN</code> - проверка попадания VLANa в фильтр</li>
+<li><code>Group</code> - схлопывание контекстов</li>
+<li><code>Collapse</code> - разворачивание контекста в несколько</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y) and Filter(X==&#39;GigabitEthernet0/0/1&#39;)&quot;
+</code></pre></div>
+результат:
+<div class="highlight"><pre><span></span><code><span class="p">{</span><span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="s1">&#39;description to_11_2.1&#39;</span><span class="p">,</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;GigabitEthernet0/0/1&#39;</span><span class="p">}</span>
+</code></pre></div>
+Мы оставили только интерфейс с именем <code>GigabitEthernet0/0/1</code></p>
+<p>3) Вывод контекста </p>
+<ul>
+<li><code>Dump</code> - распечатать контекст. Удобно использовать для отладки запросов, в прочем никто не мешает просто выполнять их поэлементно.</li>
+<li><code>Fact</code> - установить значение в базе</li>
+<li><code>Sprintf</code> - распечатать переменную</li>
+</ul>
+<p><div class="highlight"><pre><span></span><code>./noc confdb query --object &quot;200&quot; --query &quot;Match(&#39;interfaces&#39;, X, &#39;description&#39;, Y) and Dump(&quot;Stage2&quot;) and Filter(X==&#39;GigabitEthernet0/0/1&#39;)&quot; 
+Stage2: {&#39;Y&#39;: &#39;description to_SSNSK_60OKTBR_11_2.1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/1&#39;}
+{&#39;Y&#39;: &#39;description to_SSNSK_60OKTBR_11_2.1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/1&#39;}
+</code></pre></div>
+результат:
+<div class="highlight"><pre><span></span><code>Stage2: {&#39;Y&#39;: &#39;description to_SSNSK_AGG1&#39;, &#39;X&#39;: &#39;GigabitEthernet0/0/2&#39;}
+</code></pre></div></p>
+<p>Полное описание доступно в <a href="../confdb-reference/">ConfDB Query</a>.</p>
+<h3 id="_10">Тестирование запросов<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>Помимо <code>CLI</code> для запросов в графическом Веб интерфейсе в форме <code>ManagedObject</code> по кнопке <code>ConfDB</code> доступна возможность выполнения (кнопка <code>query</code>).</p>
+<p>Написание и проверку запросов удобно проводить в интерфейсе устройства: <code>Service Activation (Управление объектами)</code> -&gt; <code>Managed Object (Список объектов)</code> -&gt; Выбрать интересующий объект. В нём зайти в <code>ConfDB</code></p>
+<p>В левой части отобразится дерево <code>ConfDB</code>. По нажатии на копку <code>Query</code> откроется текстовое поле с кнопкой <code>Запуск</code>. В него можно вписать текст запроса и посмотреть результат (снизу после нажатия Запуск).</p>
+<p><img alt="" src="../../configuration-management/confdb-mo-tree-query-form-scr.png" /></p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Для выполнения запросов к секции <code>raw</code> необходимо включить её в настройках <a href="../concepts/managed-object-profile/#Config(Конфигурация)">ManagedObjectProfile</a>.</p>
+</div>
+<p>Например, запрос для вывода интерфейсов и их типов выглядит как: <code>Match('interfaces', X, 'type', Y)</code>.</p>
+<p>Запросы в секцию <code>raw</code> для вывода всех адресов <code>syslog</code> серверов <code>Huawei</code>: <code>Match('raw', X, 'info-center', 'loghost', Y)</code>
+<img alt="" src="../../configuration-management/confdb-mo-tree-query-raw-syslog-scr.png" /></p>
+<p>Поскольку наполнение секции <code>raw</code> зависит от формата конфига (т.е. производителя оборудования), то запросы к ней работают в рамках одного профиля. Разве что синтаксис конфигурации практически идентичен. В отличие от этого запросы в основную секцию будут одинаковы для всех.</p>
+<h2 id="_11">Валидация конфигурации<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Политика валидации - набор правил по которым происходит сравнение фактов, полученных путём разбора конфигурации, с эталоном. В случае расхождения факта и эталона поднимается авария.</li>
+<li>Запрос к базе фактов - текстовая строка составленная по определённым правилам, позволяющая производить операции над фактами.</li>
+<li>База фактов (ConfDB) - сущность, содержащая в себе данные (факты), полученные на основе разбора конфигурации оборудования.</li>
+</ul>
+<h3 id="_12">Подготовка запросов<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h3>
+<p>Для использования в системе запросы должны быть заранее созданы. Управление запросами находится в меню <code>Управление конфигурацией</code> -&gt; <code>Настройки</code> -&gt; <code>ConfDB Queries</code>. В нём можно добавить новый запрос или изменить назначение существующего. Форма редактирования запроса состоит из следующих полей:</p>
+<p><img alt="" src="../../configuration-management/confdb-query-edit-form-ntp-scr.png" /></p>
+<ul>
+<li>Имя запроса (<code>Name</code>) - уникальное имя</li>
+<li>Описание (<code>Description</code>)</li>
+<li>Исходник (<code>Soure</code>) - текст запроса</li>
+<li>Параметры (<code>Parameters</code>) - перечень переменных, для передачи в запрос. Переменные доступны в запросе по именам<ul>
+<li>Имя (<code>Name</code>) - имя переменной. По этому имени она будет доступна в запросе</li>
+<li>Тип (<code>Type</code>) - тип переменной. Используется для корректной работы условий</li>
+<li>По умолчанию (<code>Default</code>) - значение переменной, если не выставлено значение пользователем</li>
+<li>Описание (<code>Description</code>) - краткое описание</li>
+</ul>
+</li>
+<li>Разрешённые назначения (<code>Allow</code>) - в каком качестве можно использовать запрос:<ul>
+<li><code>Object Filter</code> - фильтр устройств</li>
+<li><code>Object Validation</code> - для валидации фактов по объекту</li>
+<li><code>Interface Filter</code> - для фильтрации интерфейсов</li>
+<li><code>Interface Validation</code> - для валидации фактов по интерфейсу</li>
+</ul>
+</li>
+<li><code>Requiere RAW</code> - для запроса необходима секция raw (факты до нормализации)</li>
+</ul>
+<p>Результатом работы запросов на фильтрацию (<code>Object Filter</code>, <code>Interface Filter</code>) должен быть не пустой контекст. Пустой контекст считается как<code>False</code>, т.е. устройство не попало под условие. Для запросов работы с интерфейсом в контексте передаётся переменная <code>ifname</code> - имя интерфейса.</p>
+<p>Запрос на валидацию <strong>ищет ошибки в конфигурации</strong>. При нахождении несоответствия должна быть выставлена переменная <code>error</code>, в которую заносится описание обнаруженной ошибки. Если в результате запроса обнаружена переменная <code>error</code>, считается что конфигурация не прошла проверку.</p>
+<p>Например:</p>
+<ul>
+<li>запрос на валидацию адреса <code>NTP</code> сервера может выглядеть так: <code>Match('raw', 'ntp',  'server', address)) and Filter(address != ntp_server_address) and Set(error="NTP server error")</code></li>
+<li>запрос на проверку версии <code>SSH</code>: <code>Match('raw', 'ip', 'ssh', 'version', ssh)) and Filter(ssh != ssh_just) and Set(error="Version SSH error")</code></li>
+</ul>
+<h3 id="confdb">Создание политики валидации на основе запросов ConfDB<a class="headerlink" href="#confdb" title="Permanent link">&para;</a></h3>
+<p>Интерфейс работы с политиками валидации находится в меню <code>Configuration Management (Управление конфигурацией) -&gt; Setup (Настройки) -&gt; Object Validation Policies (Политики валидации объекта)</code>. Форма добавления/изменения политики выглядит так</p>
+<p><img alt="" src="../../configuration-management/confdb-validation-policy-edit-form-eltex-scr.png" /></p>
+<ul>
+<li>Name (Имя) - говорящее имя политики</li>
+<li>Description (Описание) - текст описания</li>
+<li>Filter Query - запрос фильтрации политики в целом (должен быть отмечен как <code>Object Filter</code>)</li>
+<li>Правила - список правил валидации. Состоит из<ul>
+<li>Запрос (<code>Query</code>) - запрос валидации (должен быть отмечен для применения в Object Validation)</li>
+<li>Параметры запроса (<code>Query Parameters</code>) - значения параметров, передающихся в запрос в качестве переменных (список берётся из настроек запроса)</li>
+<li>Фильтр правила (<code>Filter Rule</code>) - запрос для фильтрации правила (должен быть отмечен как Object Filter). Используется при необходимости применения правила к ограниченному перечню объектов (н-р конкретных моделям)</li>
+<li>Активно (<code>Active</code>) - рабочее или не рабочее правило</li>
+<li>Код (<code>Code</code>) - код аварии, применяется при необходимо обработке аварий внешней системой</li>
+<li>Шаблон ошибки (<code>Error Template</code>) - ссылка на <a href="../concepts/template/">шаблон</a> сообщения аварии</li>
+<li>Alarm Class (<code>Класс аварии</code>) - ссылка на класс аварии открываемой при нарушении правила</li>
+<li><code>Fatal</code> - в случае нарушения опроса остановить опрос устройства</li>
+</ul>
+</li>
+</ul>
+<h3 id="_13">Включение политики в работу<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h3>
+<p>Политики валидации отрабатывают в рамках опроса <a href="../discovery-reference/box/config/">configvalidation</a>. Он запускается, если к профилю объекта (<code>ManagedObject Profile</code>) привязана политика. Настройки находятся в Профиле объекта (<code>Managed Object Profile</code>) на вкладке Конфиг (<code>Config</code>), блок <a href="../concepts/managed-object-profile/#Config(Конфигурация)">Config Validation</a>: </p>
+<ul>
+<li>Политика применения валидации (<code>Validation Policy</code>) - настройка валидации:</li>
+<li>Всегда (<code>Always</code>) - политика будет проверяться при каждом опросе</li>
+<li>При изменении (<code>Validate on Change</code>) - применяться только при изменении конфигурации </li>
+<li>Отключить (<code>Disable</code>) - валидация отключена</li>
+<li>Действие (<code>Action</code>) - выбранная политика</li>
+</ul>
+<p>Для проверки работы политики необходимо запустить полный опрос на оборудовании. Чтобы не дожидаться времени опроса можно сделать это принудительно. В интерфейсе Объекта <code>Service Activation (Управление объектами) -&gt; Managed Objects (Список объектов) -&gt; выбранный объект</code>. Кнопка Discovery (Опрос) на панели сверху.</p>
+<!-- prettier-ignore -->
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>По умолчанию Политика применяется только при изменении конфигурации. Поведение определяется настройкой в <code>Managed Object Profile -&gt; Вкладка Config -&gt; Validation Policy: Always</code></p>
+</div>
+<p>При выборе строки с box справа покажется лог опроса. Необходимо нажать Run (Запуск). После окончания опроса необходимо Обновить лог. Записи о найденных проблемах будут в строке [configvalidation], Записи о поднятых авариях внизу.</p>
+<h3 id="config-validation-handler">Обработчик Config Validation Handler<a class="headerlink" href="#config-validation-handler" title="Permanent link">&para;</a></h3>
+<p>Есть возможность реализации собственной логики валидации собственных подходов валидации. Это делается через написание обработчика и привязки его в форме <code>ManagedObject</code>, ему на вход передаётся конфигурация и он возвращает найденные ошибки.</p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../topology-processing-features/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Topology Processing Features" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Topology Processing Features
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../host-discovery-network/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Host Discovery Network" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Host Discovery Network
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

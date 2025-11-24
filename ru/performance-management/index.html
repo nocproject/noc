@@ -1,0 +1,2293 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/performance-management/">
+      
+      
+        <link rel="prev" href="../alarm-escalation-reference/">
+      
+      
+        <link rel="next" href="calculate-metrics/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Обзор - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#performance-management" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Обзор
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../performance-management/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/background/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-type-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Type Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topology-processing-features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Topology Processing Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host-discovery-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Host Discovery Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fault-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-escalation-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Escalation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_9" checked>
+        
+          <label class="md-nav__link" for="__nav_6_9" id="__nav_6_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Performance Management
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_9">
+            <span class="md-nav__icon md-icon"></span>
+            Performance Management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Термины
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Архитектура и компоненты
+  </a>
+  
+    <nav class="md-nav" aria-label="Архитектура и компоненты">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activator-metric-discovery" class="md-nav__link">
+    Activator + Metric Discovery
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric" class="md-nav__link">
+    Сервис метрик (Metric)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter" class="md-nav__link">
+    CHWRITER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clickhouse-ch" class="md-nav__link">
+    ClickHouse (CH)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Настройка сбора метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Настройка сбора метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Профиль объекта
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Профиль интерфейса
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sla" class="md-nav__link">
+    Профиль SLA
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpe" class="md-nav__link">
+    Профиль CPE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Профиль Сенсора
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Шардирование сбора
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-rules" class="md-nav__link">
+    Настройка порогов (Metric Rules)
+  </a>
+  
+    <nav class="md-nav" aria-label="Настройка порогов (Metric Rules)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-action" class="md-nav__link">
+    Metric Action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Добавление своих метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Добавление своих метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-type" class="md-nav__link">
+    Добавление имени метрики (Metric Type)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Реализация сбора в профиле
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    Отладка сбора метрик (или Что-то пошло не так)
+  </a>
+  
+    <nav class="md-nav" aria-label="Отладка сбора метрик (или Что-то пошло не так)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Отсутствие панелей с графиками
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Отсутствуют данные по графикам
+  </a>
+  
+    <nav class="md-nav" aria-label="Отсутствуют данные по графикам">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Проверка сбора метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Проверка сбора метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Проверка доступа до устройства
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Проверка сервиса метрик (Metrics)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter_1" class="md-nav__link">
+    Проверка записи метрик в базу (CHWriter)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Разное
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="calculate-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compose Metric (Metric Action)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference-report-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../peering-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Peering Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-status-monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring by Service Operation Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../message-notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Message Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../card/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storm-protection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storm Protection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui-guideline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UI Guideline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../highlights/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC Products Highlights
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Термины
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Архитектура и компоненты
+  </a>
+  
+    <nav class="md-nav" aria-label="Архитектура и компоненты">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activator-metric-discovery" class="md-nav__link">
+    Activator + Metric Discovery
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric" class="md-nav__link">
+    Сервис метрик (Metric)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter" class="md-nav__link">
+    CHWRITER
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clickhouse-ch" class="md-nav__link">
+    ClickHouse (CH)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Настройка сбора метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Настройка сбора метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Профиль объекта
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Профиль интерфейса
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sla" class="md-nav__link">
+    Профиль SLA
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cpe" class="md-nav__link">
+    Профиль CPE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Профиль Сенсора
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Шардирование сбора
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-rules" class="md-nav__link">
+    Настройка порогов (Metric Rules)
+  </a>
+  
+    <nav class="md-nav" aria-label="Настройка порогов (Metric Rules)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-action" class="md-nav__link">
+    Metric Action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Добавление своих метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Добавление своих метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-type" class="md-nav__link">
+    Добавление имени метрики (Metric Type)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Реализация сбора в профиле
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#-" class="md-nav__link">
+    Отладка сбора метрик (или Что-то пошло не так)
+  </a>
+  
+    <nav class="md-nav" aria-label="Отладка сбора метрик (или Что-то пошло не так)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Отсутствие панелей с графиками
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Отсутствуют данные по графикам
+  </a>
+  
+    <nav class="md-nav" aria-label="Отсутствуют данные по графикам">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Проверка сбора метрик
+  </a>
+  
+    <nav class="md-nav" aria-label="Проверка сбора метрик">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Проверка доступа до устройства
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Проверка сервиса метрик (Metrics)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter_1" class="md-nav__link">
+    Проверка записи метрик в базу (CHWriter)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Разное
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/performance-management/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="performance-management">Performance Management<a class="headerlink" href="#performance-management" title="Permanent link">&para;</a></h1>
+<p>Подсистема Performance Management (PM) в НОКе заведует <code>Метриками</code>. В целом, метрики и работа с ними не отличаются от таковой в других системах с поправкой на заморочки с настройки. </p>
+<p>Умеет из коробки:</p>
+<ul>
+<li>Ходить за метриками на оборудование с заданным интервалом</li>
+<li>Принять метрики из внешней системы</li>
+<li>Из коробки реализован сбор общеподдерживаемого набора метрик: <code>IF-MIB</code>, плюс <code>CPU/Memory</code> для распространённых устройств</li>
+<li>Настройки сбора метрик для: порта устройства, SLA Пробы, Датчика, OLT PON (для <code>Huawei</code>)</li>
+<li>Применить к метрике порог и сделать на этой основе аварию</li>
+<li>Сохранить метрику в базу данных для последующей работы (используется <code>Clickhouse</code>)</li>
+<li>Вывести метрику на график (<code>Grafana</code>) или сделать отчёт</li>
+</ul>
+<p>Умеет с напильником (в качестве напильника используется <code>Python</code>):</p>
+<ul>
+<li>Добавлять собственные метрика для сбора</li>
+<li>Собственные дашборды в графане</li>
+<li>Строить отчёты и аналитику по метрикам в <code>Clickhouse</code></li>
+</ul>
+<p>Не умеет</p>
+<ul>
+<li>Расписание сбора метрик - <em>собрать метрику в день Д, час Ч</em></li>
+<li>Сбор метрик по <code>IPMI</code></li>
+<li>Добавление сбора метрик через <code>MIB Browser</code> - только с использованием <em>напильника</em></li>
+</ul>
+<h3 id="_1">Термины<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<p>Некоторое количество важных слов, используемых для работы с метриками в НОКе.</p>
+<ul>
+<li><strong>Метрика</strong> - некое <em>число</em>, описывающее характеристику объекта</li>
+<li><strong>Тип метрики</strong> (<code>Metric Type</code>) - название метрики в НОКе (настройки метрики)</li>
+<li><strong>Область метрики</strong> (<code>Metric Scope</code>) - набор полей, доступных для описания метрики</li>
+<li><strong>Метка</strong> (<code>Label</code>) - тэг с информацией о метрике (мета-данными)</li>
+<li><strong>Правило обработки метрики</strong> (<code>Metric Rule</code>) - описание что системе делать с метрикой.
+ Используется для выставления порогов</li>
+<li><strong>Порог</strong> (<code>Threshold</code>) - некоторая числовая величина, с которой сравнивается метрика.
+ При его превышении создаётся авария</li>
+<li>
+<p><strong>Источник метрики</strong> (<code>Metric Source</code>) - запись в системе, с которой снимается метрика.
+ У каждого источника есть уникальный идентификатор - <code>bi_id</code>. Доступны следующие:</p>
+<ul>
+<li>SLA проба (<code>SLA Probe</code>) - для сбора используеются SLA проба на оборудовании: <code>Cisco SLA-monitor</code>, <code>Juniper RPM</code>, <code>Huawei NQA</code></li>
+<li>Сенсор (<code>Sensor</code>) - датчик на оборудовании.</li>
+<li>Устройство (<code>Managed Object</code>) - сетевое устройство с IP адресом: Коммутатор, маршрутизатор</li>
+<li>CPE (<code>CPE</code>) - устройства, работающие с контроллером: <code>IP телефоны</code>, <code>ONT</code>, <code>WiFi AP</code></li>
+<li>Агент (<code>Agent</code>) - сбор информации с серверов</li>
+<li><strong>BI ID</strong> - идентификатор источника метрики в хранилище метрики</li>
+</ul>
+</li>
+</ul>
+<p>В контексте сбора метрик, иногда упоминается их разделение на скалярные и векторны:</p>
+<ul>
+<li><em>Скалярные</em> - когда одному <em>названию</em> соответствует <strong>одно</strong> значение. Н-р если у устройства 1 датчик температуры, то у метрики <code>Температура</code> будет 1 значение - показатель этого датчика.</li>
+<li><em>Векторные</em> - когда одному <em>названию</em> соответствует <strong>более одного</strong> значения метрики. Н-р метрике <strong>Кол-во входящих пакетов</strong> соответствует столько значений, сколько интерфейсов на устройстве. Для предыдущего случая - если датчиков несколько, то метрика температуры вернёт <code>Температура датчика 1</code>, <code>Температура датчика 2</code> и т.д. Для различения метрик применяют тэги.</li>
+</ul>
+<h2 id="_2">Архитектура и компоненты<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Архитектурно <strong>PM</strong> (<code>Performance Management</code>) состоит из следующих сервисов:</p>
+<ul>
+<li>Сборщик (<code>Collector</code>) - отвечает за сбор метрик<ul>
+<li><code>Activator + Discovery</code> - сбор метрик с сетевых устройств <a href="../concepts/managed-object/">Managed Object</a></li>
+<li><code>MetricCollector</code> - <code>API</code> для приёма метрик из других систем</li>
+<li>Агент (<code>Agent</code>) - сбор метрик с хостов</li>
+</ul>
+</li>
+<li>Сервис метрик (<code>Metric</code>) - отвечает за расчёт значений метрик и применение правил порогов</li>
+<li>Писатель в базу (<a href="../services-reference/chwriter/">CHWriter</a>) - записывает метрики в базу</li>
+<li>Хранилище (<code>Clickhouse</code>) - хранить метрики</li>
+<li>Отображение графиков (<code>Grafana</code>) - отображает собранные метрики на графиках</li>
+</ul>
+<p>Остановися подробнее на каждом компоненте и опишем его роль в процессе работы с метриками.</p>
+<p><img alt="" src="../../performance-management/metrics-processed.png" /></p>
+<h3 id="activator-metric-discovery">Activator + Metric Discovery<a class="headerlink" href="#activator-metric-discovery" title="Permanent link">&para;</a></h3>
+<p><a href="../services-reference/activator/">Activator</a> взаимодействует с оборудованием по запросу
+ <a href="../services-reference/discovery/">Discovery</a>.
+ За съёкм метрик отвечает скрипт <a href="../scripts-reference/get_metrics/">get_metrics</a> с параметром - список метрик. 
+ Из коробки данный скрипт поддерживает стандартный набор метрик по <code>SNMP</code>, 
+ а дополнительные описываются в профиле <a href="../concepts/sa-profile/">Profile</a>.</p>
+<ul>
+<li><code>IF-MIB</code> - все метрики интерфейсов</li>
+<li><code>sysUptime</code> - аптайм</li>
+<li><code>CPU | Usage</code>, <code>Memory | Usage</code> - метрики для некоторых профилей</li>
+</ul>
+<p>Метрики описываются двумя путями:</p>
+<ul>
+<li>Папка <code>snmp_metrics</code> профиля, где находятся конфигурация сбора в виде файлов <code>JSON</code></li>
+<li>Скрипт <code>get_metrics</code> профиля, в котором сбор реализован через код на <code>python</code>.
+ Базовый <code>get_metrics</code> расположен в <code>sa/profiles/Generic</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Конфигурация для сбора метрик формируется на стороне <code>Discovery</code> и передаётся на активатор</p>
+</div>
+<h3 id="metric">Сервис метрик (<code>Metric</code>)<a class="headerlink" href="#metric" title="Permanent link">&para;</a></h3>
+<p>Обрабатывает поступающие метрики:
+1. Проводит проверку поступающих метрик на соответствие <a href="../metrics-reference/">MetricScope</a>.
+2. Нормализует полученные значения и вычисляет значения счётчиков
+3. Применяет правила и вычисляет пороги
+4. Отправляет метрики на запись в хранилище</p>
+<h3 id="chwriter">CHWRITER<a class="headerlink" href="#chwriter" title="Permanent link">&para;</a></h3>
+<p>Записывает метрики в соответствующие таблицы. Имена таблиц описаны в <a href="../metrics-reference/">MetricScope</a></p>
+<h3 id="clickhouse-ch">ClickHouse (CH)<a class="headerlink" href="#clickhouse-ch" title="Permanent link">&para;</a></h3>
+<p>В качестве хранилища для метрик используется БД <code>Clickhouse</code> от <strong>Yandex</strong>.</p>
+<h3 id="grafana">Grafana<a class="headerlink" href="#grafana" title="Permanent link">&para;</a></h3>
+<p>Показывает собранные метрики в виде графиков. Для работы с хранилищем используется <code>clickhouse-plugin</code>.
+ Графики доступны из форму устройства, кнопка Графики (<code>Graphs</code>), откроется общий дашборд по устройству:</p>
+<p><img alt="" src="../../performance-management/grafana-device-dash1.png" /></p>
+<p>Дашборд по устройствам разделён на несколько облстей:</p>
+<ul>
+<li><strong>(1)</strong> Карточка устройства - краткай информация об устройстве и кнопки перехода на другие дашборды</li>
+<li><strong>(3)</strong> Область датчиков - графики по датчикам (<code>Sensor</code>) на устройстве</li>
+<li><strong>(4)</strong> Область интерфейсов (портов) - выводятся графики загрузки интерфейсов </li>
+<li><strong>(5)</strong> Графики по метрикам устройства (<code>Object metrics</code>) - выводятся графики метрик, добавленных в настройках объекта (<code>Object Profile</code>)</li>
+</ul>
+<p>Дополнительные дашборды выведены в виде ссылок в правом верхнем углу <strong>(2)</strong>:</p>
+<ul>
+<li>Графики загрузки интерфейсов пакетами <code>Packets</code></li>
+<li>Графики оптических метрик <code>DOM</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Если по какому-либо интерфейсу отсутствует панель - необходимо проверить включён ли для него сбор метрик.</p>
+</div>
+<h2 id="_3">Настройка сбора метрик<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h2>
+<p>Для начала сбора метрик необходимо включить опрос <code>metrics</code> для этого в <em>профиле объекта</em> (<code>Managed Object Profile</code>)
+ на вкладке <em>Метрики</em> (<code>Metrics</code>) необходимо выставить галочку <code>Enabled Metrics</code>.
+ После этого начнётся сбор назначенных для устройства метрик.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Для сбора метрик должен быть доступ на устройства, т.е. система должна его успешно опрашивать.</p>
+</div>
+<p>Метрики для сбора назначаются в <em>групповых настройках</em> - Профилях (<code>Profile</code>) для этого на форме размещена панель метрик и настройки сбора:</p>
+<ul>
+<li><strong>Интервал по умолчанию</strong> (<code>Metric Default Interval</code>) - интервал сбора метрик. Если 0 - используется интервал из профиля устройства <a href="../concepts/managed-object-profile/">Managed Object Profile</a></li>
+<li><strong>Максимальное дробление интервала</strong> (<code>Metrics Interval Buckets</code>) - число вложенных интервалов сбора,
+ подробнее см. <a href="#шардирование-сбора">Шардирование сбора</a></li>
+<li>Метрики для сбора<ul>
+<li><strong>Тип метрики</strong> (<code>MetricType</code>) - Тип собираемой метрики. Должна быть поддержка со стороны профиля <a href="../concepts/sa-profile/">SA Profile</a></li>
+<li><strong>Сохранять</strong> (<code>Is Stored</code>) - Сохранять метрику в базу</li>
+<li><strong>Интервал</strong> (<code>Interval</code>) - Индивидуальный интервал сбора - перекрывает <em>интервал по умолчанию</em></li>
+</ul>
+</li>
+</ul>
+<p>Для метрик устройств, назначаемых в <em>профиле объекта</em> (<code>Managed Object Profile</code>)
+ график автоматически добавляется на панель с <a href="#Grafana">Grafana</a>.</p>
+<h3 id="_4">Профиль объекта<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>В групповых настройках объекта (<code>Managed Object Profile</code>) добавляются метрики устройства,
+ это любые метрики за исключением интерфейсных и <code>SLA</code> (они настраиваются в собственных профилях).
+  Профиль объекта расположен в <code>Управление объектами -&gt; Настройки -&gt; Профиль объекта -&gt; Метрики (Service Activation -&gt; Setup -&gt; Managed Object Profile -&gt; Metrics</code>, на вкладке Метрики. </p>
+<p><img alt="" src="../../performance-management/object-profile-metrics1.png" /></p>
+<p>Настройка <strong>(1)</strong> <code>enable_metric</code> запускает опрос метрик на устройстве. Если не выставлена, то любые его метрики собираться не будут.</p>
+<h3 id="_5">Профиль интерфейса<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>В групповых настройках интерфейса <a href="../concepts/interface-profile/">Interface Profile</a>
+ добавляются снимаемые с интерфейса метрики (в настройках <code>MetricType</code> выбран <code>Scope</code> Interface).
+ Для удобства их имя начинается с <code>Interface | XXX</code>.
+ Настройки расположены в меню <code>Учёт объектов -&gt; Настройки -&gt; Профили интерфейса (Inventory -&gt; Setup -&gt; Interface Profiles)</code>.
+ Настройка <em>Политика сбора метрик</em> (<code>Metric Collected Policy</code>) содержит следующие настройки:</p>
+<ul>
+<li>Включить (<code>Enable</code>)</li>
+<li>Выключить если интерфейс отключён (<code>Disable if Admin Down</code>)</li>
+<li>Выключить, если интерфейс не активен (<code>Disable if Oper Down</code>)</li>
+</ul>
+<p><img alt="" src="../../performance-management/interface-profile-metrics1.png" /></p>
+<p>Сами интерфейсы расположены на кнопке <code>Управление объектами -&gt; Список объектов -&gt; Форма объекта -&gt; Интерфейсы (Service Activation -&gt; Managed Object -&gt; &lt;ManagedObject&gt; -&gt; Intefaces</code>.
+ Для экономии времения рекомендуется использовать механим автоматического назначения профилей:
+ <a href="../concepts/dynamic-profile-classification/">Dynamic Profile Classification</a></p>
+<h3 id="sla">Профиль SLA<a class="headerlink" href="#sla" title="Permanent link">&para;</a></h3>
+<p>В групповых настройках <em>SLA пробы</em> добавляются метрики <code>SLA</code> (в настройках <code>MetricType</code> выбран <code>Scope</code> SLA).
+ Для удобства их имя начинается с <code>SLA | XXX</code>. Настройки расположены в меню <code>SLA -&gt; Настройки -&gt; Профили SLA (SLA -&gt; Setup -&gt; SLA Profiles)</code></p>
+<p><img alt="" src="../../performance-management/sla-profile-metrics1.png" /></p>
+<h3 id="cpe">Профиль CPE<a class="headerlink" href="#cpe" title="Permanent link">&para;</a></h3>
+<p>В групповых настройках <em>CPE</em> добавляются метрики для сбора с <code>CPE</code>.
+ Метрики аналогичны устройству, но снимаются с контроллера <code>Managed Object</code>.
+ Настройки расположены в меню <code>Учёт объектов -&gt; Настройки -&gt; Профили CPE (Inventory -&gt; Setup -&gt; CPE Profiles)</code></p>
+<p><img alt="" src="../../performance-management/cpe-profile-metrics1.png" /></p>
+<h3 id="_6">Профиль Сенсора<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h3>
+<p>Поскольку датчики снимают строго одну метрику <code>Sensor Value</code> <em>панели метрик</em> не предусмотрено,
+ есть только настройка <strong>(1)</strong> <em>Включить сбор</em> (<code>Enable collect</code>).
+ Настройки расположены в меню <code>Учёт объектов -&gt; Настройки -&gt; Профили Сенсора (Inventory -&gt; Setup -&gt; Sensor Profiles)</code></p>
+<p><img alt="" src="../../performance-management/sensor-profile-metrics1.png" /></p>
+<h3 id="_7">Шардирование сбора<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h3>
+<p>При большом числе источников метрик на одном устройстве: много SLA проб, CPE на контроллере.
+ Возникает ситуация когда сбор метрик перестаёт укладываться в заданный интервал,
+ в этом случае период сбора для метрик увеличивают - например, выставляют для метрик SLA вместо 5 минут - 15.
+ Но метрики с интервалом 5 минут продолжают не укладываться в свой интервал.
+ Для избежания этого в системе есть механизм разбиения <em>источников метрик</em> на <em>подинтервалы</em>
+ чтобы размазать их сбор на полный интервал без влияния на другие метрики.</p>
+<p>Контроллирует этот механизм настройка <strong>Максимальное дробление интервала</strong> (<code>Metrics Interval Buckets</code>),
+ в которой задаётся число доступных подинтервалов:</p>
+<ul>
+<li>0 - число подинтервалов рассчитывается автоматически</li>
+<li>1 - отключить дробление - доступен 1 подинтервал</li>
+<li>2 и больше - заданное вручную число подинтервалов</li>
+</ul>
+<p>Механизм поддерживается для <strong>SLA</strong> и <strong>CPE</strong></p>
+<h2 id="metric-rules">Настройка порогов (Metric Rules)<a class="headerlink" href="#metric-rules" title="Permanent link">&para;</a></h2>
+<p>Пороги настраиваются в <em>Управление производительностью -&gt; Настройки -&gt; Правила метрик</em> (<code>Performance Management -&gt; Setup -&gt; Metric Rules</code>).
+ Представляется собой список действий для метрики и условий:</p>
+<ul>
+<li><strong>Включено</strong> (<code>Active</code>) - правило в работе</li>
+<li><strong>Действия</strong> (<code>Actions</code>) - список действий при совпадении условий.<ul>
+<li><code>MetricAction</code> - манипуляци с метрикой (см. следующую главу). При выборе преобразования пункт <code>Metric Type</code> учитывается.</li>
+<li>Тип метрики (<code>MetricType</code>) - тип метрики</li>
+<li>Пороги (<code>Thresholds</code>) - список порогов. Проверка осуществляется последовательно. При выполнении условия поднимается авария.<ul>
+<li><code>Op</code> - операция, применяемая к метрике.</li>
+<li><code>Value</code> - пороговое значение для срабатывания.</li>
+<li><code>Clear Value</code> - пороговое значение для очистки аварии. (Опционально).</li>
+<li><code>Alarm Class</code> - класс аварии. Если класс аварии не указан, то используется по умолчанию <code>NOC | PM | Out of Thresholds</code>.</li>
+<li><code>Alarm Labels</code> - список меток, которые будут назначены аварии.</li>
+</ul>
+</li>
+<li><code>Action Param</code> - настройки для <code>MetricAction</code></li>
+</ul>
+</li>
+<li><strong>Правила применения</strong> (<code>Match Rules</code>) - набор меток при наличии которых правило будет применено к метрике</li>
+</ul>
+<p><img alt="" src="../../performance-management/metric-rules-thresholds1.png" /></p>
+<p>При задании <em>преобразования</em> (<code>Metric Action</code>) <em>тип метрики</em> (<code>Metric Type</code>) не учитывается и пороги применяются к
+ результату преобразования. Для изменения <em>важности аварии</em> (<code>severity</code>) необходимо использовать метки (<code>Labels</code>)
+ в соответствии с правилами (<code>Alarm Rules</code>).</p>
+<h3 id="metric-action">Metric Action<a class="headerlink" href="#metric-action" title="Permanent link">&para;</a></h3>
+<p>Для сложных манипуляций с метрикой предусмотрен <code>MetricAction</code>, он позволяет:</p>
+<ul>
+<li>Использование окна</li>
+<li>Применение функций</li>
+<li>Расчёт значение метрики через формулы</li>
+</ul>
+<p>Находятся в <code>Управление производительностью -&gt; Настройки -&gt; Манипуляции с метрикой (Performance Management -&gt; Setup -&gt; Metric Action)</code>.
+Его описание содержится в разделе <a href="calculate-metrics/">Расчётные метрики</a></p>
+<p>Процесс обработки метрики выглядит следующим образом:
+<img alt="" src="../../performance-management/metricaction-proccessed.png" /></p>
+<p>Метрики обозначенны в <strong>(2)</strong> <code>Input</code> поступают на обоработку. Отключённые этапы пропускаются:</p>
+<ul>
+<li><strong>(3,4)</strong> <strong>Activation/Deactivation Window</strong> - оконные функции для значения. Настройки:<ul>
+<li>Оконная функция (<code>Window Function</code>) и её параметры<ul>
+<li><code>Sum Step</code></li>
+<li><code>Percentile</code></li>
+<li><code>Mean</code></li>
+<li><code>Exp decay</code></li>
+<li><code>Nth</code></li>
+</ul>
+</li>
+<li>Тип окна (<code>Window Type</code>) - принцип определения размера окна<ul>
+<li><code>Tick</code> - число значений в окне</li>
+<li><code>Seconds</code> - время первого значения</li>
+</ul>
+</li>
+<li><code>Min Window</code> - минимальный размер окна, при котором начнётся расчёт оконной функции. При <code>Tick</code> - число измерений, при <code>Seconds</code> - секунды с крайнего значения</li>
+<li><code>Max Window</code> - максмимальный размер окна, значения выше него удаляются.</li>
+<li>Параметры оконной функции (зависят от выбранной функции)</li>
+</ul>
+</li>
+<li><strong>Activation/Deactivation function</strong> - функция <a href="https://en.wikipedia.org/wiki/Activation_function">активации</a>, на вход принимают значение метрики, на выходе единица или ноль<ul>
+<li><code>SoftPlus</code></li>
+<li><code>Relu</code>, <code>Rectifier</code> </li>
+<li><code>Indicator</code></li>
+<li><code>Logistic</code></li>
+</ul>
+</li>
+<li><strong>Compose Metric</strong> - отправить метрику в базу, необходим заполненный <code>MetricType</code></li>
+<li><strong>Alarm</strong> - Поднять аварию, необходим заполненный <code>Alarm Class</code></li>
+</ul>
+<p><img alt="" src="../../performance-management/metric-actions-errors1.png" /></p>
+<h2 id="_8">Добавление своих метрик<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+<p>Добавление новой метрики проходит в 2 шага:</p>
+<ol>
+<li>Добавление в систему имени метрики <a href="../metrics-reference/">Metric Type</a></li>
+<li>Добавление сбора метрики в профиле <a href="../profiles-reference/">SA Profile</a></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Для случая когда имя метрики уже есть (н-р <code>CPU | Usage</code>), а сбор не реализован необходимо поправить профиль</p>
+</div>
+<h3 id="metric-type">Добавление имени метрики (Metric Type)<a class="headerlink" href="#metric-type" title="Permanent link">&para;</a></h3>
+<p>Имя метрик (<code>Metric Type</code>) добавляется в меню <code>Управление производительностью -&gt; Настройки -&gt; Тип метрики (Performance Management -&gt; Setup -&gt; Metric Types)</code>.
+ Для создания необходимо заполнить следующие настройки:</p>
+<ul>
+<li><strong>Пространство метрик</strong> (<code>Metric Scope</code>) - таблица с метрикой. </li>
+<li><strong>Имя колонки</strong> (<code>Field Name</code>) - имя колонки с метрикой в таблице <code>Metric Scope</code></li>
+<li><strong>Тип значения</strong> (<code>Field Type</code>) - тип колонки с метрикой в таблице <code>Metric Scope</code></li>
+<li><strong>Единица измерения</strong> (<code>Measurement Units</code>)<ul>
+<li><em>Единица измерения</em> (<code>Metric Measurement Units</code>) - единица измерения метрики (по умолчанию - <code>Scalar</code>)</li>
+<li><em>Множитель</em> (<code>Meric Scale</code>) - множитель для единицы измерения. По умолчанию - <code>1</code></li>
+</ul>
+</li>
+<li><strong>Расчётное выражение</strong> (<code>Compose Expression</code>) - настройки расчётных метрик<ul>
+<li><em>Метрики</em> (<code>Input</code>)</li>
+<li><em>Выражение</em> (<code>Expression</code>)</li>
+</ul>
+</li>
+<li><strong>Delta Value</strong> - Преобразование значения в <code>Delta</code> разница межда текущим и последним значениями</li>
+</ul>
+<p><img alt="" src="../../performance-management/metric-type-form1.png" /></p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>После добавления MetricType необходим перезапуск сервиса <code>Меtric Type</code></p>
+</div>
+<h3 id="_9">Реализация сбора в профиле<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h3>
+<p>Есть 2 пути для добавления метрики в профиль:</p>
+<ul>
+<li>Добавить конфигурацию для сбора: находится в папке <code>snmp_metrics</code></li>
+<li>Описать функцию для сбора в скрипте <code>get_metris</code> профиля</li>
+</ul>
+<p>Подробнее каждый из них описан в документе.</p>
+<h2 id="-">Отладка сбора метрик (или Что-то пошло не так)<a class="headerlink" href="#-" title="Permanent link">&para;</a></h2>
+<p>Процесс сбора метрик можно представить следующей схемой: <code>Настройки -&gt; Опрос (Discovery) -&gt; Activator -&gt; Metrics -&gt; Chwriter -&gt; Grafana</code>.
+ Конечным результатом можно считать отображением метрики на дашборде <a href="./#Grafana">Графаны</a>.
+ Сигналом о каких-то сбоях при сборе метрик является отсутствие графиков либо панелей с графиками.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>График Ping/RTT можно не учитывать, поскольку он формируется отдельно (пингером)</p>
+</div>
+<p>Можно рассмотреть 2 ситуации:</p>
+<ol>
+<li>Панели с графиками есть, но на них написано <code>No data</code></li>
+<li>Панели с графиками отсутствуют</li>
+</ol>
+<h3 id="_10">Отсутствие панелей с графиками<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>При добавлении метрики в профиле объектов (<code>Object Profile</code>) панель с графиком автоматически добавляется панель с графиком метрики.
+ На графики по интерфейсам выводятся только метрики загрузки и статуса, метрики по пакетам и <code>DOM</code> доступны в отдельном дашборде.</p>
+<p>Отсутствие панели с графиками для интерфейса обозначает что в настройках профиля интерфейса (<code>Interface Profile</code>) отключён сбор метрик.</p>
+<h3 id="_11">Отсутствуют данные по графикам<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h3>
+<p>Если панель присутствует, но график не рисуется (надпись <code>No data</code>) значит есть ошибка при сборе данных.
+ Для выяснения причин имеет смысл пройти по этапам сбора метрик и проверить корректность работы.</p>
+<h4 id="_12">Проверка сбора метрик<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<p>За сбор метрик отвечает опрос (<code>Discovery</code>), его лог доступен на форме проблемного устройства: <code>Управление объектами -&gt; Список объектов -&gt; &lt;объект&gt; -&gt; Опрос -&gt; Interval (Service Activation -&gt; ManagedObject -&gt; Discovery -&gt; interval)</code>. В логе должны присутствовать строки <code>Collected metrics: 25</code> с актуальным временем (не выше интервала сбора), где <strong>25</strong> - число собранных метрик с устройства. Если число метрик больше 0, значит сбор работает корретно и ошибка может быть на следующем этапе.</p>
+<p>Если число метрик 0, либо запись отсутствует необходимо проверить доступ до оборудования и правильность выставленных настроек.
+ Дополнительную информацию могут представить следущие записи в логе:</p>
+<ul>
+<li><code>|metrics]  Collecting metrics</code> говорит о запуске запроса метрик с оборудования. Если строчка отсутствует необходимо активировать сбор метрик в <em>профиле объекта</em> (<code>ManagedObject Profile</code>), см главу <em>Настройка метрик</em></li>
+<li><code>|metrics]  No metrics found</code> в логе, говорит о том, что метрики не были считаны с устройства. Переходим к пункту проверки доступа до устройства</li>
+<li><code>|metrics]  Interface metrics are not configured. Skipping</code> - необходимо проверить назначены ли метрики на <em>профиль интерфейсов</em> (<code>Inventory</code> -&gt; <code>Setup</code> -&gt; <code>Interface Profile</code>) и привязку профилей к интерфейсам (<code>ManagedObject</code> -&gt; <code>Interfaces</code>)</li>
+<li><code>|metrics]  SLA not configured, skipping SLA metrics</code> - для случая сбора метрик по <code>SLA</code>. Необходимо проверить настройки сбора <code>SLA</code> метрик (см. пункт)</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Дополнительную информацию по работе опроса можно получить запустив его в режиме отладки <code>./noc discovery --debug run interval MONAME</code>. В конце вывода отобразятся собранные метрики</p>
+</div>
+<h5 id="_13">Проверка доступа до устройства<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h5>
+<p>Для сбора метрик к устройство должно успешно опроситься системой: собраться версия, платформа и интерфейсы (<code>Interfaces</code>).
+ Для интерфейсов должны собраться индексы (<code>ifindex</code>), также должна быть активна поддержка <code>SNMP</code> проверить это можно
+  через соответствующие пункты меню:</p>
+<ol>
+<li>Диангностики <code>CLI/SNMP</code> - они должны быть в нормальном состоянии (зелёном).</li>
+<li>Возможности (<code>Capabilities</code>) - расположены снизу формы <code>ManagedObject</code>, выглядеть она должна как показано
+ на скриншоте (зелёные галочки напротив <code>SNMP</code>, <code>SNMP | v1</code> или <code>SNMP | v2</code>)</li>
+<li>Собранные интерфейсы с индексами. Проверить можно на вкладке <em>Интерфейсы</em> (<code>Interfaces</code>).</li>
+</ol>
+<p><img alt="" src="../../performance-management/managed-object-caps-for-metrics.png" /></p>
+<p><img alt="" src="../../performance-management/managed-object-interface-ifindex-column.png" /></p>
+<h4 id="metrics">Проверка сервиса метрик (Metrics)<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h4>
+<p>Проверить работоспособность сервиса метрик (<code>Metrics</code>) можно через лог: <code>/var/log/noc/metrics-0*.log</code>.
+ В рабочем сервисе будут записи вида: <code>[noc.services.metrics.changelog] Compacted to 8 records (90459568 bytes). 0.06 ratio</code>.</p>
+<p>Записи вида <code>All slots a busy, waiting</code> показывают, что сервис находится в ожидании свободных <code>слотов</code>,
+ если она присутсвтует во всех запущенных сервисах, значит необходимо проверить настройку числа сервисов в башне.</p>
+<h4 id="chwriter_1">Проверка записи метрик в базу (CHWriter)<a class="headerlink" href="#chwriter_1" title="Permanent link">&para;</a></h4>
+<p>Для проверки поступления метрик в логе <em>chwriter</em> (<code>/var/log/noc/chwriter-00.log</code>) должны присутствовать записи:</p>
+<div class="highlight"><pre><span></span><code>2023-04-23 18:58:36,676 [chwriter] [object] Sending 3 records
+2023-04-23 18:58:36,679 [chwriter] [object] 3 records sent in 2.85ms
+2023-04-23 18:58:38,663 [chwriter] [interface] Sending 98 records
+2023-04-23 18:58:38,675 [chwriter] [interface] 98 records sent in 12.26ms
+</code></pre></div>
+<p>Если среди них есть строчки с ошибками <code>2023-04-23 07:09:36,847 [chwriter] [reboots] Failed to write records</code>,
+ то необходимо провести повторную миграцию схемы.</p>
+<h3 id="_14">Разное<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<p>Возможно разное. Если проверки выше ничего не дали, а метрики по прежнему отсутствуют за помощью можно обратиться на трекер проекта или в группу. </p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../alarm-escalation-reference/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Alarm Escalation" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Alarm Escalation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="calculate-metrics/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Compose Metric (Metric Action)" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Compose Metric (Metric Action)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

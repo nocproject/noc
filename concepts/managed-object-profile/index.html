@@ -1,0 +1,3852 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/concepts/managed-object-profile/">
+      
+      
+        <link rel="prev" href="../managed-object/">
+      
+      
+        <link rel="next" href="../network-segment/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Managed Object Profile - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#managed-object-profile" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Managed Object Profile
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../../ru/concepts/managed-object-profile/" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../installation-guide/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            References
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../sections-overview/references/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" checked>
+        
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Concepts
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            Concepts
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../administrative-domain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Administrative Domain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-class/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Class
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-severity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Severity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../allocation-group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Allocation Group
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../apikey/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Key
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../container/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Container
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dialplan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dialplan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dynamic-profile-classification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Dynamic Profile Classification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dns-zone/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    DNS Zone
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../event-class/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Class
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../event-classification-rule/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Event Classification Rule
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external-storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    External Storage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../firmware-policy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Firmware Policy
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Group
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../handler/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Handler
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interface/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interface
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interface-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Interface Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../label/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Label
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../managed-object/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Managed Object
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Managed Object Profile
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Managed Object Profile
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    Settings
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    Common
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    Access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card" class="md-nav__link">
+    Card
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ping-availability-check" class="md-nav__link">
+    Ping (Availability Check)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm-fault-management" class="md-nav__link">
+    FM (Fault Management)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#box-full-discovery" class="md-nav__link">
+    Box (Full Discovery)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-periodic-discovery" class="md-nav__link">
+    Periodic (Periodic Discovery)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-configuration" class="md-nav__link">
+    Config (Configuration)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mac" class="md-nav__link">
+    MAC
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autosegmentation" class="md-nav__link">
+    Autosegmentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration" class="md-nav__link">
+    Integration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escalation" class="md-nav__link">
+    Escalation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matchlabel" class="md-nav__link">
+    MatchLabel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hierarchy-levels" class="md-nav__link">
+    Hierarchy Levels
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-segment/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Network Segment
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../network-segment-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Network Segment Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../notification-group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Notification Group
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-diagnostics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Object Diagnostics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phone-number/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Number
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phone-number-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Number Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phone-range/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Range
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phone-range-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Phone Range Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pool/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Pool
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prefix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefix
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../prefix-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Prefix Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../remote-system/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Remote System
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resource-group/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resource Group
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sa-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SA Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sensor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sensor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sensor-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sensor Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Service
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Service Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subscriber/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Subscriber
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../subscriber-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Subscriber Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../technology/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Technology
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../template/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Template
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../threshold-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Threshold Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../user/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vc-filter/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VC Filter
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vendor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Vendor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vlan/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VLAN
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vlan-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VLAN Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vpn/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPN
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vpn-profile/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    VPN Profile
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../workflow/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../profiles-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Profiles
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../caps-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Capabilities
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../alarm-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Alarm Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../event-classes-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Event Classes
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../measurement-units-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Measurement Units
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../metrics-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Metrics
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../mx-messages-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    MX Messages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../technologies-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Technologies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../services-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Services
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../config-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Configuration
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../discovery-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Discovery
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../internal-metrics-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Internal Metrics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../agent-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    noc-agent
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../mr-labels-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Merge Request Labels
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../datastream-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    DataStream API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../nbi-api-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NBI API
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-dict-reference/administrativedomain/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Dictionaries
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../bi-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    BI Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../confdb-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    ConfDB
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../scripts-reference/add_vlan/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Scripts Reference
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../handlers-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Handlers
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../object-models-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Object Models
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../model-interfaces-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Model Interfaces
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../connection-types-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Connection Types
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../inventory-protocols-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Inventory Protocols
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../streams-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Streams
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../alarm-reference-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Reference Format
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datetime-format/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Date and Time Formats
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../man/about/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Man Pages
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../feature-gates-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Feature Gates
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../operational-alerts-reference/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Operational Alerts
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../supported-standards/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Supported Standards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    Settings
+  </a>
+  
+    <nav class="md-nav" aria-label="Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common" class="md-nav__link">
+    Common
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#access" class="md-nav__link">
+    Access
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card" class="md-nav__link">
+    Card
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ping-availability-check" class="md-nav__link">
+    Ping (Availability Check)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fm-fault-management" class="md-nav__link">
+    FM (Fault Management)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#box-full-discovery" class="md-nav__link">
+    Box (Full Discovery)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#periodic-periodic-discovery" class="md-nav__link">
+    Periodic (Periodic Discovery)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-configuration" class="md-nav__link">
+    Config (Configuration)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metrics" class="md-nav__link">
+    Metrics
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mac" class="md-nav__link">
+    MAC
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autosegmentation" class="md-nav__link">
+    Autosegmentation
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration" class="md-nav__link">
+    Integration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#escalation" class="md-nav__link">
+    Escalation
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#matchlabel" class="md-nav__link">
+    MatchLabel
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hierarchy-levels" class="md-nav__link">
+    Hierarchy Levels
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/concepts/managed-object-profile/index.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="managed-object-profile">Managed Object Profile<a class="headerlink" href="#managed-object-profile" title="Permanent link">&para;</a></h1>
+<p>Group settings applied to all devices assigned to the profile. The main part of the settings is related to Device Discovery and is common to all devices, configured only through the profile. Other settings duplicate device settings.</p>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permanent link">&para;</a></h2>
+<p>Located in <code>Device Management (Service Activation) -&gt; Settings (Setup) -&gt; Managed Object Profiles (ManagedObjectProfile)</code>, grouped by tabs, depending on their purpose.</p>
+<h3 id="common">Common<a class="headerlink" href="#common" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Description</strong> - text explanation.</li>
+<li><strong>Level</strong> - numerical designation of the device's position in the topological hierarchy <a href="#hierarchy-levels">levels</a>.</li>
+<li><strong>Labels</strong> - a set of <a href="../label/">labels</a> for the profile.</li>
+<li><strong>Style</strong> - the style of the entry in the device table (<code>Managed Object Grid</code>), the table row is formatted according to it.</li>
+<li><strong>Image</strong> - an icon on the topological map.</li>
+<li><strong>Glyph</strong> - icon settings on the image.<ul>
+<li><strong>Image</strong> - image for the glyph.</li>
+<li><strong>Position</strong> - position for the glyph.<ul>
+<li><code>N</code> - north (top).</li>
+<li><code>S</code> - south (bottom).</li>
+<li><code>W</code> - west (left).</li>
+<li><code>E</code> - east (right).</li>
+</ul>
+</li>
+<li><strong>Shape</strong> - arrange glyphs in a circle (<code>circle</code>) or square (<code>square</code>) shape.</li>
+</ul>
+</li>
+<li><strong>Address Resolution Policy</strong> - Allows the system to update the device's IP address according to the specified <code>FQDN</code>. Useful if devices are assigned dynamic IP addresses.<ul>
+<li><strong>Resolver Handler</strong> - handler <a href="../handler/">Handler</a>, implements a custom algorithm for updating the IP address.</li>
+<li><strong>Address Resolution Policy</strong>.<ul>
+<li>Disabled - do not run IP address updates.</li>
+<li>Only Once - do not run after a successful address update.</li>
+<li>Enable - run every poll.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>IPAM Templates</strong> (<code>IPAM Template</code>)<ul>
+<li><code>FQDN Suffix</code> - added to the device name when creating a record in the <code>DNS</code> reverse zone.</li>
+<li><strong>Name Template</strong> - DNS record name template.</li>
+</ul>
+</li>
+<li><strong>Dynamic Classification Policy</strong> - Profile assignment policy.<ul>
+<li>(<code>Disable</code>) - Do not assign the profile on save.</li>
+<li>(<code>By Rule</code>) - Assign according to specified rules (<code>Match Rules</code>).</li>
+</ul>
+</li>
+<li><strong>Match Rules</strong> - profile assignment rules <a href="../dynamic-profile-classification/">Profile Assignment Rules</a>. Allows dynamic assignment.</li>
+</ul>
+<h3 id="access">Access<a class="headerlink" href="#access" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Access Preference</strong> - Which access protocol to prefer when working with the device. Requires adapter support. If you use <code>Only</code> settings and the adapter does not support them, the script will not run.<ul>
+<li>SNMP Only - Use only SNMP; the script will not run if not supported.</li>
+<li>CLI Only - Use only CLI; the script will not run if not supported.</li>
+<li>CLI, SNMP - Use CLI, switch to SNMP on error.</li>
+<li>SNMP, CLI - Use SNMP, switch to CLI on error.</li>
+</ul>
+</li>
+<li><strong>CLI Session Policy</strong> - Execute all scripts within a single CLI session.<ul>
+<li>Enable - Enable sessions.</li>
+<li>Disable - Run a separate session for each script.</li>
+</ul>
+</li>
+<li><strong>CLI Privilege Policy</strong> - Elevate privileges when entering CLI.<ul>
+<li>Do not raise - Do not elevate privileges, work in the current mode.</li>
+<li>Raise Privileges - Elevate privileges.</li>
+</ul>
+</li>
+<li>(<code>SNMP Rate Limit</code>) - Limit the frequency of SNMP requests. Set the number of requests per second, with a minimum of one per second.</li>
+</ul>
+<h3 id="card">Card<a class="headerlink" href="#card" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Card - the name of the <a href="../../services-reference/card/">Card</a> template opened for <code>ManagedObject</code>.</li>
+<li>Card Title Template - template for the title of the <code>ManagedObject</code> device card.</li>
+</ul>
+<h3 id="ping-availability-check">Ping (Availability Check)<a class="headerlink" href="#ping-availability-check" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Enable Ping Check</strong> - enable availability check (ICMP) for the device (!description).</li>
+<li><em>Interval Settings</em><ul>
+<li><strong>Interval</strong> - check interval (in seconds).</li>
+<li>(Ping Off Hours) - behavior of the check during non-working hours. Used if it is necessary not to stop the check but still see the RTT graph.<ul>
+<li>(Disable Ping) - disable the check.</li>
+<li>(Enable Ping but Don't Follow Status) - do not disable the check but do not signal unavailability.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><em>Series Settings (Ping Series Settings)</em> - configuration.<ul>
+<li><strong>Availability Determination Policy (Ping Policy)</strong> - (Explanation of how availability is checked).<ul>
+<li>First Successful - the first packet returned in a series indicates device availability.</li>
+<li>All Successful - all returned packets indicate availability.</li>
+</ul>
+</li>
+<li><strong>Packet Size, bytes</strong> - ICMP packet size.</li>
+<li><strong>Number of Packets</strong> - number of packets in the check.</li>
+<li><strong>Timeout, msec</strong> - timeout after which the packet is considered lost.</li>
+</ul>
+</li>
+<li>Collect RTT for Ping (Report Ping RTT) - collect RTT metric for availability check.</li>
+<li>Save Errors in Series (Report Ping Attempts) - save the number of lost packets in the series.</li>
+</ul>
+<h3 id="fm-fault-management">FM (Fault Management)<a class="headerlink" href="#fm-fault-management" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Event Policy</strong> - FM message processing policy for the device.<ul>
+<li>(Enable) - process FM messages for the device.</li>
+<li>(Disable) - do not process FM messages for the device.</li>
+</ul>
+</li>
+<li><strong>Alarm Weight</strong> - configuration for calculating the alarm weight <a href="../../fault-management/#Severity%20and%20Weight">Alarm Weight</a>.</li>
+<li><strong>Syslog Archiving Policy</strong> - send received Syslog messages to archival storage.</li>
+<li>Merge Downlink - activate the Merge Downlink mechanism (!description).</li>
+</ul>
+<h3 id="box-full-discovery">Box (Full Discovery)<a class="headerlink" href="#box-full-discovery" title="Permanent link">&para;</a></h3>
+<p>Settings for schedule and composition of discovery.</p>
+<ul>
+<li><strong>Enable</strong> - enable full discovery on the equipment.</li>
+<li><strong>Running Policy</strong> - conditions for starting the discovery.<ul>
+<li>Require Up - require availability (ICMP).</li>
+<li>Require Up if Ping Enabled - require availability (if ICMP check is enabled).</li>
+<li>Always Run - always run.</li>
+</ul>
+</li>
+<li><strong>Interval</strong> - discovery interval (in seconds).</li>
+<li><strong>Failed Interval</strong> - interval for retrying in case of failure.</li>
+<li><strong>Check on System Start After</strong> - check on system start after.</li>
+<li><strong>Check on Config Change After</strong> - check on config change after.</li>
+<li>Discovery - composition of the discovery.<ul>
+<li><a href="../../discovery-reference/box/profile/"><strong>Profile</strong></a> - determine the working profile (<code>SA Profile</code>) of the device. Based on SNMP rules from the section.</li>
+<li><a href="../../discovery-reference/box/version/"><strong>Version</strong></a> - collect software and platform version from the device.</li>
+<li>(<a href="../../discovery-reference/box/caps/"><strong>Caps</strong></a>) - collect device capabilities (SNMP support, functionality support); information is available in the <code>Capabilities</code> section.</li>
+<li><a href="../../discovery-reference/box/interface/"><strong>Interface</strong></a> - collect network interfaces of the device.</li>
+<li>(<a href="../../discovery-reference/box/"><strong>ID</strong></a>) - collect device identifiers: hostname and MAC address.</li>
+<li><a href="../../discovery-reference/box/config/"><strong>Config</strong></a> - collect device configuration.</li>
+<li>(<a href="../../discovery-reference/box/asset/"><strong>Asset</strong></a>) - collect device components: boards, chassis, SFP.</li>
+<li>(<a href="../../discovery-reference/box/vlan/"><strong>VLAN</strong></a>) - collect VLANs.</li>
+<li>(<a href="../../discovery-reference/periodic/mac/"><strong>MAC</strong></a>) - collect MAC addresses. Collect dynamic (D) MAC addresses that meet the criteria from the MAC section.</li>
+<li>(<a href="../../discovery-reference/periodic/cpestatus/"><strong>CPE Status</strong></a>)</li>
+<li><strong>Alarm</strong> - synchronize with alarms on the device.</li>
+<li>(<a href="../../discovery-reference/periodic/metrics/"><strong>Metrics</strong></a>) - collect configured metrics.</li>
+</ul>
+</li>
+<li>Topology - composition of collected link-building methods (topology).<ul>
+<li><a href="../../discovery-reference/box/nri/"><strong>NRI</strong></a></li>
+<li><a href="../../discovery-reference/box/bfd/"><strong>BFD</strong></a></li>
+<li><a href="../../discovery-reference/box/cdp/"><strong>CDP</strong></a></li>
+<li><a href="../../discovery-reference/box/huawei_ndp/"><strong>Huawei NDP</strong></a></li>
+<li>MikroTik NDP</li>
+<li><a href="../../discovery-reference/box/fdp/"><strong>FDP</strong></a></li>
+<li><a href="../../discovery-reference/box/lldp/"><strong>LLDP</strong></a></li>
+<li><a href="../../discovery-reference/box/oam/"><strong>OAM</strong></a></li>
+<li><a href="../../discovery-reference/box/rep/"><strong>REP</strong></a></li>
+<li><a href="../../discovery-reference/box/stp/"><strong>STP</strong></a></li>
+<li><a href="../../discovery-reference/box/udld/"><strong>UDLD</strong></a></li>
+<li><a href="../../discovery-reference/box/lacp/"><strong>LACP</strong></a></li>
+<li>xMAC</li>
+<li><a href="../../discovery-reference/box/ifdesc/"><strong>ifDesc</strong></a></li>
+<li>Cache Neighbor - the system saves neighbors of the device at the specified interval. Until the interval for checking neighborliness expires, the information saved during the previous discovery will be used.</li>
+</ul>
+</li>
+<li>ifDesc Policy - settings for linking by interface descriptions (ifDesc).<ul>
+<li>(Symmetric Check) - require symmetric (two-way) link confirmation.</li>
+<li>(Patterns) - list of regular expressions.</li>
+</ul>
+</li>
+<li>(Platform &amp; Version)<ul>
+<li>(On New Platform) - discovery behavior when an unregistered model is detected in the system.<ul>
+<li>Create - add the model to the system.</li>
+<li>Alarm - stop the discovery and create an alarm.</li>
+</ul>
+</li>
+<li>(On Denied Firmware) - behavior when a prohibited firmware version is detected. Prohibited versions are specified in <a href="../firmware-policy/">Firmware Policy</a>.<ul>
+<li>Ignore - ignore and continue the discovery.</li>
+<li>Ignore &amp; Stop - ignore and stop the discovery.</li>
+<li>Raise Alarm - raise an alarm (!Alarm Class).</li>
+<li>Raise Alarm &amp; Stop - raise an alarm and stop the discovery.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="../../discovery-reference/box/vrf/">IPAM (VPN)</a> - Populate <code>VRF</code> in <code>IPAM</code>, activated if one of the options is selected.<ul>
+<li>Interface - use <code>VRF</code> from <code>Interface</code> discovery (must be enabled).</li>
+<li>MPLS - use <code>VRF</code> directly from the device.</li>
+<li>ConfDB - use <code>VRF</code> from device configuration (ConfDB support required).</li>
+</ul>
+</li>
+<li>IPAM (Prefix) - Populate prefixes in <code>IPAM</code>, activated if one of the options is selected.<ul>
+<li>Interface - use prefixes obtained during <code>Interface</code> discovery.</li>
+<li>Neighbor - use data from the device's <code>ARP</code> table.</li>
+<li>ConfDB - use prefixes from device configuration (ConfDB support required).</li>
+</ul>
+</li>
+<li>IPAM (Address)<ul>
+<li>Interface - use addresses obtained during <code>Interface</code> discovery.</li>
+<li>Management - use the device's (<code>ManagedObject</code>) management IP address from settings.</li>
+<li>DHCP - use data from the DHCP pool (requires <code>get_dhcp_pool</code> script support).</li>
+<li>Neighbor - use data from the device's <code>ARP</code> table.</li>
+<li>ConfDB - use addresses (<code>Address</code>) from device configuration (ConfDB support required).</li>
+</ul>
+</li>
+<li>Clear Links<ul>
+<li>On Platform Change - delete device links when the platform changes.</li>
+</ul>
+</li>
+<li><a href="../../discovery-reference/box/sla/">SLA</a> - collect SLA probes from the device (adapter support required).</li>
+<li><a href="../../discovery-reference/periodic/cpestatus/">CPE Status</a> - collect operational CPE status from the controller.</li>
+<li>(CPE) - collect <code>CPE</code> devices from the controller.</li>
+<li>NRI - Integration queries with an external system.<ul>
+<li>Port Mapping <a href="../../etl/#portmapper">Portmapper</a> - mapping network interfaces with ports in an external system (adapter implementation required).</li>
+<li>Service Binding - bind services to interfaces.</li>
+</ul>
+</li>
+<li>Housekeeping - activate the <a href="../../discovery-reference/box/hk/">HK Check</a> mechanism.</li>
+<li>Discovery Alarm<ul>
+<li>Box Alarm<ul>
+<li>Enable - enable alarm creation for full discovery.</li>
+<li>Disable - disable alarm creation for full discovery.</li>
+</ul>
+</li>
+<li>(Fatal Alarm Weight)</li>
+<li>(Alarm Weight)</li>
+</ul>
+</li>
+</ul>
+<h3 id="periodic-periodic-discovery">Periodic (Periodic Discovery)<a class="headerlink" href="#periodic-periodic-discovery" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Enable</strong> - enable periodic discovery on the equipment.</li>
+<li><strong>Running Policy</strong> - conditions for starting the discovery.<ul>
+<li>Require Up - require availability (ICMP).</li>
+<li>Require Up if Ping Enabled - require availability (if ICMP check is enabled).</li>
+<li>Always Run - always run.</li>
+</ul>
+</li>
+<li><strong>Interval</strong> - discovery interval (in seconds).</li>
+<li>Discovery - composition of the discovery.<ul>
+<li><a href="../../discovery-reference/periodic/uptime/">Uptime</a></li>
+<li><a href="../../discovery-reference/periodic/interfacestatus/">Interface Status</a></li>
+<li><a href="../../discovery-reference/periodic/cpestatus/">CPE Status</a></li>
+<li><a href="../../discovery-reference/periodic/mac/">MAC</a></li>
+<li><a href="../../discovery-reference/periodic/alarms/">Alarms</a></li>
+<li><a href="../../discovery-reference/periodic/metrics/">Metrics</a></li>
+</ul>
+</li>
+<li>Discovery Alarm<ul>
+<li>Box Alarm<ul>
+<li>Enable - enable alarm creation for full discovery.</li>
+<li>Disable - disable alarm creation for full discovery.</li>
+</ul>
+</li>
+<li>(Fatal Alarm Weight)</li>
+<li>(Alarm Weight)</li>
+</ul>
+</li>
+</ul>
+<h3 id="config-configuration">Config (Configuration)<a class="headerlink" href="#config-configuration" title="Permanent link">&para;</a></h3>
+<p>Settings for collecting and processing equipment configuration.</p>
+<p><img alt="Config Tab" src="mop_form_config_tab_open.png" /></p>
+<blockquote>
+<p>Description (Configuration Mechanism)</p>
+</blockquote>
+<ul>
+<li>Config Policy - configuration collection source settings<ul>
+<li><strong>Configuration Collection Policy</strong> (<code>Config Policy</code>) - source of device configuration retrieval<ul>
+<li><code>Script</code> - use script</li>
+<li><code>Script, Download</code> - script first, external storage in case of failure</li>
+<li><code>Download, Script</code> - external storage first, script in case of failure</li>
+<li><code>Download</code> - external storage</li>
+</ul>
+</li>
+<li><strong>Storage</strong> (<code>Storage</code>) - link to the used <a href="../external-storage/">Storage</a></li>
+<li><strong>Path Template</strong> (<code>Path Template</code>) - <a href="../template/">Template</a> for the configuration file path. Specified in the template body.</li>
+</ul>
+</li>
+<li>Config Fetching - <ul>
+<li><strong>Configuration Collection Policy</strong> (<code>Config Fetch Policy</code>) - adapter support is required<ul>
+<li><strong>Prefer Startup</strong> (<code>Prefer Startup</code>) - collect startup configuration of the equipment</li>
+<li><strong>Prefer Running</strong> (<code>Prefer Running</code>) - collect running configuration of the equipment</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Config Mirror<ul>
+<li>(<code>Mirror Policy</code>) - activate the configuration mirroring mechanism<ul>
+<li>Disable <code>Disabled</code> - turn off</li>
+<li>Always <code>Always Mirror</code> - always mirror</li>
+<li>On Change <code>Mirror on Change</code> - mirror configuration only on changes</li>
+</ul>
+</li>
+<li>(<code>Storage</code>) - link to the used <a href="../external-storage/">Storage</a></li>
+<li>(<code>Path Template</code>) - <a href="../template/">Template</a> for the configuration file path. Specified in the template body.</li>
+</ul>
+</li>
+<li>(<code>Raw Policy</code>) - include the <code>raw</code> section in <code>ConfDB</code> - configuration without normalization<ul>
+<li>Disable (<code>Disabled</code>) - do not include the <code>raw</code> section in <code>ConfDB</code></li>
+<li>Enable (<code>Enabled</code>) - add the <code>raw</code> section to <code>ConfDB</code></li>
+</ul>
+</li>
+<li>Config Validation - configuration validation policy<ul>
+<li>(<code>Validation Policy</code>) - configuration validation behavior<ul>
+<li>(<code>Disabled</code>) - do not validate configuration</li>
+<li>(<code>Always Validate</code>) - always validate (every poll)</li>
+<li>(<code>Validate on Change</code>) - validate only on change</li>
+</ul>
+</li>
+<li>(<code>Policy</code>) - link to validation policy</li>
+</ul>
+</li>
+<li>Beef<ul>
+<li>(<code>Beef Policy</code>)</li>
+<li>(<code>Storage</code>)</li>
+<li>(<code>Path Template</code>)</li>
+</ul>
+</li>
+</ul>
+<h3 id="metrics">Metrics<a class="headerlink" href="#metrics" title="Permanent link">&para;</a></h3>
+<p>Table of configured metrics. The assigned metric must be supported by the profile (<code>SA Profile</code>).</p>
+<ul>
+<li><a href="../../metrics-reference/"><strong>Metric Type</strong></a> - the collected metric</li>
+<li>(<code>Box</code>) - collect the metric during full discovery (<code>Box Discovery</code>)</li>
+<li>(<code>Periodic</code>) - collect the metric during periodic discovery (<code>Periodic Discovery</code>)</li>
+<li>(<code>Is Stored</code>) - store the metric in the database</li>
+<li><a href="../threshold-profile/"><strong>Threshold Profile</strong></a></li>
+</ul>
+<h3 id="mac">MAC<a class="headerlink" href="#mac" title="Permanent link">&para;</a></h3>
+<p>Configuration of MAC address filtering after collection.</p>
+<ul>
+<li><strong>Collect All</strong> - collect all MAC addresses</li>
+<li><strong>Collect if permitted by interface profile</strong> - collect MAC addresses from interfaces permitted in the interface profile (<code>Interface Profile</code>)</li>
+<li><strong>Collect from management VLAN</strong> - collect MAC addresses only from the management VLAN. Set in the network segment settings (<code>Network Segment</code>)</li>
+<li><strong>Collect from multicast VLAN</strong> - collect MAC addresses only from the multicast VLAN. Set in the network segment settings (<code>Network Segment</code>)</li>
+<li><strong>Collect from VLAN matching VC Filter</strong> - collect according to the VLAN filter matching VC Filter</li>
+</ul>
+<h3 id="autosegmentation">Autosegmentation<a class="headerlink" href="#autosegmentation" title="Permanent link">&para;</a></h3>
+<p>Automatic segmentation settings.</p>
+<h3 id="integration">Integration<a class="headerlink" href="#integration" title="Permanent link">&para;</a></h3>
+<p>Data for integration with an external system. Filled in when the ETL mechanism is in operation.
+* <strong>Remote System</strong> - link to the external system from which the object profile came
+* <strong>Remote ID</strong> - identifier of the object profile in the external system</p>
+<h3 id="escalation">Escalation<a class="headerlink" href="#escalation" title="Permanent link">&para;</a></h3>
+<p>Configuration for escalating alarms based on the device.
+* <strong>Escalation Policy</strong>
+    * Enable - allow escalation of alarms based on the device
+    * Disable - disable escalation of alarms based on the device
+    * As Depended - escalate only as part of a higher-level alarm</p>
+<h2 id="matchlabel">MatchLabel<a class="headerlink" href="#matchlabel" title="Permanent link">&para;</a></h2>
+<p>The object profiles create a service label <code>noc::managedobjectprofile::&lt;name&gt;::=</code></p>
+<h2 id="hierarchy-levels">Hierarchy Levels<a class="headerlink" href="#hierarchy-levels" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Client's Equipment</strong></td>
+<td><strong>10-19</strong></td>
+</tr>
+<tr>
+<td>CPE</td>
+<td>15</td>
+</tr>
+<tr>
+<td><strong>Access Level</strong></td>
+<td><strong>20-29</strong></td>
+</tr>
+<tr>
+<td>VPN Server</td>
+<td>22</td>
+</tr>
+<tr>
+<td>WiFi Access Point</td>
+<td>22</td>
+</tr>
+<tr>
+<td>Media Gateway</td>
+<td>23</td>
+</tr>
+<tr>
+<td>Access Switch</td>
+<td>25</td>
+</tr>
+<tr>
+<td><strong>Aggregation Level</strong></td>
+<td><strong>30-39</strong></td>
+</tr>
+<tr>
+<td>WiFi Controller</td>
+<td>35</td>
+</tr>
+<tr>
+<td>Aggregation Switch</td>
+<td>38</td>
+</tr>
+<tr>
+<td><strong>City Core</strong></td>
+<td><strong>40-49</strong></td>
+</tr>
+<tr>
+<td>L3 switch/router</td>
+<td>42</td>
+</tr>
+<tr>
+<td>BRAS</td>
+<td>44</td>
+</tr>
+<tr>
+<td>MPLS PE</td>
+<td>44</td>
+</tr>
+<tr>
+<td>MPLS P</td>
+<td>46</td>
+</tr>
+<tr>
+<td>ASBR</td>
+<td>48</td>
+</tr>
+<tr>
+<td><strong>Regional Core</strong></td>
+<td><strong>50-59</strong></td>
+</tr>
+<tr>
+<td>L3 switch/router</td>
+<td>52</td>
+</tr>
+<tr>
+<td>MPLS PE</td>
+<td>54</td>
+</tr>
+<tr>
+<td>MPLS P</td>
+<td>56</td>
+</tr>
+<tr>
+<td>ASBR</td>
+<td>58</td>
+</tr>
+<tr>
+<td><strong>Macroregional Core</strong></td>
+<td><strong>60-69</strong></td>
+</tr>
+<tr>
+<td>L3 switch/router</td>
+<td>62</td>
+</tr>
+<tr>
+<td>MPLS PE</td>
+<td>64</td>
+</tr>
+<tr>
+<td>MPLS P</td>
+<td>66</td>
+</tr>
+<tr>
+<td>ASBR</td>
+<td>68</td>
+</tr>
+<tr>
+<td><strong>National-wide Core</strong></td>
+<td><strong>70-79</strong></td>
+</tr>
+<tr>
+<td>L3 switch/router</td>
+<td>72</td>
+</tr>
+<tr>
+<td>MPLS PE</td>
+<td>74</td>
+</tr>
+<tr>
+<td>MPLS P</td>
+<td>76</td>
+</tr>
+<tr>
+<td>ASBR</td>
+<td>78</td>
+</tr>
+<tr>
+<td><strong>World-wide Core</strong></td>
+<td><strong>70-79</strong></td>
+</tr>
+<tr>
+<td>L3 switch/router</td>
+<td>82</td>
+</tr>
+<tr>
+<td>MPLS PE</td>
+<td>84</td>
+</tr>
+<tr>
+<td>MPLS P</td>
+<td>86</td>
+</tr>
+<tr>
+<td>ASBR</td>
+<td>88</td>
+</tr>
+</tbody>
+</table>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../managed-object/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Managed Object" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Managed Object
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../network-segment/" class="md-footer__link md-footer__link--next" aria-label="Next: Network Segment" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Network Segment
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

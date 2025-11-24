@@ -1,0 +1,2500 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/create-object-models-howto/">
+      
+      
+        <link rel="prev" href="../cleaning-false-config-changes-howto/">
+      
+      
+        <link rel="next" href="connection-rule/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Обзор - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#how-to-create-object-models" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Обзор
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../create-object-models-howto/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            How-to
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../deploy-noc-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deploy NOC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../backup-noc-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Backup NOC
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../noc-shell-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../add-from-network-scan-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Add devices from network scan
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sharing-collections-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sharing Collections Howto
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../fias-loading-howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Loading FIAS Data Howto
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom-dev-grafana-dashboard-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom Static Dashbord with Device Charts
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../import-mib-file-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How to Import MIB Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../using-hk-to-collect-data-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Using Housekeeper to Collect Device Data
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../upgrade-single-postgres-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Upgrade Your Single-node Postgres Server
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../noc-monitoring-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    NOC Monitoring
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reclaim-db-space-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Reclaim Database Space
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../liftbridge-to-kafka-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Migrate Liftbridge to Kafka
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cleaning-false-config-changes-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cleaning False Config Changes
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_16" checked>
+        
+          <label class="md-nav__link" for="__nav_5_16" id="__nav_5_16_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Create Object Models
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_16_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5_16">
+            <span class="md-nav__icon md-icon"></span>
+            Create Object Models
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Термины и определения.
+  </a>
+  
+    <nav class="md-nav" aria-label="Термины и определения.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-model" class="md-nav__link">
+    Модель (Object Model)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-type" class="md-nav__link">
+    Соединение (Connection Type)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-rule" class="md-nav__link">
+    Правила соединения (Connection Rule)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Инструкция (технология)
+  </a>
+  
+    <nav class="md-nav" aria-label="Инструкция (технология)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Просмотр информации о моделях
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Исходные данные
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Бумага и ручка
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-cisco-nexus-3048" class="md-nav__link">
+    Пример 1. Cisco Nexus 3048.
+  </a>
+  
+    <nav class="md-nav" aria-label="Пример 1. Cisco Nexus 3048.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Проверим данные скрипта
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Поищем аналоги
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Модульность
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Гототовые компоненты и соединения
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Готовим соединения
+  </a>
+  
+    <nav class="md-nav" aria-label="Готовим соединения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Подключение для блока вентиляторов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Подключение для супервизора
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Подключение для блока питания
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Готовим модели
+  </a>
+  
+    <nav class="md-nav" aria-label="Готовим модели">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048tp-1ge" class="md-nav__link">
+    N3K-C3048TP-1GE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048-fan" class="md-nav__link">
+    N3K-C3048-FAN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048tp-1ge-sup" class="md-nav__link">
+    N3K-C3048TP-1GE-SUP
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    Написание правил
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    Тестирование
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    Отвечаем на вопросы
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="connection-rule/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Rules
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../facades-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Facades
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../writing-noc-command-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Writing NOC Command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../language-translation-howto/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Language translation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../howto-add-vcenter-to-noc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configure vCenter on NOC as Device Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../howto-add-zabbix-rs-to-noc/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connect Zabbix Remote System as Managed Object Source
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Термины и определения.
+  </a>
+  
+    <nav class="md-nav" aria-label="Термины и определения.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-model" class="md-nav__link">
+    Модель (Object Model)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-type" class="md-nav__link">
+    Соединение (Connection Type)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-rule" class="md-nav__link">
+    Правила соединения (Connection Rule)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Инструкция (технология)
+  </a>
+  
+    <nav class="md-nav" aria-label="Инструкция (технология)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Просмотр информации о моделях
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Исходные данные
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Бумага и ручка
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-cisco-nexus-3048" class="md-nav__link">
+    Пример 1. Cisco Nexus 3048.
+  </a>
+  
+    <nav class="md-nav" aria-label="Пример 1. Cisco Nexus 3048.">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Проверим данные скрипта
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Поищем аналоги
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Модульность
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_9" class="md-nav__link">
+    Гототовые компоненты и соединения
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_10" class="md-nav__link">
+    Готовим соединения
+  </a>
+  
+    <nav class="md-nav" aria-label="Готовим соединения">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_11" class="md-nav__link">
+    Подключение для блока вентиляторов
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_12" class="md-nav__link">
+    Подключение для супервизора
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_13" class="md-nav__link">
+    Подключение для блока питания
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_14" class="md-nav__link">
+    Готовим модели
+  </a>
+  
+    <nav class="md-nav" aria-label="Готовим модели">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048tp-1ge" class="md-nav__link">
+    N3K-C3048TP-1GE
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048-fan" class="md-nav__link">
+    N3K-C3048-FAN
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#n3k-c3048tp-1ge-sup" class="md-nav__link">
+    N3K-C3048TP-1GE-SUP
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_15" class="md-nav__link">
+    Написание правил
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_16" class="md-nav__link">
+    Тестирование
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_17" class="md-nav__link">
+    Отвечаем на вопросы
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/create-object-models-howto/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="how-to-create-object-models">How-to Create Object Models<a class="headerlink" href="#how-to-create-object-models" title="Permanent link">&para;</a></h1>
+<p>Модель объекта представляет собой описание некой сущности реального мира для NOC'а.
+В модель входят:</p>
+<ul>
+<li><strong>атрибуты</strong> (<a href="../model-interfaces-reference/">Model Data</a>) - различные параметры и свойства модели (размер в RU, масса, PartNumber ...) 
+  встроенные и внешние;</li>
+<li><strong>соединения</strong> (<a href="../connection-types-reference/">Connections</a>) - отвечают за стыковку моделей друг с другом.
+  Например: воткнуть плату в шасси, подключить провод в разъём;</li>
+<li><strong>правила для соединений</strong> (<a href="connection-rule/">Connections Rule</a>) - описывают правила, 
+  по модели будут стыковаться между собой;</li>
+</ul>
+<p>Итак, для создания модели оборудования необходимо выполнить следующие шаги:</p>
+<ol>
+<li>Должны быть модели для всех компонентов оборудования.</li>
+<li>При создании модели должны быть правильно описаны связи.</li>
+<li>Необходимо описать правила, по которым эти связи будут стыковаться друг с другом.</li>
+</ol>
+<h2 id="_1">Термины и определения.<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="object-model">Модель (Object Model)<a class="headerlink" href="#object-model" title="Permanent link">&para;</a></h3>
+<p>Описание в данном разделе, в основном, повторяет описание со страницы <a href="../object-models-reference/">ObjectModel</a>.</p>
+<p>В общем виде, модель объекта состоит из <em>Атрибутов</em> и <em>Связей</em>. 
+К аттрибутам модели в НОКе можно отнести:</p>
+<ul>
+<li><strong>Имя</strong> (Name) - цифра 4</li>
+<li><strong>Описание</strong> (Description) (цифра 5)</li>
+<li><strong>Встроенная</strong> (isBuiltin) Модель поставляемая с НОКом или созданная пользователем (показывается в общем списке галочкой)</li>
+<li><strong>Производитель</strong> (Vendor) (цифра 6)</li>
+<li>Опциональные аттрибуты модели (например Context, PartNo, размеры (Dimension), занимаемое место в единицах стойки, энергопотребление и т.д.) (цифра 7)</li>
+</ul>
+<p><img alt="Пример модели коммутатора DLink" src="../../create-object-models-howto/inv_setup_obj_mo_examples_Dlink.png" /></p>
+<p>Для создания модели достаточно заполнить её имя и производителя.
+Имя может иметь произвольный формат, но стандартно, имена имеют форму:
+"<code>Vendor | ... | ... | PartNo</code>" (н-р: "<code>Cisco | 7600 | WS-F6700-DFC3C</code>", "<code>DLink | Modules | DEM-420X</code>")
+задание имени в таком формате позволяет корректно пользоваться фильтрами (цифра 3).</p>
+<p><img alt="Список моделей в интерфейсе" src="../../create-object-models-howto/inv_setup_obj_mo_list_examples_Dlink.png" /></p>
+<p>Опциональные аттрибуты модели (цифра 7) можно задавать любые, 
+но определённые имена используются НОКом для служебных нужд (н-р <code>part_no</code>)</p>
+<p>В конце идёт список связей (блок <code>Connection</code>). 
+В нём перечисляются способы, которыми объект соединяется с внешним миром.
+Для описания связи используются следующие параметры:</p>
+<ol>
+<li><strong>Имя связи</strong> (Name) - является её идентификатором и участвует в соединении объектов
+   (имена при соединении должны совпадать)</li>
+<li><strong>Тип соединения</strong> (Connection Type) - указывает на тип соединения (рассматривается ниже)
+   и, также, участвует при установке связи.</li>
+<li><strong>Направление</strong> (Direction) - направление подключения связи. Считается от объекта.</li>
+<li>Inner - подключаемый объект окажется внутри данного объекта 
+    (например в этот разъём включится линейная карте)</li>
+<li>Outer - данный объект окажется внутри объекта подключения
+     (например подключение модуля окажется внутри устройства, линейная карта с таким подключением окажется внутри шасси,
+     Трансивер с таким подключением окажется внутри разъёма SFP)</li>
+<li>Connection - коммутация без размещения объекта.
+    Подойдёт для подключения различных патч-кордов и прочего, когда вставки объектов не происходит.</li>
+<li><strong>Тип сокета</strong> (Gender) - определяет что куда может входить, а что не может </li>
+<li>female - "мама"</li>
+<li>male - "папа"</li>
+<li>genderless - нейтральный</li>
+<li><strong>Протоколы</strong> - протоколы, которые поддерживает связь Доступные протоколы</li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>На данный момент протоколы не влияют на установление соединения.
+Но их необходимо указывать, т.к. в будущем это поведение изменится</p>
+</div>
+<h3 id="connection-type">Соединение (Connection Type)<a class="headerlink" href="#connection-type" title="Permanent link">&para;</a></h3>
+<p>Более подробное  описание доступно по ссылке <a href="../connection-types-reference/">ConnectionType</a></p>
+<p>Типы соединений, в каком-то роде, тоже представляют собой объекты, 
+только объекты особого рода - <strong>соединения</strong>. Одна из аналогий это тип <code>RJ45</code>.
+Для того чтобы связь состоялась у обоих объектом должен совпадать тип соединения,
+в случае <code>RJ45</code> это коннектор и разъём. Они оба имеют тип RJ45.</p>
+<p>Также платы, электрические провода, Трансиверы и пр. устройства для подключения 
+с собой используют различные соединения в которых,
+зачастую, участвует условная вилка и условная розетка.</p>
+<p>Для того чтобы состыковаться друг с другом разным объектам они должны обладать связью с 
+одинаковым типом соединения, т.е. должны подходить друг другу (быть совместимыми). 
+Вот пример двух совместимых устройств - разъёма SFP и Трансивера:</p>
+<p><img alt="Тип подключения (форма)" src="../../create-object-models-howto/inv_setup_conntype_trans_examples.png" />
+<img alt="Форма создания объектаъ" src="../../create-object-models-howto/inv_setup_obj_mo_trans_examples.png" />
+<img alt="Соединение Transiever" src="../../create-object-models-howto/inv_setup_obj_mo_sfpswitch_examples.png" /></p>
+<p>На 1 скриншоте отображается созданная связь "<strong>Transceiver | SFP</strong>".</p>
+<p>На скриншоте 2. При заполнении объекта "<strong>Carelink | Transceiver | 1G | CL-SFP-WDM-10-55</strong>"
+мы в таблице связей мы указываем 2 связи:</p>
+<ol>
+<li>С одной стороны он подключается в SFP разъём на обоудовании, 
+      для SFP подключения создали тип связи "<code>Transceiver | SFP</code>". <ul>
+<li>Поскольку, он помещается в разъём, а не подключается в него проводом 
+  (как было бы в случае н-р медиаконвертера) направление (Direction) берём Outer. </li>
+<li>Тип сокета: Male</li>
+<li>Протоколы (<a href="../inventory-protocols-reference/">Protocols</a>) и его спецификации обслуживать он может
+  только 1 протокол: <code>TransEth1G</code></li>
+</ul>
+</li>
+<li>С другой стороны у него оптический порт - назовём его <code>rxtx</code> (т.к. это bidirectional трансивер).
+      Для оптических LC подключений создали тип сязи "<code>Optical | LC</code>"<ul>
+<li>Поскольку в его разъём никакой объект не помещается (в него включается, непосредственно патч-корд)
+  <strong>направление</strong> (Direction) зададим <code>Connection</code></li>
+<li>Тип сокета: <code>Female</code></li>
+<li>Протоколы. Поскольку реализуется протокол Bidirectional мы указываем - передача (знак больше)
+  идёт по протоколу <code>1000BASELX-1310</code>, а приём (знак меньше) - <code>1000BASELX-1550</code>.</li>
+</ul>
+</li>
+</ol>
+<p>На скриншоте 3. Мы заполняем другую сторону связи (коммутатор с 2 - мя SFP портами).</p>
+<ol>
+<li>Связь у нас только в одну сторону (вторым краем разъём впаян в плату,
+    т.е. является неотъемлимой частью шасси). Связь та же, поэтому указываем "<code>Transceiver | SFP</code>"<ul>
+<li>Поскольку в разъём помещается другой объект, указываем <strong>направление</strong> (Direction) - Inner</li>
+<li>Тип сокета: <strong>Female</strong></li>
+<li>Протоколы: согласно списка <a href="../inventory-protocols-reference/">Protocols</a>: <strong>TransEth100M, TransEth1G</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="connection-rule">Правила соединения (Connection Rule)<a class="headerlink" href="#connection-rule" title="Permanent link">&para;</a></h3>
+<p>Более подробное описание доступно по ссылке <a href="connection-rule/">ConnectionRule</a>.</p>
+<p>"Правила соединения служат для преобразования линейного списка объектов,
+выдаваемых скриптом <code>get_inventory</code> в дерево путем организации соответствующих связей" © 
+Перефразируя, используя поля <code>Type</code> и <code>Number</code>, выдаваемые скриптом <code>get_inventory</code>,
+а также порядок элементов. Основные термины, которыми оперирует правило это область (<code>Scope</code>)
+и контекст (Context).</p>
+<ul>
+<li><strong>Context</strong> - некая область в оборудовании где находится компонент.
+  Например шасси, карта расширения и пр. Заполняется скриптом get_inventory при работе.</li>
+<li><strong>Scope</strong> - область поиска подключения в модели объекта.
+  Поиск производится по имени, до 1 совпадения.</li>
+</ul>
+<p>Требуются пояснения <img alt="😄" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f604.svg" title=":smile:" />. В общем-то, правило - это конвертер списка компонентов оборудования
+в трёхмерную модель. Для примера, можно представить что вам пришёл конструктор,
+вместо собранной и упакованной железки. Шасси - коробка, материнская плата, на ней разъёмы,
+куда можно вставлять компоненты карточки, платы.
+В самих платах могут быть SFP порты, в которые можно вставлять Трансиверы.
+Вот инструкция - как это всё правильно собирается и есть правила соединения (<strong>Connection Rule</strong>).</p>
+<p>Посмотрим на примере простого коммутатора н-р "<strong>Cisco | ME3600 | ME-3600X-24FS-M</strong>".
+Как видно на скриншоте у "<strong>ME-3600X-24FS-M</strong>" большое число SFP портов, плюс,
+есть 2 места под блоки питания (1 и 2). </p>
+<p><img alt="Пример соединений ME-3600X-24FS-M" src="../../create-object-models-howto/inv_setup_obj_mo_me4600_connrule.png" />
+<img alt="Правила подключения" src="../../create-object-models-howto/inv_setup_connrule_gen_switch.png" /></p>
+<p>Если взглянуть на <code>show interfaces</code> со стороны коммутатора,
+то увидим что команда возвращает просто список компонентов,
+но указывает номера, мест, которые занимают блоки питания.
+Во время работы скрипта <code>get_interfaces</code> <em>блокам питания</em> присвоится тип тип <code>PSU</code>,
+<em>шасси</em> - <code>CHASSIS</code>, <em>трансиверам</em> - <code>XCVR</code>.
+И вместе с ними вернутся цифры, занимаемых ими слотов (1 и 2 для <code>PSU</code> и 
+какие-то для трансиверов н-р 2 и 3).</p>
+<div class="highlight"><span class="filename">show inventory ME-3600</span><pre><span></span><code>Switch#show<span class="w"> </span>inventory
+
+NAME:<span class="w"> </span><span class="s2">&quot;1&quot;</span>,<span class="w"> </span>DESCR:<span class="w"> </span><span class="s2">&quot;ME-3600X-24FS-M&quot;</span>
+
+PID:<span class="w"> </span>ME-3600X-24FS-M<span class="w">   </span>,<span class="w"> </span>VID:<span class="w"> </span>V01<span class="w">  </span>,<span class="w"> </span>SN:<span class="w"> </span>FOC1446XXXX
+
+
+
+NAME:<span class="w"> </span><span class="s2">&quot;Power Supply 1&quot;</span>,<span class="w"> </span>DESCR:<span class="w"> </span><span class="s2">&quot;FRU Power Supply&quot;</span>
+
+PID:<span class="w"> </span>PWR-ME3KX-AC<span class="w">      </span>,<span class="w"> </span>VID:<span class="w"> </span>V01<span class="w">  </span>,<span class="w"> </span>SN:<span class="w"> </span>LIT1433XXXX
+
+
+
+NAME:<span class="w"> </span><span class="s2">&quot;Power Supply 2&quot;</span>,<span class="w"> </span>DESCR:<span class="w"> </span><span class="s2">&quot;FRU Power Supply&quot;</span>
+
+PID:<span class="w"> </span>PWR-ME3KX-AC<span class="w">      </span>,<span class="w"> </span>VID:<span class="w"> </span>V01<span class="w">  </span>,<span class="w"> </span>SN:<span class="w"> </span>LIT1433XXXX
+</code></pre></div>
+<p>Исходя из <code>PartNo</code> NOC найдёт модель с <code>PartNo "ME-3600X-24FS-M"</code> в контексте <code>CHASSIS</code>
+(этот контекст задаётся в поле <code>Context</code> модели и на скриншоте показан).
+Далее, в поле "<strong>Connection Rule</strong>" обнаружится правило "<code>Generic | Switch SFP Prefixed</code>"
+согласно ему тип <code>PSU</code> необходимо искать в области (<strong>Scope</strong>) chassis,
+а имя искомого PSU будет <code>psu{N}</code>, где <code>{N}</code> - заменится на номер компонента
+(в нашем случае будут psu1 и psu2).</p>
+<p>В результате на места <code>psu1</code> и <code>psu2</code> установятся объекты "<strong>PWR-ME3KX-AC</strong>".</p>
+<h2 id="_2">Инструкция (технология)<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">Просмотр информации о моделях<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>Первый вопрос, на который необходимо получить ответ:
+<em>есть ли в НОКе необходимая модель</em> (или её близкий аналог).
+Информацию о загруженных в NOC моделях можно просмотреть в отчёте 
+<code>Inventory -&gt; Reports -&gt; "Part Numbers"</code>, столбец <code>Name</code>.
+Информацию по объектам, для которых отсутствуют модели можно посмотреть в отчёте 
+<code>Inventory -&gt; Reports -&gt; "Unknown Models Summary"</code>.</p>
+<p><img alt="Отчёт Part Numbers" src="../../create-object-models-howto/inv_reports_par_no.png" />
+<img alt="Отчёт Unknown Models Summary" src="../../create-object-models-howto/inv_reports_unknown_models.png" /></p>
+<h3 id="_4">Исходные данные<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>Исходными данными для создания моделек, в идеальном случае, является вывод 
+((ссылка на тушёнку)"тушёнка") скрипта <code>get_inventory</code>. 
+В случае их отсутствия, например скрипт ещё не написан или его вывод неполон
+(в этом случае необходимо внести изменения в скрипт, иначе НОК не сможет скомпоновать объект),
+можно воспользоваться выводом команд показа аппаратных компонентов оборудования
+((ссылка на таблицу)"<code>show inventory</code>" - Cisco, ...).
+Можно попробовать создать модельку по данным с сайта производителя
+(н-р для Cisco тип документации <code>Hardware Guide</code>), это хорошо подходит для не модульных устройсв
+(коммутаторов, простых маршрутизаторов, линейные карты) 
+т.к. они содержат только стационарные компоненты (не заменяемые) или трансиверы (SFP).</p>
+<p>Посмотреть вывод скрипта <code>get_inventory</code> можно или через механизм отладки
+(debug script (ссылка на отладку)) или через меню <code>"Service Activation" -&gt; "Managed Object" -&gt; &lt;MO&gt; -&gt; Scripts</code>.
+По двойному клику на имени скрипта (<code>get_inventory</code>) отобразится его вывод.</p>
+<p><img alt="Форма ManagedObject" src="../../create-object-models-howto/sa_mo_Scripts.png" />
+<img alt="Скрипт get_inventory" src="../../create-object-models-howto/sa_mo_Scripts_get_inventory.png" /></p>
+<p>Скрипт возвращает таблицу со следющими полями (столбцами):</p>
+<table>
+<thead>
+<tr>
+<th>Имя поля</th>
+<th>Описание</th>
+<th>Пример</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Type</td>
+<td>Тип компонента. Поле задаётся в скрипте (на основе данных, возвращаемых оборудованием)</td>
+<td></td>
+</tr>
+<tr>
+<td>Number</td>
+<td>Номер компонента в устройстве (например номер слота для линейной карты, номер SFP модуля).</td>
+<td></td>
+</tr>
+<tr>
+<td>Builtin</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Vendor</td>
+<td>Производитель компонента (н-р производители коммутатора и SFP модуля могут отличаться)</td>
+<td></td>
+</tr>
+<tr>
+<td>Part No</td>
+<td>Название модели</td>
+<td></td>
+</tr>
+<tr>
+<td>Revision</td>
+<td>Номер ревизии компонента</td>
+<td></td>
+</tr>
+<tr>
+<td>Serial No</td>
+<td>Серийный номер</td>
+<td></td>
+</tr>
+<tr>
+<td>Description</td>
+<td>Описание</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Среди полей обязательные - это Тип, Number: вместе участвуют в работе правила соединения (Connection Rule)), Part No и/или Serial No - участвуют в сопоставлении данных и модели.</p>
+</div>
+<h3 id="_5">Бумага и ручка<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h3>
+<p>После получения исходных данных, бывает, полезно сесть и посмотреть - что получится в дальнейшем. В этом могут помочь несколько вопросов:</p>
+<ol>
+<li>Насколько полные данные вернул скрипт?</li>
+<li>Ответ на этот вопрос позволит понять, что можно получить в конце. Такие данные, как Type и Number, формируются в самом скрипте, т.е. устройство напрямую их может не возвращать, но, часто, их можно определить по косвенным данным (порядок следования компонентов, парт номера). А вот Part No и Serial скрипт сам придумать не сможет (на самом деле, их можно "захардкодить в скрипте, но так делать крайне не рекомендуется, т.к. теряется смысл инвентори - отражение реальной ситуации). Исходя из этого - если из устройства нет возможности вытащить Part No и Serial компонента - в модель его включить нужно, но в реальности он туда не попадёт (пока производитель не исправит баг или не доделает нормальный вывод по компонентам).</li>
+<li>Есть ли в НОКе аналоги данного устройства или его компонентов.</li>
+<li>Тут всё логично - если кто-то уже сделал половину работы за нас - смысл её переделывать? Особенно, это касается немодульного оборудования, скорее всего, пользуясь такой же логикой, производители делают их не отличимыми друг от друга. Меняются только число и положение SFP портов. Это значит что можно просто найти подходящую модель, клонировать (Clone), исправить/дополнить (также методом Клонирования (Clone) число портов и/или SFP дырок, поправить Par No и обрести счастье, в лице сэкономленного времени.</li>
+<li>Является ли устройство модульным?</li>
+<li>Ответ на этот вопрос является (в большинстве случаев) ответом на вопрос: "Надо ли писать правило соединения (<a href="connection-rule/">Connection Rule</a>)?". Если устройство не модульное (н-р коммутатор с SFP портами) то можно просто воспользоваться стандартным правилом (н-р "Generic | Switch SFP Prefixed", "Generic | Switch SFP" и др.). Если же,устройство оказалось модульными, то без написания собственного правила соединения (Connection Rule) не обойтись (если только, например, неизвестный компонент не оказался компонентом модульного устройства и сам не является модульным (н-р линейная карта с портами))</li>
+<li>Есть ли готовые модельки и соединения для компонентов устройства в НОКе?</li>
+<li>И если устройство оказалось <em>модульным</em>, то необходимо посмотреть (по <code>Part No</code>), есть ли в НОКе модельки для компонентов этого устройства?
+   Сложность тут состоит в следующем: если моделек нет, то, в общем-то, вам повезло - "Вы первый!". 
+   Можете безгранично творить модельку, правила соединений и всё, что нужно, для работы модельки.
+   Но если вам не повезло и какие-то компоненты уже есть, то вы обязательно столкнётесь
+   с такой штукой как тип соединения (<a href="../connection-types-reference/">Connection Type</a>). 
+   Пока, запомните этот термин. В разделе про Написание правил поговорим отдельно. (может быть тут)</li>
+</ol>
+<p>Смысл в том, что Вендоры очень любят делать свои интерфейсы подключений
+и ладно бы они были общие для всего оборудования.
+Зачастую, общие они бывают для линейки оборудования, и это было бы ничего!
+Но, бывает и так, что в новом оборудовании можно использовать какие-то компоненты от
+старого (это называется совместимость), а компоненты от нового в старом использовать нельзя.
+(Особенно этим славится <code>Cisco</code>, в основном, из-за большой номенклатуры выпускаемых компонентов).</p>
+<h3 id="1-cisco-nexus-3048">Пример 1. Cisco Nexus 3048.<a class="headerlink" href="#1-cisco-nexus-3048" title="Permanent link">&para;</a></h3>
+<p>После столько длительного введения, мы перешли к главному блюду (готовка моделек).
+Как принято в кулинарии в начале разберём рецепт, и подготовим ингридиенты.
+Для примера возьмём устройство <code>Cisco Nexus 3048TP</code> (см. скришнот в Исходных данных).
+Пройдёмся по пунктам из предыдущего раздела и заполним в конце итоговую табличку:</p>
+<h4 id="_6">Проверим данные скрипта<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h4>
+<p>Заполним Исходные данные в табличке. Как мы видим, скрипт возвращает полный комплект данных.
+Сверим его с документацией на сайте производителя (или поверим на слово) 
+<code>Cisco Nexus 3048 Switch Data Sheet</code>. По нему в состав оборудования входит (Specification -&gt; Physical):</p>
+<ul>
+<li>1RU fixed form-factor switch</li>
+<li>48 10/100/1000-Mbps RJ-45 ports</li>
+<li>4 1/10 Gbps SFP+ uplink ports</li>
+<li>2 redundant power supplies</li>
+<li>1 fan tray with redundant fans</li>
+<li>1 I/O module with management, console, and USB flash memory ports</li>
+</ul>
+<p>Как видим, не очень сходится с тем, что мы видимо в таблице(smile) давайте сопоставлять:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1RU fixed form-factor switch</td>
+<td>это шасси (N3K-C3048TP-1GE) судя по возвращаемым скриптом данным в него вставляется всё остальное</td>
+</tr>
+<tr>
+<td>48 10/100/1000-Mbps RJ-45 ports</td>
+<td>48 портов. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)</td>
+</tr>
+<tr>
+<td>4 1/10 Gbps SFP+ uplink ports</td>
+<td>4 SFP порта. Это физические порты являются частью супервизора (N3K-C3048TP-1GE-SUP)</td>
+</tr>
+<tr>
+<td>2 redundant power supplies</td>
+<td>по исходным данным нам вернулось 2 PSU</td>
+</tr>
+<tr>
+<td>1 fan tray with redundant fans</td>
+<td>в исходных данных есть</td>
+</tr>
+<tr>
+<td>1 I/O module with management, console, and USB flash memory ports</td>
+<td>Являются встроенными, поэтому скрипт их не вернул</td>
+</tr>
+</tbody>
+</table>
+<p>В общем, выглядит логично. Так что считаем что по этому вопроске всё хорошо.</p>
+<h4 id="_7">Поищем аналоги<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h4>
+<p>Данный пункт можно совместить с последним. Ищем аналоги и, заодно, и совпадения - возможно, всё уже придумано до нас. Открываем Inventory -&gt; Setup -&gt; "Object Model". Вверху в фильтре выбираем Cisco -&gt; Nexus (цифра 8) и начинаем смотреть, что тут есть.</p>
+<p><img alt="Список моделей Cisco Nexus" src="../../create-object-models-howto/inv_setup_obj_mo_find_analog.png" /></p>
+<p>Наблюдаем модельки для Nexus'ов серии 2K (цифры 5 и 6): <em>Шасси</em> и <em>супервизор</em>.
+Скорее всего, они нам подойдут. Заходим внутрь шасси и гипервизора и смотрим что там.</p>
+<p><img alt="Пример модели шасси Nexus 2k" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_chass.png" />
+<img alt="Плата супервизора Nexus 2k" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_sup.png" />
+<img alt="Плата супервизора Nexus 5k" src="../../create-object-models-howto/inv_setup_obj_mo_N5K_sup.png" /></p>
+<ol>
+<li>В шасси "Cisco | NEXUS | N2K-C2232PP-10GE" в разделе соединений (цифра 2) видим 4 соединения
+   (супервизор, блок вентиляторов и 2 для блоков питания) у нас, как раз, столько и указано в документации.
+   Делаем вывод - в качестве аналога нам подходит.</li>
+<li>В супервизоре "<code>Cisco | NEXUS | N2K-C2232PP-10GE-SUP</code>" (скриншот посередине) 38 SFP+ портов,
+   у нас же <em>48 встроенных Ethernet плюс 4 SFP+</em>. Плюс в нём не указаны USB, консольный и Management порты.
+   В качестве аналога подходит, но лучше что-нибудь поближе, чтобы меньше править.</li>
+<li>В разделе Nexus есть супервизор "<code>Cisco | NEXUS | N5K-C5596UP-SUP</code>" (скриншот справа),
+    там уже присутствуют консольный, USB порты. Но все интерфейсы SFP+. 
+    Можно было бы взять обычный коммутатор (на 48 портов), но у него отличается именование интерфейсов
+   (у Nexus'ов - Ethernet, у IOS-based GigabitEthernet, FastEthernet и т.д.)</li>
+<li>В итоге проще взять "<code>Cisco | NEXUS | N5K-C5596UP-SUP</code>" и удалить лишнее(smile)</li>
+</ol>
+<p>Для блока вентиляторов всё, относительно просто, подключение у него одно, портов нет.
+Поэтому можем взять первый подходящий - "<code>Cisco | NEXUS | N2K-C2232-FAN</code>"</p>
+<p>Модели для блоков питания у нас уже есть: <code>Cisco | NEXUS | N2200-PAC-400W</code> 
+достаточно просто воспользоваться необходимым подключением.</p>
+<h4 id="_8">Модульность<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h4>
+<p>После того как мы проштудировали НОК на предмет аналогов и документацию производителей 
+на предмет сведений о составе оборудования (в случае её отсутствия всё усложняется но 
+всегда можно посмотреть на внутренности железки и/или поспрашать у знающих людей) у нас 
+достаточно информации чтобы сказать о модульности или немодульности.</p>
+<p>Вопрос, применительно к современному оборудованию не всегда простой, например, 
+в нашем случае, с одной стороны: монолитный корпус, никакой возможносты
+отсоединить что-нибудь нет (кроме как с подручными средствами).
+С другой стороны инвентори нам явно указывает, что есть шасси, в которое
+вотктнут модуль супервизора. А по нумерации интерфейсов явно видно 
+что принадлажат они не шасси (<code>Eth1/X</code> и т.д).</p>
+<p>В данном случае, лучше довериться выводу с самого оборудования. Это проще чем выдумывать себе как должно быть(smile) в идеале.</p>
+<p>Итогом рассуждений является галочка напротив модульности шасси (корпуса) и не модульности всего остального.
+Из этого следует вывод, что нам придётся приступить к написанию правила соединения для шасси
+(как всё удачно получается, а вроде бы... всего-то 1 юнитовый коммутатор...)</p>
+<h4 id="_9">Гототовые компоненты и соединения<a class="headerlink" href="#_9" title="Permanent link">&para;</a></h4>
+<p>В ходе выполнения пункта 2 мы уже нашли 1 готовую модельку - для блока питания "<code>N2200-PAC-400W</code>".
+Из этого можно сделать 2 вывода:</p>
+<ol>
+<li>Нам не придётся делать для него модельку. Ура, хвала многим пользователям!</li>
+<li>Нам, каким-то образом, придётся объяснять НОКу, что блок питания для <code>Nexus'a 2K</code> можно вставить в Nexus 3K... Но об этом в следующем пункте</li>
+</ol>
+<p>Для компонентов "<code>N3K-C3048TP-1GE-SUP</code>" и "<code>N3K-C3048-FAN</code>" подходящих соединений нет. Необходимо создавать.</p>
+<p>Вот такая табличка получилась по итогам разбирательства с одной железкой....
+В принципе таким методам имеет смысл прибегать в сложных случаях.
+Всё-таки в НОКе уже сделаны модели для, довольно, большого количества основных типов оборудования.
+(Хвала пользователям НОКа!) И шанс, что вы встретитесь с каким-то, прямо, уникальным случаем,
+для которого не удастся подобрать аналоги небольшой(smile)
+Исходные данные </p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Number</th>
+<th>Vendor</th>
+<th>Part No</th>
+<th>Serial No</th>
+<th>Аналоги</th>
+<th>Модульность</th>
+<th>Готовые модельки</th>
+<th>Готовые соединения</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHASSIS</td>
+<td>None</td>
+<td>Cisco</td>
+<td>N3K-C3048TP-1GE</td>
+<td>XXXXX</td>
+<td>Cisco &#124; NEXUS &#124; N2K-C2232PP-10GE</td>
+<td>есть</td>
+<td>нет</td>
+<td>-</td>
+</tr>
+<tr>
+<td>SUP</td>
+<td>1</td>
+<td>Cisco</td>
+<td>N3K-C3048TP-1GE-SUP</td>
+<td>XXXXX</td>
+<td>Cisco &#124; NEXUS  &#124; N2K-C2232PP-10GE-SUP , Cisco &#124; &#124; NEXUS &#124; N5K-C5596UP-SUP</td>
+<td>нет</td>
+<td>нет</td>
+<td>Нет</td>
+</tr>
+<tr>
+<td>FAN</td>
+<td>1</td>
+<td>Cisco</td>
+<td>N3K-C3048-FAN</td>
+<td>XXXXX</td>
+<td>Cisco &#124; NEXUS &#124; N2K-C2232-FAN</td>
+<td>нет</td>
+<td>нет</td>
+<td>Нет</td>
+</tr>
+<tr>
+<td>PSU</td>
+<td>1</td>
+<td>Cisco</td>
+<td>N2200-PAC-400W</td>
+<td>XXXXX</td>
+<td></td>
+<td>нет</td>
+<td>Cisco &#124; NEXUS &#124; N2200-PAC-400W</td>
+<td>Есть, но использовать не удастся</td>
+</tr>
+<tr>
+<td>PSU</td>
+<td>2</td>
+<td>Cisco</td>
+<td>N2200-PAC-400W</td>
+<td>XXXXX</td>
+<td></td>
+<td>нет</td>
+<td>Cisco &#124; NEXUS &#124; N2200-PAC-400W</td>
+<td>Есть, но использовать не удастся</td>
+</tr>
+</tbody>
+</table>
+<p>(таблица соединений)</p>
+<h3 id="_10">Готовим соединения<a class="headerlink" href="#_10" title="Permanent link">&para;</a></h3>
+<p>Для связи созданных моделей между собой необходимо задействовать соединения.
+Нам их понадобится 3: для блока питания, для блока вентиляторов и для супервизора.
+При этом необходимо дать возможность блокам питания для N2K пользоваться соединением
+для блоков питания N3K, при этом блоки питания для Nexus 3K не могут пользоваться соединением для Nexus 2K.</p>
+<h4 id="_11">Подключение для блока вентиляторов<a class="headerlink" href="#_11" title="Permanent link">&para;</a></h4>
+<p>Воспользуемся подключением для блока вентиляторов Nexus 2k: <code>Inventory -&gt; Setup -&gt; "Connection Type" -&gt; "Cisco | Nexus 2k | 2232PP/TM FAN"</code>.</p>
+<p>Изменим <strong>Name</strong> (Имя) и <strong>Description</strong> (Описание) типа соединения.
+Отношение родства не поменялись, так что оставим прежними.</p>
+<p><img alt="Соединение вентилятора до" src="../../create-object-models-howto/inv_setup_conntype_N2K_fanToN3K_fan.png" />
+<img alt="Соединение вентилятора после" src="../../create-object-models-howto/inv_setup_conntype_N2K_fanToN3K_fan_after.png" /></p>
+<h4 id="_12">Подключение для супервизора<a class="headerlink" href="#_12" title="Permanent link">&para;</a></h4>
+<p>По аналогии создаём тип подключения для супервизора.
+Для этого <strong>клонируем</strong> тип подключения для <code>Nexus 2K</code>: <code>Inventory -&gt; Setup -&gt; "Connection Type" -&gt; "Cisco | Nexus 2k | C2232PP SUP"</code>
+и переименуем его в "<code>Cisco | Nexus 3k | C3048 SUP</code>".</p>
+<p><img alt="Соединение супервизора до" src="../../create-object-models-howto/inv_setup_conntype_N2K_supToN3K_sup.png" />
+<img alt="Соединение супервизора после" src="../../create-object-models-howto/inv_setup_conntype_N2K_supToN3K_sup_after.png" /></p>
+<h4 id="_13">Подключение для блока питания<a class="headerlink" href="#_13" title="Permanent link">&para;</a></h4>
+<p>Также по аналогии клонируем тип подключения от Nexus 2k: <code>Inventory -&gt; Setup -&gt; "Connection Type" -&gt; "Cisco | Nexus 2k | 2200 PSU"</code>.
+И переименуем его в "<code>Cisco | Nexus 3k | PSU</code>"</p>
+<p><img alt="Соединение вентилятора до" src="../../create-object-models-howto/inv_setup_conntype_N2K_supToN3K_psu_after.png" />
+<img alt="Соединение вентилятора после" src="../../create-object-models-howto/inv_setup_conntype_N2K_supToN3K_psu.png" /></p>
+<p>Для возможности подключения Блоков питания от Nexus 2k дополним (<code>Extend</code>)
+тип подключения "<code>Cisco | Nexus 2k | 2200 PSU</code>" типом "<code>Cisco | Nexus 3k | PSU</code>" (цифра 5).
+<img alt="Расширение подключения PSU" src="../../create-object-models-howto/inv_setup_conntype_N2K_psu_extend.png" /></p>
+<h3 id="_14">Готовим модели<a class="headerlink" href="#_14" title="Permanent link">&para;</a></h3>
+<p>Как мы выяснили в прошлом разделе, нам необходимо создать 3 модели: 
+"<code>N3K-C3048TP-1GE</code>", "<code>N3K-C3048TP-1GE-SUP</code>", "<code>N3K-C3048-FAN</code>".
+При этом есть возможность пользоваться аналогами, что и сделаем.</p>
+<h4 id="n3k-c3048tp-1ge">N3K-C3048TP-1GE<a class="headerlink" href="#n3k-c3048tp-1ge" title="Permanent link">&para;</a></h4>
+<p>Заходим в модель <code>Inventory -&gt; Setup -&gt; "Object Models" -&gt; "Cisco | NEXUS | N2K-C2232PP-10GE"</code>,
+Нажимаем кнопочку Clone (цифра 4) и смотрим - что необходимо поправить.</p>
+<p><img alt="Модель Cisco Nexus до" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_chassToN3K_chass.png" />
+<img alt="Модель Cisco Nexus после" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_chassToN3K_chass_after.png" /></p>
+<ul>
+<li><strong>Name</strong> (Имя) (цифра 5), необходимо сменить Part No <code>N2K-C2232PP-10GE</code> на <code>N3K-C3048TP-1GE</code></li>
+<li><strong>Description</strong> (Описание) (цифра 6), необходимо заменить</li>
+<li><strong>Model Data</strong> (Параметры модели)<ul>
+<li><code>asset</code> (цифра 7) part_no необходимо изменить на <code>N3K-C3048TP-1GE</code></li>
+<li><code>stack</code> - 3048TP не поддерживает стэкирование, поэтому необходимо удалить или исправить на False</li>
+</ul>
+</li>
+<li><strong>Connections</strong> (Соединения) (цифра 7) необходимо поменять типы соединений. <code>Направления</code> (Direction) и <code>разъём</code> (Gender) не меняеются.</li>
+</ul>
+<p>После внесения изменения необходимо сохранить новую модель. Нажимаем кнопку <strong>Save</strong>.
+На скиншоте справа от оригинального в модель уже внесены изменения.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Будьте внимательны при клонировании объектов. Очень часто встречается ситуация,
+когда забывают нажать кнопку <strong>Clone</strong>!
+Перед сохранением нового объекта, который был клонирован - проверьте что кнопка Clone не активна! (серая). Если она активна - изменения вносятся в оригинальный объект! и перед сохранением необходимо нажать кнопку Clone.</p>
+</div>
+<h4 id="n3k-c3048-fan">N3K-C3048-FAN<a class="headerlink" href="#n3k-c3048-fan" title="Permanent link">&para;</a></h4>
+<p>Заходим в модель <code>Inventory -&gt; Setup -&gt; "Object Models" -&gt; "Cisco | NEXUS | N2K-C2232-FAN"</code>,
+Нажимаем кнопочку <em>Clone</em> (цифра 4) и смотрим - что необходимо поправить.
+<img alt="Модель вентилятора Cisco Nexus до" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_fanToN3K_fan.png" />
+<img alt="Модель вентилятора Cisco Nexus после" src="../../create-object-models-howto/inv_setup_obj_mo_N2K_fanToN3K_fan_after.png" /></p>
+<h4 id="n3k-c3048tp-1ge-sup">N3K-C3048TP-1GE-SUP<a class="headerlink" href="#n3k-c3048tp-1ge-sup" title="Permanent link">&para;</a></h4>
+<p>Заходим в модель <code>Inventory -&gt; Setup -&gt; "Object Models" -&gt; "Cisco | NEXUS | N5K-C5596UP-SUP"</code>,
+Нажимаем кнопочку <em>Clone</em> (цифра 4) и смотрим - что необходимо поправить.
+Кроме обычных полей <strong>Имя</strong> (Name), <strong>Описание</strong> (Description), part_no. Необходимо править большую таблицу с интерфейсами.</p>
+<p><img alt="Исохданая Модель супервизора Cisco Nexus" src="../../create-object-models-howto/inv_setup_obj_mo_N5K_supToN3K_sup.png" />
+<img alt="Модель супервизора Cisco Nexus после(1)" src="../../create-object-models-howto/inv_setup_obj_mo_N5K_supToN3K_sup_after1.png" />
+<img alt="Модель супервизора Cisco Nexus после(2)" src="../../create-object-models-howto/inv_setup_obj_mo_N5K_supToN3K_sup_after2.png" /></p>
+<p>В модели <code>N3K-C3048TP-1GE-SUP</code> в отличие от <code>N5K-C5596UP-SUP</code> 48 Ethernet интерфейсов типа
+<code>RJ-45</code> + <em>4 Интерфейса SFP</em> (вместо 48 SFP дырок на <code>N5K-C5596UP-SUP</code>).
+Поэтому менять придётся всё. За исключением <em>имени</em> и <em>Gender'a</em>. Поступаем слудующим образом:</p>
+<ol>
+<li>Оставляем только интефейс Eth1 - остальный (с Eth1/2 до Eth1/48) удаляем.</li>
+<li>В строчку интерфейса вносим следующие изменения:<ul>
+<li>ConnectionType меняем на "Electrical | RJ45"</li>
+<li>Direction меняем на s (Connection)</li>
+<li>Protocols - вписываем "10BASET,100BASETX,1000BASETX"</li>
+<li>Description - будем писать полные имена интерфейсов "Ethernet1/48</li>
+</ul>
+</li>
+<li>После этого выделяем строчку и жмём кнопочку Clone над списком (цифра 8) 48 раз. Должно получиться 48 интерфейсов плюс 1</li>
+<li>После выправляем Name (имена) и Description (Описания).</li>
+<li>Далее выделяем 49 строчку и переделываем её под SFP<ul>
+<li>ConnectionType меняем на "Transceiver | SFP+"</li>
+<li>Direction меняем на i (Inner)</li>
+<li>Protocols - вписываем "TransEth1G,TransEth10G"</li>
+</ul>
+</li>
+<li>Клонируем строчку 3 раза (делаем интерфейсы с Eth1/50 по Eth1/52)</li>
+</ol>
+<p>Результат должен совпасть со скриншотами справа.</p>
+<h3 id="_15">Написание правил<a class="headerlink" href="#_15" title="Permanent link">&para;</a></h3>
+<p>Остался последний пункт в программе готовки модели к использованию. Рекомендую освежить знания в ConnectionRule.</p>
+<p>Правила необходимы для стыковки <strong>Направлений</strong> (Direction) <code>Inner</code> и <code>Outer</code>.
+В нашем случае нам необходимо описать соединение связей типа: <code>psu</code> (1 и 2), <code>fan</code> и <code>sup</code>.
+Также в супервизор могут подключаться SFP модули (тип <code>xcvr</code>).</p>
+<p>Когда мы делали модель для шасси, то в ней уже было заполнено поле правила. Поэтому воспользуемся им.</p>
+<p><img alt="Исходное правило соединения для модели" src="../../create-object-models-howto/inv_setup_connrule_cisco_nexus.png" /></p>
+<ol>
+<li>Вначале заполняем секцию Context. <ul>
+<li>Поле <strong>TYPE</strong> должно совпадать с TYPE, который возвращает скрипт get_inventory и в него должно что-то подсоединяться.
+В нашем случае это выполняется для шасси (в него подключаются блоки питания,
+супервизор) и для супервизора (в него подключаются SFP). GEM в Nexus 3K нет.</li>
+<li><strong>Область</strong> (Scope), для удобства, делают из TYPE, строчными буквами.</li>
+<li><strong>Reset Scopes</strong> - необходимо, чтобы НОК откатывался на уровень назад, при обходе выводы get_inventory. Иначе, он будет всё искать в chassis.</li>
+</ul>
+</li>
+<li>Заполняем правила<ul>
+<li>В первом столбце перечисляем все возможные элементы TYPE. (Указываем Что мы будем связывать)</li>
+<li><strong>Match connection</strong> Имя (Name) в таблице соединений объекта, который связываем</li>
+<li><strong>Scope</strong> (Область) сюда заносим область в которой будет поиск вариантов, т.е. ту, 
+  куда будет включаться компонент (н-р БП будет включаться в шасси - для тип CHASSIS область chassis и указываем 
+  её здесь, трансиверы будут вставляться в супервизор - SUP, значит пишем в Scope sup)</li>
+<li><strong>Target Type</strong> - тип объекта с которым будет происходить соединение. Поле будет совпадать с полем Connection Context в модели</li>
+<li><strong>Target connection</strong> - показываем куда мы будем втыкать - будет совпадать с полем Name в таблице соединений</li>
+</ul>
+</li>
+</ol>
+<p>Как мы видим - правило нам подходит. На лишние типы подключений (<code>GEM</code>) можно не обращать внимания.
+Идём в "<code>Cisco | NEXUS | N3K-C3048TP-1GE</code>" и назначаем <a href="connection-rule/">Connection Rule</a> (цифра 1).</p>
+<p><img alt="Итоговое правило соединения для модели " src="../../create-object-models-howto/inv_setup_obj_mo_N3K_chass_wtest.png" /></p>
+<h2 id="_16">Тестирование<a class="headerlink" href="#_16" title="Permanent link">&para;</a></h2>
+<p>Для проверки работоспособности модели в НОК встроена возможность тестирования.
+В каждой модели или правиле соединений в верхней панели есть кнопка Test (цифра 5 на скриншоте выше).
+При её нажатии НОК скомпонует модель объекта согласно выполненным настройкам. Покажет, возможные варианты.</p>
+<p><img alt="Проверка подключения модели" src="../../create-object-models-howto/inv_setup_obj_mo_N3K_chass_test.png" /></p>
+<p>На скриншоте НОК нам показывает варианты подключений.
+В слот блока питания возможно подключить: "<code>Cisco | NEXUS | N2200-PDC-400W</code>",
+"<code>Cisco | NEXUS | N2200-PDC-400W-B</code>", "<code>Cisco | NEXUS | N2200-PAC-400W</code>",
+"<code>Cisco | NEXUS | N2200-PAC-400W-B</code>". Т.е. все блоки питания от Nexus 2K, что и требовалось.
+В слот вентилятора подключается только вентиляторный блок для N3K, также со слотом супервизора.</p>
+<p>Если взглянуть на ситуацию со стороны супервизора, то можно увидеть, что он подключается к шасси.
+Также, в 4 интерфейса возможна установка Трансиверов.</p>
+<p><img alt="Возможные подключения для модели супервизора" src="../../create-object-models-howto/inv_setup_obj_mo_N3K_sup_test.png" />
+<img alt="Возможные подключения для портов модели" src="../../create-object-models-howto/inv_setup_obj_mo_N3K_sup_test2.png" /></p>
+<p>Также доступно тестирование из командной строки
+<div class="highlight"><span class="filename">Пример вывода скрипта</span><pre><span></span><code>/opt/noc$<span class="w"> </span>./noc<span class="w"> </span>verify-model
+Cisco<span class="w"> </span><span class="p">|</span><span class="w"> </span>ASR901<span class="w"> </span><span class="p">|</span><span class="w"> </span>A901-6CZ-FT-D<span class="w"> </span>errors:
+<span class="w">    </span>TOD:<span class="w"> </span>RJ45<span class="w"> </span>must<span class="w"> </span>have<span class="w"> </span>at<span class="w"> </span>least<span class="w"> </span>one<span class="w"> </span>protocol
+<span class="w">    </span>BITS:<span class="w"> </span>RJ45<span class="w"> </span>must<span class="w"> </span>have<span class="w"> </span>at<span class="w"> </span>least<span class="w"> </span>one<span class="w"> </span>protocol
+</code></pre></div></p>
+<h2 id="_17">Отвечаем на вопросы<a class="headerlink" href="#_17" title="Permanent link">&para;</a></h2>
+<p>ASR</p>
+<p>Cisco ISR (2901)</p>
+<p>Модульная железка</p>
+<p>Команды работы с Inventory оборудования</p>
+<p>Таблица Вендор, пул команд, назначение, пример вывода</p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../cleaning-false-config-changes-howto/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Cleaning False Config Changes" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Cleaning False Config Changes
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="connection-rule/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Connection Rules" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Connection Rules
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2387 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/performance-management/">
+      
+      
+        <link rel="prev" href="../alarm-escalation-reference/">
+      
+      
+        <link rel="next" href="calculate-metrics/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Overview - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#performance-management" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Select language">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="../ru/performance-management/" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Installation
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/guides/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Background
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/background/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connection-type-restrictions/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Connection Type Restrictions
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../topology-processing-features/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Topology Processing Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Configuration Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../host-discovery-network/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Host Discovery Network
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fault-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Fault Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alarm-escalation-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Alarm Escalation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_9" checked>
+        
+          <label class="md-nav__link" for="__nav_6_9" id="__nav_6_9_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Performance Management
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_9_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_9">
+            <span class="md-nav__icon md-icon"></span>
+            Performance Management
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-management-pm-subsystem" class="md-nav__link">
+    Performance Management (PM) Subsystem
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Management (PM) Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-functionality" class="md-nav__link">
+    Core Functionality
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    Customization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-metrics-terminology" class="md-nav__link">
+    Key Metrics Terminology
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-components" class="md-nav__link">
+    Architecture and Components
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture and Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collector" class="md-nav__link">
+    Collector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric-service" class="md-nav__link">
+    Metric Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-writer-chwriter" class="md-nav__link">
+    Database Writer (CHWriter)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-clickhouse" class="md-nav__link">
+    Database (ClickHouse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activator-metric-discovery" class="md-nav__link">
+    Activator + Metric Discovery
+  </a>
+  
+    <nav class="md-nav" aria-label="Activator + Metric Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-metrics" class="md-nav__link">
+    Supported Metrics:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric-service_1" class="md-nav__link">
+    Metric Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter" class="md-nav__link">
+    CHWriter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clickhouse-ch" class="md-nav__link">
+    ClickHouse (CH)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_1" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-collection-configuration" class="md-nav__link">
+    Metric Collection Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-profile" class="md-nav__link">
+    Object Profile
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interface-profile" class="md-nav__link">
+    Interface Profile
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sla-profile" class="md-nav__link">
+    SLA Profile
+  </a>
+  
+    <nav class="md-nav" aria-label="SLA Profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cpe-profile" class="md-nav__link">
+    CPE Profile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-profile" class="md-nav__link">
+    Sensor Profile
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interval-sharding-for-metrics-collection" class="md-nav__link">
+    Interval Sharding for Metrics Collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-thresholds-metric-rules" class="md-nav__link">
+    Configuring Thresholds (Metric Rules)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Thresholds (Metric Rules)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-action" class="md-nav__link">
+    Metric Action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-custom-metrics" class="md-nav__link">
+    Adding Custom Metrics
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Custom Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-metric-name-metric-type" class="md-nav__link">
+    Adding a Metric Name (Metric Type)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-metric-collection-in-a-profile" class="md-nav__link">
+    Implementing Metric Collection in a Profile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-metric-collection-or-when-things-go-wrong" class="md-nav__link">
+    Debugging Metric Collection (Or When Things Go Wrong)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#missing-graph-panels" class="md-nav__link">
+    Missing Graph Panels
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-data-in-graphs" class="md-nav__link">
+    No Data in Graphs
+  </a>
+  
+    <nav class="md-nav" aria-label="No Data in Graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-metric-collection" class="md-nav__link">
+    Checking Metric Collection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-device-accessibility" class="md-nav__link">
+    Checking Device Accessibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-metrics-service" class="md-nav__link">
+    Checking the Metrics Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-metric-storage-chwriter" class="md-nav__link">
+    Checking Metric Storage (CHWriter)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="calculate-metrics/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Compose Metric (Metric Action)
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference-report-configuration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Working with Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../peering-management/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Peering Management
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../service-status-monitoring/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Monitoring by Service Operation Status
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../message-notification/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Message Notification
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../custom/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Custom
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../card/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Cards
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../etl/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ETL
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../storm-protection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Storm Protection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ui-guideline/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    UI Guideline
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../highlights/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    NOC Products Highlights
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#performance-management-pm-subsystem" class="md-nav__link">
+    Performance Management (PM) Subsystem
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Management (PM) Subsystem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-functionality" class="md-nav__link">
+    Core Functionality
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    Customization
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    Limitations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-metrics-terminology" class="md-nav__link">
+    Key Metrics Terminology
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-components" class="md-nav__link">
+    Architecture and Components
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture and Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collector" class="md-nav__link">
+    Collector
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric-service" class="md-nav__link">
+    Metric Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-writer-chwriter" class="md-nav__link">
+    Database Writer (CHWriter)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-clickhouse" class="md-nav__link">
+    Database (ClickHouse)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activator-metric-discovery" class="md-nav__link">
+    Activator + Metric Discovery
+  </a>
+  
+    <nav class="md-nav" aria-label="Activator + Metric Discovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-metrics" class="md-nav__link">
+    Supported Metrics:
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metric-service_1" class="md-nav__link">
+    Metric Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chwriter" class="md-nav__link">
+    CHWriter
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clickhouse-ch" class="md-nav__link">
+    ClickHouse (CH)
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grafana_1" class="md-nav__link">
+    Grafana
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-collection-configuration" class="md-nav__link">
+    Metric Collection Configuration
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#object-profile" class="md-nav__link">
+    Object Profile
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interface-profile" class="md-nav__link">
+    Interface Profile
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sla-profile" class="md-nav__link">
+    SLA Profile
+  </a>
+  
+    <nav class="md-nav" aria-label="SLA Profile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cpe-profile" class="md-nav__link">
+    CPE Profile
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensor-profile" class="md-nav__link">
+    Sensor Profile
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interval-sharding-for-metrics-collection" class="md-nav__link">
+    Interval Sharding for Metrics Collection
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-thresholds-metric-rules" class="md-nav__link">
+    Configuring Thresholds (Metric Rules)
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuring Thresholds (Metric Rules)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metric-action" class="md-nav__link">
+    Metric Action
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adding-custom-metrics" class="md-nav__link">
+    Adding Custom Metrics
+  </a>
+  
+    <nav class="md-nav" aria-label="Adding Custom Metrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-a-metric-name-metric-type" class="md-nav__link">
+    Adding a Metric Name (Metric Type)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementing-metric-collection-in-a-profile" class="md-nav__link">
+    Implementing Metric Collection in a Profile
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-metric-collection-or-when-things-go-wrong" class="md-nav__link">
+    Debugging Metric Collection (Or When Things Go Wrong)
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#missing-graph-panels" class="md-nav__link">
+    Missing Graph Panels
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#no-data-in-graphs" class="md-nav__link">
+    No Data in Graphs
+  </a>
+  
+    <nav class="md-nav" aria-label="No Data in Graphs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checking-metric-collection" class="md-nav__link">
+    Checking Metric Collection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-device-accessibility" class="md-nav__link">
+    Checking Device Accessibility
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-the-metrics-service" class="md-nav__link">
+    Checking the Metrics Service
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checking-metric-storage-chwriter" class="md-nav__link">
+    Checking Metric Storage (CHWriter)
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/performance-management/index.md" title="Edit this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="performance-management">Performance Management<a class="headerlink" href="#performance-management" title="Permanent link">&para;</a></h1>
+<h2 id="performance-management-pm-subsystem">Performance Management (PM) Subsystem<a class="headerlink" href="#performance-management-pm-subsystem" title="Permanent link">&para;</a></h2>
+<p>The Performance Management (PM) subsystem in NOC is responsible for managing and monitoring metrics. It functions similarly to other systems with some configuration nuances.</p>
+<h3 id="core-functionality">Core Functionality<a class="headerlink" href="#core-functionality" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Periodically retrieves metrics from network equipment.</li>
+<li>Accepts metrics from external systems.</li>
+<li>Default support for collecting a standardized set of metrics, including IF-MIB, and CPU/Memory metrics for common devices.</li>
+<li>Allows metric collection configurations for device ports, SLA probes, sensors, and OLT PON (for Huawei devices).</li>
+<li>Applies threshold values to metrics to trigger alarms.</li>
+<li>Stores collected metrics in a database (utilizes Clickhouse).</li>
+<li>Provides visualization of metrics on Grafana dashboards.</li>
+<li>Supports report generation based on collected metrics.</li>
+</ul>
+<h3 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Allows the addition of custom metrics for collection.</li>
+<li>Provides the ability to create custom Grafana dashboards.</li>
+<li>Enables the creation of reports and analytics using Clickhouse.</li>
+</ul>
+<h3 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h3>
+<p>The PM subsystem has certain limitations:</p>
+<ul>
+<li>It does not support scheduling metric collection at specific times (e.g., collecting metrics at a specific day and hour).</li>
+<li>It cannot collect metrics via IPMI.</li>
+<li>Adding metrics collection via an MIB browser is not supported; it requires custom scripting (Python).</li>
+</ul>
+<p>Please note that this information serves as an overview of the PM subsystem's capabilities and limitations.</p>
+<h3 id="key-metrics-terminology">Key Metrics Terminology<a class="headerlink" href="#key-metrics-terminology" title="Permanent link">&para;</a></h3>
+<p>Here are some important terms used when working with metrics in NOC:</p>
+<ul>
+<li><strong>Metric</strong>: A numerical value describing an object's characteristic.</li>
+<li><strong>Metric Type</strong>: The name of a metric in NOC (metric settings).</li>
+<li><strong>Metric Scope</strong>: A set of fields available to describe a metric.</li>
+<li><strong>Label</strong>: A tag containing information about the metric (metadata).</li>
+<li><strong>Metric Processing Rule</strong>: A description of what the system should do with a metric, often used for setting thresholds.</li>
+<li><strong>Threshold</strong>: A numerical value against which a metric is compared. When exceeded, it triggers an alarm.</li>
+<li><strong>Metric Source</strong>: A record in the system from which a metric is collected. Each source has a unique identifier called <code>bi_id</code>. Available sources include:</li>
+<li>SLA Probe: Utilizes SLA probes on network equipment, such as Cisco SLA-monitor, Juniper RPM, or Huawei NQA.</li>
+<li>Sensor: A sensor on network equipment.</li>
+<li>Managed Object: A network device with an IP address, such as a switch or router.</li>
+<li>CPE (Customer Premises Equipment): Devices that work with a controller, including IP phones, ONTs, and WiFi APs.</li>
+<li>Agent: Gathers information from servers.</li>
+<li><strong>BI ID</strong>: The identifier of the metric source in the metric storage.</li>
+</ul>
+<p>In the context of metric collection, metrics are sometimes categorized as scalar or vector:</p>
+<ul>
+<li><strong>Scalar Metrics</strong>: When one <em>name</em> corresponds to <strong>one</strong> value. For example, if a device has one temperature sensor, the metric "Temperature" will have one value, indicating the reading of that sensor.</li>
+<li><strong>Vector Metrics</strong>: When one <em>name</em> corresponds to <strong>more than one</strong> metric value. For example, the metric "Number of Incoming Packets" has as many values as there are interfaces on a device. In the previous case, if there are multiple temperature sensors, the Temperature metric will return values like "Temperature of Sensor 1," "Temperature of Sensor 2," and so on. Tags are used to differentiate metrics.</li>
+</ul>
+<p>This terminology is essential for working with metrics effectively in NOC.</p>
+<h2 id="architecture-and-components">Architecture and Components<a class="headerlink" href="#architecture-and-components" title="Permanent link">&para;</a></h2>
+<p>Architecturally, the PM (Performance Management) system in NOC consists of the following services:</p>
+<h3 id="collector">Collector<a class="headerlink" href="#collector" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Responsible for collecting metrics.</li>
+<li>Components include:<ul>
+<li>Activator + Discovery: Collects metrics from network devices (Managed Objects).</li>
+<li>MetricCollector: Provides an API for receiving metrics from other systems.</li>
+<li>Agent: Collects metrics from hosts.</li>
+</ul>
+</li>
+</ul>
+<h3 id="metric-service">Metric Service<a class="headerlink" href="#metric-service" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Responsible for calculating metric values and applying threshold rules.</li>
+</ul>
+<h3 id="database-writer-chwriter">Database Writer (CHWriter)<a class="headerlink" href="#database-writer-chwriter" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Writes metrics to the database.</li>
+</ul>
+<h3 id="database-clickhouse">Database (ClickHouse)<a class="headerlink" href="#database-clickhouse" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Stores metrics.</li>
+</ul>
+<h3 id="grafana">Grafana<a class="headerlink" href="#grafana" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Displays collected metrics on graphs.</li>
+</ul>
+<p>Let's delve into each component and describe its role in the process of working with metrics.</p>
+<p><img alt="Architecture Diagram" src="metrics-processed.png" /></p>
+<h3 id="activator-metric-discovery">Activator + Metric Discovery<a class="headerlink" href="#activator-metric-discovery" title="Permanent link">&para;</a></h3>
+<p>The Activator interacts with network equipment through the Discovery service. Metric collection is handled by the 'get_metrics' script with a parameter that specifies the list of metrics to collect. Out of the box, this script supports the standard SNMP metric set, with additional metrics described in the Profile.</p>
+<h4 id="supported-metrics">Supported Metrics:<a class="headerlink" href="#supported-metrics" title="Permanent link">&para;</a></h4>
+<ul>
+<li>IF-MIB: All interface metrics</li>
+<li>sysUptime: Uptime</li>
+<li>CPU | Usage, Memory | Usage: Metrics for specific profiles</li>
+</ul>
+<p>Metrics can be described in two ways:</p>
+<ol>
+<li>In the 'snmp_metrics' folder of the profile, where metric collection configurations are stored as JSON files.</li>
+<li>In the 'get_metrics' script of the profile, where collection is implemented using Python code. The base 'get_metrics' script is located in 'sa/profiles/Generic'.</li>
+</ol>
+<p>Please note that metric collection configurations are generated on the Discovery side and passed to the Activator.</p>
+<h3 id="metric-service_1">Metric Service<a class="headerlink" href="#metric-service_1" title="Permanent link">&para;</a></h3>
+<p>The Metric Service processes incoming metrics in the following steps:</p>
+<ol>
+<li>Checks incoming metrics for compliance with MetricScope.</li>
+<li>Normalizes received values and calculates counter values.</li>
+<li>Applies rules and calculates thresholds.</li>
+<li>Sends metrics for writing to storage.</li>
+</ol>
+<h3 id="chwriter">CHWriter<a class="headerlink" href="#chwriter" title="Permanent link">&para;</a></h3>
+<p>CHWriter is responsible for writing metrics to their respective tables, with table names described in MetricScope.</p>
+<h3 id="clickhouse-ch">ClickHouse (CH)<a class="headerlink" href="#clickhouse-ch" title="Permanent link">&para;</a></h3>
+<p>The ClickHouse database by Yandex serves as the storage for metrics.</p>
+<h3 id="grafana_1">Grafana<a class="headerlink" href="#grafana_1" title="Permanent link">&para;</a></h3>
+<p>Grafana is used to visualize collected metrics in the form of graphs. It utilizes the <code>clickhouse-plugin</code> to interact with the storage. To access the graphs, navigate to the device view and click the "Graphs" button. This will open a general dashboard for the device:</p>
+<p><img alt="Device Dashboard" src="grafana-device-dash1.png" /></p>
+<p>The device dashboard is divided into several areas:</p>
+<ul>
+<li><strong>(1)</strong> Device Card - Provides brief information about the device and buttons to navigate to other dashboards.</li>
+<li><strong>(3)</strong> Sensors Area - Displays graphs for sensors on the device.</li>
+<li><strong>(4)</strong> Interfaces (Ports) Area - Shows graphs of interface (port) utilization.</li>
+<li><strong>(5)</strong> Object Metrics - Displays graphs of metrics added in the object's settings (Object Profile).</li>
+</ul>
+<p>Additional dashboards are accessible via links in the top-right corner <strong>(2)</strong>:</p>
+<ul>
+<li>Packet Interface Utilization Graphs.</li>
+<li>Optical Metrics (DOM) Graphs.</li>
+</ul>
+<p>Please note that if a panel is missing for any interface, you should ensure that metric collection is enabled for that interface.</p>
+<h2 id="metric-collection-configuration">Metric Collection Configuration<a class="headerlink" href="#metric-collection-configuration" title="Permanent link">&para;</a></h2>
+<p>To initiate metric collection, you must enable polling for metrics. In the <em>Managed Object Profile</em>, navigate to the <em>Metrics</em> tab, and check the box for "Enabled Metrics". This action will trigger the collection of metrics assigned to the device.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ensure that the system has successful access to the device for metric collection to work.</p>
+</div>
+<p>Metrics for collection are assigned in <em>group settings</em>, known as <em>Profiles</em>. On the configuration form, you will find a metrics panel with the following settings:</p>
+<ul>
+<li><strong>Default Interval</strong> (<code>Metric Default Interval</code>) - The interval at which metrics are collected. If set to 0, it uses the interval from the <a href="../concepts/managed-object-profile/">Managed Object Profile</a> of the device.</li>
+<li><strong>Maximum Interval Buckets</strong> (<code>Metrics Interval Buckets</code>) - The number of nested collection intervals. For more details, see <a href="#metrics-collection-sharding">Metrics Collection Sharding</a>.</li>
+<li>Metrics for Collection:<ul>
+<li><strong>Metric Type</strong> (<code>MetricType</code>) - The type of metric to collect. Support should be available from the <a href="../profiles-reference/">SA Profile</a>.</li>
+<li><strong>Store</strong> (<code>Is Stored</code>) - Determines whether the metric is saved in the database.</li>
+<li><strong>Interval</strong> (<code>Interval</code>) - An individual collection interval that overrides the <em>default interval</em>.</li>
+</ul>
+</li>
+</ul>
+<p>For device metrics assigned in the <em>Managed Object Profile</em>, a graph is automatically added to the <a href="#Grafana">Grafana</a> dashboard.</p>
+<h2 id="object-profile">Object Profile<a class="headerlink" href="#object-profile" title="Permanent link">&para;</a></h2>
+<p>In the group settings of an object (<code>Managed Object Profile</code>), you can add metrics for the device. These metrics can be any type except for interface metrics and SLA metrics, which are configured in their respective profiles. To access the Object Profile, go to <code>Service Activation -&gt; Setup -&gt; Managed Object Profile -&gt; Metrics</code> and navigate to the Metrics tab.</p>
+<p><img alt="Object Profile Metrics" src="object-profile-metrics1.png" /></p>
+<p>Setting <strong>(1)</strong> <code>enable_metric</code> enables metric polling for the device. If this setting is not enabled, metrics for the device will not be collected.</p>
+<h3 id="interface-profile">Interface Profile<a class="headerlink" href="#interface-profile" title="Permanent link">&para;</a></h3>
+<p>In the group settings of an interface <a href="../concepts/interface-profile/">Interface Profile</a>, you can add metrics that are collected from the interface. For ease of identification, these metrics usually start with <code>Interface | XXX</code>. These settings are located under <code>Inventory -&gt; Setup -&gt; Interface Profiles</code>. The <code>Metric Collected Policy</code> configuration includes the following options:</p>
+<ul>
+<li>Enable</li>
+<li>Disable if Admin Down</li>
+<li>Disable if Oper Down</li>
+</ul>
+<p><img alt="Interface Profile Metrics" src="interface-profile-metrics1.png" /></p>
+<p>Interfaces can be found under <code>Service Activation -&gt; Managed Object -&gt; &lt;ManagedObject&gt; -&gt; Interfaces</code>. To save time, it is recommended to use the automatic profile assignment mechanism: <a href="../concepts/dynamic-profile-classification/">Dynamic Profile Classification</a>.</p>
+<h2 id="sla-profile">SLA Profile<a class="headerlink" href="#sla-profile" title="Permanent link">&para;</a></h2>
+<p>In the group settings of an SLA probe, you can add metrics specific to SLA (Service Level Agreement) measurements. These metrics are usually identified with names starting with <code>SLA | XXX</code>. You can find these settings under <code>SLA -&gt; Setup -&gt; SLA Profiles</code>.</p>
+<p><img alt="SLA Profile Metrics" src="sla-profile-metrics1.png" /></p>
+<h3 id="cpe-profile">CPE Profile<a class="headerlink" href="#cpe-profile" title="Permanent link">&para;</a></h3>
+<p>In the group settings of a CPE (Customer Premises Equipment), you can add metrics for collecting data from CPE devices. These metrics are similar to device metrics but are collected from the CPE controller (<code>Managed Object</code>). You can access these settings under <code>Inventory -&gt; Setup -&gt; CPE Profiles</code>.</p>
+<p><img alt="CPE Profile Metrics" src="cpe-profile-metrics1.png" /></p>
+<h3 id="sensor-profile">Sensor Profile<a class="headerlink" href="#sensor-profile" title="Permanent link">&para;</a></h3>
+<p>Since sensors typically collect only one metric, which is <code>Sensor Value</code>, there is no specific panel for metrics. Instead, you have the setting <strong>(1)</strong> <em>Enable collect</em> to enable or disable metric collection. These settings can be found under <code>Inventory -&gt; Setup -&gt; Sensor Profiles</code>.</p>
+<p><img alt="Sensor Profile Metrics" src="sensor-profile-metrics1.png" /></p>
+<h2 id="interval-sharding-for-metrics-collection">Interval Sharding for Metrics Collection<a class="headerlink" href="#interval-sharding-for-metrics-collection" title="Permanent link">&para;</a></h2>
+<p>In situations where there are a large number of metric sources on a single device, such as numerous SLA probes or CPEs on a controller, metric collection may exceed the specified interval. To address this, you can increase the collection interval for certain metrics. For example, you might set the SLA metrics collection interval to 15 minutes instead of the default 5 minutes. However, this adjustment may still not fit within their specified intervals.</p>
+<p>To avoid this issue, the system provides a mechanism to split metric sources into subintervals, allowing the collection to be spread across the full interval without affecting other metrics.</p>
+<p>You can control this mechanism using the setting <strong>Maximum Interval Buckets</strong>, where you specify the number of available subintervals:</p>
+<ul>
+<li>0 - The number of subintervals is calculated automatically.</li>
+<li>1 - Disable interval sharding, and only 1 subinterval is available.</li>
+<li>2 and greater - Manually set the number of subintervals.</li>
+</ul>
+<p>This mechanism is supported for both SLA and CPE metrics.</p>
+<h2 id="configuring-thresholds-metric-rules">Configuring Thresholds (Metric Rules)<a class="headerlink" href="#configuring-thresholds-metric-rules" title="Permanent link">&para;</a></h2>
+<p>Thresholds are configured in <em>Performance Management -&gt; Setup -&gt; Metric Rules</em>. It is a list of actions for metrics and conditions:</p>
+<ul>
+<li><strong>Enabled</strong> (<code>Active</code>) - whether the rule is active.</li>
+<li><strong>Actions</strong> (<code>Actions</code>) - a list of actions to take when conditions are met.<ul>
+<li><code>MetricAction</code> - manipulation with the metric (see the next chapter). When choosing transformations, the <code>Metric Type</code> is taken into account.</li>
+<li>Metric Type (<code>MetricType</code>) - the type of the metric.</li>
+<li>Thresholds (<code>Thresholds</code>) - a list of thresholds. The verification is carried out sequentially. An alarm is raised when exceeded.<ul>
+<li><code>Op</code> - the operation applied to the metric.</li>
+<li><code>Value</code> - the threshold value for triggering.</li>
+<li><code>Clear Value</code> - the threshold value for cleaning up an alarm. (Optional).</li>
+<li><code>Alarm Class</code> - the class of the alarm. If the alarm class is not specified, the default one is used (<code>NOC | PM | Out of Thresholds</code>).</li>
+<li><code>Alarm Labels</code> - a list of labels that will be assigned to the alarm.</li>
+</ul>
+</li>
+<li><code>Action Param</code> - settings for <code>MetricAction</code>.</li>
+</ul>
+</li>
+<li><strong>Match Rules</strong> (<code>Match Rules</code>) - a set of labels that, when present, cause the rule to be applied to the metric.</li>
+</ul>
+<p><img alt="Metric Rules" src="metric-rules-thresholds1.png" /></p>
+<p>When specifying a <em>transformation</em> (<code>Metric Action</code>), the <em>metric type</em> (<code>Metric Type</code>) is not considered, and thresholds are applied to the result of the transformation. To change the <em>severity of the alarm</em> (<code>severity</code>), use labels (<code>Labels</code>) in accordance with the rules (<code>Alarm Rules</code>).</p>
+<h3 id="metric-action">Metric Action<a class="headerlink" href="#metric-action" title="Permanent link">&para;</a></h3>
+<p>For complex manipulations with metrics, the <code>MetricAction</code> is available, which allows:</p>
+<ul>
+<li>Using windows</li>
+<li>Applying functions</li>
+<li>Calculating metric values through formulas</li>
+</ul>
+<p>You can find these actions in <em>Performance Management -&gt; Setup -&gt; Metric Action</em>. The metric processing process looks as follows:</p>
+<p><img alt="Metric Action Process" src="metricaction-proccessed.png" /></p>
+<p>Metrics marked as <strong>(2)</strong> <code>Input</code> are processed as follows:</p>
+<ul>
+<li><strong>(3,4)</strong> <strong>Activation/Deactivation Window</strong> - window functions for values. Settings include:<ul>
+<li>Window Function and its parameters<ul>
+<li><code>Sum Step</code></li>
+<li><code>Percentile</code></li>
+<li><code>Mean</code></li>
+<li><code>Exp decay</code></li>
+<li><code>Nth</code></li>
+</ul>
+</li>
+<li>Window Type - the principle of determining the window size<ul>
+<li><code>Tick</code> - the number of values in the window</li>
+<li><code>Seconds</code> - the time of the first value</li>
+</ul>
+</li>
+<li><code>Min Window</code> - the minimum window size at which the window function calculation begins. For <code>Tick</code>, it is the number of measurements, for <code>Seconds</code>, it is the seconds from the last value.</li>
+<li><code>Max Window</code> - the maximum window size, values above it are discarded.</li>
+<li>Window function parameters (depend on the selected function).</li>
+</ul>
+</li>
+<li><strong>Activation/Deactivation function</strong> - an <a href="https://en.wikipedia.org/wiki/Activation_function">activation function</a> that takes the metric value as input and outputs one or zero.<ul>
+<li><code>SoftPlus</code></li>
+<li><code>Relu</code>, <code>Rectifier</code></li>
+<li><code>Indicator</code></li>
+<li><code>Logistic</code></li>
+</ul>
+</li>
+<li><strong>Compose Metric</strong> - stores the metric in the database, requiring a filled <code>MetricType</code>.</li>
+<li><strong>Alarm</strong> - raises an alarm, requiring a filled <code>Alarm Class</code>.</li>
+</ul>
+<p><img alt="Metric Action Errors" src="metric-actions-errors1.png" /></p>
+<h2 id="adding-custom-metrics">Adding Custom Metrics<a class="headerlink" href="#adding-custom-metrics" title="Permanent link">&para;</a></h2>
+<p>Adding a new metric involves two steps:</p>
+<ol>
+<li>Adding the metric's name to the system as a <a href="../metrics-reference/">Metric Type</a>.</li>
+<li>Adding the metric collection in an <a href="../profiles-reference/">SA Profile</a>.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the metric name already exists (e.g., <code>CPU | Usage</code>) but collection is not implemented, you need to modify the profile.</p>
+</div>
+<h3 id="adding-a-metric-name-metric-type">Adding a Metric Name (Metric Type)<a class="headerlink" href="#adding-a-metric-name-metric-type" title="Permanent link">&para;</a></h3>
+<p>To add a metric name (Metric Type), go to <em>Performance Management -&gt; Setup -&gt; Metric Types</em>. To create a new metric name, fill in the following settings:</p>
+<ul>
+<li><strong>Metric Scope</strong> - the table containing the metric.</li>
+<li><strong>Field Name</strong> - the column name with the metric in the Metric Scope table.</li>
+<li><strong>Field Type</strong> - the column type with the metric in the Metric Scope table.</li>
+<li><strong>Measurement Units</strong><ul>
+<li><em>Metric Measurement Units</em> - the measurement unit of the metric (default is <code>Scalar</code>).</li>
+<li><em>Metric Scale</em> - the multiplier for the measurement unit (default is <code>1</code>).</li>
+</ul>
+</li>
+<li><strong>Compose Expression</strong> - settings for calculated metrics.<ul>
+<li><em>Input Metrics</em></li>
+<li><em>Expression</em></li>
+</ul>
+</li>
+<li><strong>Delta Value</strong> - Conversion of the value into <code>Delta</code>, the difference between the current and last values.</li>
+</ul>
+<p><img alt="Metric Type Form" src="metric-type-form1.png" /></p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>After adding the Metric Type, you need to restart the <code>Metric Type</code> service.</p>
+</div>
+<h2 id="implementing-metric-collection-in-a-profile">Implementing Metric Collection in a Profile<a class="headerlink" href="#implementing-metric-collection-in-a-profile" title="Permanent link">&para;</a></h2>
+<p>There are two ways to add a metric to a profile:</p>
+<ol>
+<li>Add configuration for collection: located in the <code>snmp_metrics</code> folder.</li>
+<li>Describe a collection function in the <code>get_metrics</code> script of the profile.</li>
+</ol>
+<p>Each of these methods is described in detail in the documentation.</p>
+<h2 id="debugging-metric-collection-or-when-things-go-wrong">Debugging Metric Collection (Or When Things Go Wrong)<a class="headerlink" href="#debugging-metric-collection-or-when-things-go-wrong" title="Permanent link">&para;</a></h2>
+<p>The process of metric collection can be visualized as follows: <code>Settings -&gt; Discovery -&gt; Activator -&gt; Metrics -&gt; CHWriter -&gt; Grafana</code>. The final result is the display of the metric on a <a href="./#Grafana">Grafana dashboard</a>. If there are issues with metric collection, you might encounter a lack of graphs or graph panels.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>The Ping/RTT graph can be ignored since it is generated separately by the pinger.</p>
+</div>
+<p>You can consider two scenarios:</p>
+<ol>
+<li>Graph panels are present, but they display <code>No data</code>.</li>
+<li>Graph panels are missing entirely.</li>
+</ol>
+<h2 id="missing-graph-panels">Missing Graph Panels<a class="headerlink" href="#missing-graph-panels" title="Permanent link">&para;</a></h2>
+<p>When you add a metric to an Object Profile, a graph panel for that metric is automatically added. Graphs for interfaces display only load and status metrics, while packet metrics and DOM metrics are available on a separate dashboard.</p>
+<p>If there's no graph panel for an interface, it indicates that metric collection is disabled in the Interface Profile.</p>
+<h2 id="no-data-in-graphs">No Data in Graphs<a class="headerlink" href="#no-data-in-graphs" title="Permanent link">&para;</a></h2>
+<p>If a panel is present but displays "No data," it means there's an issue with data collection. To diagnose the problem, you should go through the stages of metric collection and check the correctness of each step.</p>
+<h4 id="checking-metric-collection">Checking Metric Collection<a class="headerlink" href="#checking-metric-collection" title="Permanent link">&para;</a></h4>
+<p>Metric collection is handled by Discovery, and its logs are available on the problem device's form: <code>Service Activation -&gt; Managed Object -&gt; Discovery -&gt; Interval</code>. In the log, you should find lines like "Collected metrics: 25" with the current timestamp (not exceeding the collection interval), where "25" represents the number of collected metrics from the device. If the number of metrics is greater than 0, it means that collection is working correctly, and the issue may lie in the next stage.</p>
+<p>If the number of metrics is 0 or the entry is missing, you need to check device accessibility and the correctness of the settings. Additional information may be provided by the following log entries:</p>
+<ul>
+<li>"<code>|metrics]  Collecting metrics</code>" indicates that the metrics retrieval process has started. If this line is missing, you need to activate metric collection in the Managed Object Profile. Refer to the "Setting Metrics" section for details.</li>
+<li>"<code>|metrics]  No metrics found</code>" in the log means that metrics were not read from the device. Proceed to check device accessibility.</li>
+<li>"<code>|metrics]  Interface metrics are not configured. Skipping</code>" suggests that you need to check if metrics are assigned to the Interface Profile and if profiles are linked to interfaces.</li>
+<li>"<code>|metrics]  SLA not configured, skipping SLA metrics</code>" pertains to collecting SLA metrics. You should review the settings for collecting SLA metrics.</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For additional information on the operation of Discovery, you can run it in debug mode using <code>./noc discovery --debug run interval MONAME</code>. The collected metrics will be displayed at the end of the output.</p>
+</div>
+<h4 id="checking-device-accessibility">Checking Device Accessibility<a class="headerlink" href="#checking-device-accessibility" title="Permanent link">&para;</a></h4>
+<p>To collect metrics, the system must successfully poll the device, retrieve its version, platform information, and interfaces (Interfaces). Interfaces should also have their indexes (ifindex) collected. You can verify this through the following menu items:</p>
+<ol>
+<li>Diagnostics (<code>CLI/SNMP</code>) - They should be in normal condition (green).</li>
+<li>Capabilities - Located at the bottom of the Managed Object form. It should look as shown in the screenshot, with green checkmarks next to SNMP, SNMP | v1, or SNMP | v2.</li>
+<li>Gathered interfaces with indexes. You can check this on the <em>Interfaces</em> tab.</li>
+</ol>
+<p><img alt="Managed Object Capabilities" src="managed-object-caps-for-metrics.png" /></p>
+<p><img alt="Managed Object Interface ifIndex Column" src="managed-object-interface-ifindex-column.png" /></p>
+<h4 id="checking-the-metrics-service">Checking the Metrics Service<a class="headerlink" href="#checking-the-metrics-service" title="Permanent link">&para;</a></h4>
+<p>You can verify the operability of the Metrics service through the log: <code>/var/log/noc/metrics-0*.log</code>. In a functioning service, you'll find entries like <code>[noc.services.metrics.changelog] Compacted to 8 records (90459568 bytes). 0.06 ratio</code>.</p>
+<p>Entries like <code>All slots are busy, waiting</code> indicate that the service is waiting for free slots. If you find this entry in all running services, you should check the configuration of the number of services in your deployment.</p>
+<h4 id="checking-metric-storage-chwriter">Checking Metric Storage (CHWriter)<a class="headerlink" href="#checking-metric-storage-chwriter" title="Permanent link">&para;</a></h4>
+<p>To check if metrics are being written to the database, you should find entries in the CHWriter log (<code>/var/log/noc/chwriter-00.log</code>) like:</p>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../alarm-escalation-reference/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Alarm Escalation" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Alarm Escalation
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="calculate-metrics/" class="md-footer__link md-footer__link--next" aria-label="Next: Compose Metric (Metric Action)" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Compose Metric (Metric Action)
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "24.1"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>

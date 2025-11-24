@@ -1,0 +1,1487 @@
+
+<!doctype html>
+<html lang="ru" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="NOC, the open-source network management system">
+      
+      
+        <meta name="author" content="Gufo Labs">
+      
+      
+        <link rel="canonical" href="https://getnoc.com/ru/quickstart-guide/">
+      
+      
+        <link rel="prev" href="../sections-overview/guides/">
+      
+      
+        <link rel="next" href="../community-guide/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.5">
+    
+    
+      
+        <title>Quickstart - NOC</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.0e669242.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.85d0ee34.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-9JQSC5GQTM"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-9JQSC5GQTM",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-9JQSC5GQTM",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#quick-start" class="md-skip">
+          Перейти к содержанию
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Верхний колонтитул">
+    <a href="../" title="NOC" class="md-header__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NOC
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Quickstart
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Выберите язык">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04M18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12m-2.62 7 1.62-4.33L19.12 17h-3.24Z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../quickstart-guide/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="ru" class="md-select__link">
+              Русский
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Поиск" placeholder="Поиск" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Поиск">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Очистить" aria-label="Очистить" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Инициализация поиска
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Вкладки" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../installation-guide/" class="md-tabs__link">
+          
+  
+  Установка
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../sections-overview/guides/" class="md-tabs__link">
+          
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/references/" class="md-tabs__link">
+          
+  
+  References
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/howto/" class="md-tabs__link">
+          
+  
+  How-to
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../sections-overview/background/" class="md-tabs__link">
+          
+  
+  Background
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../blog/" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../release-policy/" class="md-tabs__link">
+          
+  
+  Releases
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../glossary/" class="md-tabs__link">
+        
+  
+    
+  
+  Glossary
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../license/" class="md-tabs__link">
+        
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../thanks/" class="md-tabs__link">
+        
+  
+    
+  
+  Thanks
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Навигация" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="NOC" class="md-nav__button md-logo" aria-label="NOC" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    NOC
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/gufolabs/noc" title="Перейти к репозиторию" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../installation-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Установка
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Guides
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Guides
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sections-overview/guides/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Обзор
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Quickstart
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Пользовательский интерфейс
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Добавление устройства
+  </a>
+  
+    <nav class="md-nav" aria-label="Добавление устройства">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Массовое занесение устройств
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Включение опроса
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Настройка сбора метрик
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Топология
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Аварии
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Отчёты, графики
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../community-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Community Guide
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs-contributing-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docs Contributing Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../docs-translation-guide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docs Translation Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../docs-style-guide/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Docs Style Guide
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/references/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    References
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/howto/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    How-to
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../sections-overview/background/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Background
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../blog/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    <li class="md-nav__item md-nav__item--pruned md-nav__item--nested">
+      
+        
+  
+  
+    <a href="../release-policy/" class="md-nav__link">
+      
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      
+        <span class="md-nav__icon md-icon"></span>
+      
+    </a>
+  
+
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Glossary
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    License
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thanks/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Thanks
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Содержание раздела">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Содержание раздела
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    Пользовательский интерфейс
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    Добавление устройства
+  </a>
+  
+    <nav class="md-nav" aria-label="Добавление устройства">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    Массовое занесение устройств
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    Включение опроса
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    Настройка сбора метрик
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" class="md-nav__link">
+    Топология
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_7" class="md-nav__link">
+    Аварии
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_8" class="md-nav__link">
+    Отчёты, графики
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+    <a href="https://github.com/gufolabs/noc/-/edit/master/docs/quickstart-guide/index.ru.md" title="Редактировать страницу" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h1>
+<p>NOC -- система для сбора информации и мониторинга сети. Изначально был создан как инструмент автоматизации работы с оборудованием, впоследствии прирастал модулями сбора информации, мониторинга и работы с метриками. Хотя издержками являются сложность в эксплуатации и многочисленность настроек, NOC, тем не менее, обладает своими преимуществами благодаря подходу <code>Всё о сети в одном месте</code>.</p>
+<p>Поскольку с самого начала разрабатывался для эксплуатации сети, многие концепции и терминология взяты из неё. Поэтому для лучшего понимания, о чём идёт речь, необходимо пояснить несколько терминов:</p>
+<ul>
+<li><a href="../concepts/managed-object/"><strong>ManagedObject</strong></a> (<code>Сетевое устройство</code>, <code>Управляемое устройство</code>) любое оборудование доступное по IP адресу.</li>
+<li><a href="../concepts/pool/">Пул <strong>Pool</strong></a> - при необходимости работы с устройствами, имеющими одинаковые IP адреса, можно разместить их в разных пулах. У каждого пула отдельный набор процессов, что позволяет не смешивать устройства друг с другом.</li>
+<li><a href="../concepts/interface/">Сетевые интерфейсы <strong>Interfaces</strong></a> (<code>Интерфейсы</code>, <code>Порты</code>) - компоненты оборудования, предназначенные для связи посредством линков. В NOCе живут отдельно от устройств, что позволяет работать с ними как с самостоятельной частью системы.</li>
+<li>Линки <strong>Link</strong> (<code>Линки</code>, <code>Связи</code>) - используются для связи интерфейсов друг с другом. NOC поддерживает <code>L2</code> топологию, поэтому связи могут устанавливаться только между физическими портами.</li>
+<li><a href="../concepts/sa-profile/"><strong>SA Profile</strong></a> (или просто <code>Профиль</code>, <code>Адаптер оборудования</code>) - набор скриптов и настроек работы с оборудованием. Включены в основной код системы. Именно их набор определяет, каким способом система собирает информацию с устройства.</li>
+<li><strong>Profiles</strong> (<code>Профили</code>, <code>групповые настройки</code>) - Большинство настроек в системе вынесено в профили. Это позволяет не настраивать каждое устройство или интерфейс индивидуально, а управлять группами сходных объектов через профили. Примеры профилей<ul>
+<li><a href="../concepts/managed-object-profile/"><strong>ManagedObject Profile</strong></a></li>
+<li><a href="../concepts/interface-profile/"><strong>Interface Profile</strong></a></li>
+<li><a href="../concepts/network-segment-profile/"><strong>NetworkSegment Profile</strong></a></li>
+</ul>
+</li>
+<li><strong>Capabilities</strong> (<code>Caps</code>, <code>Капсы</code>, <code>Возможности</code>) - фиксируют дополнительные знания об оборудовании (его возможности). Например, поддерживается ли <code>SNMP</code> и какой версии. Включённые протоколы и т.д.</li>
+<li><a href="../concepts/network-segment/"><strong>NetworkSegment</strong></a> (<code>Сетевой сегмент</code>) - способ топологической группировки оборудования. По нему же отображается схема сегмента и строится направление вверх.</li>
+<li><a href="../concepts/administrative-domain/"><strong>AdministrativeDomain</strong></a> (<code>Зона ответственности</code>) - используется для разделения прав доступа на оборудование.</li>
+<li><a href="../discovery-reference/"><strong>Discovery</strong></a> (<code>Опрос</code>) - процедура забора информации с оборудования при помощи скриптов профиля  (<code>SA Profile</code>).</li>
+</ul>
+<h2 id="_1">Пользовательский интерфейс<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p>Веб интерфейс системы доступен по IP адресу <code>https://&lt;installed_ip&gt;</code>. Реквизиты для входа: пользователь - <strong>admin</strong>, пароль - <strong>admin</strong>.
+<img alt="вход в систему" src="../../quickstart-guide/login.png" /></p>
+<p>После входа мы видим основной интерфейс системы, состоящий из следующих частей (зелёная рамка на картинке):
+1) Панель навигации
+2) Заголовок окна
+3) Рабочая область
+<img alt="области интерфейса" src="../../quickstart-guide/areas.png" /></p>
+<p>Навигация представляет собой следующую структуру:
+* <code>&lt;Компонент системы&gt;</code>
+    * <code>&lt;Базовое приложение&gt;</code> - находится в корне компонента и обычно представляет собой основной функционал
+    * <code>&lt;Настройки&gt;</code> (цифра 3) - расположены многочисленные настройки.
+    * <code>&lt;Отчёты&gt;</code> (цифра 2) - в этом разделе расположены различные отчёты, разделённые на виды:
+        * <code>Сводка</code> (<code>Summary</code>) (цифра 5) - обычно это таблица отображающая агрегированные данные по системе
+        * <code>Детализация</code> (цифра 6) - выгрузка <code>Excel/CSV</code> файла с данными
+        * <code>Отчёт</code> (цифра 4) - <code>HTML</code> табличка с данными по заголовку пункта</p>
+<p>Верхний уровень навигации - это базовые модули системы:
+* <strong>AAA</strong> - настройки пользователей и групп
+* <strong>Main</strong> - настройки системы, не попавшие в отдельный раздел
+* <strong>Project Management</strong> - Добавление проектов
+* <strong>Workflow</strong> - создание и редактирование <code>Workflow</code> для элементов системы
+* <strong>Inventory</strong> - инвентарная информация по оборудованию, сегменты, интерфейсы
+* <strong>Service Activation</strong> - добавление устройств и настройка опроса
+* <strong>Fault Management</strong> - работа с авариями и событиями
+* <strong>Performance Management</strong> - добавление/удаление новых метрик в систему
+* <strong>Configuration Management</strong> - настройки валидации конфигурации устройств
+* <strong>IPAM</strong> и <strong>DNS</strong> - управление адресным пространством
+* <strong>VC Management</strong> - работа с Вланами
+* <strong>Maintenance</strong> - настройка ремонтно-наладочных работ
+* <strong>Phone</strong> - учёт телефонных номеров</p>
+<p>На втором уровне доступны приложения:
+* <code>AAA</code> -&gt; <code>Setup</code>
+    * <strong>Users</strong> - пользователи системы
+    * <strong>Groups</strong> - группы пользователей
+* <code>Inventory</code>
+    * <strong>Mac DB</strong> - база данных MAC адресов
+    * <strong>Network Map</strong> - схема сегмента
+* <code>Service Activation</code>
+    * <strong>Managed Object</strong> - список устройств (оборудования)
+    * <strong>Run Commands</strong> - запуск команд на устройствах (оборудовании)
+* <code>Fault Management</code>
+    * <strong>Alarms</strong> - список аварий
+* <code>IPAM</code>
+    * <strong>Assigned Address</strong> - база IPAM
+    * <strong>VRF</strong> - </p>
+<h2 id="_2">Добавление устройства<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<p>Основные приложение для работы с устройствами <a href="../concepts/managed-object/"><strong>ManagedObject</strong></a> (<code>Service Activation</code> -&gt; <code>ManagedObject</code>). Начальная страница представляет собой таблицу <code>(3)</code>, в правой части расположена панель фильтров <code>(2)</code>. А сверху экрана строка поиска <code>(1)</code>.
+<img alt="managed object" src="../../quickstart-guide/mo.png" /></p>
+<p>Для добавления устройства необходимо нажать кнопку <strong>Add</strong> (<code>Добавить</code>) (5), откроется форма для добавления. Обязательными для заполнения полями являются:</p>
+<ul>
+<li><strong>Name</strong> - имя устройства (должно быть уникальным)</li>
+<li><a href="../concepts/managed-object-profile/"><strong>ObjectProfile</strong></a> - настройки опроса. По умолчанию выставлен <code>default</code></li>
+<li><a href="../concepts/sa-profile/"><strong>SA Profile</strong></a> - Профиль (<code>Profile</code>) для работы с устройством. По умолчанию используется <code>Generic.Host</code>, но для работы необходимо выставить более подходящий, соответствующий для ОС устройства.</li>
+<li><strong>Scheme</strong> - протокол для доступа к устройству. По умолчанию выбран <code>TELNET</code>. Доступны <code>SSH/HTTP/HTTPS</code></li>
+<li><strong>Address</strong> - IP адрес устройства.</li>
+<li><a href="../concepts/administrative-domain/"><strong>Administrative Domain</strong></a> - подразделение. По умолчанию <code>default</code></li>
+<li><a href="../concepts/network-segment/"><strong>Segment</strong></a> - сетевой сегмент, в котором расположено устройство. По умолчанию <code>ALL</code>.</li>
+<li><a href="../concepts/pool/"><strong>Pool</strong></a> - настраивается при установке, из него будут опрашиваться устройства</li>
+<li><strong>Address Resolution Policy</strong> - используется если у устройства динамический IP адрес, при его активации (<code>Enable</code>) необходимо заполнить поле <code>FQDN</code> доменными именем устройства (оно должно резолвится с хоста системы).</li>
+</ul>
+<p><img alt="форма объекта" src="../../quickstart-guide/mo-form.png" /></p>
+<p>Поля <code>User</code>, <code>Password</code>, <code>Super Password</code> и <code>RO Community</code> не являются обязательными, но их заполнение необходимо для работы с оборудованием по <code>CLI</code> (<code>User</code> и <code>Password</code>) и/или <code>SNMP</code> (<code>RO Community</code>). <strong>Auth Profile</strong> используется при необходимости группировки одинаковых настроек доступа и создаётся в <code>Service Activation</code> -&gt; <code>Setup</code> -&gt; <code>Auth Profile</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>При заполненном поле <code>Auth Profile</code> на устройстве индивидуальные настройки <strong>игнорируются</strong></p>
+</div>
+<p>В разделе <strong>Event Sources</strong> расположены настройки приёма <code>SNMP Trap</code>/<code>Syslog</code> с оборудования. При необходимости необходимо переключить <code>Event Policy</code> с <code>Disabled</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Настройки <code>Vendor</code>, <code>Platform</code>, <code>Version</code> заполнятся в ходе опроса. </p>
+</div>
+<p>Остальные настройки можно оставить по умолчаниию. Если всё заполнено верно активируется кнопка <code>Save</code> (<code>Сохранить</code>) на инструментальной панели вверху формы.</p>
+<p>В случае успеха в списке устройств появится строчка с добавленным устройством. При этом надо помнить что добавление не подразумевает опрос устройства. Его необходимо будет настроить отдельно в <code>ManagedObjectProfile</code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>В списке пулов <code>Pool</code> можно встретить <code>P0001</code>. Он создаётся при миграции со старых версий системы, для работы устройства необходимо заменить его на рабочий (обычно, <code>default</code>)</p>
+</div>
+<h3 id="_3">Массовое занесение устройств<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p>Добавление устройств через веб-интерфейс хорошо работает когда их немного. Для внесения большого числа устройств поддерживается импорт из <code>csv</code>. Он находится в меню <code>Main</code> -&gt; <code>Setup</code> -&gt; <code>CSV Export/Import</code>. В списке необходимо выбрать <code>sa.ManagedObject</code> и нажать <code>Export</code>. Мы получим файл со списком всех устройств в системе. Для импорта в этом файле необходимо оставить столбцы:
+* <strong>name</strong>
+* <strong>is_managed</strong>
+* <strong>administrative_domain</strong>
+* <strong>segment</strong>
+* <strong>pool</strong>
+* <strong>profile</strong>
+* <strong>object_profile</strong>
+* <strong>address</strong>
+* <strong>user</strong>
+* <strong>password</strong>
+* <strong>super_password</strong>
+* <strong>trap_source_type</strong>
+* <strong>syslog_source_type</strong>
+* <strong>snmp_ro</strong></p>
+<h2 id="_4">Включение опроса<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h2>
+<p>В форме добавления устройства указывался <a href="../concepts/managed-object-profile/"><strong>Object Profile</strong></a>. Это основной элемент настройки расписания и состава опроса (<code>Discovery</code>). Обычно, их создаётся несколько для групп устройств с разными настройками. После чего назначается в форме устройства (<code>Managed Object</code>).</p>
+<p>Заходим в <code>Service Activation</code> -&gt; <code>Setup</code> -&gt; <code>Managed Object Profile</code>, после установки в списке доступен один профиль - <code>default</code>
+<img alt="профиль объекта" src="../../quickstart-guide/mo-profile.png" /></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>При добавлении нового профиля устройства на вкладке <code>Common</code> необходимо выставить <code>Address Resolution Policy</code> в <code>Disabled</code>, иначе не активируется кнопка сохранения</p>
+</div>
+<p>Внутри форма разделена на вкладки по группам настроек. Основные это:</p>
+<ul>
+<li><a href="../concepts/managed-object-profile/#common"><strong>Common</strong></a></li>
+<li><a href="../concepts/managed-object-profile/#ping-"><strong>Ping Check</strong></a> - настройки проверки доступности (по <code>ICMP</code>)</li>
+<li><a href="../concepts/managed-object-profile/#box-"><strong>Box discovery</strong></a> - настройки полного опроса</li>
+<li><a href="../concepts/managed-object-profile/#periodic-"><strong>Periodic Discovery</strong></a> - настройки периодического опроса (метрики и статусы интерфейсов)</li>
+<li><a href="../concepts/managed-object-profile/#metrics"><strong>Metrics</strong></a> - собираемые с устройства метрики</li>
+<li><a href="../concepts/managed-object-profile/#config-"><strong>Config</strong></a> - настройки работы с конфигурацией (текстового конфига) устройства</li>
+</ul>
+<p>Проверка доступности активируется на вкладке <strong>Ping Check</strong> галочкой <strong>Enable</strong>. На ней же настраивается интервал и параметры отправляемого <code>ICMP</code> пакета. Есть 2 политики определения <em>восстановления</em> доступности:</p>
+<ul>
+<li><code>First Success</code> - считаем доступным, если вернулся первый пакет в серии</li>
+<li><code>All Success</code> - считаем доступным, если вернулись все пакеты из серии</li>
+</ul>
+<p><img alt="форма профиля объекта" src="../../quickstart-guide/mo-profile-form.png" /></p>
+<p>Настройки сбора информации с оборудования настраиваются на вкладке <strong>Box</strong>. Для включения достаточно отметить галочку <strong>Enable</strong> и в разделе <code>Box</code> проставить галочки требуемых видов опроса:</p>
+<ul>
+<li><strong>Profile</strong> - NOC попытается определить <strong>Profile</strong> профиль устройства. Определение будет работать по <code>SNMP</code> на основе правил из пункта <code>Service Activation</code> -&gt; <code>Setup</code> -&gt; <code>Profile Check Rules</code>.</li>
+<li><strong>Version</strong> - собираем производителя (<code>Vendor</code>), Платформу (<code>Platform</code>) и Версию (<code>Version</code>) устройства. Опционально можно добавить <code>image</code> и <code>Serial Number</code></li>
+<li><strong>Caps</strong> - тестирует, какой функционал работает в данный момент на устройстве, всё это заносится в <code>Capabilities</code> (возможности), их можно увидеть в меню <code>Capabilities</code> формы устройства. Реализована проверка <code>SNMP</code> и различных протоколов.</li>
+<li><strong>Interface</strong> - собирает порты (интерфейсы)</li>
+<li><strong>ID</strong> - собирает <code>MAC</code> шасси и <code>hostname</code> (для целей построения топологии)</li>
+<li><strong>Config</strong> - сбор конфигурации оборудования</li>
+<li><strong>Asset</strong> - собирает инвентарную информацию (шасси, платы, модули)</li>
+<li><strong>VLAN</strong> - наполняет базу вланами с оборудования (появляются в меню <code>VC Management</code> -&gt; <code>Vlan</code>)</li>
+<li><strong>MAC</strong> - сбор таблицы <code>MAC</code>ов (просмотр доступен в <code>Inventory</code> -&gt; <code>MacDB</code>)</li>
+<li><strong>Metrics</strong> - включается сбор настроенных метрик</li>
+</ul>
+<p>Раздел <code>Topology</code> включает опрос соседей с устройства для сбора топологии, о нём подробнее дальше.</p>
+<p>Раздел <code>IPAM</code> включает сбор адресной информации с устройства и синхронизацию её с <code>IPAM</code>. Она отображается в разделе <code>IPAM</code> -&gt; <code>Assigned Address</code>.</p>
+<p><strong>Housekeeping</strong> позволяет расширить сбор собственным обработчиком на <code>Python</code>.</p>
+<p>При активированных <strong>Discovery Alarm</strong> при ошибках опроса в <code>Fault Management</code> заводятся аварии.</p>
+<p>После нажатия <code>Save</code> будут созданы задачи (<code>Job</code>) на опрос оборудования в соотстветствии с указанным интервалом.</p>
+<p>Об итоге выполнения можно судить по логам. Они доступны в пункте <code>Discovery</code> формы устройства (<code>Service Activation</code> -&gt; <code>ManagedObject</code> -&gt; <code>&lt;устройство&gt;</code> -&gt; <code>Discovery</code> -&gt; <code>box</code>). В строчке будет содержаться время выполнения опроса, а в правом окне его лог. Если всё прошло успешно, то можно увидеть заполненные поля <code>vendor</code>, <code>platform</code>, <code>version</code> в форме и заполненные меню <code>Interfaces</code> и <code>Capabilities</code>.</p>
+<p>На вкладке <a href="../concepts/managed-object-profile/#periodic-"><strong>Periodic Discovery</strong></a> включается сбор:
+* <a href="../discovery-reference/periodic/metrics/">метрик (<code>Metrics</code>)</a>. запрашиваются настроенные метрики
+* <a href="../discovery-reference/periodic/uptime/">аптайма (<code>Uptime</code>)</a>. Используется OID <code>sysUptime</code>, также фиксируются перезагрузки устройства (при переходе счётчика через 0)
+* <a href="../discovery-reference/periodic/interfacestatus/">статусов интерфейсов (<code>Interface status</code>)</a>.
+* <a href="../discovery-reference/periodic/mac/"><code>MAC</code></a> - сбор <code>MAC</code> адресов. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Информация в рамках периодического опроса собирается по <code>SNMP</code>, кроме таблицы MAC адресов.</p>
+</div>
+<h2 id="_5">Настройка сбора метрик<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>Помимо включения опроса <code>Metrics</code>, необходимо указать перечень собираемых метрик. По способу настройки метрики можно подразделить на несколько видов:
+  * <strong>Метрики устройства</strong>. Добавляются во вкладке <a href="../concepts/managed-object-profile/#metrics"><code>Metrics</code></a> (<code>Service Activation</code> -&gt; <code>Setup</code> -&gt; <code>ManagedObjectProfile</code>)
+  * <strong>Метрики интерфейсов</strong>. Требуют собранных интерфейсов (в рамках <code>Interface Discovery</code>) и настраиваются в профиле интерфейсов <a href="../concepts/interface-profile/">(<code>Interface Profile</code>)</a> <code>Inventory</code> -&gt; <code>Setup</code> -&gt; <code>Interface Profile</code>. Названия интерфейсных метрик начинается с <code>Interface</code>
+  * <strong>Метрики SLA</strong>. Аналогично для интерфейсов. Требуют для работы собранных с устройства <code>SLA</code> проб (в рамках <code>SLA Discovery</code>)</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Если метрики интерфейса назначить в объекте, то собираться они не будут! (и наоборот)</p>
+</div>
+<p>Например, настройки для сбора загрузки процессора и памяти на устройстве будут выглядеть так: (картинка)</p>
+<p>Настройки для сбора загрузки интерфейса и числа пакетов (<code>Inventory</code> -&gt; <code>Setup</code> -&gt; <code>Interface Profile</code> -&gt; <code>&lt;interface_profile&gt;</code>):</p>
+<p>Поскольку метрики собираются по <code>SNMP</code>, поэтому для устройства должен быть прописан <code>RO Comminuty</code> и его работоспособность должна быть успешно проверена системой (в рамках <code>Caps Discovery</code>). Это можно увидеть в разделе <code>Capabilities</code> формы устройства (<code>Service Activation</code> -&gt; <code>ManagedObject</code> -&gt; <code>&lt;устройство&gt;</code>)</p>
+<p>Также для сбора <strong>интерфейсных метрик</strong> с устройства должны считаться интерфейсы с <code>ifindex</code>. В этом можно убедиться в разделе интерфейсы (<code>Interfaces</code>) на форме устройства, включив столбец <code>ifindex</code>.</p>
+<p>При успешном получении метрик в логе опроса можно наблюдать строчку <code>[discovery|periodic|sw11|metrics]  Spooling 154 metrics</code>. Значит что метрики отправились для записи в базу. Графики по устройству доступны в меню <code>Графики</code> (<code>Dashboard</code>).</p>
+<h2 id="_6">Топология<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>В NOCе, помимо ручного, поддерживается автоматическое построение <code>L2</code> линков, при поддержке устройством одного из протоколов определения соседства. Со стороны опроса каждому протоколу соотвествует свой метод. Полный перечень поддерживаемых методов можно увидеть в разделе <code>Topology</code> (<code>Service Activation</code> -&gt; <code>Setup</code> -&gt; <code>Managed Object Profile</code> -&gt; <code>&lt;managed_object_profile&gt;</code> -&gt; <code>Box</code>). Фактически поддерживаемые методы зависят от модели устройства и реализации в его профиле.</p>
+<p>Для сбора топологии с устройства необходимо:</p>
+<ul>
+<li>Включить <a href="../discovery-reference/box/caps/"><code>Caps Discovery</code></a> для определения поддерживаемых устройством методов построения линков</li>
+<li>Включить <a href="../discovery-reference/box/id/"><code>ID Discovery</code></a> для сбора <code>Chassis MAC</code> и <code>hostname</code>. Они используются как указатель соседа в списках соседей.</li>
+<li>В разделе <code>Topology</code> включить методы, для построения линков (можно включить все, работать будут только доступные).</li>
+</ul>
+<p>В ходе опроса NOC определит доступные методы и соберёт соседей с устройства. Дальше он поочерёдно зайдёт на каждого соседа и посмотрит, есть ли в соседях исходное устройство. В случае подтверждения строится линк. В логе при этом появляется запись.</p>
+<p>Линки устройства можно увидеть в меню <code>Links</code> формы устройства (<code>ManagedObject</code>). Также они появляются на схеме сегмента меню <code>Show Map</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Для построения линка необходим доступ к устройствам с обоих его концов</p>
+</div>
+<h2 id="_7">Аварии<a class="headerlink" href="#_7" title="Permanent link">&para;</a></h2>
+<p>После включения <a href="../concepts/managed-object-profile/#ping-"><code>Ping Check</code></a> в <code>Managed Object Profile</code> NOC начинает пинговать устройства и по недоступности заводить аварии. Аварии можно увидеть в <code>Fault Management</code> -&gt; <code>Alarms</code>.</p>
+<p>Для приёма <code>Syslog/SNMP Trap</code> необходимо настроить адрес отправки сообщений. Это делается в форме устройства в пунктах <code>Syslog Source/Trap Source</code>, Доступно несколько вариантов:</p>
+<ul>
+<li><code>Management Address</code> - сообщения устройства приходят с адреса, указанного в поле <code>Address</code> формы</li>
+<li><code>Specify Address</code> - сообщения устройства приходят с адреса, указанного в поле ниже</li>
+<li><code>Loopback Address</code> - сообщения устройства приходят с адреса <code>Loopback</code> (требуется заполненные интерфейсы <code>Interface</code> устройства)</li>
+<li><code>All interface addresses</code> - все доступные адреса на устройстве (в том числе собранные в ходе <code>Interface Discovery</code>)</li>
+</ul>
+<p>Настройка <a href="../concepts/managed-object-profile/#fm"><strong>Syslog Archive Policy</strong></a> включает отправку сырых <code>raw</code> Syslog сообщений в базу. Они доступны для поиска в интерфейсе <code>BI</code></p>
+<h2 id="_8">Отчёты, графики<a class="headerlink" href="#_8" title="Permanent link">&para;</a></h2>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Нижний колонтитул" >
+        
+          
+          <a href="../sections-overview/guides/" class="md-footer__link md-footer__link--prev" aria-label="Назад: Обзор" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Назад
+              </span>
+              <div class="md-ellipsis">
+                Обзор
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../community-guide/" class="md-footer__link md-footer__link--next" aria-label="Вперед: Обзор" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Вперед
+              </span>
+              <div class="md-ellipsis">
+                Обзор
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      2007-2025, Gufo Labs
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.action.edit", "navigation.tabs", "navigation.tabs.sticky", "navigation.prune", "navigation.footer"], "search": "../../assets/javascripts/workers/search.dfff1995.min.js", "translations": {"clipboard.copied": "\u0421\u043a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u043d\u043e \u0432 \u0431\u0443\u0444\u0435\u0440", "clipboard.copy": "\u041a\u043e\u043f\u0438\u0440\u043e\u0432\u0430\u0442\u044c \u0432 \u0431\u0443\u0444\u0435\u0440", "search.result.more.one": "\u0415\u0449\u0451 1 \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.more.other": "\u0415\u0449\u0451 # \u043d\u0430 \u044d\u0442\u043e\u0439 \u0441\u0442\u0440\u0430\u043d\u0438\u0446\u0435", "search.result.none": "\u0421\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439 \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u043e", "search.result.one": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e 1 \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0435", "search.result.other": "\u041d\u0430\u0439\u0434\u0435\u043d\u043e \u0441\u043e\u0432\u043f\u0430\u0434\u0435\u043d\u0438\u0439: #", "search.result.placeholder": "\u041d\u0430\u0447\u043d\u0438\u0442\u0435 \u043f\u0435\u0447\u0430\u0442\u0430\u0442\u044c \u0434\u043b\u044f \u043f\u043e\u0438\u0441\u043a\u0430", "search.result.term.missing": "\u041e\u0442\u0441\u0443\u0442\u0441\u0442\u0432\u0443\u0435\u0442", "select.version": "\u0412\u044b\u0431\u0435\u0440\u0438\u0442\u0435 \u0432\u0435\u0440\u0441\u0438\u044e"}, "version": "24.1"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.78eede0e.min.js"></script>
+      
+    
+  </body>
+</html>
