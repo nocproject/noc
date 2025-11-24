@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Security | Authentication | Login #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6859cc3b-c9e9-4b1b-bfda-f14611157ff9",
+    "description": "User mitya logged in from  on console 0",
+    "event_class__name": "Security | Authentication | Login",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "User (?P<user>\\S+) logged in from\\s+on console",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "User mitya logged in from  on console 0",
+            "raw_vars": []
+        }
+    ]
+}

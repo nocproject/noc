@@ -1,0 +1,23 @@
+{
+    "name": "BDCOM | xPON | Network | STP | Root Guard Recovery (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4d2e5837-0d63-4afd-975c-b543b60f0679",
+    "description": "%STP-4-GUARD: RSTP, tg0/5, Root guard unblocking",
+    "event_class__name": "Network | STP | Root Guard Recovery",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STP-4-GUARD: [RM]STP,(?: INST\\d\\d,)? (?P<interface>\\S+), Root guard unblocking",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%STP-4-GUARD: RSTP, tg0/5, Root guard unblocking",
+            "raw_vars": []
+        },
+        {
+            "message": "%STP-4-GUARD: MSTP, INST01, tg0/5, Root guard unblocking",
+            "raw_vars": []
+        }
+    ]
+}

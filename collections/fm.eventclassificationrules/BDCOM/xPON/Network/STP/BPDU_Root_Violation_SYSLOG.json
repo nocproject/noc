@@ -1,0 +1,23 @@
+{
+    "name": "BDCOM | xPON | Network | STP | BPDU Root Violation (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0e0b7185-42c3-4d07-9914-506a4271eaf9",
+    "description": "%STP-4-GUARD: RSTP, tg0/5, Root guard blocking",
+    "event_class__name": "Network | STP | BPDU Root Violation",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "%STP-4-GUARD: [RM]STP,(?: INST\\d\\d,)? (?P<interface>\\S+), Root guard blocking",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "%STP-4-GUARD: RSTP, tg0/5, Root guard blocking",
+            "raw_vars": []
+        },
+        {
+            "message": "%STP-4-GUARD: MSTP, INST01, tg0/5, Root guard blocking",
+            "raw_vars": []
+        }
+    ]
+}
