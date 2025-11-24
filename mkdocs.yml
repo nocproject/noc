@@ -337,6 +337,8 @@ plugins:
             Interface: Интерфейс
             Interface Profile: Профиль интерфейса
             Label: Метка
+hooks:
+  - scripts/docs/hooks/blog.py
 extra:
   analytics:
     provider: google
