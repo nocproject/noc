@@ -37,6 +37,7 @@ Ext.define("NOC.core.modelfilter.Lookup", {
         fieldLabel: me.title,
         labelAlign: "top",
         width: me.width,
+        uiStyle: undefined,
         listeners: {
           scope: me,
           select: me.onChange,
