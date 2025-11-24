@@ -1,0 +1,31 @@
+{
+    "name": "Network | MAC | Bridge Domain MAC Exceed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "51a922d9-9317-4d40-ba11-8be50f9fce58",
+    "description": "MAC address limit exceeded on Bridge Domain",
+    "is_unique": true,
+    "reference": ["bd"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "mac_limit",
+            "description": "MAC Address Limit"
+        },
+        {
+            "name": "utilization",
+            "description": "Utilization"
+        },
+        {
+            "name": "bd",
+            "description": "Bridge domain"
+        }
+    ],
+    "subject_template": "The MAC address threshold for the bridge domain {{bd}} been exceeded",
+    "body_template": "The MAC address threshold for the bridge domain {{bd}} been exceeded: {% if mac_limit %}{{mac_limit}}/{% endif %}{{utilization}} ({% if mac_limit %}threshold/{% endif %}value)",
+    "symptoms": "Network instability",
+    "probable_causes": "",
+    "recommended_actions": "Increase the limit on addresses learned by interfaces in the bridge domain",
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
+}
