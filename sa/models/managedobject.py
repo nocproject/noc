@@ -2368,7 +2368,7 @@ class ManagedObject(NOCModel):
                 )
         for c in instance.iter_caps():
             if c.config.set_label:
-                yield c.get_labels()
+                yield Label.ensure_labels(c.get_labels(), ["sa.ManagedObject"])
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:

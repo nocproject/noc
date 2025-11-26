@@ -200,6 +200,8 @@ class RemoteSystem(Document):
     last_successful_load = DateTimeField()
     last_extract_event = DateTimeField()
     last_successful_extract_event = DateTimeField()
+    last_extract_metrics = DateTimeField()
+    last_successful_extract_metrics = DateTimeField()
     load_error = StringField()
     object_url_template = StringField()
     # Object id in BI
@@ -214,6 +216,7 @@ class RemoteSystem(Document):
     SCHEDULER = "scheduler"
     JCLS = "noc.services.scheduler.jobs.remote_system.ETLSyncJob"
     JCLS_EVENT = "noc.services.scheduler.jobs.remote_system.ETLEventSyncJob"
+    JCLS_METRIC = "noc.services.scheduler.jobs.remote_system.ETLMetricSyncJob"
     # Sync Event
 
     def __str__(self):
@@ -408,6 +411,10 @@ class RemoteSystem(Document):
             headers=self.get_mx_message_headers(),
         )
 
+    def get_metric_extractor(self):
+        """Extract metrics from RemoteSystem"""
+        return self.get_handler().get_metric_extractor()
+
     def get_loader_chain(self):
         return self.get_handler().get_loader_chain()
 
@@ -431,6 +438,7 @@ class RemoteSystem(Document):
     def on_save(self):
         self.ensure_job()
         self.ensure_event_job()
+        self.ensure_metric_job()
 
     def on_delete(self):
         scheduler = Scheduler(self.SCHEDULER)
@@ -456,6 +464,16 @@ class RemoteSystem(Document):
                 scheduler.submit(jcls=self.JCLS_EVENT, key=self.id, ts=ts)
                 return
         scheduler.remove_job(jcls=self.JCLS_EVENT, key=self.id)
+
+    def ensure_metric_job(self):
+        """Create or remove scheduler job"""
+        scheduler = Scheduler(self.SCHEDULER)
+        if self.enable_metrics and self.remote_collectors_policy == "D":
+            ts = self.run_sync_at or datetime.datetime.now().replace(microsecond=0)
+            if ts:
+                scheduler.submit(jcls=self.JCLS_METRIC, key=self.id, ts=ts)
+                return
+        scheduler.remove_job(jcls=self.JCLS_METRIC, key=self.id)
 
     @classmethod
     def get_collector_config(cls, remote_system: "RemoteSystem") -> Dict[str, Any]:
