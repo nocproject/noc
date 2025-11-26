@@ -94,6 +94,7 @@ class Workflow(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _wiping_states_cache = cachetools.TTLCache(maxsize=100, ttl=900)
+    _productive_states_cache = cachetools.TTLCache(maxsize=100, ttl=300)
 
     def __str__(self):
         return self.name
@@ -173,6 +174,19 @@ class Workflow(Document):
         from .state import State
 
         w_states = State.objects.filter(is_wiping=True)
+        if model:
+            wfs = list(Workflow.objects.filter(allowed_models__in=[model]).scalar("id"))
+            w_states = w_states.filter(workflow__in=wfs)
+        return [s.id for s in w_states]
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_productive_states_cache"), lock=lambda _: id_lock
+    )
+    def get_productive_states(cls, model: Optional[str] = None):
+        from .state import State
+
+        w_states = State.objects.filter(is_productive=True)
         if model:
             wfs = list(Workflow.objects.filter(allowed_models__in=[model]).scalar("id"))
             w_states = w_states.filter(workflow__in=wfs)

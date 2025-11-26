@@ -710,11 +710,11 @@ class DiscoveredObject(Document):
             q |= m_q(address__in=addresses)
             # if ETL_SOURCE not in self.sources:
             #    continue
-            for m in mo.mappings:
+            for m in mo.iter_remote_mappings():
                 q |= m_q(
                     data__match={
-                        "remote_id": m["remote_id"],
-                        "remote_system": ObjectId(m["remote_system"]),
+                        "remote_id": m.remote_id,
+                        "remote_system": m.remote_system.id,
                     }
                 )
         if not q:
