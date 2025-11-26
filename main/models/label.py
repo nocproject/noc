@@ -25,7 +25,6 @@ from mongoengine.fields import (
     IntField,
     UUIDField,
     BooleanField,
-    ReferenceField,
     ListField,
     EmbeddedDocumentField,
 )
@@ -206,7 +205,7 @@ class Label(Document):
     match_prefixfilter = ListField(EmbeddedDocumentField(PrefixFilterItem))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Caches
