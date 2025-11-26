@@ -15,6 +15,7 @@ from pydantic import ConfigDict
 # NOC modules
 from .base import BaseModel, _BaseModel
 from .typing import Reference, MappingItem, CapsItem
+from .resourcegroup import ResourceGroup
 from .serviceprofile import ServiceProfile
 from .subscriber import Subscriber
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
@@ -68,6 +69,10 @@ class Service(BaseModel):
     cpe_group: Optional[str] = None
     labels: Optional[List[str]] = None
     description: Optional[str] = None
+    # Groups
+    static_client_groups: Optional[List[Reference["ResourceGroup"]]] = None
+    static_service_groups: Optional[List[Reference["ResourceGroup"]]] = None
+    # Custom
     capabilities: Optional[List[CapsItem]] = None
     instances: Optional[List[Instance]] = None
     mappings: Optional[List[MappingItem]] = None
