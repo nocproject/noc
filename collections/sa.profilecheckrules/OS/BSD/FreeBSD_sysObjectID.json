@@ -1,0 +1,13 @@
+{
+    "name": "OS | BSD | FreeBSD",
+    "$collection": "sa.profilecheckrules",
+    "uuid": "e25dca0d-41d2-4ffb-b853-50ff96edeb14",
+    "description": null,
+    "preference": 1000,
+    "method": "snmp_v2c_get",
+    "param": "SNMPv2-MIB::sysDescr.0",
+    "match_method": "re",
+    "value": "^FreeBSD",
+    "action": "match",
+    "profile__name": "OS.FreeBSD"
+}
