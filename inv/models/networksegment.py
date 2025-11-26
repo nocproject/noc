@@ -84,7 +84,7 @@ class NetworkSegment(Document):
 
     name = StringField(unique=True)
     parent = ReferenceField("self", required=False)
-    profile = ReferenceField(NetworkSegmentProfile, required=True)
+    profile = PlainReferenceField(NetworkSegmentProfile, required=True)
     description = StringField(required=False)
     # Management VLAN processing order
     # * d - disable management vlan
@@ -105,7 +105,7 @@ class NetworkSegment(Document):
 
     settings = DictField(default=lambda: {}.copy())
     labels = ListField(StringField())
-    l2_domain = ReferenceField(L2Domain, required=False)
+    l2_domain = PlainReferenceField(L2Domain, required=False)
     # Sibling segment, if part of larger structure with
     # horizontal links
     sibling = ReferenceField("self")
@@ -155,7 +155,7 @@ class NetworkSegment(Document):
     total_subscribers = ListField(EmbeddedDocumentField(SummaryItem))
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
