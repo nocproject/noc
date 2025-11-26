@@ -23,6 +23,7 @@ class Sensor(BaseModel):
     object: Optional[Reference["Object"]] = None
     managed_object: Optional[Reference["ManagedObject"]] = None
     agent: Optional[Reference["PMAgent"]] = None
+    remote_host: Optional[str] = None
     # Workflow state
     state: Optional[str] = None
     labels: List[str] = []

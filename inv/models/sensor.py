@@ -22,7 +22,6 @@ from mongoengine.fields import (
     ListField,
     DateTimeField,
     DictField,
-    ReferenceField,
 )
 from pymongo import ReadPreference
 import cachetools
@@ -113,9 +112,11 @@ class Sensor(Document):
     ipmi_id = StringField()
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
-    # Object id in remote system
+    remote_system = PlainReferenceField(RemoteSystem)
+    # Sensor id in remote system
     remote_id = StringField()
+    # Object id in remote system
+    remote_host = StringField()
     bi_id = LongField(unique=True)
     # Labels
     labels = ListField(StringField())
@@ -147,7 +148,7 @@ class Sensor(Document):
             if self.managed_object:
                 yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
             if self.agent:
-                yield "cfgmetricstarget", f"pm.Agent::{self.managed_object.bi_id}"
+                yield "cfgmetricstarget", f"pm.Agent::{self.agent.bi_id}"
             if self.object and self.object.get_data("management", "managed_object"):
                 mo = ManagedObject.get_by_id(self.object.get_data("management", "managed_object"))
                 if mo:
@@ -324,10 +325,7 @@ class Sensor(Document):
 
     @property
     def has_configured_metrics(self) -> bool:
-        """
-        Check configured collected metrics
-        :return:
-        """
+        """Check configured collected metrics"""
         config = self.get_metric_config(self)
         return config.get("metrics") or config.get("items")
 

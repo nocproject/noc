@@ -10,16 +10,17 @@ from typing import Any, Dict, List, Optional
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import StringField, DynamicField, ReferenceField, BooleanField
+from mongoengine.fields import StringField, DynamicField, BooleanField
 from pydantic import BaseModel
 
 # NOC modules
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.caps.types import CapsConfig
 from .capability import Capability
 
 
 class CapsItem(EmbeddedDocument):
-    capability: Capability = ReferenceField(Capability)
+    capability: Capability = PlainReferenceField(Capability)
     value = DynamicField()
     # Source name like "caps", "interface", "manual"
     source = StringField()
@@ -93,7 +94,7 @@ class CapsSettings(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
     # Required
-    capability: Capability = ReferenceField(Capability, required=True)
+    capability: Capability = PlainReferenceField(Capability, required=True)
     default_value = DynamicField()
     allow_manual = BooleanField(default=False)
     ref_scope = StringField(required=False)
