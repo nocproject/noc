@@ -190,7 +190,7 @@ class Service(Document):
     # Last state change
     state_changed = DateTimeField()
     # Parent service
-    parent: "Service" = ReferenceField("self", required=False)
+    parent: "Service" = PlainReferenceField("self", required=False)
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
@@ -253,7 +253,7 @@ class Service(Document):
     agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
@@ -513,7 +513,7 @@ class Service(Document):
             msg = self.get_message_context()
             # msg["managed_object"] = self.managed_object.get_message_context()
             msg["from_status"] = {"id": os, "name": os.name}
-            msg["ts"] = (timestamp.replace(microsecond=0).isoformat(),)
+            msg["ts"] = timestamp.replace(microsecond=0).isoformat()
             send_message(
                 data=msg,
                 message_type=MessageType.SERVICE_STATUS_CHANGE,

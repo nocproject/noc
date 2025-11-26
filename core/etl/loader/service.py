@@ -10,6 +10,7 @@ from typing import Dict, Any, Optional
 
 # NOC modules
 from noc.inv.models.capability import Capability
+from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
@@ -35,6 +36,20 @@ class ServiceLoader(BaseLoader):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.available_caps = {x.name for x in Capability.objects.filter()}
+        self.clean_map["static_service_groups"] = lambda x: [
+            x.id
+            for x in ResourceGroup.objects.filter(
+                remote_id__in=x or [],
+                remote_system=self.system.remote_system,
+            )
+        ]
+        self.clean_map["static_client_groups"] = lambda x: [
+            x.id
+            for x in ResourceGroup.objects.filter(
+                remote_id__in=x or [],
+                remote_system=self.system.remote_system,
+            )
+        ]
 
     def post_save(self, o: ServiceModel, fields: Dict[str, Any]):
         if not fields:
@@ -79,3 +94,4 @@ class ServiceLoader(BaseLoader):
         if v["remote_id"] in self._service_remote_ids:
             return ServiceModel.objects.get(id=self._service_remote_ids[v["remote_id"]])
         return None
+
