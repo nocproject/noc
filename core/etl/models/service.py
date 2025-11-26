@@ -104,4 +104,3 @@ class Service(BaseModel):
         "description",
         "labels",
     ]
-
