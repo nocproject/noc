@@ -178,7 +178,9 @@ class Workflow(Document):
         return [s.id for s in w_states]
 
     @classmethod
-    @cachetools.cachedmethod(operator.attrgetter("_productive_states_cache"), lock=lambda _: id_lock)
+    @cachetools.cachedmethod(
+        operator.attrgetter("_productive_states_cache"), lock=lambda _: id_lock
+    )
     def get_productive_states(cls, model: Optional[str] = None):
         from .state import State
 
