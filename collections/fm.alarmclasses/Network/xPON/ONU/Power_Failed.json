@@ -1,0 +1,29 @@
+{
+    "name": "Network | xPON | ONU | Power Failed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "fe63a499-afd5-475a-b10e-4854daba20de",
+    "is_unique": true,
+    "reference": ["mac"],
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "interface",
+            "description": "xPON interface"
+        },
+        {
+            "name": "mac",
+            "description": "ONU MAC"
+        },
+        {
+            "name": "vendor",
+            "description": "ONU vendor"
+        }
+    ],
+    "subject_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} power failed on {{interface}}",
+    "body_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} power failed on {{interface}}",
+    "symptoms": "Subscriber connection loss",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": ["noc::severity::info"]
+}
