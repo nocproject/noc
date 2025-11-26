@@ -34,7 +34,7 @@ class DiagnosticHistory(Model):
     # agent = ReferenceField(Agent, description=_("Object Name"))
     # service = ReferenceField(ManagedObject, description=_("Object Name"))
     from_state = StringField(description=_("From state"), low_cardinality=True)
-    state = StringField(description=_("Current diagnotic state"), low_cardinality=True)
+    state = StringField(description=_("Current diagnostic state"), low_cardinality=True)
     reason = StringField(description=_("Changed Reason"))
     data = StringField(description=_("Collected data (JSON)"))
 
