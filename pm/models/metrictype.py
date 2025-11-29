@@ -91,6 +91,7 @@ class CollectorMappingItem(EmbeddedDocument):
         ("sa.ManagedObjectProfile", "metrics__metric_type"),
         ("cm.ConfigurationParam", "metric_type"),
         ("inv.InterfaceProfile", "metrics__metric_type"),
+        ("inv.SensorProfile", "metric_type"),
         ("sla.SLAProfile", "metrics__metric_type"),
         ("pm.MetricAction", "compose_inputs__metric_type"),
         ("pm.MetricAction", "compose_metric_type"),
