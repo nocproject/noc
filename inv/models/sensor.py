@@ -289,11 +289,10 @@ class Sensor(Document):
             "name": sensor.label,
             "units": sensor.munits.code,
             "protocol": sensor.protocol,
-            "exposed_labels": [
-                ll
-                for ll in sensor.effective_labels
-                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
-            ],
+            "exposed_labels": Label.build_expose_labels(
+                sensor.effective_labels,
+                "expose_metric",
+            ),
             "profile": sensor.profile.bi_id,
             "rules": list(MetricRule.iter_rules_actions(sensor.effective_labels)),
         }

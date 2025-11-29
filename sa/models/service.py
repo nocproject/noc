@@ -323,6 +323,36 @@ class Service(Document):
             ).scalar("service")
         )
 
+    @classmethod
+    def get_exposed_labels_for_object(cls, mo_id: int) -> List[str]:
+        """Return exposed labels for Managed Object"""
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        coll = ServiceInstance._get_collection()
+        for row in coll.aggregate(
+            [
+                {"$match": {"managed_object": mo_id}},
+                {"$project": {"resources": 1, "service": 1}},
+                {
+                    "$lookup": {
+                        "from": "noc.services",
+                        "let": {"si_service": "$service"},
+                        "pipeline": [
+                            {
+                                "$match": {"$expr": {"$eq": ["$$si_service", "$_id"]}},
+                            },
+                            {"$project": {"effective_labels": 1}},
+                        ],
+                        "as": "svc",
+                    }
+                },
+            ]
+        ):
+            if not row["svc"]:
+                continue
+            svc = row["svc"][0]
+            yield Label.build_expose_labels(svc["effective_labels"], "expose_sa_object")
+
     def __str__(self):
         if self.label:
             return self.label
@@ -895,6 +925,9 @@ class Service(Document):
     def iter_effective_labels(cls, instance: "Service") -> Iterable[List[str]]:
         yield list(instance.labels or [])
         yield list(ServiceProfile.iter_lazy_labels(instance.profile))
+        for c in instance.iter_caps():
+            if c.config.set_label:
+                yield Label.ensure_labels(c.get_labels(), ["sa.Service"])
 
     def get_effective_agent(self) -> Optional[Agent]:
         """
