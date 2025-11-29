@@ -354,15 +354,12 @@ class CPE(Document):
         """Return MetricConfig for Metrics service"""
         if not cpe.state or not cpe.state.is_productive:
             return {}
-        labels = []
-        for ll in cpe.effective_labels:
-            l_c = Label.get_by_name(ll)
-            labels.append({"label": ll, "expose_metric": l_c.expose_metric if l_c else False})
         return {
             "type": "cpe",
             "bi_id": cpe.bi_id,
             "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
-            "labels": labels,
+            "exposed_labels": Label.build_expose_labels(cpe.effective_labels, "expose_metric"),
+            "labels": [],
             "rules": list(MetricRule.iter_rules_actions(cpe.effective_labels)),
             "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],
