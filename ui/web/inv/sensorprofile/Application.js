@@ -17,7 +17,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
     "NOC.pm.metrictype.LookupField",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField",
-    "NOC.pm.measurementunits.LookupField"
+    "NOC.pm.measurementunits.LookupField",
   ],
   model: "NOC.inv.sensorprofile.Model",
   search: true,
