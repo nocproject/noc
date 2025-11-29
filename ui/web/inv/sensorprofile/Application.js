@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // inv.sensorprofile application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.inv.sensorprofile.Application");
@@ -9,10 +9,12 @@ console.debug("Defining NOC.inv.sensorprofile.Application");
 Ext.define("NOC.inv.sensorprofile.Application", {
   extend: "NOC.core.ModelApplication",
   requires: [
+    "NOC.core.tagfield.Tagfield",
     "NOC.core.label.LabelField",
     "NOC.core.ListFormField",
     "NOC.main.handler.LookupField",
     "NOC.inv.sensorprofile.Model",
+    "NOC.pm.metrictype.LookupField",
     "NOC.wf.workflow.LookupField",
     "NOC.main.style.LookupField",
     "NOC.pm.measurementunits.LookupField",
@@ -69,6 +71,12 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           name: "units",
           xtype: "pm.measurementunits.LookupField",
           fieldLabel: __("Sensor Measurement Units"),
+          allowBlank: true,
+        },
+        {
+          name: "metric_type",
+          xtype: "pm.metrictype.LookupField",
+          fieldLabel: __("Metric Type"),
           allowBlank: true,
         },
         {
