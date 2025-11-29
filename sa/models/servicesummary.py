@@ -91,9 +91,6 @@ class ServiceSummary(Document):
         coll = ServiceInstance._get_collection().with_options(
             read_preference=ReadPreference.SECONDARY_PREFERRED,
         )
-        pp = []
-        if states:
-            pp = [{"$match": {"state": {"$in": states}}}]
         # Service, Subscribe, Iface
         for row in coll.aggregate(
             [
@@ -104,7 +101,6 @@ class ServiceSummary(Document):
                         "from": "noc.services",
                         "localField": "service",
                         "foreignField": "_id",
-                        "pipeline": pp,
                         "as": "svc",
                     }
                 },
@@ -123,6 +119,8 @@ class ServiceSummary(Document):
             if not row["svc"]:
                 continue
             svc = row["svc"][0]
+            if states and svc["state"] not in states:
+                continue
             iface = None
             for res in row.get("resources"):
                 if res.startswith("if:"):
