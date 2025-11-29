@@ -42,9 +42,9 @@ logger = logging.getLogger(__name__)
 
 class RuleSet(object):
     def __init__(self):
-        self.rules: Dict[
-            Tuple[Optional[str], str], RuleLookup
-        ] = {}  # (profile, chain) -> [rule, ..., rule]
+        self.rules: Dict[Tuple[Optional[str], str], RuleLookup] = (
+            {}
+        )  # (profile, chain) -> [rule, ..., rule]
         self.enumerations: Dict[str, Dict[str, str]] = {}  # name -> value -> enumerated
         self.lookup_cls: Optional[Callable] = None
         self.default_rule: Optional[Rule] = None
@@ -247,7 +247,8 @@ class RuleSet(object):
                 v = ecv.type.clean_value(r_vars[ecv.name])
             except InterfaceTypeError:
                 raise EventProcessingFailed(
-                    "Cannot decode variable '%s'. Invalid %s: %s" % (ecv.name, ecv.type, repr(v))
+                    "Cannot decode variable '%s'. Invalid %s: %s"
+                    % (ecv.name, ecv.type, r_vars[ecv.name])
                 )
             r[ecv.name] = v
         return r, resources, error
