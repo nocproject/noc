@@ -31,7 +31,7 @@ Ext.define("NOC.main.label.Application", {
         return get("is_builtin");
       },
       isEnableDisableRx: function(get){
-        return get("is_builtin") || get("is_wildcard");
+        return get("is_builtin");
       },
     },
   },
@@ -223,6 +223,9 @@ Ext.define("NOC.main.label.Application", {
             }
             if(item.data.expose_alarm){
               r.push(__("Alarm"));
+            }
+            if(item.data.expose_sa_object){
+              r.push(__("Allowed Models"));
             }
             return r.join(", ");
           },
@@ -889,6 +892,11 @@ Ext.define("NOC.main.label.Application", {
               name: "expose_alarm",
               xtype: "checkbox",
               boxLabel: __("Alarm"),
+            },
+            {
+              name: "expose_sa_object",
+              xtype: "checkbox",
+              boxLabel: __("Allowed Models"),
             },
           ],
         },

@@ -198,6 +198,7 @@ class Label(Document):
     expose_metric = BooleanField(default=False)
     expose_datastream = BooleanField(default=False)
     expose_alarm = BooleanField(default=False)
+    expose_sa_object = BooleanField(default=False)
     # Match Condition
     # match_condition = ALL,ANY
     # Regex
@@ -249,6 +250,7 @@ class Label(Document):
             "expose_metric": self.expose_metric,
             "expose_datastream": self.expose_datastream,
             "expose_alarm": self.expose_alarm,
+            "expose_sa_object": self.expose_sa_object,
             # Regex
         }
 
@@ -299,7 +301,6 @@ class Label(Document):
     def is_scoped(self) -> bool:
         """
         Returns True if the label is scoped
-        :return:
         """
         return "::" in self.name
 
@@ -307,7 +308,6 @@ class Label(Document):
     def is_wildcard(self) -> bool:
         """
         Returns True if the label is wildcard
-        :return:
         """
         return self.name.endswith("::*")
 
@@ -315,7 +315,6 @@ class Label(Document):
     def is_builtin(self) -> bool:
         """
         Returns True if the label is builtin NOC
-        :return:
         """
         return self.name.startswith("noc::")
 
@@ -323,7 +322,6 @@ class Label(Document):
     def is_matched(self) -> bool:
         """
         Returns True if the label is matched
-        :return:
         """
         return self.name[-1] in MATCH_OPS
 
@@ -581,6 +579,17 @@ class Label(Document):
         for p in self.name.split("::")[:-1]:
             r.append(p)
             yield "::".join(r)
+
+    @classmethod
+    def build_expose_labels(cls, labels: List[str], expose_setting: str) -> List[str]:
+        """Build expose labels list"""
+        return [
+            ll
+            for ll in labels
+            if not ll[-1] not in MATCH_OPS
+            and ll[-1] != "*"
+            and Label.get_effective_setting(ll, expose_setting)
+        ]
 
     @classmethod
     def ensure_label(
