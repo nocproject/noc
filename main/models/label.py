@@ -586,7 +586,7 @@ class Label(Document):
         return [
             ll
             for ll in labels
-            if not ll[-1] not in MATCH_OPS
+            if ll[-1] not in MATCH_OPS
             and ll[-1] != "*"
             and Label.get_effective_setting(ll, expose_setting)
         ]

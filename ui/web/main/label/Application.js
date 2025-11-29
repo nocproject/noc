@@ -22,16 +22,17 @@ Ext.define("NOC.main.label.Application", {
   viewModel: {
     data: {
       is_builtin: false,
+      is_noc_builtin: false,
       is_matching: false,
       is_scoped: false,
       is_wildcard: false,
     },
     formulas: {
       isEnableDisable: function(get){
-        return get("is_builtin");
+        return get("is_noc_builtin");
       },
       isEnableDisableRx: function(get){
-        return get("is_builtin");
+        return get("is_builtin") || get("is_wildcard");
       },
     },
   },
@@ -225,7 +226,7 @@ Ext.define("NOC.main.label.Application", {
               r.push(__("Alarm"));
             }
             if(item.data.expose_sa_object){
-              r.push(__("Allowed Models"));
+              r.push(__("SA Object"));
             }
             return r.join(", ");
           },

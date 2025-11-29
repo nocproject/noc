@@ -336,9 +336,13 @@ class Service(Document):
                 {
                     "$lookup": {
                         "from": "noc.services",
-                        "localField": "service",
-                        "foreignField": "_id",
-                        "pipeline": [{"$project": {"effective_labels": 1}}],
+                        "let": {"si_service": "$service"},
+                        "pipeline": [
+                            {
+                                "$match": {"$expr": {"$eq": ["$$si_service", "$_id"]}},
+                            },
+                            {"$project": {"effective_labels": 1}},
+                        ],
                         "as": "svc",
                     }
                 },
@@ -892,7 +896,9 @@ class Service(Document):
         for (
             sid,
             path,
-        ) in Service.objects.filter(q).scalar("id", "service_path"):
+        ) in Service.objects.filter(
+            q
+        ).scalar("id", "service_path"):
             services.add(sid)
             if path:
                 services |= set(path)
