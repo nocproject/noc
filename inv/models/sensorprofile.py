@@ -7,6 +7,7 @@
 
 # NOC modules
 import operator
+import re
 from threading import Lock
 from typing import Optional, Union, Dict, Any, Tuple, List, Callable
 from functools import partial
@@ -30,6 +31,7 @@ from mongoengine.queryset.visitor import Q as m_q
 from noc.main.models.style import Style
 from noc.main.models.label import Label
 from noc.pm.models.measurementunits import MeasurementUnits
+from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
 from noc.core.change.decorator import change
 from noc.core.model.decorator import on_delete_check
@@ -64,6 +66,19 @@ class MatchRule(EmbeddedDocument):
             r["name"] = {"$regex": self.name_pattern}
         return r
 
+    def get_q(self):
+        """Return instance queryset"""
+        q = m_q()
+        if self.labels:
+            q &= m_q(effective_labels_all=self.labels)
+        if self.resource_groups:
+            q &= m_q(effective_service_groups__all=self.resource_groups)
+        if self.units:
+            q &= m_q(units=self.units)
+        if self.name_pattern:
+            q &= m_q(label=re.compile(self.name_pattern))
+        return q
+
 
 @bi_sync
 @change
@@ -89,7 +104,9 @@ class SensorProfile(Document):
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
     collect_interval = IntField(default=60)
+    # PM Integration
     units = PlainReferenceField(MeasurementUnits)
+    metric_type: "MetricType" = PlainReferenceField(MetricType)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("R", "By Rule"), ("D", "Disable")],
