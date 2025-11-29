@@ -219,7 +219,8 @@ class Agent(Document):
     @property
     def has_configured_metrics(self) -> bool:
         """Check configured collected metrics"""
-        return self.state.is_productive
+        state = self.state or self.profile.workflow.get_default_state()
+        return state.is_productive
 
     @classmethod
     def get_metric_config(cls, agent: "Agent"):
@@ -239,11 +240,7 @@ class Agent(Document):
             "enable_fmevent": False,
             "enable_metrics": True,
             "api_key": agent.key,
-            "exposed_labels": [
-                ll
-                for ll in agent.effective_labels
-                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
-            ],
+            "exposed_labels": Label.build_expose_labels(agent.effective_labels, "expose_metric"),
             "labels": [],
             "rules": [],
             "sensors": [],

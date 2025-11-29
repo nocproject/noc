@@ -280,6 +280,10 @@ Ext.define("NOC.main.label.Model", {
       type: "boolean",
     },
     {
+      name: "expose_sa_object",
+      type: "boolean",
+    },
+    {
       name: "remote_system",
       type: "string",
     },
