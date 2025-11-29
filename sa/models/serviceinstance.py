@@ -311,8 +311,6 @@ class ServiceInstance(Document):
 
         q = Q()
         rds = {}
-        if managed_object.remote_system and managed_object.remote_id:
-            rds[managed_object.remote_id] = str(managed_object.remote_system.id)
         for m in managed_object.iter_remote_mappings():
             rds[m.remote_id] = m.remote_system.id
         if rds:
@@ -330,13 +328,16 @@ class ServiceInstance(Document):
             addrs |= {IP.prefix(x).address for x in ipv4_addrs}
         if addrs:
             q |= Q(addresses__address__in=addrs)
+        # get_full_fqdn
+        q |= Q(fqdn=managed_object.name.lower().strip())
         for si in ServiceInstance.objects.filter(q).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):
+            # By configuration
             if (
-                si.remote_id
+                si.remote_id in rds
                 and si.service.remote_system
-                and str(si.service.remote_system.id) != rds.get(si.remote_id)
+                and si.service.remote_system.id != rds.get(si.remote_id)
             ):
                 continue
             yield si
