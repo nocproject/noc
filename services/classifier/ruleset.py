@@ -42,9 +42,9 @@ logger = logging.getLogger(__name__)
 
 class RuleSet(object):
     def __init__(self):
-        self.rules: Dict[Tuple[Optional[str], str], RuleLookup] = (
-            {}
-        )  # (profile, chain) -> [rule, ..., rule]
+        self.rules: Dict[
+            Tuple[Optional[str], str], RuleLookup
+        ] = {}  # (profile, chain) -> [rule, ..., rule]
         self.enumerations: Dict[str, Dict[str, str]] = {}  # name -> value -> enumerated
         self.lookup_cls: Optional[Callable] = None
         self.default_rule: Optional[Rule] = None
