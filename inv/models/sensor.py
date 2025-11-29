@@ -9,6 +9,7 @@
 import logging
 import operator
 import datetime
+from collections import defaultdict
 from threading import Lock
 from typing import Dict, Optional, Iterable, List, Union, Any, DefaultDict
 
@@ -296,7 +297,10 @@ class Sensor(Document):
         ts = ts or datetime.datetime.now().replace(microsecond=0)
         units = units or self.munits
         shards = shards or 1
-        publish = []
+        if bulk is None:
+            parts = defaultdict(list)
+        else:
+            parts = bulk
         r = {
             "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
             "scope": "sensor",
@@ -313,31 +317,33 @@ class Sensor(Document):
             # Register ManagedObject Metrics
             if self.profile.metric_type:
                 mt = self.profile.metric_type
-                o_r = {
-                    "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
-                    "managed_object": self.managed_object.bi_id,
-                    "remote_system": self.remote_system.bi_id,
-                    "sensor": self.bi_id,
-                    "scope": mt.scope.table_name,
-                    "labels": Label.build_expose_labels(
-                        self.managed_object.effective_labels,
-                        "expose_metric",
-                    ),
-                    "_units": {"value": mt.units.code},
-                    mt.field_name: value,
-                }
-        publish.append(r)
+                parts[self.managed_object.bi_id % shards].append(
+                    {
+                        "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
+                        "managed_object": self.managed_object.bi_id,
+                        "remote_system": self.remote_system.bi_id if self.remote_system else None,
+                        "sensor": self.bi_id,
+                        "scope": mt.scope.table_name,
+                        "labels": Label.build_expose_labels(
+                            self.managed_object.effective_labels,
+                            "expose_metric",
+                        ),
+                        "_units": {"value": mt.units.code},
+                        mt.field_name: value,
+                    }
+                )
+        parts[self.bi_id % shards].append(r)
         if bulk is not None:
-            bulk[self.bi_id % shards] += publish
             return
         svc = get_service()
-        metrics_svc_slots = svc.get_slot_limits("metrics")
-        svc.publish(
-            value=orjson.dumps(publish),
-            stream="metrics",
-            partition=self.bi_id % metrics_svc_slots,  # self.object.bi_id % metrics_svc_slots,
-            headers={},
-        )
+        # metrics_svc_slots = svc.get_slot_limits("metrics")
+        for partition, publish in parts.items():
+            svc.publish(
+                value=orjson.dumps(publish),
+                stream="metrics",
+                partition=partition,
+                headers={},
+            )
 
     @classmethod
     def get_metric_config(cls, sensor: "Sensor"):
