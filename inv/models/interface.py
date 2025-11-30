@@ -46,7 +46,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.label import Label
-from noc.sa.models.service import Service
 from noc.project.models.project import Project
 from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.state import State
