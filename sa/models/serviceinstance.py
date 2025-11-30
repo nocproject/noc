@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Iterable, Any, Dict
+from typing import Optional, List, Iterable, Any, Dict, Tuple
 
 # Third-party modules
 from pymongo import UpdateOne, ReadPreference
@@ -579,22 +579,36 @@ class ServiceInstance(Document):
                 ServiceSummary.refresh_object(self.managed_object)
 
     @classmethod
-    def get_object_resources(cls, o) -> Dict[str, str]:
+    def get_object_resources(cls, oid: int) -> Dict[str, Tuple[str, int, str]]:
         """Return all resources used by object"""
         r = {}
         # Secondary Preferred
-        for row in (
-            ServiceInstance.objects.filter(
-                managed_object=o,
-                resources__exists=True,
-            )
-            .read_preference(ReadPreference.SECONDARY_PREFERRED)
-            .scalar("resources", "service")
-            .as_pymongo()
+        coll = ServiceInstance._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED,
+        )
+        for row in coll.aggregate(
+            [
+                {"$match": {"managed_object": oid, "resources": {"$exists": True, "$ne": []}}},
+                {"$project": {"service": 1, "resources": 1}},
+                {
+                    "$lookup": {
+                        "from": "noc.services",
+                        "let": {"i_service": "$service"},
+                        "pipeline": [
+                            {"$match": {"$expr": {"$eq": ["$_id", "$$i_service"]}}},
+                            {"$project": {"profile": 1, "bi_id": 1}},
+                        ],
+                        "as": "svc",
+                    }
+                },
+                {"$unwind": "$svc"},
+            ]
         ):
+            if not row["svc"]:
+                continue
             for rid in row["resources"]:
                 _, rid = rid.split(":")
-                r[rid] = row["service"]
+                r[rid] = (row["service"], row["svc"]["bi_id"], row["svc"]["profile"])
         return r
 
     @classmethod
