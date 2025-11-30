@@ -125,7 +125,7 @@ class DataItem(EmbeddedDocument):
     def key(self):
         if not self.remote_system:
             return self.source
-        return f"{self.source}@{self.remote_system.name}"
+        return f"{self.source}@{self.remote_system}"
 
 
 @bi_sync
@@ -1164,8 +1164,6 @@ def sync_purgatorium(
         processed += 1
         if r:
             logger.debug("Updated: %s", r)
-            if print_addresses and address in print_addresses:
-                logger.info("[%s] Data: %s/%s", address, r, r.data)
             updated += 1
     # Expired objects
     for o in DiscoveredObject.objects.filter(expired__gt=datetime.datetime.now()):

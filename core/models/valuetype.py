@@ -59,7 +59,7 @@ class HostNameModel(BaseModel):
 
     @field_validator("hostname")
     def validate_hostname(cls, v):
-        if not all(c.isalnum() or c == "-" or c == "." for c in v):
+        if not all(c.isalnum() or c in {"-", "."} for c in v):
             raise ValueError("Hostname contains invalid characters.")
         if v.startswith("-") or v.endswith("-"):
             raise ValueError("Hostname cannot start or end with a hyphen.")
