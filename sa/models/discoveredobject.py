@@ -125,7 +125,7 @@ class DataItem(EmbeddedDocument):
     def key(self):
         if not self.remote_system:
             return self.source
-        return f"{self.source}@{self.remote_system}"
+        return f"{self.source}@{self.remote_system.name}"
 
 
 @bi_sync
@@ -730,6 +730,7 @@ class DiscoveredObject(Document):
             # Unsync object
             if self.managed_object:
                 self.managed_object.fire_event("unmanaged")
+            self.is_dirty = False
             return
         if self.rule != rule:
             self.rule = rule
@@ -954,7 +955,7 @@ class DiscoveredObject(Document):
         """
         data, remote_rids = [], []
         for item in self.data:
-            if item.source != source and not remote_system:
+            if item.source == source and not remote_system:
                 continue
             if remote_system and not item.remote_system:
                 continue
@@ -1163,6 +1164,8 @@ def sync_purgatorium(
         processed += 1
         if r:
             logger.debug("Updated: %s", r)
+            if print_addresses and address in print_addresses:
+                logger.info("[%s] Data: %s/%s", address, r, r.data)
             updated += 1
     # Expired objects
     for o in DiscoveredObject.objects.filter(expired__gt=datetime.datetime.now()):
