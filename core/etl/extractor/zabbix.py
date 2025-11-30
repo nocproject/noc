@@ -8,11 +8,12 @@
 # Python modules
 import enum
 import datetime
-from typing import Iterable, Dict, Optional, List
+from collections import defaultdict
+from typing import Iterable, Dict, Optional, List, Tuple
 
 # Third-party modules
 from pydantic import BaseModel, Field
-from zabbix_utils import ZabbixAPI
+from zabbix_utils import ZabbixAPI, ProcessingError
 
 # NOC modules
 from noc.core.etl.extractor.base import BaseExtractor
@@ -24,6 +25,15 @@ from noc.core.etl.models.authprofile import AuthProfile
 from noc.core.etl.models.resourcegroup import ResourceGroup
 from noc.core.etl.models.fmevent import FMEventObject, Var, RemoteObject
 from noc.core.fm.event import EventSeverity
+
+
+class MediaType(enum.IntEnum):
+    EMAIL = 0
+    SCRIPT = 1
+    SMS = 2
+    JABBER = 3
+    WEBHOOK = 4
+    TESTING = 5
 
 
 class ItemType(enum.IntEnum):
@@ -80,6 +90,12 @@ class ZabbixHostInterfaceType(enum.IntEnum):
     SNMP = 2
     IPMI = 3
     JMX = 4
+
+
+class ZabbixMedia(BaseModel):
+    media_id: int
+    type: MediaType
+    topic_id: Optional[str] = None
 
 
 class ZabbixTag(BaseModel):
@@ -353,6 +369,18 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
         super().__init__(system)
         self.targets: Dict[int, RemoteObject] = {}
         self.items: Dict[int, ZabbixEventItem] = {}
+        self.media_types: Dict[int, ZabbixMedia] = {}
+        self.load_media()
+
+    def load_media(self):
+        for r in self.api.mediatype.get(output=["mediatypeid", "type", "parameters"]):
+            m = ZabbixMedia.model_validate(
+                {"media_id": int(r["mediatypeid"]), "type": MediaType(int(r["type"]))}
+            )
+            for p in r["parameters"]:
+                if p["name"] == "TopicID":
+                    m.topic_id = p["value"]
+            self.media_types[m.media_id] = m
 
     def get_next_event_ts(self, from_ts: Optional[datetime.datetime] = None):
         params = {
@@ -374,6 +402,22 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             time_from = self.get_next_event_ts()
             self.logger.info("Extracting all events from: %s", time_from)
         return time_from or datetime.datetime.now() - datetime.timedelta(days=1)
+
+    def get_alerts_tags(self, alerts) -> List[Dict[str, str]]:
+        """"""
+        r = []
+        for a in alerts:
+            if not a["sendto"]:
+                continue
+            media = int(a["mediatypeid"])
+            if media not in self.media_types:
+                send_to = a["sendto"]
+            elif self.media_types[media].topic_id:
+                send_to = f"{a['sendto']}:{self.media_types[media].topic_id}"
+            else:
+                send_to = a["sendto"]
+            r += [{"tag": "alerts", "value": send_to}]
+        return r
 
     def iter_events(self, start: Optional[datetime.datetime] = None) -> Iterable[ZabbixEvent]:
         params = {
@@ -439,11 +483,8 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
                     del row["urls"]
                 if int(row["eventid"]) in r_events_start:
                     row["r_clock"] = r_events_start.pop(int(row["eventid"]))
-                if row["alerts"]:
-                    row["tags"] += [
-                        {"tag": "alerts", "value": str(t)}
-                        for t in {a["sendto"] for a in row["alerts"]}
-                    ]
+                if row.get("alerts"):
+                    row["tags"] += self.get_alerts_tags(row["alerts"])
                 yield ZabbixEvent.model_validate(row)
 
     def update_event_items(self, ids: Iterable[int]):
@@ -571,3 +612,72 @@ class ZabbixFMEventExtractor(ZabbixExtractor):
             )
         self.api.logout()
         print("Non started events:", len(non_started_ids))
+
+
+@ZabbixRemoteSystem.extractor
+class ZabbixMetricsExtractor(ZabbixExtractor):
+    """
+    Extract Device Roles from NetBox
+    """
+
+    name = "metric"
+    HOURS = 2
+
+    def get_start_ts(self) -> datetime.datetime:
+        if self.system.remote_system.last_successful_extract_metrics:
+            self.logger.info(
+                "Initial TS from last_successful: from %s",
+                self.system.remote_system.last_successful_extract_metrics,
+            )
+            return self.system.remote_system.last_successful_extract_metrics
+        return datetime.datetime.now() - datetime.timedelta(hours=self.HOURS)
+
+    def iter_history(
+        self,
+        item_ids: List[str],
+        start: datetime.datetime,
+        end: Optional[datetime.datetime] = None,
+    ) -> Iterable[Tuple[int, datetime.datetime, float, float]]:
+        """Iter over Zabbix item history"""
+        prev_value, prev_id = None, None
+        while True:
+            try:
+                r = self.api.history.get(
+                    time_from=int(start.timestamp()),
+                    time_till=int(end.timestamp()) if end else None,
+                    sortfield=["itemid", "clock"],
+                    sortorder="ASC",
+                    itemids=item_ids,
+                    # hostids=,
+                    history=0,
+                )
+            except ProcessingError:
+                break
+            if not r:
+                break
+            for row in r:
+                clock = datetime.datetime.fromtimestamp(int(row["clock"]))
+                delta, value = 0, float(row["value"])
+                if prev_value and prev_id == row["itemid"]:
+                    delta = value - prev_value
+                yield row["itemid"], clock, value, delta
+                prev_value, prev_id = value, row["itemid"]
+            start += datetime.timedelta(hours=self.HOURS)
+
+    def iter_metrics(
+        self,
+        item_ids: List[str],
+        end_ts: Optional[datetime.datetime] = None,
+        **kwargs,
+    ) -> Iterable[Tuple[str, Optional[str], List[Tuple[int, float]]]]:
+        """"""
+        now = datetime.datetime.now().replace(microsecond=0)
+        end_ts = end_ts or now
+        start = self.get_start_ts()
+        while item_ids:
+            r = defaultdict(list)
+            ids, item_ids = item_ids[:100], item_ids[100:]
+            for item_id, ts, value, _ in self.iter_history(item_ids=ids, start=start, end=end_ts):
+                r[item_id].append((ts, value))
+            for item_id, series in r.items():
+                yield item_id, None, series

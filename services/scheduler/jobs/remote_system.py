@@ -163,15 +163,14 @@ class ETLMetricSyncJob(RemoteSystemJob):
         self.logger.info("Run extract metrics")
         parts = defaultdict(list)
         extract_sensors: Dict[str, Sensor] = {}
-        sensors = 0
+        sensors, values = 0, 0
         for s in Sensor.objects.filter(
             remote_system=self.object,
             protocol=SensorProtocol.REMOTE_PULL,
             profile__in=profiles,
         ):
             extract_sensors[s.local_id] = s
-            if len(extract_sensors) < 100:
-                continue
+        try:
             for local_id, metric_name, series in extractor.iter_metrics(
                 item_ids=list(extract_sensors),
                 end_ts=now,
@@ -182,9 +181,12 @@ class ETLMetricSyncJob(RemoteSystemJob):
                 sensors += 1
                 for ts, value in series:
                     s.set_value(value, ts, bulk=parts, shards=metrics_svc_slots)
+                    values += 1
+        except Exception as e:
+            self.logger.error("Error when extract metrics from Remote System: %s", str(e))
         if not parts:
             return
-        self.logger.info("Send sensors: %s", sensors)
+        self.logger.info("Send sensors: %s, Values: %s", sensors, values)
         RemoteSystem.objects.filter(id=self.object.id).update(
             last_extract_metrics=now,
             last_successful_extract_metrics=now,
