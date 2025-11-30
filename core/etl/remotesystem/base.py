@@ -181,6 +181,12 @@ class BaseRemoteSystem(object):
             out.write("\n".join(summary) + "\n")
         return n_errors, r
 
+    def get_metric_extractor(self):
+        """"""
+        if "metric" in self.extractors[self.__module__]:
+            return self.extractors[self.__module__]["metric"](self)
+        return None
+
     @classmethod
     def extractor(cls, c):
         """Decorator for extractor"""
