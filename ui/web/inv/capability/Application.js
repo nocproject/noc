@@ -81,6 +81,7 @@ Ext.define("NOC.inv.capability.Application", {
             ["http_url", "HTTP URL"],
             ["serial_num", "Serial Number"],
             ["vlan", "Vlan Number"],
+            ["hostname", "HostName"],
           ],
         },
         {
