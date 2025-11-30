@@ -46,7 +46,6 @@ from noc.sa.models.managedobject import ManagedObject
 from noc.sa.interfaces.base import MACAddressParameter
 from noc.sa.interfaces.igetinterfaces import IGetInterfaces
 from noc.main.models.label import Label
-from noc.sa.models.service import Service
 from noc.project.models.project import Project
 from noc.inv.models.capsitem import CapsItem
 from noc.wf.models.state import State
@@ -599,7 +598,7 @@ class Interface(Document):
         d_interval = d_interval or mo.get_metric_discovery_interval()
         s_map = {}
         if config.discovery.interface_metric_service:
-            s_map = ServiceInstance.get_object_resources(mo)
+            s_map = ServiceInstance.get_object_resources(mo.id)
         for i in (
             Interface._get_collection()
             .with_options(read_preference=ReadPreference.SECONDARY_PREFERRED)
@@ -665,15 +664,15 @@ class Interface(Document):
             if not metrics:
                 continue
             ifindex = i.get("ifindex")
-            service = None
+            service_id = None
             if str(i["_id"]) in s_map:
-                service = Service.get_by_id(s_map[str(i["_id"])])
+                service_id = s_map[str(i["_id"])][1]
             yield MetricCollectorConfig(
                 collector="managed_object",
                 metrics=tuple(metrics),
                 labels=(f"noc::interface::{i['name']}",),
                 hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                service=service.bi_id if service else None,
+                service=service_id,
             )
             if i_profile.subinterface_apply_policy != "I":
                 continue
@@ -686,9 +685,9 @@ class Interface(Document):
                 )
             ):
                 ifindex = si.get("ifindex")
-                service = None
+                service_id = None
                 if str(si["_id"]) in s_map:
-                    service = Service.get_by_id(s_map[str(si["_id"])])
+                    service_id = s_map[str(si["_id"])][1]
                 yield MetricCollectorConfig(
                     collector="managed_object",
                     metrics=tuple(metrics),
@@ -697,7 +696,7 @@ class Interface(Document):
                         f"noc::subinterface::{si['name']}",
                     ),
                     hints=[f"ifindex::{ifindex}"] if ifindex else None,
-                    service=service.bi_id if service else None,
+                    service=service_id,
                 )
 
     @classmethod
