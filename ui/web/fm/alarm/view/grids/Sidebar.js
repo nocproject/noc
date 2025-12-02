@@ -122,7 +122,7 @@ Ext.define("NOC.fm.alarm.view.grids.Sidebar", {
               fieldLabel: "TT",
               items: [
                 {
-                  boxLabel: __("Wait"),
+                  boxLabel: __("Wait TT"),
                   inputValue: 1,
                   // tooltip: __("Show only waiting confirmation"),
                 },
