@@ -146,16 +146,12 @@ class MaxMetricsDS(BaseDataSource):
                                     res[mo][i] = iface[0]
             return res
 
-        print("************************ !!!новый")
         links = {}
-        mos_id = list(mos.values_list("id", flat=True))  # [30:40]
+        mos_id = list(mos.values_list("id", flat=True))
         uplinks = {obj: [] for obj in mos_id}
-        for mo_id, mo_uplinks in list(mos.values_list("id", "uplinks")):  # [30:40]:
+        for mo_id, mo_uplinks in list(mos.values_list("id", "uplinks")):
             uplinks[mo_id] = mo_uplinks or []
         rld = load(mos_id)
-        print("uplinks", type(uplinks), len(uplinks))
-        print("rld", type(rld), len(rld))
-
         for mo in uplinks:
             for uplink in uplinks[mo]:
                 if rld[mo]:
@@ -163,11 +159,6 @@ class MaxMetricsDS(BaseDataSource):
                         links[mo] += [rld[mo][uplink]]
                     else:
                         links[mo] = [rld[mo][uplink]]
-        print("links", type(links), len(links))
-        import itertools
-
-        d = dict(itertools.islice(links.items(), 4))
-        print("links 4", d, type(d))
         return links
 
     @classmethod
@@ -187,7 +178,6 @@ class MaxMetricsDS(BaseDataSource):
         def str_to_float(str):
             return float("{0:.3f}".format(float(str)))
 
-        print("description", description, type(description))
         end = end + datetime.timedelta(days=1)
         diff = end - start
         q_filter = cls.get_filter(kwargs)
@@ -208,8 +198,6 @@ class MaxMetricsDS(BaseDataSource):
         ts_start = time.mktime(start.timetuple())
         ts_end = time.mktime(end.timetuple())
         query = QUERY % ("%s", ts_start, ts_start, ts_end)
-        print("query", query, type(query))
-
         # Write metrics data to 3-level dictionary
         # ifaces_metrics[mo_bi_id][iface_name][metric_name] -> value
         ifaces_metrics: Dict[str, Dict[str, Dict[str, Any]]] = defaultdict(dict)
