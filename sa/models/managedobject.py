@@ -2320,6 +2320,8 @@ class ManagedObject(NOCModel):
 
     @classmethod
     def iter_effective_labels(cls, instance: "ManagedObject") -> Iterable[List[str]]:
+        from noc.sa.models.service import Service
+
         yield list(instance.labels or [])
         yield list(instance.object_profile.labels or [])
         if instance.state:
@@ -2368,7 +2370,8 @@ class ManagedObject(NOCModel):
                 )
         for c in instance.iter_caps():
             if c.config.set_label:
-                yield c.get_labels()
+                yield Label.ensure_labels(c.get_labels(), ["sa.ManagedObject"])
+        yield from Service.get_exposed_labels_for_object(instance.id)
 
     @classmethod
     def can_set_label(cls, label: str) -> bool:
@@ -2548,11 +2551,7 @@ class ManagedObject(NOCModel):
                 "id": str(self.profile.id),
                 "name": self.administrative_domain.name,
             },
-            "labels": list(
-                Label.objects.filter(name__in=self.labels, expose_datastream=True).values_list(
-                    "name"
-                )
-            ),
+            "labels": Label.build_expose_labels(self.labels, "expose_datastream"),
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "object_profile": {"id": str(self.object_profile.id), "name": self.object_profile.name},
             "remote_mappings": [],
@@ -2729,11 +2728,7 @@ class ManagedObject(NOCModel):
             "mapping_refs": refs,
             "fm_pool": mo.get_effective_fm_pool().name,
             "labels": sorted(mo.effective_labels),
-            "exposed_labels": [
-                ll
-                for ll in mo.effective_labels
-                if not ll.endswith("*") and Label.get_effective_setting(ll, "expose_metric")
-            ],
+            "exposed_labels": Label.build_expose_labels(mo.effective_labels, "expose_metric"),
             "discovery_interval": mo.get_metric_discovery_interval(),
             "composed_metrics": [
                 mc.metric_type.field_name

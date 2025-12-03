@@ -1,18 +1,19 @@
 # ---------------------------------------------------------------------
-# ServiceSumamry Profile
+# ServiceSummary Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
-from typing import Dict
+from typing import Dict, Optional, List, Iterable, Any, Tuple
 from collections import defaultdict
 import logging
 
 # Third-party modules
+import bson
 from pymongo.errors import BulkWriteError, OperationFailure
-from pymongo import UpdateOne, DeleteOne, InsertOne
+from pymongo import UpdateOne, DeleteOne, InsertOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import IntField, ObjectIdField, EmbeddedDocumentField, ListField
 
@@ -79,6 +80,55 @@ class ServiceSummary(Document):
     subscriber = ListField(EmbeddedDocumentField(SummaryItem))
 
     @classmethod
+    def get_service_for_object(
+        cls,
+        managed_object,
+        states: Optional[List[str]] = None,
+    ) -> Iterable[Tuple[str, List[Dict[str, Any]], str, Optional[str], Optional[str]]]:
+        """Build service from ServiceInstance"""
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        coll = ServiceInstance._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED,
+        )
+        # Service, Subscribe, Iface
+        for row in coll.aggregate(
+            [
+                {"$match": {"managed_object": managed_object}},
+                {"$project": {"resources": 1, "service": 1}},
+                {
+                    "$lookup": {
+                        "from": "noc.services",
+                        "localField": "service",
+                        "foreignField": "_id",
+                        "as": "svc",
+                    }
+                },
+                {
+                    "$graphLookup": {
+                        "from": "noc.services",
+                        "connectFromField": "_id",
+                        "connectToField": "parent",
+                        "startWith": "$service",
+                        "as": "_nested",
+                        "maxDepth": 10,
+                    }
+                },
+            ]
+        ):
+            if not row["svc"]:
+                continue
+            svc = row["svc"][0]
+            if states and svc["state"] not in states:
+                continue
+            iface = None
+            for res in row.get("resources"):
+                if res.startswith("if:"):
+                    iface = bson.ObjectId(res[3:])
+                    break
+            yield row["service"], row["_nested"], svc["profile"], svc.get("subscriber"), iface
+
+    @classmethod
     def build_summary_for_object(cls, managed_object):
         """
         Build active services summary for managed object
@@ -86,59 +136,53 @@ class ServiceSummary(Document):
         :return: dict of interface id -> {service: ..., subscriber: ....}
             interface None means unbound or box-wise services
         """
-        from noc.sa.models.service import Service
-        from noc.wf.models.state import State
-        from noc.sa.models.serviceinstance import ServiceInstance
-
-        def iter_services(sd):
-            yield sd
-            for cs in Service._get_collection().find(
-                {"parent": sd["_id"], "state": {"$in": productive_states}},
-                {"_id": 1, "subscriber": 1, "profile": 1},
-            ):
-                yield from iter_services(cs)
+        from noc.wf.models.workflow import Workflow
 
         def add_dict(d1, d2):
             """
             Add all d2 values to d1
-            :param d1:
-            :param d2:
-            :return:
             """
             for k in d2:
                 d1[k] = d1.get(k, 0) + d2[k]
 
         # Productive states
-        productive_states = list(State.objects.filter(is_productive=True).values_list("id"))
+        productive_states = Workflow.get_productive_states()
+        sub_coll = Subscriber._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED,
+        )
         # Iterate over object's services
         # And walk underlying tree
         ri = {}
-        for si in ServiceInstance.objects.filter(managed_object=managed_object):
+        for svc, nested, svc_profile, subscriber, iface in cls.get_service_for_object(
+            managed_object,
+            states=productive_states,
+        ):
             # All subscribers for underlying tree
             subscribers = set()
             # profile_id -> count
             svc_profiles = defaultdict(int)
-            for s in iter_services(
-                {
-                    "_id": si.service.id,
-                    "profile": si.service.profile.id,
-                    "subscriber": si.service.subscriber.id if si.service.subscriber else None,
-                }
-            ):
-                if "subscriber" in s:
+            subscriber_profiles = {}
+            svc_profiles[svc_profile] += 1
+            if subscriber:
+                subscribers.add(subscriber)
+            for s in nested:
+                if s["state"] not in productive_states:
+                    continue
+                if s.get("subscriber"):
                     subscribers.add(s["subscriber"])
                 svc_profiles[s["profile"]] += 1
             # Get subscriber profiles count
-            ra = Subscriber._get_collection().aggregate(
-                [
-                    {"$match": {"_id": {"$in": list(subscribers)}}},
-                    {"$group": {"_id": "$profile", "total": {"$sum": 1}}},
-                ]
-            )
-            subscriber_profiles = {x["_id"]: x["total"] for x in ra}
+            if subscribers:
+                ra = sub_coll.aggregate(
+                    [
+                        {"$match": {"_id": {"$in": list(subscribers)}}},
+                        {"$group": {"_id": "$profile", "total": {"$sum": 1}}},
+                    ]
+                )
+                subscriber_profiles = {x["_id"]: x["total"] for x in ra}
             # Bind to interface
             # None for unbound services
-            iface = si.interface
+            # iface = si.interface
             if not iface:
                 ri[None] = {
                     "service": dict(svc_profiles),  # defaultdict -> dict
@@ -146,10 +190,10 @@ class ServiceSummary(Document):
                 }
                 continue
             if iface in ri:
-                add_dict(ri[iface.id]["service"], svc_profiles)
-                add_dict(ri[iface.id]["subscriber"], subscriber_profiles)
+                add_dict(ri[iface]["service"], svc_profiles)
+                add_dict(ri[iface]["subscriber"], subscriber_profiles)
             else:
-                ri[iface.id] = {
+                ri[iface] = {
                     "service": dict(svc_profiles),  # defaultdict -> dict
                     "subscriber": subscriber_profiles,
                 }

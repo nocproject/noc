@@ -710,11 +710,11 @@ class DiscoveredObject(Document):
             q |= m_q(address__in=addresses)
             # if ETL_SOURCE not in self.sources:
             #    continue
-            for m in mo.mappings:
+            for m in mo.iter_remote_mappings():
                 q |= m_q(
                     data__match={
-                        "remote_id": m["remote_id"],
-                        "remote_system": ObjectId(m["remote_system"]),
+                        "remote_id": m.remote_id,
+                        "remote_system": m.remote_system.id,
                     }
                 )
         if not q:
@@ -730,6 +730,7 @@ class DiscoveredObject(Document):
             # Unsync object
             if self.managed_object:
                 self.managed_object.fire_event("unmanaged")
+            self.is_dirty = False
             return
         if self.rule != rule:
             self.rule = rule
@@ -954,7 +955,7 @@ class DiscoveredObject(Document):
         """
         data, remote_rids = [], []
         for item in self.data:
-            if item.source != source and not remote_system:
+            if item.source == source and not remote_system:
                 continue
             if remote_system and not item.remote_system:
                 continue

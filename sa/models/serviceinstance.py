@@ -8,10 +8,10 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Iterable, Any, Dict
+from typing import Optional, List, Iterable, Any, Dict, Tuple
 
 # Third-party modules
-from pymongo import UpdateOne
+from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -311,23 +311,34 @@ class ServiceInstance(Document):
 
         q = Q()
         rds = {}
-        if managed_object.remote_system and managed_object.remote_id:
-            rds[managed_object.remote_id] = str(managed_object.remote_system.id)
-        for m in managed_object.mappings or []:
-            rds[m["remote_id"]] = m["remote_system"]
+        for m in managed_object.iter_remote_mappings():
+            rds[m.remote_id] = m.remote_system.id
         if rds:
             q |= Q(remote_id__in=list(rds))
         addrs = set()
         if managed_object.address:
             addrs.add(managed_object.address)
-        for ipv4_addrs in SubInterface.objects.filter(
-            managed_object=managed_object.id, ipv4_addresses__exists=True, enabled_afi="IPv4"
-        ).scalar("ipv4_addresses"):
+        for ipv4_addrs in (
+            SubInterface.objects.filter(
+                managed_object=managed_object.id, ipv4_addresses__exists=True, enabled_afi="IPv4"
+            )
+            .read_preference(ReadPreference.SECONDARY_PREFERRED)
+            .scalar("ipv4_addresses")
+        ):
             addrs |= {IP.prefix(x).address for x in ipv4_addrs}
         if addrs:
             q |= Q(addresses__address__in=addrs)
-        for si in ServiceInstance.objects.filter(q):
-            if rds and si.remote_id and str(si.service.remote_system.id) != rds.get(si.remote_id):
+        # get_full_fqdn
+        q |= Q(fqdn=managed_object.name.lower().strip())
+        for si in ServiceInstance.objects.filter(q).read_preference(
+            ReadPreference.SECONDARY_PREFERRED
+        ):
+            # By configuration
+            if (
+                si.remote_id in rds
+                and si.service.remote_system
+                and si.service.remote_system.id != rds.get(si.remote_id)
+            ):
                 continue
             yield si
 
@@ -568,20 +579,36 @@ class ServiceInstance(Document):
                 ServiceSummary.refresh_object(self.managed_object)
 
     @classmethod
-    def get_object_resources(cls, o) -> Dict[str, str]:
+    def get_object_resources(cls, oid: int) -> Dict[str, Tuple[str, int, str]]:
         """Return all resources used by object"""
         r = {}
-        for row in (
-            ServiceInstance.objects.filter(
-                managed_object=o,
-                resources__exists=True,
-            )
-            .scalar("resources", "service")
-            .as_pymongo()
+        # Secondary Preferred
+        coll = ServiceInstance._get_collection().with_options(
+            read_preference=ReadPreference.SECONDARY_PREFERRED,
+        )
+        for row in coll.aggregate(
+            [
+                {"$match": {"managed_object": oid, "resources": {"$exists": True, "$ne": []}}},
+                {"$project": {"service": 1, "resources": 1}},
+                {
+                    "$lookup": {
+                        "from": "noc.services",
+                        "let": {"i_service": "$service"},
+                        "pipeline": [
+                            {"$match": {"$expr": {"$eq": ["$_id", "$$i_service"]}}},
+                            {"$project": {"profile": 1, "bi_id": 1}},
+                        ],
+                        "as": "svc",
+                    }
+                },
+                {"$unwind": "$svc"},
+            ]
         ):
+            if not row["svc"]:
+                continue
             for rid in row["resources"]:
                 _, rid = rid.split(":")
-                r[rid] = row["service"]
+                r[rid] = (row["service"], row["svc"]["bi_id"], row["svc"]["profile"])
         return r
 
     @classmethod

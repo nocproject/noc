@@ -190,7 +190,7 @@ class Service(Document):
     # Last state change
     state_changed = DateTimeField()
     # Parent service
-    parent: "Service" = ReferenceField("self", required=False)
+    parent: "Service" = PlainReferenceField("self", required=False)
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
@@ -253,7 +253,7 @@ class Service(Document):
     agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI
@@ -322,6 +322,36 @@ class Service(Document):
                 managed_object=mo_id,
             ).scalar("service")
         )
+
+    @classmethod
+    def get_exposed_labels_for_object(cls, mo_id: int) -> List[str]:
+        """Return exposed labels for Managed Object"""
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        coll = ServiceInstance._get_collection()
+        for row in coll.aggregate(
+            [
+                {"$match": {"managed_object": mo_id}},
+                {"$project": {"resources": 1, "service": 1}},
+                {
+                    "$lookup": {
+                        "from": "noc.services",
+                        "let": {"si_service": "$service"},
+                        "pipeline": [
+                            {
+                                "$match": {"$expr": {"$eq": ["$$si_service", "$_id"]}},
+                            },
+                            {"$project": {"effective_labels": 1}},
+                        ],
+                        "as": "svc",
+                    }
+                },
+            ]
+        ):
+            if not row["svc"]:
+                continue
+            svc = row["svc"][0]
+            yield Label.build_expose_labels(svc["effective_labels"], "expose_sa_object")
 
     def __str__(self):
         if self.label:
@@ -513,7 +543,7 @@ class Service(Document):
             msg = self.get_message_context()
             # msg["managed_object"] = self.managed_object.get_message_context()
             msg["from_status"] = {"id": os, "name": os.name}
-            msg["ts"] = (timestamp.replace(microsecond=0).isoformat(),)
+            msg["ts"] = timestamp.replace(microsecond=0).isoformat()
             send_message(
                 data=msg,
                 message_type=MessageType.SERVICE_STATUS_CHANGE,
@@ -895,6 +925,9 @@ class Service(Document):
     def iter_effective_labels(cls, instance: "Service") -> Iterable[List[str]]:
         yield list(instance.labels or [])
         yield list(ServiceProfile.iter_lazy_labels(instance.profile))
+        for c in instance.iter_caps():
+            if c.config.set_label:
+                yield Label.ensure_labels(c.get_labels(), ["sa.Service"])
 
     def get_effective_agent(self) -> Optional[Agent]:
         """

@@ -92,6 +92,19 @@ Ext.define("NOC.vc.l2domainprofile.Application", {
           allowBlank: true,
         },
         {
+          name: "provisioning_policy",
+          xtype: "combobox",
+          fieldLabel: __("VLAN Provisioning Policy"),
+          allowBlank: false,
+          uiStyle: "medium",
+          value: "N",
+          store: [
+            ["D", "Disable"],
+            ["E", "Enable"],
+            ["A", "Add Only"],
+          ],
+        },
+        {
           name: "pools",
           xtype: "gridfield",
           fieldLabel: __("VLAN Pools"),
