@@ -71,6 +71,9 @@ export class ExternalLibsPlugin{
         {name: "scripts/bundles/dist/micromark.js", format: "iife"},
         {name: "scripts/bundles/dist/monaco.js", format: "iife"},
         {name: "scripts/bundles/dist/leaflet.js", format: "iife"},
+
+        // node_modules
+        {name: "node_modules/color-input/dist/color-input.min.js", format: "iife"},
   
         // NOC modules
         {name: "web/js/colors.js", format: "iife"},

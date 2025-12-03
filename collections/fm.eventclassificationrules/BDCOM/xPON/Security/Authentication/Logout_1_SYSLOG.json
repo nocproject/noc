@@ -1,5 +1,5 @@
 {
-    "name": "BDCOM | xPON | Security | Authentication | Logout (SYSLOG)",
+    "name": "BDCOM | xPON | Security | Authentication | Logout #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "ddf8d05f-ca5a-4941-bbb0-3465a71469a5",
     "description": "User gorit logouted from 10.118.0.10 on vty 0",
@@ -7,12 +7,16 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "User (?P<user>\\S+) logouted from (?P<ip>\\d\\S+)",
+    "message_rx": "User (?P<user>\\S+) log(?:outed|ged out) from (?P<ip>\\d\\S+)",
     "profiles": ["BDCOM.xPON"],
     "sources": ["syslog"],
     "test_cases": [
         {
             "message": "User gorit logouted from 10.118.0.10 on vty 0",
+            "raw_vars": []
+        },
+        {
+            "message": "User mitya logged out from 10.115.0.1 on vty 1",
             "raw_vars": []
         }
     ]

@@ -567,8 +567,24 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
               name: "dynamic_order",
               xtype: "numberfield",
               fieldLabel: __("Dynamic Order"),
-              allowBlank: true,
+              allowBlank: false,
               defaultValue: 0,
+              validator: function(value){
+                let matchRulesField = this.up("[name=match_rules]");
+                if(Ext.isEmpty(matchRulesField)){
+                  return true;
+                }
+                let val = Number.parseInt(value, 10),
+                  values = matchRulesField.getValue().map(r => r.dynamic_order),
+                  withoutCurrent = values.filter(r => r !== val);
+                if(values.length > 1 && values.length !== (withoutCurrent.length + 1)){
+                  return __("Dynamic Order must be unique");
+                }
+                return true;
+              },
+              listeners: {
+                validitychange: this.onValidityChange,
+              },
               uiStyle: "small",
             },
             {
@@ -583,6 +599,9 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
               query: {
                 "allow_matched": true,
               },
+              listeners: {
+                validitychange: this.onValidityChange,
+              },
             },
             {
               xtype: "core.tagfield",
@@ -593,12 +612,19 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
               uiStyle: "extra",
             },
           ],
+          isValid: function(){
+            let dynamicValues = this.getValue().map(r => r.dynamic_order),
+              uniqueValues = new Set(dynamicValues),
+              hasDynamicDuplicates = dynamicValues.length !== uniqueValues.size,
+              isDynamicEmpty = dynamicValues.some(v => Ext.isEmpty(v)),
+              hasEmptyLabels = this.getValue().some(r => Ext.isEmpty(r.labels) || !r.labels.length);
+            return !hasDynamicDuplicates && !isDynamicEmpty && !hasEmptyLabels;
+          },
         },
       ],
       formToolbar: [
         me.validationSettingsButton,
       ],
-
     },
     );
     me.callParent();
@@ -618,13 +644,11 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
       },
     },
   ],
-
   //
   onValidationSettings: function(){
     var me = this;
     me.showItem(me.ITEM_VALIDATION_SETTINGS).preview(me.currentRecord);
-  }
-  ,
+  },
   //
   cleanData: function(v){
     Ext.each(v.metrics, function(m){
@@ -641,5 +665,23 @@ Ext.define("NOC.inv.interfaceprofile.Application", {
         m.high_error = null;
       }
     });
+  },
+  //
+  onValidityChange: function(field){
+    var form = field.up("form"),
+      listField = field.up("listform");
+
+    if(!form || !listField){
+      return;
+    }
+    var basicForm = form.getForm();
+
+    if(listField.validate) listField.validate();
+    if(basicForm.checkValidity){
+      basicForm.checkValidity(listField);
+    } else{
+      var valid = basicForm.isValid();
+      basicForm.fireEvent("validitychange", basicForm, valid);
+    }
   },
 });

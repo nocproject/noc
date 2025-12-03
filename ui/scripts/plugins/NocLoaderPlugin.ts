@@ -1,6 +1,7 @@
 import * as esbuild from "esbuild";
 import type {Options} from "espree";
 import fs from "fs-extra";
+import MagicString from "magic-string";
 import * as path from "path";
 import {DependencyGraph} from "../DependencyGraph.ts";
 import {ExtJsParser} from "../ExtJsParser.ts";
@@ -13,6 +14,7 @@ interface PluginOptions {
   parserOptions?: Options;
   cacheDir?: string;
   debug?: boolean;
+  isDev: boolean;
 }
 
 export class NocLoaderPlugin{
@@ -43,13 +45,10 @@ export class NocLoaderPlugin{
     return {
       name: "noc-loader-plugin",
       setup: (build) => {
-        // build.onStart(async() => {
-        // this.log("NocLoaderPlugin started");
-        // });
         build.onLoad(
           {filter: new RegExp(this.options.entryPoint[0])},
           async(args) => {
-            const content = await fs.readFile(args.path, "utf8");
+            const originalCode = await fs.readFile(args.path, "utf8");
             for(const [namespace, dirPath] of Object.entries(this.options.paths)){
               const fullPath = path.join(this.options.basePath, dirPath);
               this.log(`Scanning directory ${fullPath} for Ext.define classes`);
@@ -58,9 +57,22 @@ export class NocLoaderPlugin{
             this.excludeClasses.forEach(className => {
               this.graph.remove(className);
             });
-            const imports = this.graph.topologicalSort()?.map(cl=>`import '${cl}'`).join("\n");
+            const imports = this.graph.topologicalSort()?.map(cl => `import '${cl}'`).join("\n");
+            let contents = imports + "\n" + originalCode;
+            if(this.options.isDev){
+              const s = new MagicString(originalCode);
+              s.prepend(imports + "\n");
+              const transformed = s.toString();
+              const map = s.generateMap({
+                file: path.basename(args.path),
+                source: args.path,
+                includeContent: true,
+                hires: true,
+              });
+              contents = transformed + "\n//# sourceMappingURL=" + map.toUrl();
+            }
             return {
-              contents: imports + content,
+              contents: contents,
               loader: "js",
             };
           });

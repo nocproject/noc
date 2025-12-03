@@ -1,0 +1,19 @@
+{
+    "name": "BDCOM | xPON | Security | Authentication | Logout #2 (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f6cafbb6-f8d8-4f0e-b638-fc6e77932e25",
+    "description": "User mitya logged out on console 0",
+    "event_class__name": "Security | Authentication | Logout",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "User (?P<user>\\S+) log(?:outed|ged out)\\s+on console",
+    "profiles": ["BDCOM.xPON"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "User mitya logged out on console 0",
+            "raw_vars": []
+        }
+    ]
+}

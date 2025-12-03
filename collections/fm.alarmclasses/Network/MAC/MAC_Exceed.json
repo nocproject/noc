@@ -1,0 +1,26 @@
+{
+    "name": "Network | MAC | MAC Exceed",
+    "$collection": "fm.alarmclasses",
+    "uuid": "a6739e24-98ae-4ff5-a9ff-35638e26ec45",
+    "description": "MAC Address Exceeded",
+    "is_unique": true,
+    "is_ephemeral": false,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "mac_limit",
+            "description": "MAC Address Limit"
+        },
+        {
+            "name": "utilization",
+            "description": "Utilization"
+        }
+    ],
+    "subject_template": "The MAC address threshold has been exceeded",
+    "body_template": "The MAC address threshold has been exceeded: {% if mac_limit %}{{mac_limit}}/{% endif %}{{utilization}} ({% if mac_limit %}threshold/{% endif %}value)",
+    "symptoms": "Network instability",
+    "probable_causes": "",
+    "recommended_actions": "Increase the limit on addresses learned",
+    "recover_time": 300,
+    "labels": ["noc::severity::warning"]
+}

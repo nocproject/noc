@@ -1,5 +1,5 @@
 {
-    "name": "BDCOM | xPON | Security | Authentication | Login (SYSLOG)",
+    "name": "BDCOM | xPON | Security | Authentication | Login #1 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "789a949a-5cae-41b3-abb4-4a65cd8f0fa0",
     "description": "User mitya logged in from 10.118.0.2 on vty 0",

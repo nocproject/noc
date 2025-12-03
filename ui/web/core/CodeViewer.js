@@ -58,6 +58,8 @@ Ext.define("NOC.core.CodeViewer", {
       readOnly: me.readOnly,
       theme: me.theme,
       automaticLayout: me.automaticLayout,
+      scrollBeyondLastLine: false,
+      scrollBeyondLastColumn: 0,
     });
     me.setChanges([]);
     me.setCurrentChangeIndex(0);
@@ -159,6 +161,8 @@ Ext.define("NOC.core.CodeViewer", {
       readOnly: me.readOnly,
       theme: me.theme,
       renderSideBySide: true,
+      scrollBeyondLastLine: false,
+      scrollBeyondLastColumn: 0,
     });
     
     var originalModel = window.monaco.editor.createModel(originalText || "", me.language),

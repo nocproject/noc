@@ -1,0 +1,40 @@
+{
+    "name": "Network | xPON | ONU | Discovered",
+    "$collection": "fm.eventclasses",
+    "uuid": "8612d710-2828-4b7a-8f4e-e3c24bb0bfe2",
+    "description": "ONU discovered/registered",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "xPON interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "mac",
+            "description": "ONU MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vendor",
+            "description": "ONU vendor",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} discovered on {{interface}}",
+    "body_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} discovered on {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | xPON | ONU | Power Failed"
+        }
+    ]
+}

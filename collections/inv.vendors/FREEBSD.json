@@ -1,0 +1,8 @@
+{
+    "name": "FreeBSD",
+    "uuid": "3f731480-d6dd-4616-bac8-64c385380201",
+    "full_name": "FreeBSD",
+    "code": ["FREEBSD"],
+    "site": "https://www.freebsd.org",
+    "$collection": "inv.vendors"
+}

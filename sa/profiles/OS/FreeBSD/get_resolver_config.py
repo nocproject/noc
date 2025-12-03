@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------
+# OS.FreeBSD.get_resolver_config
+# ---------------------------------------------------------------------
+# Copyright (C) 2007-2025 The NOC Project
+# See LICENSE for details
+# ---------------------------------------------------------------------
+
+# Python modules
+import re
+
+# NOC modules
+from noc.core.script.base import BaseScript
+from noc.sa.interfaces.igetresolverconfig import IGetResolverConfig
+
+
+class Script(BaseScript):
+    name = "OS.FreeBSD.get_resolver_config"
+    interface = IGetResolverConfig
+    rx_domain = re.compile(r"^\s*domain\s+(?P<domain>\S+)")
+    rx_search = re.compile(r"^\s*search\s+(?P<search>.+)")
+    rx_nameserver = re.compile(r"^\s*nameserver\s+(?P<server>\S+)")
+
+    def execute(self):
+        try:
+            s = self.cli("cat /etc/resolv.conf")
+        except self.CLISyntaxError:
+            raise self.NotSupportedError()
+        r = {"nameservers": []}
+        for l in s.splitlines():
+            match = self.rx_domain.search(l.strip())
+            if match:
+                r.update({"domain": match.group("domain")})
+            match = self.rx_search.search(l.strip())
+            if match:
+                r.update({"search": match.group("search").split()})
+            match = self.rx_nameserver.search(l.strip())
+            if match:
+                r["nameservers"] += [match.group("server")]
+        return r

@@ -71,6 +71,7 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
           handler: "onClose",
         },
         {
+          itemId: "exportBtn",
           tooltip: __("Export"),
           text: __("Export"),
           glyph: NOC.glyph.arrow_down,
@@ -97,7 +98,9 @@ Ext.define("NOC.maintenance.maintenance.ObjectsPanel", {
     store.load({
       scope: me,
       callback: function(){
-        me.down("[name=total]").setValue(store.getTotalCount());
+        let totalCount = store.getTotalCount();
+        me.down("[name=total]").setValue(totalCount);
+        me.down("#exportBtn").setDisabled(totalCount < 1);
       },
     });
     me.currentRecord = record;

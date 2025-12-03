@@ -1,0 +1,32 @@
+{
+    "name": "Network | xPON | ONU | Activated",
+    "$collection": "fm.eventclasses",
+    "uuid": "e2b8adeb-8ed4-4274-bb09-c59b6c2cfc7f",
+    "description": "ONU activated successfully",
+    "action": "A",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "xPON interface",
+            "type": "interface_name",
+            "required": true
+        },
+        {
+            "name": "mac",
+            "description": "ONU MAC",
+            "type": "mac",
+            "required": true
+        },
+        {
+            "name": "vendor",
+            "description": "ONU vendor",
+            "type": "str",
+            "required": false
+        }
+    ],
+    "subject_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} activated on {{interface}}",
+    "body_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} activated on {{interface}}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}
