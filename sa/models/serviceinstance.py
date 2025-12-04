@@ -22,6 +22,8 @@ from mongoengine.fields import (
     ListField,
     EnumField,
     BinaryField,
+    ReferenceField,
+    ObjectIdField,
     EmbeddedDocumentListField,
 )
 from mongoengine.queryset.visitor import Q
@@ -92,12 +94,15 @@ class ServiceInstance(Document):
             "#reference",
             "type",
             "remote_id",
+            "dependencies",
+            ("managed_object", "resources"),
+            ("asset_refs", "type"),
             ("addresses.address_bin", "port"),
             {"fields": ["service", "type", "managed_object", "remote_id", "name"], "unique": True},
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
-    service = PlainReferenceField("sa.Service", required=True)
+    service = ReferenceField("sa.Service", required=True)
     # Instance Description
     type: InstanceType = EnumField(InstanceType, required=True, default=InstanceType.OTHER)
     name: str = StringField(required=False)
@@ -119,6 +124,8 @@ class ServiceInstance(Document):
     asset_refs: List[str] = ListField(StringField(required=True))
     # Used Resources
     resources: List[str] = ListField(StringField(required=True))
+    # Service Dependencies
+    dependencies: List[str] = ListField(ObjectIdField())
     # Operation Attributes
     oper_status: bool = BooleanField()
     oper_status_change = DateTimeField()

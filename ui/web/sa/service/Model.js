@@ -165,16 +165,12 @@ Ext.define("NOC.sa.service.Model", {
       persist: false,
     },
     {
-      name: "static_instances",
-      type: "auto",
-    },
-    {
       name: "status_transfer_policy",
       type: "string",
       defaultValue: "P",
     },
     {
-      name: "status_dependencies",
+      name: "dependency_services",
       type: "auto",
     },
     {

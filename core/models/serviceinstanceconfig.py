@@ -33,6 +33,7 @@ class InstanceType(enum.Enum):
     ASSET = "asset"
     NETWORK_CHANNEL = "network"
     SERVICE_ENDPOINT = "endpoint"
+    SERVICE_CLIENT = "client"
     OTHER = "other"
 
 
@@ -64,6 +65,7 @@ class ServiceInstanceConfig:
     nri_port: Optional[str] = None
     fqdn: Optional[str] = None
     addresses: List[str] = None
+    services: List[str] = None
     port: int = 0
     asset_refs: List[str] = None
 
@@ -77,6 +79,8 @@ class ServiceInstanceConfig:
                 cfg = NetworkChannelInstance
             case InstanceType.SERVICE_ENDPOINT:
                 cfg = ServiceEndPoint
+            case InstanceType.SERVICE_CLIENT:
+                cfg = ConfigInstance
             case _:
                 cfg = ConfigInstance
         return cfg
