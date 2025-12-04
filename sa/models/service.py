@@ -179,7 +179,7 @@ class ServiceDependency(EmbeddedDocument):
     clean=[
         ("phone.PhoneNumber", "service"),
         ("sa.Service", "parent"),
-        ("sa.ServiceInstance", "dependencies.service"),
+        ("sa.ServiceInstance", "dependencies"),
     ],
     delete=[("sa.ServiceInstance", "service")],
 )
@@ -486,7 +486,7 @@ class Service(Document):
             if not wave:
                 break
             seen |= wave
-        seen -= self.id
+        seen -= {self.id}
         return list(seen)
 
     def iter_dependent_services(self) -> Iterable[Tuple["Service", str]]:
@@ -1036,6 +1036,7 @@ class Service(Document):
             # Update Data, Run sync
             instance.update_config(cfg)
             instance.register_endpoint(source, cfg.addresses)
+            instance.dependencies = cfg.services or None
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()

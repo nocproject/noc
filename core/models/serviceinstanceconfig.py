@@ -110,6 +110,7 @@ class ServiceInstanceConfig:
             remote_id=kwargs.get("remote_id"),
             nri_port=kwargs.get("nri_port"),
             asset_refs=kwargs.get("asset_refs"),
+            services=kwargs.get("services"),
         )
 
     def get_queryset(self, service: Any, settings: ServiceInstanceTypeConfig, **kwargs) -> Q:
