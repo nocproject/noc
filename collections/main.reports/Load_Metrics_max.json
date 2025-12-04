@@ -1,0 +1,379 @@
+{
+    "name": "Load Metrics max",
+    "$collection": "main.reports",
+    "uuid": "a4bead7e-bd33-4667-b728-55978bbf1d7f",
+    "title": "Load Metrics max (New)",
+    "description": "Отчет по пиковой загрузке",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "maxmetricsds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "managedobjectds.name",
+                    "title": "OBJECT_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.address",
+                    "title": "OBJECT_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.model",
+                    "title": "OBJECT_PLATFORM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.administrativedomain",
+                    "title": "OBJECT_ADM_DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.segment",
+                    "title": "OBJECT_SEGMENT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.container",
+                    "title": "CONTAINER_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_name",
+                    "title": "IFACE_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_description",
+                    "title": "IFACE_DESCRIPTION",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_speed",
+                    "title": "IFACE_SPEED",
+                    "format_type": "string"
+                },
+                {
+                    "name": "max_load_in",
+                    "title": "MAX_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "max_load_in_time",
+                    "title": "MAX_LOAD_IN_TIME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "max_load_out",
+                    "title": "MAX_LOAD_OUT, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "max_load_out_time",
+                    "title": "MAX_LOAD_OUT_TIME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "avg_load_in",
+                    "title": "AVG_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "avg_load_out",
+                    "title": "AVG_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "total_in",
+                    "title": "TOTAL_IN, Mbyte",
+                    "format_type": "string"
+                },
+                {
+                    "name": "total_out",
+                    "title": "TOTAL_OUT, Mbyte",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_iface_name",
+                    "title": "UPLINK_IFACE_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_iface_description",
+                    "title": "UPLINK_IFACE_DESCRIPTION",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_iface_speed",
+                    "title": "UPLINK_IFACE_SPEED",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_max_load_in",
+                    "title": "UPLINK_MAX_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_max_load_in_time",
+                    "title": "UPLINK_MAX_LOAD_IN_TIME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_max_load_out",
+                    "title": "UPLINK_MAX_LOAD_OUT, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_max_load_out_time",
+                    "title": "UPLINK_MAX_LOAD_OUT_TIME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_avg_load_in",
+                    "title": "UPLINK_AVG_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_avg_load_out",
+                    "title": "UPLINK_AVG_LOAD_IN, Mbps",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_total_in",
+                    "title": "UPLINK_TOTAL_IN, Mbyte",
+                    "format_type": "string"
+                },
+                {
+                    "name": "uplink_total_out",
+                    "title": "UPLINK_TOTAL_OUT, Mbyte",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Отчет по пиковой загрузке (Новый)"
+        },
+        "columns.name": {
+            "ru": "Имя объекта"
+        },
+        "columns.address": {
+            "ru": "IP Адрес"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.administrativedomain": {
+            "ru": "З.О."
+        },
+        "columns.segment": {
+            "ru": "Сегмент объекта"
+        },
+        "columns.container": {
+            "ru": "Почтовый адрес объекта"
+        },
+        "columns.iface_name": {
+            "ru": "Имя интерфейса"
+        },
+        "columns.iface_description": {
+            "ru": "Описание интерфейса"
+        },
+        "columns.iface_speed": {
+            "ru": "Скорость интерфейса"
+        },
+        "columns.max_load_in": {
+            "ru": "Максимальная загрузка входящий, Мбит/с"
+        },
+        "columns.max_load_in_time": {
+            "ru": "Время максимальной нагрузки, входящий"
+        },
+        "columns.max_load_out": {
+            "ru": "Максимальная загрузка исходящий, Мбит/с"
+        },
+        "columns.max_load_out_time": {
+            "ru": "Время максимальной нагрузки, исходящий"
+        },
+        "columns.avg_load_in": {
+            "ru": "Средняя загрузка входящий, Мбит/с"
+        },
+        "columns.avg_load_out": {
+            "ru": "Средняя загрузка исходящий, Мбит/с"
+        },
+        "columns.total_in": {
+            "ru": "Суммарно входящего трафика, Мбайт"
+        },
+        "columns.total_out": {
+            "ru": "Суммарно исходящего трафика, Мбайт"
+        },
+        "columns.uplink_iface_name": {
+            "ru": "Uplink: Имя интерфейса"
+        },
+        "columns.uplink_iface_description": {
+            "ru": "Uplink: Описание интерфейса"
+        },
+        "columns.uplink_iface_speed": {
+            "ru": "Uplink: Скорость интерфейса"
+        },
+        "columns.uplink_max_load_in": {
+            "ru": "Uplink: Максимальная загрузка входящий, Мбит/с"
+        },
+        "columns.uplink_max_load_in_time": {
+            "ru": "Uplink: Время максимальной нагрузки, входящий"
+        },
+        "columns.uplink_max_load_out": {
+            "ru": "Uplink: Максимальная загрузка исходящий, Мбит/с"
+        },
+        "columns.uplink_max_load_out_time": {
+            "ru": "Uplink: Время максимальной нагрузки, исходящий"
+        },
+        "columns.uplink_avg_load_in": {
+            "ru": "Uplink: Средняя загрузка входящий, Мбит/с"
+        },
+        "columns.uplink_avg_load_out": {
+            "ru": "Uplink: Средняя загрузка исходящий, Мбит/с"
+        },
+        "columns.uplink_total_in": {
+            "ru": "Uplink: Суммарно входящего трафика, Мбайт"
+        },
+        "columns.uplink_total_out": {
+            "ru": "Uplink: Суммарно исходящего трафика, Мбайт"
+        },
+        "parameters.start": {
+            "ru": "С"
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.segment": {
+            "ru": "Сегмент"
+        },
+        "parameters.administrative_domain": {
+            "ru": "По З.О."
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств"
+        },
+        "parameters.mo_profile": {
+            "ru": "По Профилю объекта"
+        },
+        "parameters.interface_profile": {
+            "ru": "По Профилю интерфейса"
+        },
+        "parameters.description": {
+            "ru": "Фильтровать по описанию (Шаблон)"
+        },
+        "parameters.exclude_zero": {
+            "ru": "Исключить интерфейсы с нулевой загрузкой"
+        }
+    },
+    "parameters": [
+        {
+            "name": "start",
+            "description": null,
+            "hide": false,
+            "label": "From",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "hide": false,
+            "label": "To",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "segment",
+            "description": null,
+            "hide": false,
+            "label": "Segment",
+            "model_id": "inv.NetworkSegment",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "mo_profile",
+            "description": null,
+            "hide": false,
+            "label": "By MO Profile",
+            "model_id": "sa.ManagedObjectProfile",
+            "type": "model"
+        },
+        {
+            "name": "interface_profile",
+            "description": null,
+            "hide": false,
+            "label": "By Interface Profile",
+            "model_id": "inv.InterfaceProfile",
+            "type": "model"
+        },
+        {
+            "name": "description",
+            "description": null,
+            "hide": false,
+            "label": "Filter by Description (REGEXP)",
+            "type": "string"
+        },
+        {
+            "name": "exclude_zero",
+            "description": null,
+            "hide": false,
+            "label": "Exclude interface that has zero load",
+            "type": "bool"
+        },
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.model,managedobjectds.administrativedomain,iface_name,iface_description,max_load_in,max_load_in_time,max_load_out,max_load_out_time,avg_load_in,avg_load_out",
+            "hide": false,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simpletable",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "csv"
+        }
+    ]
+}
