@@ -3,7 +3,7 @@
     "$collection": "main.reports",
     "uuid": "a4bead7e-bd33-4667-b728-55978bbf1d7f",
     "title": "Load Metrics max (New)",
-    "description": "Отчет по пиковой загрузке",
+    "description": "Load Metrics max",
     "bands": [
         {
             "name": "Root",
@@ -174,6 +174,9 @@
     "localization": {
         "title": {
             "ru": "Отчет по пиковой загрузке (Новый)"
+        },
+        "description": {
+            "ru": "Отчет по пиковой загрузке"
         },
         "columns.name": {
             "ru": "Имя объекта"
