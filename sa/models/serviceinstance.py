@@ -125,7 +125,7 @@ class ServiceInstance(Document):
     # Used Resources
     resources: List[str] = ListField(StringField(required=True))
     # Service Dependencies
-    dependencies: List[str] = ListField(ObjectIdField())
+    dependencies: List[str] = ListField(ObjectIdField(required=True))
     # Operation Attributes
     oper_status: bool = BooleanField()
     oper_status_change = DateTimeField()

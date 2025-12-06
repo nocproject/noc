@@ -178,7 +178,7 @@ class ServiceDependency(EmbeddedDocument):
     clean=[
         ("phone.PhoneNumber", "service"),
         ("sa.Service", "parent"),
-        ("sa.ServiceInstance", "dependencies"),
+        # ("sa.ServiceInstance", "dependencies"),
     ],
     delete=[("sa.ServiceInstance", "service")],
 )
