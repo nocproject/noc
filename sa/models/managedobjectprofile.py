@@ -1140,7 +1140,9 @@ class ManagedObjectProfile(NOCModel):
         return min(r) if r else self.metrics_default_interval
 
     @cachetools.cachedmethod(
-        operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock, key=operator.attrgetter("id")
+        operator.attrgetter("_object_profile_metrics"),
+        lock=lambda _: metrics_lock,
+        key=operator.attrgetter("id"),
     )
     def get_matcher(self) -> Callable:
         """"""
