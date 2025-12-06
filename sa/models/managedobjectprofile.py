@@ -766,6 +766,7 @@ class ManagedObjectProfile(NOCModel):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=300)
+    _object_profile_matcher = cachetools.TTLCache(maxsize=100, ttl=300)
 
     DEFAULT_WORKFLOW_NAME = "ManagedObject Default"
 
@@ -832,17 +833,12 @@ class ManagedObjectProfile(NOCModel):
                 yield "cfgmetricstarget", f"sa.ManagedObject::{mo_id}"
 
     def iter_pools(self):
-        """
-        Iterate all pool instances covered by profile
-        """
+        """Iterate all pool instances covered by profile"""
         for mo in self.managedobject_set.order_by("pool").distinct("pool"):
             yield mo.pool
 
     def can_escalate(self, depended=False):
-        """
-        Check alarms on objects within profile can be escalated
-        :return:
-        """
+        """Check alarms on objects within profile can be escalated"""
         if self.escalation_policy == "R":
             return bool(depended)
         return self.escalation_policy == "E"
@@ -863,9 +859,7 @@ class ManagedObjectProfile(NOCModel):
         return False
 
     def get_changed_diagnostics(self) -> Set[str]:
-        """
-        Return changed diagnostic state by policy field
-        """
+        """Return changed diagnostic state by policy field"""
         r = set()
         if self.is_field_changed(["event_processing_policy"]):
             r |= {SNMPTRAP_DIAG, SYSLOG_DIAG}
@@ -1145,6 +1139,9 @@ class ManagedObjectProfile(NOCModel):
         r = [m.get("interval") or self.metrics_default_interval for m in self.metrics]
         return min(r) if r else self.metrics_default_interval
 
+    @cachetools.cachedmethod(
+        operator.attrgetter("_object_profile_metrics"), lock=lambda _: metrics_lock, key=operator.attrgetter("id")
+    )
     def get_matcher(self) -> Callable:
         """"""
         expr = []

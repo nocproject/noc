@@ -151,7 +151,7 @@ class MetricRule(Document):
 
         if config.datastream.enable_cfgmetricrules:
             yield "cfgmetricrules", self.id
-        if changed_fields and "match" not in changed_fields:
+        if changed_fields and ("match" not in changed_fields or "is_active" not in changed_fields):
             return
         ids = []
         scopes = set()

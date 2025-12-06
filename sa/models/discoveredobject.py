@@ -332,15 +332,16 @@ class DiscoveredObject(Document):
     ) -> Optional["DiscoveredObject"]:
         """Check Discovered Object Exists"""
         oo = cls.find_object_by_data(address, pool, data)
-        if len(oo) == 1 and oo[0].address == address:
+        if len(oo) > 1:
+            o, data = cls.merge_discovered_objects(oo, address, data, dry_run=dry_run)
+        elif len(oo) == 1 and oo[0].address == address:
             # Replace pool ?
             o = oo[0]
         elif len(oo) == 1 and oo[0].address != address:
             # Moved address in ETL system
             o = None
-        elif oo:
-            # None ?
-            o, data = cls.merge_discovered_objects(oo, address, data, dry_run=dry_run)
+            # Remove old data
+            _, data = cls.merge_discovered_objects(oo, address, data, dry_run=dry_run)
         else:
             o = None
         if not o:
@@ -412,6 +413,7 @@ class DiscoveredObject(Document):
                     continue
                 if d.last_update > ts:
                     # Clean from Purgatorium Data
+                    logger.debug("[%s] Clean Rids: %s/%s", do.address, d.last_update, ts)
                     clean_rids.append((rs.name, rid))
                     continue
                 # Set is_delete ? For Lost Deleted/by TTL
@@ -575,6 +577,15 @@ class DiscoveredObject(Document):
         #         r.labels += o.effective_labels
         return r
 
+    @classmethod
+    def get_origin(cls, discovered: List["DiscoveredObject"]) -> "DiscoveredObject":
+        """Get origin records over Discovered Object"""
+        origin = discovered[0]
+        for d in discovered[1:]:
+            if origin.is_preferred(d):
+                origin = d
+        return origin
+
     def merge_duplicates(
         self,
         duplicates: List["DiscoveredObject"],
@@ -588,16 +599,15 @@ class DiscoveredObject(Document):
           * other - merge ctx data
         X for duplicates on multiple ETL Systems need weight for merge data
         """
-        origin, origin_ctx = self, self.get_ctx(is_new=is_new)
+        origin, origin_ctx = DiscoveredObject.get_origin([self] + list(duplicates)), self.get_ctx(
+            is_new=is_new
+        )
         priority = [str(s.remote_system.id) for s in self.rule.sources if s.remote_system]
         for d in duplicates:
             if ETL_SOURCE not in d.sources:
                 continue
             if self.is_preferred(d):
                 origin_ctx.merge_data(d.get_ctx(is_new=is_new), systems_priority=priority)
-            else:
-                origin = d
-                # origin_ctx = d.get_ctx()
         if self.origin and self.id != origin.id:
             # Move to is_duplicate
             origin_ctx.event = "duplicate"
@@ -685,6 +695,8 @@ class DiscoveredObject(Document):
             ):
                 return False
         # ? RemoteSystem Count
+        if self.rule.preference != do.rule.preference:
+            return self.rule.preference > do.rule.preference
         return len(self.sources) >= len(do.sources)
 
     def check_duplicates(self, mos: List["ManagedObject"]) -> List["DiscoveredObject"]:
@@ -953,6 +965,7 @@ class DiscoveredObject(Document):
             source: Input Source
             remote_system: Remote System
         """
+        logger.debug("[%s] Reset Data: %s/%s", self.address, source, remote_system)
         data, remote_rids = [], []
         for item in self.data:
             if item.source == source and not remote_system:
@@ -1171,6 +1184,14 @@ def sync_purgatorium(
     logger.debug("Removing expired objects")
     # Removed objects
     for o in DiscoveredObject.objects.filter(state__in=list(State.objects.filter(is_wiping=True))):
+        logger.info(
+            "[%s] Removed Discovered Object: %s/%s/%s/%s",
+            o.address,
+            o.state,
+            o.expired,
+            o.rule,
+            o.data,
+        )
         removed += 1
         o.delete()
     if disable_sync:
