@@ -1324,7 +1324,9 @@ class ActiveAlarm(Document):
         yield instance.labels
         yield instance.alarm_class.labels
         if instance.managed_object:
-            yield Label.build_expose_labels(instance.managed_object.effective_labels, "expose_alarm")
+            yield Label.build_expose_labels(
+                instance.managed_object.effective_labels, "expose_alarm"
+            )
 
     @classmethod
     def can_set_label(cls, label):
