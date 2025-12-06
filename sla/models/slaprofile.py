@@ -194,7 +194,6 @@ class SLAProfile(Document):
 
     def on_save(self):
         labels = [ll for ll in self.labels if Label.get_effective_setting(ll, "enable_slaprobe")]
-        print("ON Save", labels, self._changed_fields)
         if not labels:
             return
         if not hasattr(self, "_changed_fields") or "labels" in self._changed_fields:
