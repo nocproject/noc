@@ -2889,11 +2889,14 @@ class ManagedObject(NOCModel):
         """
         Create Managed Object instance from Template
         """
+        descr = None
+        if "description" in data:
+            descr = data["description"][:250]
         mo = ManagedObject(
             name=name or address,
             address=address,
             pool=pool,
-            description=data.get("description"),
+            description=descr,
             scheme=scheme,
             object_profile=object_profile,
             administrative_domain=administrative_domain,
