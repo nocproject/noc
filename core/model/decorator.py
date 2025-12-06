@@ -263,6 +263,9 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         :param field:
         :return:
         """
+        if setup["is_label"] and field.endswith("set_label"):
+            # CaosProfile Reference
+            return {field: o.id}
         if setup["is_label"] and is_document(model):
             return {f"{field}__contains": o.name}
         if setup["is_label"]:
