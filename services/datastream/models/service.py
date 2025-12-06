@@ -6,12 +6,13 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Literal
 
 # Third-party modules
 from pydantic import BaseModel
 
 # NOC modules
+from noc.core.models.serviceinstanceconfig import InstanceType
 from .utils import StateItem, ProjectItem, RemoteSystemItem, RemoteMapItem
 
 
@@ -30,6 +31,31 @@ class ResourceGroupItem(BaseModel):
     name: str
     technology: str
     static: bool
+
+
+class ServiceItem(BaseModel):
+    id: str
+    label: str
+    remote_system: Optional[RemoteSystemItem]
+    remote_id: Optional[str]
+
+
+class Dependency(BaseModel):
+    service: ServiceItem
+    method: Literal["parent", "used_by"] = "parent"
+    status_affected: bool = False
+    status_direction: Optional[Literal["in", "out", "both"]] = None
+    # direction: Optional[Literal["in", "out", "top", "down", "used"]]
+
+
+class ServiceInstanceItem(BaseModel):
+    id: str
+    type: InstanceType
+    name: Optional[str]
+    fqdn: Optional[str]
+    managed_object: Optional[str]
+    remote_system: Optional[RemoteSystemItem]
+    remote_id: Optional[str]
 
 
 class ServiceDataStreamItem(BaseModel):
@@ -51,3 +77,5 @@ class ServiceDataStreamItem(BaseModel):
     client_groups: Optional[List[ResourceGroupItem]]
     remote_mappings: Optional[List[RemoteMapItem]]
     effective_remote_map: Optional[Dict[str, str]]
+    instances: Optional[List[ServiceInstanceItem]]
+    dependencies: Optional[List[Dependency]]
