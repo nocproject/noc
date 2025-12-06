@@ -599,7 +599,7 @@ class DiscoveredObject(Document):
           * other - merge ctx data
         X for duplicates on multiple ETL Systems need weight for merge data
         """
-        origin = DiscoveredObject.get_origin([self] + list(duplicates))
+        origin = DiscoveredObject.get_origin([self, *list(duplicates)])
         origin_ctx = self.get_ctx(is_new=is_new)
         priority = [str(s.remote_system.id) for s in self.rule.sources if s.remote_system]
         for d in duplicates:
