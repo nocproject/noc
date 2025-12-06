@@ -102,7 +102,7 @@ class ServiceInstance(Document):
             {"fields": ["expires"], "expireAfterSeconds": 0},
         ],
     }
-    service = ReferenceField("sa.Service", required=True)
+    service = PlainReferenceField("sa.Service", required=True)
     # Instance Description
     type: InstanceType = EnumField(InstanceType, required=True, default=InstanceType.OTHER)
     name: str = StringField(required=False)
