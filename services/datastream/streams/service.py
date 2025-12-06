@@ -167,7 +167,9 @@ class ServiceDataStream(DataStream):
                 if mo.remote_system:
                     ii["managed_object"] |= {
                         "remote_system": {
-                            "id": str(mo.remote_system.id), "name": mo.remote_system.name},
+                            "id": str(mo.remote_system.id),
+                            "name": mo.remote_system.name,
+                        },
                         "remote_id": mo.remote_id,
                     }
 

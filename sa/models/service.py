@@ -949,12 +949,7 @@ class Service(Document):
         logger.debug("Requested services by query: %s", q)
         if not q:
             return list(services)
-        for (
-            sid,
-            path,
-        ) in Service.objects.filter(
-            q
-        ).scalar("id", "service_path"):
+        for sid, path in Service.objects.filter(q).scalar("id", "service_path"):
             services.add(sid)
             if path:
                 services |= set(path)
