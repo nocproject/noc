@@ -84,7 +84,7 @@ class CheckStatus(EmbeddedDocument):
 class DataItem(EmbeddedDocument):
     source: str = StringField(required=True)
     last_update = DateTimeField(required=False)
-    remote_system: "RemoteSystem" = ReferenceField(RemoteSystem, required=False)
+    remote_system: "RemoteSystem" = PlainReferenceField(RemoteSystem, required=False)
     remote_id: str = StringField(required=False)
     labels: List[str] = ListField(StringField())
     service_groups: List[ObjectId] = ListField(ObjectIdField())
