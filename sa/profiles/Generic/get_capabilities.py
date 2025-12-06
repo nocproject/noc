@@ -47,6 +47,7 @@ class Script(BaseScript):
     interface = IGetCapabilities
     requires = []
     cache = True
+    reuse_snmpv3_engine_id = False
 
     SNMP_GET_CHECK_OID = mib["SNMPv2-MIB::sysObjectID", 0]
     SNMP_BULK_CHECK_OID = mib["SNMPv2-MIB::sysDescr"]
