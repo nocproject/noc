@@ -106,6 +106,8 @@ class SNMP(object):
         Get SNMPv3 EngineId from Capabilities 'SNMP | EngineID'
         bytes.fromhex(engine_id[2:])
         """
+        if self.script and not self.script.reuse_snmpv3_engine_id:
+            return None
         engine_id = self.script.capabilities.get("SNMP | EngineID")
         if not engine_id:
             return None

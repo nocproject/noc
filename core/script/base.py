@@ -97,6 +97,10 @@ class BaseScript(object, metaclass=BaseScriptMetaclass):
     # * True - keep CLI session for next script
     # * False - close CLI session
     keep_cli_session = True
+    # For use SNMPv3 reuse EngineID from Capabilities
+    # * True - Get EngineId from 'SNMP | EngineID' Capabilities
+    # * False - refresh from device
+    reuse_snmpv3_engine_id = True
     # Script-level matchers.
     # Override profile one
     matchers = {}
