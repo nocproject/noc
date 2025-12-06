@@ -62,6 +62,8 @@ class ServiceDataStream(DataStream):
         cls._apply_remote_system(svc, r)
         cls._apply_resource_groups(svc, r)
         cls._apply_remote_mappings(svc, r)
+        cls._apply_instances(svc, r)
+        cls._apply_dependencies(svc, r)
         return r
 
     @staticmethod
@@ -85,12 +87,16 @@ class ServiceDataStream(DataStream):
             return
         caps = []
         for cname in sorted(cdata):
-            caps += [{"name": cname, "value": str(cdata[cname])}]
+            caps += [{"name": cname, "value": cdata[cname]}]
         r["capabilities"] = caps
 
     @staticmethod
     def _apply_profile(svc, r):
-        r["profile"] = {"id": str(svc.profile.id), "name": qs(svc.profile.name)}
+        r["profile"] = {
+            "id": str(svc.profile.id),
+            "name": qs(svc.profile.name),
+            "code": qs(svc.profile.code or ""),
+        }
 
     @staticmethod
     def _apply_remote_system(svc, r):
@@ -134,6 +140,70 @@ class ServiceDataStream(DataStream):
         if mappings:
             r["remote_mappings"] = mappings
             r["effective_remote_map"] = x
+
+    @classmethod
+    def _apply_instances(cls, svc: Service, r):
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        instances = []
+        for si in ServiceInstance.objects.filter(service=svc.id):
+            ii = {
+                "type": si.type.value,
+                "name": si.name,
+                "fqdn": si.fqdn,
+            }
+            if si.remote_id and svc.remote_system:
+                ii |= {
+                    "remote_system": {
+                        "id": str(svc.remote_system.id),
+                        "name": qs(svc.remote_system.name),
+                    },
+                    "remote_id": si.remote_id,
+                }
+            instances.append(ii)
+            if si.managed_object:
+                mo = si.managed_object
+                ii["managed_object"] = {"id": mo.id, "name": mo.name}
+                if mo.remote_system:
+                    ii["managed_object"] |= {
+                        "remote_system": {
+                            "id": str(mo.remote_system.id),
+                            "name": mo.remote_system.name,
+                        },
+                        "remote_id": mo.remote_id,
+                    }
+
+        if instances:
+            r["instances"] = instances
+
+    @classmethod
+    def _apply_dependencies(cls, svc: Service, r):
+        dependencies = []
+        for svc, d_type in svc.iter_dependent_services():
+            if d_type in ["U", "D"]:
+                d_type = "vertical"
+            else:
+                d_type = "horizontal"
+            dependencies.append(
+                {
+                    "service": cls.get_service(svc),
+                    "type": d_type,
+                    "status_affected": True,
+                    # "status_direction": "in, out, both",
+                }
+            )
+        if dependencies:
+            r["dependencies"] = dependencies
+
+    @classmethod
+    def get_service(cls, svc: Service) -> Dict[str, Any]:
+        r = {
+            "id": str(svc.id),
+            "label": qs(svc.label),
+            "bi_id": svc.bi_id,
+        }
+        cls._apply_remote_system(svc, r)
+        return r
 
     @staticmethod
     def _get_resource_groups(groups, static_groups):
