@@ -434,8 +434,8 @@ Ext.define("NOC.sa.service.Application", {
               },
             },
             {
-              name: "status_dependencies",
-              fieldLabel: __("Service Status Dependencies"),
+              name: "dependency_services",
+              fieldLabel: __("Service Dependencies"),
               xtype: "gridfield",
               allowBlank: true,
               columns: [
@@ -448,6 +448,15 @@ Ext.define("NOC.sa.service.Application", {
                   renderer: NOC.render.Lookup("service"),
                 },
                 {
+                  text: __("Group"),
+                  dataIndex: "group",
+                  renderer: NOC.render.Lookup("group"),
+                  width: 200,
+                  editor: {
+                    xtype: "inv.resourcegroup.LookupField",
+                  },
+                },
+                {
                   text: __("Type"),
                   dataIndex: "type",
                   width: 100,
@@ -455,16 +464,34 @@ Ext.define("NOC.sa.service.Application", {
                     xtype: "combobox",
                     store: [
                       ["S", "Service (Using)"],
-                      ["G", "Group"],
-                      ["P", "Parent"],
-                      ["C", "Children"],
+                      ["C", "Client (Using)"],
+                      ["T", "Parent (UP)"],
+                      ["D", "Children (Down)"],
                     ],
                   },
                   renderer: NOC.render.Choices({
                     "S": "Service (Using)",
-                    "G": "Group",
-                    "P": "Parent",
-                    "C": "Children",
+                    "C": "Client (Using)",
+                    "T": "Parent (UP)",
+                    "D": "Children (Down)",
+                  }),
+                },
+                {
+                  text: __("Status Transfer"),
+                  dataIndex: "oper_status_transfer",
+                  width: 100,
+                  editor: {
+                    xtype: "combobox",
+                    store: [
+                      ["D", "Disable"],
+                      ["S", "Send"],
+                      ["R", "Received"],
+                    ],
+                  },
+                  renderer: NOC.render.Choices({
+                    "D": "Disable",
+                    "S": "Send",
+                    "R": "Received",
                   }),
                 },
                 {
@@ -534,18 +561,46 @@ Ext.define("NOC.sa.service.Application", {
                   }),
                 },
                 {
-                  text: __("Ignored"),
-                  dataIndex: "ignored",
-                  width: 50,
+                  text: __("Reg. Instance"),
+                  dataIndex: "register_instance",
+                  width: 75,
                   renderer: NOC.render.Bool,
                   editor: "checkbox",
                 },
                 {
-                  text: __("Weight"),
-                  dataIndex: "weight",
+                  text: __("Include Res."),
+                  dataIndex: "include_resources",
+                  width: 75,
+                  renderer: NOC.render.Bool,
+                  editor: "checkbox",
+                },
+                {
+                  text: __("Instances"),
+                  dataIndex: "active_instances",
+                  width: 75,
                   editor: {
                     xtype: "numberfield",
                   },
+                },
+                {
+                  text: __("Reserved"),
+                  dataIndex: "reserve_instances",
+                  width: 75,
+                  editor: {
+                    xtype: "numberfield",
+                  },
+                },
+                {
+                  text: __("Name"),
+                  dataIndex: "textfield",
+                  width: 200,
+                  editor: "textfield",
+                },
+                {
+                  text: __("Port Range"),
+                  dataIndex: "port_range",
+                  width: 75,
+                  editor: "textfield",
                 },
               ],
             },
@@ -699,26 +754,6 @@ Ext.define("NOC.sa.service.Application", {
                   }),
                 },
               ],
-            },
-          ],
-        },
-        {
-          name: "static_instances",
-          xtype: "gridfield",
-          fieldLabel: __("Static Instances"),
-          allowBlank: true,
-          columns: [
-            {
-              text: __("Name"),
-              dataIndex: "textfield",
-              width: 250,
-              editor: "textfield",
-            },
-            {
-              text: __("Port"),
-              dataIndex: "port_range",
-              width: 50,
-              editor: "textfield",
             },
           ],
         },

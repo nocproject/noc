@@ -150,6 +150,8 @@ def save_document_caps(
         caps=[cf.field for cf in changed_fields or []],
     )
     self.update(**set_op)
+    if hasattr(self, "on_save_caps"):
+        self.on_save_caps(changed_fields, dry_run=dry_run)
 
 
 def save_model_caps(

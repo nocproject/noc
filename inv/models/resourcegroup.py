@@ -79,6 +79,7 @@ class MatchLabels(EmbeddedDocument):
         # sa.Service
         ("sa.Service", "static_service_groups"),
         ("sa.Service", "static_client_groups"),
+        ("sa.Service", "dependency_services__group"),
         # SA
         ("sa.CommandSnippet", "resource_group"),
         ("sa.ObjectNotification", "resource_group"),

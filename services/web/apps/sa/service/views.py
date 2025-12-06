@@ -99,6 +99,14 @@ class ServiceApplication(ExtDocApplication):
                 x["allow_subscribe"] = "no"
         return data
 
+    def cleaned_query(self, q):
+        r = super().cleaned_query(q)
+        if "effective_service_groups" in r:
+            r["effective_service_groups__in"] = ResourceGroup.get_nested_ids(
+                r.pop("effective_service_groups")
+            )
+        return r
+
     def get_Q(self, request, query):
         if is_objectid(query):
             q = Q(id=query)
