@@ -264,42 +264,6 @@ Ext.define("NOC.sa.reactionrule.Application", {
           ],
         },
         {
-          name: "action_command_set",
-          xtype: "gridfield",
-          fieldLabel: __("Action Commands"),
-          columns: [
-            {
-              text: __("Action"),
-              dataIndex: "action",
-              width: 300,
-              editor: {
-                xtype: "sa.action.LookupField",
-              },
-              renderer: NOC.render.Lookup("action"),
-            },
-            {
-              text: __("Allow Fail"),
-              dataIndex: "allow_fail",
-              width: 70,
-              editor: "checkboxfield",
-              renderer: NOC.render.Bool,
-            },
-            {
-              text: __("Clean Action"),
-              dataIndex: "clean_action",
-              width: 70,
-              editor: "checkboxfield",
-              renderer: NOC.render.Bool,
-            },
-            {
-              editor: "stringlistfield",
-              dataIndex: "context",
-              width: 400,
-              text: __("Context"),
-            },
-          ],
-        },
-        {
           name: "actions",
           xtype: "gridfield",
           fieldLabel: __("Run Actions"),
@@ -307,7 +271,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
             {
               text: __("Action"),
               dataIndex: "action",
-              width: 150,
+              width: 100,
               allowBlank: false,
               editor: {
                 xtype: "combobox",
@@ -328,7 +292,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
             {
               text: __("Run"),
               dataIndex: "run",
-              width: 150,
+              width: 75,
               allowBlank: false,
               editor: {
                 xtype: "combobox",
@@ -347,31 +311,25 @@ Ext.define("NOC.sa.reactionrule.Application", {
             {
               text: __("Commands"),
               dataIndex: "commands",
-              width: 300,
+              width: 150,
               editor: {
                 xtype: "sa.action.LookupField",
               },
-              renderer: NOC.render.Lookup("action"),
+              renderer: NOC.render.Lookup("commands"),
             },
             {
               text: __("Allow Fail"),
               dataIndex: "allow_fail",
-              width: 70,
+              width: 50,
               editor: "checkboxfield",
               renderer: NOC.render.Bool,
             },
             {
               text: __("Cancel"),
               dataIndex: "cancel_command",
-              width: 70,
+              width: 50,
               editor: "checkboxfield",
               renderer: NOC.render.Bool,
-            },
-            {
-              editor: "stringlistfield",
-              dataIndex: "context",
-              width: 400,
-              text: __("Context"),
             },
             {
               text: __("Domain Ctx"),
@@ -388,9 +346,15 @@ Ext.define("NOC.sa.reactionrule.Application", {
               renderer: NOC.render.Bool,
             },
             {
+              editor: "stringlistfield",
+              dataIndex: "context",
+              width: 400,
+              text: __("Context"),
+            },
+            {
               text: __("Handler"),
               dataIndex: "handler",
-              width: 400,
+              width: 150,
               editor: {
                 xtype: "main.handler.LookupField",
                 query: {

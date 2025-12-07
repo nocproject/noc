@@ -199,4 +199,6 @@ def apply_reactions(changes: List[Dict[str, Any]]) -> None:
             if item["model_id"] not in REACTION_MODELS:
                 continue
             item = ChangeItem.from_dict(item)
-            ReactionRule.register_change(item)
+            for rule_id in item.affected_rules or []:
+                rule = ReactionRule.get_by_id(rule_id)
+                rule.run(item.instance, domains=item.domains)
