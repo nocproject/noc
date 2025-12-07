@@ -14,7 +14,7 @@ from noc.models import is_document, get_model_id
 from noc.core.models.inputsources import InputSource
 from noc.core.change.policy import change_tracker
 from noc.core.change.model import ChangeField
-from noc.core.change.decorator import get_datastreams, get_domains
+from noc.core.change.decorator import get_datastreams, get_domains, get_applied_rules
 from .types import CapsValue, CapsConfig
 
 caps_logger = logging.getLogger(__name__)
@@ -147,6 +147,7 @@ def save_document_caps(
         audit=True,
         datastreams=get_datastreams(self),
         domains=get_domains(self, changed_fields),
+        reactions_rules=get_applied_rules(self, "update", changed_fields=changed_fields),
         caps=[cf.field for cf in changed_fields or []],
     )
     self.update(**set_op)
@@ -200,6 +201,7 @@ def save_model_caps(
         audit=True,
         datastreams=get_datastreams(self),
         domains=get_domains(self, changed_fields),
+        reactions_rules=get_applied_rules(self, "update", changed_fields=changed_fields),
         caps=[cf.field for cf in changed_fields or []],
     )
     self.__class__.objects.filter(id=self.id).update(**set_op)

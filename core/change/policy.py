@@ -101,6 +101,7 @@ class ChangeTracker(object):
         domains: Optional[List[Tuple[str, str]]] = None,
         audit: bool = False,
         caps: Optional[List[str]] = None,
+        reactions_rules: Optional[List[str]] = None,
     ) -> None:
         """
         Register datastream change
@@ -113,6 +114,7 @@ class ChangeTracker(object):
             domains: Configuration domains
             audit: Send Changes to Audit Log
             caps: Changed Capabilities list
+            reactions_rules: List of Reaction Rules
         """
         if not CHANGE_HANDLERS:
             self.load_receivers()
@@ -127,6 +129,7 @@ class ChangeTracker(object):
                 changed_fields=fields,
                 changed_caps=caps or None,
                 domains=domains or None,
+                affected_rules=reactions_rules or None,
             ),
             audit=audit and user,
         )

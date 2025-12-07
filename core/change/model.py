@@ -27,9 +27,11 @@ class ChangeItem(object):
     changed_fields: Optional[List[ChangeField]] = field(default=None, compare=False)
     changed_caps: Optional[List[str]] = field(default=None, compare=False)
     domains: Optional[List[Tuple[str, str]]] = None  # model, id, op (in/out)
+    affected_rules: Optional[List[str]] = field(default=None, compare=False)
     # datastreams: Optional[List[Tuple[str, str]]] = None
     # groups
     # labels
+    # Matcher
     ts: Optional[float] = field(default=None, compare=False)
     user: Optional[str] = field(default=None, compare=False)
 
@@ -42,6 +44,7 @@ class ChangeItem(object):
             changed_fields=[ChangeField(**cf) for cf in data.get("changed_fields") or []],
             changed_caps=data.get("changed_caps"),
             domains=data.get("domains"),
+            affected_rules=data.get("affected_rules"),
             user=data.get("user"),
             ts=float(data["ts"]) if data.get("ts") else None,
         )

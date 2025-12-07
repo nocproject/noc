@@ -31,6 +31,17 @@ def get_domains(instance, changed_fields=None) -> Optional[List[Tuple[str, str]]
     return list(instance.iter_changed_domains(changed_fields=changed_fields or {}))
 
 
+def get_applied_rules(instance, op: str, changed_fields=None) -> Optional[List[str]]:
+    """Build reaction rules"""
+    from noc.sa.models.reactionrule import ReactionRule
+
+    if hasattr(instance, "get_matcher_ctx"):
+        ctx = instance.get_matcher_ctx()
+    else:
+        ctx = {}
+    return list(ReactionRule.iter_rules(get_model_id(instance), op, ctx))
+
+
 def change(model=None, *, audit=True):
     """
     @change decorator to enable generalized change tracking on the model.
@@ -132,6 +143,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         fields=changed_fields,
         datastreams=get_datastreams(document, {cf.field: cf.old for cf in changed_fields or []}),
         domains=get_domains(document, changed_fields or []),
+        reactions_rules=get_applied_rules(document, op, changed_fields=changed_fields or []),
         audit=getattr(document, "_flag_audit", False),
     )
 
@@ -147,6 +159,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(document),
         domains=get_domains(document),
+        reactions_rules=get_applied_rules(document, op),
         audit=getattr(document, "_flag_audit", False),
     )
     if not hasattr(document, "get_changed_instance"):
@@ -159,6 +172,7 @@ def _on_document_delete(sender, document, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(document),
         domains=get_domains(document),
+        reactions_rules=get_applied_rules(document, model_id, op),
         audit=getattr(document, "_flag_audit", False),
     )
 
@@ -208,6 +222,7 @@ def _on_model_change(sender, instance, created=False, *args, **kwargs):
         fields=changed_fields,
         datastreams=get_datastreams(instance, {cf.field: cf.old for cf in changed_fields or []}),
         domains=get_domains(instance, changed_fields or []),
+        reactions_rules=get_applied_rules(instance, op, changed_fields=changed_fields or []),
         audit=getattr(instance, "_flag_audit", False),
     )
 
@@ -223,6 +238,7 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(instance),
         domains=get_domains(instance),
+        reactions_rules=get_applied_rules(instance, op),
         audit=getattr(instance, "_flag_audit", False),
     )
     if not hasattr(instance, "get_changed_instance"):
@@ -235,5 +251,6 @@ def _on_model_delete(sender, instance, *args, **kwargs):
         fields=None,
         datastreams=get_datastreams(instance),
         domains=get_domains(instance),
+        reactions_rules=get_applied_rules(instance, op),
         audit=getattr(instance, "_flag_audit", False),
     )

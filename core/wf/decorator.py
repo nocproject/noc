@@ -19,7 +19,7 @@ from noc.core.scheduler.job import Job
 from noc.core.defer import call_later
 from noc.core.wf.interaction import Interaction
 from noc.core.change.policy import change_tracker
-from noc.core.change.decorator import get_datastreams, get_domains
+from noc.core.change.decorator import get_datastreams, get_domains, get_applied_rules
 from noc.core.change.model import ChangeField
 
 logger = logging.getLogger(__name__)
@@ -128,6 +128,7 @@ def document_set_state(
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
             domains=get_domains(self, [cf]),
+            reactions_rules=get_applied_rules(self, "update", changed_fields=[cf]),
             audit=True,
         )
 
@@ -257,6 +258,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             fields=[cf],
             datastreams=get_datastreams(self, {cf.field: cf.old}),
             domains=get_domains(self, [cf]),
+            reactions_rules=get_applied_rules(self, "update", changed_fields=[cf]),
             audit=True,
         )
 
