@@ -7,6 +7,7 @@
 
 # Python modules
 import operator
+import logging
 from threading import Lock
 from typing import Optional, List, Union, Dict, Any, Callable, Tuple, Iterable
 
@@ -54,6 +55,8 @@ id_lock = Lock()
 rule_lock = Lock()
 matcher_lock = Lock()
 
+react_logger = logging.getLogger(__name__)
+
 
 class ActionItem(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
@@ -65,6 +68,8 @@ class ActionItem(EmbeddedDocument):
             ("A", "Always"),
             ("F", "Prev Failed"),
             ("S", "Prev Success"),
+            # ("L", "All Success")
+            # ("P", "Partially") Move to Affected ?
         ],
         default="A",
     )
@@ -101,12 +106,12 @@ class ActionItem(EmbeddedDocument):
             r["handler__name"] = list(self.handler.name)
         return r
 
-    def get_config(self) -> Dict[str, Any]:
-        """Get Action config"""
+    def get_config(self, **kwargs) -> Dict[str, Any]:
+        """Get Action config from Ctx"""
         key, args = None, {}
         match self.action:
             case ActionType.FIRE_WF_EVENT:
-                args = {"wf_event": self.wf_event}
+                args = {"wf_event": kwargs.get("wf_event")}
                 key = ""
             case ActionType.HANDLER:
                 key = self.handler.handler
@@ -122,7 +127,7 @@ class ActionItem(EmbeddedDocument):
 class AffectedRule(EmbeddedDocument):
     meta = {"strict": False, "auto_create_index": False}
 
-    model_id: str = StringField(required=True)
+    model_id: str = StringField(required=False)
     op: str = StringField(default="topology")
     rule: Optional["ReactionRule"] = PlainReferenceField("sa.ReactionRule", required=False)
     # RollBack Rule
@@ -375,7 +380,7 @@ class ReactionRule(Document):
                 # check Stop processing
 
     @classmethod
-    def register_change(cls, item: ChangeItem):
+    def register_change(cls, item: ChangeItem, dry_run: bool = False):
         """Register Item change"""
         o = item.instance
         if not o:
@@ -385,37 +390,16 @@ class ReactionRule(Document):
         else:
             ctx = {}
         # Getting rule
-        processed_rule = set()
         for rule_id in ReactionRule.iter_rules(item.model_id, item.op, ctx):
             rule = ReactionRule.get_by_id(rule_id)
-            # Configuration Domain
-            # Configuration Domain Ctx
-            domain_ctx = {}
-            for d_model_id, d_id in item.domains or []:
-                cfg = rule.get_domain(d_model_id, d_id)
-                if not cfg:
-                    continue
-                cfg, domain = cfg
-                domain_ctx["domain"] = domain
-                if cfg.rule:
-                    domain_ctx |= cfg.rule.get_action_ctx(domain)
-                    cfg.rule.run(domain)
-                    processed_rule.add(cfg.rule.id)
-            # run instance actions
-            rule.run(o)
+            rule.run(o, domains=item.domains, dry_run=dry_run)
 
-    def get_domain(self, model_id: str, domain_id) -> Optional[Tuple[AffectedRule, Any]]:
-        """"""
-        model = get_model(model_id)
-        domain = model.get_by_id(domain_id)
-        if not domain:
-            return None
-        for d in self.affected_domains:
-            if d.model_id == model_id:
-                return d, domain
+    @classmethod
+    def register_event(cls, event: Any, dry_run: bool = False):
+        """Register Event for reaction"""
 
     @cachetools.cachedmethod(
-        operator.attrgetter("_object_profile_metrics"),
+        operator.attrgetter("_matcher_cache"),
         lock=lambda _: matcher_lock,
         key=operator.attrgetter("id"),
     )
@@ -470,21 +454,6 @@ class ReactionRule(Document):
                 r[name] = caps[i.capability.name]
         return r
 
-    def get_action_commands_job(self, **kwargs) -> List[JobRequest]:
-        """Return as Job Request"""
-        r = []
-        for a in self.action_command_set:
-            req = a.action.get_job_request(**kwargs)
-            if self.execute_policy == "A":
-                req.require_approval = True
-            r.append(req)
-        return r
-
-    def run_action_commands(self, dry_run: bool = False, **ctx) -> None:
-        """Return As Config"""
-        for a in self.action_command_set:
-            a.action.run(**ctx, dry_run=dry_run)
-
     def iter_actions(self, o) -> List[Tuple[ActionType, Dict[str, Any], JobRequest]]:
         """
         1. Handler
@@ -492,7 +461,7 @@ class ReactionRule(Document):
         3. Object Action
         4. Notify
         """
-        for a in self.action_common:
+        for a in self.actions:
             if not a.action.is_supported(o):
                 continue
             cfg = a.get_config()
@@ -502,27 +471,80 @@ class ReactionRule(Document):
     def get_config(self):
         """Getting config for router"""
 
-    def run(self, o, dry_run: bool = True):
-        """"""
+    def iter_affected_rules(
+        self,
+        domains: List[Any],
+    ) -> Iterable[Tuple["ReactionRule", Any, "AffectedRule"]]:
+        """Iterate over affected Rules"""
+        # self ?
+        for model_id, oid in domains or []:
+            m = get_model(model_id)
+            o = m.get_by_id(oid)
+            m_ctx = o.get_matcher_ctx()
+            # yield ctx
+            for a_rule in self.affected_rules:
+                if a_rule.model_id and a_rule.model_id != model_id:
+                    continue
+                if a_rule.rule:
+                    yield a_rule.rule, o, a_rule
+                    continue
+                for rule_id in ReactionRule.iter_rules(model_id, a_rule.op, m_ctx):
+                    rule = ReactionRule.get_by_id(rule_id)
+                    yield rule, o, a_rule
 
-    def run_old(self, o, dry_run: bool = True):
-        """Execute actions"""
-        # Mege Action by Managed Object -. Actions
-        # Run: As Command, As Job
-        for action, cfg, _ in self.iter_actions(o):
-            r = action.run_action(o, **cfg)
-            # Processed result
-            # Delayed processed
-            self.processed_result(o, r)
+    def run(
+        self,
+        o: Any,
+        domains: Optional[List[Tuple[str, str]]] = None,
+        user: Optional[Any] = None,
+        dry_run: bool = True,
+        logger: Optional[logging.Logger] = None,
+    ):
+        """Run Rule for instance"""
+        logger = logger or react_logger
+        processed_rule = set()
+        domain_ctx = {}
+        # Reaction - Action API (Topology ?)
+        for rule, o, cfg in self.iter_affected_rules(domains):
+            if rule.id in processed_rule:
+                continue
+            if cfg.extend_ctx:
+                domain_ctx |= rule.get_action_ctx(o)
+                domain_ctx["domain"] = o
+            processed_rule.add(rule.id)
+            if cfg.suppress_action:
+                continue
+            rule.run(o, user=user, dry_run=dry_run)
+        # Result API
+        acton_ctx = self.get_action_ctx(o)
+        result = None
+        jobs = []
         # Action Command, Required ManagedObject ? Process Topology
-        ctx = self.get_action_ctx(o)  # get_env, Processed Data
-        if self.execute_policy == "R":
-            self.run_action_commands(**ctx, dry_run=dry_run)
-        else:
-            mo, jobs = self.get_action_commands_job(**ctx)
+        for num, ra in enumerate(self.actions):
+            if ra.run != "A":
+                continue
+            if not ra.action.is_supported(o):
+                logger.info("Not supported Action '%s' for: %s", ra.action, str(o))
+                continue
+            ctx = {}
+            ctx |= acton_ctx
+            if ra.expand_domain_ctx:
+                ctx |= domain_ctx
+            cfg = ra.get_config(**ctx)
+            if self.execute_policy == "R":
+                r = ra.action.run_action(o, cfg=cfg, user=user, dry_run=dry_run, **ctx)
+                self.processed_result(o, r)
+            else:
+                req = ra.action.get_job_request(o, cfg=cfg, user=user, dry_run=dry_run, **ctx)
+                if self.execute_policy == "A":
+                    req.require_approval = True
+                jobs.append(req)
+        if jobs:
             req = JobRequest(name=f"Reaction On {o} bu Rule {self.name}", jobs=jobs)
             # Locks for ManagedObject
             req.submit()
+        # Mege Action by Managed Object -. Actions
+        # Run: As Command, As Job
         # iter_topology
         # get_effective_path ? multiple path
         # Send Result
