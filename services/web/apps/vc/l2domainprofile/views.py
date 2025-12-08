@@ -19,6 +19,3 @@ class L2DomainProfileApplication(ExtDocApplication):
     title = "L2Domain Profile"
     menu = [_("Setup"), _("L2Domain Profiles")]
     model = L2DomainProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

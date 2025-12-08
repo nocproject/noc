@@ -19,6 +19,3 @@ class NetworkSegmentProfileApplication(ExtDocApplication):
     title = "Network Segment Profile"
     menu = [_("Setup"), _("Network Segment Profiles")]
     model = NetworkSegmentProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

@@ -19,6 +19,3 @@ class PhoneNumberProfileApplication(ExtDocApplication):
     title = "Number Profile"
     menu = [_("Setup"), _("Number Profiles")]
     model = PhoneNumberProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

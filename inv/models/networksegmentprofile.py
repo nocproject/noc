@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Network Segment Profile
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -293,3 +293,6 @@ class NetworkSegmentProfile(Document):
                 n += 1
         if not n:
             yield DEFAULT_UPLINK_POLICY
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

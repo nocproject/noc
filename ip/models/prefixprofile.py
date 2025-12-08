@@ -171,3 +171,6 @@ class PrefixProfile(Document):
                 key=str(self.id),
             )
             # PrefixProfile.objects.filter(id=self.id).update(ip_ping_discovery_last_run=None)
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

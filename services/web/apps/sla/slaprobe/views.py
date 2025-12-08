@@ -23,9 +23,6 @@ class SLAProbeApplication(ExtDocApplication):
     query_fields = ["name__icontains", "target__icontains", "description__icontains"]
     model = SLAProbe
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     def field_targets(self, o):
         return ", ".join([f"{o.type}:{o.target}"])
 

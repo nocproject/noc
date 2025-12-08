@@ -47,9 +47,6 @@ class PhoneNumberApplication(ExtDocApplication):
             data[fn] = sg_to_list(data.get(fn) or [])
         return data
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     def clean(self, data):
         # Clean resource groups
         for fn in self.resource_group_fields:

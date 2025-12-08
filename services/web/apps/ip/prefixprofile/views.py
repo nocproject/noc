@@ -19,6 +19,3 @@ class PrefixProfileApplication(ExtDocApplication):
     title = _("Prefix Profile")
     menu = [_("Setup"), _("Prefix Profiles")]
     model = PrefixProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

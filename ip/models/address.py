@@ -416,6 +416,9 @@ class Address(NOCModel):
             addr.name = name
         return addr
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
 
 # Avoid django's validation failure
 from .prefix import Prefix

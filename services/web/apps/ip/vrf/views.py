@@ -35,9 +35,6 @@ class VRFApplication(ExtModelApplication):
 
     mrt_config = {"get_vrfs": {"map_script": "get_mpls_vpn", "access": "import"}}
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile.style else ""
-
     def clean(self, data):
         if not data.get("vpn_id"):
             vdata = {"type": "VRF", "name": data["name"], "rd": data.get("rd")}

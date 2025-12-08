@@ -19,6 +19,3 @@ class ASProfileApplication(ExtDocApplication):
     title = "AS Profile"
     menu = [_("Setup"), _("AS Profiles")]
     model = ASProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

@@ -25,9 +25,6 @@ class ManagedObjectProfileApplication(ExtModelApplication):
 
     implied_permissions = {"launch": ["ip:addressprofile:lookup"]}
 
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""
-
     def field_mo_count(self, o):
         return o.managedobject_set.count()
 

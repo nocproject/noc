@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # inv.sensor application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,11 +23,6 @@ class SensorApplication(ExtDocApplication):
     model = Sensor
     query_fields = ["label"]
     query_condition = "icontains"
-
-    def field_row_class(self, o):
-        if o.profile and o.profile.style:
-            return o.profile.style.css_class_name
-        return ""
 
     # def cleaned_query(self, q):
     #     q = super().cleaned_query(q)

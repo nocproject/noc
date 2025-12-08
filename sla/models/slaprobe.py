@@ -344,6 +344,9 @@ class SLAProbe(Document):
             "provisioning_op": self.get_provisioning_op(),
         }
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
     def get_provisioning_op(self) -> str:
         """
         Return provisioning operation

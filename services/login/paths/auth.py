@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # /api/auth/auth/ handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -38,7 +38,6 @@ PINHOLE_PATHS = {
     "/api/login/token",
     "/api/zeroconf/config",
     "/api/metricscollector/send",
-    "/main/style/css/",
 }
 
 

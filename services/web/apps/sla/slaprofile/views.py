@@ -19,6 +19,3 @@ class SLAProfileApplication(ExtDocApplication):
     title = "SLA Profile"
     menu = [_("Setup"), _("SLA Profiles")]
     model = SLAProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

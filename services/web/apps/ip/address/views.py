@@ -22,9 +22,6 @@ class AddressApplication(ExtModelApplication):
     model = Address
     ignored_fields = ExtModelApplication.ignored_fields | {"prefix"}
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     def can_create(self, user, obj):
         return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
 

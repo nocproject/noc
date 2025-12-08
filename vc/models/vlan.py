@@ -268,6 +268,9 @@ class VLAN(Document):
     def vlan_role_label(self) -> Optional[str]:
         return self.profile.role_label
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
     def get_provisioning_op(self) -> str:
         """
         Return provisioning operation

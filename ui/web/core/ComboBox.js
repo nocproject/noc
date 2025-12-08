@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // core.comboBox widget
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ComboBox");
@@ -226,5 +226,8 @@ Ext.define("NOC.core.ComboBox", {
       mv[this.displayField] = rv
     }
     return this.store.getModel().create(mv)
+  },
+  getInnerTpl: function(){
+    return '<div <tpl if="row_class"> class="{row_class}"</tpl>>{label}</div>';
   },
 });

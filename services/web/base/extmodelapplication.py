@@ -51,6 +51,7 @@ from noc.main.models.label import Label
 from noc.core.middleware.tls import get_user
 from noc.core.comp import smart_text
 from noc.core.collection.base import Collection
+from noc.core.protocols.get_css_class import GetCssClass
 from noc.models import get_model_id
 from noc.core.model.util import is_related_field
 from noc.inv.models.resourcegroup import ResourceGroup
@@ -106,8 +107,13 @@ class ExtModelApplication(ExtApplication):
             self.m2m_fields.update(self.custom_m2m_fields)
         for f in self.model._meta.many_to_many:
             self.m2m_fields[f.name] = f.remote_field.model
-        # Find field_* and populate custom fields
+        # Additional fields
         self.custom_fields = {}
+        # row_class field
+        self.supports_css_class = isinstance(self.model, GetCssClass)
+        if self.supports_css_class:
+            self.custom_fields["row_class"] = self._get_row_class
+        # Find field_* and populate custom fields
         for fn in [n for n in dir(self) if n.startswith("field_")]:
             h = getattr(self, fn)
             if callable(h):
@@ -453,7 +459,10 @@ class ExtModelApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        return {"id": o.id, "label": smart_text(o)}
+        r = {"id": o.id, "label": str(o)}
+        if self.supports_css_class:
+            r["row_class"] = o.get_css_class() or ""
+        return r
 
     def lookup_tags(self, q, name, value):
         if not value:
@@ -852,4 +861,8 @@ class ExtModelApplication(ExtApplication):
             for p in v:
                 setattr(o, p, v[p])
             o.save()
-        return "%d records has been updated" % len(objects)
+        return f"{len(objects)} records has been updated"
+
+    @staticmethod
+    def _get_row_class(o: GetCssClass) -> str:
+        return o.get_css_class() or ""

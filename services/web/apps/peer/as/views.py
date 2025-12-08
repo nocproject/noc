@@ -27,6 +27,3 @@ class ASApplication(ExtModelApplication):
     int_query_fields = ["asn"]
 
     query_condition = "contains"
-
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile.style else ""

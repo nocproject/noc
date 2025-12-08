@@ -19,6 +19,3 @@ class VPNProfileApplication(ExtDocApplication):
     title = "VPN Profiles"
     menu = [_("Setup"), _("VPN Profiles")]
     model = VPNProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""
