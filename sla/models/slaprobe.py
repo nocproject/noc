@@ -333,16 +333,23 @@ class SLAProbe(Document):
     def get_action_ctx(self) -> Dict[str, Any]:
         """Context for running action"""
         return {
-            "domain": None,
             "name": self.name,
             "target": self.target,
             "target_object": self.get_target(),
             "type": self.type,
             "owner": self.group,
-            "managed_object": self.managed_object,
             "description": self.description,
             "provisioning_op": self.get_provisioning_op(),
         }
+
+    def iter_changed_domains(self, changed_fields=None):
+        """
+        Iterate over changed Domain, Configured domains, Migrate to Configuration Context
+        In/Out
+        """
+        if self.managed_object:
+            yield "sa.ManagedObject", str(self.managed_object.id)
+        # Target - Role
 
     def get_provisioning_op(self) -> str:
         """

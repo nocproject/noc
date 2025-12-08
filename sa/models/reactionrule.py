@@ -39,7 +39,6 @@ from noc.main.models.label import Label
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.inv.models.capability import Capability
 from noc.sa.models.action import Action
-from noc.sa.models.managedobject import ManagedObject
 from noc.wf.models.state import State
 from noc.models import get_model
 from noc.core.models.cfgactions import ActionType
@@ -106,12 +105,22 @@ class ActionItem(EmbeddedDocument):
             r["handler__name"] = list(self.handler.name)
         return r
 
+    def get_context(self) -> Dict[str, str]:
+        """"""
+        r = {}
+        for c in self.context:
+            key, *value = c.split(":")
+            if value:
+                r[key] = value[0]
+        return r
+
     def get_config(self, **kwargs) -> Dict[str, Any]:
         """Get Action config from Ctx"""
         key, args = None, {}
         match self.action:
+            case ActionType.ACTION_COMMAND:
+                key = self.commands.name
             case ActionType.FIRE_WF_EVENT:
-                args = {"wf_event": kwargs.get("wf_event")}
                 key = ""
             case ActionType.HANDLER:
                 key = self.handler.handler
@@ -433,14 +442,10 @@ class ReactionRule(Document):
 
     def get_action_ctx(self, o) -> Dict[str, Any]:
         """Create action context (to env)"""
-        r = {"obj": o}
+        # r = {"obj": o}
+        r = {}
         if hasattr(o, "get_action_ctx"):
             r |= o.get_action_ctx()
-        # managed_object
-        if isinstance(o, ManagedObject):
-            r["managed_object"] = o
-        elif hasattr(o, "managed_object"):
-            r["managed_object"] = o.managed_object
         if hasattr(o, "get_caps"):
             caps = o.get_caps()
         else:
@@ -492,47 +497,33 @@ class ReactionRule(Document):
                     rule = ReactionRule.get_by_id(rule_id)
                     yield rule, o, a_rule
 
-    def run(
+    def run_actions(
         self,
         o: Any,
-        domains: Optional[List[Tuple[str, str]]] = None,
         user: Optional[Any] = None,
         dry_run: bool = True,
         logger: Optional[logging.Logger] = None,
+        **kwargs,
     ):
-        """Run Rule for instance"""
+        """"""
         logger = logger or react_logger
-        processed_rule = set()
-        domain_ctx = {}
-        # Reaction - Action API (Topology ?)
-        for rule, o, cfg in self.iter_affected_rules(domains):
-            if rule.id in processed_rule:
-                continue
-            if cfg.extend_ctx:
-                domain_ctx |= rule.get_action_ctx(o)
-                domain_ctx["domain"] = o
-            processed_rule.add(rule.id)
-            if cfg.suppress_action:
-                continue
-            rule.run(o, user=user, dry_run=dry_run)
-        # Result API
-        acton_ctx = self.get_action_ctx(o)
-        result = None
         jobs = []
-        # Action Command, Required ManagedObject ? Process Topology
+        ctx = self.get_action_ctx(o)
+        ctx |= kwargs
+        logger.info("[%s] Run Action for rule: '%s' in context: %s", self.name, o, ctx)
         for num, ra in enumerate(self.actions):
             if ra.run != "A":
                 continue
             if not ra.action.is_supported(o):
-                logger.info("Not supported Action '%s' for: %s", ra.action, str(o))
+                logger.info("[%s] Not supported Action '%s' for: %s", self.name, ra.action, str(o))
                 continue
-            ctx = {}
-            ctx |= acton_ctx
-            if ra.expand_domain_ctx:
-                ctx |= domain_ctx
+            ctx = ra.get_context()
+            ctx |= kwargs
             cfg = ra.get_config(**ctx)
             if self.execute_policy == "R":
-                r = ra.action.run_action(o, cfg=cfg, user=user, dry_run=dry_run, **ctx)
+                r = ra.action.run_action(
+                    o, key=cfg.pop("key"), cfg=cfg, user=user, dry_run=dry_run, **ctx
+                )
                 self.processed_result(o, r)
             else:
                 req = ra.action.get_job_request(o, cfg=cfg, user=user, dry_run=dry_run, **ctx)
@@ -543,6 +534,36 @@ class ReactionRule(Document):
             req = JobRequest(name=f"Reaction On {o} bu Rule {self.name}", jobs=jobs)
             # Locks for ManagedObject
             req.submit()
+
+    def run(
+        self,
+        o: Any,
+        domains: Optional[List[Tuple[str, str]]] = None,
+        user: Optional[Any] = None,
+        dry_run: bool = False,
+        logger: Optional[logging.Logger] = None,
+    ):
+        """Run Rule for instance"""
+        # logger = logger or react_logger
+        processed_rule = set()
+        domain_ctx = {}
+        acton_ctx = self.get_action_ctx(o)
+        # Reaction - Action API (Topology ?)
+        # Locks for ManagedObject
+        for rule, domain, cfg in self.iter_affected_rules(domains):
+            if rule.id in processed_rule:
+                continue
+            if cfg.extend_ctx:
+                domain_ctx |= rule.get_action_ctx(domain)
+                domain_ctx["domain"] = domain
+            processed_rule.add(rule.id)
+            if cfg.suppress_action:
+                continue
+            rule.run_actions(domain, user=user, dry_run=dry_run, logger=logger, **acton_ctx)
+        # Add Domain Ctx
+        # Action Command, Required ManagedObject ? Process Topology
+        # Result API
+        self.run_actions(o, user=user, dry_run=dry_run, logger=logger, **domain_ctx)
         # Mege Action by Managed Object -. Actions
         # Run: As Command, As Job
         # iter_topology
