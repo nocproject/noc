@@ -18,7 +18,8 @@ class Command(BaseCommand):
 
         connect()
         # Install service stub
-        site.service = get_service()
+        site.set_service(get_service())
+        site.autodiscover()
         # Synchronize permissions
         try:
             Permission.sync()

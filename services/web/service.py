@@ -14,8 +14,10 @@ from django.core.wsgi import get_wsgi_application
 
 # NOC modules
 from noc.config import config
+from noc.urls import set_url_patterns
 from noc.core.service.fastapi import FastAPIService
 from noc.main.models.customfield import CustomField
+from noc.services.web.base.site import site
 
 
 class WebService(FastAPIService):
@@ -40,10 +42,9 @@ class WebService(FastAPIService):
         AuditTrail.install()
         # Initialize site
         self.logger.info("Registering web applications")
-        from noc.services.web.base.site import site
-
-        site.service = self
+        site.set_service(self)
         site.autodiscover()
+        set_url_patterns(site.urls)
         # Install Custom fields
         CustomField.install_fields()
 

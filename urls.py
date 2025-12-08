@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Django URL dispatcher.
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,17 +9,16 @@
 from django.http import HttpResponseServerError
 
 # NOC modules
-from noc.services.web.base.site import site
 from noc.core.debug import error_report
 
 #
-# Discover all applications
-#
-site.autodiscover()
-#
-# Install URL handlers
-#
-urlpatterns = site.urls
+# Populated by `web` service
+urlpatterns = []  # site.urls
+
+
+def set_url_patterns(urls) -> None:
+    global urlpatterns
+    urlpatterns = urls
 
 
 def handler500(request):

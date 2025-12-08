@@ -13,7 +13,9 @@ import sys
 from functools import partial
 from urllib.parse import quote as urllib_quote
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Union, Optional, Iterable
+from types import ModuleType
+import importlib
 
 # Third-party modules
 import cachetools
@@ -1160,12 +1162,23 @@ class Config(BaseConfig):
     def get_customized_paths(self, *args, **kwargs):
         """
         Check for customized path for given repo path.
+
         Repo path may be given in os.path.join-style components.
         Returns list of possible paths. One of elements is always repo path,
         while other may be custom counterpart, if exists.
-        :param prefer_custom: True - customized path first, False - repo path first
-        :param args: Path or path components in os.path.join-style
-        :return: List of possible paths
+
+        !!! warning
+
+            This method is not package-safe and must be revised.
+
+        Args:
+            prefer_custom:
+                True: customized path first.
+                False: repo path first.
+            args: Path or path components in os.path.join-style
+
+        Returns:
+            List of possible paths.
         """
         prefer_custom = kwargs.get("prefer_custom", False)
         rpath = os.path.join(*args)
@@ -1177,6 +1190,43 @@ class Config(BaseConfig):
                 return [cpath, rpath]
             return [rpath, cpath]
         return [rpath]
+
+    def iter_customized_modules(self, name: str, prefer_custom=True) -> Iterable[ModuleType]:
+        """
+        Iterate module instances.
+
+        Args:
+            name: Module name, dot-separated.
+            prefer_custom:
+                True: Modules from custom first.
+                False: Modules from repo first.
+
+        Returns:
+            Yields appropriate instances.
+        """
+
+        def get_module(mod_name: str) -> Optional[ModuleType]:
+            """Load module or return None."""
+            try:
+                return importlib.import_module(mod_name)
+            except ModuleNotFoundError:
+                return None
+
+        def check_and_yield(*args: Optional[ModuleType]) -> Iterable[ModuleType]:
+            """Yield only not None modules."""
+            for m in args:
+                if m:
+                    yield m
+
+        if not (name.startswith("noc.") or self.path.custom_path):
+            yield get_module(name)  # Non-customizable
+            return
+        repo_mod = get_module(name)
+        custom_mod = get_module(f"noc.custom.{name[4:]}")
+        if prefer_custom:
+            yield from check_and_yield(custom_mod, repo_mod)
+        else:
+            yield from check_and_yield(repo_mod, custom_mod)
 
     def get_hist_config(self, name):
         """
