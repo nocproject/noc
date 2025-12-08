@@ -93,7 +93,6 @@ _MODELS = {
     "main.AuditTrail": "noc.main.models.audittrail.AuditTrail",
     "main.AuthLDAPDomain": "noc.main.models.authldapdomain.AuthLDAPDomain",
     "main.Avatar": "noc.main.models.avatar.Avatar",
-    "main.Checkpoint": "noc.main.models.checkpoint.Checkpoint",
     "main.CHPolicy": "noc.main.models.chpolicy.CHPolicy",
     "main.CronTab": "noc.main.models.crontab.CronTab",
     "main.CustomField": "noc.main.models.customfield.CustomField",

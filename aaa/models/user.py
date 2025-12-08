@@ -40,7 +40,6 @@ logger = logging.getLogger(__name__)
         ("aaa.UserContact", "user"),
         ("sa.UserAccess", "user"),
         ("kb.KBUserBookmark", "user"),
-        ("main.Checkpoint", "user"),
         ("main.NotificationGroupUserSettings", "user"),
         ("main.ReportSubscription", "run_as"),
         ("ip.PrefixBookmark", "user"),
