@@ -18,7 +18,7 @@ from noc.core.translation import ugettext as _
 
 
 @on_delete_check(
-    check=[("main.Label", "match_prefixfilter.prefix_table")],
+    check=[("main.Label", "match_prefixfilter__prefix_table")],
     clean_lazy_labels="prefixfilter",
 )
 class PrefixTable(NOCModel):
