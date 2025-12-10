@@ -1,0 +1,20 @@
+{
+    "name": "Cisco | IOS | enable_sla_probe",
+    "$collection": "sa.actioncommands",
+    "uuid": "bc7ef249-6b99-47a9-bbe6-ab63cc9d9186",
+    "action__name": "enable_sla_probe",
+    "description": null,
+    "profile__name": "Cisco.IOS",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": "ip sla schedule {{ name }} life forever start-time now",
+    "timeout": 0,
+    "test_cases": [],
+    "scopes": [{
+        "command": null,
+        "enter_scope": false,
+        "scope": "ip_sla"
+    }]
+}
