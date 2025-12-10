@@ -52,6 +52,7 @@ class Profile(BaseProfile):
     command_leave_config = "return"
     command_save_config = "save"
     command_exit = "quit"
+    command_cancel_prefix = "undo"
     rogue_chars = [
         re.compile(rb"\x1b\[42D\s+\x1b\[42D"),
         b"\r",
