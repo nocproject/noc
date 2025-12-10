@@ -53,8 +53,7 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
         return partial(partial(match_version, value, op))
     if inverse:
         return partial(match_inverse, partial(matchers[op], value, field))
-    else:
-        return partial(matchers[op], value, field)
+    return partial(matchers[op], value, field)
 
 
 def match_ctx(cv: str, handler: Callable, ctx: Dict[str, Any]) -> bool:
