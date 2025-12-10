@@ -24,10 +24,11 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.mongo.fields import PlainReferenceField
+from noc.core.models.cfgactioncommands import ActionCommandConfig, ScopeConfig
 from noc.sa.models.profile import Profile
 from noc.core.text import quote_safe_path
+from noc.sa.models.action import Action
 from noc.core.prettyjson import to_json
-from .action import Action, ScopeConfig
 
 
 class PlatformMatch(EmbeddedDocument):
@@ -98,15 +99,24 @@ class ActionCommands(Document):
     }
     name = StringField(unique=True)
     uuid = UUIDField(unique=True)
-    action = ReferenceField(Action)
+    action: "Action" = ReferenceField(Action, required=True)
     description = StringField()
     profile: "Profile" = PlainReferenceField(Profile)
     # Config Scopes
     config_mode = BooleanField(default=False)
-    disable_when_change = BooleanField(default=False)
+    # disable_when_change = BooleanField(default=False)
+    disable_when_change = StringField(
+        choices=[
+            ("N", "Nothing"),
+            ("O", "Out-of-Scope"),
+            ("I", "Inner-of-Scope"),
+        ],
+        default="N",
+    )
     scopes: List["Scope"] = EmbeddedDocumentListField(Scope)
     match: List[PlatformMatch] = EmbeddedDocumentListField(PlatformMatch)
     commands = StringField()
+    # cancel commands
     # backward_commands
     # cancel_prefix
     preference = IntField(default=1000)
@@ -130,6 +140,7 @@ class ActionCommands(Document):
             "description": self.description,
             "profile__name": self.profile.name,
             "config_mode": self.config_mode,
+            "disable_when_change": self.disable_when_change,
             "match": [c.json_data for c in self.match],
             "scopes": [c.json_data for c in self.scopes],
             "commands": self.commands,
@@ -150,6 +161,7 @@ class ActionCommands(Document):
                 "profile__name",
                 "config_mode",
                 "preference",
+                "disable_when_change",
                 "match",
                 "commands",
                 "timeout",
@@ -157,21 +169,30 @@ class ActionCommands(Document):
             ],
         )
 
-    def get_scope_configs(
-        self,
-        enable_scope_commands: Optional[str] = None,
-        disable_scope_commands: Optional[str] = None,
-    ) -> Dict[str, ScopeConfig]:
+    def get_config(self, scopes: List[ScopeConfig]) -> "ActionCommandConfig":
+        """Get commands config"""
+        profile = self.profile.get_profile()
+        cfg = self.get_scope_configs()
+        r = []
+        for s in scopes:
+            if s.name in cfg:
+                s.update_config(cfg[s.name])
+            r.append(s)
+        return ActionCommandConfig(
+            name=self.action.name,
+            commands=self.commands,
+            config_mode=self.config_mode,
+            cancel_prefix=profile.command_cancel_prefix or None,
+            scopes=r,
+        )
+
+    def get_scope_configs(self) -> Dict[str, ScopeConfig]:
         """Build local configs for Scope"""
         r = {}
         for sc in self.scopes:
             cfg = sc.config
             r[cfg.name] = cfg
             # Replace to Scope Config
-            if enable_scope_commands:
-                cfg.enable_command = enable_scope_commands
-            if disable_scope_commands:
-                cfg.disable_command = disable_scope_commands
         return r
 
     def is_match(
