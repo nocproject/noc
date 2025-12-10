@@ -1,0 +1,29 @@
+{
+    "name": "Juniper | JUNOS | add_vlan",
+    "$collection": "sa.actioncommands",
+    "uuid": "ea940e30-b346-401c-af2c-745d60552cfb",
+    "action__name": "add_vlan",
+    "description": null,
+    "profile__name": "Juniper.JUNOS",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": "set vlans {{ name }} vlan-id {{ vlan }}{% if description %} description \"{{ description }}\"{% endif %}",
+    "timeout": 60,
+    "test_cases": [
+        {
+            "context": {
+                "name": "test_net_2",
+                "description": "testing purposes",
+                "vlan": 34
+            },
+            "output": "set vlans test_net_2 vlan-id 34 description \"testing purposes\""
+        }
+    ],
+    "scopes": [{
+        "command": null,
+        "enter_scope": false,
+        "scope": "vlan"
+    }]
+}

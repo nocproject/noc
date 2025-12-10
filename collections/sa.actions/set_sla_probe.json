@@ -58,5 +58,17 @@
             "is_required": false,
             "type": "str"
         }
+    ],
+    "action_set": [
+        {
+            "action__name": "enable_sla_probe",
+            "cancel": false,
+            "execute": "E"
+        },
+        {
+            "action__name": "enable_sla_probe",
+            "cancel": true,
+            "execute": "D"
+        }
     ]
 }
