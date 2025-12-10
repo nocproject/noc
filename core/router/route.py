@@ -121,7 +121,9 @@ class MatchItem(object):
         if self.labels:
             r[MessageMeta.LABELS] = {"$all": frozenset(ll.encode() for ll in self.labels)}
         if self.exclude_labels:
-            r[MessageMeta.LABELS] = {"$nin": frozenset(ll.encode() for ll in self.exclude_labels)}
+            r[MessageMeta.LABELS] = {
+                "$all_ne": frozenset(ll.encode() for ll in self.exclude_labels)
+            }
         if self.resource_groups:
             r[MessageMeta.GROUPS] = {"$all": frozenset(x.encode() for x in self.resource_groups)}
         if self.administrative_domain:
