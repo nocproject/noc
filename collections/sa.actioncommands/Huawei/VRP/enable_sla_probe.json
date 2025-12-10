@@ -1,0 +1,23 @@
+{
+    "name": "Huawei | VRP | enable_sla_probe",
+    "$collection": "sa.actioncommands",
+    "uuid": "28932cee-0811-4117-96f1-75f96871893a",
+    "action__name": "enable_sla_probe",
+    "description": null,
+    "profile__name": "Huawei.VRP",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": "start now",
+    "timeout": 0,
+    "test_cases": [],
+    "scopes": [
+        {
+            "command": "nqa test-instance {{ owner }} {{ name }}",
+            "enter_scope": true,
+            "exit_command": "quit",
+            "scope": "ip_sla"
+        }
+    ]
+}

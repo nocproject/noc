@@ -18,6 +18,13 @@
         {
             "name": "name",
             "description": "Vlan Name",
+            "default": "VLAN{{vlan}}",
+            "is_required": false,
+            "type": "str"
+        },
+        {
+            "name": "description",
+            "description": "Vlan Description",
             "is_required": false,
             "type": "str"
         }
