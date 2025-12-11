@@ -247,3 +247,14 @@ def test_or(raw, config, expected):
 )
 def test_field_eq(raw, config, expected):
     assert match(raw, config) is expected
+
+
+@pytest.mark.parametrize(
+    ("raw", "config", "expected"),
+    [
+        ({"labels": ["tag1", "tag2", "tag4"]}, {"labels": {"$all_ne": ["tag1", "tag5"]}}, True),
+        ({"labels": ["tag2", "tag4"]}, {"labels": {"$all_ne": ["tag4", "tag2"]}}, False),
+    ],
+)
+def test_negative(raw, config, expected):
+    assert match(raw, config) is expected
