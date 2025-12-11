@@ -112,6 +112,10 @@ class PrefixFilterItem(EmbeddedDocument):
 @on_delete
 @on_delete_check(
     check=[
+        ("sa.CapsProfile", "caps__set_label"),
+    ],
+    check_labels=[
+        ("wf.State", "labels"),
         ("fm.AlarmRule", "match__labels"),
         ("fm.AlarmRule", "match__exclude_labels"),
         ("pm.MetricRule", "match__labels"),
@@ -120,7 +124,6 @@ class PrefixFilterItem(EmbeddedDocument):
         ("main.MessageRoute", "match__exclude_labels"),
         ("sa.ObjectDiagnosticConfig", "match__labels"),
         ("sa.ObjectDiagnosticConfig", "match__exclude_labels"),
-        ("sa.CapsProfile", "caps__set_label"),
         ("sa.CredentialCheckRule", "match__labels"),
         ("sa.CredentialCheckRule", "match__exclude_labels"),
         ("sa.ReactionRule", "conditions__labels"),
@@ -129,7 +132,6 @@ class PrefixFilterItem(EmbeddedDocument):
         ("inv.ResourceGroup", "dynamic_service_labels__labels"),
         ("inv.ResourceGroup", "dynamic_client_labels__labels"),
         ("sa.ManagedObjectProfile", "match_rules__labels"),
-        ("wf.State", "labels"),
     ],
     clean=[
         ("sa.ManagedObject", "labels"),
