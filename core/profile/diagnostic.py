@@ -17,6 +17,7 @@ from noc.core.diagnostic.hub import HTTP_DIAG, HTTPS_DIAG
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
 from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
 from noc.core.checkers.base import Check, CheckResult
+from noc.core.validators import is_oid
 
 
 class ProfileDiagnostic:
@@ -110,7 +111,7 @@ class ProfileDiagnostic:
                 r_key = (method, self.clean_snmp_param(param))
             else:
                 r_key = (method, param)
-            if method in self.unsupported_method:
+            if method in self.unsupported_method or not r_key[1]:
                 continue
             if r_key in self.result_cache:
                 self.logger.debug("Using cached value")
@@ -138,7 +139,7 @@ class ProfileDiagnostic:
             r[rule.query_key].append(rule)
             if rule.method == "snmp_v2c_get":
                 param = self.clean_snmp_param(rule.param)
-                if param not in self.oids:
+                if param and param not in self.oids:
                     self.oids.append(param)
             elif rule.method in ("http_get", "https_get"):
                 if (rule.method, rule.param) not in self.urls:
@@ -159,6 +160,9 @@ class ProfileDiagnostic:
         except KeyError:
             self.logger.error("Cannot resolve OID '%s'. Ignoring", param)
             return None
+        if not is_oid(param):
+            self.logger.error("Bad OID format OID '%s'. Ignoring", param)
+            return None
         return param
 
     def get_profile(self) -> Tuple[Optional[str], Optional[str]]:
@@ -169,7 +173,7 @@ class ProfileDiagnostic:
                 r_key = (method, self.clean_snmp_param(param))
             else:
                 r_key = (method, param)
-            if method in unsupported_method:
+            if method in unsupported_method or not r_key[1]:
                 continue
             if r_key in self.result_cache:
                 self.logger.debug("Using cached value")
