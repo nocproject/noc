@@ -97,9 +97,22 @@ Ext.define("NOC.sa.actioncommands.Application", {
           boxLabel: __("Config. Mode"),
         },
         {
+          name: "exit_scope_commands",
+          xtype: "textfield",
+          fieldLabel: __("Exit Scope Commands"),
+          uiStyle: "medium",
+        },
+        {
           name: "disable_when_change",
-          xtype: "checkbox",
-          boxLabel: __("Disable When Change"),
+          xtype: "combobox",
+          fieldLabel: __("Disable When Change"),
+          store: [
+            ["N", __("Nothing")],
+            ["O", __("Out-of-Scope")],
+            ["I", __("Inner-of-Scope")],
+          ],
+          value: "new",
+          uiStyle: "medium",
         },
         {
           name: "preference",

@@ -45,6 +45,10 @@ Ext.define("NOC.sa.actioncommands.Model", {
       type: "string",
     },
     {
+      name: "exit_scope_commands",
+      type: "string",
+    },
+    {
       name: "match",
       type: "auto",
     },
@@ -62,7 +66,8 @@ Ext.define("NOC.sa.actioncommands.Model", {
     },
     {
       name: "disable_when_change",
-      type: "boolean",
+      type: "string",
+      defaultValue: "N",
     },
     {
       name: "preference",
