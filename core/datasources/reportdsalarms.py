@@ -45,7 +45,7 @@ class ReportDsAlarms(BaseDataSource):
         ParamInfo(name="start", type="datetime", required=True),
         ParamInfo(name="end", type="datetime"),
         ParamInfo(name="source", type="str", default="active"),
-        ParamInfo(name="objectids", type="int", allow_multi=True),
+        ParamInfo(name="objectids", type="str", allow_multi=True),
         ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
         ParamInfo(name="alarm_class", type="str", model="fm.AlarmClass"),
         ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
@@ -218,7 +218,7 @@ class ReportDsAlarms(BaseDataSource):
     def iter_data(
         cls,
         start: datetime.datetime,
-        end: Optional[datetime.datetime],
+        end: Optional[datetime.datetime] = None,
         admin_domain_ads: Optional[List[int]] = None,
         **filters: Optional[Dict[str, Any]],
     ) -> Iterable[Dict[str, Any]]:

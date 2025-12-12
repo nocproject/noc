@@ -172,7 +172,8 @@ class ReportAlarmDetailApplication(ExtApplication):
         else:
             return HttpResponseBadRequest(_("One params - FROM_DATE/TO_DATE or IDS required"))
         d_filters["start"] = fd
-        d_filters["end"] = td
+        if td:
+            d_filters["end"] = td
         for name, values in [
             ("min_duration", min_duration),
             ("max_duration", max_duration),
