@@ -1,0 +1,13 @@
+{
+    "name": "Network | xPON | Laser Always On (Network | xPON | Laser Always On,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "3610c685-1e66-40db-bd51-7acbfcea4172",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | xPON | Laser Always On",
+    "conditions": [{
+        "event_class_re": "Network | xPON | Laser Always On"
+    }],
+    "default_action": "R",
+    "stop_processing": false
+}
