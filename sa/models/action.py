@@ -308,7 +308,7 @@ class Action(Document):
                     ),
                 )
         if not has_scope:
-            yield tuple()
+            yield ()
 
     def iter_configs(
         self, profile, match_ctx, **kwargs
