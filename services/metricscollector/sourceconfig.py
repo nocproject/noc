@@ -18,6 +18,8 @@ class RemoteSystemConfig(object):
     api_key: Optional[str] = None
     code: Optional[str] = None
     is_banned: bool = False
+    batch_size: Optional[int] = 50000
+    batch_delay_s: Optional[int] = 10
 
     @classmethod
     def from_data(cls, data) -> "RemoteSystemConfig":

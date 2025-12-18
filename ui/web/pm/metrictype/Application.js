@@ -240,6 +240,12 @@ Ext.define("NOC.pm.metrictype.Application", {
               width: 300,
               editor: "stringlistfield",
             },
+            {
+              text: __("Labels"),
+              dataIndex: "in_labels",
+              width: 300,
+              editor: "stringlistfield",
+            },
           ],
         },
       ],
