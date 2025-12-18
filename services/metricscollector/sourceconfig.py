@@ -9,6 +9,9 @@
 from dataclasses import dataclass
 from typing import Tuple, Optional, Iterable, List
 
+# NOC Modules
+from noc.config import config
+
 
 @dataclass
 class RemoteSystemConfig(object):
@@ -28,6 +31,8 @@ class RemoteSystemConfig(object):
             name=data["name"],
             bi_id=int(data["bi_id"]),
             api_key=data.get("api_key"),
+            batch_size=config.metricscollector.batch_size,
+            batch_delay_s=config.metricscollector.batch_delay_s,
         )
 
 

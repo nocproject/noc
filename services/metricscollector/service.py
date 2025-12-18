@@ -158,7 +158,7 @@ class MetricsCollectorService(FastAPIService):
         """Send data to"""
         for d in iter_chunks(
             data,
-            max_size=config.msgstream.max_message_size // 3,
+            max_size=config.metricscollector.batch_max_message_size,
         ):
             self.publish(
                 value=d,
