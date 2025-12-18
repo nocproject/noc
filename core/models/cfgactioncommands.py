@@ -8,7 +8,7 @@
 # Python modules
 import re
 from dataclasses import dataclass
-from typing import Any, Dict, Optional, List
+from typing import Any, Dict, Optional, List, Tuple
 
 # Third-party modules
 import jinja2
@@ -64,19 +64,20 @@ class ActionCommandConfig:
         template = env.get_template("tpl")
         return template.render(**ctx)
 
-    def render_scope(self, **inputs) -> List[str]:
+    def render_scope(self, **inputs) -> Tuple[List[str], Dict[str, str]]:
         """Render Scope"""
-        r = []
+        r, r_ctx = [], {}
         for s in self.scopes or []:
             if not s.command:
                 # Append space ?
                 continue
             ctx = {s.name: s.value}
             ctx |= inputs
+            r_ctx |= ctx
             s_command = self.render_command(s.command, **ctx)
             if s.enter:
                 r.append(s_command)
-        return r
+        return r, r_ctx
 
     def render(
         self,
@@ -111,10 +112,11 @@ class ActionCommandConfig:
         elif enable_commands and self.cancel_prefix:
             inputs["disable_command"] = f"{cancel_prefix} {inputs['enable_command']}"
         # If render cancel - cancel scope only
+        scopes_c, s_ctx = self.render_scope(**ctx)
+        inputs["scope_prefix"] = " ".join(scopes_c)
+        inputs |= s_ctx
         if not ignore_scope:
-            scopes_c = self.render_scope(**ctx)
             r += scopes_c
-            inputs["scope_prefix"] = " ".join(scopes_c)
         command = self.render_command(self.commands, **inputs)
         if cancel and self.cancel_prefix:
             return [f"{self.cancel_prefix} {command}"]
