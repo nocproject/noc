@@ -226,6 +226,15 @@ class Report(Document):
     report_source = StringField()
     is_system = BooleanField(default=False)  # Report Is System Based
     allow_rest = BooleanField(default=False)  # Available report data from REST API
+    time_params = StringField(
+        choices=[
+            ("N", "Nothing"),
+            ("D", "Date Interval"),
+            ("T", "Time Interval"),
+            ("A", "Date Interval with Align"),
+        ],
+        default="N",
+    )
     parameters: List["ReportParam"] = EmbeddedDocumentListField(ReportParam)
     templates: List["Template"] = EmbeddedDocumentListField(Template)
     bands: List["Band"] = EmbeddedDocumentListField(Band)
@@ -272,6 +281,7 @@ class Report(Document):
             "description": self.description,
             "code": self.code,
             "hide": self.hide,
+            "time_params": self.time_params,
             "title": self.title,
         }
         if self.category:
@@ -389,6 +399,7 @@ class Report(Document):
             bands=list(bands.values()),
             templates=templates,
             parameters=params,
+            align_end_date_param=self.time_params == "A",
         )
 
     def get_band_format(self, band: Optional[str] = None) -> "BandFormat":
