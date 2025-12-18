@@ -10,7 +10,6 @@ import datetime
 import logging
 import asyncio
 import enum
-from collections import defaultdict
 from typing import Optional
 from http import HTTPStatus
 
@@ -24,8 +23,6 @@ from noc.core.perf import metrics
 from noc.core.service.loader import get_service
 from noc.core.ioloop.util import setup_asyncio
 from noc.core.fm.event import Event, Target, MessageType
-from ..models.sendmetric import SendMetric
-
 
 router = APIRouter()
 
@@ -66,7 +63,7 @@ class ZabbixAPI(object):
         _, key = authorization.split(" ")
         metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
         rs_cfg = self.service.get_remote_system_by_key(key.strip())
-        if not rs_cfg or rs_cfg.is_banned:
+        if not rs_cfg:
             # IP Address
             return ORJSONResponse(
                 {
@@ -81,7 +78,20 @@ class ZabbixAPI(object):
                 },
                 status_code=HTTPStatus.FORBIDDEN,
             )
-        received = defaultdict(dict)
+        metrics[
+            "remote_msg_in", ("collector", ZABBIX_COLLECTOR), ("remote_system", rs_cfg.name)
+        ] += 1
+        # Lock ?
+        channel = self.service.get_channel(rs_cfg, ZABBIX_COLLECTOR)
+        if not channel or channel.is_banned:
+            # IP Address
+            return ORJSONResponse(
+                {
+                    "error": f"Not Found Remote System by key {remote_system_code}",
+                },
+                status_code=HTTPStatus.NOT_FOUND,
+            )
+        received = 0
         sensors = []
         # Clock, Name
         # Log request
@@ -101,39 +111,17 @@ class ZabbixAPI(object):
                     ts = datetime.datetime.fromtimestamp(item["clock"])
                     sensors.append(((sensor_cfg, rs_cfg.bi_id), (ts, item["value"])))
                     continue
-                received[(item["clock"], item["host"]["name"])][item["name"]] = item["value"]
-        logger.debug("Received lines: %s", received_count)
+                await channel.feed(
+                    item["host"]["name"],
+                    item["name"],
+                    [(int(item["clock"]), item["value"])],
+                    labels=[f"{t['tag']}::{t['value']}" for t in item["item_tags"]],
+                )
+                received += 1
+        logger.info("Received lines: %s", received_count)
         if sensors:
-            logger.info("Received sensors: %s", len(sensors))
+            logger.debug("Received sensors: %s", len(sensors))
             self.service.send_sensors(sensors)
-        if not received:
-            return ORJSONResponse({}, status_code=200)
-        r = []
-        for (clock, host_name), metric in received.items():
-            cfg = self.service.lookup_source_by_name(
-                host_name, collector=ZABBIX_COLLECTOR
-            )  # receiver
-            if not cfg:
-                continue
-            ts = datetime.datetime.fromtimestamp(clock)
-            if cfg.no_data_check:
-                self.service.no_data_checker.register_data(
-                    str(cfg.bi_id),
-                    ts,
-                    collector="metricscollector",
-                    remote_system=rs_cfg.name,
-                )
-            metric["_units"] = {}
-            r.append(
-                SendMetric(
-                    ts=ts,
-                    collector=ZABBIX_COLLECTOR,
-                    managed_object=cfg.bi_id,
-                    remote_system=rs_cfg.bi_id,
-                    metrics=metric,
-                )
-            )
-        self.service.send_data(r)
         return ORJSONResponse({}, status_code=200)
 
     async def events(
