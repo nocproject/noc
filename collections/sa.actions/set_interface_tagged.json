@@ -1,0 +1,25 @@
+{
+    "name": "set_interface_tagged",
+    "$collection": "sa.actions",
+    "uuid": "fcdfcf0f-db9a-49b7-8e56-86dd2a017890",
+    "label": "Ensure interface in tagged mode",
+    "description": "Set interface tagged",
+    "access_level": 15,
+    "params": [
+        {
+            "name": "interface",
+            "description": "Interface name",
+            "is_required": true,
+            "scope": "interface",
+            "scope_command": "interface {{ interface }}",
+            "scope_exit": "exit",
+            "type": "interface_name"
+        },
+        {
+            "name": "allowed_vlans",
+            "description": "Tagged vlans",
+            "is_required": true,
+            "type": "vlan"
+        }
+    ]
+}
