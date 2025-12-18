@@ -7,7 +7,7 @@
     "profile__name": "Juniper.JUNOS",
     "config_mode": true,
     "preference": 1000,
-    "disable_when_change": false,
+    "disable_when_change": "N",
     "match": [],
     "commands": "set interfaces {{ interface }} unit 0 family ethernet-switching interface-mode trunk\nset interfaces {{ interface }} unit 0 family ethernet-switching vlan members {{ allowed_vlans | join(\",\") }}",
     "timeout": 0,
