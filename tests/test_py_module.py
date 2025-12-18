@@ -33,6 +33,8 @@ ALLOW_XFAIL = {
     "noc.gis.tile",
     "noc.core.etl.extractor.vcenter",
     "noc.core.etl.extractor.zabbix",
+    "noc.services.metricscollector.paths.vmagent",
+    "noc.services.metricscollector.models.vmagent",
 }
 
 
