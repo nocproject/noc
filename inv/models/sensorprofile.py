@@ -30,6 +30,7 @@ from mongoengine.queryset.visitor import Q as m_q
 # NOC modules
 from noc.main.models.style import Style
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.metrictype import MetricType
 from noc.wf.models.workflow import Workflow
@@ -42,6 +43,7 @@ from noc.core.change.model import ChangeField
 
 
 id_lock = Lock()
+matcher_lock = Lock()
 
 
 class MatchRule(EmbeddedDocument):
@@ -49,6 +51,7 @@ class MatchRule(EmbeddedDocument):
     labels = ListField(StringField())
     resource_groups = ListField(ObjectIdField())
     units = PlainReferenceField(MeasurementUnits)
+    remote_system = PlainReferenceField(RemoteSystem)
     name_pattern = StringField()
 
     def __str__(self):
@@ -60,6 +63,8 @@ class MatchRule(EmbeddedDocument):
             r["labels"] = {"$all": list(self.labels)}
         if self.resource_groups:
             r["service_groups"] = {"$all": list(self.resource_groups)}
+        if self.remote_system:
+            r["remote_system"] = self.remote_system.id
         if self.units:
             r["units"] = self.units
         if self.name_pattern:
@@ -73,6 +78,8 @@ class MatchRule(EmbeddedDocument):
             q &= m_q(effective_labels_all=self.labels)
         if self.resource_groups:
             q &= m_q(effective_service_groups__all=self.resource_groups)
+        if self.remote_system:
+            q &= m_q(remote_system=self.remote_system.id)
         if self.units:
             q &= m_q(units=self.units)
         if self.name_pattern:
@@ -121,6 +128,8 @@ class SensorProfile(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _default_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+    _sensor_profile_matcher = cachetools.TTLCache(maxsize=100, ttl=300)
+    _sensor_profile_rules = cachetools.TTLCache(maxsize=10, ttl=300)
 
     DEFAULT_PROFILE_NAME = "default"
     DEFAULT_WORKFLOW_NAME = "Sensor Default"
@@ -154,6 +163,11 @@ class SensorProfile(Document):
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_sensorprofile")
 
+    @cachetools.cachedmethod(
+        operator.attrgetter("_sensor_profile_matcher"),
+        lock=lambda _: matcher_lock,
+        key=operator.attrgetter("id"),
+    )
     def get_matcher(self) -> Callable:
         """"""
         expr = []
@@ -170,6 +184,11 @@ class SensorProfile(Document):
         return matcher(ctx)
 
     @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_sensor_profile_rules"),
+        key=lambda x: "ruleset",
+        lock=lambda _: id_lock,
+    )
     def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
         """Build matcher based on Profile Match Rules"""
         r = {}
