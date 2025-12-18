@@ -73,6 +73,8 @@ class CollectorMappingItem(EmbeddedDocument):
             r["aliases"] = list(self.aliases)
         if self.in_labels:
             r["in_labels"] = list(self.in_labels)
+        if self.unit:
+            r["unit__code"] = self.unit.code
         return r
 
     def get_config(self):
@@ -83,6 +85,7 @@ class CollectorMappingItem(EmbeddedDocument):
             "allow_partial_match": self.allow_partial_match,
             "aliases": list(self.aliases or []),
             "labels": list(self.in_labels or []),
+            "unit": self.unit.code if self.unit else None,
         }
 
 
