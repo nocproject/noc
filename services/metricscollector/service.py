@@ -28,7 +28,6 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.jsonutils import iter_chunks
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
-from noc.core.mx import MX_JOB_HANDLER, MessageType
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.sourceconfig import (
     SourceConfig,
