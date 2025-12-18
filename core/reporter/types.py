@@ -199,6 +199,7 @@ class ReportConfig(BaseModel):
     bands: List[ReportBand]  # Report Band (Band Configuration)
     templates: Dict[str, Template]  # Report Templates: template_code -> Template
     parameters: Optional[List[Parameter]] = None  # Report Parameters
+    align_end_date_param: bool = False
     # field_format: Optional[List[ReportField]] = None  # Field Formatter
 
     def get_root_band(self) -> ReportBand:

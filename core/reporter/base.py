@@ -154,23 +154,20 @@ class ReportEngine(object):
         params: Dict[str, Any],
         band: Band,
     ):
-        """
-        Render document
-        :return:
-        """
+        """Render document"""
         from noc.core.reporter.formatter.loader import loader as df_loader
 
         formatter = df_loader[template.formatter]
         fmt = formatter(band, template, output_type, output_stream)
         fmt.render_document()
 
+    @staticmethod
+    def align_date(date: datetime.datetime) -> datetime.datetime:
+        """Align end date parameter"""
+        return (date + datetime.timedelta(days=1)).replace(hour=0, minute=0, second=0)
+
     def clean_param(self, report: ReportConfig, params: Dict[str, Any]):
-        """
-        Clean and validata input params
-        :param report:
-        :param params:
-        :return:
-        """
+        """Clean and validata input params"""
         # clean_params = params.copy()
         clean_params = {}
         for p in report.parameters or []:
@@ -183,6 +180,8 @@ class ReportEngine(object):
             elif not value:
                 continue
             clean_params[name] = p.clean_value(value)
+            if name == "end" and p.type == "date" and report.align_end_date_param:
+                clean_params[name] = self.align_date(clean_params[name])
         return clean_params
 
     def parse_fields(
