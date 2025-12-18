@@ -57,6 +57,7 @@ class CollectorMappingItem(EmbeddedDocument):
     aliases = ListField(StringField())
     allow_partial_match = BooleanField(default=False)
     in_labels = ListField(StringField())
+    unit = PlainReferenceField(MeasurementUnits)
 
     def __str__(self):
         return f"{self.collector}.{self.field}"

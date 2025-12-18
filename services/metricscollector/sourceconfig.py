@@ -31,8 +31,8 @@ class RemoteSystemConfig(object):
             name=data["name"],
             bi_id=int(data["bi_id"]),
             api_key=data.get("api_key"),
-            batch_size=config.metricscollector.batch_size,
-            batch_delay_s=config.metricscollector.batch_delay_s,
+            batch_size=data.get("batch_size", config.metricscollector.batch_size),
+            batch_delay_s=data.get("batch_delay_s", config.metricscollector.batch_delay_s),
         )
 
 

@@ -246,6 +246,15 @@ Ext.define("NOC.pm.metrictype.Application", {
               width: 300,
               editor: "stringlistfield",
             },
+            {
+              text: __("Measurment Unit"),
+              dataIndex: "unit",
+              width: 200,
+              editor: {
+                xtype: "pm.measurementunits.LookupField",
+              },
+              renderer: NOC.render.Lookup("unit"),
+            },
           ],
         },
       ],

@@ -50,6 +50,7 @@ class CfgItem(object):
     allow_partial_match: bool
     labels: FrozenSet[str]
     aliases: List[str]
+    unit: str
     preference: int
 
     @classmethod
@@ -63,6 +64,7 @@ class CfgItem(object):
             allow_partial_match=bool(data.get("allow_partial_match")),
             labels=frozenset(data["labels"] or []),
             aliases=data["aliases"],
+            unit=data.get("unit"),
             preference=data["preference"],
         )
 
@@ -125,14 +127,20 @@ class MetricsCollectorService(FastAPIService):
         while not self.stopping:
             ch = await self.flush_queue.get()
             n_records = ch.records
-            self.logger.info("Flush Records: %s/%s", n_records, ch.deduplicated)
+            self.logger.info("[%s] Flush Records: %s", ch.remote_system.name, n_records)
             parts = defaultdict(list)
             for (clock, target, labels), mms in ch.data.items():
-                target = self.source_configs[target]
+                try:
+                    target = self.source_configs[target]
+                except KeyError:
+                    continue
                 ts = datetime.datetime.fromtimestamp(clock)
                 out = {}
                 for metric, value in mms.items():
-                    cfg = self.id_mappings[metric][0]
+                    try:
+                        cfg = self.id_mappings[metric][0]
+                    except KeyError:
+                        continue
                     if cfg.ch_table not in out:
                         out[cfg.ch_table] = {
                             "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
@@ -144,7 +152,7 @@ class MetricsCollectorService(FastAPIService):
                             "_units": {},
                         }
                     out[cfg.ch_table][cfg.ch_field] = value
-                    out[cfg.ch_table]["_units"][metric] = "1"
+                    out[cfg.ch_table]["_units"][metric] = cfg.unit or "1"
                 parts[target.bi_id % self.n_parts] += list(out.values())
             # Unfreeze channel
             self.logger.info("Send Records To Stream")
@@ -176,13 +184,6 @@ class MetricsCollectorService(FastAPIService):
             self.logger.info(
                 "[%s] Unknown Metrics: %s", c.remote_system.name, ",".join(c.unknown_hosts)
             )
-            await self.send_message(
-                {"collector": c.collector, "hosts": list(c.unknown_hosts)},
-                MessageType.JOB,
-                headers={
-                    MX_JOB_HANDLER: b"noc.custom.handlers.ensure_vmagent_host.ensure_unknown_target"
-                },
-            )
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -205,7 +206,7 @@ class MetricsCollectorService(FastAPIService):
 
     async def on_activate(self):
         check_callback = PeriodicCallback(
-            self.check_channels, config.metricscollector.batch_delay_ms
+            self.check_channels, config.metricscollector.batch_delay_s
         )
         check_callback.start()
         asyncio.create_task(self.flush_data())
