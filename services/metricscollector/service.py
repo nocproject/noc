@@ -151,7 +151,7 @@ class MetricsCollectorService(FastAPIService):
                             "_units": {},
                         }
                     out[cfg.ch_table][cfg.ch_field] = value
-                    out[cfg.ch_table]["_units"][metric] = cfg.unit or "1"
+                    out[cfg.ch_table]["_units"][cfg.ch_field] = cfg.unit or "1"
                 parts[target.bi_id % self.n_parts] += list(out.values())
             # Unfreeze channel
             self.logger.info("Send Records To Stream")
