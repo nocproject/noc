@@ -140,6 +140,18 @@ Ext.define("NOC.main.reportconfig.Application", {
                   boxLabel: __("Hide Report from UI"),
                   allowBlank: false,
                 },
+                {
+                  name: "time_params",
+                  xtype: "combobox",
+                  fieldLabel: __("Time Params"),
+                  allowBlank: true,
+                  store: [
+                    ["N", __("Nothing")],
+                    ["D", __("Date Interval")],
+                    ["T", __("Time Interval")],
+                    ["A", __("Date Interval with Align")],
+                  ],
+                },
               ],
             }, // Text
             {

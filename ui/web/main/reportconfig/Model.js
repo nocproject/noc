@@ -55,6 +55,10 @@ Ext.define("NOC.main.reportconfig.Model", {
       type: "string",
     },
     {
+      name: "time_params",
+      type: "string",
+    },
+    {
       name: "hide",
       type: "boolean",
       defaultValue: false,
