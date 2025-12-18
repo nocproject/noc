@@ -63,7 +63,7 @@ class VMAgentAPI(object):
         for ll in labels:
             if ll.name == JOB_LABEL_NAME:
                 continue
-            elif ll.name == METRIC_LABEL_NAME:
+            if ll.name == METRIC_LABEL_NAME:
                 name = ll.value
             elif ll.name == INSTANCE_LABEL_NAME:
                 instance = ll.value
