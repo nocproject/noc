@@ -1557,7 +1557,7 @@ class ManagedObject(NOCModel):
                             "[%s] broken config_diff_filter: Returns empty result", self.name
                         )
                 else:
-                    self.logger.warning("Handler is not allowed for config diff filter")
+                    logger.warning("Handler is not allowed for config diff filter")
                     new_data = data
             else:
                 new_data = data

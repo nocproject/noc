@@ -153,6 +153,7 @@ m_valid = DictListParameter(
 )
 
 id_lock = Lock()
+rule_lock = Lock()
 
 
 @Label.match_labels("managedobjectprofile", allowed_op={"="})
@@ -739,7 +740,7 @@ class ManagedObjectProfile(NOCModel):
         choices=[("D", "Disable"), ("R", "By Rule")],
         default="R",
     )
-    match_rules = PydanticField(
+    match_rules: List["MatchRule"] = PydanticField(
         _("Match Dynamic Rules"),
         schema=MatchRules,
         blank=True,
@@ -767,6 +768,7 @@ class ManagedObjectProfile(NOCModel):
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _object_profile_metrics = cachetools.TTLCache(maxsize=1000, ttl=300)
     _object_profile_matcher = cachetools.TTLCache(maxsize=100, ttl=300)
+    _object_profile_rules = cachetools.TTLCache(maxsize=10, ttl=300)
 
     DEFAULT_WORKFLOW_NAME = "ManagedObject Default"
 
@@ -1140,7 +1142,7 @@ class ManagedObjectProfile(NOCModel):
         return min(r) if r else self.metrics_default_interval
 
     @cachetools.cachedmethod(
-        operator.attrgetter("_object_profile_metrics"),
+        operator.attrgetter("_object_profile_matcher"),
         lock=lambda _: metrics_lock,
         key=operator.attrgetter("id"),
     )
@@ -1161,6 +1163,11 @@ class ManagedObjectProfile(NOCModel):
         return matcher(ctx)
 
     @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_object_profile_rules"),
+        key=lambda x: "ruleset",
+        lock=lambda _: rule_lock,
+    )
     def get_profiles_matcher(cls) -> Tuple[Tuple[str, Callable], ...]:
         """Build matcher based on Profile Match Rules"""
         r = {}

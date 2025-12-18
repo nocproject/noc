@@ -81,6 +81,7 @@ class Sensor(Document):
             "effective_labels",
             ("managed_object", "object"),
             ("remote_system", "remote_host"),
+            ("remote_system", "remote_id"),
             ("remote_system", "protocol", "profile"),
         ],
     }
@@ -403,6 +404,8 @@ class Sensor(Document):
         }
         if self.managed_object:
             r["service_groups"] = self.managed_object.effective_service_groups
+        if self.remote_system:
+            r["remote_system"] = self.remote_system.id
         return r
 
 
