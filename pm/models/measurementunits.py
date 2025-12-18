@@ -129,6 +129,9 @@ class MeasurementUnits(Document):
         return MeasurementUnits.objects.filter(code=code).first()
 
     @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_code_cache"), lock=lambda _: id_lock, key=lambda x: "default"
+    )
     def get_default_measurement_units(cls) -> "MeasurementUnits":
         return MeasurementUnits.objects.filter(name=cls.DEFAULT_MU_NAME).first()
 
