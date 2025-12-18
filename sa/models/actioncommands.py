@@ -131,7 +131,7 @@ class ActionCommands(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        return {
+        r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -147,6 +147,9 @@ class ActionCommands(Document):
             "timeout": self.timeout,
             "test_cases": [t.json_data for t in self.test_cases],
         }
+        if self.exit_scope_commands:
+            r["exit_scope_commands"] = self.exit_scope_commands
+        return r
 
     def to_json(self) -> str:
         return to_json(

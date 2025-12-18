@@ -23,6 +23,7 @@
             "output": "services rpm probe o1 test test1\n set probe-type icmp-ping\n set target address 8.8.8.8\n set test-interval 180\n set probe-count 3\n set probe-interval 10\n set history-size 5\nexit"
         }
     ],
+    "exit_scope_commands": "exit",
     "scopes": [
         {
             "command": "services rpm probe {{ owner }} test {{ name }}",
