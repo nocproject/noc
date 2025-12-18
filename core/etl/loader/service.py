@@ -65,7 +65,7 @@ class ServiceLoader(BaseLoader):
         o.update_caps(caps, source="etl", scope=self.system.name)
         # Raise Error in not allowed on config
         si = []
-        for i in instances:
+        for i in instances or []:
             i = Instance.model_validate(i)
             cfg = i.config
             if i.type == InstanceType.SERVICE_CLIENT:

@@ -16,6 +16,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
     "NOC.inv.sensorprofile.Model",
     "NOC.pm.metrictype.LookupField",
     "NOC.wf.workflow.LookupField",
+    "NOC.main.remotesystem.LookupField",
     "NOC.main.style.LookupField",
     "NOC.pm.measurementunits.LookupField",
   ],
@@ -168,6 +169,12 @@ Ext.define("NOC.inv.sensorprofile.Application", {
               fieldLabel: __("Match M Units"),
               allowBlank: true,
               uiStyle: "medium",
+            },
+            {
+              name: "remote_system",
+              xtype: "main.remotesystem.LookupField",
+              fieldLabel: __("Remote System"),
+              allowBlank: true,
             },
             {
               name: "name_pattern",
