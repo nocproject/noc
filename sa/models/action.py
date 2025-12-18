@@ -299,12 +299,14 @@ class Action(Document):
                 vv = kwargs[p.name]
             # Scopes from commands?
             for v in vv:
-                yield ScopeConfig(
-                    name=p.scope,
-                    value=v,
-                    command=p.scope_command,
-                    enter=bool(p.scope_command),
-                ),
+                yield (
+                    ScopeConfig(
+                        name=p.scope,
+                        value=v,
+                        command=p.scope_command,
+                        enter=bool(p.scope_command),
+                    ),
+                )
         if not has_scope:
             yield tuple()
 
