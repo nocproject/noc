@@ -1,5 +1,5 @@
 {
-    "name": "Juniper | JUNOS | sync_vlas",
+    "name": "Juniper | JUNOS | sync_vlan",
     "$collection": "sa.actioncommands",
     "uuid": "5144d64a-c0ef-4ec4-b152-aa9d63daae82",
     "action__name": "sync_vlan",

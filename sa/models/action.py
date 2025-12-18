@@ -97,7 +97,7 @@ class ActionSetItem(EmbeddedDocument):
         if self.domain_scopes:
             r["domain_scopes"] = list(self.domain_scopes)
         if self.params_ctx:
-            r["params_ctx"] = self.params_ctx
+            r["params_ctx"] = list(self.params_ctx)
         return r
 
 
