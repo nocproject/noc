@@ -10,7 +10,6 @@ import datetime
 import logging
 import asyncio
 import enum
-from collections import defaultdict
 from typing import Optional
 from http import HTTPStatus
 
@@ -113,10 +112,10 @@ class ZabbixAPI(object):
                     sensors.append(((sensor_cfg, rs_cfg.bi_id), (ts, item["value"])))
                     continue
                 await channel.feed(
-                    item["host"],
+                    item["host"]["name"],
                     item["name"],
                     [(int(item["clock"]), item["value"])],
-                    labels=item["tags"],
+                    labels=[f"{t['tag']}::{t['value']}" for t in item["item_tags"]],
                 )
                 received += 1
         logger.info("Received lines: %s", received_count)
