@@ -32,7 +32,7 @@ def action_commands(database, request):
 
 def test_action_commands_collection_cases(database, action_commands):
     for expected, ctx in action_commands.iter_cases():
-        ac, commands = action_commands.action.render_action_commands(
+        commands = action_commands.action.render_action_commands(
             action_commands.profile,
             {},
             **ctx,

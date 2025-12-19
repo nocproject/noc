@@ -1,0 +1,46 @@
+{
+    "name": "sync_vlan",
+    "$collection": "sa.actions",
+    "uuid": "7f07d3bd-f79f-4cf7-a85d-93ce7719e99e",
+    "label": "Add VLAN to Device",
+    "description": "Add Vlan to Database and tagged",
+    "access_level": 15,
+    "params": [
+        {
+            "name": "interfaces",
+            "description": null,
+            "is_required": true,
+            "multi": false,
+            "scope": "interface",
+            "type": "interface_name"
+        },
+        {
+            "name": "vlan",
+            "description": null,
+            "is_required": true,
+            "multi": false,
+            "scope": "vlan",
+            "type": "vlan"
+        },
+        {
+            "name": "name",
+            "description": null,
+            "is_required": false,
+            "multi": false,
+            "type": "str"
+        }
+    ],
+    "action_set": [
+        {
+            "action__name": "add_vlan",
+            "cancel": false,
+            "execute": "S"
+        },
+        {
+            "action__name": "set_interface_tagged",
+            "cancel": false,
+            "execute": "S",
+            "params_ctx": ["vlan::allowed_vlans"]
+        }
+    ]
+}

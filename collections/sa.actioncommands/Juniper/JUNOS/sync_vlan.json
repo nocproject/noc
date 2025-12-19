@@ -1,0 +1,25 @@
+{
+    "name": "Juniper | JUNOS | sync_vlan",
+    "$collection": "sa.actioncommands",
+    "uuid": "5144d64a-c0ef-4ec4-b152-aa9d63daae82",
+    "action__name": "sync_vlan",
+    "description": null,
+    "profile__name": "Juniper.JUNOS",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": " ",
+    "timeout": 0,
+    "test_cases": [
+        {
+            "context": {
+                "name": "Vlan1",
+                "interfaces": ["gi-0/0/0", "ge-0/0/1"],
+                "vlan": 22
+            },
+            "output": "set vlans Vlan1 vlan-id 22\nset interfaces gi-0/0/0 unit 0 family ethernet-switching interface-mode trunk\nset interfaces gi-0/0/0 unit 0 family ethernet-switching vlan members 22\nset interfaces ge-0/0/1 unit 0 family ethernet-switching interface-mode trunk\nset interfaces ge-0/0/1 unit 0 family ethernet-switching vlan members 22"
+        }
+    ],
+    "scopes": []
+}

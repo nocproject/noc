@@ -19,5 +19,6 @@
             "output": "vlan 22\n name VLAN22\nexit"
         }
     ],
+    "exit_scope_commands": "exit",
     "scopes": []
 }
