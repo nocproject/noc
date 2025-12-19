@@ -1,0 +1,26 @@
+{
+    "name": "set_interface_access",
+    "$collection": "sa.actions",
+    "uuid": "7a4163ab-1c5f-4711-afbb-8680925985ea",
+    "label": "Set interface access untagged",
+    "description": "Set interface access",
+    "access_level": 15,
+    "params": [
+        {
+            "name": "interface",
+            "description": "Interface name",
+            "is_required": true,
+            "multi": false,
+            "scope": "interface",
+            "scope_command": "interface {{ interface }}",
+            "type": "interface_name"
+        },
+        {
+            "name": "vlan",
+            "description": "Access VLAN",
+            "is_required": true,
+            "multi": false,
+            "type": "vlan"
+        }
+    ]
+}

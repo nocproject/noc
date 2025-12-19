@@ -1,0 +1,22 @@
+{
+    "name": "Juniper | JUNOS | set_interface_tagged",
+    "$collection": "sa.actioncommands",
+    "uuid": "dedabeb1-f82c-4925-bd95-d87f14eab7b9",
+    "action__name": "set_interface_tagged",
+    "description": null,
+    "profile__name": "Juniper.JUNOS",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": "set interfaces {{ interface }} unit 0 family ethernet-switching interface-mode trunk\nset interfaces {{ interface }} unit 0 family ethernet-switching vlan members {{ allowed_vlans | join(\",\") }}",
+    "timeout": 0,
+    "test_cases": [],
+    "scopes": [
+        {
+            "command": null,
+            "enter_scope": false,
+            "scope": "interface"
+        }
+    ]
+}

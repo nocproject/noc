@@ -1,0 +1,16 @@
+{
+    "name": "Cisco | IOS | set_interface_tagged",
+    "$collection": "sa.actioncommands",
+    "uuid": "93aea9fa-5e95-4766-a74d-f72966a6280d",
+    "action__name": "set_interface_tagged",
+    "description": null,
+    "profile__name": "Cisco.IOS",
+    "config_mode": true,
+    "preference": 1000,
+    "disable_when_change": "N",
+    "match": [],
+    "commands": "  switchport trunk encapsulation dot1q \n  switchport mode trunk\n  switchport trunk allowed vlan {{allowed_vlans}}\n",
+    "timeout": 60,
+    "test_cases": [],
+    "scopes": []
+}
