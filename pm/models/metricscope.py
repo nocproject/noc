@@ -191,26 +191,17 @@ class MetricScope(Document):
         return f"{self.name}.json"
 
     def iter_metrics_fields(self):
-        """
-        Yield metric field
-        :return:
-        """
+        """Yield metric field"""
         from .metrictype import MetricType
 
         for t in MetricType.objects.filter(scope=self.id).order_by("id"):
             default_value = None
             if config.clickhouse.enable_default_value:
                 default_value = getattr(config.clickhouse, f"default_{t.field_type}", None)
-            if default_value:
-                yield t.field_name, t.field_type, "DEFAULT", default_value or ""
-            else:
-                yield t.field_name, t.field_type, "", default_value or ""
+            yield t.field_name, t.field_type, "", default_value or ""
 
     def iter_fields(self):
-        """
-        Yield (field_name, field_type, materialized_expr, default_expr) tuples
-        :return:
-        """
+        """Yield (field_name, field_type, materialized_expr, default_expr) tuples"""
 
         yield "date", "Date", "", ""
         yield "ts", "DateTime", "", ""
@@ -375,6 +366,8 @@ class MetricScope(Document):
             after = None
             for f, t, me, de in self.iter_fields():
                 if f not in existing:
+                    if de:
+                        de = f"DEFAULT {de}"
                     ch.execute(
                         post=f"ALTER TABLE {table_name} ADD COLUMN {f} {t} {me} {de} AFTER {after}"
                     )
