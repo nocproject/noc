@@ -84,7 +84,7 @@ class Scope(EmbeddedDocument):
             value="",
             command=self.command,
             enter=self.enter_scope,
-            exit_command=self.exit_command,
+            # exit_command=self.exit_command,
         )
 
 
@@ -104,7 +104,6 @@ class ActionCommands(Document):
     profile: "Profile" = PlainReferenceField(Profile)
     # Config Scopes
     config_mode = BooleanField(default=False)
-    # disable_when_change = BooleanField(default=False)
     disable_when_change = StringField(
         choices=[
             ("N", "Nothing"),
@@ -115,6 +114,7 @@ class ActionCommands(Document):
     )
     scopes: List["Scope"] = EmbeddedDocumentListField(Scope)
     match: List[PlatformMatch] = EmbeddedDocumentListField(PlatformMatch)
+    exit_scope_commands = StringField()
     commands = StringField()
     # cancel commands
     # backward_commands
@@ -132,7 +132,7 @@ class ActionCommands(Document):
 
     @property
     def json_data(self) -> Dict[str, Any]:
-        return {
+        r = {
             "name": self.name,
             "$collection": self._meta["json_collection"],
             "uuid": self.uuid,
@@ -148,6 +148,9 @@ class ActionCommands(Document):
             "timeout": self.timeout,
             "test_cases": [t.json_data for t in self.test_cases],
         }
+        if self.exit_scope_commands:
+            r["exit_scope_commands"] = self.exit_scope_commands
+        return r
 
     def to_json(self) -> str:
         return to_json(
@@ -183,6 +186,7 @@ class ActionCommands(Document):
             commands=self.commands,
             config_mode=self.config_mode,
             cancel_prefix=profile.command_cancel_prefix or None,
+            exit_command=self.exit_scope_commands,
             scopes=r,
         )
 
