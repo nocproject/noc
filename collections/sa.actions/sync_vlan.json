@@ -10,6 +10,7 @@
             "name": "interfaces",
             "description": null,
             "is_required": true,
+            "multi": false,
             "scope": "interface",
             "type": "interface_name"
         },
@@ -17,6 +18,7 @@
             "name": "vlan",
             "description": null,
             "is_required": true,
+            "multi": false,
             "scope": "vlan",
             "type": "vlan"
         },
@@ -24,6 +26,7 @@
             "name": "name",
             "description": null,
             "is_required": false,
+            "multi": false,
             "type": "str"
         }
     ],

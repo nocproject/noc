@@ -10,12 +10,14 @@
             "name": "description",
             "description": "Interface description",
             "is_required": true,
+            "multi": false,
             "type": "str"
         },
         {
             "name": "interface",
             "description": "Interface name",
             "is_required": true,
+            "multi": false,
             "scope": "interface",
             "scope_command": "interface {{interface}}",
             "type": "interface_name"

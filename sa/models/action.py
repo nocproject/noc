@@ -122,6 +122,7 @@ class ActionParameter(EmbeddedDocument):
         r = {
             "name": self.name,
             "type": self.type.value,
+            "multi": self.multi,
             "description": self.description,
             "is_required": self.is_required,
         }
@@ -131,8 +132,6 @@ class ActionParameter(EmbeddedDocument):
             r["scope"] = self.scope
         if self.scope_command:
             r["scope_command"] = self.scope_command
-        if self.scope_exit:
-            r["scope_exit"] = self.scope_exit
         return r
 
 
@@ -690,8 +689,6 @@ class Action(Document):
                     v = tmpl.render(**kwargs)
                 except jinja2.exceptions.TemplateError as e:
                     raise ValueError("Parameter '%s', Render Error: %s" % (p.name, e))
-            if p.multi and not isinstance(v, list):
-                v = [v]
             if p.type == ValueType.IFACE_NAME:
                 # Interface
                 try:

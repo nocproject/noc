@@ -10,9 +10,9 @@
             "name": "vlan",
             "description": "Vlan Number",
             "is_required": true,
+            "multi": false,
             "scope": "vlan",
             "scope_command": "vlan {{ vlan }}",
-            "scope_exit": "exit",
             "type": "int"
         },
         {
@@ -20,12 +20,14 @@
             "description": "Vlan Name",
             "default": "VLAN{{vlan}}",
             "is_required": false,
+            "multi": false,
             "type": "str"
         },
         {
             "name": "description",
             "description": "Vlan Description",
             "is_required": false,
+            "multi": false,
             "type": "str"
         }
     ]

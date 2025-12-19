@@ -10,15 +10,16 @@
             "name": "interface",
             "description": "Interface name",
             "is_required": true,
+            "multi": false,
             "scope": "interface",
             "scope_command": "interface {{ interface }}",
-            "scope_exit": "exit",
             "type": "interface_name"
         },
         {
             "name": "vlan",
             "description": "Access VLAN",
             "is_required": true,
+            "multi": false,
             "type": "vlan"
         }
     ]
