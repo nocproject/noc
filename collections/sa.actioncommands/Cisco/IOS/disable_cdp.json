@@ -7,6 +7,7 @@
     "profile__name": "Cisco.IOS",
     "config_mode": true,
     "preference": 1000,
+    "disable_when_change": "N",
     "match": [],
     "commands": "no cdp enable",
     "timeout": 60,
@@ -18,5 +19,6 @@
             "output": "interface Fa 0/1\nno cdp enable\nexit"
         }
     ],
+    "exit_scope_commands": "exit",
     "scopes": []
 }

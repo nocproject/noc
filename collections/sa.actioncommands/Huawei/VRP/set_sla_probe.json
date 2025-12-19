@@ -24,6 +24,7 @@
             "output": "nqa test-instance admin2 test2\n undo start\n test-type icmp\n destination-address ipv4 8.8.8.8\n description fortest\n frequency 20\n start now\nquit"
         }
     ],
+    "exit_scope_commands": "quit",
     "scopes": [
         {
             "command": "nqa test-instance {{ owner }} {{ name }}",
