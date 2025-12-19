@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from collections import defaultdict
 import datetime
 import time
 from typing import Any, AsyncIterable, Dict, List, Optional, Iterable, Tuple
@@ -15,21 +14,21 @@ from typing import Any, AsyncIterable, Dict, List, Optional, Iterable, Tuple
 import orjson
 
 # NOC modules
+from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
 from noc.config import config
 from noc.core.clickhouse.connect import connection
 from noc.core.datasources.loader import loader as ds_loader
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.sa.models.managedobject import ManagedObject
-from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.resourcegroup import ResourceGroup
-from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
+from noc.sa.models.managedobject import ManagedObject
 
-INTERFACES_QUERY = """
+
+INTERFACES_QUERY = f"""
   SELECT
     managed_object as managed_object,
     interface as iface_name,
-    dictGetString('noc_dict.interfaceattributes', 'profile', (managed_object, interface)) as interface_profile,
-    dictGetString('noc_dict.interfaceattributes', 'description', (managed_object, interface)) as iface_description,
+    dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface)) as interface_profile,
+    dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as iface_description,
     if(max(speed)=0, dictGetUInt64('noc_dict.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)) as iface_speed,
     round(quantile(0.90)(load_in), 0) as load_in_perc,
     round(avg(load_in), 0) as load_in_avg,
@@ -135,7 +134,8 @@ class LoadMetricsDS(BaseDataSource):
         FieldInfo(name="ping_attempts"),  # type=FieldType.UINT
     ]
     params = [
-        ParamInfo(name="reporttype", type="str", required=True),  # choice of "load_interfaces", "load_cpu", "ping"
+        # reporttype is a choice from "load_interfaces", "load_cpu", "ping"
+        ParamInfo(name="reporttype", type="str", required=True),
         ParamInfo(name="start", type="datetime", required=True),
         ParamInfo(name="end", type="datetime", required=True),
         ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
@@ -191,9 +191,8 @@ class LoadMetricsDS(BaseDataSource):
         mos = ManagedObject.objects.filter(**q_filter)
         if admin_domain_ads:
             mos = mos.filter(administrative_domain__in=admin_domain_ads)
-
         mo_bi_ids = list(mos.values_list("bi_id", flat=True))
-
+        # Prepare columns list for query in ClickHouse
         ch_columns_map = {
             "load_interfaces": [
                 "iface_name",
@@ -213,9 +212,9 @@ class LoadMetricsDS(BaseDataSource):
                 "errors_out",
                 "errors_out_sum",
                 "discards_in",
-                #"discards_in_sum",
+                # "discards_in_sum",
                 "discards_out",
-                #"discards_out_sum",
+                # "discards_out_sum",
                 "interface_flap",
                 "lastchange",
                 "status_oper_last",
@@ -224,9 +223,6 @@ class LoadMetricsDS(BaseDataSource):
             "ping": ["ping_rtt", "ping_attempts"],
         }
         columns = ch_columns_map[reporttype]
-        print("-- reporttype", reporttype, type(reporttype))
-
-
         # Prepare data on the number of MAC-addresses
         mac_counters = {}
         if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
@@ -248,11 +244,15 @@ class LoadMetricsDS(BaseDataSource):
             having_section = "HAVING max(load_in) != 0 AND max(load_out) != 0"
         ch_client = connection()
         if reporttype == "load_interfaces":
-            x = query % (ts_from_date, ts_from_date, ts_to_date, mo_filter, ifp_filter, having_section)
-            print("x", x, type(x))
-            body = ch_client.execute(x, return_raw=True)  # bytes
+            body = ch_client.execute(
+                query
+                % (ts_from_date, ts_from_date, ts_to_date, mo_filter, ifp_filter, having_section),
+                return_raw=True,
+            )
         else:
-            body = ch_client.execute(query % (ts_from_date, ts_from_date, ts_to_date, mo_filter), return_raw=True)  # bytes
+            body = ch_client.execute(
+                query % (ts_from_date, ts_from_date, ts_to_date, mo_filter), return_raw=True
+            )
         # Yielding data
         num = 1
         for row_b in body.splitlines():
@@ -261,9 +261,6 @@ class LoadMetricsDS(BaseDataSource):
             yield num, "managed_object_id", 0
             yield num, "managed_object_bi_id", mo_bi_id
             for c in columns:
-                if num == 1:
-                    x = row.get(c, "")
-                    print("c", c, x, type(x))
                 yield num, c, str(row.get(c, ""))
             # Additional fields for 'Interfaces' source
             if reporttype == "load_interfaces" and (not fields or "interface_load_url" in fields):
