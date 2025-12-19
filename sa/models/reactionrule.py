@@ -501,7 +501,7 @@ class ReactionRule(Document):
         self,
         o: Any,
         user: Optional[Any] = None,
-        dry_run: bool = True,
+        dry_run: bool = False,
         logger: Optional[logging.Logger] = None,
         **kwargs,
     ):
