@@ -107,7 +107,7 @@ class RunCommandsApplication(ExtApplication):
         for mo in objects:
             match = mo.get_matcher_ctx()
             try:
-                _, commands = action.render_commands(
+                commands = action.render_commands(
                     mo.profile,
                     match_ctx=match,
                     managed_object=mo,
