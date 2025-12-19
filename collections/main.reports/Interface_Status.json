@@ -1,0 +1,226 @@
+{
+    "name": "Interface Status",
+    "$collection": "main.reports",
+    "uuid": "68e8b2e8-b956-4dbd-a30b-09712c30a6eb",
+    "title": "Interface Status (New)",
+    "description": "Статусы интерфейсов",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "interfacedetailds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "header",
+            "column_format": [
+                {
+                    "name": "managedobjectds.name",
+                    "title": "Object Name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.address",
+                    "title": "Object  Address",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.vendor",
+                    "title": "Vendor",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.model",
+                    "title": "Platform",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.sw_version_full",
+                    "title": "Object Software",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interface_name",
+                    "title": "Port name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interface_profile_name",
+                    "title": "Port profille name",
+                    "format_type": "string"
+                },
+                {
+                    "name": "admin_status",
+                    "title": "Port status",
+                    "format_type": "string"
+                },
+                {
+                    "name": "oper_status",
+                    "title": "Link status",
+                    "format_type": "string"
+                },
+                {
+                    "name": "in_speed_h",
+                    "title": "Port speed",
+                    "format_type": "string"
+                },
+                {
+                    "name": "full_duplex",
+                    "title": "Port duplex",
+                    "format_type": "string"
+                },
+                {
+                    "name": "untagged_vlan",
+                    "title": "Port untagged vlan",
+                    "format_type": "string"
+                },
+                {
+                    "name": "tagged_vlans",
+                    "title": "Port tagged vlans",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": ""
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Статусы интерфейсов (Новый)"
+        },
+        "columns.name": {
+            "ru": "Имя объекта"
+        },
+        "columns.address": {
+            "ru": "IP Адрес"
+        },
+        "columns.vendor": {
+            "ru": "Производитель"
+        },
+        "columns.model": {
+            "ru": "Платформа"
+        },
+        "columns.sw_version_full": {
+            "ru": "Версия ПО"
+        },
+        "columns.interface_name": {
+            "ru": "Порт"
+        },
+        "columns.interface_profile_name": {
+            "ru": "Профиль порта"
+        },
+        "columns.admin_status": {
+            "ru": "Опер. статус"
+        },
+        "columns.oper_status": {
+            "ru": "Состояние связи"
+        },
+        "columns.in_speed_h": {
+            "ru": "Скорость"
+        },
+        "columns.full_duplex": {
+            "ru": "Дуплекс"
+        },
+        "columns.untagged_vlan": {
+            "ru": "Нетэг.VLAN"
+        },
+        "columns.tagged_vlans": {
+            "ru": "Тэг.VLAN'ы"
+        },
+        "parameters.iface_profile": {
+            "ru": "Профиль интерфейса"
+        },
+        "parameters.administrative_domain": {
+            "ru": "З.О."
+        },
+        "parameters.resource_group": {
+            "ru": "Группа устройств (Селектор)"
+        },
+
+        "parameters.exclude_down": {
+            "ru": "Исключить порты в состоянии \"down\""
+        },
+        "parameters.exclude_def_profile": {
+            "ru": "Исключить интерфейсы с именем профиля \"default\" (если не выбран фильтр по Профилю интерфейса)"
+        }
+
+    },
+    "parameters": [
+        {
+            "name": "iface_profile",
+            "description": null,
+            "hide": false,
+            "label": "Interface Profile",
+            "model_id": "inv.InterfaceProfile",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "exclude_down",
+            "description": null,
+            "hide": false,
+            "label": "Exclude ports in the status \"down\"",
+            "type": "bool"
+        },
+        {
+            "name": "exclude_def_profile",
+            "description": null,
+            "hide": false,
+            "label": "Exclude interfaces with the \"default\" name profile (if not selected InterfaceProfile filter)",
+            "type": "bool"
+        },
+        {
+            "name": "only_admin_status",
+            "description": null,
+            "default": "true",
+            "hide": true,
+            "label": "only_admin_status",
+            "type": "bool"
+        },
+
+        {
+            "name": "fields",
+            "description": null,
+            "default": "managedobjectds.name,managedobjectds.address,managedobjectds.vendor,managedobjectds.model,managedobjectds.sw_version_full,interface_name,interface_profile_name,admin_status,oper_status,in_speed_h,full_duplex",
+            "hide": false,
+            "label": "Fields",
+            "type": "fields_selector"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simpletable",
+            "has_preview": true,
+            "is_alterable_output": true,
+            "output_type": "html"
+        }
+    ]
+}

@@ -84,6 +84,11 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(name="vendor", description="Object Vendor"),
         FieldInfo(name="model", description="Object Model", internal_name="platform"),
         FieldInfo(name="sw_version", description="Object Firmware", internal_name="version"),
+        FieldInfo(
+            name="sw_version_full",
+            description="Profile and Object Firmware",
+            internal_name="version",
+        ),
         # Attributes fields
         FieldInfo(
             name="attr_hwversion",
@@ -589,12 +594,10 @@ class ManagedObjectDS(BaseDataSource):
                 platform = mo["platform"]
                 yield num, "model", Platform.get_by_id(platform).name if platform else None
             if "version" in mo:
-                sw_version = mo["version"]
-                yield (
-                    num,
-                    "sw_version",
-                    (Firmware.get_by_id(sw_version).version if sw_version else None),
-                )
+                version_id = mo["version"]
+                fw = Firmware.get_by_id(version_id) if version_id else None
+                yield num, "sw_version", fw.version if fw else None
+                yield num, "sw_version_full", fw.full_name if fw else None
             if "vendor" in mo:
                 yield num, "vendor", Vendor.get_by_id(mo["vendor"]).name if mo["vendor"] else None
             if hostname_map:
