@@ -406,22 +406,18 @@ class Action(Document):
         req: Optional[JobRequest] = h(obj, **kwargs)
         req.submit()
 
-    def get_execute_commands(
-        self,
-        managed_object,
-        **kwargs,
-    ) -> Tuple[str, Any]:
+    def get_execute_commands(self, managed_object, **kwargs) -> Tuple[str, bool]:
         """Execute commands"""
         match = managed_object.get_matcher_ctx()
-        ac, commands = self.render_action_commands(
+        commands = self.render_action_commands(
             managed_object.profile,
             match_ctx=match,
             **kwargs,
         )
-        if ac is None:
-            return "", None
+        if not commands:
+            return "", False
         # Execute rendered commands
-        return "\n".join(commands), ac
+        return "\n".join(commands), True
 
     def get_job_request(
         self,
@@ -653,12 +649,8 @@ class Action(Document):
             req = self.get_job_request(obj, dry_run=dry_run, username=username, **kwargs)
             req.submit()
         else:
-            commands, cfg = self.get_execute_commands(obj, **kwargs)
-            obj.scripts.commands(
-                commands=[commands],
-                config_mode=cfg.config_mode,
-                dry_run=dry_run,
-            )
+            commands, cfg_mode = self.get_execute_commands(obj, **kwargs)
+            obj.scripts.commands(commands=[commands], config_mode=cfg_mode, dry_run=dry_run)
 
     def clean_action_args(
         self,
