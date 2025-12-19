@@ -12,18 +12,88 @@ import time
 from typing import Any, AsyncIterable, Dict, List, Optional, Iterable, Tuple
 
 # Third-party modules
-from pymongo import ReadPreference
+import orjson
 
 # NOC modules
 from noc.config import config
 from noc.core.clickhouse.connect import connection
-from noc.core.mongo.connection import get_db
+from noc.core.datasources.loader import loader as ds_loader
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
-from noc.services.web.base.reportdatasources.loader import loader
+
+INTERFACES_QUERY = """
+  SELECT
+    managed_object as managed_object,
+    interface as iface_name,
+    dictGetString('noc_dict.interfaceattributes', 'profile', (managed_object, interface)) as interface_profile,
+    dictGetString('noc_dict.interfaceattributes', 'description', (managed_object, interface)) as iface_description,
+    if(max(speed)=0, dictGetUInt64('noc_dict.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)) as iface_speed,
+    round(quantile(0.90)(load_in), 0) as load_in_perc,
+    round(avg(load_in), 0) as load_in_avg,
+    round(quantile(0.90)(load_in) / if(max(speed)=0, dictGetUInt64('noc_dict.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)), 4) * 100 as load_in_p,
+    round(quantile(0.90)(load_out), 0) as load_out_perc,
+    round(avg(load_out), 0) as load_out_avg,
+    round(quantile(0.90)(load_out) / if(max(speed)=0, dictGetUInt64('noc_dict.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)), 4) * 100 as load_out_p,
+    round((sum(load_in * time_delta) / 8) / 1048576) as octets_in_sum,
+    round((sum(load_out * time_delta) / 8) / 1048576) as octets_out_sum,
+    quantile(0.90)(errors_in) as errors_in,
+    sum(errors_in_delta) as errors_in_sum,
+    quantile(0.90)(errors_out) as errors_out,
+    sum(errors_out_delta) as errors_out_sum,
+    quantile(0.90)(discards_in) as discards_in,
+    quantile(0.90)(discards_out) as discards_out,
+    countEqual(arrayMap((a, p) -> a + p, arrayPushFront(groupArray(status_oper), groupArray(status_oper)[1]), arrayPushBack(groupArray(status_oper), groupArray(status_oper)[-1])), 1) as interface_flap,
+    anyLast(lastchange) as lastchange,
+    anyLast(status_oper) as status_oper_last
+  FROM
+    noc.interface
+  WHERE
+    date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
+    %s %s
+  GROUP BY
+    managed_object, interface
+  %s
+  FORMAT JSONEachRow
+"""
+
+OBJECTS_QUERY = """
+  SELECT
+    managed_object as managed_object,
+    avg(usage) as cpu_usage,
+    max(usage) as memory_usage
+  FROM
+    noc.cpu
+  WHERE
+    date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
+    %s
+  GROUP BY
+    managed_object
+  FORMAT JSONEachRow
+"""
+
+PING_QUERY = """
+  SELECT
+    managed_object as managed_object,
+    avg(rtt) as ping_rtt,
+    max(attempts) as ping_attempts
+  FROM
+    noc.ping
+  WHERE
+    date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
+    %s
+  GROUP BY
+    managed_object
+  FORMAT JSONEachRow
+"""
+
+query_map = {
+    "load_interfaces": INTERFACES_QUERY,
+    "load_cpu": OBJECTS_QUERY,
+    "ping": PING_QUERY,
+}
 
 
 class LoadMetricsDS(BaseDataSource):
@@ -37,12 +107,12 @@ class LoadMetricsDS(BaseDataSource):
         FieldInfo(name="iface_profile"),
         FieldInfo(name="iface_description"),
         FieldInfo(name="iface_speed"),
-        FieldInfo(name="load_in_perc"),
-        FieldInfo(name="load_in_avg"),
-        FieldInfo(name="load_in_p"),
-        FieldInfo(name="load_out_perc"),
-        FieldInfo(name="load_out_avg"),
-        FieldInfo(name="load_out_p"),
+        FieldInfo(name="load_in_perc"),  # type=FieldType.UINT
+        FieldInfo(name="load_in_avg"),  # type=FieldType.UINT
+        FieldInfo(name="load_in_p"),  # type=FieldType.FLOAT
+        FieldInfo(name="load_out_perc"),  # type=FieldType.UINT
+        FieldInfo(name="load_out_avg"),  # type=FieldType.UINT
+        FieldInfo(name="load_out_p"),  # type=FieldType.FLOAT
         FieldInfo(name="octets_in_sum"),
         FieldInfo(name="octets_out_sum"),
         FieldInfo(name="errors_in"),
@@ -52,20 +122,20 @@ class LoadMetricsDS(BaseDataSource):
         FieldInfo(name="discards_in"),
         FieldInfo(name="discards_out"),
         FieldInfo(name="interface_flap"),
-        # interface_load_url
         FieldInfo(name="lastchange"),
         FieldInfo(name="status_oper_last"),
-        # mac_counter
+        FieldInfo(name="interface_load_url"),
+        FieldInfo(name="mac_counter"),
         # Objects
         FieldInfo(name="slot"),
-        FieldInfo(name="cpu_usage", type=FieldType.FLOAT),
-        FieldInfo(name="memory_usage", type=FieldType.UINT),
+        FieldInfo(name="cpu_usage"),  # type=FieldType.FLOAT
+        FieldInfo(name="memory_usage"),  # type=FieldType.UINT
         # Ping
-        FieldInfo(name="ping_rtt", type=FieldType.FLOAT),
-        FieldInfo(name="ping_attempts", type=FieldType.UINT),
+        FieldInfo(name="ping_rtt"),  # type=FieldType.FLOAT
+        FieldInfo(name="ping_attempts"),  # type=FieldType.UINT
     ]
     params = [
-        ParamInfo(name="reporttype", type="str", required=True),
+        ParamInfo(name="reporttype", type="str", required=True),  # choice of "load_interfaces", "load_cpu", "ping"
         ParamInfo(name="start", type="datetime", required=True),
         ParamInfo(name="end", type="datetime", required=True),
         ParamInfo(name="segment", type="str", model="inv.NetworkSegment"),
@@ -73,7 +143,6 @@ class LoadMetricsDS(BaseDataSource):
         ParamInfo(name="resource_group", type="str", model="inv.ResourceGroup"),
         ParamInfo(name="interface_profile", type="str", model="inv.InterfaceProfile"),
         ParamInfo(name="exclude_zero", type="bool", default=False),
-        #ParamInfo(name="exclude_zero", type="bool", default=False),
     ]
 
     @staticmethod
@@ -97,15 +166,26 @@ class LoadMetricsDS(BaseDataSource):
         end: datetime.datetime = None,
         interface_profile: Optional[InterfaceProfile] = None,
         exclude_zero: bool = False,
-        #exclude_zero: bool = False,
         admin_domain_ads: Optional[List[int]] = None,
         *args,
         **kwargs,
     ) -> AsyncIterable[Tuple[str, str]]:
+        def get_interface_load_url(mo_bi_id):
+            path = "/ui/grafana/dashboard/script/report.js"
+            params = {
+                "title": "interface",
+                "biid": mo_bi_id,
+                "obj": "blabla",
+                "iface": "",
+                "from": int(ts_from_date * 1000),
+                "to": int(ts_to_date * 1000),
+            }
+            params_all = "&".join([f"{k}={v}" for k, v in params.items()])
+            return f"{path}?{params_all}"
+
         end = end + datetime.timedelta(days=1)
         ts_from_date = time.mktime(start.timetuple())
         ts_to_date = time.mktime(end.timetuple())
-
         q_filter = cls.get_filter(kwargs)
         q_filter["is_managed"] = True
         mos = ManagedObject.objects.filter(**q_filter)
@@ -114,7 +194,7 @@ class LoadMetricsDS(BaseDataSource):
 
         mo_bi_ids = list(mos.values_list("bi_id", flat=True))
 
-        columns_map = {
+        ch_columns_map = {
             "load_interfaces": [
                 "iface_name",
                 "interface_profile",
@@ -137,109 +217,57 @@ class LoadMetricsDS(BaseDataSource):
                 "discards_out",
                 #"discards_out_sum",
                 "interface_flap",
-                #
                 "lastchange",
                 "status_oper_last",
-                #
             ],
             "load_cpu": ["slot", "cpu_usage", "memory_usage"],
             "ping": ["ping_rtt", "ping_attempts"],
         }
-
-        report_map = {
-            "load_interfaces": {
-                "url": "%(path)s?title=interface&biid=%(biid)s"
-                       "&obj=%(oname)s&iface=%(iname)s&from=%(from)s&to=%(to)s",
-                "datasource": "reportinterfacemetrics",
-                "aggregated_source": "reportinterfacemetricsagg",
-            },
-            "load_cpu": {
-                "url": """%(path)s?title=cpu&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "datasource": "reportobjectmetrics",
-            },
-            "ping": {
-                "url": """%(path)s?title=ping&biid=%(biid)s&obj=%(oname)s&from=%(from)s&to=%(to)s""",
-                "datasource": "reportavailability",
-            },
-        }
-        map_table = {
-            "load_interfaces": r"/Interface\s\|\sLoad\s\|\s[In|Out]/",
-            "load_cpu": r"/[CPU|Memory]\s\|\sUsage/",
-            "errors": r"/Interface\s\|\s[Errors|Discards]\s\|\s[In|Out]/",
-            "ping": r"/Ping\s\|\sRTT/",
-        }
-        d_url = {
-            "path": "/ui/grafana/dashboard/script/report.js",
-            "rname": map_table[reporttype],
-            "from": str(int(ts_from_date * 1000)),
-            "to": str(int(ts_to_date * 1000)),
-            "biid": "",
-            "oname": "",
-            "iname": "",
-        }
-
-        url = report_map[reporttype]["url"]
-        columns = columns_map[reporttype]
-        datasource = report_map[reporttype]["datasource"]
+        columns = ch_columns_map[reporttype]
         print("-- reporttype", reporttype, type(reporttype))
-        print("-- datasource", datasource, type(datasource))
-        report = loader[datasource]
 
 
-
-        fields = ["managed_object"]
-        group = ["managed_object"]
+        # Prepare data on the number of MAC-addresses
+        mac_counters = {}
+        if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
+            mac_ds = ds_loader["interfacemacsstatds"]
+            data = mac_ds.query_sync(resolve_managedobject_id=False, start=start, end=end)
+            mac_counters = {
+                (r["managed_object_id"], r["interface_name"]): r["mac_count"]
+                for r in data.to_dicts()
+            }
+        # Prepare and run query in ClickHouse
+        query = query_map[reporttype]
+        mo_filter = ", ".join(str(id) for id in mo_bi_ids)
+        mo_filter = f"AND managed_object IN ({mo_filter})"
+        ifp_filter = ""
+        if reporttype == "load_interfaces" and interface_profile:
+            ifp_filter = f"AND interface_profile='{interface_profile.name}'"
+        having_section = ""
+        if reporttype == "load_interfaces" and exclude_zero:
+            having_section = "HAVING max(load_in) != 0 AND max(load_out) != 0"
+        ch_client = connection()
         if reporttype == "load_interfaces":
-            fields += ["iface_name"]
-            group += ["iface_name"]
-
-
-        for c in columns:
-            fields += [c]
-
-        filters = []
-        # mac_counters = {}
-
-        # if reporttype == "load_interfaces" and interface_profile:
-        #     interface_profile = InterfaceProfile.objects.filter(id=interface_profile).first()
-        #     filters += [{"name": "interface_profile", "value": [interface_profile.name]}]
-        # if reporttype == "load_interfaces" and not use_aggregated_source and exclude_zero:
-        #     # Op - operand (function) - default IN
-        #     filters += [
-        #         {"name": "max(load_in)", "value": [0], "op": "!="},
-        #         {"name": "max(load_out)", "value": [0], "op": "!="},
-        #     ]
-        # elif reporttype == "load_interfaces" and use_aggregated_source and exclude_zero:
-        #     filters += [
-        #         {"name": "maxMerge(load_in_max)", "value": [0], "op": "!="},
-        #         {"name": "maxMerge(load_out_max)", "value": [0], "op": "!="},
-        #     ]
-
-        data = report(
-            fields=fields,
-            allobjectids=False,
-            objectids=mo_bi_ids,
-            start=start,
-            end=end,
-            groups=group,
-            filters=filters,
-        )
-
+            x = query % (ts_from_date, ts_from_date, ts_to_date, mo_filter, ifp_filter, having_section)
+            print("x", x, type(x))
+            body = ch_client.execute(x, return_raw=True)  # bytes
+        else:
+            body = ch_client.execute(query % (ts_from_date, ts_from_date, ts_to_date, mo_filter), return_raw=True)  # bytes
         # Yielding data
         num = 1
-        for row in data.extract():
-            # if "interface_load_url" in fields:
-            #     d_url["biid"] = row["managed_object"]
-            #     d_url["oname"] = row["object_name"]
-            #     row["interface_load_url"] = url % d_url
-            # mac_counter
-
-            #print(num, "row", row, type(row))
+        for row_b in body.splitlines():
+            row = orjson.loads(row_b)  # dict
+            mo_bi_id = row["managed_object"]
             yield num, "managed_object_id", 0
-            yield num, "managed_object_bi_id", row["managed_object"]
+            yield num, "managed_object_bi_id", mo_bi_id
             for c in columns:
                 if num == 1:
                     x = row.get(c, "")
                     print("c", c, x, type(x))
-                yield num, c, row.get(c, "")
+                yield num, c, str(row.get(c, ""))
+            # Additional fields for 'Interfaces' source
+            if reporttype == "load_interfaces" and (not fields or "interface_load_url" in fields):
+                yield num, "interface_load_url", get_interface_load_url(mo_bi_id)
+            if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
+                yield num, "mac_counter", mac_counters.get((int(mo_bi_id), row["iface_name"]), "")
             num += 1
