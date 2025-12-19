@@ -229,7 +229,7 @@ Ext.define("NOC.sa.reactionrule.Application", {
           ],
         },
         {
-          name: "affected_domains",
+          name: "affected_rules",
           xtype: "gridfield",
           fieldLabel: __("Affected Rules"),
           columns: [
@@ -248,47 +248,99 @@ Ext.define("NOC.sa.reactionrule.Application", {
               width: 150,
             },
             {
-              text: __("Reaction"),
-              dataIndex: "reaction",
-              width: 100,
-              editor: {
-                xtype: "combobox",
-                store: [
-                  ["A", __("Affected")],
-                  ["M", __("Match")],
-                ],
-              },
-              renderer: NOC.render.Choices({
-                "A": __("Affected"),
-                "M": __("Match"),
-              }),
-            },
-          ],
-        },
-        {
-          name: "action_command_set",
-          xtype: "gridfield",
-          fieldLabel: __("Action Commands"),
-          columns: [
-            {
-              text: __("Action"),
-              dataIndex: "action",
-              width: 300,
-              editor: {
-                xtype: "sa.action.LookupField",
-              },
-              renderer: NOC.render.Lookup("action"),
-            },
-            {
-              text: __("Allow Fail"),
-              dataIndex: "allow_fail",
+              text: __("Suppress Action"),
+              dataIndex: "suppress_action",
               width: 70,
               editor: "checkboxfield",
               renderer: NOC.render.Bool,
             },
             {
-              text: __("Clean Action"),
-              dataIndex: "clean_action",
+              text: __("Extend Ctx"),
+              dataIndex: "extend_ctx",
+              width: 70,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+          ],
+        },
+        {
+          name: "actions",
+          xtype: "gridfield",
+          fieldLabel: __("Run Actions"),
+          columns: [
+            {
+              text: __("Action"),
+              dataIndex: "action",
+              width: 100,
+              allowBlank: false,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["handler", __("Handler")],
+                  ["action_command", __("Commands")],
+                  ["run_discovery", __("Run Discovery")],
+                  ["fire_wf_event", __("Fire Event")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "handler": __("Handler"),
+                "action_command": __("Commands"),
+                "run_discovery": __("Run Discovery"),
+                "fire_wf_event": __("Fire Event"),
+              }),
+            },
+            {
+              text: __("Run"),
+              dataIndex: "run",
+              width: 75,
+              allowBlank: false,
+              editor: {
+                xtype: "combobox",
+                store: [
+                  ["A", __("Always")],
+                  ["F", __("Prev Failed")],
+                  ["S", __("Prev Success")],
+                ],
+              },
+              renderer: NOC.render.Choices({
+                "A": __("Always"),
+                "F": __("Prev Failed"),
+                "S": __("Prev Successy"),
+              }),
+            },
+            {
+              text: __("Commands"),
+              dataIndex: "commands",
+              width: 150,
+              editor: {
+                xtype: "sa.action.LookupField",
+              },
+              renderer: NOC.render.Lookup("commands"),
+            },
+            {
+              text: __("Allow Fail"),
+              dataIndex: "allow_fail",
+              width: 50,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Cancel"),
+              dataIndex: "cancel_command",
+              width: 50,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Domain Ctx"),
+              dataIndex: "expand_domain_ctx",
+              width: 70,
+              editor: "checkboxfield",
+              renderer: NOC.render.Bool,
+            },
+            {
+              text: __("Over Topology"),
+              dataIndex: "over_topology",
               width: 70,
               editor: "checkboxfield",
               renderer: NOC.render.Bool,
@@ -299,36 +351,10 @@ Ext.define("NOC.sa.reactionrule.Application", {
               width: 400,
               text: __("Context"),
             },
-          ],
-        },
-        {
-          name: "action_common",
-          xtype: "gridfield",
-          fieldLabel: __("Run Actions"),
-          columns: [
-            {
-              text: __("Action"),
-              dataIndex: "action",
-              width: 150,
-              allowBlank: false,
-              editor: {
-                xtype: "combobox",
-                store: [
-                  ["handler", __("Handler")],
-                  ["run_discovery", __("Run Discovery")],
-                  ["fire_wf_event", __("Fire Event")],
-                ],
-              },
-              renderer: NOC.render.Choices({
-                "handler": __("Handler"),
-                "run_discovery": __("Run Discovery"),
-                "fire_wf_event": __("Fire Event"),
-              }),
-            },
             {
               text: __("Handler"),
               dataIndex: "handler",
-              width: 400,
+              width: 150,
               editor: {
                 xtype: "main.handler.LookupField",
                 query: {
@@ -336,12 +362,6 @@ Ext.define("NOC.sa.reactionrule.Application", {
                 },
               },
               renderer: NOC.render.Lookup("handler"),
-            },
-            {
-              editor: "textfield",
-              dataIndex: "wf_event",
-              width: 400,
-              text: __("WF Event"),
             },
           ],
         },
