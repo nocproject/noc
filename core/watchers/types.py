@@ -26,7 +26,9 @@ class ObjectEffect(enum.Enum):
     MAINTENANCE = "maintenance"
     WF_EVENT = "wf_event"
     WIPING = "wiping"
-    # AVAILABILITY = "avail"
+    SUSPEND_JOBS = "suspend_job"
+    # SuspendJob
+    # DISABLE_DIAGNOSTIC
     # WAIT_DIAGNOSTIC ?
     # ?Lock
     # WAIT_AVAIL = "avail"

@@ -33,6 +33,8 @@ from django.db.models import (
     SET_NULL,
     CASCADE,
     DateTimeField,
+    TextChoices,
+    JSONField,
     When,
     Case,
     Value,
@@ -149,6 +151,8 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
 from noc.core.etl.remotemappings import mappings
 from noc.core.model.dynamicprofile import dynamic_profile
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import ObjectEffect, WatchItem
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -376,6 +380,7 @@ class ManagedObjectManager(Manager):
                         "status"
                     )
                 ),
+                # Watchers
                 is_managed=Case(
                     When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
                     default=Value(False),
@@ -3274,6 +3279,46 @@ class ManagedObjectStatus(NOCModel):
         for (pool, status), keys in suspended_jobs.items():
             sc = Scheduler("discovery", pool=pool)
             sc.suspend_keys(keys, suspend=not status)
+
+
+@on_save
+class ManagedObjectWatchers(NOCModel):
+    class Meta(object):
+        verbose_name = "Managed Object Watchers"
+        verbose_name_plural = "Managed Object Watchers"
+        db_table = "sa_objectwatchers"
+        app_label = "sa"
+        # For Maintenance
+        unique_together = [("managed_object", "effect", "key")]
+
+    class ObjectEffect(TextChoices):
+        SUBSCRIPTION = "subscription", "Subscription"
+        MAINTENANCE = "maintenance", "Maintenance"
+        WF_EVENT = "wf_event", "WF Event"
+        WIPING = "wiping", "Wiping"
+
+    managed_object = ForeignKey(
+        ManagedObject, verbose_name="Managed Object", on_delete=CASCADE
+    )
+    effect = CharField(
+        "Effect", choices=ObjectEffect.choices, max_length=20, blank=False, null=False,
+    )
+    key: str = CharField("Effect Key", max_length=64)
+    once: bool = BooleanField()
+    wait_avail: bool = BooleanField()
+    after = DateTimeField("Last update Time", auto_now_add=False, blank=True, null=True)
+    args = JSONField(default=dict)
+
+    @property
+    def item(self) -> WatchItem:
+        """"""
+        return WatchItem(
+            effect=ObjectEffect(self.effect),
+            key=self.key,
+            once=self.once,
+            wait_avail=self.wait_avail,
+            after=self.after or None,
+        )
 
 
 # object.scripts. ...

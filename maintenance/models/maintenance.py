@@ -89,7 +89,7 @@ class Maintenance(Document):
     escalate_managed_object = ForeignKeyField(ManagedObject)
     # Time pattern when maintenance is active
     # None - active all the time
-    time_pattern = ForeignKeyField(TimePattern)
+    time_pattern: TimePattern = ForeignKeyField(TimePattern)
     # Objects declared to be affected by maintenance
     direct_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
     # Segments declared to be affected by maintenance
@@ -114,6 +114,16 @@ class Maintenance(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Maintenance"]:
         return Maintenance.objects.filter(id=oid).first()
+
+    @property
+    def is_active(self) -> bool:
+        """"""
+        if self.is_completed:
+            return False
+        now = datetime.datetime.now()
+        if self.time_pattern and not self.time_pattern.match(now):
+            return False
+        return self.start <= now < self.stop
 
     def update_affected_objects_maintenance(self):
         call_later(
@@ -151,7 +161,7 @@ class Maintenance(Document):
         if created and (self.direct_objects or self.direct_segments):
             self.update_affected_objects_maintenance()
         if self.auto_confirm:
-            self.auto_confirm_maintenance()
+             self.auto_confirm_maintenance()
 
     def on_save(self):
         changed_fields = set()
@@ -169,10 +179,15 @@ class Maintenance(Document):
 
         if self.escalate_managed_object:
             if not self.is_completed and self.auto_confirm:
+                start, stop = self.start, self.stop
+                if isinstance(self.start, str):
+                    start = datetime.datetime.fromisoformat(self.start)
+                if isinstance(self.stop, str):
+                    stop = datetime.datetime.fromisoformat(self.stop)
                 call_later(
                     "noc.services.escalator.maintenance.start_maintenance",
                     delay=max(
-                        (self.start - datetime.datetime.now()).total_seconds(),
+                        (start - datetime.datetime.now()).total_seconds(),
                         60,
                     ),
                     scheduler="escalator",
@@ -183,7 +198,7 @@ class Maintenance(Document):
                     call_later(
                         "noc.services.escalator.maintenance.close_maintenance",
                         delay=max(
-                            (self.stop - datetime.datetime.now()).total_seconds(),
+                            (stop - datetime.datetime.now()).total_seconds(),
                             60,
                         ),
                         scheduler="escalator",
