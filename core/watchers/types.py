@@ -21,6 +21,7 @@ class ObjectEffect(enum.Enum):
         WF_EVENT: Permanent Workflow Event on Object
         WIPING: Object in removing state
     """
+
     SUBSCRIPTION = "subscription"
     MAINTENANCE = "maintenance"
     WF_EVENT = "wf_event"
@@ -43,6 +44,7 @@ class WatchItem:
         wait_avail: Wait object available for run
         args: Additional arguments
     """
+
     effect: ObjectEffect
     # Match, Array
     key: Optional[str] = None

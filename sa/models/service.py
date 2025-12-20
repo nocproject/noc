@@ -50,6 +50,8 @@ from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
+from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.decorator import watchers, WatchDocumentItem
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -170,6 +172,7 @@ class ServiceDependency(EmbeddedDocument):
 @resourcegroup
 @on_init
 @change
+@watchers
 @diagnostic
 @workflow
 @capabilities
@@ -287,6 +290,10 @@ class Service(Document):
     effective_client_groups = ListField(ObjectIdField())
     # Remote Mappings
     mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
+    # Watchers
+    watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
+    wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
+    # maintenances
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
@@ -413,6 +420,14 @@ class Service(Document):
     @property
     def in_maintenance(self):
         """Check service in maintenance"""
+        from noc.maintenance.models.maintenance import Maintenance
+
+        for w in self.watchers:
+            if w.effect != ObjectEffect.MAINTENANCE:
+                continue
+            mai = Maintenance.get_by_id(w.key)
+            if mai and mai.is_active:
+                return True
         return False
 
     def check_deployed(self) -> Optional[str]:

@@ -18,7 +18,6 @@ from mongoengine.fields import EnumField, StringField, BooleanField, DictField, 
 # Python modules
 from noc.models import is_document
 from .types import ObjectEffect, WatchItem
-from noc.aaa.models.user import User
 
 watcher_logger = logging.getLogger(__name__)
 
@@ -67,9 +66,6 @@ def save_model_watchers(
 ):
     """"""
 
-    if after or self.wait_ts:
-        self.wait_ts = self.get_wait_ts()
-
 
 def save_document_watchers(
     self,
@@ -83,9 +79,14 @@ def save_document_watchers(
     for w in watchers:
         new_watchers.append(
             WatchDocumentItem(
-                effect=w.effect, key=w.key, after=w.after, once=w.once, args=w.args,
+                effect=w.effect,
+                key=w.key,
+                after=w.after,
+                once=w.once,
+                args=w.args,
             )
         )
+    # Filter Completed Maintenance
     # Not Gen Changed/Gen only flag
     self.watchers = new_watchers
     wait_ts = self.get_wait_ts()
@@ -98,13 +99,13 @@ def save_document_watchers(
 
 
 def iter_model_watchers(self) -> Iterable["WatchItem"]:
-    """Iterable watch """
-    for w in self.watchers_set():
+    """Iterable watch"""
+    for w in self.managedobjectwatchers_set:
         yield w.item
 
 
 def iter_document_watchers(self) -> Iterable["WatchItem"]:
-    """Iterable watch """
+    """Iterable watch"""
     for w in self.watchers:
         yield w.item
 
@@ -125,7 +126,7 @@ def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
 def add_watch(
     self,
     effect: ObjectEffect,
-    key: str,
+    key: Optional[str] = None,
     once: bool = False,
     after: Optional[datetime.datetime] = None,
     wait_avail: bool = False,
@@ -196,9 +197,6 @@ def touch_watch(
     """
     now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
     for w in self.iter_watchers():
-        if w.clear_only and not is_clear:
-            # Watch alarm_clear
-            continue
         if w.once and is_update:
             continue
         if w.immediate:
@@ -207,7 +205,7 @@ def touch_watch(
         if w.after and w.after > now:
             continue
         try:
-            w.run(self, is_clear=is_clear, dry_run=dry_run)
+            w.run(self, dry_run=dry_run)
         except Exception as e:
             print(f"Exception when run Watch Action: {e}")
 
@@ -239,8 +237,12 @@ def watchers(cls):
     cls.add_watch = add_watch
     cls.stop_watch = stop_watch
     # Register models
-    cls.supported_watcher_effects = frozenset()
-
+    if hasattr(cls, "SUPPORTED_EFFECTS"):
+        cls.supported_watcher_effects = frozenset(cls.SUPPORTED_EFFECTS)
+    else:
+        cls.supported_watcher_effects = frozenset(
+            [ObjectEffect.MAINTENANCE, ObjectEffect.WIPING, ObjectEffect.WF_EVENT],
+        )
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers
