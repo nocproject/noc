@@ -3286,7 +3286,7 @@ class ManagedObjectWatchers(NOCModel):
     class Meta(object):
         verbose_name = "Managed Object Watchers"
         verbose_name_plural = "Managed Object Watchers"
-        db_table = "sa_objectwatchers"
+        db_table = "sa_managedobjectwatchers"
         app_label = "sa"
         # For Maintenance
         unique_together = [("managed_object", "effect", "key")]
@@ -3303,10 +3303,10 @@ class ManagedObjectWatchers(NOCModel):
     effect = CharField(
         "Effect", choices=ObjectEffect.choices, max_length=20, blank=False, null=False,
     )
-    key: str = CharField("Effect Key", max_length=64)
+    key: str = CharField("Effect Key", max_length=64, blank=True, null=True)
     once: bool = BooleanField()
     wait_avail: bool = BooleanField()
-    after = DateTimeField("Last update Time", auto_now_add=False, blank=True, null=True)
+    after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
     args = JSONField(default=dict)
 
     @property

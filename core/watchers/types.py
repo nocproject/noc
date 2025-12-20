@@ -18,7 +18,7 @@ class ObjectEffect(enum.Enum):
     Attributes:
         SUBSCRIPTION: notification group subscription
         MAINTENANCE: Planned maintenance on Object
-        WF_EVENT: Permanent Workflow Event on Object
+        WF_EVENT: Permanent Workflow Event on Object (For Allocate)
         WIPING: Object in removing state
     """
 
@@ -26,12 +26,9 @@ class ObjectEffect(enum.Enum):
     MAINTENANCE = "maintenance"
     WF_EVENT = "wf_event"
     WIPING = "wiping"
-    SUSPEND_JOBS = "suspend_job"
-    # SuspendJob
+    SUSPEND_JOB = "suspend_job"
     # DISABLE_DIAGNOSTIC
-    # WAIT_DIAGNOSTIC ?
     # ?Lock
-    # WAIT_AVAIL = "avail"
 
 
 @dataclass(frozen=True)
@@ -53,7 +50,5 @@ class WatchItem:
     after: Optional[datetime.datetime] = None
     once: bool = True
     wait_avail: bool = False
-    # Reaction
-    # action: ActionType = None
-    # Action
+    # Reaction ? User ?, Reason
     args: Optional[Dict[str, str]] = None
