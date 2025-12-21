@@ -17,6 +17,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
     "Ext.ux.form.StringsField",
     "NOC.main.ref.check.LookupField",
     "NOC.sa.objectdiagnosticconfig.LookupField",
+    "NOC.main.remotesystem.LookupField",
     "NOC.fm.alarmclass.LookupField",
   ],
   model: "NOC.sa.objectdiagnosticconfig.Model",
@@ -129,6 +130,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
               width: 200,
               editor: "main.ref.check.LookupField",
               allowBlank: false,
+              sortable: false,
               renderer: NOC.render.Lookup("check"),
             },
             {
@@ -136,12 +138,24 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
               dataIndex: "ctx",
               width: 400,
               text: __("Context"),
+              sortable: false,
             },
             {
               text: __("Address"),
               dataIndex: "address",
               editor: "textfield",
               width: 150,
+              sortable: false,
+            },
+            {
+              text: __("Remote System"),
+              dataIndex: "remote_system",
+              width: 150,
+              sortable: false,
+              editor: {
+                xtype: "main.remotesystem.LookupField",
+              },
+              renderer: NOC.render.Lookup("remote_system"),
             },
           ],
         },
@@ -273,6 +287,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
               uiStyle: "extra",
               query: {
                 "allow_matched": true,
+                "allow_wildcard": true,
               },
             },
             {
@@ -286,6 +301,7 @@ Ext.define("NOC.sa.objectdiagnosticconfig.Application", {
               uiStyle: "extra",
               query: {
                 "allow_matched": true,
+                "allow_wildcard": true,
               },
             },
           ],
