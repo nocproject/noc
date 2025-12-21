@@ -2685,6 +2685,7 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interfaceprofile import InterfaceProfile
         from noc.pm.models.metricrule import MetricRule
         from noc.inv.models.sensor import Sensor
+        from noc.core.checkers.base import NODATA
 
         if Interaction.ServiceActivation not in mo.interactions:
             return {}
@@ -2720,6 +2721,15 @@ class ManagedObject(NOCModel):
             cfg = Sensor.get_metric_config(s)
             if cfg:
                 sensors.append(cfg)
+        nodata_policy = "D"
+        # Has Diagnostic
+        for d in mo.iter_diagnostic_configs():
+            if not d.checks:
+                continue
+            nd = [c for c in d.checks if c.name == NODATA]
+            if nd:
+                nodata_policy = "C"
+                break
         return {
             "type": "managed_object",
             "bi_id": mo.bi_id,
@@ -2735,6 +2745,8 @@ class ManagedObject(NOCModel):
                 for mc in s_metrics.values()
                 if bool(mc.metric_type.compose_expression)
             ],
+            "nodata_policy": nodata_policy,
+            "nodata_ttl": 3600,
             "rules": list(MetricRule.iter_rules_actions(mo.effective_labels)),
             "items": items,
             "sensors": sensors,
