@@ -277,6 +277,18 @@ class L2Domain(Document):
             q |= d_q(segment__in=ns)
         return list(ManagedObject.objects.filter(q).values_list("id", flat=True))
 
+    @property
+    def managed_objects(self):
+        from noc.sa.models.managedobject import ManagedObject
+        from noc.inv.models.networksegment import NetworkSegment
+        from django.db.models.query_utils import Q as d_q
+
+        q = d_q(l2_domain=self)
+        ns = NetworkSegment.objects.filter(l2_domain=self)
+        if ns:
+            q |= d_q(segment__in=ns)
+        return ManagedObject.objects.filter(q)
+
     @classmethod
     def calculate_stats(cls, l2_domains: List["L2Domain"]) -> List[Dict[str, Union[str, int]]]:
         """Calculate statistics Pool usage"""
