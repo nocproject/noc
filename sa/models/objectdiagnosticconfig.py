@@ -29,6 +29,7 @@ from mongoengine.errors import ValidationError
 import cachetools
 
 # NOC modules
+from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
 from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
@@ -37,6 +38,7 @@ from noc.core.path import safe_json_path
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 
@@ -68,18 +70,21 @@ class DiagnosticCheck(EmbeddedDocument):
     address_source = StringField(
         choices=[
             ("D", "Disable"),
-            ("O", "From Object"),
+            ("O", "Management"),
             ("C", "From Caps"),
             ("M", "Context"),
         ]
     )
     ctx = ListField(StringField(required=True))
-    address_caps = ReferenceField(Capability)
+    address_caps: Optional["Capability"] = ReferenceField(Capability)
+    remote_system: Optional["RemoteSystem"] = PlainReferenceField(RemoteSystem, required=False)
     include_credential: bool = BooleanField(default=True)
 
     def __str__(self):
         if self.include_credential:
             return f"{self.check}:creds;{self.ctx}"
+        if self.remote_system:
+            return f"{self.check}@{self.remote_system.name}:{self.ctx}"
         return f"{self.check}:{self.ctx}"
 
     @property
@@ -161,11 +166,7 @@ class ObjectDiagnosticConfig(Document):
         return list(ObjectDiagnosticConfig.objects.filter())
 
     def is_allowed(self, labels: List[str]) -> bool:
-        """
-        Check transition allowed
-        :param labels:
-        :return:
-        """
+        """Check transition allowed"""
         if not self.match:
             return True
         return any(match.is_match(labels) for match in self.match)
@@ -210,8 +211,7 @@ class ObjectDiagnosticConfig(Document):
     def get_json_path(self) -> Path:
         return safe_json_path(self.name)
 
-    @property
-    def d_config(self) -> "DiagnosticConfig":
+    def get_config(self, o: Any) -> "DiagnosticConfig":
         checks, d_ctx = [], []
         for c in self.checks:
             c_args = {}
@@ -219,7 +219,14 @@ class ObjectDiagnosticConfig(Document):
                 ctx = CtxItem.from_string(ctx)
                 c_args[ctx.name] = ctx.value
                 d_ctx.append(ctx)
-            checks.append(Check(name=c.check, script=c.script, args=c_args or None))
+            checks.append(
+                Check(
+                    name=c.check,
+                    script=c.script,
+                    args=c_args or None,
+                    remote_system=c.remote_system.name,
+                ),
+            )
         return DiagnosticConfig(
             diagnostic=self.name,
             checks=checks,
@@ -238,7 +245,7 @@ class ObjectDiagnosticConfig(Document):
         )
 
     @classmethod
-    def iter_object_diagnostics(cls, object) -> Iterable[DiagnosticConfig]:
+    def iter_object_diagnostics(cls, o) -> Iterable[DiagnosticConfig]:
         """
         Iter over Diagnostic Config for object
         First - diagnostic with checks only
@@ -246,9 +253,9 @@ class ObjectDiagnosticConfig(Document):
         """
         deferred = []
         for odc in cls.get_active_diagnostics():
-            if not odc.is_allowed(labels=getattr(object, "effective_labels", [])):
+            if not odc.is_allowed(labels=getattr(o, "effective_labels", [])):
                 continue
-            dc = odc.d_config
+            dc = odc.get_config(o)
             if odc.diagnostics:
                 deferred.append(dc)
                 continue
