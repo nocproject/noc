@@ -26,10 +26,6 @@ class L2DomainCard(BaseCard):
 
     def get_data(self):
         # Calculate contained objects
-        summary = {
-            "service": SummaryItem.items_to_dict(self.object.total_services),
-            "subscriber": SummaryItem.items_to_dict(self.object.total_subscribers),
-        }
         objects = []
         for mo in self.object.managed_objects.filter(is_managed=True):
             ss = ServiceSummary.get_object_summary(mo)
@@ -59,7 +55,7 @@ class L2DomainCard(BaseCard):
             "object": self.object,
             "managed_objects": sorted(objects, key=operator.itemgetter("name")),
             "children": sorted(children, key=operator.itemgetter("name")),
-            "parent": self.object.parent,
-            "summary": summary,
+            "parent": None,
+            "summary": {},
             "vlans": vlans,
         }
