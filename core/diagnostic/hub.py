@@ -26,6 +26,7 @@ from noc.models import is_document
 from .types import DiagnosticConfig, DiagnosticState, CheckStatus, DiagnosticValue
 from .handler import DiagnosticHandler
 
+diagnostic_logger = logging.getLogger(__name__)
 
 # BuiltIn Diagnostics
 SA_DIAG = "SA"
@@ -881,6 +882,7 @@ def update_diagnostic_checks(results: Dict[str, Dict[str, Any]]):
     """Update changed Diagnostic statuses"""
     from noc.models import get_model
 
+    diagnostic_logger.info("Update diagnostic statuses: %s", len(results))
     for sid, statuses in results.items():
         obj_type, oid = sid.split(":", 1)
         obj_type = get_model(obj_type)
@@ -889,11 +891,11 @@ def update_diagnostic_checks(results: Dict[str, Dict[str, Any]]):
         else:
             obj = obj_type.get_by_id(oid)
         if not obj:
+            diagnostic_logger.warning("Unknown Object by OID: %s", oid)
             continue
         statuses = [CheckResult.from_dict(c) for c in statuses]
         try:
             obj.diagnostic.update_checks(statuses)
         except Exception as e:
-            # logger.error("[%s] Failed when update diagnostic Statuses: %s", obj, e)
-            print(f"[{obj}] Failed when update diagnostic Statuses: {e}")
+            diagnostic_logger.error(f"[{obj}] Failed when update diagnostic Statuses: {e}")
             continue
