@@ -9,7 +9,7 @@
 import enum
 import datetime
 from dataclasses import dataclass
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 
 
 class ObjectEffect(enum.Enum):
@@ -51,5 +51,6 @@ class WatchItem:
     after: Optional[datetime.datetime] = None
     once: bool = True
     wait_avail: bool = False
+    remote_system: Optional[Any] = None
     # Reaction ? User ?, Reason
     args: Optional[Dict[str, str]] = None

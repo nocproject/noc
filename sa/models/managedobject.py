@@ -3308,8 +3308,8 @@ class ManagedObjectWatchers(NOCModel):
         null=False,
     )
     key: str = CharField("Effect Key", max_length=64, blank=True, null=True)
-    once: bool = BooleanField()
-    wait_avail: bool = BooleanField()
+    once: bool = BooleanField(default=True)
+    wait_avail: bool = BooleanField(default=False)
     after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
     remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
     args = JSONField(default=dict)
@@ -3322,6 +3322,7 @@ class ManagedObjectWatchers(NOCModel):
             key=self.key,
             once=self.once,
             wait_avail=self.wait_avail,
+            remote_system=self.remote_system,
             after=self.after or None,
         )
 

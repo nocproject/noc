@@ -28,6 +28,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_managedobjectwatchers",
             (
+                ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 (
                     "managed_object",
                     models.OneToOneField(
@@ -48,16 +49,19 @@ class Migration(BaseMigration):
                         null=False,
                     ),
                 ),
-                ("key", models.CharField("Effect Key", max_length=64)),
-                ("once", models.BooleanField("Activate once")),
-                ("wait_avail", models.BooleanField("Activate if Avail")),
+                ("key", models.CharField("Effect Key", max_length=64, null=True, blank=True)),
+                ("once", models.BooleanField("Activate once", default=True)),
+                ("wait_avail", models.BooleanField("Activate if Avail", default=False)),
                 (
                     "after",
                     models.DateTimeField(
                         "Activate after time", auto_now_add=False, null=True, blank=True
                     ),
                 ),
-                ("args", models.JSONField("Activate once", default=lambda: "{}")),
+                (
+                    "args",
+                    models.JSONField("Activate once", null=True, blank=True, default=lambda: "{}"),
+                ),
                 ("remote_system", DocumentReferenceField("self", null=True, blank=True)),
             ),
         )
