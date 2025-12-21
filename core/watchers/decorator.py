@@ -25,6 +25,9 @@ def save_watchers(
     # changed_fields: Optional[List[ChangeField]] = None,
 ):
     """Save watchers to object"""
+    # Add - insert_one
+    # Stop - remove
+    # Update after touch ?
     self.save_object_watchers(watchers, dry_run=dry_run, bulk=bulk)
 
 
@@ -81,6 +84,7 @@ def add_watch(
     for w in self.iter_watchers():
         if effect == w.effect and key == w.key:
             w.after = after
+            is_new = False
         new_watchers.append(w)
     if is_new:
         new_watchers.append(
@@ -171,7 +175,7 @@ def watchers(cls):
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers
-    elif hasattr(cls, "update_object_watchers") and hasattr(cls, "iter_object_watchers"):
+    elif hasattr(cls, "save_object_watchers") and hasattr(cls, "iter_object_watchers"):
         # Django model
         cls.iter_watchers = iter_model_watchers
     else:

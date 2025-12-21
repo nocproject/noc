@@ -406,6 +406,7 @@ class ManagedObjectManager(Manager):
 @on_init
 @on_save
 @on_delete
+@watchers
 @workflow
 @diagnostic
 @change
@@ -2891,7 +2892,7 @@ class ManagedObject(NOCModel):
         # Clean
         new = []
         for w in watchers:
-            new.append(ManagedObjectWatchers.from_item(w))
+            new.append(ManagedObjectWatchers.from_item(self, w))
         if not dry_run:
             ManagedObjectWatchers.objects.filter(managed_object=self).bulk_update(new)
 

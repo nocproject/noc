@@ -32,7 +32,7 @@ class ObjectEffect(enum.Enum):
     # ?Lock change
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True)
 class WatchItem:
     """
     Item for watchers

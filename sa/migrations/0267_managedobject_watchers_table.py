@@ -28,6 +28,7 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_managedobjectwatchers",
             (
+                ("id", models.AutoField(verbose_name="ID", primary_key=False, auto_created=True)),
                 (
                     "managed_object",
                     models.OneToOneField(
