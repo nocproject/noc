@@ -1,0 +1,78 @@
+<table class="table table-condensed table-hover">
+<tbody>
+    <tr>
+        <th colspan="2">
+            {{ object.name }} {{ summary | glyph_summary }}
+        </th>
+    </tr>
+    <tr>
+        <th scope="row">{{ _("Profile") }}</th>
+        <td>{{object.profile.name}}</td>
+    <tr>
+    <tr>
+        <th scope="row">{{ _("Objects") }}</th>
+        <td>
+            <table class="table table-striped">
+                <thead>
+                    <th class="col-sm-6">{{ _("Name") }}</th>
+                    <th class="col-sm-2">{{ _("Address") }}</th>
+                    <th class="col-sm-2">{{ _("Model") }}</th>
+                    <th class="col-sm-2">{{ _("Summary") }}</th>
+                </thead>
+                <tbody>
+                {% for o in managed_objects %}
+                <tr class="{{ {'up': 'success', 'alarm': 'warning', 'down': 'danger'}[o.status] }}">
+                    <td>
+                        <a href="/api/card/view/managedobject/{{ o.id }}/">{{ o.object | managed_object_title}}</a><br>
+                        <small>{{ o.object | object_location }}</small>
+                    </td>
+                    <td>
+                        {{ o.object.address }}<br/>
+                        {{ o.object | object_console }}
+                    </td>
+                    <td>{% if o.object.platform %}{{ o.object.platform.name }}{% else %}-{% endif %}</td>
+                    <td>{{ o.summary | glyph_summary }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </td>
+    <tr>
+    {% if vlans %}
+    <tr>
+        <th scope="row">{{ _("VLANs") }}</th>
+        <td>
+        <table class="table table-stripped">
+            <thead>
+                <th class="col-sm-2">{{ _("VLAN") }}</th>
+                <th class="col-sm-4">{{ _("Name") }}</th>
+                <th class="col-sm-2">{{ _("State") }}</th>
+                <th class="col-sm-4">{{ _("Translation") }}</th>
+            </thead>
+            <tbody>
+            {% for vlan in vlans %}
+            <tr>
+                <td><a href="/api/card/view/vlan/{{vlan.id}}/">{{vlan.vlan}}</a></td>
+                <td><a href="/api/card/view/vlan/{{vlan.id}}/">{{vlan.name}}</a></td>
+                <td>{{vlan.state.name}}</td>
+                <td>
+                {% if vlan.parent %}
+                {{vlan.translation_rule}}: {{vlan.parent.vlan}} ->
+                {% if vlan.translation_rule == "map" %}
+                [<a href="/api/card/view/vlan/{{vlan.parent.id}}/">{{vlan.parent.vlan}}</a>]
+                {% endif %}
+                {% if vlan.translation_rule == "push" %}
+                [<a href="/api/card/view/vlan/{{vlan.parent.id}}/">{{vlan.parent.vlan}}</a>,
+                <a href="/api/card/view/vlan/{{vlan.id}}/">{{vlan.vlan}}</a>]
+                {% endif %}
+                {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </td>
+    </tr>
+    {% endif %}
+</tbody>
+</table>
