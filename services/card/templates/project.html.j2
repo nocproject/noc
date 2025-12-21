@@ -378,7 +378,7 @@
                 <tbody>
                     {% for vlan in vlans %}
                         <tr>
-                            <td><a href="/api/card/view/segment/{{ vlan.segment.id }}/">{{ vlan.segment.name }}</a></td>
+                            <td><a href="/api/card/view/l2domain/{{ vlan.l2_domain.id }}/">{{ vlan.l2domain.name }}</a></td>
                             <td>{{ vlan.name }}</td>
                             <td>{{ vlan.vlan }}</td>
                         </tr>

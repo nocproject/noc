@@ -11,7 +11,7 @@
     <tr>
     <tr>
         <th scope="row">{{ _("L2 Domain") }}</th>
-        <td>{{object.l2_domain.name}}</td>
+        <td><a href="/api/card/view/l2domain/{{object.l2_domain.id}}/">{{object.l2_domain.name}}</a></td>
     <tr>
     {% if object.description %}
     <tr>
