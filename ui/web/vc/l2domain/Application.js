@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // vc.l2domain application
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2021 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.vc.l2domain.Application");
@@ -26,6 +26,21 @@ Ext.define("NOC.vc.l2domain.Application", {
 
   initComponent: function(){
     var me = this;
+
+    me.showMapButton = Ext.create("Ext.button.Button", {
+      text: __("Show Map"),
+      glyph: NOC.glyph.globe,
+      scope: me,
+      handler: me.onShowMap,
+    });
+
+    me.cardButton = Ext.create("Ext.button.Button", {
+      text: __("Card"),
+      glyph: NOC.glyph.eye,
+      scope: me,
+      handler: me.onCard,
+    });
+
     Ext.apply(me, {
       columns: [
         {
@@ -179,7 +194,28 @@ Ext.define("NOC.vc.l2domain.Application", {
           },
         },
       ],
+
+      formToolbar: [
+        me.showMapButton,
+        me.cardButton,
+      ],
     });
     me.callParent();
+  },
+  //
+  onShowMap: function(){
+    var me = this;
+    NOC.launch("inv.map", "history", {
+      args: ["l2domain", me.currentRecord.get("id")],
+    });
+  },
+  //
+  onCard: function(){
+    var me = this;
+    if(me.currentRecord){
+      window.open(
+        "/api/card/view/l2domain/" + me.currentRecord.get("id") + "/",
+      );
+    }
   },
 });
