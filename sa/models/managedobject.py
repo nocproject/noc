@@ -477,6 +477,8 @@ class ManagedObject(NOCModel):
     last_seen = DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = DateTimeField("First Discovered", null=True, blank=True)
+    # Last state change
+    watcher_wait_ts = DateTimeField("Watcher Wait Ts", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile: "Profile" = DocumentReferenceField(
@@ -2873,6 +2875,26 @@ class ManagedObject(NOCModel):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
+    def iter_object_watchers(self) -> Iterable[WatchItem]:
+        """Iterate over Object Watchers"""
+        for w in ManagedObjectWatchers.objects.filter(managed_object=self.id):
+            yield w.item
+
+    def save_object_watchers(
+        self,
+        watchers: List[WatchItem],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        # Update
+        # Clean
+        new = []
+        for w in watchers:
+            new.append(ManagedObjectWatchers.from_item(w))
+        if not dry_run:
+            ManagedObjectWatchers.objects.filter(managed_object=self).bulk_update(new)
+
     @classmethod
     def from_template(
         cls,
@@ -3326,6 +3348,16 @@ class ManagedObjectWatchers(NOCModel):
             after=self.after or None,
         )
 
+    @classmethod
+    def from_item(cls, managed_object, item: WatchItem) -> "ManagedObjectWatchers":
+        return ManagedObjectWatchers(
+            managed_object=managed_object,
+            effect=item.effect.value,
+            key=item.key,
+            once=item.once,
+            wait_avail=item.wait_avail,
+            after=item.after,
+        )
 
 # object.scripts. ...
 class ScriptsProxy(object):

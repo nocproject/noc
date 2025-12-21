@@ -10,11 +10,6 @@ import logging
 import datetime
 from typing import Optional, List, Iterable
 
-# Third-party modules
-from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import EnumField, StringField, BooleanField, DictField, DateTimeField
-
-
 # Python modules
 from noc.models import is_document
 from .types import ObjectEffect, WatchItem
@@ -22,86 +17,20 @@ from .types import ObjectEffect, WatchItem
 watcher_logger = logging.getLogger(__name__)
 
 
-class WatchDocumentItem(EmbeddedDocument):
-    """
-    Attributes:
-        effect: Watch Effect
-        key: Id for action Instance
-        once: Run only once
-        args: Addition options for run
-    """
-
-    meta = {"strict": False, "auto_create_index": False}
-
-    effect: ObjectEffect = EnumField(ObjectEffect, required=True)
-    # Match, Array
-    key = StringField(required=False)
-    after = DateTimeField(required=False)
-    once: bool = BooleanField(default=True)
-    # action: ActionType = EnumField(ActionType, required=False)
-    # Action
-    args = DictField(default=dict)
-
-    def __str__(self):
-        return f"{self.effect}:{self.key}"
-
-    @property
-    def item(self) -> "WatchItem":
-        """"""
-        return WatchItem(
-            effect=self.effect,
-            key=self.key,
-            after=self.after,
-            once=self.once,
-            args=self.args,
-        )
-
-
-def save_model_watchers(
+def save_watchers(
     self,
     watchers: List[WatchItem],
     dry_run: bool = False,
     bulk=None,
     # changed_fields: Optional[List[ChangeField]] = None,
 ):
-    """"""
-
-
-def save_document_watchers(
-    self,
-    watchers: List[WatchItem],
-    dry_run: bool = False,
-    bulk=None,
-    # changed_fields: Optional[List[ChangeField]] = None,
-):
-    """"""
-    new_watchers = []
-    for w in watchers:
-        new_watchers.append(
-            WatchDocumentItem(
-                effect=w.effect,
-                key=w.key,
-                after=w.after,
-                once=w.once,
-                args=w.args,
-            )
-        )
-    # Filter Completed Maintenance
-    # Not Gen Changed/Gen only flag
-    self.watchers = new_watchers
-    wait_ts = self.get_wait_ts()
-    if self.wait_ts != wait_ts:
-        self.wait_ts = wait_ts
-    if dry_run or self._created:
-        return
-    set_op = {"watchers": self.watchers, "wait_ts": self.wait_ts}
-    self.update(**set_op)
+    """Save watchers to object"""
+    self.save_object_watchers(watchers, dry_run=dry_run, bulk=bulk)
 
 
 def iter_model_watchers(self) -> Iterable["WatchItem"]:
     """Iterable watch"""
-    for w in self.managedobjectwatchers_set:
-        yield w.item
+    yield from self.iter_object_watchers()
 
 
 def iter_document_watchers(self) -> Iterable["WatchItem"]:
@@ -232,10 +161,6 @@ def watchers(cls):
 
     """
 
-    # cls.touch_watch = touch_watch
-    cls.get_wait_ts = get_wait_ts
-    cls.add_watch = add_watch
-    cls.stop_watch = stop_watch
     # Register models
     if hasattr(cls, "SUPPORTED_EFFECTS"):
         cls.supported_watcher_effects = frozenset(cls.SUPPORTED_EFFECTS)
@@ -246,13 +171,16 @@ def watchers(cls):
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers
-        if not hasattr(cls, "save_watchers"):
-            cls.save_watchers = save_document_watchers
-
-    else:
+    elif hasattr(cls, "update_object_watchers") and hasattr(cls, "iter_object_watchers"):
         # Django model
         cls.iter_watchers = iter_model_watchers
-        if not hasattr(cls, "save_watchers"):
-            cls.save_watchers = save_model_watchers
+    else:
+        return cls
+
+    # cls.touch_watch = touch_watch
+    cls.get_wait_ts = get_wait_ts
+    cls.add_watch = add_watch
+    cls.stop_watch = stop_watch
+    cls.save_watchers = save_watchers
 
     return cls

@@ -28,7 +28,6 @@ class Migration(BaseMigration):
         self.db.create_table(
             "sa_managedobjectwatchers",
             (
-                ("id", models.AutoField(verbose_name="ID", primary_key=True, auto_created=True)),
                 (
                     "managed_object",
                     models.OneToOneField(
@@ -65,6 +64,12 @@ class Migration(BaseMigration):
                 ("remote_system", DocumentReferenceField("self", null=True, blank=True)),
             ),
         )
+        self.db.add_column(
+            "sa_managedobject",
+            "watcher_wait_ts",
+            models.DateTimeField("Last Seen", blank=True, null=True),
+        )
+        # Migrate wiping ?
         self.db.create_index(
             "sa_managedobjectwatchers",
             [
@@ -75,4 +80,4 @@ class Migration(BaseMigration):
             ],
             unique=True,
         )
-        # Migrate wiping ?
+        self.db.create_index("sa_managedobject", ["watcher_wait_ts"], unique=False)

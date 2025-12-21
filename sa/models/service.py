@@ -51,7 +51,8 @@ from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
-from noc.core.watchers.decorator import watchers, WatchDocumentItem
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import WatchItem
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -64,6 +65,7 @@ from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
 from noc.pm.models.agent import Agent
 from noc.config import config
 
@@ -204,6 +206,7 @@ class Service(Document):
             "effective_client_groups",
             "effective_labels",
             "service_path",
+            "watcher_wait_ts",
         ],
     }
     profile: ServiceProfile = PlainReferenceField(ServiceProfile, required=True)
@@ -292,7 +295,7 @@ class Service(Document):
     mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
     # Watchers
     watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
-    wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
+    watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
     # maintenances
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
@@ -1004,6 +1007,35 @@ class Service(Document):
                 return svc.agent
             svc = svc.parent
         return None
+
+    def save_object_watchers(
+        self,
+        watchers: List[WatchItem],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        new_watchers = []
+        for w in watchers:
+            new_watchers.append(
+                WatchDocumentItem(
+                    effect=w.effect,
+                    key=w.key,
+                    after=w.after,
+                    once=w.once,
+                    args=w.args,
+                )
+            )
+        # Filter Completed Maintenance
+        # Not Gen Changed/Gen only flag
+        self.watchers = new_watchers
+        wait_ts = self.get_wait_ts()
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
+        if dry_run or self._created:
+            return
+        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+        self.update(**set_op)
 
     def on_save_caps(self, changed_fields=None, dry_run: bool = False, **kwargs):
         """"""
