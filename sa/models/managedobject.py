@@ -3289,24 +3289,29 @@ class ManagedObjectWatchers(NOCModel):
         db_table = "sa_managedobjectwatchers"
         app_label = "sa"
         # For Maintenance
-        unique_together = [("managed_object", "effect", "key")]
+        unique_together = [("managed_object", "effect", "key", "remote_system")]
 
     class ObjectEffect(TextChoices):
         SUBSCRIPTION = "subscription", "Subscription"
         MAINTENANCE = "maintenance", "Maintenance"
         WF_EVENT = "wf_event", "WF Event"
         WIPING = "wiping", "Wiping"
+        SUSPEND_JOB = "suspend_job", "Suspend Job"
+        DIAGNOSTIC_CHECK = "diagnostic_check", "Diagnostic Check"
 
-    managed_object = ForeignKey(
-        ManagedObject, verbose_name="Managed Object", on_delete=CASCADE
-    )
+    managed_object = ForeignKey(ManagedObject, verbose_name="Managed Object", on_delete=CASCADE)
     effect = CharField(
-        "Effect", choices=ObjectEffect.choices, max_length=20, blank=False, null=False,
+        "Effect",
+        choices=ObjectEffect.choices,
+        max_length=20,
+        blank=False,
+        null=False,
     )
     key: str = CharField("Effect Key", max_length=64, blank=True, null=True)
     once: bool = BooleanField()
     wait_avail: bool = BooleanField()
     after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
+    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
     args = JSONField(default=dict)
 
     @property

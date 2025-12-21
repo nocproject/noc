@@ -27,8 +27,9 @@ class ObjectEffect(enum.Enum):
     WF_EVENT = "wf_event"
     WIPING = "wiping"
     SUSPEND_JOB = "suspend_job"
-    # DISABLE_DIAGNOSTIC
-    # ?Lock
+    DIAGNOSTIC_CHECK = "diagnostic_check"
+    # Disaster ?
+    # ?Lock change
 
 
 @dataclass(frozen=True)
