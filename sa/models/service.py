@@ -50,6 +50,9 @@ from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
+from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import WatchItem
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -62,6 +65,7 @@ from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
 from noc.pm.models.agent import Agent
 from noc.config import config
 
@@ -170,6 +174,7 @@ class ServiceDependency(EmbeddedDocument):
 @resourcegroup
 @on_init
 @change
+@watchers
 @diagnostic
 @workflow
 @capabilities
@@ -201,6 +206,7 @@ class Service(Document):
             "effective_client_groups",
             "effective_labels",
             "service_path",
+            "watcher_wait_ts",
         ],
     }
     profile: ServiceProfile = PlainReferenceField(ServiceProfile, required=True)
@@ -287,6 +293,10 @@ class Service(Document):
     effective_client_groups = ListField(ObjectIdField())
     # Remote Mappings
     mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
+    # Watchers
+    watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
+    watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
+    # maintenances
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
@@ -413,6 +423,14 @@ class Service(Document):
     @property
     def in_maintenance(self):
         """Check service in maintenance"""
+        from noc.maintenance.models.maintenance import Maintenance
+
+        for w in self.watchers:
+            if w.effect != ObjectEffect.MAINTENANCE:
+                continue
+            mai = Maintenance.get_by_id(w.key)
+            if mai and mai.is_active:
+                return True
         return False
 
     def check_deployed(self) -> Optional[str]:
@@ -989,6 +1007,56 @@ class Service(Document):
                 return svc.agent
             svc = svc.parent
         return None
+
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        updates = []
+        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
+        for w in self.watchers:
+            rs = w.remote_system.name if w.remote_system else None
+            if to_remove and (w.effect, w.key, rs) in to_remove:
+                continue
+            update = up_w.pop((w.effect, w.key, rs), None)
+            if update:
+                w = WatchDocumentItem(
+                    effect=update.effect,
+                    key=update.key,
+                    remote_system=(
+                        RemoteSystem.get_by_name(update.remote_system)
+                        if update.remote_system
+                        else None
+                    ),
+                    after=update.after,
+                    once=update.once,
+                    args=update.args,
+                )
+            updates.append(w)
+        for w in up_w.values():
+            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
+            updates.append(
+                WatchDocumentItem(
+                    effect=w.effect,
+                    key=w.key,
+                    remote_system=rs,
+                    after=w.after,
+                    once=w.once,
+                    args=w.args,
+                )
+            )
+        self.watchers = updates
+        wait_ts = self.get_wait_ts()
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
+        if dry_run or self._created:
+            return
+        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+        self.update(**set_op)
 
     def on_save_caps(self, changed_fields=None, dry_run: bool = False, **kwargs):
         """"""

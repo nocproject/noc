@@ -33,6 +33,8 @@ from django.db.models import (
     SET_NULL,
     CASCADE,
     DateTimeField,
+    TextChoices,
+    JSONField,
     When,
     Case,
     Value,
@@ -149,6 +151,8 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
 from noc.core.etl.remotemappings import mappings
 from noc.core.model.dynamicprofile import dynamic_profile
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import ObjectEffect, WatchItem
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
 from .authprofile import AuthProfile
@@ -376,6 +380,7 @@ class ManagedObjectManager(Manager):
                         "status"
                     )
                 ),
+                # Watchers
                 is_managed=Case(
                     When(Q(diagnostics__SA__state="enabled"), then=Value(True)),
                     default=Value(False),
@@ -401,6 +406,7 @@ class ManagedObjectManager(Manager):
 @on_init
 @on_save
 @on_delete
+@watchers
 @workflow
 @diagnostic
 @change
@@ -472,6 +478,8 @@ class ManagedObject(NOCModel):
     last_seen = DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = DateTimeField("First Discovered", null=True, blank=True)
+    # Last state change
+    watcher_wait_ts = DateTimeField("Watcher Wait Ts", null=True, blank=True)
     # Optional pool to route FM events
     fm_pool = DocumentReferenceField(Pool, null=True, blank=True)
     profile: "Profile" = DocumentReferenceField(
@@ -2880,6 +2888,36 @@ class ManagedObject(NOCModel):
             MessageMeta.LABELS: list(self.effective_labels),
         }
 
+    def iter_object_watchers(self) -> Iterable[WatchItem]:
+        """Iterate over Object Watchers"""
+        for w in ManagedObjectWatchers.objects.filter(managed_object=self.id):
+            yield w.item
+
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        updated = []
+        for w in to_watchers:
+            updated.append(ManagedObjectWatchers.from_item(self, w))
+        if updated and not dry_run:
+            ManagedObjectWatchers.objects.bulk_create(
+                updated,
+                update_conflicts=True,
+                unique_fields=["managed_object", "effect", "key", "remote_system"],
+                update_fields=["once", "wait_avail", "after", "args"],
+            )
+        if not to_remove or dry_run:
+            return
+        q = Q()
+        for effect, key, rs in to_remove:
+            q |= Q(effect=effect.value, key=key or "", remote_system=rs or "")
+        ManagedObjectWatchers.objects.filter(q).delete()
+
     @classmethod
     def from_template(
         cls,
@@ -3286,6 +3324,73 @@ class ManagedObjectStatus(NOCModel):
         for (pool, status), keys in suspended_jobs.items():
             sc = Scheduler("discovery", pool=pool)
             sc.suspend_keys(keys, suspend=not status)
+
+
+@on_save
+class ManagedObjectWatchers(NOCModel):
+    class Meta(object):
+        verbose_name = "Managed Object Watchers"
+        verbose_name_plural = "Managed Object Watchers"
+        db_table = "sa_managedobjectwatchers"
+        app_label = "sa"
+        # For Maintenance
+        unique_together = [("managed_object", "effect", "key", "remote_system")]
+
+    class ObjectEffect(TextChoices):
+        SUBSCRIPTION = "subscription", "Subscription"
+        MAINTENANCE = "maintenance", "Maintenance"
+        WF_EVENT = "wf_event", "WF Event"
+        WIPING = "wiping", "Wiping"
+        SUSPEND_JOB = "suspend_job", "Suspend Job"
+        DIAGNOSTIC_CHECK = "diagnostic_check", "Diagnostic Check"
+
+    managed_object = ForeignKey(
+        ManagedObject,
+        verbose_name="Managed Object",
+        unique=False,
+        primary_key=False,
+        on_delete=CASCADE,
+    )
+    effect = CharField(
+        "Effect",
+        choices=ObjectEffect.choices,
+        max_length=20,
+        blank=False,
+        null=False,
+    )
+    key: str = CharField("Effect Key", max_length=64, blank=True, null=False)
+    once: bool = BooleanField(default=True)
+    wait_avail: bool = BooleanField(default=False)
+    after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
+    # Before Postgres 15 nulls not equals. It and unique constraints not worked for NULL value
+    remote_system = CharField("Effect Key", max_length=24, blank=True, null=False)
+    args: Dict[str, Any] = JSONField(default=dict)
+
+    @property
+    def item(self) -> WatchItem:
+        """"""
+        return WatchItem(
+            effect=ObjectEffect(self.effect),
+            key=self.key or None,
+            once=self.once,
+            wait_avail=self.wait_avail,
+            remote_system=self.remote_system,
+            after=self.after or None,
+            args=self.args or None,
+        )
+
+    @classmethod
+    def from_item(cls, managed_object, item: WatchItem) -> "ManagedObjectWatchers":
+        return ManagedObjectWatchers(
+            managed_object=managed_object,
+            effect=item.effect.value,
+            key=item.key or "",
+            remote_system=item.remote_system or "",
+            once=item.once,
+            wait_avail=item.wait_avail,
+            after=item.after,
+            args=item.args or None,
+        )
 
 
 # object.scripts. ...
