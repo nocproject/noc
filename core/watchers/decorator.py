@@ -6,15 +6,12 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import logging
 import datetime
-from typing import Optional, List, Iterable, Tuple
+from typing import Optional, List, Iterable, Tuple, Any
 
 # Python modules
 from noc.models import is_document
 from .types import ObjectEffect, WatchItem
-
-watcher_logger = logging.getLogger(__name__)
 
 
 def update_watchers(
@@ -70,10 +67,10 @@ def add_watch(
     self,
     effect: ObjectEffect,
     key: Optional[str] = None,
-    once: bool = False,
+    once: bool = True,
     after: Optional[datetime.datetime] = None,
     wait_avail: bool = False,
-    remote_system: Optional[str] = None,
+    remote_system: Optional[Any] = None,
     # action: Optional[ActionType] = None, # Reaction ?
     **kwargs,
 ):
@@ -88,7 +85,6 @@ def add_watch(
         remote_system: From Remote System
     """
     # is_supported
-    # if not self.is_supported_watch(effect):
     if effect not in self.supported_watcher_effects:
         raise ValueError("Not supported options")
     to_watchers = []
@@ -100,31 +96,34 @@ def add_watch(
             and (not remote_system or remote_system == w.remote_system)
         ):
             w.after = after
+            w.args = kwargs
             to_watchers.append(w)
     if not to_watchers:
         to_watchers.append(
             WatchItem(
                 effect=effect,
-                key=str(key),
+                key=str(key or ""),
                 once=once,
                 after=after,
                 args=kwargs,  # Convert to string
                 wait_avail=wait_avail,
-                remote_system=remote_system,
+                remote_system=remote_system.name if remote_system else None,
             )
         )
     if to_watchers:
         self.update_watchers(to_watchers)
 
 
-def stop_watch(self, effect: ObjectEffect, key: str, remote_system: Optional[str] = None):
+def stop_watch(
+    self, effect: ObjectEffect, key: Optional[str] = None, remote_system: Optional[Any] = None
+):
     """Stop waiting callback"""
     to_remove = []
     for w in self.iter_watchers():
         if (
             w.effect == effect
             and w.key == key
-            and (not remote_system or remote_system == w.remote_system)
+            and (not remote_system or remote_system.name == w.remote_system)
         ):
             to_remove.append((w.effect, w.key, w.remote_system))
             continue
@@ -134,32 +133,33 @@ def stop_watch(self, effect: ObjectEffect, key: str, remote_system: Optional[str
 
 def touch_watch(
     self,
+    effect: ObjectEffect,
     is_avail: bool = False,
-    is_update: bool = False,
     dry_run: bool = False,
-):
+) -> List[WatchItem]:
     """
     Processed watchers
     Args:
         is_avail: Flag for object available status
-        is_update: Flag for refresh_alarm procedure
+        effect:
         dry_run: For tests run
     """
-    # After processed - Remove if once
     now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
+    r, to_remove = [], []
     for w in self.iter_watchers():
-        if w.once and is_update:
+        if effect and w.effect != effect:
             continue
-        if w.immediate:
-            # If Immediate, not run (used for save run only)
+        if w.wait_avail and not is_avail:
             continue
         if w.after and w.after > now:
             continue
-        # Return
-        try:
-            w.run(self, dry_run=dry_run)
-        except Exception as e:
-            print(f"Exception when run Watch Action: {e}")
+        r.append(w)
+        # After processed - Remove if once
+        if w.once:
+            to_remove.append((w.effect, w.key, w.remote_system))
+    if to_remove and not dry_run:
+        self.update_watchers([], to_remove)
+    return r
 
 
 # def update_watchers_bulk(
@@ -204,6 +204,7 @@ def watchers(cls):
     cls.get_wait_ts = get_wait_ts
     cls.add_watch = add_watch
     cls.stop_watch = stop_watch
+    cls.touch_watch = touch_watch
     cls.update_watchers = update_watchers
 
     return cls

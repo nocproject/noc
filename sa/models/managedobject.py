@@ -2903,7 +2903,7 @@ class ManagedObject(NOCModel):
             return
         q = Q()
         for effect, key, rs in to_remove:
-            q |= Q(effect=effect, key=key)
+            q |= Q(effect=effect.value, key=key or "", remote_system=rs or "")
         ManagedObjectWatchers.objects.filter(q).delete()
 
     @classmethod
@@ -3352,18 +3352,19 @@ class ManagedObjectWatchers(NOCModel):
     after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
     # Before Postgres 15 nulls not equals. It and unique constraints not worked for NULL value
     remote_system = CharField("Effect Key", max_length=24, blank=True, null=False)
-    args = JSONField(default=dict)
+    args: Dict[str, Any] = JSONField(default=dict)
 
     @property
     def item(self) -> WatchItem:
         """"""
         return WatchItem(
             effect=ObjectEffect(self.effect),
-            key=self.key,
+            key=self.key or None,
             once=self.once,
             wait_avail=self.wait_avail,
             remote_system=self.remote_system,
             after=self.after or None,
+            args=self.args or None,
         )
 
     @classmethod
