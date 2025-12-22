@@ -93,6 +93,7 @@ query_map = {
     "load_cpu": OBJECTS_QUERY,
     "ping": PING_QUERY,
 }
+CHUNK_SIZE = 5000
 
 
 class LoadMetricsDS(BaseDataSource):
@@ -232,10 +233,8 @@ class LoadMetricsDS(BaseDataSource):
                 (r["managed_object_id"], r["interface_name"]): r["mac_count"]
                 for r in data.to_dicts()
             }
-        # Prepare and run query in ClickHouse
+        # Prepare query from ClickHouse
         query = query_map[reporttype]
-        mo_filter = ", ".join(str(id) for id in mo_bi_ids)
-        mo_filter = f"AND managed_object IN ({mo_filter})"
         ifp_filter = ""
         if reporttype == "load_interfaces" and interface_profile:
             ifp_filter = f"AND interface_profile='{interface_profile.name}'"
@@ -243,28 +242,33 @@ class LoadMetricsDS(BaseDataSource):
         if reporttype == "load_interfaces" and exclude_zero:
             having_section = "HAVING max(load_in) != 0 AND max(load_out) != 0"
         ch_client = connection()
-        if reporttype == "load_interfaces":
-            body = ch_client.execute(
-                query
-                % (ts_from_date, ts_from_date, ts_to_date, mo_filter, ifp_filter, having_section),
-                return_raw=True,
-            )
-        else:
-            body = ch_client.execute(
-                query % (ts_from_date, ts_from_date, ts_to_date, mo_filter), return_raw=True
-            )
-        # Yielding data
+        # Run chunked query and yield data
         num = 1
-        for row_b in body.splitlines():
-            row = orjson.loads(row_b)  # dict
-            mo_bi_id = row["managed_object"]
-            yield num, "managed_object_id", 0
-            yield num, "managed_object_bi_id", mo_bi_id
-            for c in columns:
-                yield num, c, str(row.get(c, ""))
-            # Additional fields for 'Interfaces' source
-            if reporttype == "load_interfaces" and (not fields or "interface_load_url" in fields):
-                yield num, "interface_load_url", get_interface_load_url(mo_bi_id)
-            if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
-                yield num, "mac_counter", mac_counters.get((int(mo_bi_id), row["iface_name"]), "")
-            num += 1
+        ids = mo_bi_ids
+        while ids:
+            chunk, ids = ids[:CHUNK_SIZE], ids[CHUNK_SIZE:]
+            mo_filter = ", ".join(str(id) for id in chunk)
+            mo_filter = f"AND managed_object IN ({mo_filter})"
+            q_params = [ts_from_date, ts_from_date, ts_to_date, mo_filter]
+            if reporttype == "load_interfaces":
+                q_params.extend([ifp_filter, having_section])
+            body = ch_client.execute(query % tuple(q_params), return_raw=True)
+            for row_b in body.splitlines():
+                row = orjson.loads(row_b)  # dict
+                mo_bi_id = row["managed_object"]
+                yield num, "managed_object_id", 0
+                yield num, "managed_object_bi_id", mo_bi_id
+                for c in columns:
+                    yield num, c, str(row.get(c, ""))
+                # Additional fields for 'Interfaces' source
+                if reporttype == "load_interfaces" and (
+                    not fields or "interface_load_url" in fields
+                ):
+                    yield num, "interface_load_url", get_interface_load_url(mo_bi_id)
+                if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
+                    yield (
+                        num,
+                        "mac_counter",
+                        mac_counters.get((int(mo_bi_id), row["iface_name"]), ""),
+                    )
+                num += 1
