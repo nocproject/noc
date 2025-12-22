@@ -161,7 +161,7 @@ class Maintenance(Document):
         if created and (self.direct_objects or self.direct_segments):
             self.update_affected_objects_maintenance()
         if self.auto_confirm:
-             self.auto_confirm_maintenance()
+            self.auto_confirm_maintenance()
 
     def on_save(self):
         changed_fields = set()
