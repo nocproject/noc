@@ -73,7 +73,7 @@ class Migration(BaseMigration):
             ),
         )
         self.db.execute(
-            """ALTER TABLE sa_managedobjectwatchers 
+            """ALTER TABLE sa_managedobjectwatchers
              ADD CONSTRAINT sa_managedobjectwatchers_uniques
              UNIQUE (managed_object_id,effect,key,remote_system)
              """
