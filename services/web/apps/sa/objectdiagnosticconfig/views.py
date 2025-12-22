@@ -24,8 +24,6 @@ class DiagnosticConfigApplication(ExtDocApplication):
 
     def instance_to_dict(self, o, fields=None, nocustom=False):
         r = super().instance_to_dict(o, fields=fields, nocustom=nocustom)
-        r["checks"] = [
-            {"check": c["check"], "check__label": c["check"], "arg0": c.get("arg0")}
-            for c in r.get("checks", [])
-        ]
+        for c in r.get("checks", []):
+            c["check__label"] = c["check"]
         return r
