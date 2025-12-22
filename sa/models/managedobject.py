@@ -2884,7 +2884,7 @@ class ManagedObject(NOCModel):
     def update_object_watchers(
         self,
         to_watchers: List[WatchItem],
-        to_remove: Optional[List[Tuple[ObjectEffect, str]]],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
         dry_run: bool = False,
         bulk=None,
     ):
@@ -2896,30 +2896,15 @@ class ManagedObject(NOCModel):
             ManagedObjectWatchers.objects.bulk_create(
                 updated,
                 update_conflicts=True,
-                # unique_fields=[("managed_object", "effect", "key", "remote_system")],
-                # update_fields=['b'],
+                unique_fields=["managed_object", "effect", "key", "remote_system"],
+                update_fields=["once", "wait_avail", "after", "args"],
             )
         if not to_remove or dry_run:
             return
         q = Q()
-        for effect, key in to_remove:
+        for effect, key, rs in to_remove:
             q |= Q(effect=effect, key=key)
         ManagedObjectWatchers.objects.filter(q).delete()
-
-    def save_object_watchers(
-        self,
-        watchers: List[WatchItem],
-        dry_run: bool = False,
-        bulk=None,
-    ):
-        """"""
-        # Update
-        # Clean
-        new = []
-        for w in watchers:
-            new.append(ManagedObjectWatchers.from_item(self, w))
-        if not dry_run:
-            ManagedObjectWatchers.objects.filter(managed_object=self).bulk_update(new)
 
     @classmethod
     def from_template(
@@ -3347,7 +3332,13 @@ class ManagedObjectWatchers(NOCModel):
         SUSPEND_JOB = "suspend_job", "Suspend Job"
         DIAGNOSTIC_CHECK = "diagnostic_check", "Diagnostic Check"
 
-    managed_object = ForeignKey(ManagedObject, verbose_name="Managed Object", on_delete=CASCADE)
+    managed_object = ForeignKey(
+        ManagedObject,
+        verbose_name="Managed Object",
+        unique=False,
+        primary_key=False,
+        on_delete=CASCADE,
+    )
     effect = CharField(
         "Effect",
         choices=ObjectEffect.choices,
@@ -3355,11 +3346,12 @@ class ManagedObjectWatchers(NOCModel):
         blank=False,
         null=False,
     )
-    key: str = CharField("Effect Key", max_length=64, blank=True, null=True)
+    key: str = CharField("Effect Key", max_length=64, blank=True, null=False)
     once: bool = BooleanField(default=True)
     wait_avail: bool = BooleanField(default=False)
     after = DateTimeField("Activate after time", auto_now_add=False, blank=True, null=True)
-    remote_system = DocumentReferenceField(RemoteSystem, null=True, blank=True)
+    # Before Postgres 15 nulls not equals. It and unique constraints not worked for NULL value
+    remote_system = CharField("Effect Key", max_length=24, blank=True, null=False)
     args = JSONField(default=dict)
 
     @property
@@ -3379,10 +3371,12 @@ class ManagedObjectWatchers(NOCModel):
         return ManagedObjectWatchers(
             managed_object=managed_object,
             effect=item.effect.value,
-            key=item.key,
+            key=item.key or "",
+            remote_system=item.remote_system or "",
             once=item.once,
             wait_avail=item.wait_avail,
             after=item.after,
+            args=item.args or None,
         )
 
 

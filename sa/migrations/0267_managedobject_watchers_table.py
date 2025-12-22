@@ -31,12 +31,8 @@ class Migration(BaseMigration):
                 ("id", models.AutoField(verbose_name="ID", primary_key=False, auto_created=True)),
                 (
                     "managed_object",
-                    models.OneToOneField(
-                        ManagedObject,
-                        verbose_name="Managed Object Reference",
-                        unique=False,
-                        primary_key=True,
-                        on_delete=models.CASCADE,
+                    models.ForeignKey(
+                        ManagedObject, verbose_name="Managed Object", on_delete=models.CASCADE
                     ),
                 ),
                 (
@@ -49,7 +45,12 @@ class Migration(BaseMigration):
                         null=False,
                     ),
                 ),
-                ("key", models.CharField("Effect Key", max_length=64, null=True, blank=True)),
+                (
+                    "key",
+                    models.CharField(
+                        "Effect Key", max_length=64, null=False, blank=True, default=""
+                    ),
+                ),
                 ("once", models.BooleanField("Activate once", default=True)),
                 ("wait_avail", models.BooleanField("Activate if Avail", default=False)),
                 (
@@ -62,23 +63,24 @@ class Migration(BaseMigration):
                     "args",
                     models.JSONField("Activate once", null=True, blank=True, default=lambda: "{}"),
                 ),
-                ("remote_system", DocumentReferenceField("self", null=True, blank=True)),
+                # Before Postgres 15 nulls not equals. It and unique constraints not worked for NULL value
+                (
+                    "remote_system",
+                    models.CharField(
+                        "Remote System", max_length=24, null=False, blank=True, default=""
+                    ),
+                ),
             ),
+        )
+        self.db.execute(
+            """ALTER TABLE sa_managedobjectwatchers 
+             ADD CONSTRAINT sa_managedobjectwatchers_uniques
+             UNIQUE (managed_object_id,effect,key,remote_system)
+             """
         )
         self.db.add_column(
             "sa_managedobject",
             "watcher_wait_ts",
             models.DateTimeField("Last Seen", blank=True, null=True),
-        )
-        # Migrate wiping ?
-        self.db.create_index(
-            "sa_managedobjectwatchers",
-            [
-                "managed_object_id",
-                "effect",
-                "key",
-                "remote_system",
-            ],
-            unique=True,
         )
         self.db.create_index("sa_managedobject", ["watcher_wait_ts"], unique=False)

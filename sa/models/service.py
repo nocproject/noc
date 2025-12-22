@@ -1011,29 +1011,39 @@ class Service(Document):
     def update_object_watchers(
         self,
         to_watchers: List[WatchItem],
-        to_remove: Optional[List[Tuple[ObjectEffect, str]]],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
         dry_run: bool = False,
         bulk=None,
     ):
         """"""
-        r = []
-        ww = {(w.effect, w.key) for w in to_watchers}
+        updates = []
+        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
         for w in self.watchers:
-            if to_remove and (w.effect, w.key) in to_remove:
+            if to_remove and (w.effect, w.key, w.remote_system) in to_remove:
                 continue
-            if (w.effect, w.key) in ww:
-                r.append(
-                    WatchDocumentItem(
-                        effect=w.effect,
-                        key=w.key,
-                        after=w.after,
-                        once=w.once,
-                        args=w.args,
-                    )
+            update = up_w.pop((w.effect, w.key, w.remote_system), None)
+            if update:
+                w = WatchDocumentItem(
+                    effect=w.effect,
+                    key=w.key,
+                    remote_system=w.remote_system,
+                    after=w.after,
+                    once=w.once,
+                    args=w.args,
                 )
-                continue
-            r.append(w)
-        self.watchers = r
+            updates.append(w)
+        for w in up_w.values():
+            updates.append(
+                WatchDocumentItem(
+                    effect=w.effect,
+                    key=w.key,
+                    remote_system=w.remote_system,
+                    after=w.after,
+                    once=w.once,
+                    args=w.args,
+                )
+            )
+        self.watchers = updates
         wait_ts = self.get_wait_ts()
         if self.watcher_wait_ts != wait_ts:
             self.watcher_wait_ts = wait_ts

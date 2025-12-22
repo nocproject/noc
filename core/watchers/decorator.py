@@ -20,7 +20,7 @@ watcher_logger = logging.getLogger(__name__)
 def update_watchers(
     self,
     to_watchers: List[WatchItem],
-    to_remove: Optional[List[Tuple[ObjectEffect, str]]],
+    to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]] = None,
     dry_run: bool = False,
     bulk=None,
 ):
@@ -73,6 +73,7 @@ def add_watch(
     once: bool = False,
     after: Optional[datetime.datetime] = None,
     wait_avail: bool = False,
+    remote_system: Optional[str] = None,
     # action: Optional[ActionType] = None, # Reaction ?
     **kwargs,
 ):
@@ -84,6 +85,7 @@ def add_watch(
         once: Run only once
         after: Run After Timer
         wait_avail: Only Available status
+        remote_system: From Remote System
     """
     # is_supported
     # if not self.is_supported_watch(effect):
@@ -92,10 +94,14 @@ def add_watch(
     to_watchers = []
     # When save - skip maintenance
     for w in self.iter_watchers():
-        if effect == w.effect and key == w.key:
+        if (
+            effect == w.effect
+            and key == w.key
+            and (not remote_system or remote_system == w.remote_system)
+        ):
             w.after = after
             to_watchers.append(w)
-    if not watchers:
+    if not to_watchers:
         to_watchers.append(
             WatchItem(
                 effect=effect,
@@ -104,18 +110,23 @@ def add_watch(
                 after=after,
                 args=kwargs,  # Convert to string
                 wait_avail=wait_avail,
+                remote_system=remote_system,
             )
         )
-    if watchers:
+    if to_watchers:
         self.update_watchers(to_watchers)
 
 
-def stop_watch(self, effect: ObjectEffect, key: str):
+def stop_watch(self, effect: ObjectEffect, key: str, remote_system: Optional[str] = None):
     """Stop waiting callback"""
     to_remove = []
     for w in self.iter_watchers():
-        if w.effect == effect and w.key == key:
-            to_remove.append((w.effect, w.key))
+        if (
+            w.effect == effect
+            and w.key == key
+            and (not remote_system or remote_system == w.remote_system)
+        ):
+            to_remove.append((w.effect, w.key, w.remote_system))
             continue
     if to_remove:
         self.update_watchers([], to_remove)
