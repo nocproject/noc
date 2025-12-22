@@ -1008,27 +1008,32 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def save_object_watchers(
+    def update_object_watchers(
         self,
-        watchers: List[WatchItem],
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str]]],
         dry_run: bool = False,
         bulk=None,
     ):
         """"""
-        new_watchers = []
-        for w in watchers:
-            new_watchers.append(
-                WatchDocumentItem(
-                    effect=w.effect,
-                    key=w.key,
-                    after=w.after,
-                    once=w.once,
-                    args=w.args,
+        r = []
+        ww = {(w.effect, w.key) for w in to_watchers}
+        for w in self.watchers:
+            if to_remove and (w.effect, w.key) in to_remove:
+                continue
+            if (w.effect, w.key) in ww:
+                r.append(
+                    WatchDocumentItem(
+                        effect=w.effect,
+                        key=w.key,
+                        after=w.after,
+                        once=w.once,
+                        args=w.args,
+                    )
                 )
-            )
-        # Filter Completed Maintenance
-        # Not Gen Changed/Gen only flag
-        self.watchers = new_watchers
+                continue
+            r.append(w)
+        self.watchers = r
         wait_ts = self.get_wait_ts()
         if self.watcher_wait_ts != wait_ts:
             self.watcher_wait_ts = wait_ts

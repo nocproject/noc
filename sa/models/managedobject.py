@@ -2881,6 +2881,31 @@ class ManagedObject(NOCModel):
         for w in ManagedObjectWatchers.objects.filter(managed_object=self.id):
             yield w.item
 
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str]]],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        updated = []
+        for w in to_watchers:
+            updated.append(ManagedObjectWatchers.from_item(self, w))
+        if updated and not dry_run:
+            ManagedObjectWatchers.objects.bulk_create(
+                updated,
+                update_conflicts=True,
+                # unique_fields=[("managed_object", "effect", "key", "remote_system")],
+                # update_fields=['b'],
+            )
+        if not to_remove or dry_run:
+            return
+        q = Q()
+        for effect, key in to_remove:
+            q |= Q(effect=effect, key=key)
+        ManagedObjectWatchers.objects.filter(q).delete()
+
     def save_object_watchers(
         self,
         watchers: List[WatchItem],
@@ -3359,6 +3384,7 @@ class ManagedObjectWatchers(NOCModel):
             wait_avail=item.wait_avail,
             after=item.after,
         )
+
 
 # object.scripts. ...
 class ScriptsProxy(object):

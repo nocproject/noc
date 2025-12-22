@@ -8,13 +8,24 @@
 # Python modules
 import logging
 import datetime
-from typing import Optional, List, Iterable
+from typing import Optional, List, Iterable, Tuple
 
 # Python modules
 from noc.models import is_document
 from .types import ObjectEffect, WatchItem
 
 watcher_logger = logging.getLogger(__name__)
+
+
+def update_watchers(
+    self,
+    to_watchers: List[WatchItem],
+    to_remove: Optional[List[Tuple[ObjectEffect, str]]],
+    dry_run: bool = False,
+    bulk=None,
+):
+    """Update watchers to disk"""
+    self.update_object_watchers(to_watchers, to_remove, dry_run=dry_run, bulk=bulk)
 
 
 def save_watchers(
@@ -78,16 +89,14 @@ def add_watch(
     # if not self.is_supported_watch(effect):
     if effect not in self.supported_watcher_effects:
         raise ValueError("Not supported options")
-    new_watchers = []
-    changed, is_new = False, True
+    to_watchers = []
     # When save - skip maintenance
     for w in self.iter_watchers():
         if effect == w.effect and key == w.key:
             w.after = after
-            is_new = False
-        new_watchers.append(w)
-    if is_new:
-        new_watchers.append(
+            to_watchers.append(w)
+    if not watchers:
+        to_watchers.append(
             WatchItem(
                 effect=effect,
                 key=str(key),
@@ -97,22 +106,19 @@ def add_watch(
                 wait_avail=wait_avail,
             )
         )
-        changed |= True
-    if changed:
-        self.save_watchers(new_watchers)
+    if watchers:
+        self.update_watchers(to_watchers)
 
 
 def stop_watch(self, effect: ObjectEffect, key: str):
     """Stop waiting callback"""
-    new_watchers = []
-    changed = False
+    to_remove = []
     for w in self.iter_watchers():
         if w.effect == effect and w.key == key:
-            changed |= True
+            to_remove.append((w.effect, w.key))
             continue
-        new_watchers.append(w)
-    if changed:
-        self.save_watchers(new_watchers)
+    if to_remove:
+        self.update_watchers([], to_remove)
 
 
 def touch_watch(
@@ -128,6 +134,7 @@ def touch_watch(
         is_update: Flag for refresh_alarm procedure
         dry_run: For tests run
     """
+    # After processed - Remove if once
     now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
     for w in self.iter_watchers():
         if w.once and is_update:
@@ -137,21 +144,22 @@ def touch_watch(
             continue
         if w.after and w.after > now:
             continue
+        # Return
         try:
             w.run(self, dry_run=dry_run)
         except Exception as e:
             print(f"Exception when run Watch Action: {e}")
 
 
-def update_watchers(
-    cls,
-    effect: ObjectEffect,
-    key: str,
-    ids,
-    once: bool = False,
-    after: Optional[datetime.datetime] = None,
-):
-    """Bulk update watchers"""
+# def update_watchers_bulk(
+#     cls,
+#     effect: ObjectEffect,
+#     key: str,
+#     ids,
+#     once: bool = False,
+#     after: Optional[datetime.datetime] = None,
+# ):
+#     """Bulk update watchers"""
 
 
 def watchers(cls):
@@ -175,7 +183,7 @@ def watchers(cls):
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers
-    elif hasattr(cls, "save_object_watchers") and hasattr(cls, "iter_object_watchers"):
+    elif hasattr(cls, "update_object_watchers") and hasattr(cls, "iter_object_watchers"):
         # Django model
         cls.iter_watchers = iter_model_watchers
     else:
@@ -185,6 +193,6 @@ def watchers(cls):
     cls.get_wait_ts = get_wait_ts
     cls.add_watch = add_watch
     cls.stop_watch = stop_watch
-    cls.save_watchers = save_watchers
+    cls.update_watchers = update_watchers
 
     return cls
