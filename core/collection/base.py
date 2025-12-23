@@ -205,17 +205,17 @@ class Collection(object):
         """
         return self.get_legacy_state_path().exists()
 
-    def item_hash(self, x: str) -> str:
+    def item_hash(self, data: Dict[str, Any]) -> str:
         """
         Calculate item hash.
 
         Args:
-            x: data
+            data: Data record.
 
         Returns:
             Calculated hash
         """
-        h = hashlib.sha256(x.encode()).hexdigest()
+        h = hashlib.sha256(orjson.dumps(data)).hexdigest()
         if self._api_version == self.DEFAULT_API_VERSION:
             return h
         return f"{self._api_version}:{h}"
@@ -238,20 +238,35 @@ class Collection(object):
         """
         Iterate all items from file.
         """
+
+        def get_single(data: Dict[str, Any]) -> Item:
+            """Return single item."""
+            if "uuid" not in data:
+                msg = f"Invalid JSON {path}: No UUID"
+                raise ValueError(msg)
+            return Item(uuid=data["uuid"], path=path, hash=self.item_hash(data), data=data)
+
+        def iter_bundle(data: Dict[str, Any]) -> Iterable[Item]:
+            items = data.get("items")
+            if not items:
+                return
+            for item in items:
+                yield get_single(item)
+
         # Read file
         with open(path) as f:
-            data = f.read()
-        # Decode json
-        try:
-            jdata = orjson.loads(data)
-        except ValueError as e:
-            msg = f"Error load {path}: {e}"
-            raise ValueError(msg)
+            try:
+                data = orjson.loads(f.read())
+            except ValueError as e:
+                msg = f"Error load {path}: {e}"
+                raise ValueError(msg)
+        if not isinstance(data, dict):
+            raise ValueError("must be dict")
         # Read items
-        if "uuid" not in jdata:
-            msg = f"Invalid JSON {path}: No UUID"
-            raise ValueError(msg)
-        yield Item(uuid=jdata["uuid"], path=path, hash=self.item_hash(data), data=jdata)
+        if data.get("$type") == "bundle":
+            yield from iter_bundle(data)
+        else:
+            yield get_single(data)
 
     def get_fields(self, model: Union[Document, NOCModelBase]):
         model = model or self.model
