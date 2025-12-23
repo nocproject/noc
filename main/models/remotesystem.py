@@ -106,6 +106,7 @@ class EnvItem(EmbeddedDocument):
         ("wf.Transition", "remote_system"),
         ("wf.Workflow", "remote_system"),
         ("project.Project", "remote_system"),
+        ("maintenance.Maintenance", "remote_system"),
     ],
     delete=[("main.NotificationGroupSubscription", "remote_system")],
 )
