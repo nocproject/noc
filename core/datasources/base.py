@@ -209,6 +209,12 @@ class BaseDataSource(object):
             yield f
 
     @classmethod
+    def field_by_name(cls, name: str) -> FieldInfo:
+        for f in cls.fields:
+            if f.name == name:
+                return f
+
+    @classmethod
     def clean_params(cls, params: Dict[str, Any]) -> Dict[str, Any]:
         r = {}
         if "user" in params or "administrative_domain" in params:

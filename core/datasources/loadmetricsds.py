@@ -28,7 +28,7 @@ INTERFACES_QUERY = f"""
     dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,
     managed_object as managed_object,
     interface as iface_name,
-    dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface)) as interface_profile,
+    dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface)) as iface_profile,
     dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'description', (managed_object, interface)) as iface_description,
     if(max(speed)=0, dictGetUInt64('noc_dict.interfaceattributes', 'in_speed', (managed_object, interface)), max(speed)) as iface_speed,
     round(quantile(0.90)(load_in), 0) as load_in_perc,
@@ -110,32 +110,32 @@ class LoadMetricsDS(BaseDataSource):
         FieldInfo(name="iface_profile"),
         FieldInfo(name="iface_description"),
         FieldInfo(name="iface_speed"),
-        FieldInfo(name="load_in_perc"),  # type=FieldType.UINT
-        FieldInfo(name="load_in_avg"),  # type=FieldType.UINT
-        FieldInfo(name="load_in_p"),  # type=FieldType.FLOAT
-        FieldInfo(name="load_out_perc"),  # type=FieldType.UINT
-        FieldInfo(name="load_out_avg"),  # type=FieldType.UINT
-        FieldInfo(name="load_out_p"),  # type=FieldType.FLOAT
-        FieldInfo(name="octets_in_sum"),
-        FieldInfo(name="octets_out_sum"),
-        FieldInfo(name="errors_in"),
-        FieldInfo(name="errors_in_sum"),
-        FieldInfo(name="errors_out"),
-        FieldInfo(name="errors_out_sum"),
-        FieldInfo(name="discards_in"),
-        FieldInfo(name="discards_out"),
-        FieldInfo(name="interface_flap"),
-        FieldInfo(name="lastchange"),
-        FieldInfo(name="status_oper_last"),
+        FieldInfo(name="load_in_perc", type=FieldType.UINT64),
+        FieldInfo(name="load_in_avg", type=FieldType.UINT64),
+        FieldInfo(name="load_in_p", type=FieldType.FLOAT),
+        FieldInfo(name="load_out_perc", type=FieldType.UINT64),
+        FieldInfo(name="load_out_avg", type=FieldType.UINT64),
+        FieldInfo(name="load_out_p", type=FieldType.FLOAT),
+        FieldInfo(name="octets_in_sum", type=FieldType.UINT64),
+        FieldInfo(name="octets_out_sum", type=FieldType.UINT64),
+        FieldInfo(name="errors_in", type=FieldType.UINT64),
+        FieldInfo(name="errors_in_sum", type=FieldType.UINT64),
+        FieldInfo(name="errors_out", type=FieldType.UINT64),
+        FieldInfo(name="errors_out_sum", type=FieldType.UINT64),
+        FieldInfo(name="discards_in", type=FieldType.UINT),
+        FieldInfo(name="discards_out", type=FieldType.UINT),
+        FieldInfo(name="interface_flap", type=FieldType.UINT),
+        FieldInfo(name="lastchange", type=FieldType.UINT),
+        FieldInfo(name="status_oper_last", type=FieldType.UINT),
         FieldInfo(name="interface_load_url"),
         FieldInfo(name="mac_counter"),
         # Objects
         FieldInfo(name="slot"),
-        FieldInfo(name="cpu_usage"),  # type=FieldType.FLOAT
-        FieldInfo(name="memory_usage"),  # type=FieldType.UINT
+        FieldInfo(name="cpu_usage", type=FieldType.FLOAT),
+        FieldInfo(name="memory_usage", type=FieldType.UINT),
         # Ping
-        FieldInfo(name="ping_rtt"),  # type=FieldType.FLOAT
-        FieldInfo(name="ping_attempts"),  # type=FieldType.UINT
+        FieldInfo(name="ping_rtt", type=FieldType.FLOAT),
+        FieldInfo(name="ping_attempts", type=FieldType.UINT),
     ]
     params = [
         # reporttype is a choice from "load_interfaces", "load_cpu", "ping"
@@ -187,6 +187,24 @@ class LoadMetricsDS(BaseDataSource):
             params_all = "&".join([f"{k}={v}" for k, v in params.items()])
             return f"{path}?{params_all}"
 
+        def value_to_float(v):
+            if v is None or isinstance(value, (float, int)):
+                return v
+            if isinstance(value, str):
+                try:
+                    return float(v)
+                except ValueError:
+                    return None
+
+        def value_to_int(v):
+            if v is None or isinstance(value, int):
+                return v
+            if isinstance(value, str):
+                try:
+                    return int(v)
+                except ValueError:
+                    return None
+
         end = end + datetime.timedelta(days=1)
         ts_from_date = time.mktime(start.timetuple())
         ts_to_date = time.mktime(end.timetuple())
@@ -200,7 +218,7 @@ class LoadMetricsDS(BaseDataSource):
         ch_columns_map = {
             "load_interfaces": [
                 "iface_name",
-                "interface_profile",
+                "iface_profile",
                 "iface_description",
                 "iface_speed",
                 "load_in_perc",
@@ -240,7 +258,7 @@ class LoadMetricsDS(BaseDataSource):
         query = query_map[reporttype]
         ifp_filter = ""
         if reporttype == "load_interfaces" and interface_profile:
-            ifp_filter = f"AND interface_profile='{interface_profile.name}'"
+            ifp_filter = f"AND iface_profile='{interface_profile.name}'"
         having_section = ""
         if reporttype == "load_interfaces" and exclude_zero:
             having_section = "HAVING max(load_in) != 0 AND max(load_out) != 0"
@@ -262,7 +280,13 @@ class LoadMetricsDS(BaseDataSource):
                 yield num, "managed_object_id", int(row["managed_object_id"])
                 yield num, "managed_object_bi_id", mo_bi_id
                 for c in columns:
-                    yield num, c, str(row.get(c, ""))
+                    value = row.get(c)
+                    if cls.field_by_name(c).type == FieldType.FLOAT:
+                        yield num, c, value_to_float(value)
+                    elif cls.field_by_name(c).type in (FieldType.UINT, FieldType.UINT64):
+                        yield num, c, value_to_int(value)
+                    else:
+                        yield num, c, str(row.get(c, ""))
                 # Additional fields for 'Interfaces' source
                 if reporttype == "load_interfaces" and (
                     not fields or "interface_load_url" in fields
