@@ -79,7 +79,7 @@ def match_version(cv: str, op: str, ctx: Dict[str, Any]) -> bool:
 def iter_matchers(expr: Dict[str, Any]) -> Iterable[Callable]:
     for field, matcher in expr.items():
         if field == "$or":
-            yield partial(match_or, (build_matcher(m) for m in matcher))
+            yield partial(match_or, tuple(build_matcher(m) for m in matcher))
         elif not isinstance(matcher, dict):
             # yield partial(match_eq, matcher, field)
             yield get_matcher("$eq", field, matcher)
