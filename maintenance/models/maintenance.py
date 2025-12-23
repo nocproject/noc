@@ -22,7 +22,6 @@ from mongoengine.fields import (
     ReferenceField,
     DateTimeField,
     ListField,
-    EmbeddedDocumentField,
     EmbeddedDocumentListField,
 )
 import cachetools
