@@ -23,6 +23,7 @@ from mongoengine.fields import (
     DateTimeField,
     ListField,
     EmbeddedDocumentField,
+    EmbeddedDocumentListField,
 )
 import cachetools
 import orjson
@@ -32,13 +33,15 @@ from .maintenancetype import MaintenanceType
 from mongoengine.errors import ValidationError
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.networksegment import NetworkSegment
-from noc.core.mongo.fields import ForeignKeyField
+from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.core.defer import call_later
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.service import Service
 from noc.main.models.notificationgroup import NotificationGroup
+from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
 
@@ -48,6 +51,14 @@ SQL_REMOVE = """
   SET affected_maintenances = affected_maintenances - %s
   WHERE affected_maintenances ? %s
 """
+
+
+class MaintenanceService(EmbeddedDocument):
+    service = ReferenceField(Service)
+    include_object = BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.service}"
 
 
 class MaintenanceObject(EmbeddedDocument):
@@ -91,9 +102,12 @@ class Maintenance(Document):
     # None - active all the time
     time_pattern: TimePattern = ForeignKeyField(TimePattern)
     # Objects declared to be affected by maintenance
-    direct_objects = ListField(EmbeddedDocumentField(MaintenanceObject))
+    direct_objects = EmbeddedDocumentListField(MaintenanceObject)
     # Segments declared to be affected by maintenance
-    direct_segments = ListField(EmbeddedDocumentField(MaintenanceSegment))
+    direct_segments = EmbeddedDocumentListField(MaintenanceSegment)
+    #  Service declared to be affected by maintenance
+    direct_services = EmbeddedDocumentListField(MaintenanceService)
+    # direct_group =
     # All Administrative Domain for all affected objects
     administrative_domain = ListField(ForeignKeyField(AdministrativeDomain))
     # Escalated TT ID in form
@@ -104,6 +118,16 @@ class Maintenance(Document):
         choices=[("E", "Enable"), ("D", "Disable"), ("S", "Suspend"), ("M", "Maintenance")],
         default="S",
     )
+    #
+    # Reference to remote system object has been imported from
+    remote_system = PlainReferenceField(RemoteSystem)
+    # Object id in remote system
+    remote_id = StringField()
+    # Array remote objects and service ids
+    remote_objects = ListField(StringField())
+    remote_services = ListField(StringField())
+    # Object id in BI
+    # bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 

@@ -71,6 +71,7 @@ class BaseRemoteSystem(object):
         "street",
         "building",
         "address",
+        "maintenance",
     ]
 
     def __init__(self, remote_system):

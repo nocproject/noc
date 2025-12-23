@@ -1,0 +1,24 @@
+# ----------------------------------------------------------------------
+# Maintenance loader
+# ----------------------------------------------------------------------
+# Copyright (C) 2007-2025 The NOC Project
+# See LICENSE for details
+# ----------------------------------------------------------------------
+
+# NOC modules
+from .base import BaseLoader
+from ..models.maintenance import Maintenance
+from noc.sa.models.managedobject import ManagedObject
+from noc.maintenance.models.maintenance import Maintenance as MaintenanceModel
+from noc.maintenance.models.maintenancetype import MaintenanceType
+
+
+class MaintenanceLoader(BaseLoader):
+    """
+    Maintenance loader
+    """
+
+    name = "maintenance"
+    model = MaintenanceModel
+    data_model = Maintenance
+    model_mappings = {"type": MaintenanceType}
