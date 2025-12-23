@@ -351,6 +351,9 @@ class SLAProbe(Document):
             yield "sa.ManagedObject", str(self.managed_object.id)
         # Target - Role
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
     def get_provisioning_op(self) -> str:
         """
         Return provisioning operation

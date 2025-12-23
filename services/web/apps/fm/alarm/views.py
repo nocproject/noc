@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # fm.alarm application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -325,7 +325,7 @@ class AlarmApplication(ExtApplication):
         return q
 
     def instance_to_dict(self, o, fields=None):
-        s = AlarmSeverity.get_severity(o.severity)
+        severity = AlarmSeverity.get_severity(o.severity)
         n_events = (
             ActiveEvent.objects.filter(alarms=o.id).count()
             + ArchivedEvent.objects.filter(alarms=o.id).count()
@@ -341,7 +341,7 @@ class AlarmApplication(ExtApplication):
             "administrative_domain": None,
             "administrative_domain__label": "",
             "severity": o.severity,
-            "severity__label": s.name,
+            "severity__label": severity.name,
             "alarm_class": str(o.alarm_class.id),
             "alarm_class__label": o.alarm_class.name,
             "timestamp": self.to_json(o.timestamp),
@@ -349,7 +349,7 @@ class AlarmApplication(ExtApplication):
             "events": n_events,
             "duration": o.duration,
             "clear_timestamp": self.to_json(o.clear_timestamp) if o.status == "C" else None,
-            "row_class": s.style.css_class_name,
+            "row_class": severity.get_style() or "",
             "segment__label": "",
             "segment": None,
             "location_1": location1,

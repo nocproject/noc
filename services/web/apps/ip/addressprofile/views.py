@@ -20,6 +20,3 @@ class AddressProfileApplication(ExtDocApplication):
     menu = [_("Setup"), _("Address Profiles")]
     model = AddressProfile
     implied_permissions = {"launch": ["main:template:lookup"]}
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

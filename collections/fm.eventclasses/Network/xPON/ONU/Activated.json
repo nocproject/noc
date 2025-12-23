@@ -9,23 +9,17 @@
             "name": "interface",
             "description": "xPON interface",
             "type": "interface_name",
-            "required": true
-        },
-        {
-            "name": "mac",
-            "description": "ONU MAC",
-            "type": "mac",
-            "required": true
-        },
-        {
-            "name": "vendor",
-            "description": "ONU vendor",
-            "type": "str",
             "required": false
+        },
+        {
+            "name": "onu",
+            "description": "ONU MAC/Serial",
+            "type": "str",
+            "required": true
         }
     ],
-    "subject_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} activated on {{interface}}",
-    "body_template": "ONU {% if vendor %}{{vendor}}:{% endif %}{{mac}} activated on {{interface}}",
+    "subject_template": "ONU {{onu}} activated{% if interface %} on {{interface}}{% endif %}",
+    "body_template": "ONU {{onu}} activated{% if interface %} on {{interface}}{% endif %}",
     "symptoms": "",
     "probable_causes": "",
     "recommended_actions": ""

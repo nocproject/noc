@@ -101,46 +101,12 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
       items: [
         // NOC logo
         {
-          xtype: "image",
-          src: "/ui/web/img/logo_white.svg",
-          style: {
-            width: "24px",
-            height: "24px",
-            cursor: "pointer",
-          },
-          listeners: {
-            el: {
-              scope: me,
-              click: me.openHome,
-            },
-          },
-        },
-        // Bold NOC|
-        {
-          xtype: "container",
-          html: "&nbsp;" + NOC.settings.brand + "|",
-          style: {
-            fontSize: "18px",
-            fontWeight: "bold",
-            cursor: "pointer",
-          },
-          border: false,
-          listeners: {
-            el: {
-              scope: me,
-              click: me.openHome,
-            },
-          },
-        },
-        // Installation name
-        {
-          xtype: "container",
-          html: NOC.settings.installation_name,
-          style: {
-            fontSize: "18px",
-            cursor: "pointer",
-          },
-          border: false,
+          xtype: "component",
+          html: "<div class='gf-map' style='display: flex;align-items: center; font-size: 24px; cursor: pointer; padding-left: 8px'>"
+            + "<i class= 'gf gf-larger brand-noc-s'></i> "
+            + "<snap style='font-weight: bold; padding-left: 8px;'>" + NOC.settings.brand + ": </snap>"
+            + "<snap>" + NOC.settings.installation_name + "</snap>"
+            + "</div>",
           listeners: {
             el: {
               scope: me,
@@ -232,8 +198,8 @@ Ext.define("NOC.main.desktop.HeaderPanel", {
   // Toggle full-screen mode
   onFullscreenToggle: function(){
     if(document.fullscreenElement){
-      this.fullscreenMenu.setText(__("Enter Full Screen")); 
-      document.exitFullscreen(); 
+      this.fullscreenMenu.setText(__("Enter Full Screen"));
+      document.exitFullscreen();
     } else{
       let element = document.documentElement;
       element.requestFullscreen({navigationUI: "hide"});

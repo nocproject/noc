@@ -116,3 +116,6 @@ class AddressProfile(Document):
             )
             ap.save()
         return ap
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

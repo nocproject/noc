@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Subscriber Profile
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -71,3 +71,6 @@ class SubscriberProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_subscriber")
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

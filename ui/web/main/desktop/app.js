@@ -134,6 +134,7 @@ Ext.application({
         NOC.templates = {};
         // Change title
         document.title = setup.brand + "|" + setup.installation_name;
+        this.createCss(setup.color_scheme || {});
         this.app = Ext.create("NOC.main.desktop.Application", {
           listeners: {
             scope: this,
@@ -159,5 +160,70 @@ Ext.application({
         parent.destroy();
       },
     });
+  },
+  createCss: function(scheme){
+    var classes = scheme.style || [],
+      style = document.createElement("style"),
+      root = document.documentElement,
+      css = "";
+    classes.forEach(cl => {
+      css += `.${cl.name}, .${cl.name} td{`;
+      if(!(Object.hasOwn(cl, "fontWeight") || Object.hasOwn(cl, "font-weight"))){
+        cl.fontWeight = "normal";
+      }
+      if(!(Object.hasOwn(cl, "fontStyle") || Object.hasOwn(cl, "font-style"))){
+        cl.fontStyle = "normal";
+      }
+      if(!(Object.hasOwn(cl, "textDecoration") || Object.hasOwn(cl, "text-decoration"))){
+        cl.textDecoration = "none";
+      }
+      Object.entries(cl)
+        .filter((name) => name[0] !== "name")
+        .forEach(([key, value]) => {
+          switch(key){
+            case "color":
+              css += `color: var(--${cl.name});`;
+              root.style.setProperty(`--${cl.name}`, value);
+              break;
+            case "background-color":
+            case "backgroundColor": {
+              let v = `${cl.name}-bg`;
+              css += `background-color: var(--${v});`;
+              root.style.setProperty(`--${v}`, value);
+              break;
+            }
+            case "font-weight":
+            case "fontWeight": {
+              let v = `${cl.name}-fw`;
+              css += `font-weight: var(--${v});`;
+              root.style.setProperty(`--${v}`, value);
+              break;
+            }
+            case "font-style":
+            case "fontStyle": {
+              let v = `${cl.name}-fs`;
+              css += `font-style: var(--${v});`;
+              root.style.setProperty(`--${v}`, value);
+              break;
+            }
+            case "text-decoration":
+            case "textDecoration": {
+              let v = `${cl.name}-td`;
+              css += `text-decoration: var(--${v});`;
+              root.style.setProperty(`--${v}`, value);
+              break;
+            }
+            default:
+              css += `${key}: ${value}; `;
+          }
+        });
+      css += "} ";
+    });
+    if(style.styleSheet){
+      style.styleSheet.cssText = css;
+    } else{
+      style.appendChild(document.createTextNode(css));
+    }
+    document.getElementsByTagName("head")[0].appendChild(style);
   },
 });

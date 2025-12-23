@@ -17,6 +17,7 @@ from noc.core.version import version
 from noc.aaa.models.group import Group
 from noc.main.models.userstate import UserState
 from noc.main.models.favorites import Favorites
+from noc.main.models.style import Style
 from noc.aaa.models.permission import Permission
 from noc.support.cp import CPClient
 from noc.core.feature import active_features
@@ -135,6 +136,7 @@ class DesktopApplication(ExtApplication):
             "enable_remote_system_last_extract_info": config.web.enable_remote_system_last_extract_info,
             "theme": config.web.theme,
             "has_geocoder": bool(config.geocoding.ui_geocoder),
+            "color_scheme": Style.get_scheme(),
         }
 
     @view(method=["GET"], url="^version/$", access=True, api=True)

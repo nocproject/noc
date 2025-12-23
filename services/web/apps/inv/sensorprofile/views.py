@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # inv.sensorprofile application
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,3 @@ class SensorProfileApplication(ExtDocApplication):
     title = "SensorProfile"
     menu = [_("Setup"), _("Sensor Profiles")]
     model = SensorProfile
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

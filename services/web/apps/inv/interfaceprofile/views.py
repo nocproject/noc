@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.interfaceprofile application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -37,9 +37,6 @@ class InterfaceProfileApplication(ExtDocApplication):
     model = InterfaceProfile
     query_condition = "icontains"
     query_fields = ["name", "description"]
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""
 
     @staticmethod
     def field_match_expression(o: "InterfaceProfile"):

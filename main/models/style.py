@@ -7,7 +7,7 @@
 
 # Python modules
 from threading import Lock
-from typing import Optional
+from typing import Optional, Dict, Any
 import operator
 
 # Third-party modules
@@ -75,32 +75,38 @@ class Style(NOCModel):
         return Style.objects.filter(id=oid).first()
 
     @property
-    def css_class_name(self):
-        """
-        CSS Class Name
-        """
-        return "noc-color-%d" % self.id
-
-    @property
-    def style(self):
+    def style(self) -> Dict[str, str]:
         """
         CSS Style
         """
-        s = "color: #%06X !important; background-color: #%06X !important;" % (
-            self.font_color,
-            self.background_color,
-        )
+        r = {
+            "color": f"#{self.font_color:06X}",
+            "background-color": f"#{self.background_color:06X}",
+        }
         if self.bold:
-            s += " font-weight: bold !important;"
+            r["font-weight"] = "bold"
         if self.italic:
-            s += " font-style: italic !important;"
+            r["font-style"] = "italic"
         if self.underlined:
-            s += " text-decoration: underline !important;"
-        return s
+            r["text-decoration"] = "underline"
+        return r
 
     @property
-    def css(self):
+    def css_class(self) -> Optional[str]:
+        return f"noc-color-{self.id}"
+
+    def get_css_class(self) -> Optional[str]:
+        return self.css_class
+
+    @classmethod
+    def get_scheme(cls) -> Dict[str, Any]:
         """
-        CSS class style
+        Get schema snapshot.
         """
-        return ".%s, .%s td { %s }\n" % (self.css_class_name, self.css_class_name, self.style)
+
+        def q(s: Style) -> Dict[str, Any]:
+            r = {"name": s.css_class}
+            r.update(s.style)
+            return r
+
+        return {"style": [q(x) for x in Style.objects.filter(is_active=True)]}

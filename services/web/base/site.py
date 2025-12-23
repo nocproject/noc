@@ -7,20 +7,20 @@
 
 # Python modules
 import re
-import glob
-import os
 import hashlib
 import logging
 import types
 from collections import defaultdict
 import operator
 from urllib.parse import urlencode
-from typing import List, Dict
+from typing import List, Dict, Set, Optional
 from threading import Lock
+import pkgutil
+import importlib
 
 # Third-party modules
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseForbidden, Http404
-from django.urls import path, re_path, include, reverse
+from django.urls import path, re_path, include, reverse, URLPattern
 from django.conf import settings
 from django.utils.encoding import smart_str
 from django.views.i18n import JavaScriptCatalog
@@ -33,6 +33,7 @@ from noc.config import config
 from noc.core.debug import error_report
 from noc.core.comp import smart_bytes, smart_text
 from noc.core.jsonutils import orjson_defaults
+from noc.core.service.base import BaseService
 
 logger = logging.getLogger(__name__)
 
@@ -113,7 +114,7 @@ class Site(object):
 
     def __init__(self):
         self.apps = {}  # app_id -> app instance
-        self.urlpatterns = []
+        self.urlpatterns: List[URLPattern] = []
         self.menu = []
         self.menu_roots = {}  # app -> menu
         self.reports = []  # app_id -> title
@@ -123,9 +124,19 @@ class Site(object):
         self.app_contributors = defaultdict(set)
         self.app_count = 0
         self.pending_applications = []
+        self.service: Optional[BaseService] = None
+
+    def set_service(self, service: BaseService) -> None:
+        """
+        Bind site to service.
+
+        Args:
+            service: Service instance.
+        """
+        self.service = service
 
     @property
-    def urls(self):
+    def urls(self) -> List[URLPattern]:
         """
         Returns URLConf
         """
@@ -455,44 +466,62 @@ class Site(object):
             app.report_id = str(report.id)
             self.do_register(app)
 
-    def autodiscover(self):
-        """
-        Auto-load and initialize all application classes
-        """
-        if self.apps:
-            # Do not discover site twice
+    @property
+    def is_initialized(self) -> bool:
+        """Check if site is initialized."""
+        return bool(self.apps)
+
+    @staticmethod
+    def _get_app_id(mod_name: str) -> str:
+        """Get app id from module name."""
+        # Strip `noc.` or `noc.custom.``
+        rel_name = mod_name[11:] if mod_name.startswith("noc.custom.") else mod_name[4:]
+        # Strip `services.web.apps.`
+        if not rel_name.startswith("services.web.apps."):
+            raise ValueError("invalid module name")
+        rel_name = rel_name[18:]
+        # Strip ending `.views`
+        if rel_name.endswith(".views"):
+            rel_name = rel_name[:-6]
+        return rel_name
+
+    def autodiscover(self) -> None:
+        """Auto-load and initialize all application classes."""
+        if self.is_initialized:
             return
-        self.app_count = 0
-        prefix = os.path.join("services", "web", "apps")
-        # Load applications
-        installed_apps = [x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc.")]
-        self.menu_roots = {}
-        for app in installed_apps:
-            app_path = os.path.join(prefix, app)
-            if not os.path.isdir(app_path):
-                continue
-            logger.debug("Loading %s applications", app)
-            self.menu_roots[app] = self.add_module_menu("noc.%s" % app)
-            # Initialize application
-            for cs in config.get_customized_paths("", prefer_custom=True):
-                if cs:
-                    basename = os.path.basename(os.path.dirname(cs))
-                else:
-                    basename = "noc"
-                for f in glob.glob("%s/*/views.py" % os.path.join(cs, app_path)):
-                    d = os.path.split(f)[0]
-                    # Skip application loading if denoted by DISABLED file
-                    if os.path.isfile(os.path.join(d, "DISABLED")):
-                        continue
-                    # site.register will be called by metaclass, registering views
-                    __import__(
-                        ".".join(
-                            [basename, *f[:-3].split(os.path.sep)[len(cs.split(os.path.sep)) - 1 :]]
-                        ),
-                        {},
-                        {},
-                        "*",
-                    )
+        apps_root = "noc.services.web.apps"
+        seen_apps: Set[str] = set()
+        # Type custom and repo roots
+        logger.info("Loading web applications")
+        for root in config.iter_customized_modules(apps_root, prefer_custom=True):
+            # Try all nested modules
+            for mod_info in pkgutil.walk_packages(root.__path__, f"{root.__name__}."):
+                # which are not packages
+                if mod_info.ispkg:
+                    continue
+                # which is not tryied yet.
+                # if present in custom, do not try from repo.
+                app_id = self._get_app_id(mod_info.name)
+                # Do not go deeper in application.
+                if app_id.count(".") != 1:
+                    continue
+                if app_id in seen_apps:
+                    continue
+                # import and let metaclass do all the registrations
+                importlib.import_module(mod_info.name)
+                # mark as loaded
+                seen_apps.add(app_id)
+        # Initialize menu roots
+        app_order: Dict[str, int] = {
+            app: n
+            for n, app in enumerate(x[4:] for x in settings.INSTALLED_APPS if x.startswith("noc."))
+        }
+        self.menu_roots = {
+            app: self.add_module_menu(f"noc.{app}")
+            for app in sorted(
+                {x.split(".")[0] for x in seen_apps}, key=lambda x: app_order.get(x, 999)
+            )
+        }
         # Register all collected applications
         for app_class in self.pending_applications:
             self.do_register(app_class)

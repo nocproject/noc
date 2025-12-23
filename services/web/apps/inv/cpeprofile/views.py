@@ -37,6 +37,3 @@ class CPEProfileApplication(ExtDocApplication):
     model = CPEProfile
     query_condition = "icontains"
     query_fields = ["name", "description"]
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

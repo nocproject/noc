@@ -16,6 +16,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
   requires: [
     "NOC.fm.alarm.view.form.AlarmModel",
     "NOC.fm.alarm.view.form.AlarmController",
+    "Ext.ux.grid.RowStyle",
   ],
   layout: "border",
   reference: "fm-alarm-form",
@@ -199,12 +200,7 @@ Ext.define("NOC.fm.alarm.view.form.Alarm", {
           listeners: {
             itemdblclick: "onRowDblClickTreePanel",
           },
-          viewConfig: {
-            getRowClass: function(record){
-              var c = record.get("row_class");
-              return c ? c : "";
-            },
-          },
+          plugins: ["rowstyle"],
         },
         {
           xtype: "grid",

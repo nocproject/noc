@@ -33,9 +33,6 @@ class L2DomainApplication(ExtDocApplication):
     query_condition = "icontains"
     int_query_fields = ["vlan"]
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     def bulk_field_count(self, data):
         l2domains = tuple(str(d["id"]) for d in data)
         counts = defaultdict(int)

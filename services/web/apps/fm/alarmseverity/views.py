@@ -19,6 +19,3 @@ class AlarmSeverityApplication(ExtDocApplication):
     title = _("Alarm Severity")
     menu = [_("Setup"), _("Alarm Severities")]
     model = AlarmSeverity
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

@@ -408,6 +408,9 @@ class Sensor(Document):
             r["remote_system"] = self.remote_system.id
         return r
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
 
 def sync_object(obj: "Object") -> None:
     """Synchronize sensors with object model"""

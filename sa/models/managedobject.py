@@ -160,7 +160,7 @@ from .managedobjectprofile import ManagedObjectProfile
 from .objectdiagnosticconfig import ObjectDiagnosticConfig
 
 # Increase whenever new field added or removed
-MANAGEDOBJECT_CACHE_VERSION = 54
+MANAGEDOBJECT_CACHE_VERSION = 55
 CREDENTIAL_CACHE_VERSION = 11
 
 
@@ -3147,6 +3147,9 @@ class ManagedObject(NOCModel):
         if include_credentials and self.credentials:
             ctx["cred"] = self.credentials.get_snmp_credential()
         return ctx
+
+    def get_css_class(self) -> Optional[str]:
+        return self.object_profile.get_css_class() if self.object_profile else None
 
 
 @on_save

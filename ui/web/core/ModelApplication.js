@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // NOC.core.ModelApplication
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2020 The NOC Project
+// Copyright (C) 2007-2025 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.core.ModelApplication");
@@ -26,6 +26,7 @@ Ext.define("NOC.core.ModelApplication", {
     "NOC.core.modelfilter.Favorites",
     "NOC.core.modelfilter.Tree",
     "Ext.ux.grid.column.GlyphAction",
+    "Ext.ux.grid.RowStyle",
   ],
   mixins: [
     "NOC.core.mixins.Export",
@@ -151,12 +152,10 @@ Ext.define("NOC.core.ModelApplication", {
     // Setup Grid toolbar
     var gridToolbar = [];
     var plugins = [
-      //     {
-      //         ptype: "bufferedrenderer"
-      //         //trailingBufferZone: 50,
-      //         //leadingBufferZone: 50
-      //     }
     ];
+    if(me.rowClassField){
+      plugins.push("rowstyle");
+    }
 
     if(me.additions_plugins){
       plugins = plugins.concat(me.additions_plugins);
@@ -492,7 +491,6 @@ Ext.define("NOC.core.ModelApplication", {
       rbar: grid_rbar,
       viewConfig: {
         enableTextSelection: true,
-        getRowClass: Ext.bind(me.getRowClass, me),
         listeners: {
           scope: me,
           cellclick: me.onCellClick,
@@ -1308,20 +1306,6 @@ Ext.define("NOC.core.ModelApplication", {
     me.currentRecord = null; // Mark record as new
     me.setFormTitle(me.cloneTitle, "CLONE");
     me.cloneButton.setDisabled(true);
-  },
-  // Return Grid's row classes
-  getRowClass: function(record){
-    var me = this;
-    if(me.rowClassField){
-      var c = record.get(me.rowClassField);
-      if(c){
-        return c;
-      } else{
-        return "";
-      }
-    } else{
-      return "";
-    }
   },
   //
   onCellClick: function(view, cell, cellIndex, record, row,

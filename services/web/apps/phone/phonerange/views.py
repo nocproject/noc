@@ -65,9 +65,6 @@ class PhoneRangeApplication(ExtDocApplication):
         # Clean other
         return super().clean(data)
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     @view("^(?P<id>[0-9a-f]{24})/get_path/$", access="read", api=True)
     def api_get_path(self, request, id):
         o = self.get_object_or_404(PhoneRange, id=id)

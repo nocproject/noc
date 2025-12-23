@@ -104,4 +104,15 @@ Ext.define("NOC.main.style.Application", {
       ftype: "boolean",
     },
   ],
+  onSave: function(){
+    var data = this.form.getValues(),
+      root = document.documentElement,
+      id = this.currentRecord.id;
+    this.callParent(arguments);
+    root.style.setProperty(`--noc-color-${id}`, data.font_color);
+    root.style.setProperty(`--noc-color-${id}-bg`, data.background_color);
+    root.style.setProperty(`--noc-color-${id}-fw`, data.bold ? "bold" : "normal");
+    root.style.setProperty(`--noc-color-${id}-fs`, data.italic ? "italic" : "normal");
+    root.style.setProperty(`--noc-color-${id}-td`, data.underlined ? "underline" : "none");
+  },
 });

@@ -300,3 +300,6 @@ class CPEProfile(Document):
             for mr in self.match_rules:
                 q |= mr.get_q()
         return q
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

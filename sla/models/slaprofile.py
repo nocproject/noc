@@ -202,3 +202,6 @@ class SLAProfile(Document):
                 labels=labels,
                 instance_filters=[("profile", self.id)],
             )
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None

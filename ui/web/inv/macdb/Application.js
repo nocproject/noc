@@ -11,7 +11,6 @@ Ext.define("NOC.inv.macdb.Application", {
   requires: [
     "NOC.inv.macdb.MACLogForm",
     "NOC.inv.macdb.Model",
-    "NOC.main.style.LookupField",
     "NOC.main.pool.LookupField",
     "NOC.inv.interfaceprofile.LookupField",
     "NOC.sa.managedobject.LookupField",

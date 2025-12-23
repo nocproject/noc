@@ -29,9 +29,6 @@ class NetworkSegmentApplication(ExtDocApplication):
     model = NetworkSegment
     query_fields = ["name__icontains", "description__icontains"]
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile.style else ""
-
     def clean(self, data):
         is_create = not is_objectid(data["id"])
         r = super().clean(data)

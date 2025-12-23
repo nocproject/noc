@@ -20,6 +20,3 @@ class SupplierProfileApplication(ExtDocApplication):
     menu = [_("Setup"), _("Supplier Profiles")]
     model = SupplierProfile
     query_fields = ["name__icontains", "description__icontains"]
-
-    def field_row_class(self, o):
-        return o.style.css_class_name if o.style else ""

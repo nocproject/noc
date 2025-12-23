@@ -32,9 +32,6 @@ class PrefixApplication(ExtModelApplication):
     title = _("Prefix")
     model = Prefix
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     def can_create(self, user, obj):
         return PrefixAccess.user_can_change(user, obj.vrf, obj.afi, obj.prefix)
 

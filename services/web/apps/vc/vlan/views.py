@@ -41,9 +41,6 @@ class VLANApplication(ExtDocApplication):
     query_condition = "icontains"
     int_query_fields = ["vlan"]
 
-    def field_row_class(self, o):
-        return o.profile.style.css_class_name if o.profile and o.profile.style else ""
-
     @cachedmethod(key="vlans-interface-count-%s", ttl=180)
     def get_l2domain_interfaces_count(self, l2_domain: str) -> Dict[int, int]:
         """

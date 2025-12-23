@@ -320,6 +320,9 @@ class L2Domain(Document):
 
         return vlans * 100.0 / 4095
 
+    def get_css_class(self) -> Optional[str]:
+        return self.profile.get_css_class() if self.profile else None
+
     @property
     def enable_provisioning(self) -> bool:
         return self.profile.provisioning_policy != "D"

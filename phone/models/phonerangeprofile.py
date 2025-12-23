@@ -49,3 +49,6 @@ class PhoneRangeProfile(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["PhoneRangeProfile"]:
         return PhoneRangeProfile.objects.filter(id=oid).first()
+
+    def get_css_class(self) -> Optional[str]:
+        return self.style.get_css_class() if self.style else None
