@@ -86,7 +86,7 @@ class Maintenance(Document):
         "legacy_collections": ["noc.maintainance"],
     }
 
-    type = ReferenceField(MaintenanceType)
+    type = ReferenceField(MaintenanceType, required=True)
     subject = StringField(required=True)
     description = StringField()
     start = DateTimeField()

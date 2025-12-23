@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # maintenance.maintenance application
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -142,6 +142,7 @@ class MaintenanceApplication(ExtDocApplication):
             "is_completed": o.is_completed,
             "direct_objects": [],
             "direct_segments": [],
+            "direct_services": [],
             "subject": o.subject,
             "template": o.template.id if o.template else None,
             "template__label": str(o.template) if o.template else "",
