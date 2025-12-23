@@ -11,7 +11,6 @@ from typing import Dict, Any
 # NOC modules
 from .base import BaseLoader
 from ..models.maintenance import Maintenance
-from noc.sa.models.managedobject import ManagedObject
 from noc.maintenance.models.maintenance import Maintenance as MaintenanceModel
 from noc.maintenance.models.maintenancetype import MaintenanceType
 

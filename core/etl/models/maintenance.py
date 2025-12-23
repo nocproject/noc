@@ -36,6 +36,7 @@ class Maintenance(BaseModel):
     start: datetime.datetime
     stop: datetime.datetime
     contacts: str
+    is_completed: bool = False
     objects: List[Union[MaintenanceObject, MaintenanceService]]
     description: Optional[str] = None
     # Deadline
