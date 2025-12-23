@@ -10,6 +10,7 @@
             "name": "name",
             "description": "Probe name",
             "is_required": true,
+            "multi": false,
             "scope": "ip_sla",
             "type": "str"
         },
@@ -17,12 +18,14 @@
             "name": "target",
             "description": "Target IP Address",
             "is_required": true,
+            "multi": false,
             "type": "ip_address"
         },
         {
             "name": "dscp",
             "description": "DSCP Param",
             "is_required": false,
+            "multi": false,
             "type": "str"
         },
         {
@@ -30,6 +33,7 @@
             "description": "Probe Owner",
             "default": "",
             "is_required": true,
+            "multi": false,
             "type": "str"
         },
         {
@@ -37,12 +41,14 @@
             "description": null,
             "default": "icmp-echo",
             "is_required": true,
+            "multi": false,
             "type": "str"
         },
         {
             "name": "frequency",
             "description": null,
             "is_required": false,
+            "multi": false,
             "type": "int"
         },
         {
@@ -50,13 +56,27 @@
             "description": null,
             "default": "",
             "is_required": false,
+            "multi": false,
             "type": "str"
         },
         {
             "name": "tag",
             "description": null,
             "is_required": false,
+            "multi": false,
             "type": "str"
+        }
+    ],
+    "action_set": [
+        {
+            "action__name": "enable_sla_probe",
+            "cancel": false,
+            "execute": "E"
+        },
+        {
+            "action__name": "enable_sla_probe",
+            "cancel": true,
+            "execute": "D"
         }
     ]
 }

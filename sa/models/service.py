@@ -39,18 +39,20 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.model.decorator import on_save, on_delete_check, on_init, tree
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
-from noc.core.change.decorator import change, change_tracker
+from noc.core.change.decorator import change
 from noc.core.service.loader import get_service
 from noc.core.models.servicestatus import Status
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
 from noc.core.caps.decorator import capabilities
-from noc.core.caps.types import CapsValue
 from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
+from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.decorator import watchers
+from noc.core.watchers.types import WatchItem
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -63,6 +65,7 @@ from noc.inv.models.capsitem import CapsItem
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
 from noc.pm.models.agent import Agent
 from noc.config import config
 
@@ -74,25 +77,22 @@ SVC_REF_PREFIX = "svc"
 SVC_AC = "Service | Status | Change"
 
 
-class Instance(EmbeddedDocument):
-    meta = {"strict": False, "auto_create_index": False}
-
-    name_template = StringField()
-    pool: "Pool" = PlainReferenceField(Pool, required=False)
-    port_range = StringField()
-
-
-class ServiceStatusDependency(EmbeddedDocument):
+class ServiceDependency(EmbeddedDocument):
     """
     Service dependency status
     Attributes:
         service: Service from dependent status
-        resource_group: Group for dependent status (client)
+        group: Group for dependent status (client)
         type: Dependency type:
             * service - for dependent service or group as client
             * group - for aggregating service or service group
             * parent - for overwrite parent dependent
             * children - for overwrite children dependent
+        oper_status_transfer:
+            * Disable - Not Transfer
+            * Send - Send Own Status
+            * Received - Received Own Status
+            * Both - Send and Received Status
         min_status: Min Status value receive
         max_status: Max Status value receive
         set_status: Overwrite dependent status
@@ -104,22 +104,46 @@ class ServiceStatusDependency(EmbeddedDocument):
 
     service: Optional["Service"] = PlainReferenceField("sa.Service", required=False)
     # Add to effective group, check group of client
-    resource_group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
+    group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
     type = StringField(
         choices=[
             ("S", "Service (Using)"),
-            ("G", "Group (UP)"),
-            ("P", "Parent (UP)"),
-            ("C", "Children (Down)"),
+            ("C", "Client (Using)"),
+            # ("G", "Service Group (Using)"),
+            ("U", "Parent (UP)"),
+            ("D", "Children (Down)"),
         ],
         default="S",
+    )
+    # Status
+    oper_status_transfer = StringField(
+        choices=[
+            ("D", "Disable"),
+            ("S", "Send"),
+            ("R", "Received"),
+            ("B", "Both"),
+        ],
+        default="D",
     )
     min_status = EnumField(Status, required=False)
     max_status = EnumField(Status, required=False)
     set_status = EnumField(Status, required=False)
-    ignore = BooleanField(default=False)
-    weight = IntField(min_value=0)
+    weight: int = IntField(min_value=0)
+    # is_fatal = BooleanField(default=False)
+    #
+    register_instance: bool = BooleanField(default=False)  # Find Instance
+    include_resources: bool = BooleanField(default=False)
+    # match_labels: List[str] = ListField(StringField(required=True))
+    # Instance EndPoint
+    name_template = StringField()  # Instance Template ?
+    port_range = StringField()
+    active_instances = IntField(min_value=1)
+    reserve_instances = IntField(min_value=0)
+    # type - endpoint
+    # pool: "Pool" = PlainReferenceField(Pool, required=False)
     # Propagate admin status
+    # propagate_status = BooleanField(default=False)
+    # ignore = BooleanField(default=False)
 
     def is_match(self) -> bool:
         if not self.service:
@@ -150,6 +174,7 @@ class ServiceStatusDependency(EmbeddedDocument):
 @resourcegroup
 @on_init
 @change
+@watchers
 @diagnostic
 @workflow
 @capabilities
@@ -158,6 +183,7 @@ class ServiceStatusDependency(EmbeddedDocument):
     clean=[
         ("phone.PhoneNumber", "service"),
         ("sa.Service", "parent"),
+        ("sa.ServiceInstance", "dependencies"),
     ],
     delete=[("sa.ServiceInstance", "service")],
 )
@@ -170,18 +196,20 @@ class Service(Document):
             "subscriber",
             "supplier",
             "profile",
-            ("caps.capability", "caps.value"),
-            "sla_probe",
             "parent",
-            "order_id",
             "state",
+            ("caps.capability", "caps.value"),
+            ("mappings.remote_system", "mappings.remote_id"),
+            "sla_probe",
+            "order_id",
             "effective_service_groups",
             "effective_client_groups",
             "effective_labels",
             "service_path",
+            "watcher_wait_ts",
         ],
     }
-    profile: ServiceProfile = ReferenceField(ServiceProfile, required=True)
+    profile: ServiceProfile = PlainReferenceField(ServiceProfile, required=True)
     name_template = StringField()
     # Creation timestamp
     ts = DateTimeField(default=datetime.datetime.now)
@@ -205,9 +233,7 @@ class Service(Document):
         ],
         default="P",
     )
-    status_dependencies: List["ServiceStatusDependency"] = EmbeddedDocumentListField(
-        ServiceStatusDependency
-    )
+    dependency_services: List["ServiceDependency"] = EmbeddedDocumentListField(ServiceDependency)
     calculate_status_function = StringField(
         choices=[
             ("D", "Disable"),
@@ -248,7 +274,6 @@ class Service(Document):
     # Capabilities
     caps: List[CapsItem] = EmbeddedDocumentListField(CapsItem)
     diagnostics: List[DiagnosticItem] = EmbeddedDocumentListField(DiagnosticItem)
-    static_instances: List[Instance] = EmbeddedDocumentListField(Instance)
     # Link to agent
     agent = PlainReferenceField(Agent)
     # Integration with external NRI and TT systems
@@ -268,6 +293,10 @@ class Service(Document):
     effective_client_groups = ListField(ObjectIdField())
     # Remote Mappings
     mappings: List[RemoteMappingItem] = EmbeddedDocumentListField(RemoteMappingItem)
+    # Watchers
+    watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
+    watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
+    # maintenances
 
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
@@ -394,6 +423,14 @@ class Service(Document):
     @property
     def in_maintenance(self):
         """Check service in maintenance"""
+        from noc.maintenance.models.maintenance import Maintenance
+
+        for w in self.watchers:
+            if w.effect != ObjectEffect.MAINTENANCE:
+                continue
+            mai = Maintenance.get_by_id(w.key)
+            if mai and mai.is_active:
+                return True
         return False
 
     def check_deployed(self) -> Optional[str]:
@@ -453,15 +490,51 @@ class Service(Document):
             return self.profile.status_transfer_policy
         return self.status_transfer_policy
 
-    def iter_dependency_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
+    def get_nested_ids(self) -> List[ObjectId]:
+        """Return id of this and all nested services"""
+        # $graphLookup hits 100Mb memory limit. Do not use it
+        seen = {self.id}
+        wave = {self.id}
+        max_level = 7
+        coll = Service._get_collection()
+        for _ in range(max_level):
+            # Get next wave
+            wave = {d["_id"] for d in coll.find({"parent": {"$in": list(wave)}}, {"_id": 1})} - seen
+            if not wave:
+                break
+            seen |= wave
+        seen -= {self.id}
+        return list(seen)
+
+    def iter_dependent_services(self) -> Iterable[Tuple["Service", str]]:
+        """
+        Iterable over dependent service, that affected self changed: status_change
+        """
+        # Children
+        nested = self.get_nested_ids()
+        # Services
+        services = []
+        for deps in ServiceInstance.objects.filter(
+            service=self,
+            dependencies__exists=True,
+            dependencies__ne=[],
+        ).scalar("dependencies"):
+            services += deps
+        for svc in Service.objects.filter(id__in=nested + services):
+            if svc.id in nested:
+                yield svc, "D"
+            else:
+                yield svc, "S"
+
+    def iter_dependencies_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
         """Iterate over service topology, with affected statuses"""
-        for item in self.status_dependencies:
+        for item in self.dependency_services:
             if filter_match_status and not item.is_match():
                 continue
             if item.service:
                 yield item.service
-            if item.resource_group and item.resource_group.technology.service_model == "sa.Service":
-                for svc in Service.objects.filter(effective_service_groups=item.resource_group):
+            if item.group and item.group.technology.service_model == "sa.Service":
+                for svc in Service.objects.filter(effective_service_groups=item.group):
                     yield svc
 
     def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
@@ -475,7 +548,7 @@ class Service(Document):
                 # yield from svc.iter_dependency_status("self_only")
                 ...
 
-        for item in self.status_dependencies:
+        for item in self.dependency_services:
             if not item.is_match():
                 continue
             yield item.service, item.service.profile.weight
@@ -893,10 +966,7 @@ class Service(Document):
         logger.debug("Requested services by query: %s", q)
         if not q:
             return list(services)
-        for (
-            sid,
-            path,
-        ) in Service.objects.filter(q).scalar("id", "service_path"):
+        for sid, path in Service.objects.filter(q).scalar("id", "service_path"):
             services.add(sid)
             if path:
                 services |= set(path)
@@ -930,10 +1000,7 @@ class Service(Document):
                 yield Label.ensure_labels(c.get_labels(), ["sa.Service"])
 
     def get_effective_agent(self) -> Optional[Agent]:
-        """
-        Find effective agent for service
-        :return:
-        """
+        """Find effective agent for service"""
         svc = self
         while svc:
             if svc.agent:
@@ -941,30 +1008,58 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def save_caps(
-        self, caps: List[CapsValue], dry_run: bool = False, bulk=None, changed_fields=None, **kwargs
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
+        dry_run: bool = False,
+        bulk=None,
     ):
         """"""
-        from noc.inv.models.capsitem import CapsItem
-
-        self.caps = [
-            CapsItem(
-                capability=c.capability, value=c.value, source=c.source.value, scope=c.scope or ""
+        updates = []
+        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
+        for w in self.watchers:
+            rs = w.remote_system.name if w.remote_system else None
+            if to_remove and (w.effect, w.key, rs) in to_remove:
+                continue
+            update = up_w.pop((w.effect, w.key, rs), None)
+            if update:
+                w = WatchDocumentItem(
+                    effect=update.effect,
+                    key=update.key,
+                    remote_system=(
+                        RemoteSystem.get_by_name(update.remote_system)
+                        if update.remote_system
+                        else None
+                    ),
+                    after=update.after,
+                    once=update.once,
+                    args=update.args,
+                )
+            updates.append(w)
+        for w in up_w.values():
+            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
+            updates.append(
+                WatchDocumentItem(
+                    effect=w.effect,
+                    key=w.key,
+                    remote_system=rs,
+                    after=w.after,
+                    once=w.once,
+                    args=w.args,
+                )
             )
-            for c in caps
-        ]
+        self.watchers = updates
+        wait_ts = self.get_wait_ts()
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
         if dry_run or self._created:
             return
-        # Register changes
-        change_tracker.register(
-            "update",
-            "sa.Service",
-            str(self.id),
-            fields=changed_fields,
-            audit=True,
-            caps=[cf.field for cf in changed_fields or []],
-        )
-        self.update(caps=self.caps)
+        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+        self.update(**set_op)
+
+    def on_save_caps(self, changed_fields=None, dry_run: bool = False, **kwargs):
+        """"""
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()
         self.refresh_status()
@@ -980,6 +1075,7 @@ class Service(Document):
             if not cfgs:
                 continue
             instances += cfgs
+        # Deps
         logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
@@ -1002,6 +1098,7 @@ class Service(Document):
             # Update Data, Run sync
             instance.update_config(cfg)
             instance.register_endpoint(source, cfg.addresses)
+            instance.dependencies = cfg.services or None
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()

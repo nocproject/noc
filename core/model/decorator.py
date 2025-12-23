@@ -155,7 +155,9 @@ def on_init(cls):
     return cls
 
 
-def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy_labels=None):
+def on_delete_check(
+    check=None, clean=None, delete=None, ignore=None, check_labels=None, clean_lazy_labels=None
+):
     """
     Class decorator to check and process constraints before
     trying to delete documents
@@ -196,6 +198,10 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         for model, model_id, field in iter_models("check"):
             for ro in iter_related(instance, model, field):
                 raise ValueError(f"Referred from model {model_id}: {ro!s} (id={ro.id})")
+        # Raise if contains label
+        for model, model_id, field in iter_models("check_labels"):
+            for ro in iter_related_labels(instance, model, field):
+                raise ValueError(f"Referred from Labels {model_id}: {ro!s} (id={ro.id})")
         # Clean related
         for model, model_id, field in iter_models("clean"):
             ids = []
@@ -263,12 +269,14 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         :param field:
         :return:
         """
-        if setup["is_label"] and is_document(model):
+        if setup["is_label"] and is_document(model) and field == "labels":
             return {f"{field}__contains": o.name}
-        if setup["is_label"]:
+        if setup["is_label"] and field == "labels":
             return {f"{field}__contains": [o.name]}
         if not setup["is_document"]:
             # If checked Django model
+            if is_document(model):
+                field = field.replace(".", "__")
             return {field: o.pk}
         # Replace dot notation
         field = field.replace(".", "__")
@@ -282,8 +290,17 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
             return {f"{m_field}__contains": [{json_field: str(o.id)}]}
         return {field: str(o.pk)}
 
+    def iter_related_labels(object, model, field):
+        if is_document(model):
+            qs = {f"{field}__contains": object.name}
+        else:
+            qs = {f"{field}__contains": [object.name]}
+        for ro in model.objects.filter(**qs):
+            yield ro
+
     def iter_related(object, model, field):
         qs = get_related_query(object, model, field)
+        print("Related ts", model, qs)
         for ro in model.objects.filter(**qs):
             yield ro
 
@@ -297,7 +314,13 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
             yield model, model_id, field
 
     def decorator(cls):
-        if cfg["check"] or cfg["clean"] or cfg["delete"] or cfg["clean_lazy_labels"]:
+        if (
+            cfg["check"]
+            or cfg["clean"]
+            or cfg["delete"]
+            or cfg["check_labels"]
+            or cfg["clean_lazy_labels"]
+        ):
             if is_document(cls):
                 from mongoengine import signals as mongo_signals
 
@@ -320,6 +343,7 @@ def on_delete_check(check=None, clean=None, delete=None, ignore=None, clean_lazy
         "clean": clean or [],
         "delete": delete or [],
         "ignore": ignore or [],
+        "check_labels": check_labels or [],
         "clean_lazy_labels": clean_lazy_labels or None,
     }
     setup = {"is_document": False, "is_label": False}

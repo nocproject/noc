@@ -19,6 +19,7 @@ class CollectorMapRule(BaseModel):
     allow_partial_match: bool = False
     aliases: Optional[List[str]] = None
     labels: Optional[List[str]] = None
+    unit: Optional[str] = None
     preference: int = 0
 
 

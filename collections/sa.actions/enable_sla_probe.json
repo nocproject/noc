@@ -1,0 +1,41 @@
+{
+    "name": "enable_sla_probe",
+    "$collection": "sa.actions",
+    "uuid": "fc55b7d9-1bc9-4c4e-b765-06916b177695",
+    "label": "Create SLA Probe",
+    "description": "Create sla probe",
+    "access_level": 15,
+    "params": [
+        {
+            "name": "name",
+            "description": "Probe name",
+            "is_required": true,
+            "multi": false,
+            "scope": "ip_sla",
+            "type": "str"
+        },
+        {
+            "name": "owner",
+            "description": "Probe Owner",
+            "default": "",
+            "is_required": true,
+            "multi": false,
+            "type": "str"
+        },
+        {
+            "name": "type",
+            "description": null,
+            "default": "icmp-echo",
+            "is_required": true,
+            "multi": false,
+            "type": "str"
+        },
+        {
+            "name": "frequency",
+            "description": null,
+            "is_required": false,
+            "multi": false,
+            "type": "int"
+        }
+    ]
+}

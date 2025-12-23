@@ -51,7 +51,7 @@ class ProjectCard(BaseCard):
         # Get project's as-sets
         assets = list(ASSet.objects.filter(project=self.object).order_by("name"))
         # Get project's peers
-        peers = list(Peer.objects.filter(project=self.object).order_by("peer_group"))
+        peers = list(Peer.objects.filter(project=self.object).order_by("profile"))
         # Get project's phone numbers
         phonenumbers = list(PhoneNumber.objects.filter(project=self.object).order_by("number"))
         # Get project'a phone ranges

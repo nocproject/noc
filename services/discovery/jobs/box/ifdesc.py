@@ -10,6 +10,7 @@ from typing import Optional, List, Tuple, Dict
 
 # NOC modules
 from noc.services.discovery.jobs.base import TopologyDiscoveryCheck
+from noc.core.validators import is_ipv4
 from noc.inv.models.interface import Interface
 from noc.inv.models.ifdescpatterns import IfDescPatterns
 from noc.inv.models.discoveryid import DiscoveryID
@@ -195,7 +196,9 @@ class IfDescCheck(TopologyDiscoveryCheck):
                 mo = get_nearest_object(mos)
                 if mo:
                     return mo, lmo.name
-        if address:
+        if address and not is_ipv4(address):
+            self.logger.warning("Unknown IPv4 address format: %s", address)
+        elif address:
             # Address match
             mos = ManagedObject.objects.filter(address=address)[: self.MAX_MO_CANDIDATES]
             mo = get_nearest_object(mos)

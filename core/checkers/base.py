@@ -46,6 +46,7 @@ class Check(object):
     address: str = field(default=None, compare=False)  # IP Address
     port: Optional[int] = None  # TCP/UDP port
     script: Optional[str] = None
+    remote_system: Optional[str] = None
     credential: Optional[
         Union[
             SNMPCredential,
@@ -83,6 +84,8 @@ class Check(object):
             r.append(f"port={self.port}")
         if self.arg0:
             r.append(f"arg0={self.arg0}")
+        if self.remote_system:
+            r.append(f"remote_system={self.remote_system}")
         return "&".join(r)
 
     @classmethod
@@ -174,6 +177,8 @@ class CheckResult(object):
             r.append(f"port={self.port}")
         if self.arg0:
             r.append(f"arg0={self.arg0}")
+        if self.remote_system:
+            r.append(f"remote_system={self.remote_system}")
         return "&".join(r)
 
     @property

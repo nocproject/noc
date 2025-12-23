@@ -13,6 +13,8 @@ from typing import List, Tuple, FrozenSet, Callable, Dict, Any, Union, Iterable
 # NOC Modules
 from noc.core.text import alnum_key
 
+NEGATIVE_SUFFIX = "_ne"
+
 
 def match(ctx: Dict[str, Union[List, str, int]], expr: Dict[str, Any]) -> bool:
     return build_matcher(expr)(ctx)
@@ -20,6 +22,11 @@ def match(ctx: Dict[str, Union[List, str, int]], expr: Dict[str, Any]) -> bool:
 
 def get_matcher(op: str, field: str, value: Any) -> Callable:
     """getting matcher function by operation"""
+    # Negative
+    inverse = False
+    if op.endswith(NEGATIVE_SUFFIX):
+        op = op[:-3]
+        inverse = True
     if op not in matchers:
         raise ValueError("Unknown matcher: %s" % op)
     if isinstance(value, str) and value.startswith("=="):
@@ -44,6 +51,8 @@ def get_matcher(op: str, field: str, value: Any) -> Callable:
         op = "$any"
     elif field == "version" and op in {"$gt", "$gte", "$lt", "$lte"}:
         return partial(partial(match_version, value, op))
+    if inverse:
+        return partial(match_inverse, partial(matchers[op], value, field))
     return partial(matchers[op], value, field)
 
 
@@ -70,7 +79,7 @@ def match_version(cv: str, op: str, ctx: Dict[str, Any]) -> bool:
 def iter_matchers(expr: Dict[str, Any]) -> Iterable[Callable]:
     for field, matcher in expr.items():
         if field == "$or":
-            yield partial(match_or, (build_matcher(m) for m in matcher))
+            yield partial(match_or, tuple(build_matcher(m) for m in matcher))
         elif not isinstance(matcher, dict):
             # yield partial(match_eq, matcher, field)
             yield get_matcher("$eq", field, matcher)
@@ -147,6 +156,10 @@ def match_eq(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
 
 def match_ne(cv: str, field: str, ctx: Dict[str, Any]) -> bool:
     return ctx[field] != cv
+
+
+def match_inverse(matcher: Callable, *args, **kwargs) -> bool:
+    return not matcher(*args, **kwargs)
 
 
 matchers = {

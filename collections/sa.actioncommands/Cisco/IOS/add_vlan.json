@@ -7,6 +7,7 @@
     "profile__name": "Cisco.IOS",
     "config_mode": true,
     "preference": 1000,
+    "disable_when_change": "N",
     "match": [],
     "commands": "{% if name %} name {{ name }}{% endif %}",
     "timeout": 60,
@@ -15,8 +16,9 @@
             "context": {
                 "vlan": 22
             },
-            "output": "vlan 22\nexit"
+            "output": "vlan 22\n name VLAN22\nexit"
         }
     ],
+    "exit_scope_commands": "exit",
     "scopes": []
 }

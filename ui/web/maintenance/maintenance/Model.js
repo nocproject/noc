@@ -83,6 +83,10 @@ Ext.define("NOC.maintenance.maintenance.Model", {
       type: "auto",
     },
     {
+      name: "direct_services",
+      type: "auto",
+    },
+    {
       name: "subject",
       type: "string",
     },

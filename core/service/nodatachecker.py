@@ -67,7 +67,7 @@ class DataSourceRecord:
         r = {
             "check": NODATA,
             "status": status,
-            "args": {"arg0": self.collector},
+            "args": {"collector": self.collector},
         }
         if self.remote_system:
             r["remote_system"] = self.remote_system

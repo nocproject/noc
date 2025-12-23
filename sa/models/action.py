@@ -10,7 +10,6 @@ import threading
 import operator
 import re
 from collections import defaultdict
-from dataclasses import dataclass
 from typing import Any, Dict, Optional, Union, List, Tuple, Iterable
 from pathlib import Path
 
@@ -40,94 +39,10 @@ from noc.core.models.valuetype import ValueType, ARRAY_ANNEX
 from noc.core.runner.models.jobreq import JobRequest, InputMapping, KVInputMapping
 from noc.core.topology.base import TopologyBase
 from noc.main.models.handler import Handler
-
+from noc.core.models.cfgactioncommands import ScopeConfig, ActionCommandConfig
 
 id_lock = threading.Lock()
 rx_empty_string = re.compile(r"\n{2,}")
-
-
-@dataclass
-class ScopeConfig:
-    """
-    Action Configuration Scope
-    Attributes:
-        name: Scope name
-        value:
-    """
-
-    name: str
-    value: str
-    command: Optional[str] = None
-    exit_command: Optional[str] = None
-    disable_command: Optional[str] = None
-    enable_command: Optional[str] = None
-    enter: bool = True
-
-
-@dataclass
-class ActionCommandConfig:
-    """
-    Config Action for render command
-    Attributes:
-        name: Action name
-        commands: Configuration command template
-        scopes:
-    """
-
-    name: str
-    commands: str
-    scopes: Optional[List[ScopeConfig]] = None
-
-    def render(
-        self,
-        ctx: Dict[str, Any],
-        scope_prepend: str = " ",
-        clean_empty_string: bool = True,
-        disable_when_change: bool = False,
-        ignore_scope: bool = False,
-        cancel_prefix: Optional[str] = None,
-    ):
-        """
-        Args:
-            ctx: Context for Render commands
-            scope_prepend: Add for commands string within scope
-            clean_empty_string: Clean empty strings in commands output (for template)
-            disable_when_change:
-            ignore_scope: Render commands only, without enter scope context
-            cancel_prefix: Prefix for cancel commands. Example - 'no'
-        """
-        r, exits = [], []
-        inputs = {"scope_prefix": [], "scope_prepend": scope_prepend}
-        inputs |= ctx
-        for s in self.scopes or []:
-            if ignore_scope:
-                continue
-            if not s.command:
-                # Append space ?
-                continue
-            if s.enter:
-                r.append(s.command)
-            inputs["scope_prefix"] += [s.command]
-            if disable_when_change and s.enable_command:
-                if s.disable_command:
-                    r.append(f"{scope_prepend}{s.disable_command}")
-                if s.enable_command:
-                    exits.append(f"{scope_prepend}{s.enable_command}")
-                elif cancel_prefix:
-                    exits.append(f"{cancel_prefix} {s.disable_command}")
-            if s.exit_command:
-                exits.append(s.exit_command)
-        inputs["scope_prefix"] = " ".join(inputs["scope_prefix"])
-        loader = jinja2.DictLoader({"tpl": self.commands})
-        env = jinja2.Environment(loader=loader)
-        template = env.get_template("tpl")
-        command = template.render(**inputs)
-        if clean_empty_string:
-            command = rx_empty_string.sub("\n", command)
-        if command:
-            r.append(command)
-        r += exits
-        return r
 
 
 class ActionSetItem(EmbeddedDocument):
@@ -156,28 +71,33 @@ class ActionSetItem(EmbeddedDocument):
             return bool(set(self.domain_scopes).intersection({s.name for s in scopes}))
         return True
 
-    def get_ctx(self, **kwargs) -> Dict[str, Any]:
+    def get_ctx(self, scopes: Optional[Iterable[ScopeConfig]] = None, **kwargs) -> Dict[str, Any]:
         """Processed Context"""
-        if not self.params_ctx:
-            return {}
         r = {}
+        r |= kwargs
+        if not self.params_ctx:
+            return r
+        # Input
         for c in self.params_ctx:
             param, *set_params = c.split("::")
             if set_params and param in kwargs:
                 r[set_params[0]] = kwargs[param]
+        for sc in scopes:
+            r[sc.name] = sc.value
+        # Output
         return r
 
     @property
     def json_data(self) -> Dict[str, Any]:
         r = {
-            "action": self.name,
+            "action__name": self.action.name,
             "execute": self.execute,
             "cancel": self.cancel,
         }
         if self.domain_scopes:
             r["domain_scopes"] = list(self.domain_scopes)
         if self.params_ctx:
-            r["params_ctx"] = self.params_ctx
+            r["params_ctx"] = list(self.params_ctx)
         return r
 
 
@@ -202,6 +122,7 @@ class ActionParameter(EmbeddedDocument):
         r = {
             "name": self.name,
             "type": self.type.value,
+            "multi": self.multi,
             "description": self.description,
             "is_required": self.is_required,
         }
@@ -211,8 +132,6 @@ class ActionParameter(EmbeddedDocument):
             r["scope"] = self.scope
         if self.scope_command:
             r["scope_command"] = self.scope_command
-        if self.scope_exit:
-            r["scope_exit"] = self.scope_exit
         return r
 
 
@@ -240,6 +159,7 @@ class Action(Document):
     description = StringField()
     access_level = IntField(default=15)
     # Optional handler for non-sa actions
+    # script
     handler: "Handler" = ReferenceField(Handler, required=False)
     action_job: str = StringField(default="action_commands")
     # Job, Action cfg job, test SLA/ SLA by separate task
@@ -307,7 +227,6 @@ class Action(Document):
         ports = {}
         mo_c, c_ports = constraints.get("managed_object"), set()
         for n in topology.G.nodes.values():
-            print(n)
             if not mo_c or n["mo"] == mo_c:
                 yield n["mo"], [], {}
                 c_ports |= {p["id"] for p in n["ports"]}
@@ -348,7 +267,7 @@ class Action(Document):
         loader = jinja2.DictLoader({"tpl": ac.commands})
         env = jinja2.Environment(loader=loader)
         template = env.get_template("tpl")
-        scopes, env_ctx = self.clean_args(profile, **kwargs)
+        env_ctx = self.clean_args(profile, **kwargs)
         return ac, template.render(env_ctx)
 
     def get_config(
@@ -359,82 +278,110 @@ class Action(Document):
     ) -> ActionCommandConfig:
         """"""
 
-    def get_enable_action(self) -> Optional["Action"]:
-        """Render Enable commands"""
-        for a in self.action_set or []:
-            if a.execute == "E":
-                return a.action
-        return None
+    def iter_scopes(self, **kwargs) -> Iterable[Tuple[ScopeConfig, ...]]:
+        """
+        Iterates over contexts scopes
+        Context Scope
+        * If multi x multi - to list
+        * if multi x single - render and join context
+        * if single x multi - to list
+        * if single x single - render
+        """
+        has_scope = False
+        for p in self.params:
+            if not p.scope or p.name not in kwargs:
+                continue
+            has_scope = True
+            if not isinstance(kwargs[p.name], list):
+                vv = [kwargs[p.name]]
+            else:
+                vv = kwargs[p.name]
+            # Scopes from commands?
+            for v in vv:
+                yield (
+                    ScopeConfig(
+                        name=p.scope,
+                        value=v,
+                        command=p.scope_command,
+                        enter=bool(p.scope_command),
+                    ),
+                )
+        if not has_scope:
+            yield ()
 
-    @classmethod
+    def iter_configs(
+        self, profile, match_ctx, **kwargs
+    ) -> Tuple["ActionCommandConfig", Dict[str, Any], Dict[str, Any]]:
+        """Iterate over Action Commands Configurations"""
+        # ActionSet First
+        ctx = {}
+        for p in self.params:
+            if p.name in kwargs and p.scope:
+                ctx[p.scope] = kwargs[p.name]
+        options = {}
+        after = []
+        b_ac = self.get_commands(profile.id, match_ctx)
+        for a in self.action_set or []:
+            ac = a.action.get_commands(profile.id, match_ctx)
+            if not ac:
+                continue
+            for scopes in a.action.iter_scopes(**ctx):
+                a_ctx = a.get_ctx(scopes, **kwargs)
+                try:
+                    a_ctx = a.action.clean_args(profile, **a_ctx)
+                except ValueType:
+                    # Break Action
+                    pass
+                cfg = ac.get_config(scopes)
+                if a.execute == "S":
+                    yield cfg, a_ctx, options
+                if not b_ac:
+                    continue
+                elif b_ac.disable_when_change == "O" and a.execute == "D":
+                    yield cfg, a_ctx, {"cancel": a.cancel}
+                elif b_ac.disable_when_change == "O":
+                    after.append((cfg, {"cancel": a.cancel}))
+                elif b_ac.disable_when_change == "I":
+                    commands = cfg.render(kwargs, ignore_scope=True, cancel=a.cancel)
+                    if a.execute == "E":
+                        options["enable_commands"] = commands
+                    elif a.execute == "D":
+                        options["disable_commands"] = commands
+        # Self
+        for scopes in self.iter_scopes(**kwargs):
+            ac = self.get_commands(profile.id, match_ctx)
+            if not ac:
+                continue
+            cfg = ac.get_config(scopes)
+            yield cfg, kwargs, options
+        # Before
+        # After
+        for cfg, oo in after:
+            yield cfg, kwargs, oo
+
     def render_action_commands(
-        cls,
-        action: "Action",
+        self,
         profile,
         match_ctx: Optional[Dict[str, Any]] = None,
-        managed_object: Optional[Any] = None,
         ignore_scope: bool = False,
+        render_cancel: bool = False,
         **kwargs,
-    ) -> Tuple[Any, List[str]]:
+    ) -> List[str]:
         """
-        # Context Scope
-        # If multi x multi - to list
-        # if multi x single - render and join context
-        # if single x multi - to list
-        # if single x single - render
+        Iterate over action on Set
         """
-        ac = action.get_commands(profile.id, match_ctx)
-        if not ac:
-            return None, []
-        commands, enable_commands = [], None
-        command_scopes = ac.get_scope_configs()
-        # Disable block
-        if ac.disable_when_change:
-            # Render Disable commands
-            enable_action = action.get_enable_action()
-            # To get_effective_commands
-            eac = enable_action.get_commands(profile.id, match_ctx)
-            scopes = eac.get_scope_configs()
-            if scopes and scopes["ip_sla"].enter:
-                _, ec = Action.render_action_commands(
-                    enable_action,
-                    profile,
-                    match_ctx,
-                    ignore_scope=True,
-                    managed_object=managed_object,
-                    **kwargs,
-                )
-                command_scopes = ac.get_scope_configs(enable_scope_commands=" ".join(ec))
-            else:
-                _, enable_commands = Action.render_action_commands(
-                    enable_action,
-                    profile,
-                    match_ctx,
-                    managed_object=managed_object,
-                    **kwargs,
-                )
-        args, scopes = action.clean_args(
-            profile,
-            command_scopes=command_scopes,
-            managed_object=managed_object,
-            **kwargs,
-        )
-        sa_profile = profile.get_profile()
-        r = ActionCommandConfig(
-            name=action.name,
-            commands=ac.commands,
-            scopes=scopes,
-        )
-        commands += r.render(
-            args,
-            disable_when_change=ac.disable_when_change,
-            ignore_scope=ignore_scope,
-            cancel_prefix=sa_profile.command_cancel_prefix,
-        )
-        # Enable block
-        if enable_commands:
-            commands += enable_commands
-        return ac, commands
+        args = self.clean_args(profile, **kwargs)
+        # Spit configure and show
+        # configure = defaultdict(list)
+        commands = []
+        # Fill config
+        # Merge:
+        # r -> configure/enable -> [(Scope, Scope)] -> [ActionCommandsConfig(Scope), ...]
+        # First EnterScope, with IgnoreScope
+        # Append
+        for cfg, ctx, options in self.iter_configs(profile, match_ctx, **args):
+            commands += cfg.render(ctx, ignore_scope=ignore_scope, **options)
+        return commands
 
     def render_commands(
         self,
@@ -444,11 +391,9 @@ class Action(Document):
         ignore_scope: bool = False,
         **kwargs,
     ):
-        return Action.render_action_commands(
-            self,
+        return self.render_action_commands(
             profile,
             match_ctx=match_ctx,
-            managed_object=managed_object,
             ignore_scope=ignore_scope,
             **kwargs,
         )
@@ -461,24 +406,18 @@ class Action(Document):
         req: Optional[JobRequest] = h(obj, **kwargs)
         req.submit()
 
-    def get_execute_commands(
-        self,
-        managed_object,
-        **kwargs,
-    ) -> Tuple[str, Any]:
+    def get_execute_commands(self, managed_object, **kwargs) -> Tuple[str, bool]:
         """Execute commands"""
         match = managed_object.get_matcher_ctx()
-        ac, commands = Action.render_action_commands(
-            self,
+        commands = self.render_action_commands(
             managed_object.profile,
             match_ctx=match,
-            managed_object=managed_object,
             **kwargs,
         )
-        if ac is None:
-            return "", None
+        if not commands:
+            return "", False
         # Execute rendered commands
-        return "\n".join(commands), ac
+        return "\n".join(commands), True
 
     def get_job_request(
         self,
@@ -681,11 +620,9 @@ class Action(Document):
             match = mo.get_matcher_ctx()
             for action, ctx in aas:
                 # Improve configure script
-                _, c = Action.render_action_commands(
-                    action,
+                _, c = self.render_action_commands(
                     mo.profile,
                     match,
-                    managed_object=mo,
                     **ctx,
                 )
                 commands += c
@@ -712,12 +649,8 @@ class Action(Document):
             req = self.get_job_request(obj, dry_run=dry_run, username=username, **kwargs)
             req.submit()
         else:
-            commands, cfg = self.get_execute_commands(obj, **kwargs)
-            obj.scripts.commands(
-                commands=[commands],
-                config_mode=cfg.config_mode,
-                dry_run=dry_run,
-            )
+            commands, cfg_mode = self.get_execute_commands(obj, **kwargs)
+            obj.scripts.commands(commands=[commands], config_mode=cfg_mode, dry_run=dry_run)
 
     def clean_action_args(
         self,
@@ -726,20 +659,15 @@ class Action(Document):
     ) -> List[KVInputMapping]:
         """Cleanup action arguments"""
         r = []
-        args, _ = self.clean_args(managed_object.profile, managed_object=managed_object, **kwargs)
+        args = self.clean_args(managed_object.profile, **kwargs)
         for k, v in args.items():
             if isinstance(v, list):
                 v = ValueType.convert_from_array(v)
             r.append(KVInputMapping(name=k, value=str(v)))
         return r
 
-    def clean_args(
-        self,
-        profile,
-        command_scopes: Optional[Dict[str, ScopeConfig]] = None,
-        **kwargs,
-    ) -> Tuple[Dict[str, Any], List[ScopeConfig]]:
-        args, scopes, command_scopes = {}, [], command_scopes or {}
+    def clean_args(self, profile, **kwargs) -> Dict[str, Any]:
+        r = {}
         for p in self.params:
             # is_multy, to iteration
             if p.name not in kwargs and p.is_required and not p.default:
@@ -772,39 +700,8 @@ class Action(Document):
             else:
                 v = p.type.clean_value(v)
             # Render Action
-            args[str(p.name)] = v
-            if not p.scope:
-                continue
-            # Action Command settings
-            ac_scope: Optional[ScopeConfig] = command_scopes.get(p.scope)
-            e_commands, d_commands = None, None
-            if ac_scope:
-                command = command_scopes[p.scope].command or p.scope_command
-                if ac_scope.enable_command:
-                    e_commands = ac_scope.enable_command
-                if ac_scope.disable_command:
-                    d_commands = ac_scope.enable_command
-            else:
-                command = p.scope_command
-            # Scopes from commands?
-            scopes.append(
-                ScopeConfig(
-                    name=p.scope,
-                    value=v,
-                    command=command,
-                    exit_command=ac_scope.exit_command if ac_scope else p.scope_exit,
-                    enable_command=e_commands or None,
-                    disable_command=d_commands or None,
-                    enter=ac_scope.enter if ac_scope else bool(command),
-                )
-            )
-        # Render Scope command
-        for s in scopes:
-            # Enter command
-            if s.command:
-                tmpl = jinja2.Template(s.command)
-                s.command = tmpl.render(**args)
-        return args, scopes
+            r[str(p.name)] = v
+        return r
 
     def test(self):
         """"""
@@ -812,9 +709,9 @@ class Action(Document):
 
         for ac in ActionCommands.objects.filter(action=self).order_by("preference"):
             for out, ctx in ac.iter_cases():
-                ac, commands = Action.render_action_commands(self, ac.profile, {}, **ctx)
+                commands = ac.action.render_action_commands(ac.profile, {}, **ctx)
                 commands = "\n".join(commands)
                 if commands == out:
                     print(f"[{ac.name}] OK")
                 else:
-                    print(f"[{ac.name}] FAIL: Expected: {commands}, Required: {out}")
+                    print(f"[{ac.name}] FAIL: Expected: '{commands}', Required: '{out}'")

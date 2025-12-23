@@ -479,6 +479,9 @@ class Config(BaseConfig):
     class metricscollector(ConfigSection):
         listen = StringParameter()
         ds_limit = IntParameter(default=1000)
+        batch_size = IntParameter(default=50000, help="Size of one portion from queue")
+        batch_delay_s = SecondsParameter(default=10, help="Send every period time")
+        batch_max_message_size = IntParameter(default=307200, help="Max message size for Send")
         nodata_record_ttl = SecondsParameter(default="1h")
         nodata_round_duration = SecondsParameter(default="1M")
 
