@@ -157,6 +157,10 @@ Ext.define("NOC.main.remotesystem.Model", {
       type: "boolean",
     },
     {
+      name: "enable_maintenance",
+      type: "boolean",
+    },
+    {
       name: "api_key",
       type: "string",
     },

@@ -106,6 +106,7 @@ class EnvItem(EmbeddedDocument):
         ("wf.Transition", "remote_system"),
         ("wf.Workflow", "remote_system"),
         ("project.Project", "remote_system"),
+        ("maintenance.Maintenance", "remote_system"),
     ],
     delete=[("main.NotificationGroupSubscription", "remote_system")],
 )
@@ -155,6 +156,7 @@ class RemoteSystem(Document):
     enable_pmagent = BooleanField()
     enable_fmevent = BooleanField()
     enable_metrics = BooleanField()
+    enable_maintenance = BooleanField()
     api_key: Optional[APIKey] = ReferenceField(APIKey)
     remote_collectors_policy: str = StringField(
         choices=[
