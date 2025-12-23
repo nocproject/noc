@@ -25,6 +25,7 @@ from noc.sa.models.managedobject import ManagedObject
 
 INTERFACES_QUERY = f"""
   SELECT
+    dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,
     managed_object as managed_object,
     interface as iface_name,
     dictGetString('{config.clickhouse.db_dictionaries}.interfaceattributes', 'profile', (managed_object, interface)) as interface_profile,
@@ -58,8 +59,9 @@ INTERFACES_QUERY = f"""
   FORMAT JSONEachRow
 """
 
-OBJECTS_QUERY = """
+OBJECTS_QUERY = f"""
   SELECT
+    dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,
     managed_object as managed_object,
     avg(usage) as cpu_usage,
     max(usage) as memory_usage
@@ -73,8 +75,9 @@ OBJECTS_QUERY = """
   FORMAT JSONEachRow
 """
 
-PING_QUERY = """
+PING_QUERY = f"""
   SELECT
+    dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,
     managed_object as managed_object,
     avg(rtt) as ping_rtt,
     max(attempts) as ping_attempts
@@ -256,7 +259,7 @@ class LoadMetricsDS(BaseDataSource):
             for row_b in body.splitlines():
                 row = orjson.loads(row_b)  # dict
                 mo_bi_id = row["managed_object"]
-                yield num, "managed_object_id", 0
+                yield num, "managed_object_id", int(row["managed_object_id"])
                 yield num, "managed_object_bi_id", mo_bi_id
                 for c in columns:
                     yield num, c, str(row.get(c, ""))
