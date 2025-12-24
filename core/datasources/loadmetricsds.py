@@ -60,18 +60,28 @@ INTERFACES_QUERY = f"""
 """
 
 OBJECTS_QUERY = f"""
-  SELECT
-    dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', managed_object) as managed_object_id,
-    managed_object as managed_object,
-    avg(usage) as cpu_usage,
-    max(usage) as memory_usage
-  FROM
-    noc.cpu
-  WHERE
-    date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
+  WITH
+  tc AS (
+    SELECT managed_object as managed_object, avg(usage) as usage
+    FROM noc.cpu
+    WHERE date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
     %s
-  GROUP BY
-    managed_object
+    GROUP BY managed_object
+  ),
+  tm AS (
+    SELECT managed_object as managed_object, avg(usage) as usage
+    FROM noc.memory
+    WHERE date >= toDate(%d) AND ts >= toDateTime(%d) AND ts <= toDateTime(%d)
+    %s
+    GROUP BY managed_object
+  )
+  SELECT
+    dictGetUInt64('{config.clickhouse.db_dictionaries}.managedobject', 'id', tc.managed_object) as managed_object_id,
+    tc.managed_object,
+    tc.usage as cpu_usage,
+    tm.usage as memory_usage
+  FROM tc
+  LEFT JOIN tm ON tm.managed_object=tc.managed_object
   FORMAT JSONEachRow
 """
 
@@ -132,7 +142,7 @@ class LoadMetricsDS(BaseDataSource):
         # Objects
         FieldInfo(name="slot"),
         FieldInfo(name="cpu_usage", type=FieldType.FLOAT),
-        FieldInfo(name="memory_usage", type=FieldType.UINT),
+        FieldInfo(name="memory_usage", type=FieldType.FLOAT),
         # Ping
         FieldInfo(name="ping_rtt", type=FieldType.FLOAT),
         FieldInfo(name="ping_attempts", type=FieldType.UINT),
@@ -271,6 +281,8 @@ class LoadMetricsDS(BaseDataSource):
             q_params = [ts_from_date, ts_from_date, ts_to_date, mo_filter]
             if reporttype == "load_interfaces":
                 q_params.extend([ifp_filter, having_section])
+            elif reporttype == "load_cpu":
+                q_params.extend([ts_from_date, ts_from_date, ts_to_date, mo_filter])
             body = ch_client.execute(query % tuple(q_params), return_raw=True)
             for row_b in body.splitlines():
                 row = orjson.loads(row_b)  # dict
