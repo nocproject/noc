@@ -582,7 +582,7 @@ class DiscoveredObject(Document):
         """Get origin records over Discovered Object"""
         origin = discovered[0]
         for d in discovered[1:]:
-            if origin.is_preferred(d):
+            if d.is_preferred(origin):
                 origin = d
         return origin
 
@@ -682,21 +682,26 @@ class DiscoveredObject(Document):
         """Compare DiscoveredObject"""
         if ETL_SOURCE not in do.sources:
             return len(self.sources) >= len(do.sources)
-        for s in self.rule.sources:
-            if not s.remote_system:
-                continue
-            if self.has_remote_system(s.remote_system) and not do.has_remote_system(
-                s.remote_system
-            ):
-                return True
-            if not self.has_remote_system(s.remote_system) and do.has_remote_system(
-                s.remote_system
-            ):
-                return False
-        # ? RemoteSystem Count
+        # On Same Rule
+        if self.rule == do.rule:
+            for s in self.rule.sources:
+                if not s.remote_system:
+                    continue
+                if self.has_remote_system(s.remote_system) and not do.has_remote_system(
+                    s.remote_system
+                ):
+                    return True
+                if not self.has_remote_system(s.remote_system) and do.has_remote_system(
+                    s.remote_system
+                ):
+                    return False
+        # Inter different rule
         if self.rule.preference != do.rule.preference:
             return self.rule.preference > do.rule.preference
-        return len(self.sources) >= len(do.sources)
+        if len(self.sources) != len(do.sources):
+            return len(self.sources) > len(do.sources)
+        logger.info("[%s] Rule and Source priority is same. Use address", self.address)
+        return self.address_bin > do.address_bin
 
     def check_duplicates(self, mos: List["ManagedObject"]) -> List["DiscoveredObject"]:
         """Getting DiscoveredObject duplicates record by ManagedObjects"""
@@ -826,6 +831,7 @@ class DiscoveredObject(Document):
             self.origin = origin
         elif self.origin:
             self.origin = None
+            DiscoveredObject.objects.filter(id=self.id).update(origin=self.origin)
         # Check policy
         if not mo and template and not self.origin and ctx.data:
             # Create New
