@@ -80,23 +80,32 @@ def test_update_caps_scopes(object_caps):
     [
         (
             [
-                {"key": "Cisco | IP | SLA | Responder", "value": False, "source": "discovery"},
                 {
                     "key": "Cisco | IP | SLA | Probes",
                     "value": 2,
+                    "source": "database",
+                    "scope": "sla",
+                },
+                {
+                    "key": "Chassis | Serial Number",
+                    "value": "xxxx",
                     "source": "etl",
                     "scope": "RM",
                 },
             ],
-            {},
-            {"Cisco | IP | SLA | Probes": 2},
+            {"key": "DB | Interfaces", "value": 1},
+            {
+                "Cisco | IP | SLA | Probes": 2,
+                "DB | Interfaces": 1,
+                "Chassis | Serial Number": "xxxx",
+            },
         ),
     ],
 )
 def test_delete_caps(caps, update_caps, expected, object_caps):
     for c in caps:
         object_caps.set_caps(**c)
-    object_caps.update_caps(update_caps, source="discovery")
+    object_caps.update_caps(update_caps, source="database")
     assert object_caps.get_caps() == expected
 
 

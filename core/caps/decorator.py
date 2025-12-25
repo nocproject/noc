@@ -253,7 +253,7 @@ def set_caps(
         source = InputSource(source)
     except ValueError:
         source = InputSource.UNKNOWN
-    scope = scope or ""
+    scope = scope or None
     changed, is_new, changed_fields = False, True, []
     for item in self.iter_caps():
         if item.capability == caps:
@@ -358,7 +358,7 @@ def update_caps(
     for ci in self.iter_caps():
         if not scope or (scope and scope == ci.scope):
             seen.add(ci.name)
-        if scope and scope != ci.scope:
+        if (scope and scope != ci.scope) or (not scope and ci.scope):
             # For Separate scope - skipping update (ETL)
             logger.debug(
                 "[%s] Not changing capability %s: from other scope '%s'",
