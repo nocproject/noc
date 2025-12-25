@@ -141,6 +141,7 @@ class CheckStatus(BaseModel):
     arg0: Optional[str] = None
     skipped: bool = False
     error: Optional[str] = None
+    remote_system: Optional[str] = None
 
     @classmethod
     def from_result(cls, cr: CheckResult) -> "CheckStatus":
@@ -150,6 +151,7 @@ class CheckStatus(BaseModel):
             skipped=cr.skipped,
             error=cr.error.message if cr.error else None,
             arg0=cr.arg0,
+            remote_system=cr.remote_system,
         )
 
 

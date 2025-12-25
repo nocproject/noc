@@ -61,7 +61,7 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
         if peers is None:
             return
         self.sync_peers(peers)
-        self.update_caps({"DB | BGP Peers": len(peers)}, source="database")
+        self.update_caps({"DB | BGP Peers": len(peers)}, source="database", scope="bgppeer")
 
     def get_bgp_peer(self) -> Dict[Tuple[AS, IP], DiscoveredPeer]:
         """Return BGP Peer. Local AS, RemoteIP"""
