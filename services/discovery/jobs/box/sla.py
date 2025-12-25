@@ -113,4 +113,5 @@ class SLACheck(DiscoveryCheck):
         self.update_caps(
             {"DB | SLAProbes": SLAProbe.objects.filter(managed_object=self.object.id).count()},
             source="database",
+            scope="sla",
         )

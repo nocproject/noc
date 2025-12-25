@@ -200,8 +200,8 @@ class MODiscoveryJob(PeriodicJob):
             self.caps = self.object.get_caps()
         return self.caps
 
-    def update_caps(self, caps, source):
-        self.caps = self.object.update_caps(caps, source=source, logger=self.logger)
+    def update_caps(self, caps, source, scope: Optional[str] = None):
+        self.caps = self.object.update_caps(caps, source=source, scope=scope, logger=self.logger)
 
     def allow_sessions(self):
         r = self.object.can_cli_session()
@@ -434,8 +434,8 @@ class DiscoveryCheck(object):
     def get_caps(self):
         return self.job.get_caps()
 
-    def update_caps(self, caps, source):
-        self.job.update_caps(caps, source)
+    def update_caps(self, caps, source, scope: Optional[str] = None):
+        self.job.update_caps(caps, source, scope=scope)
 
     def has_capability(self, cap):
         return bool(self.get_caps().get(cap))
