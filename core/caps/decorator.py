@@ -33,7 +33,7 @@ def iter_model_caps(
         if not c:
             caps_logger.info("Removing unknown capability id %s", ci["capability"])
             continue
-        cs = ci.get("scope", "")
+        cs = ci.get("scope") or None
         if scope and scope != cs:
             continue
         try:
@@ -83,7 +83,7 @@ def iter_document_caps(
             capability=ci.capability,
             value=cv,
             source=cs,
-            scope=ci.scope,
+            scope=ci.scope or None,
             config=configs.get(str(ci.capability.id), CapsConfig()),
         )
         processed.add(ci.capability.id)
@@ -253,7 +253,7 @@ def set_caps(
         source = InputSource(source)
     except ValueError:
         source = InputSource.UNKNOWN
-    scope = scope or ""
+    scope = scope or None
     changed, is_new, changed_fields = False, True, []
     for item in self.iter_caps():
         if item.capability == caps:
@@ -358,13 +358,13 @@ def update_caps(
     for ci in self.iter_caps():
         if not scope or (scope and scope == ci.scope):
             seen.add(ci.name)
-        if scope and scope != ci.scope:
+        if (scope and scope != ci.scope) or (not scope and ci.scope):
             # For Separate scope - skipping update (ETL)
             logger.debug(
                 "[%s] Not changing capability %s: from other scope '%s'",
                 o_label,
                 ci.name,
-                ci.scope,
+                ci.scope or "",
             )
         elif ci.source == InputSource.MANUAL:
             # Manual Source set only for set_caps method
@@ -374,6 +374,10 @@ def update_caps(
                 ci.name,
                 ci.source,
             )
+        elif ci.source == InputSource.DATABASE and not ci.scope:
+            # Skip Database Caps without source, that set after separate discovery process
+            # If not set scope - it clean.
+            continue
         elif ci.name in caps:
             value = ci.capability.clean_value(caps[ci.name])
             if ci.value != value:
@@ -398,9 +402,9 @@ def update_caps(
                     "[%s] Caps value is same for '%s': Set with source '%s'",
                     o_label,
                     ci.name,
-                    ci.source,
+                    ci.source.name,
                 )
-        elif ci.name not in caps and scope == ci.scope:
+        elif ci.name not in caps and source == ci.source:
             logger.info("[%s] Removing capability %s", o_label, ci)
             changed |= True
             changed_fields.append(
