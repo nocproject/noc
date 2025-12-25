@@ -612,7 +612,7 @@ class NotificationGroup(NOCModel):
                 instance_id=str(o.id),
                 watchers=[],
             )
-        (us.watchers.append(c),)
+        us.watchers.append(c)
         us.save()
         return us
 
