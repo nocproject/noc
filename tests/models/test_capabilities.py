@@ -96,7 +96,6 @@ def test_update_caps_scopes(object_caps):
             {"key": "DB | Interfaces", "value": 1},
             {
                 "Cisco | IP | SLA | Probes": 2,
-                "DB | Interfaces": 1,
                 "Chassis | Serial Number": "xxxx",
             },
         ),
@@ -144,7 +143,7 @@ def test_set_caps(object_caps):
             ],
             {"Cisco | IP | SLA | Probes": 1},
             "RM",
-            {"Cisco | IP | SLA | Probes": 1},
+            {"Cisco | IP | SLA | Probes": 1, "Cisco | IP | SLA | Responder": True},
             {"Cisco | IP | SLA | Probes": 1, "Cisco | IP | SLA | Responder": False},
         ),
     ],

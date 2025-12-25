@@ -364,7 +364,7 @@ def update_caps(
                 "[%s] Not changing capability %s: from other scope '%s'",
                 o_label,
                 ci.name,
-                ci.scope,
+                ci.scope or "",
             )
         elif ci.source == InputSource.MANUAL:
             # Manual Source set only for set_caps method
@@ -374,6 +374,10 @@ def update_caps(
                 ci.name,
                 ci.source,
             )
+        elif ci.source == InputSource.DATABASE and not ci.scope:
+            # Skip Database Caps without source, that set after separate discovery process
+            # If not set scope - it clean.
+            continue
         elif ci.name in caps:
             value = ci.capability.clean_value(caps[ci.name])
             if ci.value != value:
@@ -398,7 +402,7 @@ def update_caps(
                     "[%s] Caps value is same for '%s': Set with source '%s'",
                     o_label,
                     ci.name,
-                    ci.source,
+                    ci.source.name,
                 )
         elif ci.name not in caps and source == ci.source:
             logger.info("[%s] Removing capability %s", o_label, ci)
