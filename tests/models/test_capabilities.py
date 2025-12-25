@@ -75,6 +75,31 @@ def test_update_caps_scopes(object_caps):
     assert object_caps.get_caps() == {"Cisco | IP | SLA | Probes": 1}
 
 
+@pytest.mark.parametrize(
+    ("caps", "update_caps", "expected"),
+    [
+        (
+            [
+                {"key": "Cisco | IP | SLA | Responder", "value": False, "source": "discovery"},
+                {
+                    "key": "Cisco | IP | SLA | Probes",
+                    "value": 2,
+                    "source": "etl",
+                    "scope": "RM",
+                },
+            ],
+            {},
+            {"Cisco | IP | SLA | Probes": 2},
+        ),
+    ],
+)
+def test_delete_caps(caps, update_caps, expected, object_caps):
+    for c in caps:
+        object_caps.set_caps(**c)
+    object_caps.update_caps(update_caps, source="discovery")
+    assert object_caps.get_caps() == expected
+
+
 def test_set_caps(object_caps):
     for _ in range(1, 4):
         object_caps.set_caps("DB | Interfaces", 1)

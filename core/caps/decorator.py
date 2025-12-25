@@ -33,7 +33,7 @@ def iter_model_caps(
         if not c:
             caps_logger.info("Removing unknown capability id %s", ci["capability"])
             continue
-        cs = ci.get("scope", "")
+        cs = ci.get("scope") or None
         if scope and scope != cs:
             continue
         try:
@@ -83,7 +83,7 @@ def iter_document_caps(
             capability=ci.capability,
             value=cv,
             source=cs,
-            scope=ci.scope,
+            scope=ci.scope or None,
             config=configs.get(str(ci.capability.id), CapsConfig()),
         )
         processed.add(ci.capability.id)
@@ -400,7 +400,7 @@ def update_caps(
                     ci.name,
                     ci.source,
                 )
-        elif ci.name not in caps and scope == ci.scope:
+        elif ci.name not in caps and source == ci.source:
             logger.info("[%s] Removing capability %s", o_label, ci)
             changed |= True
             changed_fields.append(
