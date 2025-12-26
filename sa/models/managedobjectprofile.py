@@ -1176,6 +1176,7 @@ class ManagedObjectProfile(NOCModel):
             dynamic_classification_policy="R",
         ).values_list("id", "match_rules"):
             for mr in rules:
+                mr = MatchRule.model_validate(mr)
                 r[(str(mop_id), mr.dynamic_order)].append(build_matcher(mr.get_match_expr()))
         return tuple((x[0], tuple(r[x])) for x in sorted(r, key=lambda i: i[1]))
 
