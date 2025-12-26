@@ -1,0 +1,19 @@
+{
+    "name": "DLink | DxS | Network | STP | Root Changed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0a610aa2-afaa-46fe-9164-c2792c7e2364",
+    "description": "NOTI(5) New root port selected (Instance:0, Port:25)",
+    "event_class__name": "Network | STP | Root Changed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "New root port selected \\(Instance:(?P<instance>\\d+), Port:(?P<interface>\\d+)\\)$",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "NOTI(5) New root port selected (Instance:0, Port:25)",
+            "raw_vars": []
+        }
+    ]
+}

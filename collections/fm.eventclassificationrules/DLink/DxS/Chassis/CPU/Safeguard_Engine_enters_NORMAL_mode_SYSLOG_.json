@@ -7,12 +7,16 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters NORMAL mode$",
+    "message_rx": "( Unit (?P<unit>\\d+), )?Safe[Gg]uard Engine enters NORMAL mode$",
     "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {
             "message": "INFO: Safeguard Engine enters NORMAL mode",
+            "raw_vars": []
+        },
+        {
+            "message": "INFO: SafeGuard Engine enters NORMAL mode",
             "raw_vars": []
         }
     ]
