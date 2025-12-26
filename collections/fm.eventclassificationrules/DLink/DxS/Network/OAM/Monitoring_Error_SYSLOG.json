@@ -7,7 +7,7 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "WARN: Errored (?P<error>(?:symbol|frame)(?: (?:period|seconds summary))?) event received \\(Port (?P<interface>\\d+\\S*)\\)",
+    "message_rx": "WARN: Errored (?P<error>(?:symbol|frame)(?: (?:period|seconds summary))?) event received\\s*\\(Port (?P<interface>\\d+\\S*)\\)",
     "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [

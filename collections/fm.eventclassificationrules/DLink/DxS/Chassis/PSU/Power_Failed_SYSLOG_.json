@@ -1,0 +1,19 @@
+{
+    "name": "DLink | DxS | Chassis | PSU | Power Failed (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e72d381b-95f1-4ac5-82b2-3bbffa52eb6e",
+    "description": "WARN: Device encountered an OAM dying gasp event",
+    "event_class__name": "Chassis | PSU | Power Failed",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Device encountered an OAM dying gasp event",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "WARN: Device encountered an OAM dying gasp event",
+            "raw_vars": []
+        }
+    ]
+}
