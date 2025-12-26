@@ -16,7 +16,13 @@ from noc.services.metricscollector.sourceconfig import RemoteSystemConfig
 
 
 class RemoteSystemChannel(object):
-    def __init__(self, service, remote_system: RemoteSystemConfig, collector: str):
+    def __init__(
+        self,
+        service,
+        remote_system: RemoteSystemConfig,
+        collector: str,
+        batch_delay: Optional[int] = None,
+    ):
         self.service = service
         self.collector = collector
         self.remote_system: RemoteSystemConfig = remote_system
@@ -33,8 +39,12 @@ class RemoteSystemChannel(object):
         self.feed_ready.set()
         self.unknown_metrics: Set[str] = set()
         self.unknown_hosts: Set[str] = set()
+        self.last_received_hosts: Dict[str, int] = {}
         self.min_batch_size = remote_system.batch_size
-        self.ttl = float(remote_system.batch_delay_s)
+        if batch_delay:
+            self.ttl = float(batch_delay)
+        else:
+            self.ttl = float(remote_system.batch_delay_s)
 
     @property
     def is_banned(self) -> bool:
@@ -60,6 +70,8 @@ class RemoteSystemChannel(object):
         if not cfg:
             self.unknown_hosts.add(target)
             return
+        if cfg.no_data_check and values:
+            self.last_received_hosts[cfg.id] = values[0][0]
         if metric in self.unknown_metrics:
             return
         # Parse Labels for metrics
@@ -92,7 +104,8 @@ class RemoteSystemChannel(object):
         """Check if channel is ready to flush"""
         if not self.size:
             return False
-        return self.records >= self.min_batch_size
+        return False
+        # return self.records >= self.min_batch_size
 
     async def schedule_flush(self):
         if not self.feed_ready.is_set():
@@ -113,3 +126,7 @@ class RemoteSystemChannel(object):
         self.records = 0
         self.expired = None
         self.feed_ready.set()
+
+    def flush_unknown_metrics(self):
+        """Called when data are safely flushed"""
+        self.unknown_metrics = set()

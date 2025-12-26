@@ -110,14 +110,22 @@ class MetricsCollectorService(FastAPIService):
             self.address, self.port = address, int(port)
 
     def get_channel(
-        self, remote_system: RemoteSystemConfig, collector: str
+        self, remote_system: RemoteSystemConfig, collector: str, batch_delay: Optional[int] = None
     ) -> Optional["RemoteSystemChannel"]:
-        """"""
+        """
+        Create channel for received data
+            remote_system: External System for channel
+            collector: Collector name
+            batch_delay: Send data delay (in second)
+        """
+        # Unknown channel
+        # Unauthorized channels
         if remote_system.name not in self.channels:
             self.channels[remote_system.name] = RemoteSystemChannel(
                 self,
                 remote_system,
                 collector,
+                batch_delay=batch_delay,
             )
         return self.channels.get(remote_system.name)
 
@@ -132,6 +140,8 @@ class MetricsCollectorService(FastAPIService):
                 try:
                     target = self.source_configs[target]
                 except KeyError:
+                    continue
+                if not target.managed_object:
                     continue
                 ts = datetime.datetime.fromtimestamp(clock)
                 out = {}
@@ -176,13 +186,37 @@ class MetricsCollectorService(FastAPIService):
 
     async def report_invalid_sources(self):
         """Report invalid event sources"""
-        for c in self.channels:
-            c = self.channels[c]
-            if not c.unknown_hosts:
+        from noc.core.mx import MessageType, MX_JOB_HANDLER
+
+        for ch in self.channels:
+            ch = self.channels[ch]
+            self.logger.info(
+                "[%s] Processed controlled hosts: %s", ch.remote_system.name, len(ch.last_received_hosts),
+            )
+            for target_id, clock in ch.last_received_hosts.items():
+                try:
+                    target = self.source_configs[target_id]
+                except KeyError:
+                    continue
+                ts = datetime.datetime.fromtimestamp(clock)
+                self.no_data_checker.register_data(
+                    str(target.bi_id),
+                    ts=ts,
+                    collector=ch.collector,
+                    remote_system=ch.remote_system.name,
+                )
+            if not ch.unknown_hosts:
                 continue
             self.logger.info(
-                "[%s] Unknown Metrics: %s", c.remote_system.name, ",".join(c.unknown_hosts)
+                "[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_hosts)
             )
+            if ch.unknown_hosts:
+                self.logger.info("[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_hosts))
+                await self.send_message(
+                    {"collector": ch.collector, "hosts": list(ch.unknown_hosts)},
+                    MessageType.JOB,
+                    headers={MX_JOB_HANDLER: b"noc.custom.handlers.ensure_vmagent_host.ensure_unknown_target"},
+                )
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -541,3 +575,4 @@ class MetricsCollectorService(FastAPIService):
 
 if __name__ == "__main__":
     MetricsCollectorService().start()
+

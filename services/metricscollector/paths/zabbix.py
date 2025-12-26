@@ -106,11 +106,11 @@ class ZabbixAPI(object):
             if item["type"] == ValueType.FLOAT.value or item["type"] == ValueType.UNSIGNED.value:
                 # Add serial_num tag, to metrics.../or dict managed_object
                 # Try sensor
-                sensor_cfg = self.service.lookup_remote_sensor(item["itemid"], rs_cfg.name)
-                if sensor_cfg:
-                    ts = datetime.datetime.fromtimestamp(item["clock"])
-                    sensors.append(((sensor_cfg, rs_cfg.bi_id), (ts, item["value"])))
-                    continue
+                # sensor_cfg = self.service.lookup_remote_sensor(item["itemid"], rs_cfg.name)
+                # if sensor_cfg:
+                #     ts = datetime.datetime.fromtimestamp(item["clock"])
+                #     sensors.append(((sensor_cfg, rs_cfg.bi_id), (ts, item["value"])))
+                #     continue
                 await channel.feed(
                     item["host"]["name"],
                     item["name"],
