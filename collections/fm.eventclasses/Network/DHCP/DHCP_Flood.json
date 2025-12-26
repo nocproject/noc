@@ -1,0 +1,39 @@
+{
+    "name": "Network | DHCP | DHCP Flood",
+    "$collection": "fm.eventclasses",
+    "uuid": "a6af50dd-0cfe-4948-a026-8921d8bdbb90",
+    "description": "DHCP flood detected",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface",
+            "type": "interface_name",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 900,
+    "ttl": 86400,
+    "subject_template": "DHCP flood detected{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "body_template": "DHCP flood detected{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | DHCP | DHCP Flood"
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "name": "Network | DHCP | DHCP Flood Cleared",
+    "$collection": "fm.eventclasses",
+    "uuid": "d6bd9abe-75a2-4bbf-95f8-dd8b4a9f85ea",
+    "description": "DHCP flood cleared",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface",
+            "type": "interface_name",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "ip",
+            "description": "Source IP",
+            "type": "ip_address",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "subject_template": "DHCP flood cleared{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "body_template": "DHCP flood cleared{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "Clear DHCP Flood",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | DHCP | DHCP Flood"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "name": "Network | DHCP | DHCP Flood",
+    "$collection": "fm.alarmclasses",
+    "uuid": "5ccff1e3-1e43-4f5b-b53d-47dc39b5c160",
+    "is_unique": true,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface"
+        },
+        {
+            "name": "ip",
+            "description": "Source IP"
+        }
+    ],
+    "subject_template": "DHCP flood detected{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "body_template": "DHCP flood detected{% if interface %} from {{interface}}{% endif %}{% if ip %}, IP {{ip}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": ["noc::severity::info"]
+}

@@ -1,0 +1,13 @@
+{
+    "name": "Network | IP | ICMP Flood (Network | IP | ICMP Flood,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "254ef503-45bf-4176-8214-31cde7df5ac9",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | IP | ICMP Flood",
+    "conditions": [{
+        "event_class_re": "Network | IP | ICMP Flood"
+    }],
+    "default_action": "R",
+    "stop_processing": false
+}
