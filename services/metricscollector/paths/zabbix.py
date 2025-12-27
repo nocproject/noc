@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import logging
 import asyncio
 import enum
@@ -105,17 +104,12 @@ class ZabbixAPI(object):
             # metrics["items_in", ("collector", "zabbix")] += 1
             if item["type"] == ValueType.FLOAT.value or item["type"] == ValueType.UNSIGNED.value:
                 # Add serial_num tag, to metrics.../or dict managed_object
-                # Try sensor
-                sensor_cfg = self.service.lookup_remote_sensor(item["itemid"], rs_cfg.name)
-                if sensor_cfg:
-                    ts = datetime.datetime.fromtimestamp(item["clock"])
-                    sensors.append(((sensor_cfg, rs_cfg.bi_id), (ts, item["value"])))
-                    continue
                 await channel.feed(
                     item["host"]["name"],
                     item["name"],
                     [(int(item["clock"]), item["value"])],
                     labels=[f"{t['tag']}::{t['value']}" for t in item["item_tags"]],
+                    sensor_id=item["itemid"],
                 )
                 received += 1
         logger.info("Received lines: %s", received_count)
