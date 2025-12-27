@@ -115,7 +115,11 @@ class VMAgentAPI(object):
             "remote_msg_in", ("collector", VMAGENT_COLLECTOR), ("remote_system", rs_cfg.name)
         ] += 1
         # Lock ?
-        channel: Optional[RemoteSystemChannel] = self.service.get_channel(rs_cfg, VMAGENT_COLLECTOR)
+        channel: Optional[RemoteSystemChannel] = self.service.get_channel(
+            rs_cfg,
+            VMAGENT_COLLECTOR,
+            batch_delay=30,
+        )
         if not channel or channel.is_banned:
             # IP Address
             return ORJSONResponse(
