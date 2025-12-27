@@ -336,6 +336,12 @@ class ServiceInstance(Document):
             q |= Q(addresses__address__in=addrs)
         # get_full_fqdn
         q |= Q(fqdn=managed_object.name.lower().strip())
+        # Capability Reference
+        refs = []
+        for c in managed_object.iter_caps():
+            refs += c.capability.get_references(c.value)
+        if refs:
+            q |= Q(asset_refs__in=refs)
         for si in ServiceInstance.objects.filter(q).read_preference(
             ReadPreference.SECONDARY_PREFERRED
         ):

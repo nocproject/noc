@@ -193,6 +193,7 @@ class DiagnosticItem(BaseModel):
             return h.get_result(checks)
         state = None
         data = {}
+        to_result = [CheckStatus.from_result(c) for c in checks if not c.skipped]
         for c in checks:
             c = CheckStatus.from_result(c)
             if c.skipped:
@@ -205,7 +206,7 @@ class DiagnosticItem(BaseModel):
                 break
         if self.config.state_policy == "ANY" and checks and state is None:
             state = False
-        return state, None, data, []
+        return state, None, data, to_result
 
     def update_checks(self, checks: List[CheckStatus]) -> bool:
         """Update object checks"""

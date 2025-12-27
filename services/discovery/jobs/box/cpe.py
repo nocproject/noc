@@ -112,6 +112,7 @@ class CPECheck(DiscoveryCheck):
         self.update_caps(
             {"DB | CPEs": CPE.objects.filter(controllers__managed_object=self.object.id).count()},
             source="database",
+            scope="cpe",
         )
 
     def submit_managed_object(self, cpe: CPE):

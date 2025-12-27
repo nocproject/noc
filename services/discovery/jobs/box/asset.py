@@ -661,6 +661,7 @@ class AssetCheck(DiscoveryCheck):
         self.update_caps(
             {"DB | Sensors": Sensor.objects.filter(managed_object=self.object.id).count()},
             source="database",
+            scope="asset",
         )
 
     def submit_sensor(

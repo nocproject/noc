@@ -276,7 +276,7 @@ class CPE(Document):
     def get_component(
         cls, managed_object, global_id: str = None, local_id: str = None, **kwargs
     ) -> Optional["CPE"]:
-        if not global_id or not local_id:
+        if not global_id and not local_id:
             return None
         if global_id:
             return CPE.objects.filter(global_id=global_id).first()

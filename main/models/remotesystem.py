@@ -166,6 +166,8 @@ class RemoteSystem(Document):
         ],
         default="D",
     )
+    remote_collectors_batch_size: int = IntField(min_value=1000, default=5000)
+    remote_collectors_batch_delay: int = IntField(min_value=5, default=10)
     portmapper_name = StringField()
     managed_object_loader_policy = StringField(
         choices=[("D", "As Discovered"), ("M", "As Managed Object")],
