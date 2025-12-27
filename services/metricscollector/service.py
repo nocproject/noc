@@ -231,7 +231,11 @@ class MetricsCollectorService(FastAPIService):
                     "[%s] Unknown Hosts: %s", ch.remote_system.name, ",".join(ch.unknown_hosts)
                 )
                 await self.send_message(
-                    {"collector": ch.collector, "hosts": list(ch.unknown_hosts)},
+                    {
+                        "collector": ch.collector,
+                        "remote_system": ch.remote_system.name,
+                        "hosts": list(ch.unknown_hosts),
+                    },
                     MessageType.UNKNOWN_TARGET,
                     headers={MX_FROM_COLLECTOR: ch.collector.encode()},
                 )
