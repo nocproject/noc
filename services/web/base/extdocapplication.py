@@ -418,7 +418,7 @@ class ExtDocApplication(ExtApplication):
         return r
 
     def instance_to_lookup(self, o, fields=None):
-        r = {"id": o.id, "label": str(o)}
+        r = {"id": str(o.id), "label": str(o)}
         if self.supports_css_class:
             r["row_class"] = o.get_css_class() or ""
         return r

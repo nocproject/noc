@@ -349,7 +349,7 @@ class AlarmApplication(ExtApplication):
             "events": n_events,
             "duration": o.duration,
             "clear_timestamp": self.to_json(o.clear_timestamp) if o.status == "C" else None,
-            "row_class": severity.get_style() or "",
+            "row_class": severity.get_css_class() or "",
             "segment__label": "",
             "segment": None,
             "location_1": location1,
