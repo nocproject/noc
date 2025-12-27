@@ -6,7 +6,6 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-import datetime
 import logging
 import asyncio
 import enum
