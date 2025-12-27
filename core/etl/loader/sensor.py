@@ -8,7 +8,6 @@
 # NOC modules
 from .base import BaseLoader
 from ..models.sensor import Sensor
-from noc.inv.models.object import Object
 from noc.inv.models.sensor import Sensor as SensorModel
 from noc.pm.models.measurementunits import MeasurementUnits
 
