@@ -7,11 +7,13 @@
 
 # Third-party modules
 from pymongo import UpdateOne
+from mongoengine.queryset.visitor import Q
 from collections import namedtuple
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
+from noc.inv.models.sensor import Sensor
 
 IFHint = namedtuple("IFHint", ("name", "ifindex"))
 
@@ -24,7 +26,18 @@ class NRIPortmapperCheck(DiscoveryCheck):
 
     name = "nri_portmap"
 
+    def sensors_map(self):
+        self.logger.info("NRI Sensor Mapper")
+        q = Q()
+        for m in self.object.iter_remote_mappings():
+            q |= Q(remote_system=m.remote_system.id, remote_host=m.remote_id)
+        if not q:
+            self.logger.info("Created directly. No NRI integration. Skipping check")
+            return
+        Sensor.objects.filter(q).update(managed_object=self.object)
+
     def handler(self):
+        self.sensors_map()
         self.logger.info("NRI Portmapper")
         if not self.object.remote_system:
             self.logger.info("Created directly. No NRI integration. Skipping check")
