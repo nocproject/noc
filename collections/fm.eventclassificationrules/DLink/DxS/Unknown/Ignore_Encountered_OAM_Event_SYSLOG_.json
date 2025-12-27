@@ -1,0 +1,19 @@
+{
+    "name": "DLink | DxS | Unknown | Device_encountered_an_OAM_critical_event (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a471a686-f942-4c17-abb2-c21f9c7fa785",
+    "description": "WARN(4) Device encountered an OAM critical event",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "Device encountered an OAM critical event",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "WARN(4) Device encountered an OAM critical event",
+            "raw_vars": []
+        }
+    ]
+}

@@ -7,12 +7,16 @@
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "( Unit (?P<unit>\\d+), )?Safeguard Engine enters EXHAUSTED mode$",
+    "message_rx": "( Unit (?P<unit>\\d+), )?Safe[Gg]uard Engine enters EXHAUSTED mode$",
     "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {
             "message": "WARN: Safeguard Engine enters EXHAUSTED mode",
+            "raw_vars": []
+        },
+        {
+            "message": "WARN: SafeGuard Engine enters EXHAUSTED mode",
             "raw_vars": []
         }
     ]

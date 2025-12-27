@@ -1,0 +1,19 @@
+{
+    "name": "DLink | DxS | Network | OAM | Client Recieved Remote Failure (SYSLOG)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ffbf5431-1db2-4741-959e-e361c27993d0",
+    "description": "WARN(4) OAM dying gasp event received(Port 8)",
+    "event_class__name": "Network | OAM | Client Recieved Remote Failure",
+    "preference": 1000,
+    "patterns": [],
+    "labels": [],
+    "message_rx": "OAM dying gasp event received\\s*\\(Port (?P<interface>\\d+\\S*)\\)",
+    "profiles": ["DLink.DxS"],
+    "sources": ["syslog"],
+    "test_cases": [
+        {
+            "message": "WARN(4) OAM dying gasp event received(Port 8)",
+            "raw_vars": []
+        }
+    ]
+}

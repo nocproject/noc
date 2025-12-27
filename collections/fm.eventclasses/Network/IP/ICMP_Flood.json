@@ -1,0 +1,32 @@
+{
+    "name": "Network | IP | ICMP Flood",
+    "$collection": "fm.eventclasses",
+    "uuid": "c283cf28-3684-476d-9b2d-38198a06810e",
+    "description": "ICMP flood detected",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface",
+            "type": "interface_name",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 900,
+    "ttl": 86400,
+    "subject_template": "ICMP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "body_template": "ICMP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | IP | ICMP Flood"
+        }
+    ]
+}

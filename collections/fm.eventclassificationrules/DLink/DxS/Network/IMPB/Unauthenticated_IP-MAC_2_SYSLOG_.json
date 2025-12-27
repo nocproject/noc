@@ -2,17 +2,21 @@
     "name": "DLink | DxS | Network | IMPB | Unauthenticated IP-MAC #2 (SYSLOG)",
     "$collection": "fm.eventclassificationrules",
     "uuid": "9dcac3b4-0e3b-4ac8-9a1a-57102e991a45",
-    "description": "Mar 30 15:04:39 10.131.110.100 WARN: Unauthenticated IP-MAC address and discarded by IMPB(IP:<192.168.1.1>, MAC:<EC-43-F6-08-5D-E9>, Port<14>)",
+    "description": "WARN: Unauthenticated IP-MAC address and discarded by IMPB(IP:<192.168.1.1>, MAC:<EC-43-F6-08-5D-E9>, Port<14>)",
     "event_class__name": "Network | IMPB | Unauthenticated IP-MAC",
     "preference": 1000,
     "patterns": [],
     "labels": [],
-    "message_rx": "WARN: Unauthenticated IP-MAC address and discarded by IMPB\\(IP:<(?P<ip>\\S+)>, MAC:<(?P<mac>\\S+)>, [pP]ort<(?P<interface>\\S+)>\\)$",
+    "message_rx": "Unauthenticated IP-MAC address and discarded by IMPB\\(IP:<(?P<ip>\\S+)>, MAC:<(?P<mac>\\S+)>, [pP]ort<(?P<interface>\\S+)>\\)$",
     "profiles": ["DLink.DxS"],
     "sources": ["syslog"],
     "test_cases": [
         {
-            "message": "Mar 30 15:04:39 10.131.110.100 WARN: Unauthenticated IP-MAC address and discarded by IMPB(IP:<192.168.1.1>, MAC:<EC-43-F6-08-5D-E9>, Port<14>)",
+            "message": "WARN: Unauthenticated IP-MAC address and discarded by IMPB(IP:<192.168.1.1>, MAC:<EC-43-F6-08-5D-E9>, Port<14>)",
+            "raw_vars": []
+        },
+        {
+            "message": "WARN(4) Unauthenticated IP-MAC address and discarded by IMPB(IP:<0.0.0.0>, MAC:<48-A9-8A-05-4A-E3>, Port<13>)",
             "raw_vars": []
         }
     ]

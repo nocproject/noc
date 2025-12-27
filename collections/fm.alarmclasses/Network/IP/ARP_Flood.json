@@ -1,0 +1,19 @@
+{
+    "name": "Network | IP | ARP Flood",
+    "$collection": "fm.alarmclasses",
+    "uuid": "a90471fe-4ead-41b7-b97a-a85d486f8df1",
+    "is_unique": true,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface"
+        }
+    ],
+    "subject_template": "ARP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "body_template": "ARP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": ["noc::severity::info"]
+}

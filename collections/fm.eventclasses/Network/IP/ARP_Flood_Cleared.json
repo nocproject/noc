@@ -1,0 +1,29 @@
+{
+    "name": "Network | IP | ARP Flood Cleared",
+    "$collection": "fm.eventclasses",
+    "uuid": "726e9cba-212d-4741-b8a4-36ac701c2692",
+    "description": "ARP flood cleared",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface",
+            "type": "interface_name",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "subject_template": "ARP flood cleared{% if interface %} from {{interface}}{% endif %}",
+    "body_template": "ARP flood cleared{% if interface %} from {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "Clear ARP Flood",
+            "condition": "True",
+            "action": "clear",
+            "alarm_class__name": "Network | IP | ARP Flood"
+        }
+    ]
+}

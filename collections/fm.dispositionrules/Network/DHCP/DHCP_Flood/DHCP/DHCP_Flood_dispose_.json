@@ -1,0 +1,13 @@
+{
+    "name": "Network | DHCP | DHCP Flood (Network | DHCP | DHCP Flood,dispose)",
+    "$collection": "fm.dispositionrules",
+    "uuid": "9508268d-60d6-4ecb-8a2f-91ab27555c2f",
+    "description": null,
+    "preference": 1000,
+    "alarm_disposition__name": "Network | DHCP | DHCP Flood",
+    "conditions": [{
+        "event_class_re": "Network | DHCP | DHCP Flood"
+    }],
+    "default_action": "R",
+    "stop_processing": false
+}

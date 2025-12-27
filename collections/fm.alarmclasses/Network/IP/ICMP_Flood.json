@@ -1,0 +1,19 @@
+{
+    "name": "Network | IP | ICMP Flood",
+    "$collection": "fm.alarmclasses",
+    "uuid": "3781d9ee-a158-442a-b6a3-0ba72d25ae1d",
+    "is_unique": true,
+    "user_clearable": true,
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface"
+        }
+    ],
+    "subject_template": "ICMP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "body_template": "ICMP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "labels": ["noc::severity::info"]
+}

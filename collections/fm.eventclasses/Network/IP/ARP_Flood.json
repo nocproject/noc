@@ -1,0 +1,32 @@
+{
+    "name": "Network | IP | ARP Flood",
+    "$collection": "fm.eventclasses",
+    "uuid": "dae50ed9-239d-4d32-b675-72c937272e1f",
+    "description": "ARP flood detected",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Flood interface",
+            "type": "interface_name",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 900,
+    "ttl": 86400,
+    "subject_template": "ARP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "body_template": "ARP flood detected{% if interface %} from {{interface}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "Network | IP | ARP Flood"
+        }
+    ]
+}
