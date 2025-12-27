@@ -145,13 +145,19 @@ class NetworkHostInstance(ServiceInstanceConfig):
         """Create Config from settings"""
         if settings.asset_group and settings.asset_group.id in service.effective_client_groups:
             return cls.from_group(settings.asset_group)
-        caps = service.get_caps()
-        if not settings.refs_caps or settings.refs_caps.name not in caps:
+        if not settings.refs_caps:
             return []
-        refs = settings.refs_caps.get_references(caps[settings.refs_caps.name])
+        hostname, refs = None, []
+        for c in service.iter_caps():
+            if c.capability == settings.refs_caps:
+                refs += c.capability.get_references(c.value)
+            # More Complex: Service - get_hostname ?
+            if c.capability.type == ValueType.HOSTNAME:
+                hostname = c.value
         if not refs:
             return []
-        cfg = cls.from_config(name=name, asset_refs=refs)
+        # Fqdn
+        cfg = cls.from_config(name=name, asset_refs=refs, fqdn=hostname)
         return [cfg]
 
 
