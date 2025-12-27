@@ -62,6 +62,7 @@ MX_SHARDING_KEY = "Sharding-Key"
 MX_CHANGE_ID = "Change-Id"
 MX_DATA_ID = "Data-Id"
 MX_JOB_HANDLER = "Job-Handler"
+MX_FROM_COLLECTOR = "From-Collector"
 # Object data
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
@@ -112,6 +113,7 @@ class MessageType(enum.Enum):
     ETL_SYNC_REPORT = "etl_sync_report"
     NOTIFICATION = "notification"
     SERVICE_STATUS_CHANGE = "service_status_change"
+    UNKNOWN_TARGET = "unknown_targets"
     JOB = "job"
     OTHER = "other"
 
@@ -166,6 +168,7 @@ MESSAGE_HEADERS = {
     MX_WH_TO_PARAM_NAME,
     MX_WH_CONTENT_TYPE,
     MX_WH_NOTIFICATION_PARAM_NAME,
+    MX_FROM_COLLECTOR,
 }
 # Method -> Sender stream map, ?autoregister
 NOTIFICATION_METHODS = {

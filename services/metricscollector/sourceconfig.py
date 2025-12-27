@@ -41,14 +41,16 @@ class SensorConfig(object):
     name: str
     bi_id: int
     units: str = "1"
+    managed_object: Optional[int] = None
     hints: Optional[Tuple[str, ...]] = None
 
     @classmethod
-    def from_data(cls, data) -> "SensorConfig":
+    def from_data(cls, data, managed_object: Optional[int] = None) -> "SensorConfig":
         return SensorConfig(
             name=data["name"],
             bi_id=data["bi_id"],
             units=data["units"],
+            managed_object=managed_object,
             hints=data.get("hints"),
         )
 
