@@ -18,7 +18,6 @@ from collections import defaultdict
 
 # Third-party modules
 import cachetools
-import orjson
 
 # NOC modules
 from noc.config import config
@@ -28,6 +27,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.jsonutils import iter_chunks
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
+from noc.core.mx import MessageType, MX_FROM_COLLECTOR
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.sourceconfig import (
     SourceConfig,
@@ -102,7 +102,7 @@ class MetricsCollectorService(FastAPIService):
         self.sensor_configs: Dict[str, SensorConfig] = {}
         self.stopping = False
         # Queue of channels to flush
-        self.flush_queue = asyncio.Queue()
+        self.flush_queue: asyncio.Queue[RemoteSystemChannel] = asyncio.Queue()
         if config.metricscollector.listen:
             address, port = config.metricscollector.listen.split(":")
             if address == "auto":
@@ -126,6 +126,7 @@ class MetricsCollectorService(FastAPIService):
                 remote_system,
                 collector,
                 batch_delay=batch_delay,
+                logger=self.logger,
             )
         return self.channels.get(remote_system.name)
 
@@ -163,6 +164,26 @@ class MetricsCollectorService(FastAPIService):
                     out[cfg.ch_table][cfg.ch_field] = value
                     out[cfg.ch_table]["_units"][cfg.ch_field] = cfg.unit or "1"
                 parts[target.bi_id % self.n_parts] += list(out.values())
+            # Sensors
+            for (clock, cfg_id), value in ch.sensors_data:
+                try:
+                    cfg = self.sensor_configs[cfg_id]
+                except KeyError:
+                    continue
+                ts = datetime.datetime.fromtimestamp(clock)
+                parts[cfg.bi_id % self.n_parts].append(
+                    {
+                        "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
+                        "scope": "sensor",
+                        "labels": [f"noc::sensor::{cfg.name}"],
+                        "sensor": cfg.bi_id,
+                        "managed_object": cfg.managed_object,
+                        "_units": {"value_delta": cfg.units, "value": cfg.units},
+                        "remote_system": ch.remote_system.bi_id,
+                        "value": value,
+                        "value_delta": value,
+                    }
+                )
             # Unfreeze channel
             self.logger.info("Send Records To Stream")
             for partition, items in parts.items():
@@ -186,12 +207,12 @@ class MetricsCollectorService(FastAPIService):
 
     async def report_invalid_sources(self):
         """Report invalid event sources"""
-        from noc.core.mx import MessageType, MX_JOB_HANDLER
-
         for ch in self.channels:
             ch = self.channels[ch]
             self.logger.info(
-                "[%s] Processed controlled hosts: %s", ch.remote_system.name, len(ch.last_received_hosts),
+                "[%s] Processed controlled hosts: %s",
+                ch.remote_system.name,
+                len(ch.last_received_hosts),
             )
             for target_id, clock in ch.last_received_hosts.items():
                 try:
@@ -205,17 +226,18 @@ class MetricsCollectorService(FastAPIService):
                     collector=ch.collector,
                     remote_system=ch.remote_system.name,
                 )
-            if not ch.unknown_hosts:
-                continue
-            self.logger.info(
-                "[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_hosts)
-            )
             if ch.unknown_hosts:
-                self.logger.info("[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_hosts))
+                self.logger.info(
+                    "[%s] Unknown Hosts: %s", ch.remote_system.name, ",".join(ch.unknown_hosts)
+                )
                 await self.send_message(
                     {"collector": ch.collector, "hosts": list(ch.unknown_hosts)},
-                    MessageType.JOB,
-                    headers={MX_JOB_HANDLER: b"noc.custom.handlers.ensure_vmagent_host.ensure_unknown_target"},
+                    MessageType.UNKNOWN_TARGET,
+                    headers={MX_FROM_COLLECTOR: ch.collector.encode()},
+                )
+            if ch.unknown_metrics:
+                self.logger.info(
+                    "[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_metrics)
                 )
 
     async def init_api(self):
@@ -299,6 +321,8 @@ class MetricsCollectorService(FastAPIService):
             self.update_data(data)
         else:
             self.insert_data(data)
+        for ch in self.channels.values():
+            ch.flush_unknown_metrics |= True
 
     async def delete_metric_type(self, mt_id: str) -> None:
         self.delete_data(mt_id)
@@ -349,7 +373,7 @@ class MetricsCollectorService(FastAPIService):
         """Update sensors Config"""
         processed = set()
         for data in sensors:
-            s = SensorConfig.from_data(data)
+            s = SensorConfig.from_data(data, managed_object=cfg.bi_id)
             processed.add(s.id)
             self.sensor_configs[s.id] = s
             for m in s.get_mappings():
@@ -400,6 +424,9 @@ class MetricsCollectorService(FastAPIService):
         # Update metrics
         metrics["sources_changed"] += 1
         self.add_sources += 1
+        # Set Channel flags
+        for ch in self.channels.values():
+            ch.flush_unknown_hosts |= True
 
     def update_mappings(self, sid, new: Iterable[str], old: Optional[Iterable[str]] = None):
         """"""
@@ -550,29 +577,6 @@ class MetricsCollectorService(FastAPIService):
         self.logger.debug("[%s] Not mapped value: %s. Skipping", collector, name)
         return None
 
-    def send_sensors(
-        self, data: List[Tuple[Tuple[SensorConfig, int], Tuple[datetime.datetime, float]]]
-    ):
-        """Send Metric value for sensors"""
-        parts = defaultdict(list)
-        for (cfg, rs_id), (ts, value) in data:
-            parts[0].append(
-                {
-                    "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
-                    "scope": "sensor",
-                    "labels": [f"noc::sensor::{cfg.name}"],
-                    "sensor": cfg.bi_id,
-                    # "managed_object": item.managed_object,
-                    "_units": {"value_delta": cfg.units, "value": cfg.units},
-                    "remote_system": rs_id,
-                    "value": value,
-                    "value_delta": value,
-                }
-            )
-        for partition, items in parts.items():
-            self.publish(orjson.dumps(items), stream="metrics", partition=partition)
-
 
 if __name__ == "__main__":
     MetricsCollectorService().start()
-
