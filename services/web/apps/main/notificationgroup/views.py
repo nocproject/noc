@@ -130,4 +130,6 @@ class NotificationGroupApplication(ExtModelApplication):
             if ss.get("template"):
                 t = Template.get_by_id(int(ss["template"]))
                 ss["template__label"] = t.name
+        for sm in r.get("static_members", []):
+            sm["time_pattern__label"] = TimePattern.get_by_id(sm["time_pattern"]).name
         return r
