@@ -199,9 +199,7 @@ class JobAction(Action):
             kw = orjson.loads(msg.value) or {}
         else:
             kw = {}
-        yield JOBS_STREAM, {MX_DISABLE_MUTATIONS: b""}, [
-            {"handler": handler.decode(), "kwargs": kw}
-        ]
+        yield JOBS_STREAM, {MX_DISABLE_MUTATIONS: b""}, [{"handler": handler.decode(), "kwargs": kw}]
         yield DROP, {}, msg.value
 
 
