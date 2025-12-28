@@ -161,6 +161,7 @@ Ext.define("NOC.main.messageroute.Application", {
                 ["dump", "Dump"],
                 ["stream", "Stream"],
                 ["notification", "Notificaiton"],
+                ["job", "Job"],
               ],
               fieldLabel: __("Action"),
               uiStyle: "medium",

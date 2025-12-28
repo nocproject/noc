@@ -28,6 +28,7 @@ import orjson
 # NOC modules
 from noc.core.msgstream.message import Message
 from noc.core.matcher import build_matcher
+from noc.core.defer import JOBS_STREAM
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.mx import (
     MX_H_VALUE_SPLITTER,
@@ -36,6 +37,7 @@ from noc.core.mx import (
     MX_LABELS,
     MX_RESOURCE_GROUPS,
     MX_JOB_HANDLER,
+    MX_DISABLE_MUTATIONS,
     MessageType,
     MessageMeta,
 )
@@ -138,7 +140,7 @@ class MatchItem(object):
             if h.op == "regex":
                 r[h.header] = {"$regex": re.compile(h.value.encode(DEFAULT_ENCODING))}
             elif h.op == "!=":
-                continue
+                r[h.header] = {"$ne": h.value.encode(DEFAULT_ENCODING)}
             else:
                 r[h.header] = h.value.encode(DEFAULT_ENCODING)
         return r
@@ -207,6 +209,8 @@ class Route(object):
             headers: Message Headers
             data: Message Body
         """
+        if MX_DISABLE_MUTATIONS in headers:
+            return data
         if self.transmute_handler:
             data = self.transmute_handler(headers, data)
         elif self.transmute_template:
@@ -326,7 +330,7 @@ class DefaultJobRoute(Route):
 
     def __init__(self):
         super().__init__(name="jobs", r_type="job", order=999)
-        self.job_action = JobAction(ActionCfg("drop"))
+        self.job_action = JobAction(ActionCfg("job", stream=JOBS_STREAM))
 
     def is_match(self, msg: Message, message_type: bytes) -> bool:
         return message_type == self.MX_JOB and MX_JOB_HANDLER in msg.headers

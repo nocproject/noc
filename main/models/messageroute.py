@@ -100,7 +100,16 @@ class MessageRoute(Document):
     transmute_handler = PlainReferenceField(Handler)
     transmute_template = ForeignKeyField(Template)
     # Message actions
-    action = StringField(choices=["drop", "dump", "stream", "notification"], default="notification")
+    action = StringField(
+        choices=[
+            "drop",
+            "dump",
+            "stream",
+            "notification",
+            "job",
+        ],
+        default="notification",
+    )
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
     render_template = ForeignKeyField(Template)

@@ -62,6 +62,7 @@ MX_SHARDING_KEY = "Sharding-Key"
 MX_CHANGE_ID = "Change-Id"
 MX_DATA_ID = "Data-Id"
 MX_JOB_HANDLER = "Job-Handler"
+MX_DISABLE_MUTATIONS = "Disable-Mutation"
 MX_FROM_COLLECTOR = "From-Collector"
 # Object data
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
