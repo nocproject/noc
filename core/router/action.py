@@ -21,6 +21,7 @@ from noc.core.defer import JOBS_STREAM
 from noc.core.mx import (
     MessageType,
     MX_JOB_HANDLER,
+    MX_DISABLE_MUTATIONS,
     NOTIFICATION_METHODS,
     MX_NOTIFICATION_METHOD,
     MX_NOTIFICATION_GROUP_ID,
@@ -28,6 +29,7 @@ from noc.core.mx import (
     MX_TO,
 )
 from noc.config import config
+from noc.main.models.handler import Handler
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +48,7 @@ class HeaderItem(object):
 
 @dataclass
 class ActionCfg(object):
-    type: Literal["stream", "notification_group", "drop"]
+    type: Literal["stream", "notification_group", "drop", "job"]
     stream: Optional[str] = None
     notification_group: Optional[str] = None
     render_template: Optional[str] = None
@@ -75,15 +77,22 @@ class Action(object, metaclass=ActionBase):
     def from_data(cls, data):
         global ACTION_TYPES
 
-        return ACTION_TYPES[data["action"]](
+        action = ACTION_TYPES[data["action"]]
+        headers = [HeaderItem(**h) for h in data.get("headers", [])]
+        headers += action.get_headers(data) or []
+        return action(
             ActionCfg(
                 type=data["action"],
                 stream=data.get("stream"),
                 notification_group=data.get("notification_group"),
                 render_template=data.get("render_template"),
-                headers=[HeaderItem(**h) for h in data.get("headers", [])],
+                headers=headers,
             )
         )
+
+    @classmethod
+    def get_headers(cls, data) -> List[HeaderItem]:
+        """Parse internal headers"""
 
     def iter_action(
         self, msg: Message, message_type: bytes
@@ -167,15 +176,34 @@ class MetricAction(Action):
 class JobAction(Action):
     name = "job"
 
+    @classmethod
+    def get_headers(cls, data):
+        """Use transmute handler as"""
+        if "transmute_handler" not in data:
+            return []
+        h = Handler.get_by_id(data["transmute_handler"])
+        if h:
+            return [HeaderItem(header=MX_JOB_HANDLER, value=h.handler)]
+        return []
+
     def iter_action(
         self, msg: Message, message_type: bytes
     ) -> Iterator[Tuple[str, Dict[str, bytes], bytes]]:
-        handler = msg.headers[MX_JOB_HANDLER].decode()
+        if MX_JOB_HANDLER in self.headers:
+            handler = self.headers[MX_JOB_HANDLER]
+        elif MX_JOB_HANDLER in msg.headers:
+            handler = msg.headers[MX_JOB_HANDLER]
+        else:
+            return
         if msg.value:
-            kw = orjson.loads(msg.value)
+            kw = orjson.loads(msg.value) or {}
         else:
             kw = {}
-        yield JOBS_STREAM, {}, [{"handler": handler, "kwargs": kw or {}}]
+        yield (
+            JOBS_STREAM,
+            {MX_DISABLE_MUTATIONS: b""},
+            [{"handler": handler.decode(), "kwargs": kw}],
+        )
         yield DROP, {}, msg.value
 
 

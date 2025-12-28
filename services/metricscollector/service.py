@@ -165,7 +165,7 @@ class MetricsCollectorService(FastAPIService):
                     out[cfg.ch_table]["_units"][cfg.ch_field] = cfg.unit or "1"
                 parts[target.bi_id % self.n_parts] += list(out.values())
             # Sensors
-            for (clock, cfg_id), value in ch.sensors_data:
+            for (clock, cfg_id), value in ch.sensors_data.items():
                 try:
                     cfg = self.sensor_configs[cfg_id]
                 except KeyError:
