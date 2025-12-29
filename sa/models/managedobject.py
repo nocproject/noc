@@ -163,6 +163,13 @@ from .objectdiagnosticconfig import ObjectDiagnosticConfig
 MANAGEDOBJECT_CACHE_VERSION = 54
 CREDENTIAL_CACHE_VERSION = 11
 
+# Query for remove maintenance from affected structure
+SQL_MAINTENANCE_REMOVE = """
+  UPDATE sa_managedobject
+  SET affected_maintenances = affected_maintenances - %s
+  WHERE affected_maintenances ? %s
+"""
+
 
 @dataclass(frozen=True)
 class Credentials(object):
@@ -3147,6 +3154,30 @@ class ManagedObject(NOCModel):
         if include_credentials and self.credentials:
             ctx["cred"] = self.credentials.get_snmp_credential()
         return ctx
+
+    @classmethod
+    def get_downlinks_ids(cls, objects: List[int]) -> List[int]:
+        """Getting objects by downlinks"""
+
+    @classmethod
+    def update_maintenance(
+        cls,
+        maintenance_id: str,
+        objects: List["ManagedObject"],
+        start: datetime.datetime,
+        affected_topology: bool = False,
+        remote_system: Optional[RemoteSystem] = None,
+        remote_ids: Optional[List[str]] = None,
+    ):
+        """Update Maintenance"""
+
+    @classmethod
+    def reset_maintenance(cls, maintenance_id: str):
+        """Reset Maintenance"""
+        from django.db import connection as pg_connection
+
+        with pg_connection.cursor() as cursor:
+            cursor.execute(SQL_MAINTENANCE_REMOVE, [str(maintenance_id), str(maintenance_id)])
 
 
 @on_save

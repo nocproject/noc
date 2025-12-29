@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2025 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -9,8 +9,9 @@
 import datetime
 import operator
 import re
+import logging
 from threading import Lock
-from typing import Optional, List, Set, Union
+from typing import Optional, List, Set, Union, Tuple, Dict, Any
 
 # Third-party modules
 from bson import ObjectId
@@ -37,12 +38,15 @@ from noc.core.model.decorator import on_save, on_delete
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
 from noc.core.defer import call_later
+from noc.core.change.decorator import change
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.sa.models.service import Service
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
+logger = logging.getLogger(__name__)
+
 
 # Query for remove maintenance from affected structure
 SQL_REMOVE = """
@@ -52,8 +56,22 @@ SQL_REMOVE = """
 """
 
 
+class RemoteObject(EmbeddedDocument):
+    model_id: str = StringField(
+        required=True,
+        choices=["sa.ManagedObject", "sa.Service", "inv.NetworkSegment"],
+    )
+    remote_id: str = StringField(required=True)
+    name: str = StringField(required=False)
+
+    def __str__(self):
+        if self.name:
+            return f"{self.model_id}@{self.remote_id} ({self.name})"
+        return f"{self.model_id}@{self.remote_id}"
+
+
 class MaintenanceService(EmbeddedDocument):
-    service = ReferenceField(Service)
+    service = ReferenceField(Service, required=True)
     include_object = BooleanField(default=False)
 
     def __str__(self):
@@ -61,20 +79,21 @@ class MaintenanceService(EmbeddedDocument):
 
 
 class MaintenanceObject(EmbeddedDocument):
-    object = ForeignKeyField(ManagedObject)
+    object = ForeignKeyField(ManagedObject, required=True)
 
     def __str__(self):
         return f"{self.object}"
 
 
 class MaintenanceSegment(EmbeddedDocument):
-    segment = ReferenceField(NetworkSegment)
+    segment = ReferenceField(NetworkSegment, required=True)
 
     def __str__(self):
         return f"{self.segment}"
 
 
 @on_save
+@change
 @on_delete
 class Maintenance(Document):
     meta = {
@@ -85,11 +104,11 @@ class Maintenance(Document):
         "legacy_collections": ["noc.maintainance"],
     }
 
-    type = ReferenceField(MaintenanceType, required=True)
+    type: MaintenanceType = ReferenceField(MaintenanceType, required=True)
     subject = StringField(required=True)
     description = StringField()
-    start = DateTimeField()
-    stop = DateTimeField()
+    start = DateTimeField(required=True)
+    stop = DateTimeField(required=False)
     is_completed = BooleanField(default=False)
     auto_confirm = BooleanField(default=True)
     template = ForeignKeyField(Template)
@@ -99,13 +118,13 @@ class Maintenance(Document):
     escalate_managed_object = ForeignKeyField(ManagedObject)
     # Time pattern when maintenance is active
     # None - active all the time
-    time_pattern: TimePattern = ForeignKeyField(TimePattern)
+    time_pattern: Optional[TimePattern] = ForeignKeyField(TimePattern)
     # Objects declared to be affected by maintenance
-    direct_objects = EmbeddedDocumentListField(MaintenanceObject)
+    direct_objects: List["MaintenanceObject"] = EmbeddedDocumentListField(MaintenanceObject)
     # Segments declared to be affected by maintenance
-    direct_segments = EmbeddedDocumentListField(MaintenanceSegment)
+    direct_segments: List["MaintenanceSegment"] = EmbeddedDocumentListField(MaintenanceSegment)
     #  Service declared to be affected by maintenance
-    direct_services = EmbeddedDocumentListField(MaintenanceService)
+    direct_services: List["MaintenanceService"] = EmbeddedDocumentListField(MaintenanceService)
     # direct_group =
     # All Administrative Domain for all affected objects
     administrative_domain = ListField(ForeignKeyField(AdministrativeDomain))
@@ -119,16 +138,18 @@ class Maintenance(Document):
     )
     #
     # Reference to remote system object has been imported from
-    remote_system = PlainReferenceField(RemoteSystem)
+    remote_system: Optional["RemoteSystem"] = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Array remote objects and service ids
-    remote_objects = ListField(StringField())
-    remote_services = ListField(StringField())
+    remote_objects: List["RemoteObject"] = EmbeddedDocumentListField(RemoteObject)
     # Object id in BI
     # bi_id = LongField(unique=True)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    MAINTENANCE_STOP_HANDLER = "noc.maintenance.models.maintenance.stop"
+    MAINTENANCE_AFFECTED_HANDLER = "noc.maintenance.models.maintenance.update_affected_objects"
 
     def __str__(self):
         return f"[{'V' if self.is_completed else ' '}] {self.start}-{self.stop}: {self.subject}"
@@ -148,29 +169,110 @@ class Maintenance(Document):
             return False
         return self.start <= now < self.stop
 
-    def update_affected_objects_maintenance(self):
-        call_later(
-            "noc.maintenance.models.maintenance.update_affected_objects",
-            60,
-            maintenance_id=self.id,
-            start=self.start,
-            stop=self.stop if self.auto_confirm else None,
-        )
+    @property
+    def active_interval(self) -> Tuple[datetime.datetime, datetime.datetime]:
+        """For old fixes, String to datetime fields"""
+        m_start, m_stop = self.start, self.stop
+        if isinstance(m_start, str):
+            m_start = datetime.datetime.fromisoformat(m_start)
+        if isinstance(m_stop, str):
+            m_stop = datetime.datetime.fromisoformat(m_stop)
+        return m_start, m_stop
 
-    def auto_confirm_maintenance(self):
-        st = str(self.stop)
-        if "T" in st:
-            st = st.replace("T", " ")
-        stop = datetime.datetime.strptime(st, "%Y-%m-%d %H:%M:%S")
+    def update_remote_objects(self, objects: List[Dict[str, Any]]):
+        """Update remote Object"""
+        r = []
+        for o in objects:
+            r.append(
+                RemoteObject(model_id=o["model_id"], remote_id=o["remote_id"], name=o.get("name")),
+            )
+        self.remote_objects = r
+        self.save()
+
+    def sync_affected(self):
+        """Add Maintenance to Affected Objects"""
+        m_start, m_stop = self.active_interval
+        # Affected Maintenances
+        if not self.is_completed:
+            call_later(
+                self.MAINTENANCE_AFFECTED_HANDLER,
+                60,
+                maintenance_id=self.id,
+                start=m_start,
+                stop=m_stop if self.auto_confirm else None,
+            )
+        if (self.direct_services or self.remote_objects) and not self.is_completed:
+            Service.update_maintenance(
+                self.id,
+                [ds.service for ds in self.direct_services],
+                self.start,
+                remote_system=self.remote_system,
+                remote_ids=[
+                    oo.remote_id for oo in self.remote_objects if oo.model_id == "sa.Service"
+                ],
+            )
+        elif self.direct_services or self.remote_objects:
+            Service.reset_maintenance(self.id)
+        if (self.direct_objects or self.remote_objects) and not self.is_completed:
+            ManagedObject.update_maintenance(
+                self.id,
+                [do.object for do in self.direct_objects],
+                self.start,
+                affected_topology=True,
+                remote_system=self.remote_system,
+                remote_ids=[
+                    oo.remote_id for oo in self.remote_objects if oo.model_id == "sa.ManagedObject"
+                ],
+            )
+        elif self.direct_objects or self.remote_objects:
+            ManagedObject.reset_maintenance(self.id)
+
+    def ensure_jobs(self):
+        """Ensure maintenance Job"""
         now = datetime.datetime.now()
-        if stop > now:
-            delay = (stop - now).total_seconds()
-            call_later("noc.maintenance.models.maintenance.stop", delay, maintenance_id=self.id)
+        m_start, m_stop = self.active_interval
+        # Auto completed
+        if self.auto_confirm and m_stop > now:
+            delay = (m_stop - now).total_seconds()
+            call_later(self.MAINTENANCE_STOP_HANDLER, delay, maintenance_id=self.id)
 
-    def save(self, *args, **kwargs):
-        created = False
-        if self._created:
-            created = self._created
+    def ensure_escalated_jobs(self):
+        """Check maintenances jobs"""
+        if not self.escalate_managed_object:
+            return
+        if not self.is_completed and self.auto_confirm:
+            start, stop = self.active_interval
+            call_later(
+                "noc.services.escalator.maintenance.start_maintenance",
+                delay=max(
+                    (start - datetime.datetime.now()).total_seconds(),
+                    60,
+                ),
+                scheduler="escalator",
+                pool=self.escalate_managed_object.escalator_shard,
+                maintenance_id=self.id,
+            )
+            if self.auto_confirm:
+                call_later(
+                    "noc.services.escalator.maintenance.close_maintenance",
+                    delay=max(
+                        (stop - datetime.datetime.now()).total_seconds(),
+                        60,
+                    ),
+                    scheduler="escalator",
+                    pool=self.escalate_managed_object.escalator_shard,
+                    maintenance_id=self.id,
+                )
+        if self.is_completed and not self.auto_confirm:
+            call_later(
+                "noc.services.escalator.maintenance.close_maintenance",
+                scheduler="escalator",
+                pool=self.escalate_managed_object.escalator_shard,
+                maintenance_id=self.id,
+            )
+
+    def clean(self):
+        """Validate dereference"""
         if self.direct_objects:
             if any(o_elem.object is None for o_elem in self.direct_objects):
                 raise ValidationError("Object line is Empty")
@@ -180,68 +282,23 @@ class Maintenance(Document):
                     elem.segment = elem.segment
                 except Exception:
                     raise ValidationError("Segment line is Empty")
-        super().save(*args, **kwargs)
-        if created and (self.direct_objects or self.direct_segments):
-            self.update_affected_objects_maintenance()
-        if self.auto_confirm:
-            self.auto_confirm_maintenance()
 
     def on_save(self):
         changed_fields = set()
         if hasattr(self, "_changed_fields"):
             changed_fields = set(self._changed_fields)
-        if changed_fields.intersection(
-            {"direct_objects", "direct_segments", "stop", "start", "time_pattern"}
-        ):
-            self.update_affected_objects_maintenance()
-        if "stop" in changed_fields:
-            if not self.is_completed and self.auto_confirm:
-                self.auto_confirm_maintenance()
         if "is_completed" in changed_fields:
             self.remove_maintenance()
-
-        if self.escalate_managed_object:
-            if not self.is_completed and self.auto_confirm:
-                start, stop = self.start, self.stop
-                if isinstance(self.start, str):
-                    start = datetime.datetime.fromisoformat(self.start)
-                if isinstance(self.stop, str):
-                    stop = datetime.datetime.fromisoformat(self.stop)
-                call_later(
-                    "noc.services.escalator.maintenance.start_maintenance",
-                    delay=max(
-                        (start - datetime.datetime.now()).total_seconds(),
-                        60,
-                    ),
-                    scheduler="escalator",
-                    pool=self.escalate_managed_object.escalator_shard,
-                    maintenance_id=self.id,
-                )
-                if self.auto_confirm:
-                    call_later(
-                        "noc.services.escalator.maintenance.close_maintenance",
-                        delay=max(
-                            (stop - datetime.datetime.now()).total_seconds(),
-                            60,
-                        ),
-                        scheduler="escalator",
-                        pool=self.escalate_managed_object.escalator_shard,
-                        maintenance_id=self.id,
-                    )
-            if self.is_completed and not self.auto_confirm:
-                call_later(
-                    "noc.services.escalator.maintenance.close_maintenance",
-                    scheduler="escalator",
-                    pool=self.escalate_managed_object.escalator_shard,
-                    maintenance_id=self.id,
-                )
+        self.sync_affected()
+        self.ensure_escalated_jobs()
+        self.ensure_jobs()
 
     def on_delete(self):
         self.remove_maintenance()
 
     def remove_maintenance(self):
-        with pg_connection.cursor() as cursor:
-            cursor.execute(SQL_REMOVE, [str(self.id), str(self.id)])
+        Service.reset_maintenance(self.id)
+        ManagedObject.reset_maintenance(self.id)
 
     @classmethod
     def currently_affected(cls, objects: Optional[List[int]] = None) -> List[int]:
@@ -317,6 +374,7 @@ def update_affected_objects(
         return so
 
     data = Maintenance.get_by_id(maintenance_id)
+    logger.info("[%s] Processed update Maintenance affected", data.id)
     # Calculate affected objects
     affected: Set[int] = {o.object.id for o in data.direct_objects if o.object}
     for o in data.direct_segments:
@@ -361,6 +419,7 @@ def update_affected_objects(
     # Clear cache
     for mo_id in set(mai_objects).union(affected):
         ManagedObject._reset_caches(mo_id)
+    logger.info("[%s] Maintenance affected update completed", data.id)
     # Check id objects not in affected
     # nin_mai = set(affected).difference(set(mai_objects))
     # Check id objects for delete
@@ -397,7 +456,9 @@ def stop(maintenance_id):
     # Find Active Maintenance
     mai = Maintenance.get_by_id(maintenance_id)
     if not mai:
+        logger.warning("Stop for maintenance with Unknown Id: %s", maintenance_id)
         return
+    logger.info("[%s] Run stop Maintenance Job", mai)
     mai.is_completed = True
     # Find email addresses on Maintenance Contacts
     if mai.template:
@@ -423,8 +484,7 @@ def stop(maintenance_id):
             is_managed=True, affected_maintenances__has_key=str(maintenance_id)
         ).values_list("id", flat=True)
     )
-    with pg_connection.cursor() as cursor:
-        cursor.execute(SQL_REMOVE, [str(maintenance_id), str(maintenance_id)])
+    ManagedObject.reset_maintenance(maintenance_id)
     # Clear cache
     for mo_id in mai_objects:
         ManagedObject._reset_caches(mo_id)

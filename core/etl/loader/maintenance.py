@@ -26,6 +26,10 @@ class MaintenanceLoader(BaseLoader):
     model_mappings = {"type": MaintenanceType}
 
     post_save_fields = {"objects"}
+    type_model_map = {
+        "service": "sa.Service",
+        "managed_object": "sa.ManagedObject",
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -33,3 +37,9 @@ class MaintenanceLoader(BaseLoader):
 
     def post_save(self, o: MaintenanceModel, fields: Dict[str, Any]):
         """Processed maintenance object"""
+        r = []
+        for oo in fields.get("objects", []):
+            t = oo.pop("type")
+            oo["model_id"] = self.type_model_map[t]
+            r.append(oo)
+        o.update_remote_objects(r)

@@ -353,6 +353,14 @@ class Service(Document):
         )
 
     @classmethod
+    def get_by_remote_ids(cls, remote_system: RemoteSystem, ids: List[str]) -> List[str]:
+        """Return object IDS by remote_ids"""
+        return Service.objects.filter(
+            m_q(remote_system=str(remote_system.id), remote_id__in=ids)
+            | m_q(mappings__match={"remote_id": {"$in": ids}, "remote_system": remote_system.id})
+        ).scalar("id")
+
+    @classmethod
     def get_exposed_labels_for_object(cls, mo_id: int) -> List[str]:
         """Return exposed labels for Managed Object"""
         from noc.sa.models.serviceinstance import ServiceInstance
@@ -1179,6 +1187,30 @@ class Service(Document):
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterable diagnostic Config"""
         yield from self.profile.iter_diagnostic_configs(self)
+
+    @classmethod
+    def update_maintenance(
+        cls,
+        maintenance_id: str,
+        services: List["Service"],
+        start: datetime.datetime,
+        affected_topology: bool = False,
+        remote_system: Optional[RemoteSystem] = None,
+        remote_ids: Optional[List[str]] = None,
+    ):
+        """Update Maintenance"""
+        svcs = [s.id for s in services]
+        if remote_system and remote_ids:
+            svcs += Service.get_by_remote_ids(remote_system, remote_ids)
+        logger.info("Update maintenance on Services: %s", svcs)
+        for svc in Service.objects.filter(id__in=svcs):
+            svc.add_watch(ObjectEffect.MAINTENANCE, key=str(maintenance_id), after=start)
+
+    @classmethod
+    def reset_maintenance(cls, maintenance_id: ObjectId):
+        """Reset Maintenance"""
+        for svc in Service.objects.filter(watchers__key=str(maintenance_id)):
+            svc.stop_watch(ObjectEffect.MAINTENANCE, str(maintenance_id))
 
     def get_check_ctx(self, include_credentials=False, **kwargs) -> Dict[str, Any]:
         """"""
