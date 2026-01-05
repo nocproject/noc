@@ -50,9 +50,8 @@ from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
-from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.types import ObjectEffect, WatchItem
 from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
-from noc.core.watchers.types import WatchItem
 from noc.core.scheduler.scheduler import Scheduler
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
@@ -1043,31 +1042,11 @@ class Service(Document):
                 continue
             update = up_w.pop((w.effect, w.key, rs), None)
             if update:
-                w = WatchDocumentItem(
-                    effect=update.effect,
-                    key=update.key,
-                    remote_system=(
-                        RemoteSystem.get_by_name(update.remote_system)
-                        if update.remote_system
-                        else None
-                    ),
-                    after=update.after,
-                    once=update.once,
-                    args=update.args,
-                )
+                w = WatchDocumentItem.from_item(update)
             updates.append(w)
         for w in up_w.values():
             rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
-            updates.append(
-                WatchDocumentItem(
-                    effect=w.effect,
-                    key=w.key,
-                    remote_system=rs,
-                    after=w.after,
-                    once=w.once,
-                    args=w.args,
-                )
-            )
+            updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
         self.watchers = updates
         wait_ts = self.get_wait_ts()
         if self.watcher_wait_ts != wait_ts:
@@ -1219,12 +1198,7 @@ class Service(Document):
             svcs += Service.get_by_remote_ids(remote_system, remote_ids)
         logger.info("Update maintenance on Services: %s", svcs)
         for svc in Service.objects.filter(id__in=svcs):
-            svc.add_watch(
-                ObjectEffect.MAINTENANCE,
-                key=str(maintenance_id),
-                after=start,
-                once=False,
-            )
+            svc.add_watch(ObjectEffect.MAINTENANCE, key=str(maintenance_id), once=False)
 
     @classmethod
     def reset_maintenance(cls, maintenance_id: ObjectId):

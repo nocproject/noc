@@ -24,6 +24,7 @@ class RunWatchersJob(PeriodicJob):
         for svc in model.objects.filter(watcher_wait_ts__lte=now):
             for w in svc.touch_watch():
                 a = w.get_action()
+                self.logger.debug("[%s] Touch Watch: %s / Action: %s", svc, w, a)
                 if not a or not a.is_supported(svc):
                     continue
                 # Send to Worker

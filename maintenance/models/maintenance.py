@@ -25,24 +25,28 @@ from mongoengine.fields import (
     ListField,
     EmbeddedDocumentListField,
 )
+from mongoengine.errors import ValidationError
 import cachetools
 import orjson
 
 # NOC modules
-from .maintenancetype import MaintenanceType
-from mongoengine.errors import ValidationError
-from noc.sa.models.managedobject import ManagedObject
-from noc.inv.models.networksegment import NetworkSegment
 from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete
-from noc.main.models.timepattern import TimePattern
-from noc.main.models.template import Template
 from noc.core.defer import call_later
 from noc.core.change.decorator import change
+from noc.core.watchers.types import ObjectEffect, WatchItem
+from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
+from noc.core.mx import MessageType, send_message, MX_TO_STAGE_NAME
+from noc.main.models.timepattern import TimePattern
+from noc.main.models.template import Template
 from noc.sa.models.administrativedomain import AdministrativeDomain
+from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
+from noc.inv.models.networksegment import NetworkSegment
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.remotesystem import RemoteSystem
+from .maintenancetype import MaintenanceType
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -54,6 +58,7 @@ SQL_REMOVE = """
   SET affected_maintenances = affected_maintenances - %s
   WHERE affected_maintenances ? %s
 """
+SCHEDULER = "scheduler"
 
 
 class RemoteObject(EmbeddedDocument):
@@ -94,13 +99,20 @@ class MaintenanceSegment(EmbeddedDocument):
 
 @on_save
 @change
+@watchers
 @on_delete
 class Maintenance(Document):
     meta = {
         "collection": "noc.maintenance",
         "strict": False,
         "auto_create_index": False,
-        "indexes": ["start", "stop", ("start", "is_completed"), "administrative_domain"],
+        "indexes": [
+            "start",
+            "stop",
+            ("start", "is_completed"),
+            "administrative_domain",
+            "watcher_wait_ts",
+        ],
         "legacy_collections": ["noc.maintainance"],
     }
 
@@ -143,6 +155,9 @@ class Maintenance(Document):
     remote_id = StringField()
     # Array remote objects and service ids
     remote_objects: List["RemoteObject"] = EmbeddedDocumentListField(RemoteObject)
+    # Watchers
+    watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
+    watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
     # Object id in BI
     # bi_id = LongField(unique=True)
 
@@ -150,6 +165,7 @@ class Maintenance(Document):
 
     MAINTENANCE_STOP_HANDLER = "noc.maintenance.models.maintenance.stop"
     MAINTENANCE_AFFECTED_HANDLER = "noc.maintenance.models.maintenance.update_affected_objects"
+    SUPPORTED_EFFECTS = frozenset([ObjectEffect.WF_EVENT, ObjectEffect.MX_EVENT])
 
     def __str__(self):
         return f"[{'V' if self.is_completed else ' '}] {self.start}-{self.stop}: {self.subject}"
@@ -158,6 +174,15 @@ class Maintenance(Document):
     @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
     def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["Maintenance"]:
         return Maintenance.objects.filter(id=oid).first()
+
+    @classmethod
+    def get_min_wait_ts(cls) -> Optional[datetime.datetime]:
+        """"""
+        return (
+            Maintenance.objects()
+            .aggregate([{"$group": {"_id": None, "wait_ts": {"$min": "$watcher_wait_ts"}}}])
+            .next()["wait_ts"]
+        )
 
     @property
     def is_active(self) -> bool:
@@ -180,6 +205,43 @@ class Maintenance(Document):
         if isinstance(m_stop, str):
             m_stop = datetime.datetime.fromisoformat(m_stop)
         return m_start, m_stop
+
+    def event(self, stage: str, data: Optional[Dict[str, Any]] = None):
+        """
+        Process object-related event
+        Args:
+            stage: on_start, on_end, on_stage
+            data:
+        """
+        logger.info("[%s|%s] Sending maintenance event message", self.subject, stage)
+        d = self.get_message_context()
+        if data:
+            d.update(data)
+        send_message(
+            data=d,
+            message_type=MessageType.MAINTENANCE_PROCESSED,
+            headers={MX_TO_STAGE_NAME: stage.encode()},
+        )
+
+    def get_message_context(self) -> Dict[str, Any]:
+        """Service Message Ctx"""
+        # Direct maintenance
+        r = {
+            "id": str(self.id),
+            "subject": self.subject,
+            "description": self.description,
+            "is_completed": self.is_completed,
+            "contacts": self.contacts,
+            "type": {"id": str(self.type.id), "name": self.type.name},
+        }
+        if self.remote_system:
+            r["remote_system"] = {
+                "id": str(self.remote_system.id),
+                "name": self.remote_system.name,
+            }
+            r["remote_id"] = self.remote_id
+        # Affected ?
+        return r
 
     def update_remote_objects(self, objects: List[Dict[str, Any]]):
         """Update remote Object"""
@@ -228,6 +290,44 @@ class Maintenance(Document):
             )
         elif self.direct_objects or self.remote_objects:
             ManagedObject.reset_maintenance(self.id)
+
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """"""
+        from noc.core.scheduler.scheduler import Scheduler
+
+        updates = []
+        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
+        for w in self.watchers:
+            rs = w.remote_system.name if w.remote_system else None
+            if to_remove and (w.effect, w.key, rs) in to_remove:
+                continue
+            update = up_w.pop((w.effect, w.key, rs), None)
+            if update:
+                w = WatchDocumentItem.from_item(update)
+            updates.append(w)
+        for w in up_w.values():
+            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
+            updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
+        self.watchers = updates
+        wait_ts, _ = self.active_interval
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
+        if dry_run or self._created:
+            return
+        m_ts = self.get_min_wait_ts()
+        if wait_ts and (not m_ts or wait_ts < m_ts):
+            scheduler = Scheduler(SCHEDULER)
+            scheduler.submit(
+                jcls=WATCHER_JCLS, key="maintenance.Maintenance", ts=get_next_ts(wait_ts)
+            )
+        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+        self.update(**set_op)
 
     def ensure_jobs(self):
         """Ensure maintenance Job"""
@@ -289,8 +389,13 @@ class Maintenance(Document):
         changed_fields = set()
         if hasattr(self, "_changed_fields"):
             changed_fields = set(self._changed_fields)
-        if "is_completed" in changed_fields:
+        if "is_completed" in changed_fields and self.is_completed:
             self.remove_maintenance()
+            self.event("on_completed")
+        if self._created or ("is_completed" in changed_fields and not self.is_completed):
+            # Gen MX Event
+            m_start, _ = self.active_interval
+            self.add_watch(ObjectEffect.MX_EVENT, after=m_start, once=True, stage="start")
         self.sync_affected()
         self.ensure_escalated_jobs()
         self.ensure_jobs()

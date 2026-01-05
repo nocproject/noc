@@ -5,6 +5,9 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+from typing import Optional
+
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
 from mongoengine.fields import EnumField, StringField, BooleanField, DictField, DateTimeField
@@ -49,4 +52,16 @@ class WatchDocumentItem(EmbeddedDocument):
             once=self.once,
             remote_system=self.remote_system,
             args=self.args,
+        )
+
+    @classmethod
+    def from_item(cls, item: WatchItem, remote_system: Optional[RemoteSystem] = None):
+        """Create record from WatchItem"""
+        return WatchDocumentItem(
+            effect=item.effect,
+            key=item.key,
+            remote_system=item.remote_system or remote_system,
+            after=item.after,
+            once=item.once,
+            args=item.args,
         )

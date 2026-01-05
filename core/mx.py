@@ -67,6 +67,7 @@ MX_FROM_COLLECTOR = "From-Collector"
 # Object data
 MX_ADMINISTRATIVE_DOMAIN_ID = "Administrative-Domain-Id"
 MX_PROFILE_ID = "Profile-Id"
+MX_TO_STAGE_NAME = "Resource-To-Stage-Name"
 MX_LABELS = "Labels"
 MX_RESOURCE_GROUPS = "Resource-Group-Ids"
 MX_WATCH_FOR_ID = "Watch-For-Id"
@@ -116,6 +117,7 @@ class MessageType(enum.Enum):
     SERVICE_STATUS_CHANGE = "service_status_change"
     UNKNOWN_TARGET = "unknown_targets"
     JOB = "job"
+    MAINTENANCE_PROCESSED = "maintenance_processed"
     OTHER = "other"
 
 
@@ -158,6 +160,7 @@ MESSAGE_HEADERS = {
     MX_CHANGE_ID,
     MX_ADMINISTRATIVE_DOMAIN_ID,
     MX_PROFILE_ID,
+    MX_TO_STAGE_NAME,
     MX_TO,
     MX_LANG,
     KAFKA_PARTITION,

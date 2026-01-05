@@ -40,6 +40,7 @@ class ActionType(enum.Enum):
     AUDIT_COMMAND = "audit_command"
     RUN_DISCOVERY = "run_discovery"
     FIRE_WF_EVENT = "fire_wf_event"
+    FIRE_OBJ_EVENT = "fire_obj_event"
     SET_OPER_STATE = "set_oper_state"
     UP_DOWN_DIAGNOSTIC = "update_diagnostic"
     HANDLER = "handler"
@@ -58,6 +59,8 @@ class ActionType(enum.Enum):
                 return hasattr(obj, "set_oper_status")
             case self.UP_DOWN_DIAGNOSTIC:
                 return hasattr(obj, "diagnostic")
+            case self.FIRE_OBJ_EVENT:
+                return hasattr(obj, "event")
             case self.HANDLER:
                 return True
         return False
@@ -97,17 +100,21 @@ class ActionType(enum.Enum):
                 return partial(self.set_oper_status, **kwargs)
             case self.UP_DOWN_DIAGNOSTIC:
                 return partial(self.diagnostic_up_down, **kwargs)
+            case self.FIRE_OBJ_EVENT:
+                return partial(self.send_obj_event, **kwargs)
             case self.HANDLER:
                 return get_handler(key)
         return None
-
-    def get_job(self, obj: Any, key: str, cfg, **kwargs):
-        """Get action config for send to runner job"""
 
     @staticmethod
     def send_workflow_event(obj, wf_event: str, **kwargs):
         """Send Workflow signal"""
         obj.fire_event(wf_event)
+
+    @staticmethod
+    def send_obj_event(obj, **kwargs):
+        """Send Workflow signal"""
+        obj.event(**kwargs)
 
     @staticmethod
     def set_oper_status(obj, status, ts: Optional[datetime.datetime] = None, **kwargs):
