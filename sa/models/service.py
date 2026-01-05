@@ -51,8 +51,9 @@ from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
-from noc.core.watchers.decorator import watchers
+from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
 from noc.core.watchers.types import WatchItem
+from noc.core.scheduler.scheduler import Scheduler
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -74,6 +75,7 @@ logger = logging.getLogger(__name__)
 id_lock = Lock()
 _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 SVC_REF_PREFIX = "svc"
+SCHEDULER = "scheduler"
 SVC_AC = "Service | Status | Change"
 
 
@@ -389,6 +391,15 @@ class Service(Document):
                 continue
             svc = row["svc"][0]
             yield Label.build_expose_labels(svc["effective_labels"], "expose_sa_object")
+
+    @classmethod
+    def get_min_wait_ts(cls) -> Optional[datetime.datetime]:
+        """"""
+        return (
+            Service.objects()
+            .aggregate([{"$group": {"_id": None, "wait_ts": {"$min": "$watcher_wait_ts"}}}])
+            .next()["wait_ts"]
+        )
 
     def __str__(self):
         if self.label:
@@ -1063,6 +1074,10 @@ class Service(Document):
             self.watcher_wait_ts = wait_ts
         if dry_run or self._created:
             return
+        m_ts = self.get_min_wait_ts()
+        if wait_ts and (not m_ts or wait_ts < m_ts):
+            scheduler = Scheduler(SCHEDULER)
+            scheduler.submit(jcls=WATCHER_JCLS, key="sa.Service", ts=get_next_ts(wait_ts))
         set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
         self.update(**set_op)
 
@@ -1204,7 +1219,12 @@ class Service(Document):
             svcs += Service.get_by_remote_ids(remote_system, remote_ids)
         logger.info("Update maintenance on Services: %s", svcs)
         for svc in Service.objects.filter(id__in=svcs):
-            svc.add_watch(ObjectEffect.MAINTENANCE, key=str(maintenance_id), after=start)
+            svc.add_watch(
+                ObjectEffect.MAINTENANCE,
+                key=str(maintenance_id),
+                after=start,
+                once=False,
+            )
 
     @classmethod
     def reset_maintenance(cls, maintenance_id: ObjectId):

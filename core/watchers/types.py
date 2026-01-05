@@ -11,6 +11,9 @@ import datetime
 from dataclasses import dataclass
 from typing import Optional, Dict, Any
 
+# NOC Modules
+from noc.core.models.cfgactions import ActionType
+
 
 class ObjectEffect(enum.Enum):
     """
@@ -25,6 +28,7 @@ class ObjectEffect(enum.Enum):
     SUBSCRIPTION = "subscription"
     MAINTENANCE = "maintenance"
     WF_EVENT = "wf_event"
+    MX_EVENT = "mx_event"
     WIPING = "wiping"
     SUSPEND_JOB = "suspend_job"
     DIAGNOSTIC_CHECK = "diagnostic_check"
@@ -40,8 +44,8 @@ class WatchItem:
         effect: Watch effect
         key: Effect key
         after: Run watch after
-        once: Remove after run
-        wait_avail: Wait object available for run
+        once: Remove after effect
+        wait_avail: Run after object available
         args: Additional arguments
     """
 
@@ -52,5 +56,12 @@ class WatchItem:
     once: bool = True
     wait_avail: bool = False
     remote_system: Optional[Any] = None
+    # deadline
     # Reaction ? User ?, Reason
     args: Optional[Dict[str, str]] = None
+
+    def get_action(self) -> Optional[ActionType]:
+        """Return Object Action"""
+        if self.effect == ObjectEffect.WF_EVENT:
+            return ActionType.FIRE_WF_EVENT
+        return None

@@ -37,6 +37,7 @@ class SchedulerService(FastAPIService):
         self.ensure_topology_job()
         self.ensure_purgatorium_job()
         self.ensure_network_instance_discovery_job()
+        self.ensure_watchers_job()
 
     @classmethod
     def ensure_topology_job(cls):
@@ -66,6 +67,15 @@ class SchedulerService(FastAPIService):
             jcls=cls.NETWORK_INSTANCE_DISCOVERY_JOB,
             ts=datetime.datetime.now() + datetime.timedelta(seconds=60),
         )
+
+    @classmethod
+    def ensure_watchers_job(cls):
+        """Create watchers job"""
+        from noc.core.watchers.decorator import WATCHER_JCLS
+
+        scheduler = Scheduler(cls.name)
+        scheduler.submit(jcls=WATCHER_JCLS, key="sa.Service", keep_ts=True)
+        scheduler.submit(jcls=WATCHER_JCLS, key="sa.ManagedObject", keep_ts=True)
 
 
 if __name__ == "__main__":

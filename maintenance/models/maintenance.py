@@ -167,7 +167,9 @@ class Maintenance(Document):
         now = datetime.datetime.now()
         if self.time_pattern and not self.time_pattern.match(now):
             return False
-        return self.start <= now < self.stop
+        if self.auto_confirm:
+            return self.start <= now < self.stop
+        return self.start <= now
 
     @property
     def active_interval(self) -> Tuple[datetime.datetime, datetime.datetime]:
@@ -205,7 +207,7 @@ class Maintenance(Document):
             Service.update_maintenance(
                 self.id,
                 [ds.service for ds in self.direct_services],
-                self.start,
+                m_start,
                 remote_system=self.remote_system,
                 remote_ids=[
                     oo.remote_id for oo in self.remote_objects if oo.model_id == "sa.Service"
@@ -217,7 +219,7 @@ class Maintenance(Document):
             ManagedObject.update_maintenance(
                 self.id,
                 [do.object for do in self.direct_objects],
-                self.start,
+                m_start,
                 affected_topology=True,
                 remote_system=self.remote_system,
                 remote_ids=[

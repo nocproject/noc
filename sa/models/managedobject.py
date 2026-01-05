@@ -14,12 +14,14 @@ import operator
 from threading import Lock
 import datetime
 import warnings
+from collections import defaultdict
 from dataclasses import dataclass
 from itertools import chain
 from typing import Tuple, Iterable, List, Any, Dict, Set, Optional, Union
 
 # Third-party modules
 import cachetools
+import orjson
 from django.contrib.postgres.fields import ArrayField
 from django.db.models.query_utils import Q
 from django.core.validators import MinValueValidator
@@ -1035,6 +1037,19 @@ class ManagedObject(NOCModel):
         if not q:
             return []
         return list(ManagedObject.objects.filter(q))
+
+    @classmethod
+    def get_by_remote_ids(cls, remote_system: RemoteSystem, ids: List[str]) -> List[str]:
+        """Return object IDS by remote_ids"""
+        q = Q()
+        for rs_id in ids:
+            q |= Q(remote_system=str(remote_system.id), remote_id=rs_id)
+            q |= Q(
+                mappings__contains=[{"remote_id": rs_id, "remote_system": str(remote_system.id)}]
+            )
+        if not q:
+            return []
+        return list(ManagedObject.objects.filter(q).values_list("id", flat=True))
 
     @classmethod
     def get_by_l2_domains(cls, domains: Iterable[str]):
@@ -2926,6 +2941,11 @@ class ManagedObject(NOCModel):
         ManagedObjectWatchers.objects.filter(q).delete()
 
     @classmethod
+    def get_min_wait_ts(cls) -> Optional[datetime.datetime]:
+        """"""
+        return None
+
+    @classmethod
     def from_template(
         cls,
         address: str,
@@ -3158,6 +3178,24 @@ class ManagedObject(NOCModel):
     @classmethod
     def get_downlinks_ids(cls, objects: List[int]) -> List[int]:
         """Getting objects by downlinks"""
+        objects = set(objects)
+        r = {
+            mo_id
+            for mo_id in ManagedObject.objects.filter(
+                is_managed=True, uplinks__overlap=list(objects)
+            ).values_list("id", flat=True)
+            if mo_id not in objects
+        }
+        if not r:
+            return []
+        # Leave only objects with all uplinks affected
+        rr = set()
+        for mo_id, uplinks in ManagedObject.objects.filter(
+            is_managed=True, id__in=list(r)
+        ).values_list("id", "uplinks"):
+            if len([1 for u in uplinks if u in objects]) == len(uplinks):
+                rr.add(mo_id)
+        return list(rr)
 
     @classmethod
     def update_maintenance(
@@ -3170,6 +3208,35 @@ class ManagedObject(NOCModel):
         remote_ids: Optional[List[str]] = None,
     ):
         """Update Maintenance"""
+        updated = defaultdict(list)
+        ids = {o.id for o in objects}
+        if remote_system and remote_ids:
+            ids |= set(ManagedObject.get_by_remote_ids(remote_system, remote_ids))
+        if affected_topology:
+            ids |= set(cls.get_downlinks_ids(list(ids)))
+        for oid in ids:
+            updated[oid].append(
+                WatchItem(effect=ObjectEffect.MAINTENANCE, key=str(maintenance_id), once=False),
+            )
+        if updated:
+            ManagedObjectWatchers.update_bulk(updated)
+        # for oid in ManagedObject.objects.filter(id__in=list(ids)):
+        #     updated.append(
+        #         ManagedObjectWatchers(
+        #             managed_object=oid,
+        #             effect=ObjectEffect.MAINTENANCE.value,
+        #             key=maintenance_id,
+        #             once=False,
+        #         ),
+        #     )
+        # if updated:
+        #     # Get Processed and reset others
+        #     ManagedObjectWatchers.objects.bulk_create(
+        #         updated,
+        #         update_conflicts=True,
+        #         unique_fields=["managed_object", "effect", "key", "remote_system"],
+        #         update_fields=["once", "wait_avail", "after", "args"],
+        #     )
 
     @classmethod
     def reset_maintenance(cls, maintenance_id: str):
@@ -3178,6 +3245,7 @@ class ManagedObject(NOCModel):
 
         with pg_connection.cursor() as cursor:
             cursor.execute(SQL_MAINTENANCE_REMOVE, [str(maintenance_id), str(maintenance_id)])
+        ManagedObjectWatchers.objects.filter(key=maintenance_id).delete()
 
 
 @on_save
@@ -3421,6 +3489,42 @@ class ManagedObjectWatchers(NOCModel):
             wait_avail=item.wait_avail,
             after=item.after,
             args=item.args or None,
+        )
+
+    @classmethod
+    def update_bulk(cls, updated: Dict[int, List["WatchItem"]]):
+        """Update bulk query"""
+        from psycopg2.extras import execute_values
+        from django.db import connection as pg_connection
+
+        bulk = []
+        for oid, items in updated.items():
+            for ii in items:
+                aa = orjson.dumps(ii.args or {}).decode()
+                bulk.append(
+                    (
+                        int(oid),
+                        ii.effect.value,
+                        ii.key or "",
+                        ii.once,
+                        ii.wait_avail,
+                        ii.after or None,
+                        aa,
+                        str(ii.remote_system.id) if ii.remote_system else "",
+                    )
+                )
+        cursor = pg_connection.cursor()
+        execute_values(
+            cursor,
+            """
+            INSERT INTO sa_managedobjectwatchers as ow
+            (managed_object_id, effect, key, once, wait_avail, after, args, remote_system) VALUES %s
+            ON CONFLICT ON CONSTRAINT sa_managedobjectwatchers_uniques DO UPDATE
+            SET once=EXCLUDED.once, wait_avail=EXCLUDED.wait_avail, after=EXCLUDED.after,
+                remote_system=EXCLUDED.remote_system, args=EXCLUDED.args::jsonb
+            """,
+            bulk,
+            page_size=1000,
         )
 
 

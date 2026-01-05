@@ -13,6 +13,19 @@ from typing import Optional, List, Iterable, Tuple, Any
 from noc.models import is_document
 from .types import ObjectEffect, WatchItem
 
+WATCHER_JCLS = "noc.services.scheduler.jobs.run_watchers.RunWatchersJob"
+WAIT_DEFAULT_INTERVAL_SEC = 180
+MIN_NEXT_SHIFT_SEC = 30
+
+
+def get_next_ts(next_ts: Optional[datetime.datetime]):
+    now = datetime.datetime.now().replace(microsecond=0)
+    if not next_ts:
+        next_ts = now + datetime.timedelta(seconds=WAIT_DEFAULT_INTERVAL_SEC)
+    elif next_ts <= now:
+        next_ts = now + datetime.timedelta(seconds=MIN_NEXT_SHIFT_SEC)
+    return next_ts
+
 
 def update_watchers(
     self,
@@ -133,9 +146,9 @@ def stop_watch(
 
 def touch_watch(
     self,
-    effect: ObjectEffect,
+    effect: Optional[ObjectEffect] = None,
     is_avail: bool = False,
-    dry_run: bool = False,
+    dry_run: bool = True,
 ) -> List[WatchItem]:
     """
     Processed watchers
