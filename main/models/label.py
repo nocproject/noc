@@ -351,6 +351,20 @@ class Label(Document):
             r.append(ll)
         return r
 
+    @classmethod
+    def _refresh_object_labels(cls, obj: Any):
+        """Refresh effective labels on object"""
+        # Sync Labels
+        if not hasattr(obj, "effective_labels"):
+            return
+        el = Label.build_effective_labels(obj)
+        # Build and clean up effective labels. Filter can_set_labels
+        if not obj.effective_labels or el != set(obj.effective_labels):
+            # mo.effective_labels = sorted(el)
+            obj.objects.filter(id=obj.id).update(effective_labels=sorted(el))
+            if hasattr(obj, "_reset_caches"):
+                obj._reset_caches(obj.id)
+
     # def __getattr__(self, item):
     #     """
     #     Check enable_XX settings for backward compatible

@@ -42,7 +42,7 @@ class CapsSettings(EmbeddedDocument):
     # Add to Reference
     ref_scope = StringField(required=False)
     # Wildcard
-    set_label = ReferenceField(Label, required=False)
+    set_label: Optional["Label"] = ReferenceField(Label, required=False)
     # ref_remote_system
 
     def __str__(self):
@@ -53,8 +53,10 @@ class CapsSettings(EmbeddedDocument):
         if self.default_value:
             self.capability.clean_value(self.default_value)
         if self.set_label:
-            if not self.set_label.is_wildcard:
+            if not self.set_label.is_wildcard and not self.capability.type.is_logical:
                 raise ValueError("Only wildcard label may by set")
+            if self.capability.type.is_logical and self.set_label.is_scoped:
+                raise ValueError("On boolean type only not-scoped Set")
 
     def get_config(self) -> CapsConfig:
         """"""

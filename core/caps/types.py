@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Optional, Any, List
 
 # NOC modules
+from noc.core.models.valuetype import ValueType
 from noc.core.models.inputsources import InputSource
 
 
@@ -67,4 +68,8 @@ class CapsValue(object):
             return None
         if self.capability.multi:
             return [f"{self.config.set_label[:-1]}{v}" for v in self.value]
+        if self.capability.type == ValueType.BOOL:
+            if not self.value or self.config.set_label[-1] == "*":
+                return None
+            return [self.config.set_label]
         return [f"{self.config.set_label[:-1]}{self.value}"]

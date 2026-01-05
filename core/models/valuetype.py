@@ -96,6 +96,11 @@ class ValueType(enum.Enum):
     IP_VRF = "vrf"
     HOSTNAME = "hostname"
 
+    @property
+    def is_logical(self):
+        """Check type is boolean"""
+        return self == ValueType.BOOL
+
     def get_default(self, value):
         match self.value:
             case "str":
