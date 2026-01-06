@@ -632,7 +632,7 @@ class Label(Document):
         #     return  # Exists
         label = Label.get_by_name(name)
         if label:
-            return None  # Exists
+            return label  # Exists
         logger.info("[%s] Create label by ensure", name)
         settings = cls.get_effective_settings(name, include_current=True)
         if not settings.get("allow_auto_create"):
