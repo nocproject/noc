@@ -361,7 +361,10 @@ class Label(Document):
         # Build and clean up effective labels. Filter can_set_labels
         if not obj.effective_labels or el != set(obj.effective_labels):
             # mo.effective_labels = sorted(el)
-            obj.objects.filter(id=obj.id).update(effective_labels=sorted(el))
+            if is_document(obj):
+                obj.objects.filter(id=obj.id).update(effective_labels=sorted(el))
+            else:
+                obj.__class__.objects.filter(id=obj.id).update(effective_labels=sorted(el))
             if hasattr(obj, "_reset_caches"):
                 obj._reset_caches(obj.id)
 
