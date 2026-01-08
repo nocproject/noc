@@ -15,7 +15,7 @@ from pydantic import BaseModel
 # NOC modules
 from noc.core.service.loader import get_service
 from noc.core.perf import metrics
-from noc.core.mx import MX_METRICS_SCOPE, MX_LABELS, MessageType
+from noc.core.mx import MX_METRICS_SCOPE, MessageType
 from .base import BaseCDAGNode, ValueType, Category
 from noc.config import config
 
@@ -24,8 +24,6 @@ class MetricsNodeConfig(BaseModel):
     scope: str
     spool: bool = True
     spool_message: bool = False
-    message_meta: Optional[Dict[str, Any]] = None
-    message_labels: Optional[bytes] = None
 
 
 NS = 1_000_000_000
@@ -46,7 +44,9 @@ class MetricsNode(BaseCDAGNode):
     dot_shape = "folder"
     mx_scopes = set(config.message.enable_metric_scopes)
 
-    def get_value(self, ts: int, labels: List[str], **kwargs) -> Optional[Dict[str, ValueType]]:
+    def get_value(
+        self, ts: int, labels: List[str], target: Optional[Any], **kwargs
+    ) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
         cleaners = scope_cleaners.get(self.config.scope) or {}
@@ -76,7 +76,7 @@ class MetricsNode(BaseCDAGNode):
         if self.config.spool:
             svc.register_metrics(self.config.scope, [r])
         if self.config.spool_message and self.config.scope in self.mx_scopes:
-            self.send_mx(r)
+            self.send_mx(r, target)
         return r
 
     @staticmethod
@@ -89,11 +89,12 @@ class MetricsNode(BaseCDAGNode):
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
 
-    def send_mx(self, data):
+    def send_mx(self, data, target):
         """
         Send collected metrics to MX Router
-        :param data:
-        :return:
+        Args:
+            data:
+            target:
         """
         global mx_converters
 
@@ -104,15 +105,15 @@ class MetricsNode(BaseCDAGNode):
         r = mx_converters[self.config.scope](data)
         if not r:
             return
-        if self.config.message_meta:
-            r["meta"] = self.config.message_meta
+        if target and target.meta:
+            r["meta"] = target.meta
         svc = get_service()
         svc.register_message(
             r,
             MessageType.METRICS,
             {
                 MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
-                MX_LABELS: self.config.message_labels or b"",
+                # MX_LABELS: self.config.message_labels or b"",
             },
             r["bi_id"],
             group_key=f"{self.config.scope}-{r['bi_id']}",

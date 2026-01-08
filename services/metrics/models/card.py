@@ -7,13 +7,13 @@
 
 # Python modules
 from dataclasses import dataclass
-from typing import Dict, Tuple, List, Optional, Set, Iterable
+from typing import Dict, Tuple, List, Optional, Set, Iterable, Union
 
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.alarm import AlarmNode
-from .source import SourceInfo
+from .target import SensorTarget, ManagedObjectTarget, ComponentTarget
 
 
 @dataclass
@@ -32,20 +32,17 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("affected_rules", "alarms", "config", "is_dirty", "probes", "senders")
+    __slots__ = ("affected_rules", "alarms", "component", "config", "is_dirty", "probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode, ...]
     alarms: List[AlarmNode]
     affected_rules: Set[str]
-    config: Optional[SourceInfo]
+    config: Optional[Union[ManagedObjectTarget, SensorTarget]]
+    component: Optional[ComponentTarget]
     is_dirty: bool
 
     def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
-        """
-        Get probe sender by name
-        :param name:
-        :return:
-        """
+        """Get probe sender by name"""
         return next((s for s in self.senders if s.config.scope == name), None)
 
     @classmethod
@@ -78,3 +75,22 @@ class Card(object):
 
     def set_dirty(self):
         self.is_dirty = True
+
+    def get_rules(self) -> Iterable[str]:
+        """Get metric rules"""
+        if not self.component:
+            return self.config.rules or []
+        return self.component.rules or []
+
+    @property
+    def composed_metrics(self):
+        if not self.component:
+            return self.config.composed_metrics or []
+        return self.component.composed_metrics or []
+
+    @property
+    def m_unit(self) -> Optional[str]:
+        """"""
+        if self.config and self.config.type == "sensor":
+            return self.config.units
+        return None

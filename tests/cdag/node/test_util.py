@@ -75,13 +75,13 @@ def test_metrics(values, expected):
     # Check default inputs
     node = cdag.get_node()
     inputs = set(node.iter_inputs())
-    assert inputs == {"ts", "labels"}
+    assert inputs == {"ts", "target", "labels"}
     assert node.allow_dynamic is True
     # Add dynamic inputs
     for k in values:
         node.add_input(k)
     inputs = set(node.iter_inputs())
-    x_inputs = {"ts", "labels"}
+    x_inputs = {"ts", "target", "labels"}
     x_inputs.update(set(values))
     assert inputs == x_inputs
     # Activate dynamic inputs
@@ -90,6 +90,7 @@ def test_metrics(values, expected):
             cdag.activate(k, v)
     # Activate static inputs
     cdag.activate("ts", TS)
+    cdag.activate("target", None)
     cdag.activate("labels", LABELS)
     value = cdag.get_value()
     assert value == expected

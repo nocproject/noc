@@ -17,7 +17,6 @@ import hashlib
 # Third-party modules
 import orjson
 import cachetools
-from pymongo import ReadPreference
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -34,17 +33,22 @@ from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
-from noc.core.mx import MX_H_VALUE_SPLITTER
-from noc.core.comp import DEFAULT_ENCODING
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.services.metrics.models.card import Card, ScopeInfo
 from noc.services.metrics.models.rule import Rule
-from noc.services.metrics.models.source import MetricKey, SourceConfig, SourceInfo, ItemConfig
-from noc.services.datastream.streams.cfgmetricstarget import CfgMetricsTargetDataStream
+from noc.services.metrics.models.target import (
+    MetricKey,
+    MetricTarget,
+    ManagedObjectTarget,
+    SLAProbeTarget,
+    SensorTarget,
+    ComponentTarget,
+)
 from noc.config import config as global_config
 
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
+ObjectTarget = Union[ManagedObjectTarget, SLAProbeTarget]
 
 
 def unscope(x):
@@ -73,7 +77,8 @@ class MetricsService(FastAPIService):
         self.change_log: Optional[ChangeLog] = None
         self.start_state: Dict[str, Dict[str, Any]] = {}
         # Source Configs
-        self.sources_config: Dict[int, SourceConfig] = {}
+        self.targets: Dict[int, ObjectTarget] = {}
+        self.sensors: Dict[int, SensorTarget] = {}
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         # Options
@@ -81,7 +86,7 @@ class MetricsService(FastAPIService):
         self.disable_spool: bool = (
             global_config.metrics.disable_spool
         )  # Disable Send metric record to Clickhouse
-        self.source_metrics: Dict[Tuple[str, int], List[MetricKey]] = defaultdict(list)
+        self.target_card_map: Dict[int, List[MetricKey]] = defaultdict(list)
         # Sync primitives
         self.mappings_ready_event = asyncio.Event()  # Load Metric Sources
         self.rules_ready_event = asyncio.Event()  # Load Metric Rules
@@ -207,8 +212,9 @@ class MetricsService(FastAPIService):
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
             # Exposed labels
-            if card.config and card.config.metric_labels:
-                item["labels"] = labels + card.config.metric_labels
+            if card.config and card.config.exposed_labels:
+                # Add component labels
+                item["labels"] = labels + list(card.config.exposed_labels)
             state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
@@ -322,13 +328,19 @@ class MetricsService(FastAPIService):
         cdag = self.get_scope_cdag(k)
         if not cdag:
             return None
-        source = self.get_source_info(k)
+        target, cp = self.get_target(k)
         # Apply CDAG to a common graph and collect inputs to the card
-        card = await self.project_cdag(cdag, prefix=self.get_key_hash(k), config=source)
+        card = await self.project_cdag(
+            cdag,
+            prefix=self.get_key_hash(k),
+            config=target,
+            component=cp,
+        )
         metrics["project_cards"] += 1
         self.cards[k] = card
-        for kk in k[1]:
-            self.source_metrics[kk].append(k)
+        if target:
+            # Skip metric for sensor
+            self.target_card_map[target.bi_id].append(k)
         # Apply Rules
         self.apply_rules(k, labels)
         return card
@@ -381,14 +393,19 @@ class MetricsService(FastAPIService):
         return new_node
 
     async def project_cdag(
-        self, src: CDAG, prefix: str, config: Optional[SourceConfig] = None
+        self,
+        src: CDAG,
+        prefix: str,
+        config: Optional[ManagedObjectTarget] = None,
+        component: Optional[ComponentTarget] = None,
     ) -> Card:
         """
         Project `src` to a current graph and return the controlling Card
-        :param src: Applied graph
-        :param prefix: Unique card prefix
-        :param config:
-        :return:
+        Args:
+            src: Applied graph
+            prefix: Unique card prefix
+            config:
+            component:
         """
 
         nodes: Dict[str, BaseCDAGNode] = {}
@@ -398,16 +415,16 @@ class MetricsService(FastAPIService):
             nodes[node.node_id] = self.clone_and_add_node(
                 node,
                 prefix=prefix,
-                config=(
-                    {
-                        "message_meta": config.meta or {},
-                        "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
-                            encoding=DEFAULT_ENCODING
-                        ),
-                    }
-                    if config
-                    else None
-                ),
+                # config=(
+                #     {
+                #         "message_meta": config.meta or {},
+                #         # "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
+                #         #     encoding=DEFAULT_ENCODING
+                #         # ),
+                #     }
+                #     if config
+                #     else None
+                # ),
             )
         # Subscribe
         for o_node in src.nodes.values():
@@ -427,6 +444,7 @@ class MetricsService(FastAPIService):
             affected_rules=set(),
             is_dirty=False,
             config=config,
+            component=component,
         )
 
     async def get_dispose_partitions(self, pool: str) -> int:
@@ -441,19 +459,21 @@ class MetricsService(FastAPIService):
         return parts
 
     def add_probe(
-        self, metric_field: str, k: MetricKey, is_composed: bool = False
+        self, metric_field: str, k: MetricKey, is_composed: bool = False, unit: Optional[str] = None
     ) -> Optional[ProbeNode]:
         """
         Add new probe to card
-        :param metric_field: Metric field name
-        :param k: Metric key
-        :param is_composed: Create ComposeProbeNode
-        :return:
+        Args:
+            metric_field: Metric field name
+            k: Metric key
+            is_composed: Create ComposeProbeNode
+            unit: Measurement Unit
         """
         card = self.cards[k]
         mt = MetricType.get_by_field_name(metric_field, k[0])
         if not mt:
-            self.logger.warning("[%s] Unknown metric field: %s", k, metric_field)
+            if not is_composed:
+                self.logger.warning("[%s] Unknown metric field: %s", k, metric_field)
             return None
         sender = card.get_sender(mt.scope.table_name)
         if not sender:
@@ -464,12 +484,15 @@ class MetricsService(FastAPIService):
             probe_cls = ComposeProbeNode
         prefix = self.get_key_hash(k)
         state_id = f"{prefix}::{metric_field}"
+        cfg = self.metric_configs.get((k[0], metric_field))
+        if unit:
+            cfg.unit = unit
         # Create Probe
         p = probe_cls.construct(
             metric_field,
             prefix=prefix,
             state=self.start_state.pop(state_id, None),
-            config=self.metric_configs.get((k[0], metric_field)),
+            config=cfg,
             sticky=True,
         )
         # Subscribe
@@ -479,79 +502,28 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
-    @cachetools.cached(cachetools.TTLCache(maxsize=128, ttl=60))
-    def get_source_db(self, s_id):
-        coll = CfgMetricsTargetDataStream.get_collection().with_options(
-            read_preference=ReadPreference.SECONDARY_PREFERRED
-        )
-        data = coll.find_one({"_id": str(s_id)})
-        if not data:
-            return None
-        return self.get_source_config(orjson.loads(data["data"]))
-
-    def get_source(self, s_id) -> Optional[SourceConfig]:
-        if s_id not in self.sources_config:
-            self.logger.info("[%s] Unknown Source", s_id)
-            return None
-        return self.sources_config[s_id]
-
-    def get_source_info(self, k: MetricKey) -> Optional[SourceInfo]:
-        """
-        Get source Info by Metric Key. Sources:
-         * managed_object
-         * agent
-         * sensor
-         * sla_probe
-        :param k: MetricKey
-        :return:
-        """
-        key_ctx, source = dict(k[1]), None
-        sensor, sla_probe, service = None, None, None
+    def get_target(
+        self, k: MetricKey
+    ) -> Optional[Tuple[Optional[MetricTarget], Optional[ComponentTarget]]]:
+        """Resolve metrics target"""
+        key_ctx = dict(k[1])
         if key_ctx.get("sensor"):
-            source = self.get_source(key_ctx["sensor"])
-            sensor = key_ctx["sensor"]
-            # sensor = self.sources_config.get(key_ctx["sensor"])
-        elif key_ctx.get("sla_probe"):
-            source = self.get_source(key_ctx["sla_probe"])
-            sla_probe = key_ctx["sla_probe"]
-            # sla_probe = self.sources_config.get(key_ctx["sla_probe"])
+            tid = key_ctx["sensor"]
+            return self.sensors.get(tid), None
+        if key_ctx.get("sla_probe"):
+            tid = key_ctx["sla_probe"]
         elif key_ctx.get("agent"):
-            source = self.get_source(key_ctx["agent"])
-            # agent = key_ctx["agent"]
-            # source = self.sources_config.get(key_ctx["agent"])
+            tid = key_ctx["agent"]
         elif "managed_object" in key_ctx:
-            source = self.get_source(key_ctx["managed_object"])
-            # source = self.sources_config.get(key_ctx["managed_object"])
-        if "service" in key_ctx:
-            service = key_ctx["service"]
-        if not source:
-            return None
-        composed_metrics = []
-        rules = source.rules or []
-        metric_labels = list(source.exposed_labels or [])
-        # Find matched item
-        for item in source.items:
-            if not item.is_match(k):
-                continue
-            if item.composed_metrics:
-                composed_metrics = list(item.composed_metrics)
-            if item.rules:
-                rules = item.rules
-            # if item.metric_labels:
-            #     metric_labels = item.metric_labels
-            break
-        return SourceInfo(
-            bi_id=source.bi_id,
-            sensor=sensor,
-            sla_probe=sla_probe,
-            service=service,
-            fm_pool=source.fm_pool,
-            labels=list(source.labels),
-            metric_labels=metric_labels,
-            composed_metrics=composed_metrics,
-            rules=rules,
-            meta=source.meta,
-        )
+            tid = key_ctx["managed_object"]
+        else:
+            self.logger.info("Not Found Source info")
+            return None, None
+        target = self.targets.get(tid)
+        if not target:
+            self.logger.info("[%s] Unknown Source", tid)
+            return None, None
+        return target, None
 
     def apply_rules(self, k: MetricKey, labels: List[str]):
         """
@@ -563,18 +535,20 @@ class MetricsService(FastAPIService):
         card = self.cards[k]
         if not card.config or card.is_dirty:
             # Getting Context
-            card.config = self.get_source_info(k)
+            card.config, card.component = self.get_target(k)
         if not card.config:
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
             return
-        source = card.config
+        # Replace to card.iter_rules
+        target = card.config
         # s_labels = set(self.merge_labels(source.labels, labels))
         # Apply matched rules
         # for rule_id, rule in self.rules.items():
-        if source.rules:
-            self.logger.debug("[%s] Apply Rules: %s", k, source.rules)
-        for rule_id, action_id in source.rules:
+        rules = card.get_rules()
+        if rules:
+            self.logger.debug("[%s] Apply Rules: %s", k, rules)
+        for rule_id, action_id in rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
             rule_id = f"{rule_id}-{action_id}"
@@ -599,23 +573,23 @@ class MetricsService(FastAPIService):
                     and "compose_" not in node_id
                 ):
                     # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
-                    probe = self.add_probe(node_id, k)
+                    probe = self.add_probe(node_id, k, unit=card.m_unit)
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
                 static_config = None
-                if node.name in {"alarm", "threshold"}:
-                    slots = self.get_slot_limits(f"correlator-{source.fm_pool}")
+                if node.name in {"alarm", "threshold"} and target.managed_object:
+                    slots = self.get_slot_limits(f"correlator-{target.fm_pool}")
                     static_config = {
-                        "managed_object": f"bi_id:{source.bi_id}",
-                        "partition": source.bi_id % slots or 0,
-                        "pool": source.fm_pool,
+                        "managed_object": f"bi_id:{target.managed_object}",
+                        "partition": target.bi_id % slots or 0,
+                        "pool": target.fm_pool,
                         "labels": k[2],
                     }
-                    if source.sla_probe:
-                        static_config["sla_probe"] = source.sla_probe
-                    if source.sensor:
-                        static_config["sensor"] = source.sensor
+                    if target.type == "sla_probe":
+                        static_config["sla_probe"] = target.bi_id
+                    if target.type == "sensor":
+                        static_config["sensor"] = target.bi_id
                     self.logger.debug("Create Alarm Node with config %s", static_config)
                 nodes[node.node_id] = self.clone_and_add_node(
                     node, prefix=self.get_key_hash(k), config=config, static_config=static_config
@@ -655,8 +629,11 @@ class MetricsService(FastAPIService):
             card.affected_rules.add(sys.intern(rule_id))
         card.is_dirty = False
         # Add complex probe
-        for cp_metric_filed in source.composed_metrics:
+        for cp_metric_filed in card.composed_metrics:
             cp = self.add_probe(cp_metric_filed, k, is_composed=True)
+            if not cp:
+                # Not matched scope
+                continue
             # Add probe
             for m_field in self.compose_inputs[cp_metric_filed]:
                 if m_field in card.probes:
@@ -682,7 +659,7 @@ class MetricsService(FastAPIService):
                 continue  # Missed field
             probe = card.probes.get(n)
             if self.lazy_init and not probe:
-                probe = self.add_probe(n, k)
+                probe = self.add_probe(n, k, unit=card.m_unit)
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
@@ -701,38 +678,28 @@ class MetricsService(FastAPIService):
                     sender.activate(tx, kf, kv)
             if si.enable_timedelta and time_delta:
                 sender.activate(tx, "time_delta", time_delta)
+            sender.activate(tx, "target", card.config)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         return tx.get_changed_state()
 
-    @staticmethod
-    def get_source_config(data):
-        if "$deleted" in data or data.get("type") == "remote_system":
-            return None
-        items = []
-        for item in data.get("items", []):
-            items.append(
-                ItemConfig(
-                    key_labels=tuple(sys.intern(ll) for ll in item["key"]),
-                    composed_metrics=tuple(
-                        sys.intern(m) for m in item.get("composed_metrics") or []
-                    ),
-                    rules=item.get("rules"),
-                )
-            )
-        return SourceConfig(
-            type=data["type"],
-            bi_id=data["bi_id"],
-            fm_pool=data["fm_pool"] if data.get("fm_pool") else None,
-            labels=tuple(
-                sys.intern(ll if isinstance(ll, str) else ll["label"]) for ll in data["labels"]
-            ),
-            exposed_labels=tuple(sys.intern(ll) for ll in data.get("exposed_labels", [])),
-            items=tuple(items),
-            rules=data.get("rules"),
-            meta=data.get("opaque_data") if global_config.message.enable_metrics else None,
-            # Append meta if enable messages
-        )
+    def update_sensors(self, target: ObjectTarget, sensors: List[Dict[str, Any]]):
+        """Update sensors info"""
+        if target.type != "managed_object":
+            return
+        processed = set()
+        for d in sensors:
+            sensor = MetricTarget.from_config(d, "sensor")
+            if not sensor:
+                continue
+            self.sensors[sensor.bi_id] = sensor
+            processed.add(sensor.bi_id)
+        # Remove Unused sensors
+        for sid in target.sensors - processed:
+            if sid not in self.sensors:
+                continue
+            sensor = self.sensors.pop(sid)
+            self.logger.info("[%s] Remove sensor: %s", target, sensor)
 
     async def update_source_config(self, data: Dict[str, Any]) -> None:
         """
@@ -741,19 +708,28 @@ class MetricsService(FastAPIService):
         # if not self.cards:
         #     # Initial config
         #     return
-        sc_id = int(data["id"])
         if "type" not in data:
-            self.logger.info("[%s] Bad Source data", sc_id)
+            self.logger.info("[%s] Bad Source data", data["id"])
             return
-        sc = self.get_source_config(data)
-        if sc_id not in self.sources_config:
-            self.sources_config[sc_id] = sc
+        target = MetricTarget.from_config(data, data["type"])
+        if not target:
+            # Unknown target type
             return
-        if sc == self.sources_config[sc_id]:
+        tid = int(target.bi_id)
+        if tid not in self.targets:
+            # New
+            self.targets[tid] = target
+            self.update_sensors(target, data.get("sensors", []))
+            return
+        # Apply Sensors
+        self.update_sensors(self.targets[tid], data.get("sensors", []))
+        # Check Changed
+        if target == self.targets[tid]:
             self.logger.info("Source config is same. Continue")
             return
-        self.sources_config[sc_id] = sc
-        self.invalidate_card_config(sc)
+        # Invalidate Cards
+        self.targets[tid] = target
+        self.invalidate_card_config(target)
         # diff = self.sources_config[sc_id].is_differ(sc)
         # if "condition" in diff:
         #    self.invalidate_card_config(sc)
@@ -763,51 +739,39 @@ class MetricsService(FastAPIService):
         Delete cards for source
         """
         c_id = int(c_id)
-        key_ctx = None
-        for source_type in ["managed_object", "sla_probe", "sensor", "agent"]:
-            if key_ctx in self.source_metrics:
-                key_ctx = (source_type, c_id)
-                break
-        if not key_ctx:
+        if c_id not in self.targets:
+            self.logger.debug("[%s] Unknown target for remove", c_id)
             return
-        self.logger.info("Delete cards for source: %s", key_ctx)
-        for mk in self.source_metrics[key_ctx]:
+        self.logger.info("Delete cards for source: %s", c_id)
+        for mk in self.target_card_map[c_id]:
             if mk not in self.cards:
                 continue
             card = self.cards.pop(mk)
             for a in card.alarms:
                 a.reset_state()
             del card
-        del self.source_metrics[key_ctx]
+        del self.targets[c_id]
 
     async def on_mappings_ready(self) -> None:
         """
         Called when all mappings are ready.
         """
         self.mappings_ready_event.set()
-        self.logger.info("%d SourceConfigs has been loaded", len(self.sources_config))
+        self.logger.info("%d Targets has been loaded", len(self.targets))
+        self.logger.info("%d Sensors has been loaded", len(self.sensors))
 
-    def iter_cards(self, sc: SourceConfig) -> Iterable[Card]:
-        """
-        Iter cards matched source config
-        :param sc: Source Config for filter
-        :return:
-        """
+    def iter_cards(self, target: MetricTarget) -> Iterable[Card]:
+        """Iter cards matched source config"""
         # Generate context
-        if (sc.type, sc.bi_id) not in self.source_metrics:
+        if target.bi_id not in self.target_card_map:
             return
         # Filter card by key labels
-        for mk in self.source_metrics[(sc.type, sc.bi_id)]:
+        for mk in self.target_card_map[target.bi_id]:
             self.logger.info("[%s] Found Card", mk)
             yield self.cards[mk]
 
-    def invalidate_card_config(self, sc: SourceConfig, delete: bool = False):
-        """
-        Invalidate Cards on config
-        :param sc:
-        :param delete: Remove Card
-        :return:
-        """
+    def invalidate_card_config(self, sc: MetricTarget, delete: bool = False):
+        """Invalidate Cards on config"""
         num = 0
         for card in self.iter_cards(sc):
             # Invalidate all card otherwise check rules condition need labels from metrics
@@ -860,11 +824,8 @@ class MetricsService(FastAPIService):
         self.logger.info("Invalidate %s cards", num)
 
     async def update_rules(self, data: Dict[str, Any]) -> None:
-        """
-        Apply Metric Rules change
-        :param data:
-        :return:
-        """
+        """Apply Metric Rules change"""
+        # Add Invalidate Graph
         invalidate_rules = set()
         for action in data["actions"]:
             rule_id = f"{data['id']}-{action['id']}"  # Rule id - join rule and action

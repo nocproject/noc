@@ -214,6 +214,7 @@ def test_case():
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
         # Activate sender
+        sender.activate(tx, "target", None)
         sender.activate(tx, "ts", ts)
         sender.activate(tx, "labels", data["labels"])
         result = tx.inputs.get(cdag.nodes["check"]) or None
