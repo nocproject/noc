@@ -201,8 +201,9 @@ def update_profiles(
             ll = get_label(o)
             processed += 1
             ctx = o.get_matcher_ctx()
-            for p_id, match in classifier:
-                if match(ctx):
+            for p_id, matchers in classifier:
+                match = any(match(ctx) for match in matchers)
+                if match:
                     break
             else:
                 logger.debug("[%s|%s] Nothing profile for match", o.id, ll)

@@ -103,7 +103,7 @@ class ServiceSummary(Document):
                         "let": {"i_service": "$service"},
                         "pipeline": [
                             {"$match": {"$expr": {"$eq": ["$_id", "$$i_service"]}}},
-                            {"$project": {"profile": 1, "subscriber": 1, "parent": 1}},
+                            {"$project": {"profile": 1, "subscriber": 1, "parent": 1, "state": 1}},
                         ],
                         # "localField": "service",
                         # "foreignField": "_id",

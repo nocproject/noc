@@ -79,25 +79,28 @@ class RemoteSystemChannel(object):
             return
         if cfg.no_data_check and values:
             self.last_received_hosts[cfg.id] = values[0][0]
-        if metric in self.unknown_metrics:
-            return
+        # if metric in self.unknown_metrics:
+        #     return
+        # Try sensor
+        if sensor_id:
+            sensor_cfg = self.service.lookup_remote_sensor(sensor_id, self.remote_system.name)
+        else:
+            sensor_cfg = None
         # Parse Labels for metrics
         cfg_metric = self.service.get_cfg_metric(self.collector, metric, labels=labels)
         if not cfg_metric:
             # Key Labels
-            #     self.unknown_metrics.add(metric)
+            self.unknown_metrics.add(metric)
+        if not sensor_id and not cfg_metric:
             return
-        # Try sensor
-        sensor_cfg = None
-        if sensor_id:
-            sensor_cfg = self.service.lookup_remote_sensor(sensor_id, self.remote_system.name)
         # Append data
         for v in values:
             # if ((v[0], cfg.id, frozenset(labels or [])) in self.data
             #         and cfg_metric.id in self.data[(v[0], cfg.id, frozenset(labels or []))]):
             #     self.deduplicated += 1
-            key = (v[0], cfg.id, frozenset(labels or []))
-            self.data[key][cfg_metric.id] = v[1]
+            if cfg_metric:
+                key = (v[0], cfg.id, frozenset(labels or []))
+                self.data[key][cfg_metric.id] = v[1]
             if sensor_cfg:
                 self.sensors_data[(v[0], sensor_cfg.id)] = v[1]
             self.size += len(str(v))

@@ -6,9 +6,11 @@
 # ---------------------------------------------------------------------
 
 # Third-Party modules
+import operator
 from django.db.models import Q
 from collections import defaultdict
-import operator
+from mongoengine.queryset.visitor import Q as m_q
+
 
 # NOC modules
 from .jinja import JinjaDashboard
@@ -212,7 +214,7 @@ class MODashboard(JinjaDashboard):
         sensor_types = defaultdict(list)
         sensor_enum = []
         o = Object.get_managed(self.object.id) or []
-        for s in Sensor.objects.filter(object__in=o):
+        for s in Sensor.objects.filter(m_q(managed_object=self.object) | m_q(object__in=o)):
             s_type = s.profile.name
             if not s.state.is_productive:
                 s_type = "missed"

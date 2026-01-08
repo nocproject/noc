@@ -11,6 +11,7 @@ import asyncio
 import operator
 import re
 import datetime
+import itertools
 from time import perf_counter
 from dataclasses import dataclass
 from typing import Any, Optional, Tuple, List, Dict, Set, Iterable, DefaultDict, FrozenSet
@@ -37,6 +38,7 @@ from noc.services.metricscollector.sourceconfig import (
 from noc.services.metricscollector.models.channel import RemoteSystemChannel
 
 NS = 1_000_000_000
+MAX_UNKNOWN_METRICS = 200
 
 
 @dataclass(frozen=True)
@@ -135,7 +137,12 @@ class MetricsCollectorService(FastAPIService):
         while not self.stopping:
             ch = await self.flush_queue.get()
             n_records = ch.records
-            self.logger.info("[%s] Flush Records: %s", ch.remote_system.name, n_records)
+            self.logger.info(
+                "[%s] Flush Records: %s, Sensors: %s",
+                ch.remote_system.name,
+                n_records,
+                len(ch.sensors_data),
+            )
             parts = defaultdict(list)
             for (clock, target, labels), mms in ch.data.items():
                 try:
@@ -241,7 +248,10 @@ class MetricsCollectorService(FastAPIService):
                 )
             if ch.unknown_metrics:
                 self.logger.info(
-                    "[%s] Unknown Metrics: %s", ch.remote_system.name, ",".join(ch.unknown_metrics)
+                    "[%s] Unknown Metrics (%s): %s",
+                    ch.remote_system.name,
+                    len(ch.unknown_metrics),
+                    ";".join(itertools.islice(ch.unknown_metrics, MAX_UNKNOWN_METRICS)),
                 )
 
     async def init_api(self):
@@ -416,7 +426,7 @@ class MetricsCollectorService(FastAPIService):
         except Exception as e:
             print(f"{data['id']} Error when processed source: {e}")
             return False
-        if s.sensors or (s.id in self.sensor_configs and self.source_configs[s.id].sensors):
+        if s.sensors or (s.id in self.source_configs and self.source_configs[s.id].sensors):
             await self.update_sensors(s, data.get("sensors"))
         if s.id not in self.source_configs:
             self.update_mappings(s.id, s.get_mappings())

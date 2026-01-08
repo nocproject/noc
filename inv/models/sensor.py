@@ -349,9 +349,10 @@ class Sensor(Document):
     @classmethod
     def get_metric_config(cls, sensor: "Sensor"):
         """Return MetricConfig for Metrics service"""
-        if not sensor.state.is_productive:
+        if not sensor.state.is_productive or not sensor.profile.enable_collect:
             return {}
         r = {
+            "id": str(sensor.id),
             "bi_id": sensor.bi_id,
             "name": sensor.label,
             "units": sensor.munits.code,

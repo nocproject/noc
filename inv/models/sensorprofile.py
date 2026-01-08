@@ -41,6 +41,7 @@ from noc.core.bi.decorator import bi_sync
 from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField
 from noc.core.matcher import build_matcher
 from noc.core.change.model import ChangeField
+from noc.config import config
 
 
 id_lock = Lock()
@@ -164,6 +165,26 @@ class SensorProfile(Document):
     @classmethod
     def can_set_label(cls, label):
         return Label.get_effective_setting(label, setting="enable_sensorprofile")
+
+    def iter_changed_datastream(self, changed_fields=None):
+        from noc.inv.models.sensor import Sensor
+
+        if not config.datastream.enable_cfgmetricstarget:
+            return
+        if (
+            changed_fields
+            and "enable_collect" not in changed_fields
+            and "units" not in changed_fields
+        ):
+            return
+        mos = {
+            mo.bi_id
+            for mo in Sensor.objects.filter(profile=self, managed_object__exists=True).scalar(
+                "managed_object"
+            )
+        }
+        for bi_id in mos:
+            yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
 
     @cachetools.cachedmethod(
         operator.attrgetter("_sensor_profile_matcher"),
