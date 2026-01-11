@@ -259,7 +259,7 @@ class SLAProbe(Document):
             "composed_metrics": [],
             "sharding_key": sla_probe.managed_object.bi_id if sla_probe.managed_object else None,
             "opaque_data": sla_probe.get_message_context(),
-            "rules": list(MetricRule.iter_rules_actions(sla_probe.effective_labels)),
+            "rules": MetricRule.get_affected_rules(sla_probe.get_matcher_ctx(), scope="sla"),
         }
 
     @property
@@ -320,15 +320,18 @@ class SLAProbe(Document):
             state = self.profile.workflow.get_default_state()
         else:
             state = self.state
-        return {
+        r = {
             "name": self.name,
             "description": self.description,
             "labels": list(self.effective_labels),
             "provisioning_op": self.get_provisioning_op(),
-            # "service_groups": list(self.effective_service_groups),
+            "service_groups": [],
             "caps": self.get_caps(),
             "state": str(state.id),
         }
+        if self.managed_object:
+            r["service_groups"] = self.managed_object.effective_service_groups
+        return r
 
     def get_action_ctx(self) -> Dict[str, Any]:
         """Context for running action"""

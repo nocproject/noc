@@ -79,7 +79,7 @@ class MatchRule(EmbeddedDocument):
         """Return instance queryset"""
         q = m_q()
         if self.labels:
-            q &= m_q(effective_labels_all=self.labels)
+            q &= m_q(effective_labels__all=self.labels)
         if self.resource_groups:
             q &= m_q(effective_service_groups__all=self.resource_groups)
         if self.type:

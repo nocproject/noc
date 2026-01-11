@@ -360,7 +360,7 @@ class CPE(Document):
             "fm_pool": cpe.controller.managed_object.get_effective_fm_pool().name,
             "exposed_labels": Label.build_expose_labels(cpe.effective_labels, "expose_metric"),
             "labels": [],
-            "rules": list(MetricRule.iter_rules_actions(cpe.effective_labels)),
+            "rules": list(MetricRule.get_affected_rules(cpe.get_matcher_ctx())),
             "sharding_key": cpe.controller.managed_object.bi_id if cpe.controller else None,
             "items": [],
         }

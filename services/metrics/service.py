@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # Metrics service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -412,20 +412,7 @@ class MetricsService(FastAPIService):
         # Clone nodes
         for node in src.nodes.values():
             # Apply sender nodes
-            nodes[node.node_id] = self.clone_and_add_node(
-                node,
-                prefix=prefix,
-                # config=(
-                #     {
-                #         "message_meta": config.meta or {},
-                #         # "message_labels": MX_H_VALUE_SPLITTER.join(config.labels).encode(
-                #         #     encoding=DEFAULT_ENCODING
-                #         # ),
-                #     }
-                #     if config
-                #     else None
-                # ),
-            )
+            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
         # Subscribe
         for o_node in src.nodes.values():
             node = nodes[o_node.node_id]
@@ -540,24 +527,23 @@ class MetricsService(FastAPIService):
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
             return
-        # Replace to card.iter_rules
-        target = card.config
         # s_labels = set(self.merge_labels(source.labels, labels))
         # Apply matched rules
         # for rule_id, rule in self.rules.items():
+        # Replace to card.iter_rules
         rules = card.get_rules()
-        if rules:
-            self.logger.debug("[%s] Apply Rules: %s", k, rules)
+        scopes = set()
         for rule_id, action_id in rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
-            rule_id = f"{rule_id}-{action_id}"
-            if rule_id not in self.rules:
-                self.logger.debug("[%s] Broken rules", rule_id)
+            rid = f"{rule_id}-{action_id}"
+            if rid not in self.rules:
+                self.logger.warning("[%s] Broken rules", rid)
                 continue
-            rule = self.rules[rule_id]
+            rule = self.rules[rid]
             if not rule or k[0] not in rule.match_scopes:
                 continue
+            scopes.add(k[0])
             nodes: Dict[str, BaseCDAGNode] = {}
             # Node
             for node in rule.graph.nodes.values():
@@ -577,27 +563,15 @@ class MetricsService(FastAPIService):
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
-                static_config = None
-                if node.name in {"alarm", "threshold"} and target.managed_object:
-                    slots = self.get_slot_limits(f"correlator-{target.fm_pool}")
-                    static_config = {
-                        "managed_object": f"bi_id:{target.managed_object}",
-                        "partition": target.bi_id % slots or 0,
-                        "pool": target.fm_pool,
-                        "labels": k[2],
-                    }
-                    if target.type == "sla_probe":
-                        static_config["sla_probe"] = target.bi_id
-                    if target.type == "sensor":
-                        static_config["sensor"] = target.bi_id
-                    self.logger.debug("Create Alarm Node with config %s", static_config)
                 nodes[node.node_id] = self.clone_and_add_node(
-                    node, prefix=self.get_key_hash(k), config=config, static_config=static_config
+                    node,
+                    prefix=self.get_key_hash(k),
+                    config=config,
                 )
             if (
-                f"{rule_id}::alarm" not in nodes
-                and f"{rule_id}::threshold" not in nodes
-                and f"{rule_id}::probe" not in nodes
+                f"{rid}::alarm" not in nodes
+                and f"{rid}::threshold" not in nodes
+                and f"{rid}::probe" not in nodes
             ):
                 self.logger.warning(
                     "[%s] Rules without ending output. Skipping", rule.graph.graph_id
@@ -626,8 +600,10 @@ class MetricsService(FastAPIService):
                 # Add alarms nodes for clear alarm on delete
                 if node.name in {"alarm", "threshold"}:
                     card.alarms += [node]
-            card.affected_rules.add(sys.intern(rule_id))
+            card.affected_rules.add(sys.intern(rid))
         card.is_dirty = False
+        if rules and scopes:
+            self.logger.info("[%s] Apply Rules: %s; To scopes: %s", k, rules, scopes)
         # Add complex probe
         for cp_metric_filed in card.composed_metrics:
             cp = self.add_probe(cp_metric_filed, k, is_composed=True)
@@ -681,6 +657,11 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "target", card.config)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
+        # Alarm
+        for alarm in card.alarms:
+            if card.config:
+                alarm.activate(tx, "target", card.config)
+                # Labels
         return tx.get_changed_state()
 
     def update_sensors(self, target: ObjectTarget, sensors: List[Dict[str, Any]]):
@@ -770,25 +751,22 @@ class MetricsService(FastAPIService):
             self.logger.info("[%s] Found Card", mk)
             yield self.cards[mk]
 
-    def invalidate_card_config(self, sc: MetricTarget, delete: bool = False):
+    def invalidate_card_config(self, target: MetricTarget):
         """Invalidate Cards on config"""
         num = 0
-        for card in self.iter_cards(sc):
+        for card in self.iter_cards(target):
             # Invalidate all card otherwise check rules condition need labels from metrics
-            if card.affected_rules:
-                card.invalidate_card()
-                card.affected_rules = set()
-            else:
-                card.set_dirty()
+            card.config = target
+            # if card.affected_rules:
+            #     card.invalidate_alarms()
+            #     card.affected_rules = set()
+            # else:
+            #     card.set_dirty()
             # Check alarm
-            for a in card.alarms:
-                if delete:
-                    a.reset_state()
-                    continue
-                if a.config.pool != sc.fm_pool:
-                    # Hack for ConfigProxy use
-                    a.config.__static["pool"] = sc.fm_pool
-                    # Alarm config update
+            # for a in card.alarms:
+            #     if delete:
+            #         a.reset_state()
+            #         continue
             num += 1
         if num:
             self.logger.info("Invalidate %s cards config", num)
@@ -813,14 +791,13 @@ class MetricsService(FastAPIService):
                 continue
             if c.affected_rules and c.affected_rules.intersection(rules):
                 c.invalidate_card()
+                deleted = c.invalidate_alarms(remove_all=is_delete)
+                self.logger.info("Invalidate alarm nodes: %s", deleted)
                 c.affected_rules = set()
                 # c.affected_rules -= rules
+                for node_id in deleted:
+                    await self.change_log.feed({node_id: None})
                 num += 1
-                if is_delete:
-                    while c.alarms:
-                        node = c.alarms.pop()
-                        await self.change_log.feed({node.node_id: None})
-                        del node
         self.logger.info("Invalidate %s cards", num)
 
     async def update_rules(self, data: Dict[str, Any]) -> None:
@@ -876,6 +853,8 @@ class MetricsService(FastAPIService):
                 self.logger.info("[%s] %s Changed. Invalidate cards for rules", r.id, diff)
                 self.rules[r_id] = r
                 invalidate_rules.add(r_id)
+        if not data["actions"]:
+            await self.delete_rules(data["id"])
         if invalidate_rules:
             await self.invalidate_card_rules(invalidate_rules)
 

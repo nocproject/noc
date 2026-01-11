@@ -11,8 +11,14 @@ from typing import List, Set, Any, Callable
 
 # NOC modules
 from noc.core.convert.dbm import dbm2mw, mw2dbm
+from noc.core.convert.percent import normalize_percent, normalize_range
 
-FN_LOCALS = {"dbm2mw": dbm2mw, "mw2dbm": mw2dbm}
+FN_LOCALS = {
+    "dbm2mw": dbm2mw,
+    "mw2dbm": mw2dbm,
+    "normalize_percent": normalize_percent,
+    "normalize_range": normalize_range,
+}
 
 
 class _VarVisitor(ast.NodeVisitor):

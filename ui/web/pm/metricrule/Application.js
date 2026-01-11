@@ -14,6 +14,7 @@ Ext.define("NOC.pm.metricrule.Application", {
     "NOC.pm.metrictype.LookupField",
     "NOC.fm.alarmclass.LookupField",
     "NOC.core.label.LabelField",
+    "NOC.core.tagfield.Tagfield",
     "NOC.core.ListFormField",
     "Ext.ux.form.GridField",
   ],
@@ -229,6 +230,14 @@ Ext.define("NOC.pm.metricrule.Application", {
           labelAlign: "top",
           rows: 5,
           items: [
+            {
+              xtype: "core.tagfield",
+              url: "/inv/resourcegroup/lookup/",
+              fieldLabel: __("Object Groups"),
+              name: "resource_groups",
+              allowBlank: true,
+              uiStyle: "extra",
+            },
             {
               name: "labels",
               xtype: "labelfield",

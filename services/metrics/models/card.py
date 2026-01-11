@@ -13,6 +13,7 @@ from typing import Dict, Tuple, List, Optional, Set, Iterable, Union
 from noc.core.perf import metrics
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.threshold import ThresholdNode
 from .target import SensorTarget, ManagedObjectTarget, ComponentTarget
 
 
@@ -35,7 +36,7 @@ class Card(object):
     __slots__ = ("affected_rules", "alarms", "component", "config", "is_dirty", "probes", "senders")
     probes: Dict[str, BaseCDAGNode]
     senders: Tuple[BaseCDAGNode, ...]
-    alarms: List[AlarmNode]
+    alarms: List[Union[ThresholdNode, AlarmNode]]
     affected_rules: Set[str]
     config: Optional[Union[ManagedObjectTarget, SensorTarget]]
     component: Optional[ComponentTarget]
@@ -49,17 +50,13 @@ class Card(object):
     def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
         """
         Iterate over nodes subscribed to Probes on Card
-        :return:
         """
         for s in node.iter_subscribers():
             yield s.node
             yield from cls.iter_subscribed_nodes(s.node)
 
     def invalidate_card(self):
-        """
-        Remove all subscribed node and set  is_dirty for applied rules
-        :return:
-        """
+        """Remove all subscribed node and set  is_dirty for applied rules"""
         for probe in self.probes.values():
             for node in self.iter_subscribed_nodes(probe):
                 if node in self.senders or node in self.probes or node in self.alarms:
@@ -73,10 +70,34 @@ class Card(object):
                 probe.unsubscribe(s.node, s.input)
         self.set_dirty()
 
+    def invalidate_alarms(self, remove_all: bool = False) -> List[Tuple[str, str]]:
+        """Remove not affected alarms node and return node_id"""
+        r = []
+        # Actual rules
+        rules = {f"{rule_id}-{action_id}" for rule_id, action_id in self.get_rules()}
+        if remove_all:
+            to_deleted = self.affected_rules
+        else:
+            to_deleted = self.affected_rules - rules
+        if not to_deleted:
+            return []
+        alarms = []
+        # Unsubscribe
+        for a in self.alarms:
+            if a.rule_id not in to_deleted:
+                alarms.append(a)
+            else:
+                r.append((a.node_id, a.name))
+                del a
+        self.alarms = alarms
+        if r:
+            self.set_dirty()
+        return r
+
     def set_dirty(self):
         self.is_dirty = True
 
-    def get_rules(self) -> Iterable[str]:
+    def get_rules(self) -> Iterable[Tuple[str, str]]:
         """Get metric rules"""
         if not self.component:
             return self.config.rules or []

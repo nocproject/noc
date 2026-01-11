@@ -397,6 +397,8 @@ class MetricAction(Document):
                 type="threshold" if thresholds else "alarm",
                 inputs=[key_input or g_input],
                 config={
+                    "rule_id": str(rule_id),
+                    "action_id": str(self.id),
                     "alarm_class": self.alarm_config.alarm_class.name,
                     "reference": self.alarm_config.reference
                     or "th:{{vars.rule}}:{{vars.action}}:{{object}}:{{alarm_class}}:{{';'.join(labels)}}",

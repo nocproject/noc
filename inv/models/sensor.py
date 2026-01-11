@@ -362,7 +362,7 @@ class Sensor(Document):
                 "expose_metric",
             ),
             "profile": sensor.profile.bi_id,
-            "rules": list(MetricRule.iter_rules_actions(sensor.effective_labels)),
+            "rules": MetricRule.get_affected_rules(sensor.get_matcher_ctx(), scope="sensor"),
         }
         if sensor.remote_system:
             r["hints"] = [RemoteSystem.clean_reference(sensor.remote_system, sensor.remote_id)]

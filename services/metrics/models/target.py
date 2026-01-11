@@ -8,15 +8,23 @@
 # Python modules
 import sys
 from dataclasses import dataclass
-from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar
+from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List
 
 MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
+
+
+def convert_rules(rules: List[Tuple[str, str]]) -> Tuple[Tuple[str, str], ...]:
+    """"""
+    r = []
+    for rule_id, action_id in rules:
+        r.append((sys.intern(str(rule_id)), sys.intern(str(action_id))))
+    return tuple(r)
 
 
 @dataclass(frozen=True, slots=True)
 class ComponentTarget:
     key_labels: Tuple[str, ...]  # noc::interface::*, noc::interface::Fa 0/24
-    rules: Tuple[str, ...]
+    rules: Optional[Tuple[Tuple[str, str], ...]]
     composed_metrics: Tuple[str, ...]  # Metric Field for compose metrics
     exposed_labels: Optional[Tuple[str, ...]]
 
@@ -25,7 +33,7 @@ class ComponentTarget:
         """Create Instance from data"""
         return ComponentTarget(
             key_labels=tuple(sys.intern(ll) for ll in data["key"]),
-            rules=data.get("rules"),
+            rules=convert_rules(data.get("rules", [])),
             composed_metrics=tuple(sys.intern(m) for m in data.get("composed_metrics") or []),
             exposed_labels=None,
         )
@@ -39,7 +47,7 @@ class MetricTarget:
     bi_id: int
     managed_object: Optional[int]
     fm_pool: Optional[str]
-    rules: Optional[Tuple[str, ...]]
+    rules: Optional[Tuple[Tuple[str, str], ...]]
     exposed_labels: Optional[Tuple[str, ...]]
     composed_metrics: Optional[Tuple[str, ...]]
     # not_save_metrics
@@ -59,7 +67,7 @@ class MetricTarget:
             "bi_id": data["bi_id"],
             "managed_object": data.get("managed_object"),
             "fm_pool": fm_pool,
-            "rules": data.get("rules"),
+            "rules": convert_rules(data.get("rules", [])),
             "exposed_labels": tuple(sys.intern(ll) for ll in data.get("exposed_labels", [])),
             "composed_metrics": tuple(sys.intern(ll) for ll in data.get("composed_metrics", [])),
         }
@@ -110,6 +118,7 @@ class SLAProbeTarget(MetricTarget):
     type = "sla_probe"
 
     opaque: Optional[Dict[str, Any]]
+    service: Optional[int] = None
 
     @property
     def meta(self):

@@ -2728,7 +2728,13 @@ class ManagedObject(NOCModel):
             ip = InterfaceProfile.get_by_id(iface["profile"])
             if not ip.metrics:
                 continue
-            rules = list(MetricRule.iter_rules_actions(iface["effective_labels"]))
+            rules = MetricRule.get_affected_rules(
+                {
+                    "labels": iface["effective_labels"],
+                    "service_groups": list(mo.effective_service_groups),
+                },
+                scope="interface",
+            )
             c_metrics = [
                 mc.metric_type.field_name
                 for mc in ip.metrics
@@ -2777,7 +2783,7 @@ class ManagedObject(NOCModel):
             ],
             "nodata_policy": nodata_policy,
             "nodata_ttl": 3600,
-            "rules": list(MetricRule.iter_rules_actions(mo.effective_labels)),
+            "rules": list(MetricRule.get_affected_rules(mo.get_matcher_ctx())),
             "items": items,
             "sensors": sensors,
             "sharding_key": mo.bi_id,

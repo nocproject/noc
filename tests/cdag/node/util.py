@@ -108,3 +108,12 @@ class PublishStub(ServiceStub):
     def iter_published(self):
         yield from self.messages
         self.messages = []
+
+
+@dataclass
+class MetricTarget:
+    type: str
+    id: str
+    bi_id: int
+    managed_object: Optional[int]
+    fm_pool: Optional[str]

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Threshold node
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,13 +17,13 @@ from pydantic import BaseModel, TypeAdapter
 
 # NOC modules
 from .base import BaseCDAGNode, ValueType, Category
-from .alarm import AlarmNodeConfig
 from noc.core.service.loader import get_service
 
 
 class ThresholdState(BaseModel):
     active: bool = False
     reference: str = None
+    pool: Optional[str] = None
     last_raise: datetime.datetime = None
 
 
@@ -78,8 +78,16 @@ class ThresholdItem(BaseModel):
         )
 
 
-class ThresholdNodeConfig(AlarmNodeConfig):
+class ThresholdNodeConfig(BaseModel):
     alarm_class: Optional[str] = None
+    reference: Optional[str] = None
+    error_text_template: Optional[str] = None
+    vars: Optional[List[VarItem]] = None
+    pool: str = ""
+    dry_run: bool = False  # For service test used
+    partition: int = 0
+    rule_id: str
+    action_id: str
     thresholds: List[ThresholdItem]
 
 
@@ -97,35 +105,53 @@ class ThresholdNode(BaseCDAGNode):
     state_cls = ThresholdNodeState
     categories = [Category.UTIL]
 
+    @property
+    def rule_id(self) -> str:
+        return f"{self.config.rule_id}-{self.config.action_id}"
+
     def iter_thresholds(self) -> Iterable[ThresholdItem]:
         for num, th in enumerate(ta_ListThresholdItem.validate_python(self.config.thresholds)):
             yield num, th
 
-    def get_value(self, x: ValueType, **kwargs):
+    # check pool
+    def get_value(self, x: ValueType, target: Any, **kwargs):
+        logger.debug("[%s] Getting threshold value: %s", target, x)
         for num, th in self.iter_thresholds():
             if self.is_active(str(num)) and th.is_clear_match(x):
                 self.clear_alarm(str(num))
             elif th.is_open_match(x) and not self.is_active(str(num)):
-                self.raise_alarm(x, th, str(num))
+                self.raise_alarm(x, target, th, str(num))
 
-    def raise_alarm(self, x: ValueType, th: ThresholdItem = None, tid: str = None) -> None:
+    def get_reference(self, th: ThresholdItem, target: Any) -> str:
+        """Create Alarm reference by config"""
+        template = "th:{{object}}:{{alarm_class}}"
+        if self.config.reference:
+            template = self.config.reference
+        elif th.alarm_labels:
+            template = "th:{{object or ''}}:{{alarm_class}}:{{';'.join(labels)}}"
+        return Template(template).render(
+            **{
+                "object": target.managed_object,
+                "alarm_class": th.alarm_class,
+                "labels": th.alarm_labels or [],
+                "vars": {v.name: v.value for v in self.config.vars or []},
+            }
+        )
+
+    def raise_alarm(self, x: ValueType, target, th: ThresholdItem = None, tid: str = None) -> None:
         """
         Raise alarm
         """
 
-        def q(v):
-            template = Template(v)
-            return template.render(x=x, config=self.config)
-
-        now = datetime.datetime.now()
+        logger.info("[%s] Raise Alarm", th)
+        now = datetime.datetime.now().replace(microsecond=0)
         msg = {
             "$op": "raise",
-            "reference": self.config_cls.get_reference(self.config),
+            "reference": self.get_reference(th, target),
             "timestamp": now.isoformat(),
-            "managed_object": self.config.managed_object,
+            "managed_object": f"bi_id:{target.managed_object}",
             "alarm_class": th.alarm_class,
-            "labels": list(self.config.labels or []) + (th.alarm_labels or []),
-            # x is numpy.float64 type, ?
+            "labels": th.alarm_labels or [],
             "vars": {
                 "ovalue": round(float(x), 3),
                 "tvalue": th.value,
@@ -134,23 +160,23 @@ class ThresholdNode(BaseCDAGNode):
         }
         # Render vars
         if self.config.vars:
-            msg["vars"].update({v.name: q(v.value) for v in self.config.vars})
+            msg["vars"].update({v.name: v.value for v in self.config.vars})
         if self.config.error_text_template:
             msg["vars"]["message"] = self.config.error_text_template
-        if self.config.sla_probe:
-            msg["vars"]["sla_probe"] = self.config.sla_probe
-        if self.config.sensor:
-            msg["vars"]["sensor"] = self.config.sensor
-        if self.config.service:
-            msg["vars"]["service"] = self.config.service
-        self.publish_message(msg)
-        self.set_state(tid, reference=self.config_cls.get_reference(self.config))
+        if target.type == "sla_probe":
+            msg["vars"]["sla_probe"] = target.bi_id
+            if target.service:
+                msg["vars"]["service"] = target.service
+        if target.type == "sensor":
+            msg["vars"]["sensor"] = target.bi_id
+        self.publish_message(msg, target.fm_pool)
+        self.set_state(tid, reference=self.get_reference(th, target), pool=target.fm_pool)
         logger.info(
             "[%s|%s|%s|%s] Raise alarm: %s",
             self.node_id,
-            self.config.managed_object,
-            ";".join(self.config.labels or []),
-            self.config.pool,
+            target.managed_object,
+            ";".join(th.alarm_labels or []),
+            target.fm_pool,
             x,
         )
 
@@ -164,13 +190,13 @@ class ThresholdNode(BaseCDAGNode):
             "timestamp": datetime.datetime.now().isoformat(),
             "message": message,
         }
-        self.publish_message(msg)
+        self.publish_message(msg, self.state.thresholds[threshold].pool)
         self.state.thresholds[threshold].active = False
         logger.info(
             "[%s|%s|%s] Clear alarm",
             self.node_id,
-            self.config.managed_object,
-            ";".join(self.config.labels or []),
+            threshold,
+            "",
         )
 
     def is_active(self, threshold: Optional[str] = None) -> bool:
@@ -180,25 +206,26 @@ class ThresholdNode(BaseCDAGNode):
             return False
         return any(t.active for t in self.state.thresholds.values())
 
-    def set_state(self, threshold: str, reference: Optional[str] = None):
+    def set_state(
+        self, threshold: str, reference: Optional[str] = None, pool: Optional[str] = None
+    ):
         if threshold in self.state.thresholds:
             self.state.thresholds[threshold].active = True
             self.state.thresholds[threshold].last_raise = datetime.datetime.now().replace(
                 microsecond=0
             )
             self.state.thresholds[threshold].reference = reference
+            self.state.thresholds[threshold].pool = pool
         else:
             self.state.thresholds[threshold] = ThresholdState(
                 active=True,
                 last_raise=datetime.datetime.now(),
                 reference=reference,
+                pool=pool,
             )
 
     def reset_state(self, threshold: Optional[str] = None):
-        """
-        Reset Alarm Node state
-        :return:
-        """
+        """Reset Alarm Node state"""
         if not self.is_active(threshold):
             return
         if threshold:
@@ -210,13 +237,11 @@ class ThresholdNode(BaseCDAGNode):
             self.clear_alarm(th, "Reset by change node config")
             state.active = False
 
-    def publish_message(self, msg):
-        if self.config.dry_run or not self.config.pool:
+    def publish_message(self, msg, pool: str):
+        if self.config.dry_run or not pool:
             return
         svc = get_service()
-        svc.publish(
-            orjson.dumps(msg), stream=f"dispose.{self.config.pool}", partition=self.config.partition
-        )
+        svc.publish(orjson.dumps(msg), stream=f"dispose.{pool}", partition=self.config.partition)
 
     def __del__(self):
         self.reset_state()
