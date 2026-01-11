@@ -36,8 +36,6 @@ from noc.core.escape import fm_unescape
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.comp import DEFAULT_ENCODING
 from noc.core.msgstream.message import Message
-from noc.core.diagnostic.types import DiagnosticState
-from noc.core.diagnostic.hub import SNMPTRAP_DIAG, SYSLOG_DIAG
 from noc.core.fm.event import Event, EventSource, Target, Var, EventSeverity
 from noc.core.mx import MessageType
 from noc.main.models.remotesystem import RemoteSystem
@@ -673,7 +671,6 @@ class ClassifierService(FastAPIService):
             event.type.profile = GENERIC_PROFILE
             metrics[EventMetrics.CR_UOBJECT] += 1
         else:
-            self.update_diagnostic(mo, event)
             event.type.profile = mo.profile.name
             self.logger.info("[%s|%s|%s] Managed object found", event.id, mo.name, mo.address)
         # Process event
@@ -735,7 +732,14 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
-        e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg) or e_action
+        e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg)
+        self.logger.debug(
+            "[%s|%s|%s] Result Action: %s",
+            event.id,
+            event.target.name,
+            event.target.address,
+            e_action,
+        )
         if e_action in (EventAction.DROP, EventAction.DROP_MX):
             self.logger.info(
                 "[%s|%s|%s] Dropped by action",
@@ -798,35 +802,6 @@ class ClassifierService(FastAPIService):
         Check codebooks for match
         """
         return cb1 == cb2
-
-    def update_diagnostic(self, mo: ManagedObject, event: Event):
-        """
-        Update ManagedObject diagnostic
-        Args:
-            mo: Managed Object Instance
-            event: Event Instance
-        """
-        # Check diagnostics
-        if event.type.source == EventSource.SYSLOG and (
-            SYSLOG_DIAG not in mo.diagnostics
-            or mo.diagnostics[SYSLOG_DIAG]["state"] == DiagnosticState.unknown
-        ):
-            mo.diagnostic.set_state(
-                diagnostic=SYSLOG_DIAG,
-                state=DiagnosticState.enabled,
-                reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event.timestamp,
-            )
-        if event.type.source == EventSource.SNMP_TRAP and (
-            SNMPTRAP_DIAG not in mo.diagnostics
-            or mo.diagnostics[SNMPTRAP_DIAG]["state"] == DiagnosticState.unknown
-        ):
-            mo.diagnostic.set_state(
-                diagnostic=SNMPTRAP_DIAG,
-                state=DiagnosticState.enabled,
-                reason=f"Receive Syslog from address: {event.target.address}",
-                changed_ts=event.timestamp,
-            )
 
     def register_event(
         self,

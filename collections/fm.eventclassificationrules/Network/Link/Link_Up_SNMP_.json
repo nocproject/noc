@@ -8,7 +8,7 @@
     "sources": ["SNMP Trap"],
     "patterns": [
         {
-            "key_re": "^IF-MIB::(ifName|ifDescr)\\.\\d+$",
+            "key_re": "^IF-MIB::(ifName|ifDescr)(:?\\.\\d+)?$",
             "value_re": "^(?P<interface>.+)$"
         },
         {

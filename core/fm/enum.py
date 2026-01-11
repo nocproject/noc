@@ -107,13 +107,13 @@ class EventAction(enum.Enum):
         """Check event to disposition"""
         return self == EventAction.DISPOSITION
 
-    def __or__(self, other):
-        if not other or self == EventAction.DROP:
+    def __or__(self, other: "EventAction"):
+        if not other or self.is_drop:
             return self
-        if other == EventAction.DROP:
-            return EventAction.DROP
-        if self == EventAction.DISPOSITION:
-            return EventAction.DISPOSITION
+        if other.is_drop:
+            return other
+        if other.to_dispose:
+            return other
         return other
 
 
