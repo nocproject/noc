@@ -263,17 +263,9 @@ class MetricRule(Document):
             else:
                 q = m_q(effective_labels__all=list(match.labels), managed_object__exists=True)
             if "interface" in scopes:
-                object_ids |= {
-                    x["managed_object"]
-                    for x in Interface.objects.filter(q)
-                    .distinct(field="managed_object")
-                    .as_pymongo()
-                }
+                object_ids |= set(Interface.objects.filter(q).distinct(field="managed_object"))
             if "sensor" in scopes:
-                object_ids |= {
-                    x["managed_object"]
-                    for x in Sensor.objects.filter(q).distinct(field="managed_object").as_pymongo()
-                }
+                object_ids |= set(Sensor.objects.filter(q).distinct(field="managed_object"))
             dq |= match.get_model_q()
             mq |= match.get_q()
 

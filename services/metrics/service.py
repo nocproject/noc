@@ -17,6 +17,7 @@ import hashlib
 # Third-party modules
 import orjson
 import cachetools
+from pydantic import ValidationError
 
 # NOC modules
 from noc.core.service.fastapi import FastAPIService
@@ -807,7 +808,11 @@ class MetricsService(FastAPIService):
         for action in data["actions"]:
             rule_id = f"{data['id']}-{action['id']}"  # Rule id - join rule and action
             graph = CDAG(f"{data['name']}-{action['name']}")
-            g_config = GraphConfig(**action["graph_config"])
+            try:
+                g_config = GraphConfig(**action["graph_config"])
+            except ValidationError as e:
+                self.logger.warning("[%s] Unknown Rule Format: %s", rule_id, e)
+                continue
             scopes = set()
             for a_input in action["inputs"]:
                 scopes.add(a_input["sender_id"])
