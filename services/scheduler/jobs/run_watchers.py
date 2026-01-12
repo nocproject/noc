@@ -50,4 +50,5 @@ class RunWatchersJob(PeriodicJob):
             next_ts = now + datetime.timedelta(seconds=WAIT_DEFAULT_INTERVAL_SEC)
         elif next_ts <= now:
             next_ts = now + datetime.timedelta(seconds=MIN_NEXT_SHIFT_SEC)
+        self.logger.debug("Schedule next Maintenance watcher TS: %s", next_ts)
         return next_ts

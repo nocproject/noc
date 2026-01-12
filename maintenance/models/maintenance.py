@@ -111,6 +111,7 @@ class Maintenance(Document):
             "stop",
             ("start", "is_completed"),
             "administrative_domain",
+            "is_completed",
             "watcher_wait_ts",
         ],
         "legacy_collections": ["noc.maintainance"],
@@ -180,7 +181,12 @@ class Maintenance(Document):
         """"""
         return (
             Maintenance.objects()
-            .aggregate([{"$group": {"_id": None, "wait_ts": {"$min": "$watcher_wait_ts"}}}])
+            .aggregate(
+                [
+                    {"$match": {"is_completed": {"$ne": True}}},
+                    {"$group": {"_id": None, "wait_ts": {"$min": "$watcher_wait_ts"}}},
+                ]
+            )
             .next()["wait_ts"]
         )
 
@@ -315,7 +321,10 @@ class Maintenance(Document):
             rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
             updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
         self.watchers = updates
-        wait_ts, _ = self.active_interval
+        if not updates:
+            wait_ts = None
+        else:
+            wait_ts, _ = self.active_interval
         if self.watcher_wait_ts != wait_ts:
             self.watcher_wait_ts = wait_ts
         if dry_run or self._created:
@@ -389,10 +398,12 @@ class Maintenance(Document):
         changed_fields = set()
         if hasattr(self, "_changed_fields"):
             changed_fields = set(self._changed_fields)
-        if "is_completed" in changed_fields and self.is_completed:
+        if (not changed_fields or "is_completed" in changed_fields) and self.is_completed:
             self.remove_maintenance()
             self.event("on_completed")
-        if self._created or ("is_completed" in changed_fields and not self.is_completed):
+        if (
+            not changed_fields or "is_completed" in changed_fields or "start" in changed_fields
+        ) and not self.is_completed:
             # Gen MX Event
             m_start, _ = self.active_interval
             self.add_watch(ObjectEffect.MX_EVENT, after=m_start, once=True, stage="start")
