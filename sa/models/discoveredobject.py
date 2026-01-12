@@ -211,6 +211,8 @@ class DiscoveredObject(Document):
         data, labels, changed = {}, [], False
         rids = set()
         for di in self.iter_sorted_data():
+            if di.is_delete:
+                continue
             for key, value in di.data.items():
                 if key in data or not value:
                     # Already set by priority source
