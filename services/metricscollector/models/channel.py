@@ -70,10 +70,7 @@ class RemoteSystemChannel(object):
         # Wait until feed became possible
         await self.feed_ready.wait()
         # Resolve Target, Resolve Metric, Filter Labels
-        cfg = self.service.lookup_source_by_name(
-            target,
-            collector=self.collector,
-        )  # receiver
+        cfg = self.service.lookup_source_by_name(target, collector=self.collector)
         if not cfg:
             self.unknown_hosts.add(target)
             return
@@ -91,7 +88,7 @@ class RemoteSystemChannel(object):
         if not cfg_metric:
             # Key Labels
             self.unknown_metrics.add(metric)
-        if not sensor_id and not cfg_metric:
+        if not sensor_cfg and not cfg_metric:
             return
         # Append data
         for v in values:

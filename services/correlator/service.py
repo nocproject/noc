@@ -431,11 +431,11 @@ class CorrelatorService(FastAPIService):
                 after_ts = (
                     alarm.timestamp + datetime.timedelta(seconds=rule.rule_apply_delay)
                 ).replace(microsecond=0)
-                self.logger.info(
+                self.logger.debug(
                     "[%s] Processed rule: %s, After: %s", alarm.id, rule.name, after_ts
                 )
             else:
-                self.logger.info("[%s] Processed rule: %s", alarm.id, rule.name)
+                self.logger.debug("[%s] Processed rule: %s", alarm.id, rule.name)
             # Calculate Severity and to match
             for gi in rule.iter_groups(alarm):
                 if gi.reference and gi.reference not in alarm_groups:
@@ -531,7 +531,9 @@ class CorrelatorService(FastAPIService):
         labels = labels or []
         # @todo: Make configurable
         if managed_object and Interaction.Alarm not in managed_object.interactions:
-            self.logger.info("Managed object is allowed processed Alarm. Do not raise alarm")
+            self.logger.info(
+                "[%s] Managed object is allowed processed Alarm. Do not raise alarm", managed_object
+            )
             return None
         if not reference and managed_object:
             reference = self.get_default_reference(
@@ -1107,14 +1109,15 @@ class CorrelatorService(FastAPIService):
             remote_system=remote_system,
         ):
             a_vars = rule.get_vars(r_vars)
-            if alarm_class and rule.alarm_class == alarm_class:
-                reference = req.reference
-            else:
+            if not req.reference:
                 reference = self.get_disposition_reference(
                     alarm_class=rule.alarm_class,
                     a_vars=a_vars,
                     managed_object=managed_object,
                 )
+            else:
+                # Deduplication?
+                reference = req.reference
             try:
                 if rule.action == "clear" and rule.combo_condition == "none":
                     await self.clear_alarm_from_rule(
@@ -1276,6 +1279,9 @@ class CorrelatorService(FastAPIService):
                 severity=req.severity,
                 subject=req.name,
             )
+        if not group_alarm:
+            # Create alarm not allowed. Skipping
+            return
         if req.g_type == GroupType.SERVICE and not req.alarms:
             # For auto groups not clear Group Alarm
             self.resolve_deferred_groups(group_alarm.reference)
