@@ -68,6 +68,10 @@ class EventConfig:
                 window=ff["window"],
                 vars=[vv["name"] for vv in data["vars"] if vv["match_suppress"]],
             )
+        if "link_event" in data:
+            ec.link_event = data["link_event"]
+        # if v.required and v.resource_model == "inv.Interface":
+        #   ec.link_event = True
         for vv in data["vars"]:
             v = VarItem(
                 name=vv["name"],
@@ -75,8 +79,6 @@ class EventConfig:
                 required=vv["required"],
                 resource_model=vv.get("resource_model"),
             )
-            if v.required and v.resource_model == "inv.Interface":
-                ec.link_event = True
             ec.vars.append(v)
         # for rr in data["resources"]:
         #     ec.resolvers[rr["resource"]] = lambda x: True

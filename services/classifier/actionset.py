@@ -190,13 +190,15 @@ class ActionSet(object):
             "service_groups": frozenset(target.effective_service_groups or []) if target else [],
             "remote_system": event.remote_system,
         }
-        event_action: Optional[EventAction] = None
+        drop_action: Optional[EventAction] = None
+        to_dispose = False
         resource_action = None
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
+            r = a.action
             # Event Handlers
             for h in a.iter_event_actions():
                 try:
-                    event_action = h(event, target) or event_action
+                    r = h(event, target) or r
                 except Exception as e:
                     self.logger.error(
                         "[%s|%s] Error when execute event: %s", event.id, a.name, str(e)
@@ -225,19 +227,26 @@ class ActionSet(object):
                 # Default Link Event
                 if (
                     config.is_link_event
+                    and not resource_action
                     and hasattr(instance, "as_resource")
                     and instance.as_resource().startswith("if:")
                 ):
                     # "inv.Interface"
                     resource_action = self.get_resource_action(instance, event=event)
-        # Drop Event is Preferred
-        if event_action and event_action.is_drop:
-            return event_action
+            if r.to_dispose:
+                to_dispose |= True
+            elif r.is_drop and not drop_action:
+                drop_action = r
         # Resource Action
         if resource_action:
             return resource_action
+        # Preferred Disposition
+        if to_dispose:
+            return EventAction.DISPOSITION
+        if drop_action:
+            return drop_action
         # Log - default Action
-        return event_action or EventAction.LOG
+        return EventAction.LOG
 
     @staticmethod
     def run_event_handler(

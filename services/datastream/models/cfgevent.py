@@ -71,6 +71,7 @@ class CfgEvent(BaseModel):
     bi_id: str
     event_class: EventClass
     is_unique: bool = False
+    link_event: bool = False
     filters: Optional[List[FilterConfig]] = None
     # vars
     vars: Optional[List[VarItem]] = None

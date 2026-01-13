@@ -80,11 +80,6 @@ class EventAction(enum.Enum):
     LOG_ERROR = 4
     DROP_MX = 5
 
-    def __lt__(self, other):
-        if self.__class__ is other.__class__:
-            return self.value < other.value
-        return NotImplemented
-
     @classmethod
     def from_rule(cls, action: str) -> "EventAction":
         """Convert rule value to Action"""
@@ -107,14 +102,13 @@ class EventAction(enum.Enum):
         """Check event to disposition"""
         return self == EventAction.DISPOSITION
 
-    def __or__(self, other: "EventAction"):
-        if not other or self.is_drop:
-            return self
+    def is_priority(self, other: "EventAction") -> bool:
+        """"""
+        if not other:
+            return True
         if other.is_drop:
-            return other
-        if other.to_dispose:
-            return other
-        return other
+            return False
+        return self.is_drop or self.to_dispose
 
 
 class AlarmAction(enum.Enum):

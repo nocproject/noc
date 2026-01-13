@@ -706,15 +706,7 @@ class ClassifierService(FastAPIService):
         self.dedup_filter.register(event, e_cfg, duplicate_vars)
         # Calculate rule variables
         event.vars, e_res, error = self.ruleset.eval_vars(resolved_vars, mo, e_cfg=e_cfg)
-        if not error:
-            self.logger.info(
-                "[%s|%s|%s] Event processed successfully: %s",
-                event.id,
-                event.target.name,
-                event.target.address,
-                e_cfg.event_class,
-            )
-        else:
+        if error:
             e_action = EventAction.LOG_ERROR
             self.logger.info(
                 "[%s|%s|%s] Event processed with error: %s/%s",
@@ -733,11 +725,13 @@ class ClassifierService(FastAPIService):
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
         e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg)
-        self.logger.debug(
-            "[%s|%s|%s] Result Action: %s",
+        self.logger.info(
+            "[%s|%s|%s] Event processed successfully: %s (%s), Resolution: %s",
             event.id,
             event.target.name,
             event.target.address,
+            e_cfg.event_class,
+            event.type.severity,
             e_action,
         )
         if e_action in (EventAction.DROP, EventAction.DROP_MX):

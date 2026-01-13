@@ -429,6 +429,7 @@ class EventClass(Document):
                 "id": str(event_class.id),
                 "bi_id": str(event_class.bi_id),
             },
+            "link_event": event_class.link_event,
             "vars": [],
             "filters": [],
             "handlers": [],
