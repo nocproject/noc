@@ -151,7 +151,9 @@ class MessageMeta(enum.Enum):
 
     def clean_header_value(self, value: Any) -> bytes:
         if self.config.is_list:
-            return MX_H_VALUE_SPLITTER.join(value).encode(DEFAULT_ENCODING)
+            if not isinstance(value, list):
+                value = [value]
+            return MX_H_VALUE_SPLITTER.join([str(x) for x in value]).encode(DEFAULT_ENCODING)
         return str(value).encode(DEFAULT_ENCODING)
 
 

@@ -40,7 +40,7 @@ class Action:
     event: Tuple[Callable, ...] = None
     target: Tuple[Callable, ...] = None
     resource: Dict[str, Tuple[Callable, ...]] = None
-    action: EventAction.LOG = EventAction.LOG
+    action: EventAction = EventAction.LOG
 
     def iter_event_actions(self) -> Iterable[Callable]:
         """Iter event action"""
@@ -176,7 +176,7 @@ class ActionSet(object):
         target: ManagedObject,
         resources: List[Any],
         config: EventConfig,
-    ) -> EventAction:
+    ) -> Tuple[EventAction, int]:
         """
         Processed actions on Event
         Args:
@@ -193,6 +193,7 @@ class ActionSet(object):
         drop_action: Optional[EventAction] = None
         to_dispose = False
         resource_action = None
+        num = 0
         for a in self.iter_actions(config.event_class_id, ctx, event.vars):
             r = a.action
             # Event Handlers
@@ -237,16 +238,18 @@ class ActionSet(object):
                 to_dispose |= True
             elif r.is_drop and not drop_action:
                 drop_action = r
+            self.logger.debug("[%s] Processed action. Resolution: %s", a.name, r)
+            num += 1
         # Resource Action
         if resource_action:
-            return resource_action
+            return resource_action, num
         # Preferred Disposition
         if to_dispose:
-            return EventAction.DISPOSITION
+            return EventAction.DISPOSITION, num
         if drop_action:
-            return drop_action
+            return drop_action, num
         # Log - default Action
-        return EventAction.LOG
+        return EventAction.LOG, num
 
     @staticmethod
     def run_event_handler(

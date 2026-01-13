@@ -724,15 +724,16 @@ class ClassifierService(FastAPIService):
         # Fill suppress filter
         self.suppress_filter.register(event, e_cfg)
         # Call Actions
-        e_action = self.action_set.run_actions(event, mo, e_res, config=e_cfg)
+        e_action, rules = self.action_set.run_actions(event, mo, e_res, config=e_cfg)
         self.logger.info(
-            "[%s|%s|%s] Event processed successfully: %s (%s), Resolution: %s",
+            "[%s|%s|%s] Event processed successfully: %s (%s), Resolution: %s, Rules: %d",
             event.id,
             event.target.name,
             event.target.address,
             e_cfg.event_class,
             event.type.severity,
             e_action,
+            rules,
         )
         if e_action in (EventAction.DROP, EventAction.DROP_MX):
             self.logger.info(

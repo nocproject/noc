@@ -327,14 +327,14 @@ class Maintenance(Document):
             wait_ts, _ = self.active_interval
         if self.watcher_wait_ts != wait_ts:
             self.watcher_wait_ts = wait_ts
-        if dry_run or self._created:
-            return
         m_ts = self.get_min_wait_ts()
-        if wait_ts and (not m_ts or wait_ts < m_ts):
+        if wait_ts and (not m_ts or wait_ts <= m_ts):
             scheduler = Scheduler(SCHEDULER)
             scheduler.submit(
                 jcls=WATCHER_JCLS, key="maintenance.Maintenance", ts=get_next_ts(wait_ts)
             )
+        if dry_run or self._created:
+            return
         set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
         self.update(**set_op)
 
