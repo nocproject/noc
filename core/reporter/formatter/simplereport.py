@@ -137,7 +137,7 @@ class SimpleReportFormatter(DataFormatter):
         if not columns:
             raise ValueError("Not setting column for Report")
         data = []
-        fields = [c.name for c in columns]
+        fields = [c.name.rsplit(".", maxsplit=1)[-1] for c in columns]
         for rb in self.root_band.iter_report_bands():
             if rb.name == HEADER_BAND:
                 # Skip Header Band

@@ -1,0 +1,421 @@
+{
+    "name": "Load Metrics",
+    "$collection": "main.reports",
+    "uuid": "e193a2bf-0320-4f98-978f-cb0f0ca550f9",
+    "title": "Load Metrics (New)",
+    "description": "Load Metrics",
+    "bands": [
+        {
+            "name": "Root",
+            "orientation": "H",
+            "queries": [
+                {
+                    "datasource": "loadmetricsds",
+                    "json": null
+                },
+                {
+                    "datasource": "managedobjectds",
+                    "json": null
+                }
+            ]
+        },
+        {
+            "name": "load_interfaces",
+            "condition_param": "reporttype",
+            "condition_value": "load_interfaces",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select managed_object_id, name, address, model, administrativedomain, segment, container, iface_name, iface_description, iface_speed, load_in_perc, load_in_avg, load_in_p, load_out_perc, load_out_avg, load_out_p, octets_in_sum, octets_out_sum, errors_in, errors_in_sum, errors_out, errors_out_sum, discards_in, discards_out, interface_flap, lastchange, status_oper_last, interface_load_url, mac_counter from Root"
+                }
+            ]
+        },
+        {
+            "name": "load_cpu",
+            "condition_param": "reporttype",
+            "condition_value": "load_cpu",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select managed_object_id, name, address, model, administrativedomain, segment, container, cpu_usage, memory_usage from Root"
+                }
+            ]
+        },
+        {
+            "name": "ping",
+            "condition_param": "reporttype",
+            "condition_value": "ping",
+            "orientation": "H",
+            "parent": "Root",
+            "queries": [
+                {
+                    "ds_query": "select managed_object_id, name, address, model, administrativedomain, segment, container, ping_rtt, ping_attempts from Root"
+                }
+            ]
+        }
+    ],
+    "bands_format": [
+        {
+            "name": "load_interfaces",
+            "column_format": [
+                {
+                    "name": "managed_object_id",
+                    "title": "MANAGED_OBJECT_ID",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.name",
+                    "title": "OBJECT_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.address",
+                    "title": "OBJECT_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.model",
+                    "title": "OBJECT_PLATFORM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.administrativedomain",
+                    "title": "OBJECT_ADM_DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.segment",
+                    "title": "OBJECT_SEGMENT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.container",
+                    "title": "CONTAINER_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_name",
+                    "title": "INTERFACE_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_description",
+                    "title": "INTERFACE_DESCRIPTION",
+                    "format_type": "string"
+                },
+                {
+                    "name": "iface_speed",
+                    "title": "INTERFACE_SPEED",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_in_perc",
+                    "title": "LOAD_IN_PERC",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_in_avg",
+                    "title": "LOAD_IN_AVG",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_in_p",
+                    "title": "LOAD_IN_P",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_out_perc",
+                    "title": "LOAD_OUT_PERC",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_out_avg",
+                    "title": "LOAD_OUT_AVG",
+                    "format_type": "string"
+                },
+                {
+                    "name": "load_out_p",
+                    "title": "LOAD_OUT_P",
+                    "format_type": "string"
+                },
+                {
+                    "name": "octets_in_sum",
+                    "title": "OCTETS_IN_SUM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "octets_out_sum",
+                    "title": "OCTETS_OUT_SUM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "errors_in",
+                    "title": "ERRORS_IN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "errors_in_sum",
+                    "title": "ERRORS_IN_SUM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "errors_out",
+                    "title": "ERRORS_OUT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "errors_out_sum",
+                    "title": "ERRORS_OUT_SUM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "discards_in",
+                    "title": "DISCARDS_IN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "discards_out",
+                    "title": "DISCARDS_OUT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interface_flap",
+                    "title": "INTERFACE_FLAP",
+                    "format_type": "string"
+                },
+                {
+                    "name": "lastchange",
+                    "title": "LAST_CHANGE",
+                    "format_type": "string"
+                },
+                {
+                    "name": "status_oper_last",
+                    "title": "STATUS_OPER_LAST",
+                    "format_type": "string"
+                },
+                {
+                    "name": "interface_load_url",
+                    "title": "INTERFACE_LOAD_URL",
+                    "format_type": "string"
+                },
+                {
+                    "name": "mac_counter",
+                    "title": "MAC_COUNTER",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": "-=LOAD INTERFACES=-"
+        },
+        {
+            "name": "load_cpu",
+            "column_format": [
+                {
+                    "name": "managed_object_id",
+                    "title": "MANAGED_OBJECT_ID",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.name",
+                    "title": "OBJECT_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.address",
+                    "title": "OBJECT_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.model",
+                    "title": "OBJECT_PLATFORM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.administrativedomain",
+                    "title": "OBJECT_ADM_DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.segment",
+                    "title": "OBJECT_SEGMENT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.container",
+                    "title": "CONTAINER_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "cpu_usage",
+                    "title": "CPU_USAGE",
+                    "format_type": "string"
+                },
+                {
+                    "name": "memory_usage",
+                    "title": "MEMORY_USAGE",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": "-=LOAD CPU=-"
+        },
+        {
+            "name": "ping",
+            "column_format": [
+                {
+                    "name": "managed_object_id",
+                    "title": "MANAGED_OBJECT_ID",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.name",
+                    "title": "OBJECT_NAME",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.address",
+                    "title": "OBJECT_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.model",
+                    "title": "OBJECT_PLATFORM",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.administrativedomain",
+                    "title": "OBJECT_ADM_DOMAIN",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.segment",
+                    "title": "OBJECT_SEGMENT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "managedobjectds.container",
+                    "title": "CONTAINER_ADDRESS",
+                    "format_type": "string"
+                },
+                {
+                    "name": "ping_rtt",
+                    "title": "PING_RTT",
+                    "format_type": "string"
+                },
+                {
+                    "name": "ping_attempts",
+                    "title": "PING_ATTEMPTS",
+                    "format_type": "string"
+                }
+            ],
+            "title_template": "-=PING=-"
+        }
+    ],
+    "category": "inv",
+    "code": null,
+    "hide": false,
+    "localization": {
+        "title": {
+            "ru": "Отчет по метрикам (Новый)"
+        },
+        "description": {
+            "ru": "Отчет по метрикам"
+        },
+        "parameters.start": {
+            "ru": "С"
+        },
+        "parameters.end": {
+            "ru": "По"
+        },
+        "parameters.segment": {
+            "ru": "Сегмент"
+        },
+        "parameters.administrative_domain": {
+            "ru": "По З.О."
+        },
+        "parameters.resource_group": {
+            "ru": "По Группе устройств"
+        },
+        "parameters.interface_profile": {
+            "ru": "По Профилю интерфейса"
+        },
+        "parameters.exclude_zero": {
+            "ru": "Исключить интерфейсы с нулевой загрузкой"
+        }
+    },
+    "parameters": [
+        {
+            "name": "reporttype",
+            "description": null,
+            "choices": ["load_interfaces", "load_cpu", "ping"],
+            "hide": false,
+            "label": "Report Type",
+            "required": true,
+            "type": "combo-choice"
+        },
+        {
+            "name": "start",
+            "description": null,
+            "hide": false,
+            "label": "From",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "end",
+            "description": null,
+            "hide": false,
+            "label": "To",
+            "required": true,
+            "type": "date"
+        },
+        {
+            "name": "segment",
+            "description": null,
+            "hide": false,
+            "label": "Segment",
+            "model_id": "inv.NetworkSegment",
+            "type": "model"
+        },
+        {
+            "name": "administrative_domain",
+            "description": null,
+            "hide": false,
+            "label": "By Adm. domain",
+            "model_id": "sa.AdministrativeDomain",
+            "type": "model"
+        },
+        {
+            "name": "resource_group",
+            "description": null,
+            "hide": false,
+            "label": "By Resource Group",
+            "model_id": "inv.ResourceGroup",
+            "type": "model"
+        },
+        {
+            "name": "interface_profile",
+            "description": null,
+            "hide": false,
+            "label": "By Interface Profile",
+            "model_id": "inv.InterfaceProfile",
+            "type": "model"
+        },
+        {
+            "name": "exclude_zero",
+            "description": null,
+            "hide": false,
+            "label": "Exclude interface that has zero load",
+            "type": "bool"
+        }
+    ],
+    "templates": [
+        {
+            "code": "DEFAULT",
+            "handler": "simplereport",
+            "has_preview": false,
+            "is_alterable_output": true,
+            "output_type": "csv"
+        }
+    ]
+}
