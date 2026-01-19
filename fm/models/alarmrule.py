@@ -305,6 +305,8 @@ class AlarmRule(Document):
         if rule.min_severity:
             r["min_severity"] = rule.min_severity.severity
         if rule.escalation_profile:
+            r["escalation_profile"] = str(rule.escalation_profile.id)
+            r["escalation_delay"] = rule.escalation_profile.get_delay()
             r["job"] = EscalationProfile.get_config(rule.escalation_profile)
         if rule.max_severity:
             r["max_severity"] = rule.max_severity.severity

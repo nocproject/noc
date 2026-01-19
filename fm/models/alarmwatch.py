@@ -28,6 +28,7 @@ class Effect(enum.Enum):
     SUBSCRIPTION = "subscription"
     HANDLER = "handler"
     ALARM_JOB = "alarm_job"
+    ESCALATION = "escalation"
     SEVERITY = "severity"
     STOP_CLEAR = "stop_clear"
     CLEAR_ALARM = "clear_alarm"
@@ -53,6 +54,7 @@ class WatchItem(EmbeddedDocument):
     once: bool = BooleanField(default=True)
     immediate: bool = BooleanField(default=False)
     clear_only: bool = BooleanField(default=False)
+    root_only: bool = BooleanField(default=False)
     after = DateTimeField(required=False)
     args = DictField(default=dict)
 
@@ -88,6 +90,12 @@ class WatchItem(EmbeddedDocument):
                 h(**self.get_args(alarm, is_clear), dry_run=dry_run)
             case Effect.ALARM_JOB:
                 alarm.refresh_job(is_clear, job_id=self.key)
+            case Effect.ESCALATION:
+                alarm.refresh_escalation_job(
+                    profile=self.key,
+                    is_clear=is_clear,
+                    job_id=self.args.get("job_id"),
+                )
             case Effect.REWRITE_ALARM_CLASS:
                 alarm.refresh_alarm_class(dry_run=dry_run)
             case Effect.CLEAR_ALARM:

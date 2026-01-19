@@ -72,6 +72,7 @@ class EventAlarmRule:
     combo_window: int = 0
     combo_count: int = 0
     combo_event_classes: List[str] = None
+    preference: int = 999
     reference_lookup: bool = False
     stop_disposition: bool = False
 
@@ -104,6 +105,7 @@ class EventAlarmRule:
             unique=alarm_class.is_unique,
             stop_disposition=rule.stop_processing,
             combo_condition="none",
+            preference=rule.preference,
             vars_transform=vars_transform,
         )
         if rule.reference_lookup:

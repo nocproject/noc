@@ -44,11 +44,13 @@ class AlarmActionRunner(object):
         allowed_actions: List[AlarmAction] = None,
         logger: Optional[Logger] = None,
         services: Optional[List[Service]] = None,
+        groups: List[int] = None,
         dry_run: bool = False,
     ):
         self.items = items
         self.alarm: "ActiveAlarm" = items[0].alarm
-        self.services: List[Service] = services
+        self.affected_services: List[Service] = services
+        self.groups = groups
         self.allowed_actions: List[AllowedAction] = allowed_actions or []
         self.logger = logger or logging.getLogger("AlarmActionRunner")
         self.alarm_log = []
@@ -133,15 +135,15 @@ class AlarmActionRunner(object):
     def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
         """Return Affected Service item for escalation doc"""
         r = []
-        if "service" in self.alarm.components:
-            svc = self.alarm.components.service
-            return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
-        if not self.services:
+        # if "service" in self.alarm.components:
+        #     svc = self.alarm.components.service
+        #     return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
+        if not self.affected_services:
             return r
         # (
         #             list(Service.objects.filter(id__in=services)) if services else []
         #         )
-        for svc in self.services:
+        for svc in self.affected_services:
             r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
         return r
 

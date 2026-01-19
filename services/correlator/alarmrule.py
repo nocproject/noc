@@ -20,7 +20,6 @@ from noc.core.fm.enum import GroupType, AlarmAction
 from noc.fm.models.alarmrule import AlarmRule as CfgAlarmRule
 from noc.fm.models.alarmclass import AlarmClass
 from noc.fm.models.activealarm import ActiveAlarm
-from noc.fm.models.escalationprofile import EscalationProfile
 from noc.fm.models.alarmwatch import Effect
 
 
@@ -81,7 +80,8 @@ class AlarmRule(object):
     rewrite_alarm_class: Optional[AlarmClass] = None
     action: Optional[str] = None
     rule_apply_delay: Optional[int] = None
-    escalation_profile: Optional[EscalationProfile] = None
+    escalation_profile: Optional[str] = None
+    escalation_delay: int = 60
 
     def __init__(self, name, rid):
         self.name = name
@@ -123,6 +123,9 @@ class AlarmRule(object):
                     AllowedAction.model_validate(c) for c in config["job"]["allowed_actions"]
                 ],
             )
+        if config.get("escalation_profile"):
+            rule.escalation_profile = config["escalation_profile"]
+            rule.escalation_delay = config["escalation_delay"]
         rule.severity_policy = config["severity_policy"]
         if "min_severity" in config:
             rule.min_severity = config["min_severity"]

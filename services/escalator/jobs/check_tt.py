@@ -21,7 +21,7 @@ from noc.core.fm.request import ActionConfig
 from noc.core.fm.enum import AlarmAction
 from noc.aaa.models.user import User
 from noc.fm.models.ttsystem import TTSystem
-from noc.services.correlator.service import AlarmJob
+from noc.services.correlator.alarmjob import AlarmJob
 from noc.config import config
 from noc.core.text import alnum_key
 

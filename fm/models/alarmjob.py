@@ -21,6 +21,7 @@ from mongoengine.fields import (
     DictField,
     LongField,
     FloatField,
+    ListField,
     IntField,
 )
 
@@ -70,6 +71,8 @@ class AlarmItem(EmbeddedDocument):
     meta = {"strict": False}
 
     alarm = ObjectIdField()
+    # For requested Escalation by ManagedObject
+    # managed_object_id: Int
     status = EnumField(ItemStatus, default=ItemStatus.NEW)
     # Already escalated doc
 
@@ -138,6 +141,7 @@ class AlarmJob(Document):
     # labels = ListField(StringField())
     # effective_labels = ListField(StringField())
     status = EnumField(JobStatus, default=JobStatus.WAITING, required=True)
+    escalation_profile = ObjectIdField(required=False)
     # Start escalation timestamp
     created_at = DateTimeField(required=True)
     started_at = DateTimeField(required=False)
@@ -155,10 +159,10 @@ class AlarmJob(Document):
     groups = EmbeddedDocumentListField(GroupItem)
     max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
-    # affected_services = ListField(ObjectIdField())
-    # affected_maintenances = ListField(ObjectIdField())
+    affected_services = ListField(ObjectIdField())
+    affected_maintenances = ListField(ObjectIdField())
     # Escalation summary
-    # severity: int = IntField(min_value=0)
+    severity: int = IntField(min_value=0)
     # subject: Optional[str] = StringField(required=False)
     total_objects: List[ObjectSummaryItem] = EmbeddedDocumentListField(ObjectSummaryItem)
     total_services: List[SummaryItem] = EmbeddedDocumentListField(SummaryItem)

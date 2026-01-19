@@ -193,7 +193,7 @@ class ItemStatus(enum.Enum):
     FAIL = "fail"  # escalation fail
     EXISTS = "exists"  # Exists on another escalation
     REMOVED = "removed"  # item removed
-    ARCHIVED = "archived"
+    ARCHIVED = "archived"  # Item deleted from collections
 
     @classmethod
     def from_alarm(cls, alarm, is_clear: bool = False):
