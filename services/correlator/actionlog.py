@@ -197,6 +197,8 @@ class ActionLog(object):
         """
         if user and not isinstance(user, User):
             user = User.get_by_id(int(user))
+        elif action.assigned:
+            user = User.get_by_id(int(action.assigned))
         if tt_system:
             tt_system = TTSystem.get_by_id(tt_system)
         elif stub_tt_system:

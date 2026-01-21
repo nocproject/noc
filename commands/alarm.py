@@ -213,7 +213,7 @@ class Command(BaseCommand):
         name = name or "default"
         for path in args:
             with open(path) as f:
-                if path.endswith("yml"):
+                if path.endswith("yml") or path.endswith("yaml"):
                     data = yaml.safe_load(f.read())
                     ac = AlarmConfig(**data[name])
                     self.run_scr_action(ac)
@@ -253,12 +253,15 @@ class Command(BaseCommand):
         self, alarms, profile: str = None, is_end: bool = False, *args, **options
     ):
         alarm = get_alarm(alarms[0])
-        profile = EscalationProfile.get_by_id(profile)
-        if not profile:
+        ep = EscalationProfile.get_by_id(profile)
+        if not ep:
             self.die("Not found Rule for Alarm, Set static")
-        req = profile.from_alarm(alarm)
-        job = AlarmJob.from_request(req, dry_run=True)
-        job.run()
+        # job = AlarmJob.from_request(profile)
+        # job.dry_run = True
+        req = ep.from_alarm(alarm)
+        job = AlarmJob.from_request(req, dry_run=False)
+        job.run(to_save_state=False)
+        # job.save_state()
 
     @staticmethod
     def get_default_reference(

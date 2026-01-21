@@ -23,6 +23,7 @@ from .types import (
     EscalationResult,
     TTChange,
     TTAction,
+    TTUser,
 )
 from .error import TTError, TemporaryTTError
 from noc.core.debug import error_report
@@ -200,6 +201,7 @@ class TTSystemCtx(object):
         actions=None,
         items=None,
         services=None,
+        assigned=None,
         suppress_tt_trace: bool = True,
         is_unavailable: bool = False,
     ):
@@ -216,6 +218,7 @@ class TTSystemCtx(object):
         self.error_text: Optional[str] = ""
         self.suppress_tt_trace: bool = suppress_tt_trace
         self.is_unavailable = is_unavailable
+        self.assigned: Optional[TTUser] = assigned
 
     def get_result(self) -> EscalationResult:
         if self.error_code:
@@ -270,6 +273,7 @@ class TTSystemCtx(object):
                 actions=self.actions,
                 items=self.items,
                 is_unavailable=self.is_unavailable,
+                assigned=self.assigned,
             )
         )
         return self.id

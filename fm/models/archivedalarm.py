@@ -293,6 +293,42 @@ class ArchivedAlarm(Document):
                 {"_id": self.id}, {"$set": {"escalation_close_ctx": current_context}}
             )
 
+    def get_message_ctx(self, include_affected: bool = True):
+        """
+        Get escalation context
+        """
+
+        def summary_to_list(summary, model):
+            r = []
+            for k in summary:
+                p = model.get_by_id(k.profile)
+                if not p or getattr(p, "show_in_summary", True) is False:
+                    continue
+                r += [{"profile": p.name, "summary": k.summary}]
+            return sorted(r, key=lambda x: -x["summary"])
+
+        from noc.sa.models.managedobjectprofile import ManagedObjectProfile
+        from noc.sa.models.serviceprofile import ServiceProfile
+        from noc.crm.models.subscriberprofile import SubscriberProfile
+
+        return {
+            "alarm": self,
+            # "leader": self.alarm,
+            "services": self.affected_services,
+            "group": None,
+            "service": None,
+            "managed_object": self.managed_object,
+            "affected_objects": [self.managed_object],
+            "total_objects": summary_to_list(self.total_objects, ManagedObjectProfile),
+            "total_subscribers": summary_to_list(self.total_subscribers, SubscriberProfile),
+            "total_services": summary_to_list(self.total_services, ServiceProfile),
+            "tt": None,
+            "lost_redundancy": False,
+            "affected_subscribers": [],
+            "affected_services": [],
+            "has_merged_downlinks": False,
+        }
+
 
 # Avoid circular references
 from .activealarm import ActiveAlarm

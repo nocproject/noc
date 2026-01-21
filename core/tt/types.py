@@ -58,6 +58,24 @@ class TTActionContext(BaseModel):
     label: Optional[str] = None
 
 
+class Attachment(BaseModel):
+    filename: str
+    body: bytes
+    mime_type: str = "text/plain"
+    # application/vnd.ms-excel
+    url: Optional[str] = None
+
+    @property
+    def size(self):
+        return len(self.body)
+
+
+class TTUser(BaseModel):
+    id: str
+    username: str
+    remote_id: Optional[str] = None
+
+
 class TTSystemConfig(BaseModel):
     """
     Attributes:
@@ -203,6 +221,8 @@ class EscalationContext(BaseModel):
     login: Optional[str] = None
     actions: Optional[List[TTActionContext]] = None
     is_unavailable: bool = False
+    assigned: Optional[TTUser] = None
+    attachments: Optional[List[Attachment]] = None
 
     @property
     def leader(self) -> EscalationItem:
@@ -293,3 +313,4 @@ class TTCommentRequest(BaseModel):
     login: Optional[str] = None
     subject: Optional[str] = None
     reply_to: Optional[str] = None
+    user: Optional[TTUser] = None

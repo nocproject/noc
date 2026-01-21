@@ -11,7 +11,7 @@ import datetime
 import operator
 import time
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union, Dict
+from typing import List, Optional, Any, Union, Dict, Iterable
 
 # Third-party modules
 from bson import ObjectId
@@ -24,6 +24,8 @@ from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.debug import error_report
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.periodicjob import PeriodicJob
+from noc.core.lock.process import ProcessLock
+from noc.core.change.policy import change_tracker
 from noc.aaa.models.user import User
 from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
@@ -71,7 +73,7 @@ class Item(object):
             return Item(alarm=None, status=ItemStatus.ARCHIVED)
         return Item(
             alarm=alarm,
-            managed_object_id=alarm.managed_object.id,
+            managed_object_id=alarm.managed_object.id if alarm.managed_object else None,
             status=ItemStatus.from_alarm(alarm, is_clear=is_clear),
         )
 
@@ -92,6 +94,8 @@ class AlarmJob(object):
     """
     Runtime Alarm Automation
     """
+
+    lock = ProcessLock(category="alarmjob", owner="correlator")
 
     def __init__(
         self,
@@ -121,6 +125,8 @@ class AlarmJob(object):
         self.name = name
         self.profile = profile
         self.items: List[Item] = items
+        self.services: List[str] = []
+        self.groups: List[str] = []
         self.actions = actions
         self.maintenance_policy = maintenance_policy or "e"
         self.items_policy = item_policy or EscalationPolicy.ROOT
@@ -135,6 +141,7 @@ class AlarmJob(object):
         self.ctx_id = ctx_id
         self.telemetry_sample = telemetry_sample
         self.dry_run = dry_run
+        self.is_dirty = True
         self.static_delay: Optional[str] = static_delay
         # Alarm Severity
         self.logger = logger or PrefixLoggerAdapter(
@@ -171,7 +178,7 @@ class AlarmJob(object):
 
     def get_lock_items(self):
         """"""
-        return [f"a:{self.alarm}"]
+        return [f"a:{ii.alarm.id}" for ii in self.items]
 
     @property
     def is_end(self) -> bool:
@@ -240,94 +247,101 @@ class AlarmJob(object):
         """Run job for works"""
         now = ts or datetime.datetime.now().replace(microsecond=0)
         is_end = force_end or self.is_end
+        # Refresh escalation Items
+        if self.is_dirty:
+            # Move to from_state ?
+            self.update_escalation_items()
+        if not self.items:
+            self.logger.info("Nothing alarms for escalate")
+            return
         alarm_ctx = self.alarm.get_message_ctx()
         self.logger.info("Start actions at: %s, End Flag: %s", now, is_end)
-        # Refresh escalation Items
-        # if self.is_dirty:
-        #     self.update_escalation_items()
         sev_changed = self.severity != self.base_severity
         self.logger.info("[%s] Actions: %s", self.severity, self.actions)
         runner = AlarmActionRunner(
-            self.items, logger=self.logger, allowed_actions=self.allowed_actions
+            self.items,
+            logger=self.logger,
+            allowed_actions=self.allowed_actions,
+            services=self.services,
         )
-        # Sorted return new list, not needed copying self.actions
-        for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
-            self.logger.debug("[%s] Processed action", aa)
-            if aa.status == ActionStatus.FAILED:
-                continue
-            if aa.when == "on_end" and not is_end:
-                self.logger.debug("[%s] Action execute on End. Next...", aa.action)
-                continue
-            if aa.timestamp > now:
-                self.logger.info("Next action delayed: %s", aa.timestamp - now)
-                break
-            # changed and aa.status == ActionStatus.SUCCESS or
-            if aa.status == ActionStatus.SUCCESS and not sev_changed:
-                # Skip already running job
-                if self.dry_run:
-                    self.logger.debug("[%s] Action already executed. Next...", aa)
-                continue
-            if not aa.is_match(self.severity, now, self.alarm.ack_user):
-                # Set Skip (Condition)
-                self.logger.debug(
-                    "[%s] Action severity condition [%s] not Match. Next...",
-                    aa.action,
-                    self.severity,
-                )
-                aa.set_status(ActionResult(status=ActionStatus.SKIP))
-                continue
-            if self.dry_run and self.static_delay:
-                time.sleep(self.static_delay)
-            # if not aa.to_run(status, delay):
-            #    continue
-            try:
-                r = runner.run_action(
-                    aa.action,
-                    **aa.get_ctx(
-                        document_id=aa.document_id,
-                        alarm_ctx=alarm_ctx,
-                    ),
-                )  # aa.get_ctx for job
-            except Exception as e:
-                r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
-                error_report()
-                # Job Status to Exception
-            self.logger.info("[%s] Action result: %s", aa, r)
-            if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
-                # If Repeat - add action to next on repeat delay
-                # Self register actions
-                self.actions.append(aa.get_repeat(self.repeat_delay))  #! repeat after end actions
-            if r.action:
-                self.actions.append(
-                    ActionLog.from_request(
-                        r.action,
-                        started_at=aa.timestamp,
-                        document_id=r.document_id,
+        with (
+            # Span(client="alarmjob", sample=self.get_span_sample()) as ctx,
+            self.lock.acquire(self.get_lock_items()),
+            change_tracker.bulk_changes(),
+        ):
+            # Check States
+            # Sorted return new list, not needed copying self.actions
+            for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
+                self.logger.debug("[%s] Processed action", aa)
+                if aa.status == ActionStatus.FAILED:
+                    continue
+                if aa.when == "on_end" and not is_end:
+                    self.logger.debug("[%s] Action execute on End. Next...", aa.action)
+                    continue
+                if aa.timestamp > now:
+                    self.logger.info("Next action delayed: %s", aa.timestamp - now)
+                    break
+                # changed and aa.status == ActionStatus.SUCCESS or
+                if aa.status == ActionStatus.SUCCESS and not sev_changed:
+                    # Skip already running job
+                    if self.dry_run:
+                        self.logger.debug("[%s] Action already executed. Next...", aa)
+                    continue
+                if not aa.is_match(self.severity, now, self.alarm.ack_user):
+                    # Set Skip (Condition)
+                    self.logger.debug(
+                        "[%s] Action severity condition [%s] not Match. Next...",
+                        aa.action,
+                        self.severity,
                     )
-                )
-            aa.set_status(r)
-            # Processed Result
-            if aa.stop_processing:
-                # Set Stop job status
-                break
-        # alarm_log = runner.get_bulk()
-        if to_save_state and self.has_state():
-            # Check waiting
-            # state_policy: always, waiting only, not_save
-            self.logger.info("State saved")
-            self.save_state(is_completed=is_end)
+                    aa.set_status(ActionResult(status=ActionStatus.SKIP))
+                    continue
+                if self.dry_run and self.static_delay:
+                    time.sleep(self.static_delay)
+                # if not aa.to_run(status, delay):
+                #    continue
+                try:
+                    r = runner.run_action(
+                        aa.action,
+                        **aa.get_ctx(
+                            document_id=aa.document_id,
+                            alarm_ctx=alarm_ctx,
+                        ),
+                    )  # aa.get_ctx for job
+                except Exception as e:
+                    r = ActionResult(status=ActionStatus.FAILED, error=str(e))  # Exception Status
+                    error_report()
+                    # Job Status to Exception
+                self.logger.info("[%s] Action result: %s", aa, r)
+                if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
+                    # If Repeat - add action to next on repeat delay
+                    # Self register actions
+                    self.actions.append(
+                        aa.get_repeat(self.repeat_delay)
+                    )  #! repeat after end actions
+                if r.action:
+                    self.actions.append(
+                        ActionLog.from_request(
+                            r.action,
+                            started_at=aa.timestamp,
+                            document_id=r.document_id,
+                        )
+                    )
+                aa.set_status(r)
+                # Processed Result
+                if aa.stop_processing:
+                    # Set Stop job status
+                    break
+            # alarm_log = runner.get_bulk()
+            if to_save_state and self.has_state():
+                # Check waiting
+                # state_policy: always, waiting only, not_save
+                self.logger.info("State saved")
+                self.save_state(is_completed=is_end)
         if is_end:
             # Archived not save when is_end state
             self.save_state(is_completed=True)
             return
-        # ts = self.get_next_ts()
-        # if self.profile:
-        #     self.alarm.add_watch(
-        #         Effect.ESCALATION, key=str(self.profile), after=ts, job_id=str(self.id)
-        #     )
-        # else:
-        #     self.alarm.add_watch(Effect.ALARM_JOB, key=str(self.id), after=ts)
-        print("Alarm: %s", self.alarm.wait_ts)
         # Only if save-state
         self.alarm.safe_save()
         # Update after_at and key
@@ -466,7 +480,8 @@ class AlarmJob(object):
             items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
             actions=actions,
             tt_docs=tt_docs,
-            groups=[],
+            # groups=self.groups,
+            affected_services=self.services,
             severity=self.severity,
             # total_objects=self.total_objects,
             # total_services=self.total_services,
@@ -500,20 +515,44 @@ class AlarmJob(object):
             r.append(Item(alarm=None, status=ItemStatus.REMOVED))
         return r
 
+    def iter_escalation_alarms(self) -> Iterable[ActiveAlarm]:
+        """Iter over alarms on items"""
+        if (
+            self.items_policy in {EscalationPolicy.ROOT, EscalationPolicy.ROOT_FIRST}
+            and self.alarm.root
+        ):
+            return
+        yield self.alarm
+        if self.items_policy == EscalationPolicy.ROOT:
+            yield from self.alarm.iter_consequences()
+            return
+        yield from self.alarm.iter_consequences()
+        if self.items_policy == EscalationPolicy.ROOT_FIRST:
+            for aa in ActiveAlarm.objects.filter(groups__in=self.alarm.groups).order_by(
+                "root", "-timestamp"
+            ):
+                yield aa
+
     def update_escalation_items(self):
         """Build items by Policy"""
-        # self.items_policy == EscalationPolicy.ROOT
-        alarm = self.alarm
-        alarms = [ii.alarm.id for ii in self.items]
-        # items, groups, services = [], [], []
-        # Refresh Items
-        for aa in []:
-            if aa.id in alarms:
-                continue
-            self.items.append(Item(alarm=aa, status=ItemStatus.from_alarm(alarm)))
-        # Refresh groups
+        alarms = {ii.alarm.id: ii for ii in self.items}
+        items, groups, services = [], set(), set()
+        for aa in self.iter_escalation_alarms():
+            if aa.id in items:
+                # Update status
+                items.append(alarms[aa.id])
+            if aa.id not in items:
+                items.append(Item(alarm=aa, status=ItemStatus.from_alarm(aa)))
+            if aa.groups:
+                groups |= set(aa.groups)
+            if aa.affected_services:
+                services |= set(aa.affected_services)
+        # Refresh Groups
         # Refresh Services
         # Refresh Maintenance ?
+        self.services = services
+        self.groups = groups
+        self.items = items
 
     @classmethod
     def from_state(

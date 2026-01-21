@@ -150,6 +150,7 @@ class EscalationItem(EmbeddedDocument):
                     login=tt_login,
                     queue=self.tt_queue,
                     promote_item_policy=promote_item,
+                    assigned=str(self.assigned_user.id) if self.assigned_user else None,
                 )
             )
         if self.register_message:

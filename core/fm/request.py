@@ -57,6 +57,7 @@ class ActionConfig(BaseModel):
     # If approve required, it suspend processing and send
     # Message to approver
     manually: bool = False
+    assigned: Optional[str] = None
     # Manual, Group Access
     # root_only: bool = True
     # already_escalated
