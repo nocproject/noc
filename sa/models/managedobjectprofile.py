@@ -1032,7 +1032,11 @@ class ManagedObjectProfile(NOCModel):
             yield DiagnosticConfig(
                 CLI_DIAG,
                 display_description="Check Device response by CLI (TELNET/SSH) request",
-                checks=[Check(name="TELNET"), Check(name="SSH")],
+                checks=(
+                    [Check(name="TELNET"), Check(name="SSH")]
+                    if o.scheme == 1
+                    else [Check(name="SSH"), Check(name="TELNET")]
+                ),
                 discovery_box=True,
                 alarm_class="NOC | Managed Object | Access Lost",
                 alarm_labels=["noc::access::method::CLI"],
