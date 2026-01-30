@@ -56,6 +56,7 @@ class WatchItem(EmbeddedDocument):
     clear_only: bool = BooleanField(default=False)
     root_only: bool = BooleanField(default=False)
     after = DateTimeField(required=False)
+    job = StringField(required=False)
     args = DictField(default=dict)
 
     def __str__(self):
@@ -94,7 +95,7 @@ class WatchItem(EmbeddedDocument):
                 alarm.refresh_escalation_job(
                     profile=self.key,
                     is_clear=is_clear,
-                    job_id=self.args.get("job_id"),
+                    job_id=self.job,
                 )
             case Effect.REWRITE_ALARM_CLASS:
                 alarm.refresh_alarm_class(dry_run=dry_run)

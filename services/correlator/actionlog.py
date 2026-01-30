@@ -101,6 +101,8 @@ class ActionLog(object):
         self.error = result.error
         if result.ctx:
             self.ctx |= result.ctx
+        if result.document_id:
+            self.document_id = result.document_id
 
     def is_match(self, severity: int, timestamp: datetime.datetime, ack_user: Any):
         """Check job condition"""

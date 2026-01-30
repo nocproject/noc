@@ -428,6 +428,7 @@ class ActiveAlarm(Document):
             adm_path=self.adm_path,
             segment_path=self.segment_path,
             container_path=self.container_path,
+            affected_services=self.affected_services,
             uplinks=self.uplinks,
             rca_neighbors=self.rca_neighbors,
             rca_type=self.rca_type,
@@ -646,6 +647,8 @@ class ActiveAlarm(Document):
     def get_wait_ts(self, timestamp: Optional[datetime.datetime] = None):
         wait_ts = []
         for w in self.watchers:
+            if w.root_only and self.root:
+                continue
             if w.after:
                 wait_ts.append(w.after)
         if timestamp:
@@ -661,7 +664,9 @@ class ActiveAlarm(Document):
         once: bool = False,
         immediate: bool = False,
         clear_only: bool = False,
+        root_only: bool = False,
         after: Optional[datetime.datetime] = None,
+        job: Optional[str] = None,
         keep_args: bool = False,
         **kwargs,
     ):
@@ -673,6 +678,7 @@ class ActiveAlarm(Document):
             once: Run only once
             immediate: Already executed (used for save data/reference on external job)
             clear_only: Run only alarm clear
+            root_only: Ru only Root alarm
             after: Run After Timer
             keep_args: Keep arguments for exist effect
         """
@@ -680,9 +686,11 @@ class ActiveAlarm(Document):
             raise ValueError("Not supported options")
         for w in self.watchers:
             if effect == w.effect and key == w.key:
+                w.after = after
                 if not keep_args:
-                    w.after = after
                     w.args = kwargs
+                if job and w.job != job:
+                    w.job = job
                 break
         else:
             self.watchers.append(
@@ -692,7 +700,9 @@ class ActiveAlarm(Document):
                     once=once,
                     immediate=immediate,
                     clear_only=clear_only,
+                    root_only=root_only,
                     after=after,
+                    job=job or None,
                     args=kwargs,  # Convert to string
                 )
             )
@@ -714,6 +724,7 @@ class ActiveAlarm(Document):
         self,
         is_clear: bool = False,
         is_update: bool = False,
+        effect: Optional[Effect] = None,
         dry_run: bool = False,
     ):
         """
@@ -721,24 +732,34 @@ class ActiveAlarm(Document):
         Args:
             is_clear: Flag for alarm_clear procedure
             is_update: Flag for refresh_alarm procedure
+            effect: Effect only
             dry_run: For tests run
         """
         now = datetime.datetime.now() + datetime.timedelta(seconds=10)  # time drift
+        jobs = set()
         for w in self.watchers:
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
                 continue
             if w.once and is_update:
                 continue
+            if w.root_only and self.root:
+                continue
+            if effect and w.effect != effect:
+                continue
             if w.immediate:
                 # If Immediate, not run (used for save run only)
                 continue
             if w.after and w.after > now:
                 continue
+            if w.job:
+                jobs.add(w.job)
             try:
                 w.run(self, is_clear=is_clear, dry_run=dry_run)
             except Exception as e:
                 print(f"Exception when run Watch Action: {e}")
+        for job in jobs:
+            self.refresh_job(job, is_clear=is_clear)
 
     @property
     def duration(self) -> int:
@@ -1392,37 +1413,36 @@ class ActiveAlarm(Document):
     ):
         """"""
         from noc.services.correlator.alarmjob import AlarmJob
+        from noc.main.models.pool import Pool
 
         if not job_id:
             job = AlarmJob.ensure_profile_job(self, profile)
             if job.is_end:
+                # Can escalate ?
                 # Job already ended
                 return
+            # For save escalation profile
             job.save_state()
-            self.add_watch(Effect.ESCALATION, key=profile, job_id=str(job.id))
             job_id = str(job.id)
         # Run Scheduler
-        # ts = a.wait_ts - datetime.datetime.now().replace(microsecond=0)
+        pool = Pool.get_default_fm_pool()
+        self.refresh_job(job_id, pool.name)
+
+    def refresh_job(self, job_id: str, is_clear: bool = False, pool: Optional[str] = None):
+        """Refresh Alarm Job by changes"""
+        shard = 0
+        if not pool and self.managed_object:
+            pool, shard = self.managed_object.alarms_stream_and_partition
+            _, pool = pool.split(".", 1)
         call_later(
             "noc.services.correlator.alarmjob.run_alarm_job",
             scheduler="correlator",
             max_runs=5,
-            pool=config.pool,
+            pool=pool,
             delay=2,
-            shard=self.managed_object.id if self.managed_object else 0,
+            shard=shard,
             job_id=job_id,
         )
-
-    def refresh_job(self, is_clear: bool = False, job_id: Optional[str] = None):
-        """Refresh Alarm Job by changes"""
-        from noc.services.correlator.alarmjob import AlarmJob
-
-        if job_id:
-            job = AlarmJob.get_by_id(job_id)
-            job.update_item(self, is_clear=is_clear)
-        else:
-            job = AlarmJob.from_alarm(self, is_clear=is_clear)
-        job.run()
 
     def get_resources(self) -> List[str]:
         """"""

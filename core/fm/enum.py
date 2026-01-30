@@ -190,6 +190,7 @@ class ItemStatus(enum.Enum):
 
     NEW = "new"  # new item
     CHANGED = "changed"  # item changed
+    PROCESSED = "processed"
     FAIL = "fail"  # escalation fail
     EXISTS = "exists"  # Exists on another escalation
     REMOVED = "removed"  # item removed

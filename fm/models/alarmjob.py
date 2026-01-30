@@ -22,6 +22,7 @@ from mongoengine.fields import (
     LongField,
     FloatField,
     ListField,
+    BinaryField,
     IntField,
 )
 
@@ -156,7 +157,8 @@ class AlarmJob(Document):
     actions: List[ActionLog] = EmbeddedDocumentListField(ActionLog)
     # List of group references, if any
     tt_docs = DictField()
-    groups = EmbeddedDocumentListField(GroupItem)
+    is_dirty = BooleanField(default=True)
+    groups = ListField(BinaryField())
     max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
     affected_services = ListField(ObjectIdField())

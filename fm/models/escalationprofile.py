@@ -1,11 +1,12 @@
 # ---------------------------------------------------------------------
 # EscalationProfile model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
+import datetime
 import operator
 from typing import Optional, Union, List, FrozenSet, Dict, Any
 from threading import Lock
@@ -39,6 +40,7 @@ from noc.aaa.models.group import Group
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.alarmseverity import AlarmSeverity
 from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmwatch import Effect
 
 id_lock = Lock()
 
@@ -400,3 +402,29 @@ class EscalationProfile(Document):
         if profile.repeat_escalations == "D":
             r |= {"repeat_delay": profile.repeat_delay, "max_repeats": 2}
         return r
+
+    @classmethod
+    def watch_escalation(cls, profile: str, alarm: ActiveAlarm, force: bool = False):
+        """Check Alarm fow"""
+        profile = EscalationProfile.get_by_id(profile)
+        if not profile:
+            # Unknown escalation Profile
+            return
+        # After
+        delay = profile.get_delay()
+        if profile.alarm_consequence_policy == "a":
+            after = alarm.timestamp + datetime.timedelta(seconds=delay)
+        else:
+            after = datetime.datetime.now().replace(microsecond=0)
+        # Group
+        root_only = False
+        if profile.escalation_policy in {EscalationPolicy.ROOT, EscalationPolicy.ROOT_FIRST}:
+            root_only = True
+        alarm.add_watch(
+            Effect.ESCALATION,
+            key=str(profile.id),
+            once=True,
+            after=after,
+            root_only=root_only,
+            keep_args=True,
+        )
