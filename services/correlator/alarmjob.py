@@ -411,7 +411,7 @@ class AlarmJob(object):
             # Only if save-state
             self.save_state(is_completed=is_end)
 
-    def get_leader(self) -> Tuple[Optional[ActiveAlarm], List[bytes], Set[str]]:
+    def get_leader(self) -> Tuple[Optional[ActiveAlarm], List[bytes], Set[ObjectId]]:
         """
         Detect escalation Leader by Escalation Policy
         Group
@@ -420,19 +420,19 @@ class AlarmJob(object):
             # Not Root Alarm not escalated, or ALWAYS ?
             return None, [], set()
         if self.alarm.group_type == GroupType.SERVICE and self.alarm.vars.get("service"):
-            services = {self.alarm.vars["service"]}
+            services = {ObjectId(self.alarm.vars["service"])}
         else:
             services = set(self.alarm.affected_services)
-        if self.is_group and self.items_policy in {
-            EscalationPolicy.ALWAYS_FIRST,
-            EscalationPolicy.ROOT_FIRST,
-        }:
-            groups = set(self.alarm.groups)
-        elif (
+        if (
             self.alarm.group_type in {GroupType.SERVICE, GroupType.GROUP}
             and self.items_policy != EscalationPolicy.ROOT
         ):
             groups = {self.alarm.reference}
+        elif self.alarm.groups and self.items_policy in {
+            EscalationPolicy.ALWAYS_FIRST,
+            EscalationPolicy.ROOT_FIRST,
+        }:
+            groups = set(self.alarm.groups)
         else:
             groups = set()
         # Apply Policy
@@ -444,11 +444,14 @@ class AlarmJob(object):
         """Build alarm items by Policy"""
         alarms = {ii.alarm.id: ii for ii in self.items[1:]}
         leader, groups, services = self.get_leader()
-        if leader:
-            items = [Item.from_alarm(leader)]
-        else:
+        if not leader:
             self.items = []
             return
+        item = Item.from_alarm(leader)
+        if leader.managed_object:
+            item.managed_object_id = leader.managed_object.id
+        # First as Leader
+        items = [item]
         for aa in self.iter_escalation_alarms(leader, groups):
             if aa.affected_services:
                 services |= set(aa.affected_services)
@@ -461,13 +464,14 @@ class AlarmJob(object):
                 item = Item(alarm=aa, status=ItemStatus.from_alarm(aa))
             if aa.managed_object:
                 item.managed_object_id = aa.managed_object.id
+            items.append(item)
         for ii in alarms.values():
             items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
         # Refresh Maintenance ?
         self.items = items
+        self.services = list(services)
         if include_groups:
-            self.services = list(services)
-            self.groups = list(groups)
+            self.groups = groups
 
     def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
         """Update job item"""
@@ -513,6 +517,7 @@ class AlarmJob(object):
             allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions or []],
             # Settings
             # maintenance_policy=req.maintenance_policy,
+            item_policy=req.item_policy,
             # Repeat settings
             max_repeats=req.max_repeats,
             repeat_delay=req.repeat_delay,
@@ -642,13 +647,15 @@ class AlarmJob(object):
             return
         if self.items_policy == EscalationPolicy.ROOT:
             yield alarm
-        yield from self.alarm.iter_consequences()
+        yield from alarm.iter_consequences()
 
     def iter_groups_alarm(self, groups: List[bytes]):
         """Iterate over groups alarm"""
         if self.items_policy not in {EscalationPolicy.ROOT_FIRST, EscalationPolicy.ALWAYS_FIRST}:
             return
         for aa in ActiveAlarm.objects.filter(groups__in=groups).order_by("root", "-timestamp"):
+            yield aa
+        for aa in ActiveAlarm.objects.filter(reference__in=groups):
             yield aa
 
     @classmethod

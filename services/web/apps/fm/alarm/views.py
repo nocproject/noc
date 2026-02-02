@@ -627,8 +627,10 @@ class AlarmApplication(ExtApplication):
                         "subject": a.subject,
                         "alarm_class": str(a.alarm_class.id),
                         "alarm_class__label": a.alarm_class.name,
-                        "managed_object": a.managed_object.id,
-                        "managed_object__label": a.managed_object.name,
+                        "managed_object": a.managed_object.id if a.managed_object else None,
+                        "managed_object__label": (
+                            a.managed_object.name if a.managed_object else None
+                        ),
                         "timestamp": self.to_json(a.timestamp),
                         "groups": (
                             ", ".join(

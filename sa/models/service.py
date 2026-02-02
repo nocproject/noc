@@ -491,9 +491,11 @@ class Service(Document):
             not hasattr(self, "_changed_fields")
             or "profile" in self._changed_fields
             or "caps" in self._changed_fields
+            or "effective_labels" in self._changed_fields
         ):
             self.diagnostic.refresh_diagnostics()
             self.refresh_status()
+            self._refresh_managed_object()
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -629,8 +631,8 @@ class Service(Document):
             ],
         )
         if self.profile.is_enabled_notification:
-            logger.debug("Sending status change notification")
             headers = self.get_mx_message_headers(self.effective_labels)
+            logger.debug("Sending status change notification: H(%s)", headers)
             msg = self.get_message_context()
             # msg["managed_object"] = self.managed_object.get_message_context()
             msg["from_status"] = {"id": os, "name": os.name}
@@ -657,7 +659,7 @@ class Service(Document):
             "description": self.description,
             "profile": {"id": str(self.profile.id), "name": self.profile.name},
             "status": {"id": self.oper_status, "name": self.oper_status.name},
-            "in_maintenance": int(self.in_maintenance),
+            "in_maintenance": self.in_maintenance,
             "agreement_id": self.agreement_id,
             "caps": self.get_caps(),
         }
@@ -813,7 +815,11 @@ class Service(Document):
             # Calculate Status
             status = rule.status or ServiceProfile.get_status_by_severity(aa.severity)
             logger.info(
-                "[%s] Alarm status is: %s. Instance flag %s", aa, status, rule.affected_instance
+                "[%s|%s] Alarm status is: %s. Instance flag %s",
+                self.id,
+                aa,
+                status,
+                rule.affected_instance,
             )
             if status == Status.UNKNOWN:
                 continue
@@ -942,6 +948,8 @@ class Service(Document):
         for svc in Service.objects.filter(service_path=svc_id):
             if svc.profile.get_rule_by_alarm(alarm):
                 r.append(svc.id)
+        if not r:
+            r.append(ObjectId(svc_id))
         return r
 
     @classmethod
@@ -1065,6 +1073,7 @@ class Service(Document):
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()
         self.refresh_status()
+        self._refresh_managed_object()
 
     def sync_instances(self):
         """Synchronize Config-base instance"""

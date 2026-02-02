@@ -19,6 +19,9 @@
     </tr>
     <tr>
         <th scope="row">{{ _("Object") }}</th>
+        {% if not managed_object %}
+        <td> - </td>
+        {% else %}
         <td>
             <a href="/api/card/view/managedobject/{{ managed_object.id }}/">{{ managed_object | managed_object_title }}</a>
             ({{ managed_object.address }}, {{ managed_object.platform }})
@@ -29,6 +32,7 @@
             </a>
             {% endif %}
         </td>
+        {% endif %}
     </tr>
     <tr>
         <th scope="row" class="col-sm-1">{{ _("Location") }}</th>
@@ -130,8 +134,13 @@
                             {{ a.service_summary | glyph_summary }}
                         </td>
                         <td>{{ a.display_duration }}</td>
+                        {% if not managed_object %}
+                        <td> - </td>
+                        <td> - </td>
+                        {% else %}
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object | managed_object_title }}</a></td>
                         <td><a href="/api/card/view/managedobject/{{ a.managed_object.id }}/">{{ a.managed_object.address }}</a></td>
+                        {% endif %}
                         <td>{{ a.alarm_class.name }}</td>
                         <td>{{ a.subject }}</td>
                     </th>
