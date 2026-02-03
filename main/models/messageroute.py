@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # MessageRoute
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -30,6 +30,7 @@ from noc.core.mongo.fields import PlainReferenceField, ForeignKeyField, PlainRef
 from noc.core.change.decorator import change
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.inv.models.resourcegroup import ResourceGroup
+from noc.main.models.remotesystem import RemoteSystem
 from noc.config import config
 from .handler import Handler
 from .template import Template
@@ -66,6 +67,7 @@ class MRMatch(EmbeddedDocument):
     resource_groups = PlainReferenceListField(ResourceGroup)
     administrative_domain = ForeignKeyField(AdministrativeDomain)
     headers_match = EmbeddedDocumentListField(HeaderMatch)
+    remote_system = PlainReferenceField(RemoteSystem)
 
     def __str__(self):
         return f"{', '.join(self.labels)}, {self.administrative_domain or ''}"
@@ -178,6 +180,9 @@ class MessageRoute(Document):
                         else None
                     ),
                     MessageMeta.GROUPS.value: [str(g.id) for g in match.resource_groups or []],
+                    MessageMeta.REMOTE_SYSTEM.value: (
+                        str(match.remote_system.id) if match.remote_system else None
+                    ),
                     "headers": [
                         {"header": m.header, "op": m.op, "value": m.value}
                         for m in match.headers_match or []

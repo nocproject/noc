@@ -9,10 +9,11 @@
 import logging
 from dataclasses import dataclass
 from time import perf_counter
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.fm.event import Event
 
 logger = logging.getLogger(__name__)
 FM_EVENT_EXTRACTOR = "fmevent"
@@ -104,6 +105,9 @@ class BaseRemoteSystem(object):
             xc = self.extractors[self.__module__][en](self)
             xc._force_checkpoint = checkpoint
             t0 = perf_counter()
+            if en == FM_EVENT_EXTRACTOR and self.remote_system.event_sync_mode == "P":
+                self.logger.info("For event extractor enable push policy. Skipping")
+                continue
             if en == FM_EVENT_EXTRACTOR and not incremental:
                 incremental = self.remote_system.event_sync_mode == "I"
             xc.extract(incremental=incremental)
@@ -181,6 +185,18 @@ class BaseRemoteSystem(object):
             out.write("Summary:\n")
             out.write("\n".join(summary) + "\n")
         return n_errors, r
+
+    def get_events(self, events: List[Dict[str, Any]], deferred, **kwargs) -> List[Event]:
+        """Push extract FM Events"""
+        if not self.extractors or FM_EVENT_EXTRACTOR not in self.extractors[self.__module__]:
+            self.logger.info("Extractor %s is not implemented. Skipping", FM_EVENT_EXTRACTOR)
+            return []
+        if self.remote_system.event_sync_mode != "P":
+            return []
+        xc = self.extractors[self.__module__][FM_EVENT_EXTRACTOR](self)
+        if not hasattr(xc, "get_collected_events"):
+            return []
+        return xc.get_collected_events(events, deferred)
 
     def get_metric_extractor(self):
         """"""

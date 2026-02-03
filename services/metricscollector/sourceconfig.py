@@ -21,19 +21,28 @@ class RemoteSystemConfig(object):
     api_key: Optional[str] = None
     code: Optional[str] = None
     is_banned: bool = False
+    enable_event: bool = True
+    enable_metrics: bool = True
+    policy: str = "E"
+    batch_signal: str = "A"
     batch_size: Optional[int] = 50000
     batch_delay_s: Optional[int] = 10
 
     @classmethod
     def from_data(cls, data) -> "RemoteSystemConfig":
-        return RemoteSystemConfig(
-            id=str(data["id"]),
-            name=data["name"],
-            bi_id=int(data["bi_id"]),
-            api_key=data.get("api_key"),
-            batch_size=data.get("batch_size", config.metricscollector.batch_size),
-            batch_delay_s=data.get("batch_delay_s", config.metricscollector.batch_delay_s),
-        )
+        cfg = data.get("channel") or {}
+        if not cfg:
+            cfg |= {
+                "batch_size": config.metricscollector.batch_size,
+                "batch_delay_s": config.metricscollector.batch_delay_s,
+            }
+        cfg |= {
+            "id": str(data["id"]),
+            "name": data["name"],
+            "bi_id": int(data["bi_id"]),
+            "api_key": data.get("api_key"),
+        }
+        return RemoteSystemConfig(**cfg)
 
 
 @dataclass(eq=True, frozen=True)

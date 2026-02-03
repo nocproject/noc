@@ -21,7 +21,7 @@ from fastapi.responses import ORJSONResponse
 from noc.core.perf import metrics
 from noc.core.service.loader import get_service
 from noc.core.ioloop.util import setup_asyncio
-from noc.core.fm.event import Event, Target, MessageType
+from noc.core.etl.models.fmevent import FMEventObject, RemoteObject
 
 router = APIRouter()
 
@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 API_ACCESS_HEADER = "X-NOC-API-Access"
 ZABBIX_COLLECTOR = "zabbix"
+ZABBIX_EVENT_COLLECTOR = "zabbix_event"
 
 
 class ValueType(enum.Enum):
@@ -120,15 +121,15 @@ class ZabbixAPI(object):
 
     async def events(
         self,
-        remote_system_code: str,
         req: bytes = Body(...),
+        remote_system_code: Optional[str] = None,
         authorization: Optional[str] = Header(None, alias="Authorization"),
     ) -> ORJSONResponse:
         if not authorization:
             raise HTTPException(status_code=HTTPStatus.FORBIDDEN)
         logger.debug("REQUEST: %r", req)
         _, key = authorization.split(" ")
-        metrics["msg_in", ("collector", ZABBIX_COLLECTOR)] += 1
+        metrics["msg_in", ("collector", ZABBIX_EVENT_COLLECTOR)] += 1
         rs_cfg = self.service.get_remote_system_by_key(key.strip())
         if not rs_cfg or rs_cfg.is_banned:
             # IP Address
@@ -138,37 +139,37 @@ class ZabbixAPI(object):
                 },
                 status_code=HTTPStatus.NOT_FOUND,
             )
-        if rs_cfg.api_key != authorization:
+        if rs_cfg.api_key != key.strip():
             return ORJSONResponse(
                 {
                     "error": f"Remote System API Key not Authorization {remote_system_code}",
                 },
                 status_code=HTTPStatus.FORBIDDEN,
             )
+        channel = self.service.get_event_channel(rs_cfg, ZABBIX_EVENT_COLLECTOR)
         for line in req.split(b"\n"):
             if not line:
                 continue
             item = orjson.loads(line)
             metrics["zabbix_events_in"] += 1
             if "p_eventid" in item:
+                await channel.feed_resolved_event(item["eventid"], r_event_id=item["p_eventid"])
                 continue
             host_name = item["hosts"][0]["name"]
             cfg = self.service.lookup_source_by_name(host_name)
             if not cfg:
                 continue
-            event = Event(
+            fm_event = FMEventObject(
+                id=str(item["eventid"]),
                 ts=item["clock"],
-                target=Target(name=host_name, address=cfg.address),
+                object=RemoteObject(id=cfg.id, name=host_name, address=cfg.address),
+                severity=str(item["severity"]),
                 data=[],
-                type=MessageType(),
-                remote_id=str(item["eventid"]),
-                remote_system=rs_cfg.name,
                 message=item["name"],
                 labels=[f"{t['tag']}::{t['value']}" for t in item["tags"]],
             )
-            logger.info("Received %s event", event)
-        # Spool data
-        # Spool Format
+            logger.info("Received %s event", fm_event)
+            await channel.feed_etl(fm_event)
         return ORJSONResponse({}, status_code=200)
 
     def setup_endpoints(self):

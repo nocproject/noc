@@ -14,6 +14,8 @@ from typing import Optional, Set, Dict, Tuple, List, FrozenSet, Iterable, Defaul
 
 # NOC modules
 from noc.services.metricscollector.sourceconfig import RemoteSystemConfig
+from noc.core.etl.models.fmevent import FMEventObject
+from noc.core.fm.event import Event
 
 
 class RemoteSystemChannel(object):
@@ -117,6 +119,8 @@ class RemoteSystemChannel(object):
         """Check if channel is ready to flush"""
         if not self.size:
             return False
+        if self.remote_system.batch_signal == "D":
+            return False
         return self.records >= self.min_batch_size
 
     async def schedule_flush(self):
@@ -139,6 +143,106 @@ class RemoteSystemChannel(object):
             self.logger.info(
                 "[%s] Clean unknown metrics: %s", self.remote_system.name, len(self.unknown_metrics)
             )
+        if self.flush_unknown_hosts:
+            self.unknown_hosts = set()
+            self.flush_unknown_hosts = False
+            self.logger.info(
+                "[%s] Clean unknown Hosts: %s", self.remote_system.name, len(self.unknown_hosts)
+            )
+        self.feed_ready.set()
+
+
+class RemoteSystemEventChannel(object):
+    def __init__(
+        self,
+        service,
+        remote_system: RemoteSystemConfig,
+        collector: str,
+        batch_delay: Optional[int] = None,
+        logger: Optional[logging.Logger] = None,
+    ):
+        self.service = service
+        self.collector = collector
+        self.remote_system: RemoteSystemConfig = remote_system
+        self.logger = logger
+        self.last_offset: int = 0
+        self.size: int = 0
+        self.events: List[Event] = []
+        self.fm_events: Dict[str, FMEventObject] = {}
+        self.deferred = []
+        self.records: int = 0
+        self.deduplicated: int = 0
+        self.expired: Optional[float] = None
+        self.feed_ready = asyncio.Event()
+        self.feed_ready.set()
+        self.flush_unknown_hosts = False
+        self.unknown_hosts: Set[str] = set()
+        self.last_received_hosts: Dict[str, int] = {}
+        self.min_batch_size = remote_system.batch_size
+        if batch_delay:
+            self.ttl = float(batch_delay)
+        else:
+            self.ttl = float(remote_system.batch_delay_s)
+
+    @property
+    def is_banned(self) -> bool:
+        return False
+
+    async def feed(self, event: Event):
+        """Register Event"""
+        await self.feed_ready.wait()
+        self.events.append(event)
+        self.records += 1
+        self.last_offset = max(self.last_offset, event.ts)
+        if not self.expired:
+            self.expired = perf_counter() + self.ttl
+
+    async def feed_etl(self, event: FMEventObject):
+        """Register Event"""
+        await self.feed_ready.wait()
+        self.fm_events[event.id] = event
+        self.records += 1
+        self.last_offset = max(self.last_offset, event.ts)
+        if not self.expired:
+            self.expired = perf_counter() + self.ttl
+
+    async def feed_resolved_event(self, event_id: str, r_event_id: str):
+        """Register Resolved Event"""
+        await self.feed_ready.wait()
+        event = self.fm_events.get(event_id)
+        if not event:
+            self.deferred.append(r_event_id)
+        else:
+            event.is_cleared = True
+            self.fm_events[r_event_id] = event
+        self.records += 1
+        # self.last_offset = max(self.last_offset, event.ts)
+        if not self.expired:
+            self.expired = perf_counter() + self.ttl
+
+    def is_expired(self, ts: float) -> bool:
+        """Check if channel is expired to given timestamp"""
+        return self.expired and self.expired < ts
+
+    def is_ready_to_flush(self) -> bool:
+        """Check if channel is ready to flush"""
+        return False
+
+    async def schedule_flush(self):
+        if not self.feed_ready.is_set():
+            return  # Already scheduled
+        self.expired = None
+        self.feed_ready.clear()
+        await self.service.flush_queue.put(self)
+
+    def flush_complete(self):
+        """Called when data are safely flushed"""
+        self.events = []
+        self.fm_events = {}
+        self.deferred = []
+        self.size = 0
+        self.records = 0
+        self.expired = None
         if self.flush_unknown_hosts:
             self.unknown_hosts = set()
             self.flush_unknown_hosts = False

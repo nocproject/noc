@@ -232,6 +232,17 @@ Ext.define("NOC.main.remotesystem.Application", {
               boxLabel: __("Enable FM Event"),
             },
             {
+              name: "event_sync_mode",
+              xtype: "combobox",
+              fieldLabel: __("Event Sync Mode"),
+              store: [
+                ["I", __("Incremental")],
+                ["S", __("Snapshot")],
+                ["P", __("Push (Collector)")],
+              ],
+              value: "I",
+            },
+            {
               name: "enable_metrics",
               xtype: "checkbox",
               boxLabel: __("Enable Metrics"),
@@ -272,6 +283,50 @@ Ext.define("NOC.main.remotesystem.Application", {
               xtype: "aaa.apikey.LookupField",
               fieldLabel: __("Api Key"),
               allowBlank: true,
+            },
+            {
+              name: "remote_collectors_batch_signal",
+              xtype: "combobox",
+              fieldLabel: __("Metric Batch Signal"),
+              allowBlank: true,
+              labelWidth: 200,
+              queryMode: "local",
+              displayField: "label",
+              valueField: "id",
+              defaultValue: "A",
+              store: {
+                fields: ["id", "label"],
+                data: [
+                  {id: "A", label: "Delay & Count Condition"},
+                  {id: "D", label: "Delay Only"},
+                  {id: "B", label: "Records Count Only"},
+                ],
+              },
+              uiStyle: "medium",
+            },
+            {
+              name: "metrics_batch_delay",
+              xtype: "numberfield",
+              fieldLabel: __("Metric Batch Delay, sec"),
+              labelWidth: 200,
+              uiStyle: "small",
+              minValue: 5,
+              defaultValue: 10,
+              listeners: {
+                scope: me,
+                change: function(_item, newValue){
+                  me.form.findField("metrics_batch_delay").setValue(newValue);
+                },
+              },
+            },
+            {
+              name: "metrics_min_batch_size",
+              xtype: "numberfield",
+              fieldLabel: __("Metric Batch Delay, sec"),
+              labelWidth: 200,
+              uiStyle: "small",
+              defaultValue: 5000,
+              minValue: 0,
             },
           ],
         },

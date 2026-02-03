@@ -19,6 +19,7 @@ from collections import defaultdict
 
 # Third-party modules
 import cachetools
+import orjson
 
 # NOC modules
 from noc.config import config
@@ -28,14 +29,18 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.jsonutils import iter_chunks
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
-from noc.core.mx import MessageType, MX_FROM_COLLECTOR
+from noc.core.mx import MessageType, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEM, MX_ETL_LOADER
+from noc.core.fm.event import Event
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.sourceconfig import (
     SourceConfig,
     RemoteSystemConfig,
     SensorConfig,
 )
-from noc.services.metricscollector.models.channel import RemoteSystemChannel
+from noc.services.metricscollector.models.channel import (
+    RemoteSystemChannel,
+    RemoteSystemEventChannel,
+)
 
 NS = 1_000_000_000
 MAX_UNKNOWN_METRICS = 200
@@ -96,6 +101,7 @@ class MetricsCollectorService(FastAPIService):
         self.source_configs: Dict[str, SourceConfig] = {}  # id -> SourceConfig
         self.source_map: Dict[str, str] = {}
         self.channels: Dict[str, RemoteSystemChannel] = {}
+        self.event_channels: Dict[str, RemoteSystemEventChannel] = {}
         # Remote Systems Config
         self.banned_rs = set()
         self.remote_system_config: Dict[str, RemoteSystemConfig] = {}
@@ -112,7 +118,10 @@ class MetricsCollectorService(FastAPIService):
             self.address, self.port = address, int(port)
 
     def get_channel(
-        self, remote_system: RemoteSystemConfig, collector: str, batch_delay: Optional[int] = None
+        self,
+        remote_system: RemoteSystemConfig,
+        collector: str,
+        batch_delay: Optional[int] = None,
     ) -> Optional["RemoteSystemChannel"]:
         """
         Create channel for received data
@@ -132,11 +141,55 @@ class MetricsCollectorService(FastAPIService):
             )
         return self.channels.get(remote_system.name)
 
+    def get_event_channel(
+        self,
+        remote_system: RemoteSystemConfig,
+        collector: str,
+        batch_delay: Optional[int] = None,
+    ) -> Optional[RemoteSystemEventChannel]:
+        """"""
+        if remote_system.name not in self.event_channels:
+            self.event_channels[remote_system.name] = RemoteSystemEventChannel(
+                self,
+                remote_system,
+                collector,
+                batch_delay=batch_delay,
+                logger=self.logger,
+            )
+        return self.event_channels.get(remote_system.name)
+
     async def flush_data(self):
         """Flush data"""
         while not self.stopping:
             ch = await self.flush_queue.get()
             n_records = ch.records
+            if isinstance(ch, RemoteSystemEventChannel):
+                await self.send_events(ch.events)
+                # Register ETL
+                if ch.fm_events:
+                    await self.send_message(
+                        orjson.dumps(
+                            {
+                                "remote_system": ch.remote_system.name,
+                                "events": [c.model_dump() for c in ch.fm_events.values()],
+                                "deferred": ch.deferred,
+                            }
+                        ),
+                        MessageType.ETL_PUSH,
+                        headers={
+                            MX_REMOTE_SYSTEM: ch.remote_system.name.encode(),
+                            MX_ETL_LOADER: b"fmevent",
+                        },
+                    )
+                    self.logger.info(
+                        "[%s] Flush Events Records: %s. Etl: %s/Deferred: %s",
+                        ch.remote_system.name,
+                        n_records,
+                        len(ch.fm_events),
+                        len(ch.deferred),
+                    )
+                ch.flush_complete()
+                continue
             self.logger.info(
                 "[%s] Flush Records: %s, Sensors: %s",
                 ch.remote_system.name,
@@ -198,6 +251,11 @@ class MetricsCollectorService(FastAPIService):
                 await asyncio.sleep(1)
             del parts
             ch.flush_complete()
+
+    async def send_events(self, events: List[Event], partition: Optional[int] = None):
+        """Send data to"""
+        for event in events:
+            self.publish(orjson.dumps(event.model_dump()), f"events.{event.target.pool}")
 
     async def send_records(self, data: List[Any], partition: Optional[int] = None):
         """Send data to"""
@@ -283,6 +341,7 @@ class MetricsCollectorService(FastAPIService):
     async def check_channels(self):
         ts = perf_counter()
         expired = [c for c in self.channels.values() if c.is_expired(ts)]
+        expired += [c for c in self.event_channels.values() if c.is_expired(ts)]
         for ch in expired:
             self.logger.debug("[%s] Flushing due to timeout", ch.remote_system)
             await ch.schedule_flush()

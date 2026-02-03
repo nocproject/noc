@@ -13,6 +13,7 @@ from typing import Optional, Union, List, Dict, Tuple, Any
 
 # Third-party modules
 import bson
+import orjson
 import cachetools
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -166,8 +167,12 @@ class RemoteSystem(Document):
         ],
         default="D",
     )
-    remote_collectors_batch_size: int = IntField(min_value=1000, default=5000)
-    remote_collectors_batch_delay: int = IntField(min_value=5, default=10)
+    remote_collectors_batch_signal = StringField(
+        choices=[("A", "Any"), ("D", "Delay Only"), ("B", "Batch Only")],
+        default="D",
+    )
+    metrics_min_batch_size: int = IntField(min_value=1000, default=5000)
+    metrics_batch_delay: int = IntField(min_value=5, default=10)
     portmapper_name = StringField()
     managed_object_loader_policy = StringField(
         choices=[("D", "As Discovered"), ("M", "As Managed Object")],
@@ -191,7 +196,7 @@ class RemoteSystem(Document):
     sync_lock = BooleanField(default=False)
     event_sync_interval = IntField(default=0)
     event_sync_mode = StringField(
-        choices=[("I", "incremental"), ("S", "Snapshot")],
+        choices=[("I", "incremental"), ("S", "Snapshot"), ("P", "Push")],
         default="I",
     )
     event_sync_lock = BooleanField(default=False)
@@ -522,7 +527,8 @@ class RemoteSystem(Document):
     @classmethod
     def get_metric_config(cls, remote_system: "RemoteSystem"):
         """Return MetricConfig for Target service"""
-        if not remote_system.enable_metrics and not remote_system.enable_fmevent:
+        enable_fmevent = remote_system.enable_fmevent and remote_system.event_sync_mode == "P"
+        if not remote_system.enable_metrics and not enable_fmevent:
             return {}
         return {
             "type": "remote_system",
@@ -532,6 +538,46 @@ class RemoteSystem(Document):
             "enable_fmevent": remote_system.enable_fmevent,
             "enable_metrics": remote_system.enable_metrics,
             "api_key": remote_system.api_key.key if remote_system.api_key else None,
+            "channel": {
+                "policy": remote_system.remote_collectors_policy,
+                "batch_signal": remote_system.remote_collectors_batch_signal,
+                "batch_size": remote_system.metrics_min_batch_size,
+                "batch_delay_s": remote_system.metrics_batch_delay,
+                "enable_event": enable_fmevent,
+                "enable_metrics": remote_system.enable_metrics,
+            },
             "rules": [],
             "items": [],
         }
+
+    def push_events(self, events: List[Dict[str, Any]], deferred: List[str]):
+        """Push events from Collector"""
+        from noc.core.service.loader import get_service
+
+        svc = get_service()
+        try:
+            events = self.get_handler().get_events(events, deferred)
+        except Exception:
+            error_report(suppress_log=True)
+            return
+            # error = str(e)
+        if not events:
+            return
+        max_ts, num = 0, 0
+        for num, event in enumerate(sorted(events, key=operator.attrgetter("ts"))):
+            max_ts = max(max_ts, event.ts)
+            svc.publish(orjson.dumps(event.model_dump()), f"events.{event.target.pool}")
+        if max_ts:
+            self.last_extract_event = datetime.datetime.fromtimestamp(max_ts)
+            RemoteSystem.objects.filter(id=self.id).update(
+                last_extract_event=self.last_extract_event,
+                last_successful_extract_event=self.last_successful_extract_event,
+            )
+
+
+def processed_remote_event(remote_system: str, events: List[Dict[str, Any]], deferred: List[str]):
+    """"""
+    rs = RemoteSystem.get_by_name(remote_system)
+    if not rs:
+        return
+    rs.push_events(events, deferred)

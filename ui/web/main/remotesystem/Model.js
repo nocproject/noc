@@ -192,6 +192,24 @@ Ext.define("NOC.main.remotesystem.Model", {
       type: "boolean",
     },
     {
+      name: "event_sync_mode",
+      type: "string",
+      defaultValue: "I",
+    },
+    {
+      name: "remote_collectors_batch_signal",
+      type: "string",
+      defaultValue: "A",
+    },
+    {
+      name: "metrics_min_batch_size",
+      type: "integer",
+    },
+    {
+      name: "metrics_batch_delay",
+      type: "integer",
+    },
+    {
       name: "sync_policy",
       type: "string",
       defaultValue: "M",

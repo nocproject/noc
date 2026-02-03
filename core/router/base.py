@@ -25,7 +25,7 @@ from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.config import get_stream
 from noc.core.span import Span
-from .route import Route, DefaultNotificationRoute, DefaultJobRoute
+from .route import Route, DefaultNotificationRoute, DefaultJobRoute, DefaultETLEventRoute
 from .action import DROP, DUMP
 
 logger = logging.getLogger(__name__)
@@ -34,12 +34,14 @@ logger = logging.getLogger(__name__)
 class Router(object):
     DEFAULT_N_CHAIN = "default"
     DEFAULT_JOB_CHAIN = "default_job"
+    DEFAULT_ETL_EVENT_PUSH_JOB_CHAIN = "default_etl_event_push"
 
     def __init__(self):
         self.chains: DefaultDict[bytes, List[Route]] = defaultdict(list)
         self.routes: Dict[str, Route] = {
             self.DEFAULT_N_CHAIN: DefaultNotificationRoute(),  # Add default route for notification
             self.DEFAULT_JOB_CHAIN: DefaultJobRoute(),  # Add default rout for send to job
+            self.DEFAULT_ETL_EVENT_PUSH_JOB_CHAIN: DefaultETLEventRoute(),
         }
         self.stream_partitions: Dict[str, int] = {}
         self.svc = get_service()
@@ -142,7 +144,12 @@ class Router(object):
             if (
                 r_types
                 and not r.m_types.intersection(r_types)
-                and rid not in {self.DEFAULT_N_CHAIN, self.DEFAULT_JOB_CHAIN}
+                and rid
+                not in {
+                    self.DEFAULT_N_CHAIN,
+                    self.DEFAULT_JOB_CHAIN,
+                    self.DEFAULT_ETL_EVENT_PUSH_JOB_CHAIN,
+                }
             ):
                 continue
             if r_types:
