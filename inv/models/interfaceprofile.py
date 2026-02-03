@@ -233,7 +233,7 @@ class InterfaceProfile(Document):
     match_rules = EmbeddedDocumentListField(MatchRule)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI

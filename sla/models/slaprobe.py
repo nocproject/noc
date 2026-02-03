@@ -264,12 +264,10 @@ class SLAProbe(Document):
 
     @property
     def has_configured_metrics(self) -> bool:
-        """
-        Check configured collected metrics
-        :return:
-        """
-        cfg = self.get_metric_config(self)
-        return cfg.get("metrics") or cfg.get("items")
+        """Check configured collected metrics"""
+        if not self.profile.metrics:
+            return False
+        return bool(self.profile.get_metric_discovery_interval())
 
     @classmethod
     def get_metric_discovery_interval(cls, mo: ManagedObject) -> int:

@@ -25,7 +25,6 @@ from mongoengine.fields import (
     EmbeddedDocumentField,
     EmbeddedDocumentListField,
     DynamicField,
-    ReferenceField,
     BooleanField,
     DateTimeField,
 )
@@ -233,7 +232,7 @@ class Object(Document):
     effective_labels = ListField(StringField())
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
-    remote_system = ReferenceField(RemoteSystem)
+    remote_system = PlainReferenceField(RemoteSystem)
     # Object id in remote system
     remote_id = StringField()
     # Object id in BI

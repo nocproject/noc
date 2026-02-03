@@ -371,8 +371,9 @@ class CPE(Document):
         Check configured collected metrics
         :return:
         """
-        config = self.get_metric_config(self)
-        return config.get("metrics") or config.get("items")
+        if not self.profile.metrics:
+            return False
+        return bool(self.profile.get_metric_discovery_interval())
 
     def get_cpe_interface(self):
         return self.controller.get_interface()

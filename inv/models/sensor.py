@@ -393,8 +393,7 @@ class Sensor(Document):
     @property
     def has_configured_metrics(self) -> bool:
         """Check configured collected metrics"""
-        config = self.get_metric_config(self)
-        return config.get("metrics") or config.get("items")
+        return self.profile.enable_collect
 
     def get_matcher_ctx(self) -> Dict[str, Any]:
         r = {
