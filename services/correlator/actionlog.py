@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, List
 
 # NOC modules
-from noc.core.fm.request import ActionConfig
+from noc.core.fm.request import ActionConfig, WhenCondition
 from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.timepattern import TimePattern
 from noc.aaa.models.user import User
@@ -52,7 +52,7 @@ class ActionLog(object):
         time_pattern: Optional[TimePattern] = None,
         min_severity: Optional[int] = None,
         alarm_ack: str = "any",
-        when: str = "any",
+        when: WhenCondition = WhenCondition.ANY,
         # Time ?
         subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
@@ -81,7 +81,7 @@ class ActionLog(object):
         self.min_severity = min_severity or 0
         self.time_pattern: Optional[TimePattern] = time_pattern
         self.alarm_ack: str = alarm_ack or "any"
-        self.when: str = when or "any"
+        self.when: WhenCondition = when or WhenCondition.ANY
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
         self.repeat_num = repeat_num or 0
@@ -247,7 +247,7 @@ class ActionLog(object):
             time_pattern=data.get("time_pattern"),
             min_severity=data["min_severity"],
             alarm_ack=data["alarm_ack"],
-            when=data["when"],
+            when=WhenCondition(data["when"]),
             timestamp=data["timestamp"],
             repeat_num=int(data["repeat_num"]),
             status=ActionStatus(data["status"]),
@@ -270,7 +270,7 @@ class ActionLog(object):
             "time_pattern": self.time_pattern,
             "min_severity": self.min_severity,
             "alarm_ack": self.alarm_ack,
-            "when": self.when,
+            "when": self.when.value,
             "timestamp": self.timestamp.replace(microsecond=0),
             "status": self.status.value,
             "error": self.error,
@@ -331,7 +331,7 @@ class ActionLog(object):
                         document_id=tt_id,
                         timestamp=now,
                         status=ActionStatus.NEW,
-                        when="on_end",
+                        when=WhenCondition.ON_END,
                         **args,
                     )
                 ]

@@ -7,6 +7,7 @@
 
 # Python modules
 import datetime
+import enum
 from typing import Optional, Literal, List
 
 # Third-party modules
@@ -16,6 +17,13 @@ from pydantic import BaseModel, Field
 # NOC modules
 from .enum import AlarmAction
 from noc.core.models.escalationpolicy import EscalationPolicy
+
+
+class WhenCondition(enum.Enum):
+    ANY = "any"
+    ON_END = "on_end"
+    ON_START = "on_start"
+    ON_CLEAR = "on_clear"
 
 
 class ActionConfig(BaseModel):
@@ -37,7 +45,7 @@ class ActionConfig(BaseModel):
     key: Optional[str] = None
     delay: int = 0
     ack: Literal["any", "ack", "unack"] = "any"
-    when: Literal["any", "on_start", "on_end"] = "any"  # Manually, end sequence
+    when: WhenCondition = WhenCondition.ANY  # Manually, end sequence
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     # Retry until - Disable, Count, TTL

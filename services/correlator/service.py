@@ -417,6 +417,8 @@ class CorrelatorService(FastAPIService):
         elif timestamp > alarm.last_update:
             # Refresh last update
             alarm.last_update = timestamp
+            # For retry alarm, stop clear
+            alarm.stop_watch(Effect.CLEAR_ALARM, key="")
             alarm.save()
         e_severity = alarm.get_effective_severity()
         if e_severity == alarm.severity:
@@ -493,9 +495,9 @@ class CorrelatorService(FastAPIService):
                     after = alarm.timestamp + datetime.timedelta(seconds=rule.clear_after_delay)
                 else:
                     after = alarm.last_update + datetime.timedelta(seconds=rule.clear_after_delay)
-                alarm.add_watch(Effect.CLEAR_ALARM, key="", after=after)
+                alarm.add_watch(Effect.CLEAR_ALARM, key=str(rule.id), after=after)
             else:
-                alarm.stop_watch(Effect.CLEAR_ALARM, key="")
+                alarm.stop_watch(Effect.CLEAR_ALARM, key=str(rule.id))
             rule.apply_actions(alarm)
         return groups
 
@@ -1410,7 +1412,16 @@ class CorrelatorService(FastAPIService):
         )
         alarm.last_update = max(alarm.last_update, ts)
         groups = alarm.groups
-        alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source, force=bool(source))
+        aa = alarm.clear_alarm(message or "Cleared by id", ts=ts, source=source, force=bool(source))
+        if not aa:
+            self.logger.info(
+                "[%s|%s] Alarm %s(%s) clear not allowed",
+                alarm.managed_object.name if alarm.managed_object else DEFAULT_REFERENCE,
+                alarm.managed_object.address if alarm.managed_object else alarm.reference,
+                alarm.alarm_class.name,
+                alarm.id,
+            )
+            return
         metrics["alarm_clear"] += 1
         await self.clear_groups(groups, ts=ts)
 

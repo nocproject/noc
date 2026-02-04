@@ -365,6 +365,7 @@ class EscalationProfile(Document):
         return AlarmActionRequest(
             item=ActionItem(alarm=str(alarm.id)),
             item_policy=self.escalation_policy,
+            end_condition=self.end_condition,
             start_at=alarm.timestamp,
             actions=actions,
             allowed_actions=ma,

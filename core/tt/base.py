@@ -158,6 +158,7 @@ class BaseTTSystem(object):
 
     def get_updates(
         self,
+        login: str,
         last_run: Optional[datetime] = None,
         last_update: Optional[str] = None,
         tt_ids: Optional[List[str]] = None,
@@ -169,6 +170,7 @@ class BaseTTSystem(object):
             last_run: timestamp last run
             last_update: Last update sequence number
             tt_ids: List document id for request changes
+            login: Login for authenticate
 
         """
         raise NotImplementedError()

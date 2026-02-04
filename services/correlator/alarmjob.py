@@ -19,7 +19,7 @@ from bson import ObjectId
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus, GroupType
-from noc.core.fm.request import AlarmActionRequest, ActionConfig
+from noc.core.fm.request import AlarmActionRequest, ActionConfig, WhenCondition
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.debug import error_report
 from noc.core.scheduler.job import Job
@@ -192,7 +192,7 @@ class AlarmJob(object):
     @property
     def is_end(self) -> bool:
         match self.end_condition:
-            case "CR":
+            case "CR" | "CT":
                 return self.leader_item.is_close or self.alarm.status == "C"
             case "CA":
                 # Close All
@@ -225,7 +225,7 @@ class AlarmJob(object):
         Calculate next run ts. When set delay or Temp Error
         """
         for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
-            if aa.status == ActionStatus.NEW and aa.when != "on_end":
+            if aa.status == ActionStatus.NEW and aa.when != WhenCondition.ON_END:
                 return (aa.timestamp + datetime.timedelta(seconds=1)).replace(microsecond=0)
         return None
 
@@ -348,7 +348,7 @@ class AlarmJob(object):
                 )
                 if aa.status == ActionStatus.FAILED:
                     continue
-                if aa.when == "on_end" and not is_end:
+                if aa.when != WhenCondition.ON_END and is_end:
                     self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                     continue
                 if aa.timestamp > now:
@@ -396,6 +396,8 @@ class AlarmJob(object):
                             document_id=r.document_id,
                         )
                     )
+                if self.end_condition == "CT" and r.document_id and not is_end:
+                    self.alarm.add_watch(Effect.STOP_CLEAR, key=str(self.id), immediate=True)
                 # AlarmLog
                 aa.set_status(r)
                 # Processed Result
@@ -517,6 +519,7 @@ class AlarmJob(object):
             allowed_actions=[AllowedAction.from_request(aa) for aa in req.allowed_actions or []],
             # Settings
             # maintenance_policy=req.maintenance_policy,
+            end_condition=req.end_condition,
             item_policy=req.item_policy,
             # Repeat settings
             max_repeats=req.max_repeats,
@@ -572,8 +575,10 @@ class AlarmJob(object):
 
         tt_docs, actions = {}, []
         start_at, completed_at = None, None
+        status = JobStatus.WAITING
         if is_completed:
             completed_at = datetime.datetime.now().replace(microsecond=0)
+            status = JobStatus.SUCCESS
         for a in self.actions:
             if a.action == AlarmAction.CREATE_TT and a.document_id:
                 tt_docs[a.key] = a.document_id
@@ -584,20 +589,21 @@ class AlarmJob(object):
             id=self.id,
             name=self.name,
             escalation_profile=self.profile,
-            status=JobStatus.WAITING,
+            status=status,
             created_at=actions[0].timestamp,
             started_at=start_at,
             completed_at=completed_at,
             ctx_id=self.ctx_id,
             telemetry_sample=self.telemetry_sample,
             maintenance_policy=self.maintenance_policy,
+            end_condition=self.end_condition,
             max_repeats=self.max_repeats,
             repeat_delay=self.repeat_delay,
             is_dirty=False,
             items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
             actions=actions,
             tt_docs=tt_docs,
-            # groups=self.groups,
+            groups=self.groups,
             affected_services=self.services,
             severity=self.severity,
             # total_objects=self.total_objects,
@@ -742,6 +748,7 @@ class AlarmWatchersJob(PeriodicJob):
         now = datetime.datetime.now().replace(microsecond=0)
         for aa in ActiveAlarm.objects.filter(wait_ts__lte=now):
             aa.touch_watch()
+            aa.wait_ts = aa.get_wait_ts()
             aa.safe_save()
             # Clean After
             # Bulk ?

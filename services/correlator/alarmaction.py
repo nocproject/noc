@@ -23,7 +23,7 @@ from noc.core.tt.types import (
 )
 from noc.core.tt.base import TTSystemCtx, TTAction
 from noc.core.fm.enum import AlarmAction, ActionStatus
-from noc.core.fm.request import AllowedAction, ActionConfig
+from noc.core.fm.request import AllowedAction, ActionConfig, WhenCondition
 from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
@@ -73,6 +73,8 @@ class AlarmActionRunner(object):
                 r = self.create_tt(**ctx)
             case AlarmAction.CLOSE_TT:
                 r = self.close_tt(**ctx)
+            case AlarmAction.COMMENT_TT:
+                r = self.comment_tt(**ctx)
             case AlarmAction.CLEAR:
                 r = self.alarm_clear(**ctx)
             case AlarmAction.ACK:
@@ -304,7 +306,7 @@ class AlarmActionRunner(object):
             message = subject or f"Acknowledge by {user} (from TTSystem: {requester.name})"
         else:
             message = subject or f"Acknowledge by {user}"
-        self.alarm.acknowledge(user, message)
+        self.alarm.acknowledge(user, message, touch=False)
         return ActionResult(status=ActionStatus.SUCCESS)
 
     def alarm_unack(
@@ -323,7 +325,7 @@ class AlarmActionRunner(object):
             message = subject or f"UnAcknowledge by {user} (from TTSystem: {requester.name})"
         else:
             message = subject or f"UnAcknowledge by {user}"
-        self.alarm.unacknowledge(user, message)
+        self.alarm.unacknowledge(user, message, touch=False)
         return ActionResult(status=ActionStatus.SUCCESS)
 
     def alarm_clear(
@@ -449,7 +451,7 @@ class AlarmActionRunner(object):
                 status=ActionStatus.SUCCESS,
                 document_id=r.document,
                 action=ActionConfig(
-                    when="on_end",
+                    when=WhenCondition.ON_END,
                     action=AlarmAction.CLOSE_TT,
                     key=str(tt_system.id),
                     # template=str(self.close_template.id) if self.close_template else None,

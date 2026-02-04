@@ -9,7 +9,7 @@
 import datetime
 import threading
 from collections import defaultdict
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Dict
 
 # NOC modules
 from noc.core.scheduler.job import Job
@@ -21,6 +21,7 @@ from noc.core.fm.request import ActionConfig
 from noc.core.fm.enum import AlarmAction
 from noc.aaa.models.user import User
 from noc.fm.models.ttsystem import TTSystem
+from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
 from noc.services.correlator.alarmjob import AlarmJob
 from noc.config import config
 from noc.core.text import alnum_key
@@ -59,15 +60,32 @@ class CheckTTJob(Job):
         """
         return User.get_by_contact(username)
 
+    def get_waited_tt_ids(self) -> Dict[str, str]:
+        """Getting waited TTS"""
+        r = {}
+        oid = str(self.object.id)
+        for job_id, ids in AlarmJobState.objects.filter(
+            **{
+                f"tt_docs__{oid}__exists": True,
+                "end_condition": "CT",
+            }
+        ).scalar("id", "tt_docs"):
+            if oid not in ids:
+                continue
+            r[str(job_id)] = ids[oid]
+        return r
+
     def handler(self, **kwargs):
         tts = self.object.get_system()
+        waited_ids = self.get_waited_tt_ids()
         last_ts: datetime.datetime = datetime.datetime.now()
         last_id: Optional[str] = self.object.last_update_id
         changes = defaultdict(list)
         for c in tts.get_updates(
+            self.object.login,
             self.object.last_update_id,
             self.object.last_update_ts,
-            [],
+            list(waited_ids.keys()),
         ):
             # if c.document_id not in docs:
             #    self.logger.info(

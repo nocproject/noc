@@ -7,7 +7,7 @@
 
 # Third-party modules
 from mongoengine.document import EmbeddedDocument
-from mongoengine.fields import DateTimeField, StringField
+from mongoengine.fields import DateTimeField, StringField, BooleanField
 
 
 class AlarmLog(EmbeddedDocument):
@@ -20,6 +20,7 @@ class AlarmLog(EmbeddedDocument):
     # Escalated TT ID in form
     # <external system name>:<external tt id>
     tt_id = StringField(required=False)
+    internal = BooleanField(default=True)
 
     def __str__(self):
         if self.tt_id:

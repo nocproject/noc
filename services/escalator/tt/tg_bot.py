@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 import orjson
 
 # NOC modules
-from noc.core.tt.base import BaseTTSystem, TTError
+from noc.core.tt.base import BaseTTSystem, TTError, TemporaryTTError
 from noc.core.tt.types import (
     EscalationContext,
     DeescalationContext,
@@ -116,10 +116,12 @@ class TGBotTTSystem(BaseTTSystem):
                 f"{self.url}/{action}",
                 orjson.dumps(msg),
             )
-            body = orjson.loads(body)
             self.logger.info("Telegram send result: %s/%s", body, status)
+            body = orjson.loads(body)
             if status == 200 and "result" in body:
                 return str(body["result"]["message_id"])
+            if status == 429:
+                raise TemporaryTTError(body["description"])
             raise TTError(body["description"])
 
     @staticmethod
