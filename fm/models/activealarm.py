@@ -1228,6 +1228,7 @@ class ActiveAlarm(Document):
         close_tt: bool = False,
         wait_tt: Optional[str] = None,
         template: Optional[Template] = None,
+        supress_job: bool = False,
         **kwargs,
     ):
         if close_tt:
@@ -1250,12 +1251,13 @@ class ActiveAlarm(Document):
         if wait_tt:
             self.add_watch(Effect.STOP_CLEAR, key=wait_tt, immediate=True)
             self.log_message("Waiting for TT to close")
-            call_later(
-                "noc.services.escalator.wait_tt.wait_tt",
-                scheduler="escalator",
-                pool=self.managed_object.escalator_shard,
-                alarm_id=self.id,
-            )
+            if not supress_job:
+                call_later(
+                    "noc.services.escalator.wait_tt.wait_tt",
+                    scheduler="escalator",
+                    pool=self.managed_object.escalator_shard,
+                    alarm_id=self.id,
+                )
         self.log_message("Escalated to %s" % tt_id, tt_id=tt_id, to_save=True)
         # q = {"_id": self.id}
         # op = {
@@ -1437,7 +1439,7 @@ class ActiveAlarm(Document):
                 # Job already ended
                 return
             # For save escalation profile
-            job.save_state()
+            job.save_state(is_dirty=True)
             job_id = str(job.id)
         # Run Scheduler
         pool = Pool.get_default_fm_pool()

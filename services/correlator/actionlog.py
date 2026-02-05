@@ -9,7 +9,7 @@
 # Python modules
 import datetime
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any, List, Set
 
 # NOC modules
 from noc.core.fm.request import ActionConfig, WhenCondition
@@ -37,7 +37,7 @@ class ActionResult(object):
     error: Optional[str] = None
     document_id: Optional[str] = None
     ctx: Optional[Dict[str, str]] = None
-    action: Optional[ActionConfig] = None
+    actions: Optional[List[ActionConfig]] = None
 
 
 class ActionLog(object):
@@ -53,6 +53,7 @@ class ActionLog(object):
         min_severity: Optional[int] = None,
         alarm_ack: str = "any",
         when: WhenCondition = WhenCondition.ANY,
+        has_effect: Optional[Effect] = None,
         # Time ?
         subject: Optional[str] = None,
         timestamp: Optional[datetime.datetime] = None,
@@ -82,6 +83,7 @@ class ActionLog(object):
         self.time_pattern: Optional[TimePattern] = time_pattern
         self.alarm_ack: str = alarm_ack or "any"
         self.when: WhenCondition = when or WhenCondition.ANY
+        self.has_effect: Optional[Effect] = has_effect
         self.stop_processing = stop_processing
         self.allow_fail = allow_fail
         self.repeat_num = repeat_num or 0
@@ -104,13 +106,22 @@ class ActionLog(object):
         if result.document_id:
             self.document_id = result.document_id
 
-    def is_match(self, severity: int, timestamp: datetime.datetime, ack_user: Any):
+    def is_match(
+        self,
+        severity: int,
+        timestamp: datetime.datetime,
+        ack_user: Any,
+        effects: Optional[Set[Effect]] = None,
+    ):
         """Check job condition"""
+        effects = effects or set()
         if severity < self.min_severity:
             return False
         if self.time_pattern and not self.time_pattern.match(timestamp):
             return False
         if self.alarm_ack == "ack" and not ack_user:
+            return False
+        if self.has_effect and self.has_effect not in effects:
             return False
         return not (self.alarm_ack == "unack" and ack_user)
 
@@ -118,6 +129,7 @@ class ActionLog(object):
         self,
         document_id: Optional[str] = None,
         alarm_ctx: Optional[Dict[str, Any]] = None,
+        wait_tt: bool = False,
     ) -> Dict[str, Any]:
         """
         Build action Context
@@ -129,7 +141,12 @@ class ActionLog(object):
         if (self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT)) and self.key == "stub":
             r["tt_system"] = self.tt_system
             r["tt_id"] = self.document_id or document_id
-        elif self.action in (AlarmAction.CREATE_TT, AlarmAction.CLOSE_TT):
+        elif self.action in (
+            AlarmAction.CREATE_TT,
+            AlarmAction.CLOSE_TT,
+            AlarmAction.COMMENT_TT,
+            AlarmAction.COMMENT_ALARM_STATE,
+        ):
             r["tt_system"] = TTSystem.get_by_id(self.key)
             r["tt_id"] = self.document_id or document_id
         elif self.action == AlarmAction.NOTIFY:
@@ -146,6 +163,8 @@ class ActionLog(object):
         if self.tt_system:
             # from_system
             r["from_system"] = self.tt_system
+        if wait_tt:
+            r["wait_tt"] = True
         if self.ctx:
             r |= self.ctx
         return r
@@ -165,6 +184,7 @@ class ActionLog(object):
             time_pattern=self.time_pattern,
             alarm_ack=self.alarm_ack,
             when=self.when,
+            has_effect=self.has_effect,
             min_severity=self.min_severity,
             allow_fail=self.allow_fail,
             stop_processing=self.stop_processing,
@@ -218,6 +238,7 @@ class ActionLog(object):
             alarm_ack=action.ack,
             when=action.when,
             min_severity=action.min_severity or 0,
+            has_effect=action.has_effect or None,
             allow_fail=action.allow_fail,
             stop_processing=action.stop_processing,
             # Ctx
@@ -243,11 +264,12 @@ class ActionLog(object):
             template = Template.get_by_id(int(data["template"]))
         return ActionLog(
             action=AlarmAction(data["action"]),
-            key=data["key"],
+            key=data.get("key"),
             time_pattern=data.get("time_pattern"),
             min_severity=data["min_severity"],
             alarm_ack=data["alarm_ack"],
             when=WhenCondition(data["when"]),
+            has_effect=Effect(data["has_effect"]) if data.get("has_effect") else None,
             timestamp=data["timestamp"],
             repeat_num=int(data["repeat_num"]),
             status=ActionStatus(data["status"]),
@@ -271,6 +293,7 @@ class ActionLog(object):
             "min_severity": self.min_severity,
             "alarm_ack": self.alarm_ack,
             "when": self.when.value,
+            "has_effect": self.has_effect.value if self.has_effect else None,
             "timestamp": self.timestamp.replace(microsecond=0),
             "status": self.status.value,
             "error": self.error,

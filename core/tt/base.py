@@ -289,8 +289,8 @@ class TTSystemCtx(object):
         self.tt_system.comment(
             TTCommentRequest(
                 id=self.id,
-                subject=message,
-                body=None,
+                subject=None,
+                body=message,
                 login=self.login,
                 queue=self.queue,
             )

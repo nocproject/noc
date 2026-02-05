@@ -29,6 +29,7 @@ from mongoengine.fields import (
 # NOC models
 from noc.core.fm.enum import AlarmAction, ActionStatus, ItemStatus
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
+from noc.fm.models.alarmwatch import Effect
 
 
 class JobStatus(Enum):
@@ -103,6 +104,7 @@ class ActionLog(EmbeddedDocument):
     time_pattern = StringField()
     alarm_ack = StringField()
     when = StringField(default="any")
+    has_effect = EnumField(Effect, required=False)
     stop_processing: bool = BooleanField(default=False)
     allow_fail: bool = BooleanField(default=False)
     repeat_num: int = IntField(default=0)

@@ -305,6 +305,16 @@ class AlarmJob(object):
                 ),
             )
 
+    def get_runner(self) -> "AlarmActionRunner":
+        """Getting runner"""
+        return AlarmActionRunner(
+            self.items,
+            logger=self.logger,
+            allowed_actions=self.allowed_actions,
+            services=self.services,
+            groups=self.groups,
+        )
+
     def run(
         self,
         ts: Optional[datetime.datetime] = None,
@@ -325,13 +335,7 @@ class AlarmJob(object):
             changed,
             len(self.actions),
         )
-        runner = AlarmActionRunner(
-            self.items,
-            logger=self.logger,
-            allowed_actions=self.allowed_actions,
-            services=self.services,
-            groups=self.groups,
-        )
+        runner = self.get_runner()
         # Action Context
         with (
             Span(client="alarmjob", sample=self.get_span_sample()),
@@ -339,6 +343,10 @@ class AlarmJob(object):
             change_tracker.bulk_changes(),
         ):
             self.check_escalated()
+            if not is_end and self.alarm.status == "A":
+                effects = {w.effect for w in self.alarm.watchers}
+            else:
+                effects = set()
             alarm_ctx = self.alarm.get_message_ctx()
             for aa in sorted(self.actions, key=operator.attrgetter("timestamp")):
                 self.logger.debug(
@@ -348,7 +356,7 @@ class AlarmJob(object):
                 )
                 if aa.status == ActionStatus.FAILED:
                     continue
-                if aa.when != WhenCondition.ON_END and is_end:
+                if aa.when == WhenCondition.ON_END and not is_end:
                     self.logger.debug("[%s] Action execute on End. Next...", aa.action)
                     continue
                 if aa.timestamp > now:
@@ -360,7 +368,7 @@ class AlarmJob(object):
                     if self.dry_run:
                         self.logger.debug("[%s] Action already executed. Next...", aa)
                     continue
-                if not aa.is_match(self.severity, now, self.alarm.ack_user):
+                if not aa.is_match(self.severity, now, self.alarm.ack_user, effects):
                     # Set Skip (Condition)
                     self.logger.debug(
                         "[%s] Action condition [%s] not Match. Next...",
@@ -377,6 +385,7 @@ class AlarmJob(object):
                         **aa.get_ctx(
                             document_id=aa.document_id,
                             alarm_ctx=alarm_ctx,
+                            wait_tt=self.end_condition == "CT" and not is_end,
                         ),
                     )  # aa.get_ctx for job
                 except Exception as e:
@@ -384,23 +393,23 @@ class AlarmJob(object):
                     error_report()
                     # Job Status to Exception
                 self.logger.info("[%s] Action result: %s", aa, r)
+                # Add repeat action
                 if aa.repeat_num < self.max_repeats and r.status == ActionStatus.SUCCESS:
                     # If Repeat - add action to next on repeat delay
                     # Self register actions, repeat after end actions
                     self.actions.append(aa.get_repeat(self.repeat_delay))
-                if r.action:
+                # Add return actions
+                for action in r.actions or []:
                     self.actions.append(
                         ActionLog.from_request(
-                            r.action,
+                            action,
                             started_at=aa.timestamp,
                             document_id=r.document_id,
                         )
                     )
-                if self.end_condition == "CT" and r.document_id and not is_end:
-                    self.alarm.add_watch(Effect.STOP_CLEAR, key=str(self.id), immediate=True)
-                # AlarmLog
-                aa.set_status(r)
                 # Processed Result
+                aa.set_status(r)
+                # Add Before actions
                 if aa.stop_processing:
                     # Set Stop job status
                     break
@@ -565,7 +574,7 @@ class AlarmJob(object):
             static_delay=static_delay,
         )
 
-    def save_state(self, dry_run: bool = False, is_completed: bool = False):
+    def save_state(self, dry_run: bool = False, is_completed: bool = False, is_dirty: bool = False):
         from noc.fm.models.alarmjob import (
             AlarmJob as AlarmJobState,
             AlarmItem,
@@ -599,7 +608,7 @@ class AlarmJob(object):
             end_condition=self.end_condition,
             max_repeats=self.max_repeats,
             repeat_delay=self.repeat_delay,
-            is_dirty=False,
+            is_dirty=is_dirty,
             items=[AlarmItem(alarm=i.alarm.id, status=i.status) for i in self.items],
             actions=actions,
             tt_docs=tt_docs,
@@ -711,6 +720,8 @@ class AlarmJob(object):
         timestamp: Optional[datetime.datetime] = None,
     ):
         """Run action on Job"""
+        from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
+
         if not self.is_allowed_action(action.action, user):
             self.logger.info("[%s] No Permission User for Run Action: %s", user, action.action)
             return
@@ -723,8 +734,12 @@ class AlarmJob(object):
             tt_system=str(tt_system.id) if tt_system else None,
             one_time=True,
         )
-        self.actions += [al]
-        self.run()
+        runner = self.get_runner()
+        r = runner.run_action(al.action, **al.get_ctx(alarm_ctx=self.alarm.get_message_ctx()))
+        al.set_status(r)
+        self.actions.append(al)
+        AlarmJobState.objects.filter(id=self.id).update(push__actions=al.get_state())
+        # self.run()
 
     @classmethod
     def ensure_job(cls, tt_id: str) -> Optional["AlarmJob"]:
@@ -773,7 +788,7 @@ class AlarmWatchersJob(PeriodicJob):
 def run_alarm_job(job_id: str, *args, **kwargs):
     job = AlarmJob.get_by_id(job_id)
     if not job:
-        print("Unknown job")
+        print(f"{job} Unknown job")
         return
     job.run()
     wait_ts = job.get_next_ts()

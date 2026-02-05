@@ -125,6 +125,7 @@ class AlarmAction(enum.Enum):
     CREATE_TT = "create_tt"
     CLOSE_TT = "close_tt"
     COMMENT_TT = "comment_tt"
+    COMMENT_ALARM_STATE = "comment_alarm_state"
     ACK = "ack"
     UN_ACK = "un_ack"
     CLEAR = "clear"  # Reopen
