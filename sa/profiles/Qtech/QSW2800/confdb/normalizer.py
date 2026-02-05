@@ -27,10 +27,24 @@ class Qtech2800Normalizer(BaseNormalizer):
     def normalize_username_password(self, tokens):
         yield self.make_user_encrypted_password(username=tokens[1], password=" ".join(tokens[3:]))
 
-    @match("snmp-server", "community", ANY, ANY, ANY)
+    @match("snmp-server", "community", ANY, ANY, ANY, "access", ANY)
+    def normalize_snmp_community_with_acl(self, tokens):
+        yield self.make_snmp_community_level(
+            community=tokens[4].strip('"'), level={"rw": "read-write", "ro": "read-only"}[tokens[2]]
+        )
+
+    @match("snmp-server", "community", ANY, ANY)
+    def normalize_snmp_community_simple(self, tokens):
+        try:
+            level = {"rw": "read-write", "ro": "read-only"}[tokens[3]]
+        except KeyError:
+            return
+        yield self.make_snmp_community_level(community=tokens[2].strip('"'), level=level)
+
+    @match("snmp-server", "community", ANY, ANY, "encrypted")
     def normalize_snmp_community(self, tokens):
         yield self.make_snmp_community_level(
-            community=tokens[4], level={"rw": "read-write", "ro": "read-only"}[tokens[2]]
+            community=tokens[2].strip('"'), level={"rw": "read-write", "ro": "read-only"}[tokens[3]]
         )
 
     @match("vlan", ANY, "name", ANY)
