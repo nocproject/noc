@@ -294,7 +294,7 @@ class PingService(FastAPIService):
             # await asyncio.sleep(attempts)
             await retry_timeout(attempts)
         if not timings:
-            return None, 0  # No success
+            return None, attempts  # No success
         # CHECK_ALL policy
         return sum(timings) / len(timings), 0
 
