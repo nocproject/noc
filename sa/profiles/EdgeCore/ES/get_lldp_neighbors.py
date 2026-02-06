@@ -80,7 +80,7 @@ class Script(BaseScript):
                 iface_name = port_id  # BUG. Look in PortID instead PortDesc
             elif port_subtype == 3:
                 # Iface MAC address
-                iface_name = port_descr
+                iface_name = names.get(int(port_num), port_id)
             elif port_subtype == 7 and port_id.isdigit():
                 # Iface local (ifindex)
                 iface_name = names[int(port_id)]
