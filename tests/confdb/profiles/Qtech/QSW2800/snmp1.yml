@@ -1,0 +1,6 @@
+config: |
+  !
+  snmp-server community "COMMUNITY" ro
+  !
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'protocols', 'snmp', 'community', 'COMMUNITY', 'level', 'read-only', {'replace': True}]
