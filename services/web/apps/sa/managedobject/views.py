@@ -88,7 +88,12 @@ class ManagedObjectApplication(ExtModelApplication):
     query_condition = "icontains"
     query_fields = ["name", "description"]
     secret_fields = {"password", "super_password", "snmp_ro", "snmp_rw"}
-    ignored_fields = ExtModelApplication.ignored_fields | {"global_cpe_id", "local_cpe_id"}
+    ignored_fields = ExtModelApplication.ignored_fields | {
+        "global_cpe_id",
+        "local_cpe_id",
+        "remote_system",
+        "remote_id",
+    }
     # Inlines
     attrs = ModelInline(ManagedObjectAttribute)
     cfg = RepoInline("config", access="config")
