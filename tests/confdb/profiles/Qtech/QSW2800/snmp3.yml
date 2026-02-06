@@ -1,0 +1,6 @@
+config: |
+  !
+  snmp-server community "COMMUNITY" rw encrypted
+  !
+result:
+  - ['virtual-router', 'default', 'forwarding-instance', 'default', 'protocols', 'snmp', 'community', 'COMMUNITY', 'level', 'read-write', {'replace': True}]
