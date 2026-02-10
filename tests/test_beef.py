@@ -8,11 +8,12 @@
 # Python modules
 import re
 import bz2
+import os
 
 # Third-party modules
 import pytest
-from fs import open_fs
 import orjson
+import fsspec
 
 # NOC modules
 from noc.config import config
@@ -37,10 +38,12 @@ def get_beef_tests():
     r = []
     paths = config.tests.beef_paths or []
     for url in paths:
-        fs = open_fs(url)
-        for path in fs.walk.files(filter=["*.json.bz2"]):
-            if rx_tc.match(path):
-                r += [(fs, path)]
+        fs, url_path = fsspec.url_to_fs(url)
+        for path, _, files in fs.walk(url_path):
+            for name in files:
+                path = os.path.join(path, name)
+                if rx_tc.match(path):
+                    r += [(fs, path)]
     return r
 
 

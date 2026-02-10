@@ -11,7 +11,7 @@ from collections import defaultdict
 
 # Third-party modules
 import pytest
-from fs import open_fs
+import fsspec
 import yaml
 import cachetools
 
@@ -101,14 +101,21 @@ def get_discovery_configs():
     paths = config.tests.beef_paths or []
     for n, url in enumerate(paths):
         pool_name = "DP%04d" % (n + 1)
-        fs = open_fs(url)
-        for m, path in enumerate(fs.walk.files(filter=["test-discovery.yml"])):
-            data = yaml.safe_load(fs.readbytes(path))
-            name = os.path.basename(os.path.dirname(path))
-            m = m + 1
-            address = "10.%d.%d.%d" % ((m >> 16) & 0xFF, (m >> 8) & 0xFF, m & 0xFF)
-            beef_path = os.path.join(os.path.dirname(path), "beef.json.bz2")
-            r += [(name, address, pool_name, url, beef_path, data)]
+        fs, url_path = fsspec.url_to_fs(url)
+        num = 0
+        for path, _, files in fs.walk(url_path):
+            for name in files:
+                if name != "test-discovery.yml":
+                    continue
+                file_path = os.path.join(path, name)
+                with fs.open(file_path, mode="rb") as f:
+                    data = yaml.safe_load(f.read())
+                    # name = os.path.basename(os.path.dirname(path))
+                    m = num + 1
+                    address = "10.%d.%d.%d" % ((m >> 16) & 0xFF, (m >> 8) & 0xFF, m & 0xFF)
+                    beef_path = os.path.join(os.path.dirname(file_path), "beef.json.bz2")
+                    r += [(name, address, pool_name, url, beef_path, data)]
+                num += 1
     return r
 
 

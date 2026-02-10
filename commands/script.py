@@ -14,7 +14,6 @@ import re
 from collections import namedtuple
 
 # Third-party modules
-from fs import open_fs
 import orjson
 import yaml
 import codecs
@@ -512,6 +511,8 @@ class StorageStub(object):
         self.url = url
 
     def open_fs(self):
+        from fs import open_fs
+
         return open_fs(self.url)
 
     class Error(Exception):

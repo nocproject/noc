@@ -11,11 +11,10 @@ from typing import Optional, Union
 import operator
 
 # Third-party modules
+import cachetools
+from fsspec import url_to_fs
 from mongoengine.document import Document
 from mongoengine.fields import StringField
-from fs import open_fs
-from fs.errors import FSError
-import cachetools
 from bson import ObjectId
 
 # NOC modules
@@ -50,8 +49,6 @@ class ExtStorage(Document):
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 
-    Error = FSError
-
     def __str__(self):
         return self.name
 
@@ -66,7 +63,8 @@ class ExtStorage(Document):
         return ExtStorage.objects.filter(name=name).first()
 
     def open_fs(self):
-        return open_fs(self.url)
+        fs, _ = url_to_fs(self.url)
+        return fs
 
     @property
     def is_config_mirror(self):

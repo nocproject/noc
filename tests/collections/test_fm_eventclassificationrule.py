@@ -7,11 +7,12 @@
 
 # Python modules
 import datetime
+import os
 
 # Third-party modules
 import pytest
 import orjson
-from fs import open_fs
+import fsspec
 
 # NOC modules
 from noc.services.classifier.ruleset import RuleSet
@@ -57,9 +58,13 @@ def iter_json_loader(urls):
     if not urls:
         urls = []
     for url in urls:
-        with open_fs(url) as fs:
-            for path in fs.walk.files(filter=["*.json"]):
-                with fs.open(path) as f:
+        fs, url_path = fsspec.url_to_fs(url)
+        for path, _, files in fs.walk(url_path):
+            for name in files:
+                if not name.endswith(".json"):
+                    continue
+                path = os.path.join(path, name)
+                with fs.open(os.path.join(path, name), mode="rb") as f:
                     data = orjson.loads(f.read())
                 if not isinstance(data, list):
                     data = [data]

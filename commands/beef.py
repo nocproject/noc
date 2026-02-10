@@ -16,7 +16,6 @@ import codecs
 import uuid
 import yaml
 import orjson
-from fs import open_fs
 
 # NOC modules
 from noc.core.mongo.connection import connect
@@ -117,6 +116,7 @@ class Command(BaseCommand):
         connect()
         from noc.inv.models.resourcegroup import ResourceGroup
         from noc.dev.models.spec import Spec
+        from fs import open_fs
 
         class FakeSpec(object):
             def __init__(self, name):
