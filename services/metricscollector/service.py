@@ -166,12 +166,12 @@ class MetricsCollectorService(FastAPIService):
             if isinstance(ch, RemoteSystemEventChannel):
                 await self.send_events(ch.events)
                 # Register ETL
-                if ch.fm_events:
+                if ch.received_events:
                     await self.send_message(
                         orjson.dumps(
                             {
                                 "remote_system": ch.remote_system.name,
-                                "events": [c.model_dump() for c in ch.fm_events.values()],
+                                "events": [c.model_dump() for c in ch.received_events.values()],
                                 "deferred": ch.deferred,
                             }
                         ),
@@ -185,7 +185,7 @@ class MetricsCollectorService(FastAPIService):
                         "[%s] Flush Events Records: %s. Etl: %s/Deferred: %s",
                         ch.remote_system.name,
                         n_records,
-                        len(ch.fm_events),
+                        len(ch.received_events),
                         len(ch.deferred),
                     )
                 ch.flush_complete()

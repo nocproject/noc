@@ -168,7 +168,8 @@ class RemoteSystemEventChannel(object):
         self.last_offset: int = 0
         self.size: int = 0
         self.events: List[Event] = []
-        self.fm_events: Dict[str, FMEventObject] = {}
+        self.received_events: Dict[str, FMEventObject] = {}
+        self.send_events: Dict[str, FMEventObject] = {}
         self.deferred = []
         self.records: int = 0
         self.deduplicated: int = 0
@@ -200,22 +201,28 @@ class RemoteSystemEventChannel(object):
     async def feed_etl(self, event: FMEventObject):
         """Register Event"""
         await self.feed_ready.wait()
-        self.fm_events[event.id] = event
+        self.received_events[event.id] = event
         self.records += 1
         self.last_offset = max(self.last_offset, event.ts)
         if not self.expired:
             self.expired = perf_counter() + self.ttl
 
-    async def feed_resolved_event(self, event_id: str, r_event_id: str):
+    async def feed_resolved_event(self, event_id: str, r_event_id: str, ts: int):
         """Register Resolved Event"""
         await self.feed_ready.wait()
-        event = self.fm_events.get(event_id)
+        if r_event_id not in self.received_events:
+            event = self.send_events.pop(r_event_id, None)
+        else:
+            event = self.received_events[r_event_id]
         if not event:
-            self.deferred.append(r_event_id)
+            self.deferred.append(event_id)
         else:
             event.is_cleared = True
-            self.fm_events[r_event_id] = event
+            event.id = event_id
+            event.ts = ts
+            self.received_events[event.id] = event
         self.records += 1
+        self.last_offset = max(self.last_offset, ts)
         # self.last_offset = max(self.last_offset, event.ts)
         if not self.expired:
             self.expired = perf_counter() + self.ttl
@@ -238,7 +245,8 @@ class RemoteSystemEventChannel(object):
     def flush_complete(self):
         """Called when data are safely flushed"""
         self.events = []
-        self.fm_events = {}
+        self.send_events |= self.received_events
+        self.received_events = {}
         self.deferred = []
         self.size = 0
         self.records = 0

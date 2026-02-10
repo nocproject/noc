@@ -153,16 +153,22 @@ class ZabbixAPI(object):
             item = orjson.loads(line)
             metrics["zabbix_events_in"] += 1
             if "p_eventid" in item:
-                await channel.feed_resolved_event(item["eventid"], r_event_id=item["p_eventid"])
+                await channel.feed_resolved_event(
+                    str(item["eventid"]),
+                    r_event_id=str(item["p_eventid"]),
+                    ts=item["clock"],
+                )
                 continue
             host_name = item["hosts"][0]["name"]
             cfg = self.service.lookup_source_by_name(host_name)
-            if not cfg:
-                continue
+            if cfg:
+                obj = RemoteObject(id=str(cfg.managed_object), name=host_name, address=cfg.address)
+            else:
+                obj = RemoteObject(name=host_name)
             fm_event = FMEventObject(
                 id=str(item["eventid"]),
                 ts=item["clock"],
-                object=RemoteObject(id=cfg.id, name=host_name, address=cfg.address),
+                object=obj,
                 severity=str(item["severity"]),
                 data=[],
                 message=item["name"],

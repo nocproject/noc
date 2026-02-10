@@ -24,6 +24,7 @@ from noc.inv.models.sensorprofile import SensorProfile
 from noc.config import config
 
 NS = 1_000_000_000
+SEND_METRICS_CHUK_SIZE = 5_000
 
 
 class RemoteSystemJob(PeriodicJob):
@@ -160,10 +161,9 @@ class ETLMetricSyncJob(RemoteSystemJob):
         if not metrics_svc_slots:
             self.logger.warning("No active Metrics service. Skipping...")
             return
-        self.logger.info("Run extract metrics")
         parts = defaultdict(list)
         extract_sensors: Dict[str, Sensor] = {}
-        sensors, values = 0, 0
+        sensors, values, s_values = 0, 0, 0
         for s in Sensor.objects.filter(
             remote_system=self.object,
             protocol=SensorProtocol.REMOTE_PULL,
@@ -182,15 +182,30 @@ class ETLMetricSyncJob(RemoteSystemJob):
                 for ts, value in series:
                     s.set_value(value, ts, bulk=parts, shards=metrics_svc_slots)
                     values += 1
+                if values > SEND_METRICS_CHUK_SIZE and parts:
+                    self.send_parts(parts)
+                    s_values += values
+                    values = 0
+                    self.logger.info("Send parts: %s", s_values // values)
+                    parts = defaultdict(list)
         except Exception as e:
             self.logger.error("Error when extract metrics from Remote System: %s", str(e))
-        if not parts:
+        s_values += values
+        if not parts and not s_values:
+            self.logger.info("Nothing metrics parts. Sensors: %s, Values: %s", sensors, s_values)
             return
-        self.logger.info("Send sensors: %s, Values: %s", sensors, values)
+        self.logger.info("[%s] Send sensors: %s, Values: %s", self.object.name, sensors, s_values)
         RemoteSystem.objects.filter(id=self.object.id).update(
             last_extract_metrics=now,
             last_successful_extract_metrics=now,
         )
+        if parts:
+            self.send_parts(parts)
+
+    @classmethod
+    def send_parts(cls, parts):
+        svc = get_service()
+
         for partition, items in parts.items():
             for d in iter_chunks(
                 items,

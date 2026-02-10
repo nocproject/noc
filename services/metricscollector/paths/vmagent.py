@@ -29,7 +29,7 @@ VMAGENT_COLLECTOR = "vmagent"
 METRIC_LABEL_NAME = "__name__"
 INSTANCE_LABEL_NAME = "instance"
 JOB_LABEL_NAME = "job"
-NODE_LABEL_NAMES = frozenset(["node", "host"])
+NODE_LABEL_NAMES = frozenset(["node", "host", "netbox_name"])
 MS = 1000
 
 router = APIRouter()
