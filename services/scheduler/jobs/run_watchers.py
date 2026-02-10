@@ -18,10 +18,12 @@ MIN_NEXT_SHIFT_SEC = 30
 
 class RunWatchersJob(PeriodicJob):
     def handler(self, **kwargs):
-        self.logger.info("Run watcher for model: %s, %s", kwargs, self.attrs[self.ATTR_KEY])
         model = get_model(self.attrs[self.ATTR_KEY])
         now = datetime.datetime.now().replace(microsecond=0)
+        self.logger.info("[%s] Run watcher", model)
+        num, actions = 0, 0
         for svc in model.objects.filter(watcher_wait_ts__lte=now):
+            num += 1
             for w in svc.touch_watch():
                 a = w.get_action()
                 self.logger.debug("[%s] Touch Watch: %s / Action: %s", svc, w, a)
@@ -29,11 +31,14 @@ class RunWatchersJob(PeriodicJob):
                     continue
                 # Send to Worker
                 a.run_action(svc, w.key, w.args)
+                actions += 1
                 if w.once:
                     svc.stop_watch(w.effect, w.key, remote_system=w.remote_system)
                 # Clean After
             # Bulk ?
         # Clean cache
+        if num:
+            self.logger.info("[%s] Processed: %s, Action: %s", model, num, actions)
 
     def can_run(self):
         return True

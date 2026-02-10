@@ -43,6 +43,7 @@ from django.db.models import (
     Manager,
     Subquery,
     OuterRef,
+    Min,
 )
 from pydantic import BaseModel, RootModel
 from pymongo import ASCENDING
@@ -153,7 +154,7 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.wf.decorator import workflow
 from noc.core.etl.remotemappings import mappings
 from noc.core.model.dynamicprofile import dynamic_profile
-from noc.core.watchers.decorator import watchers
+from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
 from noc.core.watchers.types import ObjectEffect, WatchItem
 from noc.wf.models.state import State
 from .administrativedomain import AdministrativeDomain
@@ -171,6 +172,7 @@ SQL_MAINTENANCE_REMOVE = """
   SET affected_maintenances = affected_maintenances - %s
   WHERE affected_maintenances ? %s
 """
+SCHEDULER = "scheduler"
 
 
 @dataclass(frozen=True)
@@ -2929,27 +2931,39 @@ class ManagedObject(NOCModel):
         bulk=None,
     ):
         """"""
+        from noc.core.scheduler.scheduler import Scheduler
+
         updated = []
         for w in to_watchers:
             updated.append(ManagedObjectWatchers.from_item(self, w))
-        if updated and not dry_run:
+        if dry_run:
+            return
+        if updated:
             ManagedObjectWatchers.objects.bulk_create(
                 updated,
                 update_conflicts=True,
                 unique_fields=["managed_object", "effect", "key", "remote_system"],
                 update_fields=["once", "wait_avail", "after", "args"],
             )
-        if not to_remove or dry_run:
-            return
-        q = Q()
-        for effect, key, rs in to_remove:
-            q |= Q(effect=effect.value, key=key or "", remote_system=rs or "")
-        ManagedObjectWatchers.objects.filter(q).delete()
+        if to_remove:
+            q = Q()
+            for effect, key, rs in to_remove:
+                q |= Q(effect=effect.value, key=key or "", remote_system=rs or "")
+            ManagedObjectWatchers.objects.filter(q).delete()
+        wait_ts = self.get_wait_ts()
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
+            self.__class__.objects.filter(id=self.id).update(watcher_wait_ts=self.watcher_wait_ts)
+        m_ts = self.get_min_wait_ts()
+        if wait_ts and (not m_ts or wait_ts <= m_ts):
+            scheduler = Scheduler(SCHEDULER)
+            scheduler.submit(jcls=WATCHER_JCLS, key="sa.ManagedObject", ts=get_next_ts(wait_ts))
 
     @classmethod
     def get_min_wait_ts(cls) -> Optional[datetime.datetime]:
         """"""
-        return None
+        r = ManagedObjectWatchers.objects.aggregate(Min("after"))
+        return r.get("after__min")
 
     @classmethod
     def from_template(

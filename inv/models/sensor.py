@@ -11,7 +11,7 @@ import operator
 import datetime
 from collections import defaultdict
 from threading import Lock
-from typing import Dict, Optional, Iterable, List, Union, Any, DefaultDict
+from typing import Dict, Optional, Iterable, List, Union, Any, DefaultDict, Tuple
 
 # Third-party modules
 import bson
@@ -26,6 +26,7 @@ from mongoengine.fields import (
     DateTimeField,
     DictField,
     EnumField,
+    EmbeddedDocumentListField,
 )
 from pymongo import ReadPreference
 
@@ -38,10 +39,14 @@ from noc.core.models.cfgmetrics import MetricCollectorConfig, MetricItem
 from noc.core.models.sensorprotos import SensorProtocol
 from noc.core.model.dynamicprofile import dynamic_profile
 from noc.core.service.loader import get_service
+from noc.core.watchers.types import ObjectEffect, WatchItem
+from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
+from noc.core.scheduler.scheduler import Scheduler
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 from noc.inv.models.object import Object
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.objectwatchersitem import WatchDocumentItem
 from noc.pm.models.measurementunits import MeasurementUnits
 from noc.pm.models.agent import Agent
 from noc.pm.models.metrictype import MetricType
@@ -51,6 +56,7 @@ from .sensorprofile import SensorProfile
 from noc.config import config
 
 SOURCES = {"objectmodel", "asset", "etl", "manual"}
+SCHEDULER = "scheduler"
 
 id_lock = Lock()
 logger = logging.getLogger(__name__)
@@ -66,6 +72,7 @@ NS = 1_000_000_000
 @dynamic_profile(profile_model_id="inv.SensorProfile", sync_profile=True)
 @Label.model
 @change(audit=False)
+@watchers
 @bi_sync
 @workflow
 class Sensor(Document):
@@ -79,6 +86,7 @@ class Sensor(Document):
             "object",
             "remote_system",
             "effective_labels",
+            "watcher_wait_ts",
             ("managed_object", "object"),
             ("remote_system", "remote_host"),
             ("remote_system", "remote_id"),
@@ -117,6 +125,9 @@ class Sensor(Document):
     modbus_format = StringField(choices=MODBUS_FORMAT)
     snmp_oid = StringField()
     ipmi_id = StringField()
+    # Watchers
+    watchers: List[WatchDocumentItem] = EmbeddedDocumentListField(WatchDocumentItem)
+    watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = PlainReferenceField(RemoteSystem)
@@ -132,6 +143,8 @@ class Sensor(Document):
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
+
+    SUPPORTED_EFFECTS = frozenset([ObjectEffect.WF_EVENT, ObjectEffect.WIPING])
 
     def __str__(self):
         if self.object:
@@ -407,6 +420,54 @@ class Sensor(Document):
         if self.remote_system:
             r["remote_system"] = self.remote_system.id
         return r
+
+    def get_wiping_ttl(self):
+        return self.profile.wiping_ttl
+
+    @classmethod
+    def get_min_wait_ts(cls) -> Optional[datetime.datetime]:
+        """"""
+        return (
+            Sensor.objects()
+            .aggregate([{"$group": {"_id": None, "wait_ts": {"$min": "$watcher_wait_ts"}}}])
+            .next()["wait_ts"]
+        )
+
+    def update_object_watchers(
+        self,
+        to_watchers: List[WatchItem],
+        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
+        dry_run: bool = False,
+        bulk=None,
+    ):
+        """Update watchers"""
+
+        updates = []
+        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
+        for w in self.watchers:
+            rs = w.remote_system.name if w.remote_system else None
+            key = w.key or None
+            if to_remove and (w.effect, key, rs) in to_remove:
+                continue
+            update = up_w.pop((w.effect, key, rs), None)
+            if update:
+                w = WatchDocumentItem.from_item(update)
+            updates.append(w)
+        for w in up_w.values():
+            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
+            updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
+        self.watchers = updates
+        wait_ts = self.get_wait_ts()
+        if self.watcher_wait_ts != wait_ts:
+            self.watcher_wait_ts = wait_ts
+        if dry_run or self._created:
+            return
+        m_ts = self.get_min_wait_ts()
+        if wait_ts and (not m_ts or wait_ts < m_ts):
+            scheduler = Scheduler(SCHEDULER)
+            scheduler.submit(jcls=WATCHER_JCLS, key="inv.Sensor", ts=get_next_ts(wait_ts))
+        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+        self.update(**set_op)
 
 
 def sync_object(obj: "Object") -> None:

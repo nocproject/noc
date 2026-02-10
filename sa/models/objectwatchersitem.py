@@ -47,7 +47,7 @@ class WatchDocumentItem(EmbeddedDocument):
         """"""
         return WatchItem(
             effect=self.effect,
-            key=self.key,
+            key=self.key or None,
             after=self.after,
             once=self.once,
             remote_system=self.remote_system,
@@ -57,11 +57,15 @@ class WatchDocumentItem(EmbeddedDocument):
     @classmethod
     def from_item(cls, item: WatchItem, remote_system: Optional[RemoteSystem] = None):
         """Create record from WatchItem"""
+        if item.after:
+            after = item.after.replace(microsecond=0)
+        else:
+            after = None
         return WatchDocumentItem(
             effect=item.effect,
-            key=item.key,
+            key=item.key or "",
             remote_system=item.remote_system or remote_system,
-            after=item.after,
+            after=after,
             once=item.once,
             args=item.args,
         )

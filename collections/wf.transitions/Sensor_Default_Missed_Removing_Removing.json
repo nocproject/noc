@@ -1,0 +1,15 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__uuid": "98befc82-699e-4655-a7dc-a812694379c1",
+    "to_state__uuid": "76942166-8b37-4759-9411-47ecace78487",
+    "uuid": "cb4af12a-d2f4-4653-8b7f-6588aa29d5d9",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "expired",
+    "label": "Removing",
+    "enable_manual": false,
+    "vertices": [{
+        "x": 190,
+        "y": 320
+    }]
+}

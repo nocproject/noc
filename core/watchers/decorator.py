@@ -84,6 +84,7 @@ def add_watch(
     after: Optional[datetime.datetime] = None,
     wait_avail: bool = False,
     remote_system: Optional[Any] = None,
+    dry_run: bool = False,
     # action: Optional[ActionType] = None, # Reaction ?
     **kwargs,
 ):
@@ -124,11 +125,15 @@ def add_watch(
             )
         )
     if to_watchers:
-        self.update_watchers(to_watchers)
+        self.update_watchers(to_watchers, dry_run=dry_run)
 
 
 def stop_watch(
-    self, effect: ObjectEffect, key: Optional[str] = None, remote_system: Optional[Any] = None
+    self,
+    effect: ObjectEffect,
+    key: Optional[str] = None,
+    remote_system: Optional[Any] = None,
+    dry_run: bool = False,
 ):
     """Stop waiting callback"""
     to_remove = []
@@ -141,7 +146,7 @@ def stop_watch(
             to_remove.append((w.effect, w.key, w.remote_system))
             continue
     if to_remove:
-        self.update_watchers([], to_remove)
+        self.update_watchers([], to_remove, dry_run=dry_run)
 
 
 def touch_watch(
@@ -171,7 +176,7 @@ def touch_watch(
         if w.once:
             to_remove.append((w.effect, w.key, w.remote_system))
     if to_remove and not dry_run:
-        self.update_watchers([], to_remove)
+        self.update_watchers([], to_remove, dry_run=dry_run)
     return r
 
 

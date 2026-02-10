@@ -1046,9 +1046,10 @@ class Service(Document):
         up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
         for w in self.watchers:
             rs = w.remote_system.name if w.remote_system else None
-            if to_remove and (w.effect, w.key, rs) in to_remove:
+            key = w.key or None
+            if to_remove and (w.effect, key, rs) in to_remove:
                 continue
-            update = up_w.pop((w.effect, w.key, rs), None)
+            update = up_w.pop((w.effect, key, rs), None)
             if update:
                 w = WatchDocumentItem.from_item(update)
             updates.append(w)

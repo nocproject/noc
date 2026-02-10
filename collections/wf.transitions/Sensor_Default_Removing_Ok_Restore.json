@@ -1,0 +1,11 @@
+{
+    "workflow__name": "Sensor Default",
+    "from_state__uuid": "76942166-8b37-4759-9411-47ecace78487",
+    "to_state__uuid": "0608c350-e183-44c3-8b5e-abfea6ad89e7",
+    "uuid": "b0f7ab25-269b-4041-9f42-2db1f49aa115",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "seen",
+    "label": "Restore",
+    "enable_manual": true
+}

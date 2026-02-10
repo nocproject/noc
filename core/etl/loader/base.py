@@ -90,6 +90,8 @@ class BaseLoader(object):
     workflow_event_model = False
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
+    # Effect
+    # on_delete_effect: Optional[ObjectEffect] = None
     # Label
     label_enable_setting: Optional[str] = None
     # Incremental

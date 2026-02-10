@@ -108,15 +108,16 @@ class SensorProfile(Document):
 
     name = StringField(unique=True)
     description = StringField()
-    workflow = PlainReferenceField(
+    workflow: "Workflow" = PlainReferenceField(
         Workflow, default=partial(Workflow.get_default_workflow, "inv.Sensor")
     )
     style = ForeignKeyField(Style)
     enable_collect = BooleanField(default=False)
     collect_interval = IntField(default=60)
     # PM Integration
-    units = PlainReferenceField(MeasurementUnits)
-    metric_type: "MetricType" = PlainReferenceField(MetricType)
+    units: Optional[MeasurementUnits] = PlainReferenceField(MeasurementUnits)
+    metric_type: Optional["MetricType"] = PlainReferenceField(MetricType)
+    wiping_ttl = IntField(min_value=0, default=0)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
         choices=[("R", "By Rule"), ("D", "Disable")],

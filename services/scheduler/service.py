@@ -76,6 +76,7 @@ class SchedulerService(FastAPIService):
         scheduler = Scheduler(cls.name)
         scheduler.submit(jcls=WATCHER_JCLS, key="sa.Service", keep_ts=True)
         scheduler.submit(jcls=WATCHER_JCLS, key="sa.ManagedObject", keep_ts=True)
+        scheduler.submit(jcls=WATCHER_JCLS, key="inv.Sensor", keep_ts=True)
 
 
 if __name__ == "__main__":
