@@ -7,7 +7,7 @@
 
 # Third-party modules
 import pytest
-from fs import open_fs
+import fs_path
 import orjson
 from django.db import models
 
@@ -19,9 +19,12 @@ from noc.core.model.fields import DocumentReferenceField, CachedForeignKey
 
 def iter_data():
     for url in config.tests.fixtures_paths:
-        with open_fs(url) as fs:
-            for path in sorted(fs.walk.files(filter=["*.json"])):
-                with fs.open(path) as f:
+        fs, fs_path = fsspec.url_to_fs(url)
+        for path, _, files in fs.walk(fs_path):
+            for name in files:
+                if not name.endswith(".json"):
+                    continue
+                with fs.open(os.path.join(path, name), mode="rb") as f:
                     data = orjson.loads(f.read())
                 if not isinstance(data, list):
                     data = [data]
