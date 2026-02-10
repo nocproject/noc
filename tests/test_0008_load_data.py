@@ -7,7 +7,8 @@
 
 # Third-party modules
 import pytest
-import fs_path
+import fsspec
+import os
 import orjson
 from django.db import models
 
