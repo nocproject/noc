@@ -1,0 +1,31 @@
+{
+    "name": "Check | SSL Certificate | Unavailable",
+    "$collection": "fm.eventclasses",
+    "uuid": "8bf0728d-5835-477f-9814-1ee85f21ebdd",
+    "description": "Service Check is unavailable from Zabbix",
+    "action": "A",
+    "vars": [
+        {
+            "name": "code",
+            "description": "HTTP response code",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "url",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "SSL Certificate Unavaiable",
+    "body_template": "SSL Certificate Unavaiable",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,25 @@
+{
+    "name": "WiFi Controller | AP | Disconnected (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ab73a0e9-a184-421f-8d35-91037057369f",
+    "event_class__name": "WiFi Controller | AP | Changed",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "state",
+        "value": "disconnected"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^\\[(?P<access_point>.+)\\]\\s*AP is Disconnected$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ T-14 ] AP is Disconnected",
+            "raw_vars": []
+        }
+    ]
+}

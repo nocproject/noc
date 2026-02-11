@@ -1,0 +1,27 @@
+{
+    "name": "System | FS | Write Response | Too High (Zabbix Window)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f790ae4a-3d38-49a1-908b-961aa2e3b845",
+    "description": "Disk write request responses are too high",
+    "event_class__name": "System | FS | Write Response | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?P<mountpoint>\\d+(\\s\\S+:)*)\\: Disk write request responses are too high \\(write > (?P<tvalue>\\d+|\\d+\\.\\d+)s for (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "0 C:: Disk write request responses are too high (write > 0.02s for 15m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "6: Disk write request responses are too high (write > 0.02s for 15m)",
+            "raw_vars": []
+        }
+    ]
+}

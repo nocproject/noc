@@ -1,0 +1,38 @@
+{
+    "name": "Windows | AD Replication | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "40b8eb6b-325b-419e-9410-407fc4e949d3",
+    "description": "AD Replication Service Events Error",
+    "action": "L",
+    "vars": [
+        {
+            "name": "error",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "from_node",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "to_node",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "AD Replication Service Error",
+    "body_template": "AD Replication Service Error",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

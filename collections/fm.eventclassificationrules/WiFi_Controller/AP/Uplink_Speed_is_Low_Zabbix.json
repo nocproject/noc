@@ -1,0 +1,36 @@
+{
+    "name": "WiFi Controller | AP | Uplink Speed is Low (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6e97e519-7076-4d4c-b598-00cad7ba4f5c",
+    "event_class__name": "Network | Link | Utilization (Bandwith) Too Low",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [
+        {
+            "name": "interface",
+            "value": "uplink"
+        },
+        {
+            "name": "tvalue",
+            "value": "0"
+        }
+    ],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?:\\[\\s)?(?P<access_point>\\S+)(?:\\s\\])?\\s*Uplink Speed is Low",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ APT-R ] Uplink Speed is Low",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "WRL-AP_11 Uplink Speed is Low",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Network | Link | Link Down (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8a625657-894b-49d4-a0ab-89ff787621f1",
+    "description": "IF-MIB::linkDown",
+    "event_class__name": "Network | Link | Link Down",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Link down",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface nomad: Link down",
+            "raw_vars": []
+        }
+    ]
+}

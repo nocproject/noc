@@ -1,0 +1,60 @@
+{
+    "name": "Network | Link | Errors Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "9753854a-3cdc-4550-97fc-0d3873d88600",
+    "description": "Interface Bandwidth Utilization metric Threshold up to value",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Device Interface Name",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "tname",
+            "description": "Threshold name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Operational value",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Sensor state",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "over",
+            "description": "Threshold window (sec)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Interface {{ interface }}: High errors rate {% if tvalue %} (>{{ tvalue }}%) {% endif %}",
+    "body_template": "Interface errors rate: {{ ovalue }} {% if tvalue %} (>{{ tvalue }}%) {% endif %}",
+    "symptoms": "Interface traffic overload errors value",
+    "probable_causes": "One or more network connection generate high traffic",
+    "recommended_actions": "Check traffic graph for detect source high traffic"
+}

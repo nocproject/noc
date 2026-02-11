@@ -1,0 +1,24 @@
+{
+    "name": "Application | Cisco Meraki | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "11e57619-203a-49c8-915b-1da555639591",
+    "description": "Cisco Meraki device  Error",
+    "action": "L",
+    "vars": [
+        {
+            "name": "error",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Meraki device {{ error }}",
+    "body_template": "Meraki device {{ error }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

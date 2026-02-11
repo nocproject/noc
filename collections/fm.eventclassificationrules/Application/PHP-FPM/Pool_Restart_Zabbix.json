@@ -1,0 +1,33 @@
+{
+    "name": "Application | PHP-FPM | Pool Restart (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "11825934-8446-4cba-81e0-cc6d58df0067",
+    "event_class__name": "Application | PHP-FPM | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::php-fpm"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": false,
+            "set_var": "yservice",
+            "wildcard": "YadroService::*"
+        }
+    ],
+    "message_rx": "Pool has been restarted \\(uptime < \\d+m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::php-fpm"],
+            "message": "PHP-FPM: Pool has been restarted (uptime < 10m)",
+            "raw_vars": []
+        }
+    ]
+}

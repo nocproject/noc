@@ -1,0 +1,45 @@
+{
+    "name": "System | FS | Swap Usage | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "38c73ad2-d411-4bbb-acb0-e3eae85e4440",
+    "description": "System /swap event class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "tvalue",
+            "description": "Threshold Value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Utilization Value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold State: error, critical",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "Window size for calculate value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "High swap space usage {{ ovalue }}% {% if tvalue %} (less than {{ tvalue }}% free){% endif %}",
+    "body_template": "CPU Utilization threshold is {{ tstate }}",
+    "symptoms": "System used /SWAP partition",
+    "probable_causes": "High Memory Utilization",
+    "recommended_actions": "Check system memory consumption"
+}

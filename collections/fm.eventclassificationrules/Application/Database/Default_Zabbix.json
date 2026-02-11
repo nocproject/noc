@@ -1,0 +1,22 @@
+{
+    "name": "Application | Database | Default (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1cb8fdd5-0b5b-4687-8f76-bef49969a8bb",
+    "description": "Event Class for database template from Zabbix",
+    "event_class__name": "Application | Database | Default",
+    "preference": 5000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?P<application>MSSQL|DB|MongoDB|MySQL|InfluxDB|ClickHouse):",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "MSSQL: Failed to fetch info data (or no data for 30m)",
+            "raw_vars": []
+        }
+    ]
+}

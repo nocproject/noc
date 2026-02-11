@@ -1,0 +1,28 @@
+{
+    "name": "Application | HAProxy | Server Down (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f87e5e8d-0c53-429a-8535-ecbf238299c4",
+    "event_class__name": "Application | HAProxy | Server Down",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "HAProxy (?P<server>\\S+)\\s(?P<service>\\S+): Server is (?P<status>\\S+)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::haproxy"],
+            "message": "HAProxy bk_exchange_SSL XXX2: Server is DOWN",
+            "raw_vars": []
+        }
+    ]
+}

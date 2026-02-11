@@ -1,0 +1,52 @@
+{
+    "name": "System | CPU Privileged Time | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "14a313b5-ad0b-4b28-ab40-dbc03a31502e",
+    "description": "CPU Privileged Time Threshold class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "cpu_id",
+            "description": "CPU Identifier (CPU Slot)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold Value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Utilization Value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold State: error, critical",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "Window size for calculate value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "CPU Privileged Time {{ ovalue }}% {% if tvalue %} overload threshold {{ tvalue }} {% endif %}",
+    "body_template": "CPU Privileged Time threshold is {{ tstate }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

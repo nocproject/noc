@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Locks | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "649a6d6c-92fe-43b5-99f1-67de2831b76e",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "DB\\s*\\[(?P<db_name>\\S+)\\]: Number of locks is too high \\(over (?P<tvalue>\\d+) in (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "DB [ddd]: Number of locks is too high (over 1500 in 5m)",
+            "raw_vars": []
+        }
+    ]
+}

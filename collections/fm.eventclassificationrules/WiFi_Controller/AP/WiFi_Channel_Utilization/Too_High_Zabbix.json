@@ -1,0 +1,36 @@
+{
+    "name": "WiFi Controller | AP | WiFi Channel Utilization | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1cb16dca-c180-4909-9a5c-bbaac9eba1dd",
+    "event_class__name": "WiFi Controller | AP | WiFi Channel Utilization | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [
+        {
+            "name": "interface",
+            "value": "wifi"
+        },
+        {
+            "name": "tvalue",
+            "value": "0"
+        }
+    ],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Channel utilization (?P<band>\\S+)\\s+on\\s+(?P<access_point>\\S+)\\s+(very\\s)?high",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Channel utilization 2G on WAP-102 very high",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Channel utilization 5G on WAP-179 high",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,66 @@
+{
+    "name": "Hardware Storage | Threshold | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "f9374ea5-ddcd-40d5-b6d3-314fa39e91df",
+    "description": "Hardware Storage metric Threshold up to value",
+    "action": "L",
+    "vars": [
+        {
+            "name": "enclosure",
+            "description": "Enclosure number",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "drive_bay",
+            "description": "Drive Bay number",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tname",
+            "description": "Threshold name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Operational value",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Sensor state",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "over",
+            "description": "Threshold window (sec)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ tname }} {{ ovalue }} {% if tvalue %} more than {{ tvalue }} {% endif %} set {{ state }}",
+    "body_template": "{{ message }}",
+    "symptoms": "Database metric value more than threshold",
+    "probable_causes": "Working condition on sensor module non-optimal (by threshold)",
+    "recommended_actions": "Check work conditions on database environment"
+}

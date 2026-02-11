@@ -1,0 +1,21 @@
+{
+    "name": "System | Installed Packages (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e924cc13-da46-4ff9-99bf-37f2e3b1e765",
+    "event_class__name": "System | Installed Packages",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "(\\S+)\\s*:\\s*Number of installed packages has been changed",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": " Linux: Number of installed packages has been changed",
+            "raw_vars": []
+        }
+    ]
+}

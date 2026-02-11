@@ -1,0 +1,32 @@
+{
+    "name": "MSExchange | Database | Threshold | Default (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "bc7a0f0d-bfd5-4c4d-ba7b-39b9615d4017",
+    "description": "Event Class for database template from Zabbix",
+    "event_class__name": "MSExhange | Database | Threshold | Too High",
+    "preference": 5000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "application",
+        "value": "msexchange"
+    }],
+    "patterns": [{
+        "key_re": "opdata",
+        "value_re": "^(?P<ovalue>\\S*)$"
+    }],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Database Counters \\[(?P<db_name>\\S+)\\]:\\s*(?P<tname>.+) is (?:higher|too high).*$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Database Counters [syntacore]: Average write time latency is higher than read time latency for 10m",
+            "raw_vars": [{
+                "name": "opdata",
+                "value": ""
+            }]
+        }
+    ]
+}

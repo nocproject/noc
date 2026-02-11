@@ -1,0 +1,23 @@
+{
+    "name": "Network | Link | Error Rate Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8aeaac31-13c4-48d5-b780-10b338075a04",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "Network | Link | Errors Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tname",
+        "value": "Error rate threshold"
+    }],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^Interface (?P<interface>[\\w\\s\\d\\\\\\/]+).*:\\s*High error rate \\(>(?P<tvalue>\\d+) for (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface 1/1/35: High error rate (>10 for 5m)",
+            "raw_vars": []
+        }
+    ]
+}

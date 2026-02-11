@@ -1,0 +1,38 @@
+{
+    "name": "Application | PostreSQL | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "d823a261-3a9c-4a59-b0d5-b28379d19d9f",
+    "description": "Not found specified Class for database-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "application",
+            "description": "Database Application name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "db_name",
+            "description": "Database name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "table_name",
+            "description": "Database Table Name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

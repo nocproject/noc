@@ -1,0 +1,32 @@
+{
+    "name": "Application | Cisco Meraki | Error (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6e367461-3b6b-4775-87ae-63f121cdfe01",
+    "event_class__name": "Application | Cisco Meraki | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "target::cisco-meraki-dashboard"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Meraki: There are errors in '(?P<error>.+)' metric",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::cisco-meraki-dashboard"],
+            "message": "Meraki: There are errors in 'Get VPNs' metric",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix", "target::cisco-meraki-dashboard"],
+            "message": "Meraki: There are errors in 'Get networks' metric",
+            "raw_vars": []
+        }
+    ]
+}

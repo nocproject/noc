@@ -1,0 +1,24 @@
+{
+    "name": "WiFi Controller | AP Rebooted",
+    "$collection": "fm.eventclasses",
+    "uuid": "345e8bf2-23d8-4947-92e5-ecf701a74ebf",
+    "description": "AP rebooted",
+    "action": "A",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "AP name for event",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "AP {{ ap_name }} has been restarted",
+    "body_template": "AP {{ ap_name }} AP has been restarted",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

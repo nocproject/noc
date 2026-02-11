@@ -1,0 +1,25 @@
+{
+    "name": "Application | PgBouncer | Client MaxWait | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d2c181c3-fd90-403a-bf75-09c82018e122",
+    "event_class__name": "Application | PgBouncer | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "application",
+        "value": "pgbouncer"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "PgBouncer client (?P<client>\\S+)\\s*:\\s*maxwait\\s+is more than (?P<tvalue>\\d+)\\s+second",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "PgBouncer client vman-test-admin: maxwait  is more than 15 second",
+            "raw_vars": []
+        }
+    ]
+}

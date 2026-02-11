@@ -1,0 +1,25 @@
+{
+    "name": "Windows | AD Replication | Not Available (Zabbix, RPC)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "47c2fdbc-d672-43f0-8b28-ee98e6d716d0",
+    "event_class__name": "Windows | AD Replication | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "error",
+        "value": "not_available"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "1256: The remote system is not available",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "1256: The remote system is not available",
+            "raw_vars": []
+        }
+    ]
+}

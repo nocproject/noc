@@ -1,0 +1,21 @@
+{
+    "name": "System | Backup | Failed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2687abe9-a8ce-4520-b4a9-b0f0c6814f24",
+    "event_class__name": "System | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Бэкап инстанса завершился неудачно",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Бэкап инстанса завершился неудачно",
+            "raw_vars": []
+        }
+    ]
+}

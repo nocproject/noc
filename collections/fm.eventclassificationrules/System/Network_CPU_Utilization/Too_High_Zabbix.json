@@ -1,0 +1,26 @@
+{
+    "name": "System | Network CPU Utilization | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "20e6b93a-5a95-40c4-bab9-fbf4a915641c",
+    "description": "System CPU utilization for Zabbix-generated system",
+    "event_class__name": "System | CPU Utilization | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tvalue",
+        "value": "0"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "High CPU utilization",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "#{#SNMPVALUE}: High CPU utilization",
+            "raw_vars": []
+        }
+    ]
+}

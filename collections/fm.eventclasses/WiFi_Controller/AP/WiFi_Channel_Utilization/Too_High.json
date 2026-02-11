@@ -1,0 +1,52 @@
+{
+    "name": "WiFi Controller | AP | WiFi Channel Utilization | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "32dc0e8d-ba5b-470e-a865-68fe92ff0cb8",
+    "description": "Channel utilization Threshold class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "AP name on Controller",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "triggerid",
+            "description": "Event trigger identifier",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "opdata",
+            "description": "Operational data with expanded macros",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value for over value",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "band",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Channel utilization {{ tvalue }}%",
+    "body_template": "Channel utilization {{ tvalue }}%",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

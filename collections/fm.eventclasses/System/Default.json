@@ -1,0 +1,38 @@
+{
+    "name": "System | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "640ac79a-9370-431b-9327-02c3365d8071",
+    "description": "Not found specified Class for OS-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "pid",
+            "description": "Process Identifier",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "process_name",
+            "description": "Name of Process Execute file",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "process_agrs",
+            "description": "Process arguments",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

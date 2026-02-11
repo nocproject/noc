@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | Hypervisor | Down (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cb5b60a3-a5f3-46db-9fa3-aa35bf81e26f",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "Hypervisor is down",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "Hypervisor is down",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "name": "Application | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "d0dcc0c4-e85a-4419-837f-45843adf188f",
+    "description": "Not found specified Class for Application-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "application",
+            "description": "Application name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "instance",
+            "description": "Application instance",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

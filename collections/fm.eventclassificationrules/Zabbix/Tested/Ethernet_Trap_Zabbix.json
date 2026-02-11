@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Tested | Ethernet Trap (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2e17a6cd-75c7-4cae-8085-fb61f54871fa",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^SNMP TRAP no ethernet$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "SNMP TRAP no ethernet",
+            "raw_vars": []
+        }
+    ]
+}

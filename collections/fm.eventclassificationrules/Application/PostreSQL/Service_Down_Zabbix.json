@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Service Down (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6c17b071-e2b5-4419-ae9d-f45a6291795f",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Service is down",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Service is down",
+            "raw_vars": []
+        }
+    ]
+}

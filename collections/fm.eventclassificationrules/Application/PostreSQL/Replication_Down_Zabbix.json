@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Replication Down (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6260f914-6a9f-4e11-a360-3b80014ddfb3",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Replication down",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "Replication down",
+            "raw_vars": []
+        }
+    ]
+}

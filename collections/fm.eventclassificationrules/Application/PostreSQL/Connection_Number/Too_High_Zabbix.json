@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Connection Number | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "0d48fb46-7e41-4aa2-a903-052bde13d45c",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Total number of connections is too high \\(over (?P<tvalue>\\d+) in (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "Connections sum: Total number of connections is too high (over 90 in 5m)",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "System | Description Changed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "9e508364-593c-43a4-8c75-c24bc47b719f",
+    "event_class__name": "System | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Operating system description has changed",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Mikrotik: Operating system description has changed",
+            "raw_vars": []
+        }
+    ]
+}

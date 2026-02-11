@@ -1,0 +1,60 @@
+{
+    "name": "Network | Link | Drops Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "c3e72e4d-d529-4eaf-ba93-518388f795e2",
+    "description": "Interface Dropped metric Threshold up to value",
+    "action": "L",
+    "vars": [
+        {
+            "name": "interface",
+            "description": "Device Interface Name",
+            "type": "interface_name",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "tname",
+            "description": "Threshold name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Operational value",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Sensor state",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "over",
+            "description": "Threshold window (sec)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "link_event": true,
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Interface {{ interface }}: High drops rate {% if tvalue %} (>{{ tvalue }}%) {% endif %}",
+    "body_template": "Interface drops rate: {{ ovalue }} {% if tvalue %} (>{{ tvalue }}%) {% endif %}",
+    "symptoms": "Interface traffic overload drops value",
+    "probable_causes": "One or more network connection generate high traffic",
+    "recommended_actions": "Check traffic graph for detect source high traffic"
+}

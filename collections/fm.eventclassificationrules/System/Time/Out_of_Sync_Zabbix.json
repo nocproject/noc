@@ -1,0 +1,21 @@
+{
+    "name": "System | Time | Out of Sync (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c5073192-a6a2-4880-a3bb-146dbb5cb75f",
+    "event_class__name": "System | Time | Out of Sync",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "System time is out of sync \\(diff with (?P<source>.+)\\s>\\s(?P<tvalue>\\d+)s\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: System time is out of sync (diff with Zabbix server > 60s)",
+            "raw_vars": []
+        }
+    ]
+}

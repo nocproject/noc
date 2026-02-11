@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | vSAN | Hardware Compatibility Alarm (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cc906392-986e-4acb-bc83-35eb0ddd3c43",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "vSAN hardware compatibility issues",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "vSAN hardware compatibility issues",
+            "raw_vars": []
+        }
+    ]
+}

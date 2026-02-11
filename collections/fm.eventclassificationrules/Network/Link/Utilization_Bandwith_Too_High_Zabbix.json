@@ -1,0 +1,28 @@
+{
+    "name": "Network | Link | Utilization (Bandwith) Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "33dbbdc1-af2e-470c-9433-9c04dea32da7",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "Network | Link | Utilization (Bandwith) Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tname",
+        "value": "Bandwidth utilization threshold"
+    }],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^Interface (?P<interface>[\\w\\s\\d\\\\\\/]+).*:\\s*High bandwidth usage \\(\\>(?P<tvalue>\\d+)%\\)$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface tun0: High bandwidth usage (>90%)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface ether10(): High bandwidth usage (>90%)",
+            "raw_vars": []
+        }
+    ]
+}

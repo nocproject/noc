@@ -1,0 +1,45 @@
+{
+    "name": "System | Memory Utilization | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "e81ad779-0441-4c56-97b1-3c67a08190c4",
+    "description": "Memory Utilization Threshold class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "tvalue",
+            "description": "Threshold Value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Utilization Value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold State: error, critical",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "Window size for calculate value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Memory Utilization {{ ovalue }}% {% if tvalue %} overload threshold {{ tvalue }} {% endif %}",
+    "body_template": "Memory Utilization threshold is {{ tstate }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

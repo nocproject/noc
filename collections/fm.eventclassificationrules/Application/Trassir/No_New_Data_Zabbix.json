@@ -1,0 +1,25 @@
+{
+    "name": "Application | Trassir | No New Data (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2cfb896e-05a2-4e4b-a8c1-0b3450d2085f",
+    "event_class__name": "Application | Trassir | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "error",
+        "value": "no_new_data"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^No new data from trassir server",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "No new data from trassir server",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | vSAN | Support Insight | Status (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c7c17ac3-cac5-4c44-816e-04c4d95ab07a",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "vSAN Support Insight",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "vSAN Support Insight",
+            "raw_vars": []
+        }
+    ]
+}

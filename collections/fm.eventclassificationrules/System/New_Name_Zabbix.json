@@ -1,0 +1,18 @@
+{
+    "name": "System | New Name (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1cb42ae7-2587-43db-ba0c-67d5114dff69",
+    "event_class__name": "System | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "System name has changed \\(new name: (?P<new_value>\\S+)\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "System name has changed (new name: XXXXXXXXXXXXXXXX)",
+            "raw_vars": []
+        }
+    ]
+}

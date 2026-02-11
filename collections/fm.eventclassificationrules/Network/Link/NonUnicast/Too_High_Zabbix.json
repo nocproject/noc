@@ -1,0 +1,21 @@
+{
+    "name": "Network | Link | NonUnicast | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "4d2b2694-67a8-4d4f-b733-ad7a356400a6",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "NonUnicast traffic is High",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "NonUnicast traffic is High",
+            "raw_vars": []
+        }
+    ]
+}

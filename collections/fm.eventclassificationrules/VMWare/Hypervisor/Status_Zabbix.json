@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | Hypervisor | Status (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6c1aa92a-37cf-4832-8dd9-d6a08843c458",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "^The (?P<hypervisor>\\S+) health is (?P<status>\\S+)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "The 008b847f-8a52-ec11-906e-0017a4403562 health is Red",
+            "raw_vars": []
+        }
+    ]
+}

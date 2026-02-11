@@ -1,0 +1,32 @@
+{
+    "name": "System | Memory Utilization | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "df620856-cd3b-4522-a380-c9411fdc9652",
+    "description": "System memory utilization for Zabbix-generated system",
+    "event_class__name": "System | Memory Utilization | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "High memory utilization \\(>(?P<tvalue>\\d+)%\\s+for\\s+(?P<window_size>\\d+)[hm]\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: High memory utilization (>90% for 5m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: High memory utilization (>90% for 5m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: High memory utilization (>97% for 1h)",
+            "raw_vars": []
+        }
+    ]
+}

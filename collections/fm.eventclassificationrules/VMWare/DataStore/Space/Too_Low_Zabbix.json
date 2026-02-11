@@ -1,0 +1,32 @@
+{
+    "name": "VMWare | DataStore | Space | Too Low (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f9072fdc-2201-4d0e-b100-6d73688c5a85",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": false,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "^Datastore free space is (critically low|low) \\(\\[(?P<datastore>\\S+)\\] free space < (?P<tvalue>\\d+)%\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "Datastore free space is low ([SSD_NC] free space < 20%)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "Datastore free space is critically low ([SAN-01] free space < 10%)",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "name": "System | FS | Space | Too Low (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a0d7d6cc-84ef-4ae7-adc7-ee82758519d5",
+    "description": "Event Class for not running state Zabbix\nLinux: High swap space usage (less than 50% free)",
+    "event_class__name": "System | FS | Space | Too Low",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?P<mountpoint>\\S+)\\: Disk space is\\s+(?P<critical>critically|)\\s*low \\(used\\s+\\>\\s+(?P<tvalue>\\d+)%\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "/: Disk space is low (used > 80%)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "/: Disk space is critically low (used > 90%)",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,36 @@
+{
+    "name": "System | Process | Not Running Automatic (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "16e884cb-2895-4f6d-b62e-c3ff7aa998bd",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "System | Process | Not Running",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "state",
+        "value": "not_running"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^\"(?P<process_name>.+)\"\\s\\(.+\\) is not running \\(startup type (?P<startup_type>automatic|automatic delayed)\\)$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "\"IsmServ\" (Intersite Messaging) is not running (startup type automatic)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "\"UsoSvc\" (Update Orchestrator Service) is not running (startup type automatic delayed)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "\"Fuji Nexim Setup Station Service\" (Fuji Nexim Setup Station Service) is not running (startup type automatic delayed)",
+            "raw_vars": []
+        }
+    ]
+}

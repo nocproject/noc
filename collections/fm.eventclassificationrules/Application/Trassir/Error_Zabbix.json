@@ -1,0 +1,26 @@
+{
+    "name": "Application | Trassir | Error (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a4813cb6-6b4a-4518-bd75-b2b57d80c8bf",
+    "event_class__name": "Application | Trassir | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Trassir server (?P<error>\\S+) problem",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Trassir server network problem",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Trassir server database problem",
+            "raw_vars": []
+        }
+    ]
+}

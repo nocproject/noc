@@ -1,0 +1,38 @@
+{
+    "name": "Hardware Storage | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "9e75fc87-96f7-4dc8-8d3e-6b499068d56a",
+    "description": "Not found specified Class for Hardware Storage-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "controller_id",
+            "description": "Storage controller ID",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "enclosure",
+            "description": "Enclosure number",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "drive_bay",
+            "description": "Drive Bay number",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

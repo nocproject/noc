@@ -1,0 +1,26 @@
+{
+    "name": "WiFi Controller | AP | TX Retries (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c7887520-9488-42e3-b355-308c92ea235d",
+    "event_class__name": "WiFi Controller | AP | TX Retries Threshold",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?:\\[\\s)?(?P<access_point>\\S+)(?:\\s\\])?\\s*(?P<band>\\S+)?\\s*T[xX] Retries over (?P<tvalue>\\d+)%$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ M-41 ] TX Retries over 35%",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "AP_009 5GHz Tx Retries over 30%",
+            "raw_vars": []
+        }
+    ]
+}

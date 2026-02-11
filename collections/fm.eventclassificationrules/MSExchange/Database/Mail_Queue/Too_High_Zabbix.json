@@ -1,0 +1,28 @@
+{
+    "name": "MSExchange | Mail Queue | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2426d70d-318f-4b81-a2a9-c5029de18ca6",
+    "event_class__name": "MSExhange | Mail Queue | Too High",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::ms-exchange"
+        }
+    ],
+    "message_rx": "Queue over (?P<tvalue>\\d+)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::ms-exchange"],
+            "message": "Queue over 100",
+            "raw_vars": []
+        }
+    ]
+}

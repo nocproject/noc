@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | VirtualMachine | CPU Usage | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "34e6cb7e-a48b-4ea2-966e-a3d74d8ec348",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "Virtual machine CPU usage",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "Virtual machine CPU usage",
+            "raw_vars": []
+        }
+    ]
+}

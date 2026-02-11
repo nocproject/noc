@@ -1,0 +1,32 @@
+{
+    "name": "Check | Web Site | Unavailable",
+    "$collection": "fm.eventclasses",
+    "uuid": "8c15f769-b360-4af5-a505-e1c6f251a406",
+    "description": "Web Site unavailable",
+    "action": "A",
+    "vars": [
+        {
+            "name": "url",
+            "description": "Site URL",
+            "type": "str",
+            "required": true,
+            "match_suppress": true
+        },
+        {
+            "name": "code",
+            "description": "HTTP response code",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Site {{ url }} Unavaiable",
+    "body_template": "Site {{ url }} Unavaiable",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": []
+}

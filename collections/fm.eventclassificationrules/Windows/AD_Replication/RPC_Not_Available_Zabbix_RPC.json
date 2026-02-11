@@ -1,0 +1,25 @@
+{
+    "name": "Windows | AD Replication | RPC Not Available (Zabbix, RPC)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "13310bd1-fdcb-45c0-bb04-5b4dd03bcf14",
+    "event_class__name": "Windows | AD Replication | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "error",
+        "value": "rpc_not_available"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "1722: The RPC server is unavailable",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "1722: The RPC server is unavailable",
+            "raw_vars": []
+        }
+    ]
+}

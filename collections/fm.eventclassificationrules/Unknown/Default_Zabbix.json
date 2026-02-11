@@ -1,0 +1,17 @@
+{
+    "name": "Unknown | Default (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "19d2b14a-3d2b-431e-8fa2-e821a0aad45c",
+    "description": "Next to last in the chain. Catches all unclassified messages from Zabbix",
+    "event_class__name": "Zabbix | Trigger",
+    "preference": 9000,
+    "sources": ["other"],
+    "patterns": [{
+        "key_re": "triggerid",
+        "value_re": "(?P<triggerid>.*)"
+    }],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }]
+}

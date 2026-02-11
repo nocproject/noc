@@ -1,0 +1,31 @@
+{
+    "name": "WiFi Controller | Restarted (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a2e5fa86-510d-4f6c-8e16-15a41a0aef58",
+    "event_class__name": "WiFi Controller | AP Rebooted",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "access_point",
+        "value": ""
+    }],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": false,
+            "wildcard": "type::WiFi Controller"
+        }
+    ],
+    "message_rx": "\\[ SYSINFO \\] Controller has been restarted",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ SYSINFO ] Controller has been restarted",
+            "raw_vars": []
+        }
+    ]
+}

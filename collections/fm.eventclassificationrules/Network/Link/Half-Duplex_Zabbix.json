@@ -1,0 +1,26 @@
+{
+    "name": "Network | Link | Half-Duplex (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "05de2ac2-1ec0-43c5-90f8-30f626b9fc45",
+    "event_class__name": "Network | Link | Half-Duplex",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Interface (?P<interface>.+)\\(.*\\): In half-duplex mode$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface Gi2/0/40(): In half-duplex mode",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface ge-0/0/13(PRINTER): In half-duplex mode",
+            "raw_vars": []
+        }
+    ]
+}

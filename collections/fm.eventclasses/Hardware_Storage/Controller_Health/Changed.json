@@ -1,0 +1,38 @@
+{
+    "name": "Hardware Storage | Controller Health | Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "2813273c-c2b5-45ea-b020-b90324d4be49",
+    "description": "Change Storage Controller State",
+    "action": "L",
+    "vars": [
+        {
+            "name": "controller",
+            "description": "Storage controller ID",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Storage Controller State",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "from_state",
+            "description": "From state changed",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Controller {{ controller }} health is {{ state }}",
+    "body_template": "Controller {{ controller }} change health {% if from_state %} {{ from_state }} to {% endif %} {{ state }}",
+    "symptoms": "Controller health change to state",
+    "probable_causes": "Controller OS changed software or hardware configuration",
+    "recommended_actions": "Check controller working condition"
+}

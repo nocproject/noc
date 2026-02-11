@@ -1,0 +1,17 @@
+{
+    "name": "Service | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "096d4aeb-be3a-438f-874d-6807335506c0",
+    "action": "L",
+    "vars": [
+
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 360,
+    "subject_template": "Service change state from",
+    "body_template": "Service change state from",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

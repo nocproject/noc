@@ -1,0 +1,52 @@
+{
+    "name": "Kubernetes | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "2acccd97-34f1-4677-bebd-f4561fa93b64",
+    "description": "Default Event Class for Kubernetes events",
+    "action": "L",
+    "vars": [
+        {
+            "name": "node",
+            "description": "Node name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "pod",
+            "description": "Pod name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Current value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "status",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ node }} {{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

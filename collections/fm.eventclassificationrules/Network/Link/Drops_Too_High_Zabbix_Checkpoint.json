@@ -1,0 +1,31 @@
+{
+    "name": "Network | Link | Drops Too High (Zabbix, Checkpoint)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c921c359-4026-46c3-8bbf-491acd41abd9",
+    "event_class__name": "Network | Link | Drops Too High",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tname",
+        "value": "Packets drops rate"
+    }],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "target::checkpoint"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Number of dropped packets has been increased: >(?P<tvalue>\\d+)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::checkpoint"],
+            "message": "Check Point Firewall: Number of dropped packets has been increased: >0",
+            "raw_vars": []
+        }
+    ]
+}

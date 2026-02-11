@@ -1,0 +1,21 @@
+{
+    "name": "System | Insufficient Memory (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "05ed12eb-1e10-495e-97c2-fa6e9de8e74a",
+    "event_class__name": "Chassis | RAM | Insufficient Memory",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Lack of available memory \\(<(?P<tvalue>\\d+)M of .+\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: Lack of available memory (<20M of 3.82 GB)",
+            "raw_vars": []
+        }
+    ]
+}

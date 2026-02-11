@@ -1,0 +1,45 @@
+{
+    "name": "WiFi Controller | AP | Clients Threshold",
+    "$collection": "fm.eventclasses",
+    "uuid": "0626d74f-ae53-4542-9799-75bc32d6220f",
+    "description": "AP Clients Threshold class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "AP name on controller",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "triggerid",
+            "description": "Event trigger identifier",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "opdata",
+            "description": "Operational data with expanded macros",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value for over value",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Clients to much {{ tvalue }}%",
+    "body_template": "Clients count over {{ tvalue }}%",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

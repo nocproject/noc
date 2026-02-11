@@ -1,0 +1,32 @@
+{
+    "name": "System | CPU Utilization | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "08d4e107-2f76-4dc6-b218-b5c7eba58eed",
+    "description": "System CPU utilization for Zabbix-generated system",
+    "event_class__name": "System | CPU Utilization | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "High CPU [Uu]tilization \\(over\\s+(?P<tvalue>\\d+)%\\s+for\\s+(?P<window_size>\\d+)m\\)?",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: High CPU utilization (over 90% for 5m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: High CPU utilization (over 90% for 5m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "High CPU Utilization (over 90% for 15m",
+            "raw_vars": []
+        }
+    ]
+}

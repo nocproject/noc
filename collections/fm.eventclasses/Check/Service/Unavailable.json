@@ -1,0 +1,31 @@
+{
+    "name": "Check | Service | Unavailable",
+    "$collection": "fm.eventclasses",
+    "uuid": "315562fd-0d04-498d-9923-73c8c3b9edd8",
+    "description": "Service Check is unavailable from Zabbix",
+    "action": "A",
+    "vars": [
+        {
+            "name": "service",
+            "description": "Service Name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "code",
+            "description": "HTTP response code",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ service }} Unavaiable",
+    "body_template": "{{ service }} Unavaiable",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

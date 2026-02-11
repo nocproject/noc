@@ -1,0 +1,28 @@
+{
+    "name": "Application | Patroni | Not Running (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "f2af7294-d83b-46dd-9d33-f0b7069c496b",
+    "event_class__name": "Application | Patroni | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Node not running",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::patroni"],
+            "message": "Patroni: Node not running",
+            "raw_vars": []
+        }
+    ]
+}

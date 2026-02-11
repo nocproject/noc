@@ -1,0 +1,21 @@
+{
+    "name": "Windows | AD Replication | Errors (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d4886f6a-a5f6-466d-af0f-369ff4f43481",
+    "event_class__name": "Windows | AD Replication | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Replication from (?P<from_node>\\S+) to (?P<to_node>\\S+) failed",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Replication from DC-01 to DC-02 failed",
+            "raw_vars": []
+        }
+    ]
+}

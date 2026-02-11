@@ -1,0 +1,21 @@
+{
+    "name": "Application | Trassir | Reboot (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "586e1eaf-5773-4f2f-a583-6bd53cd2baa6",
+    "event_class__name": "Zabbix | Reboot",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Trassir server was restarted",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Trassir server was restarted",
+            "raw_vars": []
+        }
+    ]
+}

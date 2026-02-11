@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | No Data Collected (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "8b6c9834-ddb6-4fa7-a690-aa1ebd2cf858",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Failed to get items \\(no data for (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Failed to get items (no data for 30m)",
+            "raw_vars": []
+        }
+    ]
+}

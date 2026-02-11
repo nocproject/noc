@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | VirtualMachine | Not Running (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "19ffbd50-534e-44be-b06d-dd02b74b8ccc",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "VM is not running",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "VM is not running",
+            "raw_vars": []
+        }
+    ]
+}

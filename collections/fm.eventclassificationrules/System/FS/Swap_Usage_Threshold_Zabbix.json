@@ -1,0 +1,38 @@
+{
+    "name": "System | FS | Swap Usage Threshold (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d1eaad25-998d-4b87-84bc-18b3d4aeff40",
+    "description": "Event Class for not running state Zabbix\nLinux: High swap space usage (less than 50% free)",
+    "event_class__name": "System | FS | Swap Usage | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [
+        {
+            "key_re": "opdata",
+            "value_re": "total:\\s*(?P<ovalue>\\S+).+$"
+        }
+    ],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?:\\S+\\: |)High swap space usage \\(less than (?P<tvalue>\\d+)% free\\)$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: High swap space usage (less than 50% free)",
+            "raw_vars": [{
+                "name": "opdata",
+                "value": "Free: 0.2081 %, total: 980 MB"
+            }]
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "High swap space usage (less than 20% free)",
+            "raw_vars": [{
+                "name": "opdata",
+                "value": "Free: 0.2081 %, total: 980 MB"
+            }]
+        }
+    ]
+}

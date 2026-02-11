@@ -1,0 +1,52 @@
+{
+    "name": "System | FS | Read Response | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "b9e9466c-28e9-4f11-8870-9db2e2e1c639",
+    "description": "Not found specified Class for OS FileSystem-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "device",
+            "description": "Filesystem device",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "mountpoint",
+            "description": "Filesystem mountpoint",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value for space used",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Current space used value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold level",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ mountpoint }}: Read request responses Too High (used > {{ tvalue }}%)",
+    "body_template": "Current used is: {{ ovalue }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

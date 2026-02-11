@@ -1,0 +1,27 @@
+{
+    "name": "System | CPU Load | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cdf3965b-a1c3-42f6-b8cb-36223d6c9390",
+    "description": "System CPU Load for Zabbix-generated system",
+    "event_class__name": "System | CPU Load | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Load average is too high \\(per CPU load over (?P<tvalue>\\d+(\\.\\d+)?)\\s+for\\s+(?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: Load average is too high (per CPU load over 1.5 for 5m)",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Linux: Load average is too high (per CPU load over 5 for 5m)",
+            "raw_vars": []
+        }
+    ]
+}

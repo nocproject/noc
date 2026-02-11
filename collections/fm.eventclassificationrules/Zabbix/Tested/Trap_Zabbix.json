@@ -1,0 +1,26 @@
+{
+    "name": "Zabbix | Tested | Trap (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d34d9a91-7aae-484a-a221-51b426d4839d",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Test snmp trap|Trap test",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Test snmp trap",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Trap test",
+            "raw_vars": []
+        }
+    ]
+}

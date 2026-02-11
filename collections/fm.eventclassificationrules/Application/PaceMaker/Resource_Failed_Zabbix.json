@@ -1,0 +1,25 @@
+{
+    "name": "Application | PaceMaker | Resource Failed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "ea86aa4d-bd0e-44ef-b2d0-10a7e1a348e3",
+    "event_class__name": "Application | PaceMaker | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "application",
+        "value": "pacemaker"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "pacemaker: One or more resources have passed into \"(?P<status>\\S+)\" state",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "B-01/pacemaker: One or more resources have passed into \"failed\" state",
+            "raw_vars": []
+        }
+    ]
+}

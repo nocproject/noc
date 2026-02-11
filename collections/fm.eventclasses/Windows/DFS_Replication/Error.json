@@ -1,0 +1,24 @@
+{
+    "name": "Windows | DFS Replication | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "e85335d9-ec33-49b4-a66b-52abc74f244f",
+    "description": "DFS Replication Service Events Error",
+    "action": "L",
+    "vars": [
+        {
+            "name": "error",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "DFS Replication Service Error",
+    "body_template": "DFS Replication Service Error",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,38 @@
+{
+    "name": "Application | HAProxy | Server Down",
+    "$collection": "fm.eventclasses",
+    "uuid": "dd61f8a5-1922-4793-bdb4-9e17448805e8",
+    "description": "Not found specified Class for database-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "application",
+            "description": "Application name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "server",
+            "description": "HAProxy Server",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "service",
+            "description": "HAProxy Service",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

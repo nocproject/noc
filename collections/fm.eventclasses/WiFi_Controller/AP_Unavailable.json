@@ -1,0 +1,31 @@
+{
+    "name": "WiFi Controller | AP Unavailable",
+    "$collection": "fm.eventclasses",
+    "uuid": "ab6f23b2-8f36-41cc-9d6d-5b445ea2daa1",
+    "description": "AP is unavailable from WiFi controller",
+    "action": "A",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "AP name on Controller",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "method",
+            "description": "Check Method",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "AP {{ ap_name }} Unavaiable by {{ method }}",
+    "body_template": "AP {{ ap_name }} Unavaiable by {{ method }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

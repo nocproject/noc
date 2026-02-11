@@ -1,0 +1,31 @@
+{
+    "name": "System | Installed Packages",
+    "$collection": "fm.eventclasses",
+    "uuid": "4f64db57-288a-4066-9c0c-316af1b6ada2",
+    "description": "System installed new software",
+    "action": "A",
+    "vars": [
+        {
+            "name": "user",
+            "description": "Username",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "packages",
+            "description": "Packages installed list",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "New Packages installed {% if user %} by {{user}}{% endif %}",
+    "body_template": "New Packages installed{% if user %} requested by {{user}}{% endif %}:\n{% if packages %} {{packages}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

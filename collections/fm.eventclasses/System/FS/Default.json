@@ -1,0 +1,31 @@
+{
+    "name": "System | FS | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "ff6b1f60-a038-4d79-8fd7-732207ee0ee3",
+    "description": "Not found specified Class for OS FileSystem-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "device",
+            "description": "Filesystem device",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "mountpoint",
+            "description": "Filesystem mountpoint",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

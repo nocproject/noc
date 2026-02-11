@@ -1,0 +1,26 @@
+{
+    "name": "Application | LDAP | Request Threshold | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5dad0695-015c-44a1-adc4-171ea8ace206",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "Application | Threshold | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "state",
+        "value": "exited"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "(?P<application>.+)\\s\\[\\S+\\]\\s*:(?P<tname>.+)\\sis too high \\(>(?P<tvalue>\\S+) for (?P<over>\\S+)\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Domain Controller [t-dc-01.corp.yadro.com]: LDAP search time is too high (>0.05s for 5m)",
+            "raw_vars": []
+        }
+    ]
+}

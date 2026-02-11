@@ -1,0 +1,21 @@
+{
+    "name": "Disk | Read/Write Requests | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "74e324e2-57f5-43ca-b473-9167e2ad1109",
+    "event_class__name": "System | FS | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "(?P<disk>\\S+): Disk read/write request responses are too high \\(read > (?P<tvalue_read>\\d+) ms for 15m or write > (?P<tvalue_write>\\d+) ms for 15m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "sdb: Disk read/write request responses are too high (read > 120 ms for 15m or write > 120 ms for 15m)",
+            "raw_vars": []
+        }
+    ]
+}

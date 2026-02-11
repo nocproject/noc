@@ -1,0 +1,28 @@
+{
+    "name": "Application | ETCD | No Data (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "df219549-0d96-4a52-9a41-15fec34a75d8",
+    "event_class__name": "Application | ETCD | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::etcd"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Etcd: Failed to fetch info data \\(or no data for \\d+m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::etcd"],
+            "message": "Etcd: Failed to fetch info data (or no data for 30m)",
+            "raw_vars": []
+        }
+    ]
+}

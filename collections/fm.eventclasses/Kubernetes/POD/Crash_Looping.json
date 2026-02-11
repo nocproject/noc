@@ -1,0 +1,31 @@
+{
+    "name": "Kubernetes | POD | Crash Looping",
+    "$collection": "fm.eventclasses",
+    "uuid": "fe83bc17-0b27-47ec-91ff-558e6a5f0bd0",
+    "description": "Default Event Class for Kubernetes events",
+    "action": "L",
+    "vars": [
+        {
+            "name": "node",
+            "description": "Node name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "pod",
+            "description": "Pod name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Node [{{ node }}] Pod [{{ pod }}]: Pod is crash looping",
+    "body_template": "{{ message }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

@@ -1,0 +1,25 @@
+{
+    "name": "Application | Trassir | Wrong Data (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "93b5479c-0a30-4856-a52a-20449c448563",
+    "event_class__name": "Application | Trassir | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "error",
+        "value": "wrong_data"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Wrong data from trassir server",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Wrong data from trassir server",
+            "raw_vars": []
+        }
+    ]
+}

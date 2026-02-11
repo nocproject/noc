@@ -1,0 +1,24 @@
+{
+    "name": "Security | Linux | Passwd change",
+    "$collection": "fm.eventclasses",
+    "uuid": "961bcd60-8a5f-4ca4-a9ee-8e05279199b6",
+    "description": "Detect Password database on host has been changed",
+    "action": "L",
+    "vars": [
+        {
+            "name": "user",
+            "description": "User that changed",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "/etc/passwd has been changed",
+    "body_template": "/etc/passwd has been changed",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

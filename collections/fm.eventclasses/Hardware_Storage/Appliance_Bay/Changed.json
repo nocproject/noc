@@ -1,0 +1,45 @@
+{
+    "name": "Hardware Storage | Appliance Bay | Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "b9365c58-9f6b-4798-a593-43d9748b81e1",
+    "description": "Change Storage Controller Applience Bay State",
+    "action": "L",
+    "vars": [
+        {
+            "name": "enclosure",
+            "description": "Enclosure number",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "bay_number",
+            "description": "Bay number",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Storage Controller State",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "from_state",
+            "description": "From state changed",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Applience Bay {{ enclosure }}:{{ bay_number }} health is {{ state }}",
+    "body_template": "Applience Bay {{ enclosure }}:{{ bay_number }} change health {% if from_state %} {{ from_state }} to {% endif %} {{ state }}",
+    "symptoms": "Applience Bay healt change to state",
+    "probable_causes": "Applience Bay hardware hardware error",
+    "recommended_actions": "Check Disk status on controller and manually"
+}

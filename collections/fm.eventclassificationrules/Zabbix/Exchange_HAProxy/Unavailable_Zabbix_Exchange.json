@@ -1,0 +1,21 @@
+{
+    "name": "Zabbix | Exchange HAProxy | Unavailable (Zabbix, Exchange)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "134b29d0-f9e3-47c1-9f90-33f9b094be87",
+    "event_class__name": "Unknown | Ignore",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^Login Page in Unavalable$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Login Page in Unavalable",
+            "raw_vars": []
+        }
+    ]
+}

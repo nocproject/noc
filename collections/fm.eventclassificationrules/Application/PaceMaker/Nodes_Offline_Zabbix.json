@@ -1,0 +1,25 @@
+{
+    "name": "Application | PaceMaker | Nodes Offline (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "e1ac61ee-093e-44c9-8bb1-49c46d1ea9c4",
+    "event_class__name": "Application | PaceMaker | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "application",
+        "value": "pacemaker"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "pacemaker: One or more nodes goes offline",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "B-01/pacemaker: One or more nodes goes offline",
+            "raw_vars": []
+        }
+    ]
+}

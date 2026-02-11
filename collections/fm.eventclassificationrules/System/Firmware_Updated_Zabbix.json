@@ -1,0 +1,21 @@
+{
+    "name": "System | Firmware Updated (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1c21db6f-97ad-44f3-9f57-9bcbcfae4d6e",
+    "event_class__name": "System | Firmware Updated",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Firmware has changed",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Firmware has changed",
+            "raw_vars": []
+        }
+    ]
+}

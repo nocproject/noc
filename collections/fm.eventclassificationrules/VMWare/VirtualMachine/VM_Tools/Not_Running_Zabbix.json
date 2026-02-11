@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | VirtualMachine | VM Tools | Not Running (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "50b9f0b3-82ed-4f31-988c-64818d1a96eb",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "VMware Tools is not running",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "VMware Tools is not running",
+            "raw_vars": []
+        }
+    ]
+}

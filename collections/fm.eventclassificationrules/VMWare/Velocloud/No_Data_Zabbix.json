@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | Velocloud | No Data (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d9950300-608b-4f0e-9c55-5dcf9b7cfb58",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "target::vmware-sd-wan-velocloud"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Failed to fetch aggregate data \\(or no data for \\d+m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware-sd-wan-velocloud"],
+            "message": "Velocloud: Failed to fetch aggregate data (or no data for 30m)",
+            "raw_vars": []
+        }
+    ]
+}

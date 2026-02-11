@@ -1,0 +1,26 @@
+{
+    "name": "WiFi Controller | AP | Memory Utilization (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "db9bda77-dc2d-4371-8623-b74651d16e75",
+    "event_class__name": "System | Memory Utilization | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?:\\[\\s)?(?P<access_point>\\S+)(?:\\s\\])?\\s*Memory Utilization over (?P<tvalue>\\d+)%",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ APT-R ] Memory Utilization over 90%",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "WRL-AP_11 Memory Utilization over 90%",
+            "raw_vars": []
+        }
+    ]
+}

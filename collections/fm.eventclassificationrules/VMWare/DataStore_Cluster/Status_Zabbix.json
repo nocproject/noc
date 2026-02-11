@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | DataStore Cluster | Status (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "3fddf3c4-9ef0-4a0b-81e6-857ccbf35e44",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "^The \\[(?P<datastore>\\S+)\\] status is (?P<status>\\S+)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "The [Cluster-01] status is Yellow",
+            "raw_vars": []
+        }
+    ]
+}

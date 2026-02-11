@@ -1,0 +1,22 @@
+{
+    "name": "Network | Link | Utilization (Bandwith) Too Low (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "fce1f7ec-c557-405c-9d16-1b1a15ddc8c1",
+    "event_class__name": "Network | Link | Utilization (Bandwith) Too Low",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tname",
+        "value": "Bandwidth utilization threshold"
+    }],
+    "patterns": [],
+    "labels": [],
+    "message_rx": "^Interface (?P<interface>[\\w\\s\\d\\\\\\/]+).*:\\s* low traffic$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Interface irb.782: low traffic",
+            "raw_vars": []
+        }
+    ]
+}

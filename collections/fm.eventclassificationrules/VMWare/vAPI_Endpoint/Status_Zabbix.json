@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | vAPI Endpoint | Status (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "777a0f94-bedd-4485-b3d0-01f6963fe56b",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "VMware vAPI Endpoint Service Health Alarm",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "VMware vAPI Endpoint Service Health Alarm",
+            "raw_vars": []
+        }
+    ]
+}

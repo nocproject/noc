@@ -1,0 +1,38 @@
+{
+    "name": "WiFi Controller | AP | Changed",
+    "$collection": "fm.eventclasses",
+    "uuid": "a4de6c3b-b158-4e09-985d-9963d4d26860",
+    "description": "Change AP State on WiFi Controller",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "AP Name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Storage Controller State",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "from_state",
+            "description": "From state changed",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "[{{ access_point }}] AP change state to {{ state }}",
+    "body_template": "AP {{ access_point }} change {% if from_state %} {{ from_state }} to {% endif %} state {{ state }}",
+    "symptoms": "AP change to state on Controller register",
+    "probable_causes": "AP is disconnected or power off",
+    "recommended_actions": "Check AP availability"
+}

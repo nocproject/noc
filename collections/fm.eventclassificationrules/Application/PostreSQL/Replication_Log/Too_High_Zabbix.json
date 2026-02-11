@@ -1,0 +1,33 @@
+{
+    "name": "Application | PostreSQL | Replication Log | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "267a8891-e13a-4cc9-b0d0-83980a8117ad",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Replication lag more than (?P<tvalue>\\d+)[sm]",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Replication lag more than 1m",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Replication lag more than 10s",
+            "raw_vars": []
+        }
+    ]
+}

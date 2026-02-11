@@ -1,0 +1,24 @@
+{
+    "name": "Application | Trassir | Error",
+    "$collection": "fm.eventclasses",
+    "uuid": "27cf5094-b73e-4ff3-ba9c-de4926bbaf4f",
+    "description": "Trassir VideoServer Error",
+    "action": "L",
+    "vars": [
+        {
+            "name": "error",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Trassir server {{ error }}",
+    "body_template": "Trassir server {{ error }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

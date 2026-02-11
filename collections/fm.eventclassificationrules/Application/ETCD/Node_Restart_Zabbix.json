@@ -1,0 +1,28 @@
+{
+    "name": "Application | ETCD | Node Restart (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d1eb666f-02a2-457b-98f4-6c985724e8e0",
+    "event_class__name": "Application | ETCD | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::etcd"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "\\S+ has been restarted \\(uptime < \\d+m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::etcd"],
+            "message": "Etcd: T-PGCLUSTER-01 has been restarted (uptime < 10m)",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "name": "System | Protocol | Not Resolved (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "45a7d599-0940-4bc0-b26f-74488716c589",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "System | Protocol | Not Resolved",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?P<protocol>.+)\\snot resolve on (?P<check>\\S+)$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "File Sharing not resolve on TCP",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "LDAP not resolve on TCP",
+            "raw_vars": []
+        }
+    ]
+}

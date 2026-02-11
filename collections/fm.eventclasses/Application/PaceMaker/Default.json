@@ -1,0 +1,45 @@
+{
+    "name": "Application | PaceMaker | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "37f1b2b4-ef08-415a-bb11-4a338bdc6ede",
+    "description": "Not found specified Class for Application-specific Event",
+    "action": "L",
+    "vars": [
+        {
+            "name": "application",
+            "description": "Application name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "node",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "resource",
+            "description": "Application instance",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "status",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ message }}",
+    "body_template": "{{ message }}",
+    "symptoms": "No specific symptoms",
+    "probable_causes": "Cause description on event message",
+    "recommended_actions": "Grab this event, create appropriative event class and reclassify the event again"
+}

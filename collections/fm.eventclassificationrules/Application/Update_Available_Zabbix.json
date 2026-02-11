@@ -1,0 +1,33 @@
+{
+    "name": "Application | Update Available (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "1ed0e062-2635-4fa1-96f9-2a62453be191",
+    "event_class__name": "Application | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Application updates are available",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::patroni"],
+            "message": "Application updates are available",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix", "target::nextcloud"],
+            "message": "Application updates are available",
+            "raw_vars": []
+        }
+    ]
+}

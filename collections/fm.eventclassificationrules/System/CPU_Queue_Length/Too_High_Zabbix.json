@@ -1,0 +1,22 @@
+{
+    "name": "System | CPU Queue Length | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "7474aded-dd20-4d66-8924-496b861e4fbe",
+    "description": "System CPU Queue Length for Zabbix-generated system",
+    "event_class__name": "System | CPU Queue Length | Too High",
+    "preference": 2000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "CPU queue length is too high \\(over\\s+(?P<tvalue>\\d+)\\s+for\\s+(?P<window_size>\\d+)m\\)?",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Windows: CPU queue length is too high (over 3 for 5m)",
+            "raw_vars": []
+        }
+    ]
+}

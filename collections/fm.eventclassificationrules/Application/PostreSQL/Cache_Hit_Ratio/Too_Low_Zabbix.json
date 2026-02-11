@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Cache Hit Ratio | Too Low (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "a2ec29ec-c803-477e-8e05-704c03bb6986",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::postgresql"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Cache hit ratio too low \\(under (?P<tvalue>\\d+) in (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Cache hit ratio too low (under 90 in 5m)",
+            "raw_vars": []
+        }
+    ]
+}

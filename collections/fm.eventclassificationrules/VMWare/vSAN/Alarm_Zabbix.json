@@ -1,0 +1,32 @@
+{
+    "name": "VMWare | vSAN | Alarm (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "c8ffe028-abe2-4b95-8dda-66f9ddda10af",
+    "event_class__name": "VMWare | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "^vSAN (?P<component>.+)\\salarm\\s'(?P<alarm>.+)'",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "vSAN cluster alarm 'Time is synchronized across hosts and VC'",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "vSAN hyperconverged cluster configuration alarm 'Host compliance check for hyperconverged cluster configuration'",
+            "raw_vars": []
+        }
+    ]
+}

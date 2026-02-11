@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Service Restart (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "7570c264-04b8-437c-b6b5-65a0ad99f6be",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "Service has been restarted \\(uptime=.+\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "PostgreSQL: Service has been restarted (uptime=10m 39s 345ms)",
+            "raw_vars": []
+        }
+    ]
+}

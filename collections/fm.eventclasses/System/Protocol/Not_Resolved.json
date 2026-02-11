@@ -1,0 +1,31 @@
+{
+    "name": "System | Protocol | Not Resolved",
+    "$collection": "fm.eventclasses",
+    "uuid": "d4232d28-e8dd-435b-94ca-e71967479192",
+    "description": "Event Class for checker state",
+    "action": "L",
+    "vars": [
+        {
+            "name": "protocol",
+            "description": "Protocol Check",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "check",
+            "description": "Check method",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ protocol }} not resolve on {{ check }}",
+    "body_template": "Check {{ check }} failed test {{ protocol }}",
+    "symptoms": "Destination host not respond by send protocol message on port",
+    "probable_causes": "Protocol disabled or deny on firewall",
+    "recommended_actions": "Allowed on firewall rules or disable check"
+}

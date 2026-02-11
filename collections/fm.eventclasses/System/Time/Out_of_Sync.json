@@ -1,0 +1,45 @@
+{
+    "name": "System | Time | Out of Sync",
+    "$collection": "fm.eventclasses",
+    "uuid": "b12e18c7-ee41-43f5-b820-dc3295f7002e",
+    "description": "System clock diff with monitoring",
+    "action": "A",
+    "vars": [
+        {
+            "name": "source",
+            "description": "Time Source",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Diff (in seconds)",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "handlers": [
+        "noc.fm.handlers.event.audit.log_reboot",
+
+        "noc.fm.handlers.event.discovery.on_system_start"
+    ],
+    "subject_template": "System time is out of sync (diff with {{ source }} {% if tvalue %} > {{ tvalue }}s{% endif %})",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": "",
+    "disposition": [
+        {
+            "name": "dispose",
+            "condition": "True",
+            "action": "raise",
+            "alarm_class__name": "System | Reboot",
+            "stop_disposition": "true"
+        }
+    ]
+}

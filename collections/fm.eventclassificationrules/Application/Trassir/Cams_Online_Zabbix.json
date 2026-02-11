@@ -1,0 +1,30 @@
+{
+    "name": "Application | Trassir | Cams Online (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "cd2c9fe6-216e-460e-a9e1-19abe393fa77",
+    "event_class__name": "Application | Trassir | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "error",
+        "value": "some_cams_offline"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "Not all cams online on trassir server|Часть камер недоступна",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Not all cams online on trassir server",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "Trassir. Часть камер недоступна",
+            "raw_vars": []
+        }
+    ]
+}

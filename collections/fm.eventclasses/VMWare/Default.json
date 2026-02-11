@@ -1,0 +1,39 @@
+{
+    "name": "VMWare | Default",
+    "$collection": "fm.eventclasses",
+    "uuid": "8a4e2a87-fdcc-41f1-80b2-c37a63622d9b",
+    "description": "System rebooting",
+    "action": "A",
+    "vars": [
+        {
+            "name": "hypervisor",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": true
+        },
+        {
+            "name": "vm_id",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": true
+        },
+        {
+            "name": "status",
+            "description": "",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "handlers": [],
+    "subject_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "body_template": "Reboot{% if user %} requested by {{user}}{% endif %}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

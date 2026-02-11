@@ -1,0 +1,73 @@
+{
+    "name": "Hardware | Temperature | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "fab6f230-b30e-4fdb-ab5a-589d74308e1b",
+    "description": "Temperature is above warning threshold",
+    "action": "L",
+    "vars": [
+        {
+            "name": "cpu_id",
+            "description": "CPU Identifier (CPU Slot)",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "chassis",
+            "description": "Chassis id",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "slot",
+            "description": "Slot number",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold Value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Temperature Value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold State: error, critical, warning",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "Window size for calculate value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "units",
+            "description": "Measurement Units",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Temperature {{ ovalue }} {% if tvalue %} exceeded threshold {{ tvalue }} {% endif %}",
+    "body_template": "Temperature to exceeded threshold",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

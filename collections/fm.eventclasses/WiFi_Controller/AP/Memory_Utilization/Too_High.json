@@ -1,0 +1,52 @@
+{
+    "name": "WiFi Controller | AP | Memory Utilization | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "3842713b-2d4b-4602-ab77-18afcf9d31a7",
+    "description": "Memory Utilization Threshold class",
+    "action": "L",
+    "vars": [
+        {
+            "name": "access_point",
+            "description": "Access Point name on Controller",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold Value",
+            "type": "float",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Utilization Value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tstate",
+            "description": "Threshold State: error, critical",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "window_size",
+            "description": "Window size for calculate value",
+            "type": "int",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Memory Utilization {{ ovalue }}% {% if tvalue %} overload threshold {{ tvalue }} {% endif %}",
+    "body_template": "Memory Utilization threshold is {{ tstate }}",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

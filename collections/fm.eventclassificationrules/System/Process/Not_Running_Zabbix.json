@@ -1,0 +1,19 @@
+{
+    "name": "System | Process | Not Running (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "2309d579-05e9-4e8d-98e6-b3836add707a",
+    "description": "Event Class for not running state Zabbix",
+    "event_class__name": "System | Process | Not Running",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "state",
+        "value": "exited"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?P<process_name>\\S+):\\s*Service is not running$"
+}

@@ -1,0 +1,28 @@
+{
+    "name": "Application | PostreSQL | Slow Queries | Too High (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "31286b44-a506-4337-b615-828c3c7a6802",
+    "event_class__name": "Application | PostreSQL | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "set_var": "application",
+            "wildcard": "target::*"
+        },
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        }
+    ],
+    "message_rx": "DB\\s*\\[(?P<db_name>\\S+)\\]: Too many slow queries \\(over (?P<tvalue>\\d+) in (?P<window_size>\\d+)m\\)",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::postgresql"],
+            "message": "DB [zabbix]: Too many slow queries (over 5 in 5m)",
+            "raw_vars": []
+        }
+    ]
+}

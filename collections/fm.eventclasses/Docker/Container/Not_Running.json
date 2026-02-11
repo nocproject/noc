@@ -1,0 +1,38 @@
+{
+    "name": "Docker | Container | Not Running",
+    "$collection": "fm.eventclasses",
+    "uuid": "3464ec7e-04d4-4fc5-a9f2-665e96416bef",
+    "description": "Process on system not running state",
+    "action": "L",
+    "vars": [
+        {
+            "name": "container",
+            "description": "Process name",
+            "type": "str",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "cid",
+            "description": "Process id",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "state",
+            "description": "Process state",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "Process {{container}} not running",
+    "body_template": "Process {{container}} not running",
+    "symptoms": "Process on system not in running state",
+    "probable_causes": "Process disabled or deleted",
+    "recommended_actions": "Check process state and remove it if unused"
+}

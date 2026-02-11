@@ -1,0 +1,30 @@
+{
+    "name": "WiFi Controller | AP | Clients Threshold (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "5152c281-82e3-45ef-9958-1d914886a514",
+    "event_class__name": "WiFi Controller | AP | Clients Threshold",
+    "preference": 2000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "tvalue",
+        "value": "0"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "^(?:\\[\\s)?(?P<access_point>\\S+)(?:\\s\\])?\\s*Clients to much$",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "[ AT-55 ] Clients to much",
+            "raw_vars": []
+        },
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "AP_007 Clients to much",
+            "raw_vars": []
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "name": "Application | PaceMaker | DC Changed (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "6b852065-2b3f-4691-bb1f-efe5333eaa4b",
+    "event_class__name": "Application | PaceMaker | Default",
+    "preference": 1000,
+    "sources": ["other"],
+    "vars": [{
+        "name": "application",
+        "value": "pacemaker"
+    }],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "pacemaker: DC was changed",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "B-01/pacemaker: DC was changed",
+            "raw_vars": []
+        }
+    ]
+}

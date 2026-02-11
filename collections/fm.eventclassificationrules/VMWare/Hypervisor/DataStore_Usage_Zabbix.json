@@ -1,0 +1,27 @@
+{
+    "name": "VMWare | Hypervisor | DataStore Usage (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "d64c787a-81af-45ad-8789-d5bebc5e5af1",
+    "event_class__name": "Chassis | RAM | Insufficient Memory",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [
+        {
+            "is_required": true,
+            "wildcard": "remote_system::zabbix"
+        },
+        {
+            "is_required": true,
+            "wildcard": "target::vmware"
+        }
+    ],
+    "message_rx": "Datastore usage on disk",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix", "target::vmware"],
+            "message": "Datastore usage on disk",
+            "raw_vars": []
+        }
+    ]
+}

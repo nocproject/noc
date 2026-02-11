@@ -1,0 +1,38 @@
+{
+    "name": "Kubernetes | Node | Memory Requests | Too High",
+    "$collection": "fm.eventclasses",
+    "uuid": "45ad450e-f887-43b4-bb21-1bf1ae50c182",
+    "description": "Kubernetes Node Memory requests",
+    "action": "L",
+    "vars": [
+        {
+            "name": "node",
+            "description": "Node name",
+            "type": "str",
+            "required": false,
+            "match_suppress": false
+        },
+        {
+            "name": "tvalue",
+            "description": "Threshold value",
+            "type": "int",
+            "required": true,
+            "match_suppress": false
+        },
+        {
+            "name": "ovalue",
+            "description": "Current value",
+            "type": "float",
+            "required": false,
+            "match_suppress": false
+        }
+    ],
+    "deduplication_window": 3,
+    "suppression_window": 0,
+    "ttl": 86400,
+    "subject_template": "{{ node }} Total Memory requests are too high ",
+    "body_template": "Total Memory requests are too high",
+    "symptoms": "",
+    "probable_causes": "",
+    "recommended_actions": ""
+}

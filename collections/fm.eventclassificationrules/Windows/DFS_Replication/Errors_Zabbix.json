@@ -1,0 +1,21 @@
+{
+    "name": "Windows | DFS Replication | Errors (Zabbix)",
+    "$collection": "fm.eventclassificationrules",
+    "uuid": "537bcb0f-4664-4416-8cfd-3c4f06916f50",
+    "event_class__name": "Windows | DFS Replication | Error",
+    "preference": 1000,
+    "sources": ["other"],
+    "patterns": [],
+    "labels": [{
+        "is_required": true,
+        "wildcard": "remote_system::zabbix"
+    }],
+    "message_rx": "DFS Replication Events Error",
+    "test_cases": [
+        {
+            "input_labels": ["remote_system::zabbix"],
+            "message": "DFS Replication Events Error on node1",
+            "raw_vars": []
+        }
+    ]
+}
