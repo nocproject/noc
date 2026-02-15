@@ -14,6 +14,8 @@ from collections import namedtuple
 from noc.services.discovery.jobs.base import DiscoveryCheck
 from noc.inv.models.interface import Interface
 from noc.inv.models.sensor import Sensor
+from noc.core.change.policy import change_tracker
+from noc.core.change.decorator import get_datastreams
 
 IFHint = namedtuple("IFHint", ("name", "ifindex"))
 
@@ -34,7 +36,17 @@ class NRIPortmapperCheck(DiscoveryCheck):
         if not q:
             self.logger.info("Created directly. No NRI integration. Skipping check")
             return
-        Sensor.objects.filter(q).update(managed_object=self.object)
+        sensors = list(Sensor.objects.filter(q & Q(managed_object__ne=self.object.id)).scalar("id"))
+        if sensors:
+            self.logger.info("Updated Sensor mappings: %s", len(sensors))
+            Sensor.objects.filter(id__in=sensors).update(managed_object=self.object)
+            change_tracker.register(
+                "update",
+                "sa.ManagedObject",
+                str(self.object.id),
+                fields=[],
+                datastreams=get_datastreams(self.object),
+            )
 
     def handler(self):
         self.sensors_map()

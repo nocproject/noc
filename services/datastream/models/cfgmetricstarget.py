@@ -34,6 +34,15 @@ class MetricItem(BaseModel):
     rules: Optional[List[str]] = None
 
 
+class RemoteChannelItem(BaseModel):
+    policy: Literal["D", "E", "S"]
+    batch_signal: Literal["A", "D", "B"] = "A"
+    batch_size: int = 5_000
+    batch_delay_s: int = 10
+    enable_event: bool = False
+    enable_metrics: bool = False
+
+
 class CfgMetricsTarget(BaseModel):
     id: str  # Record id     # Split Config/Part
     type: Literal["managed_object", "sensor", "sla", "agent", "remote_system"]
@@ -57,6 +66,7 @@ class CfgMetricsTarget(BaseModel):
     fm_pool: Optional[str] = None
     # metric_key
     # key -> Rule
+    channel: Optional[RemoteChannelItem] = None
     managed_object: Optional[int] = None
     exposed_labels: Optional[List[str]] = None
     rules: Optional[List[str]] = None

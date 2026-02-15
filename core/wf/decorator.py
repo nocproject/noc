@@ -97,11 +97,11 @@ def document_set_state(
     # Apply Watchers
     # Bulk Supported?
     if self._has_watchers:
-        if state.is_wiping and not prev_state.is_wiping:
+        if state.is_wiping and (not prev_state or not prev_state.is_wiping):
             self.add_watch(ObjectEffect.WIPING, after=self.expired)
         elif "expired" in set_op and self.expired:
             self.add_watch(ObjectEffect.WF_EVENT, after=self.expired, wf_event="expired")
-        if prev_state.is_wiping and not state.is_wiping:
+        if (not prev_state or prev_state.is_wiping) and not state.is_wiping:
             self.stop_watch(ObjectEffect.WIPING)
         if "expired" in set_op and not self.expired:
             self.stop_watch(ObjectEffect.WF_EVENT)
@@ -225,11 +225,11 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
     # Apply Watchers
     # Add Bulk
     if self._has_watchers:
-        if state.is_wiping and not prev_state.is_wiping:
+        if state.is_wiping and (not prev_state or not prev_state.is_wiping):
             self.add_watch(ObjectEffect.WIPING, after=self.expired)
         elif "expired" in set_op and self.expired:
             self.add_watch(ObjectEffect.WF_EVENT, after=self.expired, wf_event="expired")
-        if prev_state.is_wiping and not state.is_wiping:
+        if (not prev_state or prev_state.is_wiping) and not state.is_wiping:
             self.stop_watch(ObjectEffect.WIPING)
         if "expired" in set_op and not self.expired:
             self.stop_watch(ObjectEffect.WF_EVENT)

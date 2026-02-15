@@ -67,7 +67,12 @@ class RemoteSystemChannel(object):
         sensor_id: Optional[str] = None,
     ):
         """Feed the message. Returns optional offset of last saved message"""
-        if target in self.unknown_hosts:
+        # Try sensor
+        if sensor_id:
+            sensor_cfg = self.service.lookup_remote_sensor(sensor_id, self.remote_system.name)
+        else:
+            sensor_cfg = None
+        if target in self.unknown_hosts and not sensor_cfg:
             return
         # Wait until feed became possible
         await self.feed_ready.wait()
@@ -75,16 +80,12 @@ class RemoteSystemChannel(object):
         cfg = self.service.lookup_source_by_name(target, collector=self.collector)
         if not cfg:
             self.unknown_hosts.add(target)
-            return
-        if cfg.no_data_check and values:
+            if not sensor_cfg:
+                return
+        elif cfg.no_data_check and values:
             self.last_received_hosts[cfg.id] = values[0][0]
         # if metric in self.unknown_metrics:
         #     return
-        # Try sensor
-        if sensor_id:
-            sensor_cfg = self.service.lookup_remote_sensor(sensor_id, self.remote_system.name)
-        else:
-            sensor_cfg = None
         # Parse Labels for metrics
         cfg_metric = self.service.get_cfg_metric(self.collector, metric, labels=labels)
         if not cfg_metric:
@@ -97,7 +98,7 @@ class RemoteSystemChannel(object):
             # if ((v[0], cfg.id, frozenset(labels or [])) in self.data
             #         and cfg_metric.id in self.data[(v[0], cfg.id, frozenset(labels or []))]):
             #     self.deduplicated += 1
-            if cfg_metric:
+            if cfg_metric and cfg:
                 key = (v[0], cfg.id, frozenset(labels or []))
                 self.data[key][cfg_metric.id] = v[1]
             if sensor_cfg:
