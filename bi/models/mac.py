@@ -109,11 +109,11 @@ class MAC(Model):
                 field = "MACNumToString(mac)"
             # @todo convert mac all
             if isinstance(query[k], list) and len(query[k]) == 1:
-                arg = query[k][0].strip()
-            elif isinstance(query[k], str):
-                arg = query[k].strip()
+                arg = query[k][0]
             else:
                 arg = query[k]
+            if isinstance(arg, str):
+                arg = arg.strip()
             f_filter["$and"] += [{"$%s" % q: [{"$field": field}, arg]}]
         if not f_filter:
             return
