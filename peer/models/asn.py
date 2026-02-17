@@ -62,7 +62,7 @@ class AS(NOCModel):
     )
     # RPSL descr field
     description = models.TextField("Description", null=True, blank=True)
-    organisation = models.ForeignKey(
+    organisation: Optional[Organisation] = models.ForeignKey(
         Organisation, verbose_name="Organisation", null=True, blank=True, on_delete=models.CASCADE
     )
     administrative_contacts = models.ManyToManyField(
@@ -127,7 +127,8 @@ class AS(NOCModel):
             s += ["as-name: %s" % self.as_name]
         if self.description:
             s += ["descr: %s" % x for x in self.description.split("\n")]
-        s += ["org: %s" % self.organisation.organisation]
+        if self.organisation:
+            s += ["org: %s" % self.organisation.organisation]
         # Add header remarks
         if self.header_remarks:
             s += ["remarks: %s" % x for x in self.header_remarks.split("\n")]

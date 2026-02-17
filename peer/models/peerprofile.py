@@ -112,8 +112,8 @@ class PeerProfile(NOCModel):
     def get_default_profile(cls) -> "PeerProfile":
         pp = PeerProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
         if not pp:
-            sp = PeerProfile(name=cls.DEFAULT_PROFILE_NAME)
-            sp.save()
+            pp = PeerProfile(name=cls.DEFAULT_PROFILE_NAME)
+            pp.save()
         return pp
 
     @classmethod

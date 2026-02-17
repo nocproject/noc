@@ -510,7 +510,7 @@ class AddressCheck(DiscoveryCheck):
             or address.address.startswith("fe80:")
         )
 
-    def fire_seen(self, address):
+    def fire_seen(self, address: Address):
         """
         Fire `seen` event and process `seen_propagation_policy`
         :param address:

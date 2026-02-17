@@ -140,6 +140,8 @@ class BGPPeerCheck(PolicyDiscoveryCheck):
             first_discovered=now,
             managed_object=self.object,
         )
+        if self.object.object_profile.bgppeer_profile:
+            p.profile = self.object.object_profile.bgppeer_profile
         self.logger.info(
             "Creating BGP Peer %s (AS%s): remote_as=%s profile=%s",
             p.remote_ip,

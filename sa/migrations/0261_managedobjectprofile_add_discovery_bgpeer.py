@@ -37,7 +37,7 @@ class Migration(BaseMigration):
                 default="c",
             ),
         )
-        PeerProfile = self.db.mock_model(model_name="PeerProfile", db_table="peer_peer")
+        PeerProfile = self.db.mock_model(model_name="PeerProfile", db_table="peer_peerprofile")
         self.db.add_column(
             "sa_managedobjectprofile",
             "bgppeer_profile",
