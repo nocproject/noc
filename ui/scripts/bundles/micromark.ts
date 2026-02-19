@@ -32,7 +32,8 @@ const MicromarkAPI = {
     })
     
     if(finalOptions.sanitize){
-      html = (DOMPurify as {sanitize: (html: string, config?: Config) => string}).sanitize(html, finalOptions.purifyOptions)
+      const purify = DOMPurify as {sanitize: (html: string, config?: Config) => string}
+      html = purify.sanitize(html, finalOptions.purifyOptions)
     }
     
     return html

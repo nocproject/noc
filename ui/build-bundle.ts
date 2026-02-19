@@ -1,26 +1,49 @@
+import type {OnLoadArgs, PluginBuild} from "esbuild";
 import {build} from "esbuild";
 import * as fs from "fs";
+import * as path from "path";
 import {workers} from "./scripts/bundles/monaco-workers.ts";
+
+const isDev = process.argv.includes("--dev");
 
 const buildOption = {
   bundle: true,
-  minify: true,
-  sourcemap: false,
+  minify: !isDev,
+  sourcemap: isDev,
+  sourcesContent: true,
   format: "iife" as const,
   target: ["es2020"],
   // platform: "browser" as const,
   tsconfig: "tsconfig.json",
+  loader: {
+    ".png": "dataurl" as const,
+  },
 };
 
-const outputDir = "scripts/bundles/dist";
-const generatedFile = `${outputDir}/monaco.generated.ts`;
+const outputDir = "dist";
+// removed generatedFile logic
 
-if(fs.existsSync(generatedFile)){
-  fs.unlinkSync(generatedFile);
-}
 if(!fs.existsSync(outputDir)){
   fs.mkdirSync(outputDir, {recursive: true});
 }
+
+const monacoWorkerPlugin = (workerCodes: Record<string, string>) => ({
+  name: "monaco-worker",
+  setup(build: PluginBuild){
+    build.onLoad({filter: /monaco\.ts$/}, async(args: OnLoadArgs) => {
+      let source = await fs.promises.readFile(args.path, "utf8");
+      for(const [label, code] of Object.entries(workerCodes)){
+        const placeholder = `/*${label}_WORKER_CODE*/ ""`;
+        source = source.replace(placeholder, JSON.stringify(code));
+      }
+      return {
+        contents: source,
+        loader: "ts",
+        resolveDir: path.dirname(args.path),
+      };
+    });
+  },
+});
 
 async function buildMonacoWorkers(){
   const workerCodes: Record<string, string> = {};
@@ -48,31 +71,24 @@ async function main(){
   
   if(bundleName === "monaco"){
     const workerCodes = await buildMonacoWorkers();
-    let monacoSource = fs.readFileSync("scripts/bundles/monaco.ts", "utf-8");
-
-    for(const [label, code] of Object.entries(workerCodes)){
-      const placeholder = `/*${label}_WORKER_CODE*/ ""`;
-      monacoSource = monacoSource.replace(
-        placeholder,
-        JSON.stringify(code),
-      );
-    }
-
-    fs.writeFileSync(generatedFile, monacoSource);
 
     await build({
       ...buildOption,
       loader: {
         ".ttf": "dataurl",
       },
-      entryPoints: [generatedFile],
+      entryPoints: ["scripts/bundles/monaco.ts"],
+      plugins: [monacoWorkerPlugin(workerCodes)],
       outfile: `${outputDir}/monaco.js`,
     });
 
     console.log("Monaco bundle built successfully!");
     return;
   } else{
-    const entryPoints = `scripts/bundles/${bundleName}.ts`;
+    let entryPoints = `scripts/bundles/${bundleName}.ts`;
+    if(!fs.existsSync(entryPoints)){
+      entryPoints = `scripts/bundles/${bundleName}/index.ts`;
+    }
     const outfile = `${outputDir}/${bundleName}.js`;
 
     await build({

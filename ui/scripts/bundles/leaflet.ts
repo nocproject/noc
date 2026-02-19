@@ -1,3 +1,5 @@
+import "leaflet/dist/leaflet.css";
+
 declare global {
     interface Window {
       leafletAPI: typeof LeafletAPI;

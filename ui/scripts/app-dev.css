@@ -8,7 +8,4 @@
 @import "@cssWeb/colors.css";
 @import "@cssPkg/fontawesome/css/font-awesome.min.css";
 @import "@cssPkg/joint/joint.min.css";
-@import "../node_modules/leaflet/dist/leaflet.css";
-/* self made css */
-@import "./bundles/dist/monaco.css";
 @import "node_modules/@gufo-labs/font/gufo-font.css";
