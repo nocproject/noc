@@ -8,9 +8,9 @@ console.debug("Defining NOC.inv.map.MapPanel");
 
 Ext.define("NOC.inv.map.MapPanel", {
   extend: "Ext.panel.Panel",
-  requires: ["NOC.inv.map.ShapeRegistry", "NOC.inv.map.MapRenderer"],
+  requires: ["NOC.inv.map.ShapeRegistry", "NOC.inv.map.MapRendererPlaceholder"],
   layout: "fit",
-  scrollable: true,
+  // scrollable: true,
   app: null,
   readOnly: false,
   pollingInterval: 180000,
@@ -22,12 +22,22 @@ Ext.define("NOC.inv.map.MapPanel", {
   LO_LOAD: 1,
 
   resizeHandles: "onResize",
+  items: [
+    {
+      xtype: "component",
+      itemId: "topoMap",
+      // html: "<div style='width:100%;height:100%'></div>",
+      // scrollable: true,
+      layout: "fit",
+      border: true,
+    },
+  ],
 
   initComponent: function(){
     var me = this;
 
     me.shapeRegistry = NOC.inv.map.ShapeRegistry;
-    me.renderer = Ext.create("NOC.inv.map.MapRenderer", me);
+    me.renderer = Ext.create("NOC.inv.map.MapRendererPlaceholder", me);
     me.usedImages = {};
     me.hasStp = false;
     me.objectNodes = {};
@@ -44,16 +54,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.overlayMode = me.LO_NONE;
     me.interfaceMetrics = [];
 
-    Ext.apply(me, {
-      items: [
-        {
-          xtype: "component",
-          autoScroll: true,
-          layout: "fit",
-        },
-      ],
-    });
-    //
     me.nodeMenu = Ext.create("Ext.menu.Menu", {
       items: [
         {
@@ -139,13 +139,10 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.callParent();
   },
 
-  afterRender: function(){
-    var me = this;
-    me.callParent();
-    me.initMap();
-    this.boundScrollHandler = Ext.bind(this.moveViewPort, this);
-    this.body.dom.addEventListener("scroll", this.boundScrollHandler);
+  onBoxReady: function(width, height){
+    this.renderer.initMap(width, height);
   },
+
   destroy: function(){
     var dom = this.body.dom;
     if(this.boundScrollHandler){
@@ -188,36 +185,6 @@ Ext.define("NOC.inv.map.MapPanel", {
       this.viewPort.position(moveX, moveY);
       // this.viewPort.position(x, y);
     }
-  },
-  // Initialize JointJS Map
-  initMap: function(){
-    var me = this,
-      dom = me.items.first().el.dom;
-    me.graph = new joint.dia.Graph();
-    me.graph.on("change", Ext.bind(me.onChange, me));
-    me.paper = new joint.dia.Paper({
-      el: dom,
-      model: me.graph,
-      preventContextMenu: false,
-      async: false,
-      guard: function(evt){
-        return evt.type === "mousedown" && evt.buttons === 2;
-      },
-      interactive: Ext.bind(me.onInteractive, me),
-    });
-    // Apply SVG filters
-    me.renderer.initFilters();
-    // Subscribe to events
-    me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
-    me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
-    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
-    me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
-    me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
-    me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
-    me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
-    me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
-    me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
-    me.fireEvent("mapready");
   },
   // Load segment data
   loadSegment: function(generator, segmentId, forceSpring){

@@ -216,14 +216,27 @@ Ext.define("NOC.inv.map.Application", {
       hideCollapseTool: true,
     });
 
-    me.miniMapPanel = Ext.create("NOC.inv.map.MiniMap", {
+    me.miniMapPanel = Ext.create("Ext.panel.Panel", {
       region: "south",
+      itemId: "miniMap",
       width: this.rightWidth,
+      height: 300,
       collapsible: true,
       collapseMode: undefined,
       header: false,
       hideCollapseTool: true,
+      layout: "fit",
     });
+
+    // me.miniMapPanel = Ext.create("NOC.inv.map.MiniMap", {
+    //   region: "south",
+    //   itemId: "miniMap",
+    //   width: this.rightWidth,
+    //   collapsible: true,
+    //   collapseMode: undefined,
+    //   header: false,
+    //   hideCollapseTool: true,
+    // });
 
     me.basketPanel = Ext.create("NOC.inv.map.Basket", {
       collapsed: true,
@@ -285,7 +298,7 @@ Ext.define("NOC.inv.map.Application", {
           }
         },
         renderdone: function(){
-          me.miniMapPanel.scaleContentToFit();
+          // me.miniMapPanel.scaleContentToFit();
           if(me.selectedObjectId){
             me.selectCell(me.mapPanel.objectNodes[me.selectedObjectId]);
           }
@@ -430,7 +443,7 @@ Ext.define("NOC.inv.map.Application", {
     this.viewStpButton.setPressed(false);
     this.zoomCombo.setValue(1.0);
     this.mapPanel.setZoom(1.0);
-    this.mapPanel.paper.clearGrid();
+    // this.mapPanel.paper.clearGrid();
   },
 
   onMapReady: function(){
@@ -451,7 +464,7 @@ Ext.define("NOC.inv.map.Application", {
         this.selectedObjectId = this.noc.cmd.args[2];
       }
     }
-    this.miniMapPanel.createMini(this.mapPanel);
+    // this.miniMapPanel.createMini(this.mapPanel);
   },
 
   onSelectSegment: function(combo, record){

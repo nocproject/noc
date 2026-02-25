@@ -8,13 +8,18 @@ console.debug("Defining NOC.main.desktop.WorkplacePanel");
 
 Ext.define("NOC.main.desktop.WorkplacePanel", {
   extend: "Ext.tab.Panel",
+  itemId: "workplacePanel",
   region: "center", // Always required for border layout
   activeTab: 0,
   border: false,
-  layout: "fit",
+  layout: "card", // Ext set layout automatically to card!
   app: null,
   tabBar: {
     cls: "noc-navigation-header",
+  },
+  listeners: {
+    tabchange: "onTabChange",
+    afterrender: Ext.emptyFn,
   },
   //
   initComponent: function(){
@@ -29,13 +34,6 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
       handler: me.onExpand,
       getActualRotation: function(){return 0;},
     });
-    Ext.apply(me, {
-      listeners: {
-        scope: me,
-        tabchange: me.onTabChange,
-        afterrender: Ext.emptyFn,
-      },
-    });
     me.callParent();
     me.tabBar.add({
       xtype: "tbfill",
@@ -46,38 +44,35 @@ Ext.define("NOC.main.desktop.WorkplacePanel", {
   // Launch application in tab
   launchTab: function(panel_class, title, params, node){
     this.mask(__("Loading tab with") + " " + panel_class + " ...");
-    Ext.Loader.require(panel_class, function(){
-      var app = Ext.create(panel_class, {
+    var tab = this.add({
+        title: title,
+        closable: true,
+        layout: "fit",
+        items: Ext.create(panel_class, {
           noc: params,
           title: title,
           closable: true,
-        }),tab = this.add({
-          title: title,
-          closable: true,
-          layout: "fit",
-          items: app,
-          listeners: {
-            scope: this,
-            beforeclose: this.onTabClose,
-          },
-          menuNode: node,
         }),
-        first = this.items.first(),
-        homeApp = first.down("[appId=main.home]");
-        // Close Home tab, if any
-      if(homeApp){
-        var homeTab = homeApp.up();
-        if(homeTab && homeTab !== tab){
-          homeTab.close();
-        }
+        listeners: {
+          scope: this,
+          beforeclose: this.onTabClose,
+        },
+        menuNode: node,
+      }),
+      homeApp = this.down("[appId=main.home]");
+      // Close Home tab, if any
+    if(homeApp){
+      var homeTab = homeApp.up();
+      if(homeTab && homeTab !== tab){
+        homeTab.close();
       }
-      //
-      this.setActiveTab(tab);
-      if(node){
-        this.up().launchedTabs[node] = tab;
-      }
-      this.unmask();
-    }, this);
+    }
+    //
+    this.setActiveTab(tab);
+    if(node){
+      this.up().launchedTabs[node] = tab;
+    }
+    this.unmask();
   },
   //
   onTabChange: function(panel, tab){

@@ -109,6 +109,7 @@ export default tseslint.config(
         "L": "readonly",
         "$": "readonly",
         "new_load_scripts": "readonly",
+        "map": "readonly",
       },
     },
   },

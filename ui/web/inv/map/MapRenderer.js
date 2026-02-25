@@ -90,6 +90,36 @@ Ext.define("NOC.inv.map.MapRenderer", {
     this.shapeRegistry = NOC.inv.map.ShapeRegistry;
     this.usedImages = {};
   },
+  // Initialize JointJS Map
+  initMap: function(){
+    var me = this,
+      dom = me.items.first().el.dom;
+    me.graph = new joint.dia.Graph();
+    me.graph.on("change", Ext.bind(me.onChange, me));
+    me.paper = new joint.dia.Paper({
+      el: dom,
+      model: me.graph,
+      preventContextMenu: false,
+      async: false,
+      guard: function(evt){
+        return evt.type === "mousedown" && evt.buttons === 2;
+      },
+      interactive: Ext.bind(me.onInteractive, me),
+    });
+    // Apply SVG filters
+    me.renderer.initFilters();
+    // Subscribe to events
+    me.paper.on("cell:pointerdown", Ext.bind(me.onCellSelected, me));
+    me.paper.on("cell:pointerdblclick", Ext.bind(me.onCellDoubleClick, me));
+    me.paper.on("blank:pointerdown", Ext.bind(me.onBlankSelected, me));
+    me.paper.on("cell:highlight", Ext.bind(me.onCellHighlight, me));
+    me.paper.on("cell:unhighlight", Ext.bind(me.onCellUnhighlight, me));
+    me.paper.on("cell:contextmenu", Ext.bind(me.onContextMenu, me));
+    me.paper.on("blank:contextmenu", Ext.bind(me.onSegmentContextMenu, me));
+    me.paper.on("link:mouseenter", Ext.bind(me.onLinkOver, me));
+    me.paper.on("link:mouseleave", Ext.bind(me.onLinkOut, me));
+    me.fireEvent("mapready");
+  },
 
   initFilters: function(){
     var me = this;
