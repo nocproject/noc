@@ -57,7 +57,7 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
         """
         d_interval = self.get_interval()
         if run and interval != d_interval:
-            p_sc = interval / d_interval
+            p_sc = interval // d_interval
             if run % p_sc:  # runs
                 self.logger.info(
                     "[%s] Skip due to schedule, next run in %s sec",
