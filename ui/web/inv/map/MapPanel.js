@@ -26,7 +26,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     {
       xtype: "component",
       itemId: "topoMap",
-      // html: "<div style='width:100%;height:100%'></div>",
       // scrollable: true,
       layout: "fit",
       border: true,
@@ -364,8 +363,11 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   // Change interactive flag
   setInteractive: function(interactive){
-    var me = this;
-    me.isInteractive = interactive;
+    if(interactive){
+      this.renderer.setEditMode();
+    } else{
+      this.renderer.setPanMode();
+    }
   },
   //
   onInteractive: function(){
@@ -598,8 +600,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setZoom: function(zoom){
-    var me = this;
-    me.renderer.setZoom(zoom);
+    this.renderer.setZoom(zoom);
   },
   
   onNodeMenuViewMap: function(){

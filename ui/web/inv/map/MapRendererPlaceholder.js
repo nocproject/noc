@@ -12,6 +12,10 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   LINK_ADMIN_DOWN: 1,
   LINK_OPER_DOWN: 2,
   LINK_STP_BLOCKED: 3,
+  // Zoom levels
+  FIT_PAGE: -3,
+  FIT_HEIGHT: -1,
+  FIT_WIDTH: -2,
 
   constructor: function(panel){
     this.panel = panel;
@@ -20,25 +24,24 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   initMap: function(width, height){
     const {nodes, links} = this.generateTopology(20, 20);
     let mainEl = this.panel.down("#topoMap").el,
-      miniEl = this.panel.up().down("#miniMap").body,
-      topoMap = new map.Topology({
-        mainContainer: mainEl.dom,
-        minimapContainer: miniEl.dom,
-        initialScale: 1,
-        minScale: 0.1,
-        maxScale: 5,
-        gridSize: 20,
-        boundsPadding: 12,
-        snapThreshold: 5,
-        fitToPageOnLoad: true,
-        asyncRendering: false,
-        enableViewportCulling: true,
-        debugLogs: false,
-      });
+      miniEl = this.panel.up().down("#miniMap").body;
+    this.topoMap = new map.Topology({
+      mainContainer: mainEl.dom,
+      minimapContainer: miniEl.dom,
+      initialScale: 1,
+      minScale: 0.1,
+      maxScale: 5,
+      gridSize: 20,
+      boundsPadding: 64,
+      snapThreshold: 5,
+      fitToPageOnLoad: true,
+      asyncRendering: false,
+      enableViewportCulling: true,
+      debugLogs: false,
+    });
     console.log(width, height);
-    console.log("MapRendererPlaceholder.initMap DOM", topoMap);
-    topoMap.loadData(nodes, links);
-    topoMap.setBoundsPadding(60);
+    console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
+    this.topoMap.loadData(nodes, links);
   },
 
   initFilters: function(){
@@ -62,7 +65,19 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   },
 
   setZoom: function(zoom){
-    console.warn("MapRendererPlaceholder.setZoom", zoom);
+    switch(zoom){
+      case this.FIT_PAGE:
+        this.topoMap.fitToPage();
+        return;
+      case this.FIT_HEIGHT:
+        this.topoMap.fitToHeight();
+        return;
+      case this.FIT_WIDTH:
+        this.topoMap.fitToWidth();
+        return;
+    }
+       
+    this.topoMap.setZoom(zoom/100);
   },
 
   setLoadOverlayData: function(data){
@@ -73,10 +88,17 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     console.warn("MapRendererPlaceholder.resetOverlayData");
   },
 
-  changeLabelText: function(showIPAddress){
-    console.warn("MapRendererPlaceholder.changeLabelText", showIPAddress);
+  changeLabelText: function(){
+    this.topoMap.toggleNodeLabelMode();
   },
 
+  setEditMode: function(){
+    this.topoMap.setMode("edit");
+  },
+  
+  setPanMode: function(){
+    this.topoMap.setMode("pan");
+  },
   generateTopology: function(rows, cols){
     const nodes = [];
     const links = [];
@@ -85,19 +107,34 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     const startX = 80;
     const startY = 60;
     let linkSeq = 1;
+    const statusClasses = ["gf-ok", "gf-warn", "gf-unknown", "gf-fail"];
+
+    const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
 
     for(let row = 0; row < rows; row += 1){
       for(let col = 0; col < cols; col += 1){
         const index = row * cols + col;
         const id = `n${index + 1}`;
-        const status = index % 23 === 0 ? "DOWN" : index % 7 === 0 ? "WARN" : "UP";
+        const statusClass = statusClasses[Math.floor(Math.random() * statusClasses.length)];
+      
+        const textLen = Math.floor(Math.random() * 30);
+        const loremText = lorem.slice(0, textLen);
 
         nodes.push({
           id,
           x: startX + col * spacingX,
           y: startY + row * spacingY,
-          label: `Node ${index + 1}`,
-          status,
+          attrs: {
+            title: {
+              text: `Node ${index + 1} ${loremText}`,
+            },
+            ipaddr: {
+              text: `10.42.${row + 1}.${col + 1}`,
+            },
+            icon: {
+              status: statusClass,
+            },
+          },
         });
 
         if(col < cols - 1){
@@ -105,7 +142,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
             id: `l${linkSeq}`,
             sourceId: id,
             targetId: `n${index + 2}`,
-            label: "1G",
+            // label: "1G",
           });
           linkSeq += 1;
         }
@@ -115,7 +152,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
             id: `l${linkSeq}`,
             sourceId: id,
             targetId: `n${index + cols + 1}`,
-            label: "10G",
+            // label: "10G",
           });
           linkSeq += 1;
         }

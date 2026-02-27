@@ -19,6 +19,7 @@ Ext.define("NOC.inv.map.Application", {
     "NOC.inv.map.Legend",
     "NOC.inv.map.MiniMap",
     "NOC.inv.map.Basket",
+    "NOC.inv.inv.plugins.Zoom",
     "Ext.ux.form.SearchField",
   ],
   rightWidth: 250,
@@ -395,7 +396,11 @@ Ext.define("NOC.inv.map.Application", {
           items: [
             me.segmentCombo,
             "-",
-            me.zoomCombo,
+            {
+              xtype: "invPluginsZoom",
+              itemId: "zoomControl",
+              setZoom: Ext.bind(me.mapPanel.setZoom, me.mapPanel),
+            },
             me.reloadButton,
             "-",
             me.searchField,
@@ -441,8 +446,8 @@ Ext.define("NOC.inv.map.Application", {
     this.inspectSegment();
     this.viewMapButton.setPressed(true);
     this.viewStpButton.setPressed(false);
-    this.zoomCombo.setValue(1.0);
-    this.mapPanel.setZoom(1.0);
+    // this.zoomCombo.setValue(1.0);
+    // this.mapPanel.setZoom(1.0);
     // this.mapPanel.paper.clearGrid();
   },
 
@@ -538,17 +543,17 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   onEdit: function(){
-    this.mapPanel.paper.clearGrid();
+    // this.mapPanel.paper.clearGrid();
     if(this.editButton.pressed){
-      this.mapPanel.setOverlayMode(0);
-      this.mapPanel.paper.setGrid({
-        name: "doubleMesh",
-        args: [
-          {color: "#bdc3c7", thickness: 1}, // settings for the primary mesh
-          {color: "#bdc3c7", scaleFactor: 5, thickness: 2}, //settings for the secondary mesh
-        ],
-      });
-      this.mapPanel.paper.drawGrid();
+      // this.mapPanel.setOverlayMode(0);
+      // this.mapPanel.paper.setGrid({
+      //   name: "doubleMesh",
+      //   args: [
+      //     {color: "#bdc3c7", thickness: 1}, // settings for the primary mesh
+      //     {color: "#bdc3c7", scaleFactor: 5, thickness: 2}, //settings for the secondary mesh
+      //   ],
+      // });
+      // this.mapPanel.paper.drawGrid();
       this.viewMapButton.setPressed(true);
       this.saveButton.setDisabled(true);
       this.setStateMapButtons(false);
