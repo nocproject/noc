@@ -150,6 +150,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     if(this.rafId){
       cancelAnimationFrame(this.rafId);
     }
+    this.renderer.removeHandlers();
     this.callParent();
   },
   // ViewPort
@@ -823,10 +824,10 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onResize: function(){
-    var me = this;
-    if("paper" in me){
-      me.renderer.setPaperDimension();
-    }
+    // var me = this;
+    // if("paper" in me){
+    // me.renderer.setPaperDimension();
+    // }
   },
 
   changeLabelText: function(showIPAddress){

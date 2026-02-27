@@ -16,7 +16,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   FIT_PAGE: -3,
   FIT_HEIGHT: -1,
   FIT_WIDTH: -2,
-
+  removeHandlers: Ext.emptyFn,
   constructor: function(panel){
     this.panel = panel;
   },
@@ -30,7 +30,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       minimapContainer: miniEl.dom,
       initialScale: 1,
       minScale: 0.1,
-      maxScale: 5,
+      maxScale: 4,
       gridSize: 20,
       boundsPadding: 64,
       snapThreshold: 5,
@@ -39,11 +39,41 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       enableViewportCulling: true,
       debugLogs: false,
     });
+    this.topoMap.loadData(nodes, links);
+    mainEl.dom.addEventListener("topology:element:click", this.onElementClick.bind(this));
+    mainEl.dom.addEventListener("topology:link:click", this.onLinkClick.bind(this));
+    mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
+
+    this.removeHandlers = function(){
+      mainEl.dom.removeEventListener("topology:element:click", this.onElementClick);
+      mainEl.dom.removeEventListener("topology:link:click", this.onLinkClick);
+      mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
+    };
     console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
-    this.topoMap.loadData(nodes, links);
   },
 
+  onElementClick: function(event){
+    const attrs = event.detail.attrs;
+    console.log("Element attrs", attrs);
+  },
+
+  onLinkClick: function(event){
+    const attrs = event.detail.attrs;
+    console.log("Link attrs", attrs);
+  },
+
+  zoomControlSetCustomField: function(value){
+    const zoomControl = this.panel.up("[appId=inv.map]").down("#zoomControl"),
+      vm = zoomControl.getViewModel(),
+      scale = Math.round(value * 100);
+    vm.set("zoom", scale);
+  },
+
+  onWheel: function(event){
+    this.zoomControlSetCustomField(event.detail.scale);
+  },
+  
   initFilters: function(){
     console.warn("MapRendererPlaceholder.initFilters");
   },
@@ -68,12 +98,15 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     switch(zoom){
       case this.FIT_PAGE:
         this.topoMap.fitToPage();
+        this.zoomControlSetCustomField(this.topoMap.getScale());
         return;
       case this.FIT_HEIGHT:
         this.topoMap.fitToHeight();
+        this.zoomControlSetCustomField(this.topoMap.getScale());
         return;
       case this.FIT_WIDTH:
         this.topoMap.fitToWidth();
+        this.zoomControlSetCustomField(this.topoMap.getScale());
         return;
     }
        
