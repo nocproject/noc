@@ -23,17 +23,6 @@ Ext.define("NOC.inv.map.Application", {
     "Ext.ux.form.SearchField",
   ],
   rightWidth: 250,
-  zoomLevels: [
-    [0.25, "25%"],
-    [0.5, "50%"],
-    [0.75, "75%"],
-    [1.0, "100%"],
-    [1.25, "125%"],
-    [1.5, "150%"],
-    [2.0, "200%"],
-    [3.0, "300%"],
-    [4.0, "400%"],
-  ],
   initComponent: function(){
     var me = this;
 
@@ -91,18 +80,6 @@ Ext.define("NOC.inv.map.Application", {
       listeners: {
         scope: me,
         select: me.onSelectSegment,
-      },
-    });
-
-    me.zoomCombo = Ext.create("Ext.form.ComboBox", {
-      store: me.zoomLevels,
-      width: 97,
-      value: 1.0,
-      valueField: "zoom",
-      displayField: "label",
-      listeners: {
-        scope: me,
-        select: me.onZoom,
       },
     });
 
@@ -446,8 +423,6 @@ Ext.define("NOC.inv.map.Application", {
     this.inspectSegment();
     this.viewMapButton.setPressed(true);
     this.viewStpButton.setPressed(false);
-    // this.zoomCombo.setValue(1.0);
-    // this.mapPanel.setZoom(1.0);
     // this.mapPanel.paper.clearGrid();
   },
 
@@ -477,10 +452,6 @@ Ext.define("NOC.inv.map.Application", {
       this.generator = record.get("generator");
       this.loadSegment(record.get("id"));
     }
-  },
-
-  onZoom: function(combo, record){
-    this.mapPanel.setZoom(record.get("field1"));
   },
 
   inspectSegment: function(){
