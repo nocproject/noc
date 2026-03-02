@@ -85,7 +85,7 @@ class Command(BaseCommand):
             "--before-days", type=int, help="Revision or Date", required=True
         )
         forget_parser.add_argument(
-            "--approve", action="store_true", default=False, help="Do not modify data"
+            "--approve", action="store_true", default=False, help="Approve changes"
         )
         forget_parser.add_argument("--include-labels", help="Labels for additional filter")
         forget_parser.add_argument("--exclude-labels", help="Labels for exclude additional filter")
