@@ -1,0 +1,12 @@
+{
+    "workflow__name": "ManagedObject Default",
+    "from_state__uuid": "1908c695-6829-4c34-9732-3436516e85c1",
+    "to_state__uuid": "929cf1ec-d3ac-433c-90e8-dfb129cc7a12",
+    "uuid": "987216ec-1b7d-4880-8c68-a726db6ac814",
+    "is_active": true,
+    "$collection": "wf.transitions",
+    "event": "managed",
+    "label": "Managed",
+    "description": "Restore object from removed",
+    "enable_manual": true
+}
