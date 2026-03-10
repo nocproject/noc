@@ -13,7 +13,7 @@
     "vars": [
         {
             "name": "to_state",
-            "condition": "eq",
+            "condition": "ne",
             "required": true,
             "value": "ESTABLISHED"
         }
