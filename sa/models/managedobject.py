@@ -2582,6 +2582,7 @@ class ManagedObject(NOCModel):
             "administrative_domain": {
                 "id": str(self.profile.id),
                 "name": self.administrative_domain.name,
+                "description": self.administrative_domain.description,
             },
             "labels": Label.build_expose_labels(self.labels, "expose_datastream"),
             "profile": {"id": str(self.profile.id), "name": self.profile.name},

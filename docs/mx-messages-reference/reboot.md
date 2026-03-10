@@ -42,6 +42,7 @@ Message contains JSON with following fields:
 | {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                                 |
 | {{ tab2 }} id                   | String               | Administrative Domain's ID                                                    |
 | {{ tab2 }} name                 | String               | Administrative Domain's name                                                  |
+| {{ tab2 }} description          | String               | Administrative Domain's Description                                           |
 | {{ tab }} segment               | Object {{ complex }} | Network Segment details                                                       |
 | {{ tab2 }} id                   | String               | Network Segment's ID                                                          |
 | {{ tab2 }} name                 | String               | Network Segment's name                                                        |

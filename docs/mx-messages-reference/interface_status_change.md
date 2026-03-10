@@ -32,6 +32,7 @@ Message contains JSON object, containing objects of following structure
 | {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details |
 | {{ tab2 }} id                   | String               | Administrative Domain's ID    |
 | {{ tab2 }} name                 | String               | Administrative Domain's name  |
+| {{ tab2 }} description          | String               | Administrative Domain's description |
 | {{ tab }} profile               | Object {{ complex }} | SA Profile details            |
 | {{ tab2 }} id                   | String               | SA Profile's ID               |
 | {{ tab2 }} name                 | String               | SA Profile's name             |

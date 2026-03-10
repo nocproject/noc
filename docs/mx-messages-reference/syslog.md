@@ -36,6 +36,7 @@ Message contains JSON object, containing objects of following structure
 | {{ tab }} administrative_domain | Object {{ complex }} | Administrative Domain details                                                                       |
 | {{ tab2 }} id                   | String               | Administrative Domain's ID                                                                          |
 | {{ tab2 }} name                 | String               | Administrative Domain's name                                                                        |
+| {{ tab2 }} description          | String               | Administrative Domain's description                                                                 |
 | {{ tab2 }} remote_id            | String               | Managed Object Administrative Domain's ID in Remote System (if any)                                 |
 | {{ tab2 }} remote_system        | Object {{ complex }} | Source [remote system](../concepts/remote-system/index.md) for Managed Object Administrative Domain |
 | {{ tab4 }} id                   | String               | External system's id                                                                                |
