@@ -15,7 +15,8 @@ import asyncio
 from typing import Optional
 
 # Third-party modules
-import consul.base
+from consul.exceptions import NotFound
+from consul.check import Check
 
 # NOC modules
 from noc.config import config
@@ -202,7 +203,7 @@ class ConsulDCS(DCSBase):
         self.svc_check_url = f"http://{address}:{port}/health/?service={svc_id}"
         self.health_check_service_id = svc_id
         if config.features.consul_healthchecks:
-            checks = consul.Check.http(
+            checks = Check.http(
                 self.svc_check_url,
                 f"{check_interval or self.check_interval}s",
                 f"{check_timeout or self.check_timeout}s",
@@ -269,7 +270,7 @@ class ConsulDCS(DCSBase):
                         self.logger.debug("Session renewed")
                         touched = True
                         break
-                    except consul.base.NotFound as e:
+                    except NotFound as e:
                         self.logger.warning("Session lost by: '%s'. Forcing quit", e)
                         break
                     except ConsulRepeatableErrors as e:

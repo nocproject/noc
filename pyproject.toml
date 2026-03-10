@@ -34,11 +34,119 @@ content-type = "text/markdown"
 file = "README.md"
 
 [project.urls]
+<<<<<<< HEAD
 "Bug Tracker" = "https://github.com/gufolabs/gufo_snmp/issues"
 Changelog = "https://github.com/gufolabs/gufo_snmp/blob/master/CHANGELOG.md"
 Documentation = "https://docs.gufolabs.com/gufo_snmp/"
 Homepage = "https://github.com/gufolabs/gufo_snmp/"
 "Source Code" = "https://github.com/gufolabs/gufo_snmp/"
+=======
+"Bug Tracker" = "https://code.getnoc.com/noc/noc/-/issues"
+Changelog = "https://getnoc.com/release-policy/"
+Documentation = "https://getnoc.com/"
+Homepage = "https://getnoc.com/"
+"Source Code" = "https://code.getnoc.com/noc/noc/-/tree/master"
+
+[project.optional-dependencies]
+activator = ["ssh2-python==1.1.2.post1"]
+bh = [
+  "gufo-ping==0.5.0",
+  "gufo-traceroute==0.2.0",
+]
+cache-memcached = ["pylibmc==1.6.3"]
+cache-redis = ["hiredis==3.1.0", "redis==4.6.0"]
+classifier = ["bitarray==3.7.1"]
+dev = [
+  "Babel==2.13.1",
+  "ipython==9.5.0",
+  "pojson==0.7",
+]
+docs = [
+  "mkdocs-material==9.7.0",
+  "mkdocstrings[python]==0.30.1",
+  "mkdocs-macros-plugin==1.0.5",
+  "mkdocs-static-i18n==1.3.0",
+  "mkdocs-gen-files==0.5.0",
+  "mkdocs-literate-nav==0.6.2",
+  "minify_html==0.18.1",
+  "cachetools==5.5.2", # For {{ config_param() }}
+]
+lint = [
+  "ruff==0.14.1",
+  "mypy==1.10",
+  "black==24.8.0",
+  "mongo-types==0.15.1",
+  "types-orjson==3.6.2",
+  "types-cachetools==5.5.0.20240820",
+]
+login-ldap = ["ldap3==2.10.2.rc2"]
+login-pam = ["python-pam==1.8.4"]
+login-radius = ["pyrad==2.4"]
+node = [
+  "aiokafka[lz4,snappy,zstd]==0.12.0",
+  "Django==4.2.26",
+  "FastAPI==0.115.11",
+  "Jinja2==3.1.6",
+  "PyYAML==6.0.2",
+  "Pygments==2.19.1",
+  "XlsxWriter==3.2.2",
+  "atomicl==0.1.1",
+  "blinker==1.9.0",
+  "bsdiff4==1.2.6",
+  "cachetools==5.5.2",
+  "crontab==1.0.1",
+  "siphash24==1.8",
+  "demjson3==3.0.6",
+  "dnspython==2.7.0",
+  "fsspec==2025.12.0",
+  "geojson==3.2.0",
+  "geopy==2.4.1",
+  "gufo-http==0.7.0",
+  "manhole==1.8.1",
+  "markerlib==0.6.0",
+  "mongoengine==0.29.0",
+  "motor==3.5.1",
+  "networkx==3.5",
+  "numpy==2.3.2",
+  "orjson==3.10.15",
+  "progressbar2==4.5.0",
+  "psycopg2-binary==2.9.10",
+  "polars-lts-cpu==1.24.0",
+  "pydantic==2.11.10",
+  "pymongo==4.8.0",
+  "pyproj==3.7.1",
+  "py-consul==1.7.1",
+  "python-creole==1.4.10",
+  "python-dateutil==2.9.0",
+  "python-jose[cryptography]==3.4.0",
+  "python-multipart==0.0.20",
+  "pytz==2025.1",
+  "setproctitle==1.3.5",
+  "uvicorn==0.34.3",
+  'yappi==1.7.3',
+  "gufo-liftbridge==0.2.0",
+  "gufo-snmp==0.8.3",
+  "gufo_noc_speedup==0.1.0",
+  "urllib3<2", # To be deleted after drop OS with openssl<1.1.1 (centos7,rhel7,deb9)
+]
+ping = ["gufo-ping==0.5.0"]
+prod-tools = [
+  "sentry-sdk==0.20.3",
+  "supervisor-wildcards==0.1.3",
+]
+sender-kafka = ["aiokafka[lz4,snappy,zstd]==0.12.0"]
+supervisor = [
+  "supervisor==4.2.5",
+  "supervisor-serialrestart==0.1.1",
+]
+test = [
+  "pytest==8.4.2",
+  "pytest-cov==7.0.0",
+]
+testing = ["dbf==0.99.3"]
+vcenter = ["pyvmomi==8.0.3.0.1"]
+zabbix = ["zabbix-utils==2.0.2"]
+>>>>>>> 44c65e68c5 (Replace not maintained python-consul client to py-consul.)
 
 [tool.setuptools]
 include-package-data = true
@@ -57,7 +165,7 @@ version = {file = "VERSION"}
 
 [tool.black]
 line-length = 100 # Must be same as tool.ruff.line-length
-target-version = ['py310'] 
+target-version = ['py310']
 
 [tool.coverage.run]
 omit = ['*tests*']
@@ -70,10 +178,55 @@ directory = "build/coverage"
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
-exclude = [".git", "build", "dist", "var", "share", "collections", "node_modules", "ansible"] 
+exclude = [".git", "build", "dist", "var", "share", "collections", "node_modules", "ansible"]
 line-length = 100 # Must be same as tool.black.line-length
+<<<<<<< HEAD
 # Assume Python 3.10
 target-version = "py310"
+=======
+# Assume Python 3.12
+target-version = "py312"
+# Always autofix, but never try to fix `F401` (unused imports).
+fix = false #fix = true
+
+[tool.ruff.lint]
+ignore = [
+  "A001", # A001 Variable `{name}` is shadowing a python builtin
+  "A002", # A002 Argument `{name}` is shadowing a python builtin
+  "A003", # Class attribute `{name}` is shadowing a python builtin"
+  "A004", # Import `sum` is shadowing a Python builtin
+  "D203",
+  "D212",
+  "D107",
+  "PLR0912", # Too many branches
+  "PLR0911", # Too many return statements
+  "PLR0913", # Too many arguments to function call
+  "PLR0915", # Too many statements
+  "PLR2004", # Magic value used in comparison, consider replacing {v} with a constant variable
+  "PLR1704", # @todo: Manual work! Redefining argument with the local name `name`
+  "RET503", # @todo: Manual work! Missing explicit `return` at the end of function able to return non-`None` value
+  "SIM102", # @todo: Investigate necessity of adding parenthesis! Use a single `if` statement instead of nested `if` statements
+  "SIM105", # @todo: After porting of the reports! Use `contextlib.suppress(KeyError)` instead of `try`-`except`-`pass`
+  "SIM108", # @todo: Controversal! Use ternary operator `mib_name = name[0].split("::", 1)[0] if isinstance(name, tuple) else name.split("::", 1)[0]` instead of `if`-`else`-block
+  "SIM112", # @todo: Not applicabile! Use capitalized environment variable `FTP_PROXY` instead of `ftp_proxy`
+  "SIM113", # @todo: Manual work! Use `enumerate()` for index variable `n` in `for` loop
+  "SIM114", # @todo: Controversal! Combine `if` branches using logical `or` operator
+  "SIM115", # @todo: We have a functions which are return handlers! Use a context manager for opening files
+  "SIM118", # @todo: Clashes with .keys() method! Use `key in dict` instead of `key in dict.keys()`
+  "PIE804", # @todo: After porting of reports! Unnecessary `dict` kwargs
+  "PIE810", # @todo: Enable after porting of reports! Call `startswith` once with a `tuple`
+  "PLC0206", # @todo: Manual work! Extracting value from dictionary without calling `.items()`
+  "PLC0415", # @todo: Not possible! `import` should be at the top-level of a file
+  "RUF001", # @todo: Occured in reports! String contains ambiguous `Т` (CYRILLIC CAPITAL LETTER TE). Did you mean `T` (LATIN CAPITAL LETTER T)?
+  "RUF006", # Store a reference to the return value of `asyncio.create_task`
+  "RUF009", # @todo: Manual work! Do not perform function call `Layout` in dataclass defaults
+  "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+  "RUF013", # PEP 484 prohibits implicit `Optional`
+  "RUF051", # @todo: ruff#20700 reported! Use `pop` instead of `key in dict` followed by `del dict[key]`
+  "RUF059", # Unpacked variable `epsilon` is never used
+  "RUF100", # Unused blanket `noqa` directive
+]
+>>>>>>> 44c65e68c5 (Replace not maintained python-consul client to py-consul.)
 # Enable
 lint.select = [
   # "E", # Pycodestyle Error
@@ -88,7 +241,7 @@ lint.select = [
   # "BLE", # flake8-blind-except
   # "B", # flake8-bugbear
   "A", # flake8-builtins
-  "C4", # flake8-comprehensions 
+  "C4", # flake8-comprehensions
   # "EM", # flake8-errmsg
   "ISC", # flake8-implicit-str-concat
   # "ICN", # flake8-import-conventions

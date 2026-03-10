@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Consul client
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ from typing import Optional
 
 # Third-party modules
 import consul.base
+from consul.exceptions import Timeout
 
 # NOC modules
 from noc.config import config
@@ -17,7 +18,7 @@ from noc.core.http.async_client import HttpClient
 from noc.core.comp import DEFAULT_ENCODING
 
 ConsulRepeatableCodes = {500, 503, 598, 599}
-ConsulRepeatableErrors = consul.base.Timeout
+ConsulRepeatableErrors = Timeout
 
 
 class ConsulHTTPClient(consul.base.HTTPClient):
@@ -38,26 +39,32 @@ class ConsulHTTPClient(consul.base.HTTPClient):
             )
 
             if code in ConsulRepeatableCodes:
-                raise consul.base.Timeout
+                raise Timeout
             return callback(consul.base.Response(code=code, headers=headers, body=body))
 
-    def get(self, callback, path, params=None):
+    def get(self, callback, path, params=None, headers: dict[str, str] | None = None):
         url = self.uri(path, params)
         return self._request(callback, url, method="GET")
 
-    def put(self, callback, path, params=None, data=""):
+    def put(
+        self, callback, path, params=None, data: str = "", headers: dict[str, str] | None = None
+    ):
         url = self.uri(path, params)
         return self._request(callback, url, method="PUT", body="" if data is None else data)
 
-    def delete(self, callback, path, params=None):
+    def delete(self, callback, path, params=None, headers: dict[str, str] | None = None):
         url = self.uri(path, params)
         return self._request(callback, url, method="DELETE")
 
-    def post(self, callback, path, params=None, data=""):
+    def post(
+        self, callback, path, params=None, data: str = "", headers: dict[str, str] | None = None
+    ):
         url = self.uri(path, params)
         return self._request(callback, url, method="POST", body=data)
 
+    def close(self): ...
+
 
 class ConsulClient(consul.base.Consul):
-    def connect(self, host, port, scheme, verify=True, cert=None):
+    def http_connect(self, host: str, port: int, scheme, verify: bool | str = True, cert=None):
         return ConsulHTTPClient(host, port, scheme, verify=verify)
