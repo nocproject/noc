@@ -461,7 +461,7 @@ class Script(BaseScript):
         return r
 
     def to_keep_cli_session(self):
-        if self.is_s77xx or self.is_s127xx:
+        if self.is_s77xx or self.is_s127xx or self.is_quidway_S9xxx or self.is_quidway_S5xxx:
             return False
         return self.keep_cli_session
 
