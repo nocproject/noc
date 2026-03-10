@@ -68,6 +68,12 @@ class ServiceApplication(ExtDocApplication):
         "effective_client_groups",
     ]
 
+    @staticmethod
+    def get_resource_label(o) -> str:
+        if not o:
+            return "Unknown"
+        return f"{o} ({o.description})"
+
     def field_label(self, o):
         return o.label
 
@@ -211,7 +217,8 @@ class ServiceApplication(ExtDocApplication):
             r["resources"] += [
                 {
                     "resource": rr,
-                    "resource__label": str(x),
+                    # "resource__label": str(x),
+                    "resource__label": self.get_resource_label(x),
                     "managed_object": x.managed_object.id,
                     "managed_object__label": str(x.managed_object.name),
                 }
@@ -224,6 +231,7 @@ class ServiceApplication(ExtDocApplication):
         q = self.parse_request_query(request)
         if "managed_object" not in q:
             return []
+        query: str = q.get("__query")
         if r_type == "interface":
             r_model = Interface.objects.filter(
                 managed_object=int(q["managed_object"]), type="physical"
@@ -234,10 +242,13 @@ class ServiceApplication(ExtDocApplication):
             return self.response_not_found(f"{r_type} not found")
         r = []
         for res in r_model:
+            label = self.get_resource_label(res)
+            if query and query.strip().lower() not in label.lower():
+                continue
             r.append(
                 {
                     "resource": res.as_resource(),
-                    "resource__label": str(res),
+                    "resource__label": label,
                 }
             )
         return r
