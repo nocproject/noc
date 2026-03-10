@@ -33,7 +33,6 @@ class Script(BaseScript):
     name = "Cisco.IOS.get_interfaces"
     interface = IGetInterfaces
     MAX_REPETITIONS = 15
-
     rx_sh_int = re.compile(
         r"^(?P<interface>.+?)\s+is(?:\s+administratively)?\s+(?P<admin_status>up|down),\s+line\s+"
         r"protocol\s+is\s+(?P<oper_status>up|down)\s?(?:\s+NOTE.+\n.+)?"
@@ -79,13 +78,15 @@ class Script(BaseScript):
     rx_ctp = re.compile(r"Keepalive set \(\d+ sec\)")
     rx_cdp = re.compile(r"^(?P<iface>\S+) is ")
     rx_lldp = re.compile(
-        r"^(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?):.+Rx: (?P<rx_state>\S+)",
+        r"^(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe|Hu)[^:]+?):.+Rx: (?P<rx_state>\S+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_gvtp = re.compile(r"VTP Operating Mode\s+: Off", re.MULTILINE)
-    rx_vtp = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?)\s+enabled", re.MULTILINE)
+    rx_vtp = re.compile(
+        r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe|Hu)[^:]+?)\s+enabled", re.MULTILINE
+    )
     rx_vtp1 = re.compile(
-        r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe)[^:]+?)\s+",
+        r"^\s*Local updater ID is \S+ on interface (?P<iface>(?:Fa|Gi|Te|Fo|Fi|Tw|Twe|Hu)[^:]+?)\s+",
         re.MULTILINE,
     )
     rx_oam = re.compile(r"^\s*(?P<iface>(?:Fa|Gi|Te|Fo)\S+)\s+\S+\s+\S+\s+\S+\s+\S+\s*$")
@@ -331,7 +332,7 @@ class Script(BaseScript):
             },
         ):
             # print(ifindex, enc_type, vlans_base, vlans_2k, vlans_3k, vlans_4k)
-            if int(enc_type) != 4:
+            if int(enc_type) != 4 or not vlans_base:
                 # not dot1Q
                 continue
             vlans_bank = b"".join([vlans_base, vlans_2k or b"", vlans_3k or b"", vlans_4k or b""])

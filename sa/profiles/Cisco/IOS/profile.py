@@ -133,9 +133,9 @@ class Profile(BaseProfile):
         if il.startswith("srp"):
             return "SRP %s" % interface[3:].strip()
         if il.startswith("twe"):
-            if il.startswith("twe "):
-                return il.capitalize()
-            return "Twe %s" % interface[14:].strip()
+            # TwentyFiveGigE, 3-chars suffix
+            name = self.convert_interface_name_cisco(interface)
+            return "Twe %s" % name[2:].strip()
         if il.startswith("cable"):
             match = self.rx_cable_if.search(interface)
             if match:
@@ -235,6 +235,7 @@ class Profile(BaseProfile):
         "To": "physical",  # TokenRing
         "Tu": "tunnel",  # Tunnel
         "Tw": "physical",  # TwoGigabitEthernet or TwentyFiveGigE
+        "Hu": "physical",  # HundredGigabitEthernet
         "Vi": "template",  # Virtual-Template
         "VL": "SVI",  # VLAN, found on C3500XL
         "Vl": "SVI",  # Vlan

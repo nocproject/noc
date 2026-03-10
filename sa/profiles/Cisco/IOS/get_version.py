@@ -1,15 +1,17 @@
 # ---------------------------------------------------------------------
 # Cisco.IOS.get_version
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+from typing import Tuple, Optional
 
 # NOC modules
 from noc.core.script.base import BaseScript
+from noc.core.snmp.error import SNMPError
 from noc.sa.interfaces.igetversion import IGetVersion
 from noc.core.mib import mib
 
@@ -21,13 +23,13 @@ class Script(BaseScript):
     always_prefer = "S"
 
     rx_version = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino)\])?,.*?|IOS \(tm\)) (IOS[\-\s]XE "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino|Bengaluru|Dublin)\])?,.*?|IOS \(tm\)|vios_l2) (IOS[\-\s]XE "
         r"Software,\s)?(?P<platform>.+?) Software \((?P<image>[^)]+)\), (Experimental )?"
         r"Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
     rx_snmp_ver = re.compile(
-        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
+        r"^(?:Cisco IOS Software( \[(?:Gibraltar|Fuji|Everest|Denali|Amsterdam|Cupertino|Bengaluru|Dublin)\])?,.*?|IOS \(tm\)) (?P<platform>.+?) "
         r"Software \((?P<image>[^)]+)\), (Experimental )?Version (?P<version>[^\s,]+)",
         re.MULTILINE | re.DOTALL,
     )
@@ -73,6 +75,13 @@ class Script(BaseScript):
 
         return platform
 
+    def snmp_get_or_none(self, oid):
+        try:
+            p = self.snmp.get(oid)
+        except SNMPError:
+            return None
+        return p
+
     def execute_snmp(self, **kwargs):
         v = self.snmp.get(mib["SNMPv2-MIB::sysDescr", 0], cached=True)
         if v:
@@ -81,38 +90,38 @@ class Script(BaseScript):
             platform = match.group("platform")
             # inventory
             # p = self.snmp.get("1.3.6.1.2.1.47.1.1.1.1.2.1001")
-            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1001])
+            p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalDescr", 1001])
             if p and (p.startswith("WS-C") or p.startswith("ME-3")):
                 platform = p
-                s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1001])
+                p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalSerialNum", 1001])
             else:
                 # Found in WS-C3650-48TD
-                p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1000])
+                p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalDescr", 1000])
                 if p and p.startswith("WS-C"):
                     platform = p
                     s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
                 else:
                     # CISCO-ENTITY-MIB::entPhysicalModelName
-                    p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1])
+                    p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalModelName", 1])
                     if not p:
                         # Found in WS-C650X-E
-                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 2])
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2])
+                        p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalModelName", 2])
+                        s = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalSerialNum", 2])
                     # WS-C4500X-32 return '  ', WS-C4900M return 'MIDPLANE'
                     if p is None or p.strip() in ["", "MIDPLANE"]:
                         # Found in WS-C4500X-32 and WS-C4900M
-                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalModelName", 1000])
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
+                        p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalModelName", 1000])
+                        s = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalSerialNum", 1000])
                         if p is None:
                             # Found on C2600 series
-                            p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 1])
-                            s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
+                            p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalDescr", 1])
+                            s = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
                     elif not s:
                         s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 1])
                     if p in ["Catalyst 37xx Switch Stack", "Catalyst C29xx Switch Stack"]:
                         # Found on 37xx and C29xx
-                        p = self.snmp.get(mib["ENTITY-MIB::entPhysicalDescr", 2001])
-                        s = self.snmp.get(mib["ENTITY-MIB::entPhysicalSerialNum", 2001])
+                        p = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalDescr", 2001])
+                        s = self.snmp_get_or_none(mib["ENTITY-MIB::entPhysicalSerialNum", 2001])
                     if p:
                         p = p.strip()  # Cisco 3845 return 'CISCO3845         '
                         if p.startswith("CISCO"):
@@ -141,44 +150,48 @@ class Script(BaseScript):
                     r["attributes"]["Serial Number"] = s
                 return r
 
+    def execute_inventory_raw(self) -> Tuple[str, Optional[str]]:
+        v = self.cli("show inventory raw")
+        i = 0
+        serial, platform = None, None
+        for match in self.rx_item.finditer(v):
+            name = match.group("name")
+            pid = match.group("pid")
+            if pid is None:
+                pid = ""
+            descr = match.group("descr")
+            if name in self.IGNORED_NAMES:
+                continue
+            if (
+                (i == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
+                and not pid.startswith("WS-CAC-")
+                and not pid.endswith("-MB")
+                and "Clock" not in descr
+                and "VTT FRU" not in descr
+                and "C2801 Motherboard " not in descr
+                and "xx Switch Stack" not in descr
+            ):
+                if pid in ("", "N/A"):
+                    if self.rx_7100.search(descr):
+                        pid = "CISCO7100"
+                if pid == "MIDPLANE" and name == "Switch System":
+                    match1 = self.rx_c4900m.search(descr)
+                    if match1:
+                        pid = match1.group("part_no")
+                if pid.startswith("CISCO"):
+                    pid = pid[5:]
+                platform = pid
+                serial = match.group("serial")
+                break
+            i = 1
+        if serial in self.IGNORED_SERIAL:
+            serial = None
+        return platform, serial
+
     def execute_cli(self, **kwargs):
         c = ""
         try:
-            v = self.cli("show inventory raw")
-            i = 0
-            serial = None
-            for match in self.rx_item.finditer(v):
-                name = match.group("name")
-                pid = match.group("pid")
-                if pid is None:
-                    pid = ""
-                descr = match.group("descr")
-                if name in self.IGNORED_NAMES:
-                    continue
-                if (
-                    (i == 0 or pid.startswith("CISCO") or pid.startswith("WS-C"))
-                    and not pid.startswith("WS-CAC-")
-                    and not pid.endswith("-MB")
-                    and "Clock" not in descr
-                    and "VTT FRU" not in descr
-                    and "C2801 Motherboard " not in descr
-                    and "xx Switch Stack" not in descr
-                ):
-                    if pid in ("", "N/A"):
-                        if self.rx_7100.search(descr):
-                            pid = "CISCO7100"
-                    if pid == "MIDPLANE" and name == "Switch System":
-                        match1 = self.rx_c4900m.search(descr)
-                        if match1:
-                            pid = match1.group("part_no")
-                    if pid.startswith("CISCO"):
-                        pid = pid[5:]
-                    platform = pid
-                    serial = match.group("serial")
-                    break
-                i = 1
-            if serial in self.IGNORED_SERIAL:
-                serial = None
+            platform, serial = self.execute_inventory_raw()
         except self.CLISyntaxError:
             c = self.cli("show version", cached=True)
             match = self.rx_ver.search(c)
