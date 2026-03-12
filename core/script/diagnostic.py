@@ -13,8 +13,8 @@ from typing import List, Iterable, Optional, Tuple, Dict, Any
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
 from noc.core.checkers.base import Check, CheckResult
 from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
+from noc.core.profile.loader import GENERIC_PROFILE
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
-from noc.sa.models.profile import GENERIC_PROFILE
 
 
 class SNMPSuggestsDiagnostic:
@@ -96,7 +96,11 @@ class CLISuggestsDiagnostic:
         if not profile or profile == GENERIC_PROFILE:
             self.logger.info("Generic profile not checked for CLI")
             return
-        for c in self.config.checks:
+        raise_privilege, port = False, None
+        for c in self.config.checks or []:
+            if c.credential:
+                raise_privilege |= c.credential.raise_privilege
+            port = c.port
             r.append(
                 Check(
                     name=c.name,
@@ -106,22 +110,31 @@ class CLISuggestsDiagnostic:
                     credential=c.credential,
                 )
             )
-            if not suggests_cli:
+        if not suggests_cli:
+            yield r
+        for s in CredentialCheckRule.get_suggest_rules():
+            if not s.is_match(labels):
                 continue
-            for s in CredentialCheckRule.get_suggest_rules():
-                if not s.is_match(labels):
+            for cr in s.credentials:
+                if not isinstance(cr, CLICredential):
                     continue
-                for cr in s.credentials:
-                    if isinstance(cr, CLICredential):
-                        r.append(
-                            Check(
-                                name=c.name,
-                                address=c.address,
-                                port=c.port,
-                                args={"arg0": profile},
-                                credential=cr,
-                            )
+                for p in cr.enable_protocols:
+                    p = Protocol(p)
+                    r.append(
+                        Check(
+                            name=p.config.check,
+                            address=address,
+                            port=port,
+                            args={"arg0": profile},
+                            credential=CLICredential(
+                                username=cr.username,
+                                password=cr.password,
+                                super_password=cr.super_password,
+                                raise_privilege=raise_privilege,
+                                enable_protocols=(p,),
+                            ),
                         )
+                    )
         yield r
 
     def get_result(
