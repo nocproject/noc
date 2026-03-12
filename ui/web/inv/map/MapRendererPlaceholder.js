@@ -22,7 +22,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   },
 
   initMap: function(width, height){
-    const {nodes, links} = this.generateTopology(20, 20);
+    // const {nodes, links} = this.generateTopology(20, 20);
     let mainEl = this.panel.down("#topoMap").el,
       miniEl = this.panel.up().down("#miniMap").body;
     this.topoMap = new map.Topology({
@@ -39,23 +39,22 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       enableViewportCulling: true,
       debugLogs: false,
     });
-    this.topoMap.loadData(nodes, links);
-    mainEl.dom.addEventListener("topology:element:click", this.onElementClick.bind(this));
-    mainEl.dom.addEventListener("topology:link:click", this.onLinkClick.bind(this));
+    // this.topoMap.loadData(nodes, links);
+    mainEl.dom.addEventListener("topology:cell:pointerdown", this.onCellSelected.bind(this));
     mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
 
     this.removeHandlers = function(){
-      mainEl.dom.removeEventListener("topology:element:click", this.onElementClick);
-      mainEl.dom.removeEventListener("topology:link:click", this.onLinkClick);
+      mainEl.dom.removeEventListener("topology:cell:pointerdown", this.onCellSelected);
       mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
     };
     console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
   },
 
-  onElementClick: function(event){
-    const attrs = event.detail.attrs;
-    console.log("Element attrs", attrs);
+  onCellSelected: function(event){
+    const data = event.detail.cell;
+    console.log("Element attrs", data);
+    this.panel.onCellSelected(data);
   },
 
   onLinkClick: function(event){
@@ -80,6 +79,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   renderMap: function(data){
     console.warn("MapRendererPlaceholder.renderMap", data);
+    this.topoMap.fromMapData(data)
   },
 
   setLinkStyle: function(link, status){
