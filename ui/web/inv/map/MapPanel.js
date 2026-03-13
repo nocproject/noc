@@ -549,16 +549,12 @@ Ext.define("NOC.inv.map.MapPanel", {
   // data is dict of
   // metric -> {ts: .., value: }
 
-  onCellHighlight: function(view, el){
-    var me = this;
-    V(el).attr("filter", "url(#highlight)");
-    me.fireEvent("onSelectCell", view.model.get("data").id);
+  onCellHighlight: function(data){
+    this.fireEvent("onSelectCell", data.id);
   },
 
-  onCellUnhighlight: function(view, el){
-    var me = this;
-    V(el).attr("filter", "");
-    me.fireEvent("onUnselectCell", null);
+  onCellUnhighlight: function(){
+    this.fireEvent("onUnselectCell", null);
   },
 
   resetLayout: function(forceSpring){

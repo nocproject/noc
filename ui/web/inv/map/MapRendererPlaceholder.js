@@ -42,11 +42,15 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     // this.topoMap.loadData(nodes, links);
     mainEl.dom.addEventListener("topology:cell:pointerdown", this.onCellSelected.bind(this));
     mainEl.dom.addEventListener("topology:blank:pointerdown", this.onBlankSelected.bind(this));
+    mainEl.dom.addEventListener("topology:cell:highlight", this.onCellHighlight.bind(this));
+    mainEl.dom.addEventListener("topology:cell:unhighlight", this.onCellUnhighlight.bind(this));
     mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
 
     this.removeHandlers = function(){
       mainEl.dom.removeEventListener("topology:cell:pointerdown", this.onCellSelected);
       mainEl.dom.removeEventListener("topology:blank:pointerdown", this.onBlankSelected);
+      mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellHighlight);
+      mainEl.dom.removeEventListener("topology:cell:unhighlight", this.onCellUnhighlight);
       mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
     };
     console.log(width, height);
@@ -67,6 +71,17 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   onLinkClick: function(event){
     const attrs = event.detail.attrs;
     console.log("Link attrs", attrs);
+  },
+
+  onCellHighlight: function(event){
+    const data = event.detail.data;
+    console.log("Highlight element", data);
+    this.panel.onCellHighlight(data);
+  },
+  
+  onCellUnhighlight: function(){
+    console.log("Unhighlight element");
+    this.panel.onCellUnhighlight();
   },
 
   zoomControlSetCustomField: function(value){

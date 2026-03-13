@@ -17,7 +17,6 @@ Ext.define("NOC.inv.map.Application", {
     "NOC.inv.map.inspectors.CloudInspector",
     "NOC.inv.map.inspectors.CPEInspector",
     "NOC.inv.map.Legend",
-    "NOC.inv.map.MiniMap",
     "NOC.inv.map.Basket",
     "NOC.inv.inv.plugins.Zoom",
     "Ext.ux.form.SearchField",
@@ -205,16 +204,6 @@ Ext.define("NOC.inv.map.Application", {
       hideCollapseTool: true,
       layout: "fit",
     });
-
-    // me.miniMapPanel = Ext.create("NOC.inv.map.MiniMap", {
-    //   region: "south",
-    //   itemId: "miniMap",
-    //   width: this.rightWidth,
-    //   collapsible: true,
-    //   collapseMode: undefined,
-    //   header: false,
-    //   hideCollapseTool: true,
-    // });
 
     me.basketPanel = Ext.create("NOC.inv.map.Basket", {
       collapsed: true,
