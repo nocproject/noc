@@ -49,7 +49,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.isDirty = false; // Graph is changed
     me.statusPollingTaskId = null;
     me.overlayPollingTaskId = null;
-    me.currentHighlight = null;
     me.overlayMode = me.LO_NONE;
     me.interfaceMetrics = [];
 
@@ -224,17 +223,10 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   unhighlight: function(){
-    var me = this;
-    if(me.currentHighlight){
-      me.currentHighlight.unhighlight();
-      me.currentHighlight = null;
-    }
-    me.nodeMenu.hide();
+    this.nodeMenu.hide();
   },
   //
-  onCellSelected: function(view){
-    var me = this,
-      data = view.model.get("data");
+  onCellSelected: function(data){
     this.unhighlight();
     if(Ext.isEmpty(data)){
       this.onBlankSelected();
@@ -242,37 +234,25 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
     switch(data.type){
       case "managedobject":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectManagedObject(data.id);
+        this.app.inspectManagedObject(data.id);
         break;
       case "link":
-        me.app.inspectLink(data.id);
+        this.app.inspectLink(data.id);
         break;
       case "cloud":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectCloud(data.id);
+        this.app.inspectCloud(data.id);
         break;
       case "objectgroup":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectGroup(data.node_id);
+        this.app.inspectObjectGroup(data.node_id);
         break;
       case "objectsegment":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectSegment(data.node_id);
+        this.app.inspectObjectSegment(data.node_id);
         break;
       case "cpe":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectCPE(data.node_id);
+        this.app.inspectCPE(data.node_id);
         break;
       case "other":
-        view.highlight();
-        me.currentHighlight = view;
-        me.app.inspectObjectPortal(data.portal);
+        this.app.inspectObjectPortal(data.portal);
         break;
     }
   },
