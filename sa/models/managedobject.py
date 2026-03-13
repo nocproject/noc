@@ -2782,9 +2782,9 @@ class ManagedObjectStatus(NOCModel):
     ):
         """
         Update statuses bulk
-        :param statuses:
-        :param update_jobs:
-        :return:
+        Args:
+            statuses: Statuses bulk
+            update_jobs: Suspend ManagedObject jobs
         """
         from django.db import connection as pg_connection
         from collections import defaultdict
@@ -2799,12 +2799,6 @@ class ManagedObjectStatus(NOCModel):
         cs = {}
         with pg_connection.cursor() as cursor:
             cursor.execute(
-                # """
-                # SELECT managed_object_id, status, last, mo.pool
-                # FROM sa_objectstatus
-                # LEFT JOIN sa_managedobject AS mo ON sa_objectstatus.managed_object_id = mo.id
-                # WHERE managed_object_id = ANY(%s::INT[])
-                # """,
                 """
                 SELECT id, os.status, os.last, mo.pool
                 FROM sa_managedobject AS mo
@@ -2823,7 +2817,14 @@ class ManagedObjectStatus(NOCModel):
                 logger.error("Unknown object id: %s", oid)
                 continue
             ts = (ts or now).replace(microsecond=0, tzinfo=None)
-            if cs[oid]["status"] is None or (cs[oid]["status"] != status and cs[oid]["last"] <= ts):
+            if cs[oid]["status"] is None or cs[oid]["status"] != status:
+                if not cs[oid]["last"]:
+                    # Unknown state, from migration?
+                    pass
+                elif cs[oid]["last"] > ts:
+                    # Oops, out-of-order update
+                    # Restore correct state
+                    continue
                 bulk[oid] = (oid, status, ts)  # Only last status
                 if update_jobs:
                     suspended_jobs[(cs[oid]["pool"], status)].append(oid)
@@ -2831,10 +2832,6 @@ class ManagedObjectStatus(NOCModel):
                 if cs[oid]["last"] and status:
                     outages.append((oid, cs[oid]["last"], ts))
                 cs[oid].update({"status": status, "last": ts})
-            elif cs[oid]["last"] > ts:
-                # Oops, out-of-order update
-                # Restore correct state
-                pass
         if not bulk:
             return
         # Save statuses to db
@@ -2844,7 +2841,7 @@ class ManagedObjectStatus(NOCModel):
                 """
                 INSERT INTO sa_objectstatus as os (managed_object_id, status, last) VALUES %s
                 ON CONFLICT (managed_object_id) DO UPDATE SET status = EXCLUDED.status, last = EXCLUDED.last
-                WHERE os.status != EXCLUDED.status and os.last < EXCLUDED.last
+                WHERE os.status != EXCLUDED.status and (os.last < EXCLUDED.last or os.last is Null)
                 """,
                 list(bulk.values()),
                 page_size=500,
