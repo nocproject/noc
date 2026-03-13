@@ -11,6 +11,7 @@ import operator
 import re
 from threading import Lock
 from typing import Optional, List, Set
+import logging
 
 # Third-party modules
 from django.db import connection as pg_connection
@@ -38,6 +39,8 @@ from noc.main.models.template import Template
 from noc.core.defer import call_later
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.main.models.notificationgroup import NotificationGroup
+
+logger = logging.getLogger(__name__)
 
 id_lock = Lock()
 
@@ -312,13 +315,17 @@ def update_affected_objects(
         SQL_ADD = """UPDATE sa_managedobject
         SET affected_maintenances = affected_maintenances || %s::jsonb
         WHERE id = ANY(%s::int[])"""
-        cursor.execute(
-            SQL_ADD,
-            [
-                orjson.dumps({str(maintenance_id): affected_data}).decode("utf-8"),
-                list(affected),
-            ],
-        )
+
+        if not data.is_completed:
+            cursor.execute(
+                SQL_ADD,
+                [
+                    orjson.dumps({str(maintenance_id): affected_data}).decode("utf-8"),
+                    list(affected),
+                ],
+            )
+        else:
+            logger.info("Maintenance is completed. Ignore scheduled task.")
     # Clear cache
     for mo_id in set(mai_objects).union(affected):
         ManagedObject._reset_caches(mo_id)
