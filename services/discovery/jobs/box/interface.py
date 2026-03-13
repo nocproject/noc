@@ -505,7 +505,7 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         """
         if iface.profile_locked:
             self.logger.info(
-                "[%s] Interface %s profile set by User. That block for classification",
+                "[%s] Interface %s profile set by User. That block for classification. Contacts to User with System Administrator rights",
                 iface.name,
                 iface.profile.name,
             )
