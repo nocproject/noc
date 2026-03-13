@@ -39,7 +39,7 @@ class Script(BaseScript):
 
     rx_neighbor = re.compile(
         r"^chassis id: (?P<chassis_id>\S+)\s*\n"
-        r"^port id: (?P<port_id>\S+)\s*\n"
+        r"^port id: (?P<port_id>.*)\s*\n"
         r"^port description:(?P<port_descr>.*)\n"
         r"^system name:(?P<system_name>.*)\n"
         r"^system description:(?P<system_descr>(.*\n)*?)"
