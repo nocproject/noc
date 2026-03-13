@@ -264,10 +264,10 @@ Ext.define("NOC.inv.map.Application", {
             me.basketButton.setPressed();
           }
         },
-        renderdone: function(){
-          // me.miniMapPanel.scaleContentToFit();
-          if(me.selectedObjectId){
-            me.selectCell(me.mapPanel.objectNodes[me.selectedObjectId]);
+        renderdone: () => {
+          console.log("Map render done");
+          if(this.selectedObjectId){
+            this.mapPanel.highlightAndMoveById(this.selectedObjectId);
           }
         },
         updateTick: function(text){
@@ -281,6 +281,7 @@ Ext.define("NOC.inv.map.Application", {
         },
         onSelectCell: me.selected,
         onUnselectCell: me.selected,
+        searchResult: me.onSearchResult,
       },
     });
 
@@ -433,7 +434,6 @@ Ext.define("NOC.inv.map.Application", {
         this.selectedObjectId = this.noc.cmd.args[2];
       }
     }
-    // this.miniMapPanel.createMini(this.mapPanel);
   },
 
   onSelectSegment: function(combo, record){
@@ -608,44 +608,8 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   onSearch: function(){
-    var searched = undefined,
-      value = this.searchField.getValue();
-    if(!Ext.isEmpty(value)){
-      Ext.Object.eachValue(this.mapPanel.objectNodes, function(node){
-        var name = node.attributes.name.replace(/\n/g, "");
-        if(name.indexOf(value) !== -1){
-          searched = node;
-          return false;
-        }
-      });
-      this.selectCell(searched);
-    }
-  },
-
-  selectCell: function(searched){
-    var scrollX, scrollY,
-      zoom = this.zoomCombo.getValue(),
-      getScroll = function(pos, offset){
-        var value = pos * zoom - offset;
-        return value > 0 ? value : 0;
-      };
-    this.selectedObjectId = null;
-    if(searched && searched.isElement()){
-      var offsetX = this.mapPanel.getWidth() / 2,
-        offsetY = this.mapPanel.getHeight() / 2;
-      this.searchButton.setText(__("Search"));
-      scrollX = getScroll(searched.attributes.position.x, offsetX);
-      scrollY = getScroll(searched.attributes.position.y, offsetY);
-      this.mapPanel.onCellSelected(this.mapPanel.paper.findViewByModel(searched));
-      this.selectedObjectId = searched.attributes.data.id;
-    } else{
-      scrollX = scrollY = 0;
-      this.mapPanel.unhighlight();
-      this.searchButton.setText(__("Not found"));
-    }
-    this.setHistoryHash(this.currentSegmentId);
-    this.mapPanel.setPaperDimension();
-    this.mapPanel.scrollTo(scrollX, scrollY);
+    let value = this.searchField.getValue();
+    this.mapPanel.highlightAndMoveByLabel(value);
   },
 
   resetSearchButton: function(){
@@ -671,5 +635,13 @@ Ext.define("NOC.inv.map.Application", {
       this.currentHistoryHash += ":" + this.selectedObjectId;
     }
     Ext.History.setHash(this.currentHistoryHash);
+  },
+
+  onSearchResult: function(detail){
+    console.log("Search result", detail);
+    if(!detail.found){
+      this.mapPanel.onBlankSelected();
+      this.searchButton.setText(__("Not found"));
+    }
   },
 });

@@ -338,9 +338,9 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   onBlankSelected: function(){
-    var me = this;
-    me.unhighlight();
-    me.app.inspectSegment();
+    this.unhighlight();
+    this.onUnhighlight();
+    this.app.inspectSegment();
   },
   // Change interactive flag
   setInteractive: function(interactive){
@@ -812,5 +812,37 @@ Ext.define("NOC.inv.map.MapPanel", {
 
   setPaperDimension: function(){
     this.renderer.setPaperDimension();
+  },
+
+  highlightAndMoveById: function(id){
+    this.sendRequest("idAndMove", id);
+  },
+
+  highlightAndMoveByLabel: function(query){
+    this.sendRequest("labelAndMove", query);
+  },
+
+  sendRequest(mode, query){
+    let topoMapEl = this.down("#topoMap").el;
+    topoMapEl.dom.dispatchEvent(
+      new CustomEvent("topology:node-search:request", {
+        bubbles: true,
+        composed: true,
+        detail: {
+          query: query,
+          mode: mode,
+        },
+      }),
+    );
+  },
+
+  onUnhighlight: function(){
+    let topoMapEl = this.down("#topoMap").el;
+    topoMapEl.dom.dispatchEvent(
+      new CustomEvent("topology:unhighlight:request", {
+        bubbles: true,
+        composed: true,
+      }),
+    );
   },
 });

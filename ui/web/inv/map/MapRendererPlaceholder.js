@@ -40,21 +40,24 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       debugLogs: false,
     });
     // this.topoMap.loadData(nodes, links);
-    mainEl.dom.addEventListener("topology:cell:pointerdown", this.onCellSelected.bind(this));
+    mainEl.dom.addEventListener("topology:cell:highlight", this.onCellSelected.bind(this));
     mainEl.dom.addEventListener("topology:blank:pointerdown", this.onBlankSelected.bind(this));
     mainEl.dom.addEventListener("topology:cell:highlight", this.onCellHighlight.bind(this));
     mainEl.dom.addEventListener("topology:cell:unhighlight", this.onCellUnhighlight.bind(this));
+    mainEl.dom.addEventListener("topology:node-search:result", this.onSearchResult.bind(this));
     mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
 
     this.removeHandlers = function(){
-      mainEl.dom.removeEventListener("topology:cell:pointerdown", this.onCellSelected);
+      mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellSelected);
       mainEl.dom.removeEventListener("topology:blank:pointerdown", this.onBlankSelected);
       mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellHighlight);
       mainEl.dom.removeEventListener("topology:cell:unhighlight", this.onCellUnhighlight);
+      mainEl.dom.removeEventListener("topology:node-search:result", this.onSearchResult);
       mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
     };
     console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
+    this.panel.fireEvent("mapready");
   },
 
   onCellSelected: function(event){
@@ -77,6 +80,14 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     const data = event.detail.data;
     console.log("Highlight element", data);
     this.panel.onCellHighlight(data);
+  },
+
+  onSearchResult: function(event){
+    const detail = event.detail;
+    if(detail.mode === "labelAndMove"){
+      console.log("Search result", detail);
+      this.panel.fireEvent("searchResult", detail);
+    }
   },
   
   onCellUnhighlight: function(){
@@ -101,7 +112,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   renderMap: function(data){
     console.warn("MapRendererPlaceholder.renderMap", data);
-    this.topoMap.fromMapData(data)
+    this.topoMap.fromMapData(data);
+    this.panel.fireEvent("renderdone");
   },
 
   setLinkStyle: function(link, status){
