@@ -692,17 +692,14 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onSegmentMenuAddToBasket: function(){
-    var me = this;
-    var store = Ext.data.StoreManager.lookup("basketStore");
+    let store = Ext.data.StoreManager.lookup("basketStore");
 
     if(store.getCount() === 0){
-      me.fireEvent("openbasket");
+      this.fireEvent("openbasket");
     }
-    Ext.each(this.graph.getElements(), function(e){
-      if("managedobject" === e.get("id").split(":")[0]){
-        var objectId = Number(e.get("id").split(":")[1]);
-        me.addObjectToBasket(objectId, store);
-      }
+    
+    this.renderer.topoMap.data.elements.getIdsByDataType("managedobject").forEach((id) => {
+      this.addObjectToBasket(id, store);
     });
   },
 
