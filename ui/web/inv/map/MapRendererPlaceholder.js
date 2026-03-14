@@ -45,6 +45,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     mainEl.dom.addEventListener("topology:cell:highlight", this.onCellHighlight.bind(this));
     mainEl.dom.addEventListener("topology:cell:unhighlight", this.onCellUnhighlight.bind(this));
     mainEl.dom.addEventListener("topology:node-search:result", this.onSearchResult.bind(this));
+    mainEl.dom.addEventListener("topology:cell:contextmenu", this.onContextMenu.bind(this));
+    mainEl.dom.addEventListener("topology:blank:contextmenu", this.onSegmentContextMenu.bind(this));
     mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
 
     this.removeHandlers = function(){
@@ -53,6 +55,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellHighlight);
       mainEl.dom.removeEventListener("topology:cell:unhighlight", this.onCellUnhighlight);
       mainEl.dom.removeEventListener("topology:node-search:result", this.onSearchResult);
+      mainEl.dom.removeEventListener("topology:cell:contextmenu", this.onContextMenu);
+      mainEl.dom.removeEventListener("topology:blank:contextmenu", this.onSegmentContextMenu);
       mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
     };
     console.log(width, height);
@@ -74,6 +78,16 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   onLinkClick: function(event){
     const attrs = event.detail.attrs;
     console.log("Link attrs", attrs);
+  },
+
+  onSegmentContextMenu: function(event){
+    console.log("Segment context menu", event);
+    this.panel.onSegmentContextMenu(event);
+  },
+
+  onContextMenu: function(event){
+    console.log("Element context menu", event);
+    this.panel.onContextMenu(event);
   },
 
   onCellHighlight: function(event){

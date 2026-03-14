@@ -258,9 +258,10 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onSegmentContextMenu: function(evt){
-    var me = this;
+    let {clientX, clientY} = evt.detail;
     evt.preventDefault();
-    me.segmentMenu.showAt(evt.clientX, evt.clientY);
+    this.segmentMenu.showAt(clientX, clientY);
+    console.log("Segment context menu", clientX, clientY);
   },
 
   onLinkOver: function(link, evt){
@@ -312,20 +313,21 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
-  onContextMenu: function(view, evt){
+  onContextMenu: function(evt){
     evt.preventDefault();
-    var data = view.model.get("data");
+    let data = evt.detail.data,
+      {clientX, clientY} = evt.detail;
     if(Ext.isEmpty(data)){
       this.onSegmentContextMenu(evt);
       return;
     }
-    this.nodeMenuObject = view.model.get("id").split(":")[1];
+    // this.nodeMenuObject = view.model.get("id").split(":")[1];
     this.nodeMenuObjectType = data.type;
     if("wrench" !== this.nodeMenuObjectType){
       Ext.each(this.nodeMenu.items.items, function(item){
         item.setVisible(item.menuOn.indexOf(this.nodeMenuObjectType) !== -1);
       }, this);
-      this.nodeMenu.showAt(evt.clientX, evt.clientY);
+      this.nodeMenu.showAt(clientX, clientY);
     }
   },
   //
