@@ -321,7 +321,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       this.onSegmentContextMenu(evt);
       return;
     }
-    // this.nodeMenuObject = view.model.get("id").split(":")[1];
+    this.nodeMenuObject = data.id;
     this.nodeMenuObjectType = data.type;
     if("wrench" !== this.nodeMenuObjectType){
       Ext.each(this.nodeMenu.items.items, function(item){
@@ -612,16 +612,16 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onNodeMenuMaintainceMode: function(){
-    var me = this,
-      objectId = Number(me.nodeMenuObject);
+    let object = Number(this.nodeMenuObject),
+      object__label = this.renderer.topoMap.data.elements.getById(this.nodeMenuObject).data.name;
 
     NOC.run("NOC.inv.map.Maintenance", __("Add To Maintenance"), {
       args: [
         {mode: "Object"},
         [
           {
-            object: objectId,
-            object__label: me.objectNodes[objectId].attributes.attrs.text.text,
+            object,
+            object__label,
           },
         ],
       ],
@@ -670,12 +670,13 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onNodeMenuNewMaintaince: function(){
-    var me = this,
-      objectId = Number(me.nodeMenuObject);
-    me.newMaintaince([
+    let object = Number(this.nodeMenuObject),
+      object__label = this.renderer.topoMap.data.elements.getById(this.nodeMenuObject).data.name;
+
+    this.newMaintaince([
       {
-        object: objectId,
-        object__label: me.objectNodes[objectId].attributes.attrs.text.text,
+        object,
+        object__label,
       },
     ]);
   },
