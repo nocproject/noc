@@ -10,7 +10,6 @@ Ext.define("NOC.inv.map.MapPanel", {
   extend: "Ext.panel.Panel",
   requires: ["NOC.inv.map.ShapeRegistry", "NOC.inv.map.MapRendererPlaceholder"],
   layout: "fit",
-  // scrollable: true,
   app: null,
   readOnly: false,
   pollingInterval: 180000,
@@ -26,7 +25,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     {
       xtype: "component",
       itemId: "topoMap",
-      // scrollable: true,
       layout: "fit",
       border: true,
     },
@@ -142,50 +140,9 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   destroy: function(){
-    var dom = this.body.dom;
-    if(this.boundScrollHandler){
-      dom.removeEventListener("scroll", this.boundScrollHandler);
-    }
-    if(this.rafId){
-      cancelAnimationFrame(this.rafId);
-    }
     this.renderer.removeHandlers();
     this.callParent();
   },
-  // ViewPort
-  inThrottle: false,
-  rafId: null,
-  setViewPortSize: function(){
-    var {width, height} = this.body.el.dom.getBoundingClientRect(),
-      {sx, sy} = this.paper.scale();
-    if(this.viewPort){
-      this.viewPort.size(width / sx, height / sy);
-    }
-  },
-  //
-  moveViewPort: function(evt){
-    if(!this.inThrottle){
-      this.inThrottle = true;
-      this.rafId = requestAnimationFrame(() => {
-        this.handleViewPortScroll(evt);
-        this.inThrottle = false;
-      });
-    }
-  },
-  //
-  handleViewPortScroll: function(evt){
-    var {scrollLeft, scrollTop} = evt.target,
-      {sx, sy} = this.paper.scale(),
-      // {x, y} = this.paper.clientToLocalPoint({x: scrollLeft, y: scrollTop}),
-      moveX = Math.trunc(scrollLeft / sx),
-      moveY = Math.trunc(scrollTop / sy);
-
-    if(this.viewPort){
-      this.viewPort.position(moveX, moveY);
-      // this.viewPort.position(x, y);
-    }
-  },
-  // Load segment data
   loadSegment: function(generator, segmentId, forceSpring){
     var me = this,
       url;
@@ -218,8 +175,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   renderMap: function(data){
-    var me = this;
-    me.renderer.renderMap(data);
+    this.renderer.renderMap(data);
   },
   //
   unhighlight: function(){
