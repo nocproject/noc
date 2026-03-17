@@ -40,24 +40,24 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       debugLogs: false,
     });
     // this.topoMap.loadData(nodes, links);
-    mainEl.dom.addEventListener("topology:cell:highlight", this.onCellSelected.bind(this));
-    mainEl.dom.addEventListener("topology:blank:pointerdown", this.onBlankSelected.bind(this));
-    mainEl.dom.addEventListener("topology:cell:highlight", this.onCellHighlight.bind(this));
-    mainEl.dom.addEventListener("topology:cell:unhighlight", this.onCellUnhighlight.bind(this));
-    mainEl.dom.addEventListener("topology:node-search:result", this.onSearchResult.bind(this));
-    mainEl.dom.addEventListener("topology:cell:contextmenu", this.onContextMenu.bind(this));
-    mainEl.dom.addEventListener("topology:blank:contextmenu", this.onSegmentContextMenu.bind(this));
-    mainEl.dom.addEventListener("topology:wheel", this.onWheel.bind(this));
+    mainEl.dom.addEventListener("topo:cell:highlight", this.onCellSelected.bind(this));
+    mainEl.dom.addEventListener("topo:blank:pointerdown", this.onBlankSelected.bind(this));
+    mainEl.dom.addEventListener("topo:cell:highlight", this.onCellHighlight.bind(this));
+    mainEl.dom.addEventListener("topo:cell:unhighlight", this.onCellUnhighlight.bind(this));
+    mainEl.dom.addEventListener("topo:node-search:result", this.onSearchResult.bind(this));
+    mainEl.dom.addEventListener("topo:cell:contextmenu", this.onContextMenu.bind(this));
+    mainEl.dom.addEventListener("topo:blank:contextmenu", this.onSegmentContextMenu.bind(this));
+    mainEl.dom.addEventListener("topo:wheel", this.onWheel.bind(this));
 
     this.removeHandlers = function(){
-      mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellSelected);
-      mainEl.dom.removeEventListener("topology:blank:pointerdown", this.onBlankSelected);
-      mainEl.dom.removeEventListener("topology:cell:highlight", this.onCellHighlight);
-      mainEl.dom.removeEventListener("topology:cell:unhighlight", this.onCellUnhighlight);
-      mainEl.dom.removeEventListener("topology:node-search:result", this.onSearchResult);
-      mainEl.dom.removeEventListener("topology:cell:contextmenu", this.onContextMenu);
-      mainEl.dom.removeEventListener("topology:blank:contextmenu", this.onSegmentContextMenu);
-      mainEl.dom.removeEventListener("topology:wheel", this.onWheel);
+      mainEl.dom.removeEventListener("topo:cell:highlight", this.onCellSelected);
+      mainEl.dom.removeEventListener("topo:blank:pointerdown", this.onBlankSelected);
+      mainEl.dom.removeEventListener("topo:cell:highlight", this.onCellHighlight);
+      mainEl.dom.removeEventListener("topo:cell:unhighlight", this.onCellUnhighlight);
+      mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
+      mainEl.dom.removeEventListener("topo:cell:contextmenu", this.onContextMenu);
+      mainEl.dom.removeEventListener("topo:blank:contextmenu", this.onSegmentContextMenu);
+      mainEl.dom.removeEventListener("topo:wheel", this.onWheel);
     };
     console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);

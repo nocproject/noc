@@ -781,7 +781,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   sendRequest(mode, query){
     let topoMapEl = this.down("#topoMap").el;
     topoMapEl.dom.dispatchEvent(
-      new CustomEvent("topology:node-search:request", {
+      new CustomEvent("topo:node-search:request", {
         bubbles: true,
         composed: true,
         detail: {
@@ -795,7 +795,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   onUnhighlight: function(){
     let topoMapEl = this.down("#topoMap").el;
     topoMapEl.dom.dispatchEvent(
-      new CustomEvent("topology:unhighlight:request", {
+      new CustomEvent("topo:unhighlight:request", {
         bubbles: true,
         composed: true,
       }),
