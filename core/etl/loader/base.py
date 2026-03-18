@@ -117,7 +117,6 @@ class BaseLoader(object):
         self.mappings: Dict[str, str] = {}
         self.remote_mappings: Dict[Tuple[str, str], Dict[str, str]] = {}
         self.wf_state_mappings = {}
-        self.ensured_labels = set()
         self.new_state_path = None
         self.c_add = 0
         self.c_change = 0
@@ -160,8 +159,6 @@ class BaseLoader(object):
         self.has_remote_system: bool = hasattr(self.model, "remote_system")
         if self.workflow_state_sync:
             self.load_wf_state_mappings()
-        if self.enable_labels:
-            self.load_ensured_labels()
 
     @property
     def is_document(self):
@@ -194,15 +191,6 @@ class BaseLoader(object):
         self.logger.info("Loading Workflow states")
         for ws in State.objects.filter():
             self.wf_state_mappings[(str(ws.workflow.id), ws.name)] = ws
-
-    def load_ensured_labels(self):
-        from noc.main.models.label import Label
-
-        self.logger.info("Loading Labels: %s", self.enable_labels)
-        for ll in Label.objects.filter(allow_models__in=[get_model_id(self.model)]):
-            if ll.is_wildcard or ll.is_matched:
-                continue
-            self.ensured_labels.add(ll.name)
 
     @classmethod
     def get_remote_mappings(cls, remote_system: str, name: str) -> Dict[str, str]:
@@ -681,8 +669,9 @@ class BaseLoader(object):
         if not labels:
             return None
         r = []
-        for ll in set(labels or []) - self.ensured_labels:
-            x = Label.ensure_label(ll, [get_model_id(self.model)])
+        model_id = get_model_id(self.model)
+        for ll in set(labels or []):
+            x = Label.ensure_label(ll, [model_id])
             if x:
                 r.append(ll)
         return r
