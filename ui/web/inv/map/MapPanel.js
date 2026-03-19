@@ -193,6 +193,9 @@ Ext.define("NOC.inv.map.MapPanel", {
       case "managedobject":
         this.app.inspectManagedObject(data.id);
         break;
+      case "link":
+        this.app.inspectLink(data.id);
+        break;
       case "cloud":
         this.app.inspectCloud(data.id);
         break;
@@ -209,10 +212,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         this.app.inspectObjectPortal(data.portal);
         break;
     }
-  },
-  //
-  onLinkClick: function(data){
-    this.app.inspectLink(data.id);
   },
   //
   onSegmentContextMenu: function(evt){

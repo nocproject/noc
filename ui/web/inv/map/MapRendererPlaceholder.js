@@ -44,7 +44,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     mainEl.dom.addEventListener("topo:cell:unhighlight", this.onCellUnhighlight.bind(this));
     mainEl.dom.addEventListener("topo:cell:contextmenu", this.onContextMenu.bind(this));
     mainEl.dom.addEventListener("topo:element:pointerdblclick", this.onElementDblClick.bind(this));
-    mainEl.dom.addEventListener("topo:cell:pointerdown", this.onCellLink.bind(this));
     mainEl.dom.addEventListener("topo:blank:pointerdown", this.onBlankSelected.bind(this));
     mainEl.dom.addEventListener("topo:blank:contextmenu", this.onSegmentContextMenu.bind(this));
     mainEl.dom.addEventListener("topo:node-search:result", this.onSearchResult.bind(this));
@@ -55,7 +54,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       mainEl.dom.removeEventListener("topo:cell:unhighlight", this.onCellUnhighlight);
       mainEl.dom.removeEventListener("topo:cell:contextmenu", this.onContextMenu);
       mainEl.dom.removeEventListener("topo:element:pointerdblclick", this.onElementDblClick);
-      mainEl.dom.removeEventListener("topo:cell:pointerdown", this.onCellLink);
       mainEl.dom.removeEventListener("topo:blank:pointerdown", this.onBlankSelected);
       mainEl.dom.removeEventListener("topo:blank:contextmenu", this.onSegmentContextMenu);
       mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
@@ -75,14 +73,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   onBlankSelected: function(){
     console.log("Blank selected");
     this.panel.onBlankSelected();
-  },
-
-  onCellLink: function(event){
-    const data = event.detail.data;
-    console.log("Link attrs", data);
-    if(data.type === "link"){
-      this.panel.onLinkClick(data);
-    }
   },
 
   onSegmentContextMenu: function(event){
