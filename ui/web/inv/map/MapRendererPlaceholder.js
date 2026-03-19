@@ -41,23 +41,25 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     });
     // this.topoMap.loadData(nodes, links);
     mainEl.dom.addEventListener("topo:cell:highlight", this.onCellSelected.bind(this));
-    mainEl.dom.addEventListener("topo:blank:pointerdown", this.onBlankSelected.bind(this));
-    mainEl.dom.addEventListener("topo:cell:highlight", this.onCellHighlight.bind(this));
     mainEl.dom.addEventListener("topo:cell:unhighlight", this.onCellUnhighlight.bind(this));
-    mainEl.dom.addEventListener("topo:node-search:result", this.onSearchResult.bind(this));
     mainEl.dom.addEventListener("topo:cell:contextmenu", this.onContextMenu.bind(this));
+    mainEl.dom.addEventListener("topo:element:pointerdblclick", this.onElementDblClick.bind(this));
+    mainEl.dom.addEventListener("topo:cell:pointerdown", this.onCellLink.bind(this));
+    mainEl.dom.addEventListener("topo:blank:pointerdown", this.onBlankSelected.bind(this));
     mainEl.dom.addEventListener("topo:blank:contextmenu", this.onSegmentContextMenu.bind(this));
-    mainEl.dom.addEventListener("topo:wheel", this.onWheel.bind(this));
+    mainEl.dom.addEventListener("topo:node-search:result", this.onSearchResult.bind(this));
+    mainEl.dom.addEventListener("topo:scale-change", this.onScaleChange.bind(this));
 
     this.removeHandlers = function(){
       mainEl.dom.removeEventListener("topo:cell:highlight", this.onCellSelected);
-      mainEl.dom.removeEventListener("topo:blank:pointerdown", this.onBlankSelected);
-      mainEl.dom.removeEventListener("topo:cell:highlight", this.onCellHighlight);
       mainEl.dom.removeEventListener("topo:cell:unhighlight", this.onCellUnhighlight);
-      mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
       mainEl.dom.removeEventListener("topo:cell:contextmenu", this.onContextMenu);
+      mainEl.dom.removeEventListener("topo:element:pointerdblclick", this.onElementDblClick);
+      mainEl.dom.removeEventListener("topo:cell:pointerdown", this.onCellLink);
+      mainEl.dom.removeEventListener("topo:blank:pointerdown", this.onBlankSelected);
       mainEl.dom.removeEventListener("topo:blank:contextmenu", this.onSegmentContextMenu);
-      mainEl.dom.removeEventListener("topo:wheel", this.onWheel);
+      mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
+      mainEl.dom.removeEventListener("topo:scale-change", this.onScaleChange);
     };
     console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
@@ -75,9 +77,12 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     this.panel.onBlankSelected();
   },
 
-  onLinkClick: function(event){
-    const attrs = event.detail.attrs;
-    console.log("Link attrs", attrs);
+  onCellLink: function(event){
+    const data = event.detail.data;
+    console.log("Link attrs", data);
+    if(data.type === "link"){
+      this.panel.onLinkClick(data);
+    }
   },
 
   onSegmentContextMenu: function(event){
@@ -90,10 +95,10 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     this.panel.onContextMenu(event);
   },
 
-  onCellHighlight: function(event){
+  onElementDblClick: function(event){
     const data = event.detail.data;
-    console.log("Highlight element", data);
-    this.panel.onCellHighlight(data);
+    console.log("Element double click", data);
+    this.panel.onElementDoubleClick(data);
   },
 
   onSearchResult: function(event){
@@ -116,7 +121,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     vm.set("zoom", scale);
   },
 
-  onWheel: function(event){
+  onScaleChange: function(event){
     this.zoomControlSetCustomField(event.detail.scale);
   },
   
@@ -126,7 +131,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   renderMap: function(data){
     console.warn("MapRendererPlaceholder.renderMap", data);
-    this.topoMap.fromMapData(data);
+    this.topoMap.convertAndLoad(data);
     this.panel.fireEvent("renderdone");
   },
 

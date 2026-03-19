@@ -183,6 +183,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
   //
   onCellSelected: function(data){
+    this.fireEvent("onSelectCell", data.id);
     this.unhighlight();
     if(Ext.isEmpty(data)){
       this.onBlankSelected();
@@ -191,9 +192,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     switch(data.type){
       case "managedobject":
         this.app.inspectManagedObject(data.id);
-        break;
-      case "link":
-        this.app.inspectLink(data.id);
         break;
       case "cloud":
         this.app.inspectCloud(data.id);
@@ -212,7 +210,11 @@ Ext.define("NOC.inv.map.MapPanel", {
         break;
     }
   },
-
+  //
+  onLinkClick: function(data){
+    this.app.inspectLink(data.id);
+  },
+  //
   onSegmentContextMenu: function(evt){
     let {clientX, clientY} = evt.detail;
     evt.preventDefault();
@@ -287,8 +289,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
   //
-  onCellDoubleClick: function(view){
-    var data = view.model.get("data");
+  onElementDoubleClick: function(data){
     if(Ext.isEmpty(data)) return;
     if(data.type === "managedobject"){
       window.open("/api/card/view/managedobject/" + data.id + "/");
@@ -501,14 +502,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     } else{
       me.getOverlayData();
     }
-  },
-
-  // Display links load
-  // data is dict of
-  // metric -> {ts: .., value: }
-
-  onCellHighlight: function(data){
-    this.fireEvent("onSelectCell", data.id);
   },
 
   onCellUnhighlight: function(){
