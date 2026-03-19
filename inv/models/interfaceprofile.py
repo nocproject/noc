@@ -252,6 +252,7 @@ class InterfaceProfile(Document):
 
     def iter_changed_datastream(self, changed_fields=None):
         from noc.inv.models.interface import Interface
+        from noc.sa.models.managedobject import ManagedObject
 
         if not config.datastream.enable_cfgmetricstarget:
             return
@@ -261,14 +262,19 @@ class InterfaceProfile(Document):
             and "metrics" not in changed_fields
         ):
             return
-        mos = {
-            mo.bi_id
-            for mo in Interface.objects.filter(
-                profile=self, type__in=["physical", "aggregated"]
-            ).scalar("managed_object")
-        }
-        for bi_id in mos:
-            yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
+        coll = Interface._get_collection()
+        mos = [
+            row["_id"]
+            for row in coll.aggregate(
+                [
+                    {"$match": {"profile": self.id, "type": {"$in": ["physical", "aggregated"]}}},
+                    {"$group": {"_id": "$managed_object"}},
+                ]
+            )
+        ]
+        if mos:
+            for bi_id in ManagedObject.objects.filter(id__in=mos).values_list("bi_id", flat=True):
+                yield "cfgmetricstarget", f"sa.ManagedObject::{bi_id}"
 
     def __str__(self):
         return self.name
