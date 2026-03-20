@@ -8,7 +8,10 @@ console.debug("Defining NOC.inv.map.MapPanel");
 
 Ext.define("NOC.inv.map.MapPanel", {
   extend: "Ext.panel.Panel",
-  requires: ["NOC.inv.map.ShapeRegistry", "NOC.inv.map.MapRendererPlaceholder"],
+  requires: ["NOC.inv.map.ShapeRegistry", "NOC.inv.map.MapRendererPlaceholder", "NOC.core.mixins.Polling"],
+  mixins: [
+    "NOC.core.mixins.Polling",
+  ],
   layout: "fit",
   app: null,
   readOnly: false,
@@ -45,7 +48,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.linkBw = {}; // Link id -> {in: ..., out: ...}
     me.isInteractive = false; // Graph is editable
     me.isDirty = false; // Graph is changed
-    me.statusPollingTaskId = null;
     me.overlayPollingTaskId = null;
     me.overlayMode = me.LO_NONE;
     me.interfaceMetrics = [];
@@ -140,6 +142,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   destroy: function(){
+    this.stopPolling();
     this.renderer.removeHandlers();
     this.callParent();
   },
@@ -392,6 +395,20 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
+  pollingTask: function(){
+    if(this.destroyed) return;
+    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+      this.getObjectStatus();
+    }
+  },
+
+  overlayPollingTask: function(){
+    if(this.destroyed) return;
+    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+      this.getOverlayData();
+    }
+  },
+
   getObjectStatus: function(){
     var me = this;
     Ext.Ajax.request({
@@ -468,14 +485,12 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   stopPolling: function(){
-    var me = this;
-    if(me.statusPollingTaskId){
-      Ext.TaskManager.stop(me.statusPollingTaskId);
-      me.statusPollingTaskId = null;
-    }
-    if(me.overlayPollingTaskId){
-      Ext.TaskManager.stop(me.overlayPollingTaskId);
-      me.overlayPollingTaskId = null;
+    // Stop status polling task and observer (from mixin)
+    this.mixins["NOC.core.mixins.Polling"].stopPolling.call(this);
+    // Stop overlay polling task
+    if(this.overlayPollingTaskId){
+      Ext.TaskManager.stop(this.overlayPollingTaskId);
+      this.overlayPollingTaskId = null;
     }
   },
 
@@ -490,7 +505,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     // Start polling when necessary
     if(mode !== me.LO_NONE && !me.overlayPollingTaskId){
       me.overlayPollingTaskId = Ext.TaskManager.start({
-        run: me.getOverlayData,
+        run: me.overlayPollingTask,
         interval: me.pollingInterval,
         scope: me,
       });

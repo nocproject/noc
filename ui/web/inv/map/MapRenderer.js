@@ -226,15 +226,7 @@ Ext.define("NOC.inv.map.MapRenderer", {
     paper.findViewByModel(panel.viewPort).$el.hide();
         
     // Run status polling
-    if(panel.statusPollingTaskId){
-      panel.getObjectStatus();
-    } else{
-      panel.statusPollingTaskId = Ext.TaskManager.start({
-        run: panel.getObjectStatus,
-        interval: panel.pollingInterval,
-        scope: panel,
-      });
-    }
+    panel.startPolling();
         
     panel.hasStp = data.caps.indexOf("Network | STP") !== -1;
     panel.app.viewStpButton.setDisabled(!panel.hasStp);

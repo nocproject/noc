@@ -10,8 +10,11 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
   extend: "Ext.panel.Panel",
   requires: [
     "NOC.inv.inv.plugins.alarm.AlarmModel",
+    "NOC.core.mixins.Polling",
   ],
-  pollingTaskId: undefined,
+  mixins: [
+    "NOC.core.mixins.Polling",
+  ],
   pollingInterval: 5000,
   // ViewModel for this panel
   viewModel: {
@@ -254,67 +257,10 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
     return "<i class='fa fa-fw' style='width:16px;'></i>";
   },
   //
-  startPolling: function(){
-    var me = this;
-    
-    if(this.observer){
-      this.stopPolling();
-    }
-    
-    this.observer = new IntersectionObserver(function(entries){
-      if(me.destroyed) return;
-      me.isIntersecting = entries[0].isIntersecting;
-      me.disableHandler(!entries[0].isIntersecting);
-    }, {
-      threshold: 0.1,
-    });
-    
-    if(this.getEl() && this.getEl().dom){
-      this.observer.observe(this.getEl().dom);
-    }
-    
-    if(Ext.isEmpty(this.pollingTaskId)){
-      this.pollingTaskId = Ext.TaskManager.start({
-        run: this.pollingTask,
-        interval: this.pollingInterval,
-        scope: this,
-      });
-    } else{
-      this.pollingTask();
-    }
-  },
-  //
-  stopPolling: function(){
-    if(this.pollingTaskId){
-      Ext.TaskManager.stop(this.pollingTaskId);
-      this.pollingTaskId = undefined;
-    }
-    if(this.observer && this.getEl() && this.getEl().dom){
-      this.observer.unobserve(this.getEl().dom);
-      this.observer.disconnect();
-      this.observer = null;
-    }
-  },
-  //
   pollingTask: function(){
     if(this.destroyed) return;
-    
-    let isVisible = !document.hidden, // check is user has switched to another tab browser
-      isFocused = document.hasFocus(), // check is user has minimized browser window
-      isIntersecting = this.isIntersecting; // switch to other application tab
-    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
+    if(!document.hidden && document.hasFocus() && this.isIntersecting){
       this.alarmUpdate();
-    }
-  },
-  //
-  disableHandler: function(state){
-    if(this.destroyed) return;
-    
-    var isVisible = !document.hidden, // check is user has switched to another tab browser
-      isIntersecting = this.isIntersecting; // switch to other application tab
-    if(this.pollingTaskId && isIntersecting && isVisible){
-      this.setContainerDisabled(state);
-      this.pollingTask();
     }
   },
   //
