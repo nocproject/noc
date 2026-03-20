@@ -135,8 +135,8 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.callParent();
   },
 
-  onBoxReady: function(width, height){
-    this.renderer.initMap(width, height);
+  onBoxReady: function(){
+    this.renderer.initMap();
   },
 
   destroy: function(){
@@ -752,6 +752,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     // if("paper" in me){
     // me.renderer.setPaperDimension();
     // }
+    console.log("MapPanel resized");
   },
 
   changeLabelText: function(showIPAddress){

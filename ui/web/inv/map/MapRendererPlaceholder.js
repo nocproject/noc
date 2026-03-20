@@ -21,8 +21,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     this.panel = panel;
   },
 
-  initMap: function(width, height){
-    // const {nodes, links} = this.generateTopology(20, 20);
+  initMap: function(){
     let mainEl = this.panel.down("#topoMap").el,
       miniEl = this.panel.up().down("#miniMap").body;
     this.topoMap = new map.Topology({
@@ -59,7 +58,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
       mainEl.dom.removeEventListener("topo:scale-change", this.onScaleChange);
     };
-    console.log(width, height);
     console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
     this.panel.fireEvent("mapready");
   },
