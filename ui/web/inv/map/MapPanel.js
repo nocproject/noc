@@ -480,8 +480,9 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
-  disableHandler: function(){
+  disableHandler: function(state){
     if(this.destroyed) return;
+    this.setDisabled(state);
     var isVisible = !document.hidden,
       isFocused = document.hasFocus(),
       isIntersecting = this.isIntersecting;
