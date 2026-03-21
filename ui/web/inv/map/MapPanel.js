@@ -410,18 +410,16 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   getObjectStatus: function(){
-    var me = this;
     Ext.Ajax.request({
       url: "/inv/map/objects_statuses/",
       method: "POST",
       jsonData: {
-        nodes: me.objectsList,
+        nodes: this.objectsList,
       },
-      scope: me,
-      success: function(response){
-        var data = Ext.decode(response.responseText);
-        me.startUpdatedTimer();
-        me.renderer.applyObjectStatuses(data);
+      success: (response)=> {
+        const data = Ext.decode(response.responseText);
+        this.startUpdatedTimer();
+        this.renderer.applyObjectStatuses(data);
       },
       failure: function(){
         NOC.error(__("Objects statuses failure!"));
@@ -452,11 +450,10 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   getOverlayData: function(){
-    var me = this;
-    switch(me.overlayMode){
-      case me.LO_LOAD:
+    switch(this.overlayMode){
+      case this.LO_LOAD:
         var r = [];
-        Ext.each(me.interfaceMetrics, function(m){
+        Ext.each(this.interfaceMetrics, function(m){
           r.push({
             id: m.id,
             metric: "Interface | Load | In",
@@ -474,13 +471,28 @@ Ext.define("NOC.inv.map.MapPanel", {
           jsonData: {
             metrics: r,
           },
-          scope: me,
-          success: function(response){
-            me.renderer.setLoadOverlayData(Ext.decode(response.responseText));
+          success: (response)=> {
+            this.renderer.setLoadOverlayData(Ext.decode(response.responseText));
           },
           failure: Ext.emptyFn,
         });
         break;
+    }
+  },
+
+  disableHandler: function(){
+    if(this.destroyed) return;
+    var isVisible = !document.hidden,
+      isFocused = document.hasFocus(),
+      isIntersecting = this.isIntersecting;
+    if(isIntersecting && isVisible && isFocused){
+      this.app.setStatusIcon(this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+      this.pollingTask();
+      if(this.overlayPollingTaskId){
+        this.overlayPollingTask();
+      }
+    } else{
+      this.app.setStatusIcon(this.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
     }
   },
 
@@ -495,26 +507,25 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   setOverlayMode: function(mode){
-    var me = this;
     // Stop polling when necessary
-    if(mode === me.LO_NONE && me.overlayPollingTaskId){
-      Ext.TaskManager.stop(me.overlayPollingTaskId);
-      me.overlayPollingTaskId = null;
+    if(mode === this.LO_NONE && this.overlayPollingTaskId){
+      Ext.TaskManager.stop(this.overlayPollingTaskId);
+      this.overlayPollingTaskId = null;
     }
-    me.overlayMode = mode;
+    this.overlayMode = mode;
     // Start polling when necessary
-    if(mode !== me.LO_NONE && !me.overlayPollingTaskId){
-      me.overlayPollingTaskId = Ext.TaskManager.start({
-        run: me.overlayPollingTask,
-        interval: me.pollingInterval,
-        scope: me,
+    if(mode !== this.LO_NONE && !this.overlayPollingTaskId){
+      this.overlayPollingTaskId = Ext.TaskManager.start({
+        run: this.overlayPollingTask,
+        interval: this.pollingInterval,
+        scope: this,
       });
     }
     //
-    if(mode === me.LO_NONE){
-      me.renderer.resetOverlayData();
+    if(mode === this.LO_NONE){
+      this.renderer.resetOverlayData();
     } else{
-      me.getOverlayData();
+      this.getOverlayData();
     }
   },
 
@@ -662,7 +673,7 @@ Ext.define("NOC.inv.map.MapPanel", {
       this.fireEvent("openbasket");
     }
     
-    this.renderer.topoMap.data.elements.getIdsByDataType("managedobject").forEach((id) => {
+    this.renderer.topoMap.data.elements.getIdsByDataType("managedobject").forEach((id)=> {
       this.addObjectToBasket(id, store);
     });
   },

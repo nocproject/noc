@@ -34,6 +34,22 @@ Ext.define("NOC.core.mixins.Polling", {
       this.observer.observe(this.getEl().dom);
     }
 
+    this._handleWindowFocus = () => {
+      if(this.destroyed) return;
+      setTimeout(() => { if(!this.destroyed) this.disableHandler(false); }, 100);
+    };
+    this._handleWindowBlur = () => {
+      if(this.destroyed) return;
+      this.disableHandler(true);
+    };
+    this._handleVisibilityChange = () => {
+      if(this.destroyed) return;
+      this.disableHandler(document.hidden);
+    };
+    window.addEventListener("focus", this._handleWindowFocus);
+    window.addEventListener("blur", this._handleWindowBlur);
+    document.addEventListener("visibilitychange", this._handleVisibilityChange);
+
     if(Ext.isEmpty(this.pollingTaskId)){
       this.pollingTaskId = Ext.TaskManager.start({
         run: this.pollingTask,
@@ -57,6 +73,14 @@ Ext.define("NOC.core.mixins.Polling", {
       this.observer.disconnect();
       this.observer = null;
     }
+    if(this._handleWindowFocus){
+      window.removeEventListener("focus", this._handleWindowFocus);
+      window.removeEventListener("blur", this._handleWindowBlur);
+      document.removeEventListener("visibilitychange", this._handleVisibilityChange);
+      this._handleWindowFocus = null;
+      this._handleWindowBlur = null;
+      this._handleVisibilityChange = null;
+    }
   },
 
   disableHandler: function(state){
@@ -72,4 +96,11 @@ Ext.define("NOC.core.mixins.Polling", {
   },
 
   pollingTask: Ext.emptyFn,
+
+  generateIcon: function(isUpdatable, icon, color, msg){
+    if(isUpdatable){
+      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
+    }
+    return "<i class='fa fa-fw' style='width:16px;'></i>";
+  },
 });

@@ -10,6 +10,10 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
   alias: "controller.fm.alarm.container",
   requires: [
     "NOC.fm.alarm.view.form.ClearAlarms",
+    "NOC.core.mixins.Polling",
+  ],
+  mixins: [
+    "NOC.core.mixins.Polling",
   ],
   pollingTaskId: undefined,
   pollingInterval: 120000,
@@ -475,11 +479,5 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
         }
       }),
     }).show();
-  },
-  generateIcon: function(isUpdatable, icon, color, msg){
-    if(isUpdatable){
-      return `<i class='fa fa-${icon}' style='padding-left:4px;color:${color};width:16px;' data-qtip='${msg}'></i>`;
-    }
-    return "<i class='fa fa-fw' style='padding-left:4px;width:16px;'></i>";
   },
 });

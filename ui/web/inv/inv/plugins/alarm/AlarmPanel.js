@@ -250,13 +250,6 @@ Ext.define("NOC.inv.inv.plugins.alarm.AlarmPanel", {
     this.getViewModel().set("autoReloadText", __("Auto reload : ") + (isReloading ? __("ON") : __("OFF")));
   },
   //
-  generateIcon: function(isUpdatable, icon, color, msg){
-    if(isUpdatable){
-      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
-    }
-    return "<i class='fa fa-fw' style='width:16px;'></i>";
-  },
-  //
   pollingTask: function(){
     if(this.destroyed) return;
     if(!document.hidden && document.hasFocus() && this.isIntersecting){

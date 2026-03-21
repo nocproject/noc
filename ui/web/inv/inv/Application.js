@@ -447,7 +447,7 @@ Ext.define("NOC.inv.inv.Application", {
         me.restoreHistory(me.noc.cmd.args);
         break;
     }
-    this.subscribeToEvents();
+    this.startPolling();
   },
   //
   onReloadNav: function(){
@@ -1122,13 +1122,6 @@ Ext.define("NOC.inv.inv.Application", {
     this.getViewModel().set("autoReloadText", __("Auto reload : ") + (isReloading ? __("ON") : __("OFF")));
   },
   //
-  generateIcon: function(isUpdatable, icon, color, msg){
-    if(isUpdatable){
-      return `<i class='fa fa-${icon}' style='color:${color};width:16px;' data-qtip='${msg}'></i>`;
-    }
-    return "<i class='fa fa-fw' style='width:16px;'></i>";
-  },
-  //
   pollingTask: function(){
     if(this.destroyed) return;
     if(!document.hidden && document.hasFocus() && this.isIntersecting){
@@ -1150,26 +1143,9 @@ Ext.define("NOC.inv.inv.Application", {
       this.getViewModel().set("icon", icon);
     }
   },
-  subscribeToEvents: function(){
-    this.handleWindowFocus = this.handleWindowFocus.bind(this);
-    this.handleWindowBlur = this.handleWindowBlur.bind(this);
-    window.addEventListener("focus", this.handleWindowFocus);
-    window.addEventListener("blur", this.handleWindowBlur);
-  },
-  
-  unsubscribeFromEvents: function(){
-    if(this.handleWindowFocus){
-      window.removeEventListener("focus", this.handleWindowFocus);
-    }
-    if(this.handleWindowBlur){
-      window.removeEventListener("blur", this.handleWindowBlur);
-    }
-  },
-  //
   destroy: function(){
     this.destroyed = true;
     
-    this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
     
@@ -1177,21 +1153,6 @@ Ext.define("NOC.inv.inv.Application", {
     this.isUpdating = false;
     
     this.callParent();
-  },
-  //
-  handleWindowFocus: function(){
-    if(this.destroyed) return;
-    var me = this;
-    setTimeout(function(){
-      if(!me.destroyed){
-        me.disableHandler(false);
-      }
-    }, 100);
-  },
-  //
-  handleWindowBlur: function(){
-    if(this.destroyed) return;
-    this.disableHandler(true);
   },
   //
   statusUpdate: function(){

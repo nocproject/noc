@@ -334,6 +334,11 @@ Ext.define("NOC.inv.map.Application", {
       },
     });
 
+    me.statusIndicator = Ext.create("Ext.toolbar.TextItem", {
+      padding: "3 4 0 4",
+      html: "<i class='fa fa-fw' style='width:16px;'></i>",
+    });
+
     me.miniMapButton = Ext.create("Ext.button.Button", {
       glyph: NOC.glyph.map,
       tooltip: __("Show/Hide miniMap"),
@@ -389,6 +394,7 @@ Ext.define("NOC.inv.map.Application", {
             me.basketButton,
             me.miniMapButton,
             me.legendButton,
+            me.statusIndicator,
           ],
         },
         me.rightPanel,
@@ -396,6 +402,12 @@ Ext.define("NOC.inv.map.Application", {
       items: [me.mapPanel],
     });
     me.callParent();
+  },
+
+  setStatusIcon: function(html){
+    if(this.statusIndicator){
+      this.statusIndicator.setHtml(html);
+    }
   },
 
   loadSegment: function(segmentId){

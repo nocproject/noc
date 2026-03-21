@@ -120,6 +120,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   renderMap: function(data){
     console.warn("MapRendererPlaceholder.renderMap", data);
     this.topoMap.convertAndLoad(data);
+    // Run status polling
+    this.panel.startPolling();
     this.panel.fireEvent("renderdone");
   },
 
