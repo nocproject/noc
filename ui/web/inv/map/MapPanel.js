@@ -39,7 +39,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.shapeRegistry = NOC.inv.map.ShapeRegistry;
     me.renderer = Ext.create("NOC.inv.map.MapRendererPlaceholder", me);
     me.usedImages = {};
-    me.hasStp = false;
     me.objectNodes = {};
     me.objectsList = [];
     me.portObjects = {}; // port id -> object id
