@@ -131,6 +131,13 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   applyObjectStatuses: function(data){
     console.warn("MapRendererPlaceholder.applyObjectStatuses", data);
+    // this.topoMap.data.elements.setStatuses(data);
+    this.topoMap.data.elements.setRandomStatuses([
+      {status_code: 0, metrics_label: ""},
+      {status_code: 1, metrics_label: "CPU<br/>12%"},
+      {status_code: 2, metrics_label: "CPU<br/>78%"},
+      {status_code: 4, metrics_label: "Link<br/>Down"},
+    ]);
   },
 
   setPaperDimension: function(zoom){
