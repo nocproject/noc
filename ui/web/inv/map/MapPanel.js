@@ -775,11 +775,11 @@ Ext.define("NOC.inv.map.MapPanel", {
   },
 
   onResize: function(){
-    // var me = this;
-    // if("paper" in me){
-    // me.renderer.setPaperDimension();
-    // }
-    console.log("MapPanel resized");
+    let main = this.down("#topoMap").getSize(),
+      minimap = this.up().down("#miniMap").getSize(),
+      payload = {main, minimap};
+    console.log("MapPanel resized", payload);
+    this.renderer.topoMap.notifyResize(payload);
   },
 
   changeLabelText: function(showIPAddress){
