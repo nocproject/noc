@@ -635,9 +635,6 @@ Ext.define("NOC.inv.map.Application", {
   },
 
   getHistoryHash: function(){
-    if(this.currentSegmentId){
-      this.mapPanel.loadSegment(this.generator, this.currentSegmentId);
-    }
     return this.currentHistoryHash;
   },
 
