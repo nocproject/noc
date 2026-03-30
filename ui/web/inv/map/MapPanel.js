@@ -413,7 +413,12 @@ Ext.define("NOC.inv.map.MapPanel", {
       url: "/inv/map/objects_statuses/",
       method: "POST",
       jsonData: {
-        nodes: this.objectsList,
+        nodes: this.renderer.topoMap?.data.elements.getAll().map((e) => ({
+          id: e.id,
+          node_id: e.data.id,
+          node_type: e.data.type,
+          metrics_template: e.data.metrics_template,
+        })) || [],
       },
       success: (response)=> {
         const data = Ext.decode(response.responseText);
