@@ -24,7 +24,8 @@ const buildOption = {
 const bundles: {entry: string; name: string}[] = [
   {entry: "scripts/bundles/micromark.ts", name: "micromark"},
   {entry: "scripts/bundles/leaflet.ts", name: "leaflet"},
-  {entry: "scripts/bundles/joint/index.ts", name: "joint"},
+  {entry: "node_modules/topo-map/dist/topo-map.umd.js", name: "topo-map"},
+  // {entry: "scripts/bundles/joint/index.ts", name: "joint"},
   // monaco is special — added below
 ];
 
@@ -109,12 +110,13 @@ function cleanOldFiles(pattern: RegExp): void{
 }
 
 function updateHtmlFiles(jsFileName: string, cssFileName: string): void{
+  const prefix = "/ui";
   const htmlFiles = fs.readdirSync(outputDir).filter(f => f.startsWith("index") && f.endsWith(".html"));
   for(const htmlFile of htmlFiles){
     const filePath = path.join(outputDir, htmlFile);
     let content = fs.readFileSync(filePath, "utf8");
-    content = content.replace(/libs-bundle[^"]*\.js/, jsFileName);
-    content = content.replace(/libs-bundle[^"]*\.css/, cssFileName);
+    content = content.replace(/libs-bundle[^"]*\.js/, `${prefix}/${jsFileName}`);
+    content = content.replace(/libs-bundle[^"]*\.css/, `${prefix}/${cssFileName}`);
     fs.writeFileSync(filePath, content);
     console.log(`Updated ${filePath}`);
   }
