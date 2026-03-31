@@ -1,7 +1,7 @@
 //---------------------------------------------------------------------
 // Workflow editor, JointJS version
 //---------------------------------------------------------------------
-// Copyright (C) 2007-2018 The NOC Project
+// Copyright (C) 2007-2026 The NOC Project
 // See LICENSE for details
 //---------------------------------------------------------------------
 console.debug("Defining NOC.wf.workflow.WFEditor");
@@ -42,9 +42,9 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       ],
     });
     me.menuPosition = {x: 0, y: 0};
-    me.stateWidth = 100;
-    me.stateHeight = 40;
-    me.isIspectorDirty = false;
+    me.isInspectorDirty = false;
+    me.currentSelection = {kind: "workflow", data: null};
+    me.suspendSelectionSync = false;
     me.inspector = {
       xtype: "form",
       itemId: "inspector",
@@ -57,7 +57,7 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       },
       listeners: {
         scope: me,
-        dirtychange: me.inspectorDirty,
+        dirtychange: me.onInspectorDirty,
       },
       buttons: [
         {
@@ -105,59 +105,75 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     });
     me.callParent();
   },
-  //
   afterRender: function(){
     var me = this;
-    // new_load_scripts([
-    //   "/ui/pkg/lodash/lodash.min.js",
-    //   "/ui/pkg/backbone/backbone.min.js",
-    //   "/ui/pkg/dagre/dagre.min.js",
-    //   "/ui/pkg/graphlib/graphlib.min.js",
-    //   "/ui/pkg/joint/joint.min.js",
-    //   "/ui/pkg/joint.layout.directedgraph/joint.layout.directedgraph.min.js",
-    //   "/ui/web/wf/workflow/js/joint.element.Tools.js",
-    // ], me, me.initMap);
     me.callParent();
     me.initMap();
   },
-  // Initialize JointJS Map
+  beforeDestroy: function(){
+    var me = this,
+      module;
+    if(me.containerDom){
+      me.containerDom.removeEventListener("contextmenu", me.onNativeContextMenuBound || me.onNativeContextMenu);
+    }
+    if(me.editor){
+      module = me.getEditorModule();
+      if(module){
+        if(me.onEditorSelectionChangeBound){
+          me.editor.removeEventListener(module.WORKFLOW_SELECTION_CHANGE_EVENT, me.onEditorSelectionChangeBound);
+        }
+        if(me.onEditorContextMenuBound){
+          me.editor.removeEventListener(module.WORKFLOW_CONTEXTMENU_EVENT, me.onEditorContextMenuBound);
+        }
+      }
+      if(Ext.isFunction(me.editor.destroy)){
+        me.editor.destroy();
+      }
+      me.editor = null;
+    }
+    me.callParent();
+  },
+  getEditorModule: function(){
+    var module = window.map;
+    if(!module || !module.WorkflowEditor){
+      NOC.error(__("Workflow editor module is not loaded"));
+      return null;
+    }
+    return module;
+  },
   initMap: function(){
     var me = this,
-      dom = me.getComponent("container").el.dom;
-    me.currentHighlight = null;
-    me.workflow = {};
-    me.graph = new joint.dia.Graph;
-    me.paper = new joint.dia.Paper({
-      el: dom,
-      model: me.graph,
-      gridSize: 10,
-      gridWidth: 10,
-      gridHeight: 10,
-      drawGrid: true,
-      linkPinning: false,
-      preventContextMenu: false,
-      defaultRouter: {
-        name: "metro",
-      },
-      defaultConnector: {
-        name: "rounded",
-      },
-      guard: function(evt){
-        return (evt.type === "mousedown" && evt.buttons === 2);
-      },
+      dom = me.getComponent("container").el.dom,
+      module = me.getEditorModule();
+
+    if(!module){
+      return;
+    }
+
+    me.workflow = me.loadData({
+      name: "New Workflow",
+      description: "",
+      is_active: true,
+      allowed_models: [],
+    }, "workflow");
+    me.editor = new module.WorkflowEditor({
+      mainContainer: dom,
+      fitToPageOnLoad: true,
+      gridSize: 20,
     });
-    me.paper.on("blank:pointerclick", Ext.bind(me.onSelect, me));
-    me.paper.on("cell:pointerclick", Ext.bind(me.onSelect, me));
-    me.paper.on("blank:contextmenu", Ext.bind(me.openBlankMenu, me));
-    //
-    me.graph.on("change:position", function(element){
-      var elementView = element.findView(me.paper);
-      elementView.removeTools();
-    });
-    me.graph.on("remove", Ext.bind(me.onRemoveCell, me));
+    me.containerDom = dom;
+    me.onNativeContextMenuBound = Ext.bind(me.onNativeContextMenu, me);
+    me.onEditorSelectionChangeBound = function(event){
+      me.onEditorSelectionChange(event.detail.selection);
+    };
+    me.onEditorContextMenuBound = function(event){
+      me.onEditorContextMenu(event.detail);
+    };
+    me.editor.addEventListener(module.WORKFLOW_SELECTION_CHANGE_EVENT, me.onEditorSelectionChangeBound);
+    me.editor.addEventListener(module.WORKFLOW_CONTEXTMENU_EVENT, me.onEditorContextMenuBound);
+    dom.addEventListener("contextmenu", me.onNativeContextMenuBound);
     me.setScriptsLoaded(true);
   },
-  //
   preview: function(record){
     var me = this;
     if(record){
@@ -185,154 +201,163 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         transitions: [],
       });
     }
-    if(me.graph && Ext.isFunction(me.graph.clear)){
-      me.graph.clear();
-    }
     me.callParent(arguments);
   },
-  //
   draw: function(data){
-    var me = this, x = 200, y = 40, makeLayout = true;
-    var stateByName = function(name){
-      return me.graph.getElements().filter(function(element){
-        return element.attr("label/text") === name;
-      })
-    };
-
-    me.workflow = me.loadData(data, "workflow");
-    data.states.forEach(function(state){
-      var rect = new joint.shapes.standard.Rectangle();
-      if(state.x && state.y){
-        rect.set("position", {x: state.x, y: state.y});
-        makeLayout = false;
-      } else{
-        rect.set("position", {x: x, y: y});
-      }
-      rect.resize(me.stateWidth, me.stateHeight);
-      rect.attr("label/text", state.name);
-      rect.prop({data: me.loadData(state, "state")});
-      rect.addTo(me.graph);
-      y += 100;
+    var me = this;
+    if(!me.editor){
+      return;
+    }
+    me.editor.loadWorkflow(data);
+    me.applySelection({
+      kind: "workflow",
+      data: me.workflow,
     });
-    data.transitions.forEach(function(transition){
-      var fromStates = stateByName(transition.from_state);
-      var toStates = stateByName(transition.to_state);
-
-      fromStates.forEach(function(source){
-        toStates.forEach(function(target){
-          var link = new joint.shapes.standard.Link();
-          link.source(source);
-          link.target(target);
-          link.appendLabel({
-            attrs: {
-              text: {
-                text: transition.label,
-              },
-            },
-          });
-          link.prop({data: me.loadData(transition, "transition")});
-          if(Object.hasOwn(transition, "vertices")){
-            transition.vertices.forEach(function(vertex, index){
-              link.insertVertex(index, vertex);
-            });
+  },
+  onEditorSelectionChange: function(selection){
+    var me = this;
+    if(me.suspendSelectionSync){
+      return;
+    }
+    if(me.isInspectorDirty){
+      Ext.Msg.show({
+        title: __("Unsaved data"),
+        msg: __("You have unsaved changes in inspector. Save or cancel the changes."),
+        buttons: Ext.Msg.YESNOCANCEL,
+        icon: Ext.MessageBox.WARNING,
+        modal: true,
+        scope: me,
+        fn: function(button){
+          if(button === "yes"){
+            if(!me.onSubmitInspector()){
+              me.restoreEditorSelection();
+            }
           }
-          link.addTo(me.graph);
-        });
+          if(button === "no"){
+            me.isInspectorDirty = false;
+            me.applySelection(selection);
+          }
+          if(button === "cancel"){
+            me.restoreEditorSelection();
+          }
+        },
       });
-    });
-    if(makeLayout){
-      joint.layout.DirectedGraph.layout(me.graph, {
-        marginX: 50,
-        marginY: 50,
-        nodeSep: 100,
-        edgeSep: 80,
-        rankDir: "TB",
-      });
+      return;
     }
-    me.showWorkflowInspector(me.workflow);
+    me.applySelection(selection);
   },
-  //
-  unhighlight: function(){
+  onEditorContextMenu: function(detail){
     var me = this;
-    if(me.currentHighlight){
-      me.currentHighlight.unhighlight();
-      me.currentHighlight.removeTools();
-      me.currentHighlight = null;
+    if(detail.kind !== "blank"){
+      return;
     }
+    me.menuPosition = {x: detail.localX, y: detail.localY};
+    me.blankMenu.showAt(detail.clientX, detail.clientY);
   },
-  //
-  addElementTools: function(view){
+  onNativeContextMenu: function(event){
     var me = this,
-      removeButton = new joint.elementTools.Remove({offset: -10, distance: -10}),
-      linkButton = new joint.elementTools.AddLink({offset: me.stateHeight / 2, distance: me.stateWidth}),
-      toolsView = new joint.dia.ToolsView({
-        tools: [
-          removeButton,
-          linkButton,
-        ],
-      });
-    view.addTools(toolsView);
+      localPoint,
+      target,
+      paper;
+    if(!me.editor){
+      return;
+    }
+    target = event.target;
+    if(target && target.closest && target.closest("[model-id]")){
+      return;
+    }
+    event.preventDefault();
+    if(me.editor.clientToLocalPoint && Ext.isFunction(me.editor.clientToLocalPoint)){
+      localPoint = me.editor.clientToLocalPoint(event.clientX, event.clientY);
+    } else{
+      paper = me.editor.paper;
+      if(paper && Ext.isFunction(paper.clientToLocalPoint)){
+        localPoint = paper.clientToLocalPoint({x: event.clientX, y: event.clientY});
+      } else{
+        localPoint = {x: event.offsetX || 0, y: event.offsetY || 0};
+      }
+    }
+    me.menuPosition = {x: localPoint.x, y: localPoint.y};
+    me.blankMenu.showAt(event.clientX, event.clientY);
   },
-  //
-  addLinkTools: function(view){
-    var removeButton = new joint.linkTools.Remove(),
-      verticesTool = new joint.linkTools.Vertices(),
-      segmentsTool = new joint.linkTools.Segments();
-    var toolsView = new joint.dia.ToolsView({
-      tools: [
-        verticesTool,
-        segmentsTool,
-        removeButton,
-      ],
-    });
-    view.addTools(toolsView);
-  },
-  //
-  onSelect: function(view){
-    var me = this;
-    me.dirtyCheck(me.select, view);
-  },
-  //
-  select: function(view){
+  restoreEditorSelection: function(){
     var me = this,
-      data = me.workflow;
-    me.unhighlight();
-    if(view.model){
-      data = view.model.get("data");
-      me.currentHighlight = view;
-      view.highlight();
+      selection = me.currentSelection;
+    if(!me.editor){
+      return;
     }
-    switch(data.type){
-      case "state": {
-        me.addElementTools(view);
-        me.showStateInspector(data);
-        break;
+    me.suspendSelectionSync = true;
+    try{
+      if(!selection || selection.kind === "workflow"){
+        me.editor.clearSelection();
+      } else{
+        me.editor.selectCell(selection.id);
       }
-      case "transition": {
-        me.addLinkTools(view);
-        me.showTransitionInspector(data);
-        break;
-      }
-      case "workflow": {
-        me.showWorkflowInspector(data);
-        break;
-      }
+    } finally{
+      me.suspendSelectionSync = false;
     }
   },
-  //
+  applySelection: function(selection){
+    var me = this,
+      data;
+
+    me.refreshWorkflowSnapshot();
+    if(!selection || selection.kind === "workflow"){
+      me.currentSelection = {
+        kind: "workflow",
+        data: Ext.clone(me.workflow),
+      };
+      me.showWorkflowInspector(me.workflow);
+      return;
+    }
+
+    if(selection.kind === "state"){
+      data = me.loadData(selection.data, "state");
+      me.currentSelection = {
+        kind: "state",
+        id: selection.id,
+        data: data,
+      };
+      me.showStateInspector(data);
+      return;
+    }
+
+    data = me.loadData(selection.data, "transition");
+    me.currentSelection = {
+      kind: "transition",
+      id: selection.id,
+      data: data,
+    };
+    me.showTransitionInspector(data);
+  },
+  refreshWorkflowSnapshot: function(){
+    var me = this,
+      document;
+    if(!me.editor){
+      return null;
+    }
+    document = me.editor.toJSON();
+    me.workflow = me.loadData(document, "workflow");
+    return document;
+  },
   clearInspector: function(){
     var me = this,
       inspector = me.getComponent("inspector");
-    me.isIspectorDirty = false;
+    me.isInspectorDirty = false;
     if(inspector && Ext.isFunction(inspector.destroy)){
       inspector.destroy();
     }
   },
-  //
   showInspector: function(data, fields, title){
     var me = this, inspector,
-      record = Ext.create(me.getModelName(data.type));
+      modelName = me.getModelName(data.type),
+      record;
 
+    if(!modelName){
+      NOC.error(__("Unknown type: ") + data.type);
+      return;
+    }
+    record = Ext.create(modelName);
     record.set(data);
     me.clearInspector();
 
@@ -355,7 +380,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     inspector = Ext.create(me.inspector);
     me.add(inspector);
   },
-  //
   showWorkflowInspector: function(data){
     var me = this,
       fields = [
@@ -416,7 +440,6 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       ];
     me.showInspector(data, fields, __("Workflow Inspector"));
   },
-  //
   showStateInspector: function(data){
     var me = this,
       fields = [
@@ -518,10 +541,8 @@ Ext.define("NOC.wf.workflow.WFEditor", {
           allowBlank: true,
         },
       ];
-    me.stateNamePrev = data.name;
     me.showInspector(data, fields, __("State Inspector"));
   },
-  //
   showTransitionInspector: function(data){
     var me = this,
       fields = [
@@ -592,45 +613,41 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       ];
     me.showInspector(data, fields, __("Transition Inspector"));
   },
-  //
   onSubmitInspector: function(){
     var me = this,
       data,
       form = me.getComponent("inspector");
-    if(form.isValid()){
-      form.updateRecord(form.record);
-      data = form.record.getData();
-      if(data.type === "state" && data.name !== me.stateNamePrev){
-        me.changeStatenameInTransition(me.stateNamePrev, data.name);
-      }
-      me.isIspectorDirty = false;
-      if(me.currentHighlight && me.currentHighlight.model){
-        me.currentHighlight.model.removeProp("data");
-        me.currentHighlight.model.prop({data: data});
-        switch(me.currentHighlight.model.get("data").type){
-          case "state": {
-            me.currentHighlight.model.attr("label/text", data.name);
-            break;
-          }
-          case "transition": {
-            me.currentHighlight.model.label(0, {
-              attrs: {
-                text: {
-                  text: data.label,
-                },
-              },
-            });
-            break;
-          }
-        }
-      } else{ // workflow
-        me.workflow = me.loadData(data, "workflow");
-      }
+    if(!form || !form.isValid()){
+      return false;
+    }
+
+    form.updateRecord(form.record);
+    data = form.record.getData();
+    me.isInspectorDirty = false;
+    if(!me.editor || !me.currentSelection){
       return true;
     }
-    return false;
+
+    switch(me.currentSelection.kind){
+      case "state":
+        me.editor.updateState(me.currentSelection.id, me.toPatch(data));
+        break;
+      case "transition":
+        me.editor.updateTransition(me.currentSelection.id, me.toPatch(data));
+        break;
+      default:
+        me.editor.updateWorkflowMeta(me.toPatch(data));
+        break;
+    }
+
+    me.applySelection(me.editor.getSelection());
+    return true;
   },
-  //
+  toPatch: function(data){
+    var patch = Ext.clone(data);
+    delete patch.type;
+    return patch;
+  },
   onDeleteClick: function(){
     var me = this;
     Ext.Msg.show({
@@ -647,90 +664,23 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       },
     });
   },
-  //
   onSaveClick: function(){
     var me = this;
     me.dirtyCheck(me.save);
   },
-  //
   save: function(){
     var me = this,
-      data = me.graph.toJSON(),
-      findStateNameById = function(id){
-        for(var i = 0; i < states.length; i++){
-          if(states[i].id === id){
-            return states[i].data.name;
-          }
-        }
-        return "state not found";
-      },
-      states = data.cells.filter(function(cell){
-        return cell.data.type === "state"
-      }),
-      transitions = data.cells
-                .filter(function(cell){
-                  return cell.data.type === "transition"
-                })
-                .map(function(element){
-                  element.from_state = findStateNameById(element.source.id);
-                  element.to_state = findStateNameById(element.target.id);
-                  element.data["vertices"] = [];
-                  if(Object.hasOwn(element, "vertices")){
-                    element.data["vertices"] = element.vertices;
-                  }
-                  if(Object.hasOwn(element.data, "remote_system") && element.data["remote_system"].length === 0){
-                    delete element.data["remote_system"];
-                  }
-                  if(Object.hasOwn(element.data, "remote_id") && element.data["remote_id"].length === 0){
-                    delete element.data["remote_id"];
-                  }
-                  delete element.data["bi_id"];
-                  delete element.data["uuid"];
-                  delete element.data["remote_system__label"];
-                  delete element.data["workflow__label"];
-                  delete element.data["from_state__label"];
-                  delete element.data["to_state__label"];
-                  delete element.data["type"];
-                  return element.data;
-                });
+      ret;
     if(!me.configId){
       NOC.error(__("Create new diagram not implement"));
       return;
     }
-    states = states.map(function(element){
-      element.data.x = element.position.x;
-      element.data.y = element.position.y;
-      if(element.data["job_handler"] != null && element.data["job_handler"].length === 0){
-        element.data["job_handler"] = null;
-      }
-      if(Object.hasOwn(element.data, "remote_system") && element.data["remote_system"].length === 0){
-        delete element.data["remote_system"];
-      }
-      if(Object.hasOwn(element.data, "remote_id") && element.data["remote_id"].length === 0){
-        delete element.data["remote_id"];
-      }
-      delete element.data["bi_id"];
-      delete element.data["uuid"];
-      delete element.data["position"];
-      delete element.data["type"];
-      delete element.data["update_ttl"];
-      delete element.data["workflow"];
-      delete element.data["workflow__label"];
-      return element.data;
-    });
-    var ret = Ext.merge(Ext.clone(me.workflow), {states: states, transitions: transitions});
-    delete ret["uuid"];
-    delete ret["bi_id"];
-    delete ret["type"];
-    delete ret["id"];
-    if(ret["allowed_models"] != null && ret["allowed_models"].length != 0){
-      var allowed_models = [];
-
-      ret["allowed_models"].forEach(function(key){
-        allowed_models.push(Ext.isDefined(key.id) ? key.id : key);
-      });
-      ret["allowed_models"] = allowed_models;
+    if(!me.editor){
+      NOC.error(__("Workflow editor is not initialized"));
+      return;
     }
+
+    ret = me.sanitizeWorkflowForSave(me.editor.exportForSave());
     Ext.Ajax.request({
       url: "/wf/workflow/" + me.configId + "/config/",
       method: "POST",
@@ -745,59 +695,97 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       },
     });
   },
-  //
-  openBlankMenu: function(evt){
-    var me = this;
-    evt.preventDefault();
-    me.menuPosition = {x: evt.originalEvent.layerX, y: evt.originalEvent.layerY};
-    me.blankMenu.showAt(evt.clientX, evt.clientY);
-    me.unhighlight();
-  },
-  //
-  onAddState: function(){
-    var stateName = "New State";
-    var me = this, view,
-      rect = new joint.shapes.standard.Rectangle(),
-      data = {
-        type: "state",
-        name: stateName,
-        on_enter_handlers: [],
-        on_leave_handlers: [],
-        job_handler: null,
-        labels: [],
-      };
-    rect.prop({data: data});
-    rect.set("position", me.menuPosition);
-    rect.resize(me.stateWidth, me.stateHeight);
-    rect.attr("label/text", stateName);
-    rect.addTo(me.graph);
-    view = rect.findView(me.paper);
-    me.currentHighlight = view;
-    view.highlight();
-    me.addElementTools(view);
-    me.showStateInspector(data);
-  },
-  //
-  onRemoveCell: function(){
+  sanitizeWorkflowForSave: function(data){
     var me = this,
-      data = me.workflow;
+      ret = Ext.clone(data);
 
-    me.showWorkflowInspector(data);
+    delete ret["uuid"];
+    delete ret["bi_id"];
+    delete ret["type"];
+    delete ret["kind"];
+    delete ret["id"];
+
+    if(ret["allowed_models"] != null && ret["allowed_models"].length !== 0){
+      ret["allowed_models"] = ret["allowed_models"].map(function(item){
+        return Ext.isDefined(item.id) ? item.id : item;
+      });
+    }
+
+    ret.states = (ret.states || []).map(function(item){
+      return me.sanitizeStateForSave(item);
+    });
+    ret.transitions = (ret.transitions || []).map(function(item){
+      return me.sanitizeTransitionForSave(item);
+    });
+    return ret;
   },
-  //
+  sanitizeStateForSave: function(data){
+    var ret = Ext.clone(data);
+    if(ret["job_handler"] != null && ret["job_handler"].length === 0){
+      ret["job_handler"] = null;
+    }
+    if(Object.hasOwn(ret, "remote_system") && ret["remote_system"] != null && ret["remote_system"].length === 0){
+      delete ret["remote_system"];
+    }
+    if(Object.hasOwn(ret, "remote_id") && ret["remote_id"] != null && ret["remote_id"].length === 0){
+      delete ret["remote_id"];
+    }
+    delete ret["bi_id"];
+    delete ret["uuid"];
+    delete ret["position"];
+    delete ret["type"];
+    delete ret["kind"];
+    delete ret["update_ttl"];
+    delete ret["workflow"];
+    delete ret["workflow__label"];
+    return ret;
+  },
+  sanitizeTransitionForSave: function(data){
+    var ret = Ext.clone(data);
+    if(Object.hasOwn(ret, "remote_system") && ret["remote_system"] != null && ret["remote_system"].length === 0){
+      delete ret["remote_system"];
+    }
+    if(Object.hasOwn(ret, "remote_id") && ret["remote_id"] != null && ret["remote_id"].length === 0){
+      delete ret["remote_id"];
+    }
+    delete ret["bi_id"];
+    delete ret["uuid"];
+    delete ret["remote_system__label"];
+    delete ret["workflow__label"];
+    delete ret["from_state__label"];
+    delete ret["to_state__label"];
+    delete ret["type"];
+    delete ret["kind"];
+    delete ret["sourceStateId"];
+    delete ret["targetStateId"];
+    return ret;
+  },
+  openBlankMenu: function(){
+    return;
+  },
+  onAddState: function(){
+    var me = this;
+    if(!me.editor){
+      return;
+    }
+    me.editor.addState(me.menuPosition, {
+      name: "New State",
+      on_enter_handlers: [],
+      on_leave_handlers: [],
+      job_handler: null,
+      labels: [],
+    });
+    me.refreshWorkflowSnapshot();
+  },
   loadData: function(data, type){
-    var me = this,
-      ret = {type: type},
-      record = Ext.create(me.getModelName(type));
+    var ret = {type: type};
     Ext.Object.each(data, function(key, value){
       if(["states", "transitions"].indexOf(key) === -1){
-        record.set(key, value);
         ret[key] = value;
       }
     });
     return ret;
   },
-  //
   getModelName: function(type){
     switch(type){
       case "transition":
@@ -805,18 +793,18 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       case "state":
         return "NOC.wf.state.Model";
       case "workflow":
-        return "NOC.wf.workflow.Model"
+        return "NOC.wf.workflow.Model";
+      default:
+        return null;
     }
   },
-  //
-  inspectorDirty: function(){
+  onInspectorDirty: function(){
     var me = this;
-    me.isIspectorDirty = true;
+    me.isInspectorDirty = true;
   },
-  //
   dirtyCheck: function(handler, args){
     var me = this;
-    if(me.isIspectorDirty){
+    if(me.isInspectorDirty){
       Ext.Msg.show({
         title: __("Unsaved data"),
         msg: __("You have unsaved changes in inspector. Save or cancel the changes."),
@@ -825,14 +813,13 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         modal: true,
         scope: me,
         fn: function(button){
-          var me = this;
           if(button === "yes"){
             if(me.onSubmitInspector()){
               handler.call(me, args);
             }
           }
           if(button === "no"){
-            me.isIspectorDirty = false;
+            me.isInspectorDirty = false;
             handler.call(me, args);
           }
         },
@@ -841,32 +828,11 @@ Ext.define("NOC.wf.workflow.WFEditor", {
       handler.call(me, args);
     }
   },
-  //
   onClose: function(){
     var me = this;
     me.app.onClose();
   },
-  //
-  changeStatenameInTransition: function(prevName, newName){
-    var me = this, i, data, cloned,
-      cells = me.graph.getCells(),
-      len = cells.length,
-      replaceProp = function(cell, data){
-        cell.removeProp("data");
-        cell.prop({data: data});
-      };
-    for(i = 0; i < len; i++){
-      data = cells[i].get("data");
-      if(data.type === "transition"){
-        if(data.from_state === prevName){
-          cloned = Ext.merge({}, Ext.clone(data), {from_state: newName});
-          replaceProp(cells[i], cloned);
-        }
-        if(data.to_state === prevName){
-          cloned = Ext.Object.merge({}, Ext.clone(data), {to_state: newName});
-          replaceProp(cells[i], cloned);
-        }
-      }
-    }
+  changeStatenameInTransition: function(){
+    return;
   },
 });

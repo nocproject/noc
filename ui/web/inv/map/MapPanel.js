@@ -332,7 +332,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         y: pos.x,
       });
     });
-    me.renderer.setPaperDimension();
   },
   //
   save: function(){

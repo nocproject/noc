@@ -21,10 +21,24 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     this.panel = panel;
   },
 
+  getMapModule: function(){
+    var module = window.map;
+    if(!module || !module.Topology){
+      NOC.error(__("Map module is not loaded"));
+      return null;
+    }
+    return module;
+  },
+
   initMap: function(){
     let mainEl = this.panel.down("#topoMap").el,
-      miniEl = this.panel.up().down("#miniMap").body;
-    this.topoMap = new map.Topology({
+      miniEl = this.panel.up().down("#miniMap").body,
+      module = this.getMapModule();
+    if(!module){
+      return;
+    }
+
+    this.topoMap = new module.Topology({
       mainContainer: mainEl.dom,
       minimapContainer: miniEl.dom,
       initialScale: 1,
@@ -38,67 +52,69 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       enableViewportCulling: true,
       debugLogs: false,
     });
-    // this.topoMap.loadData(nodes, links);
-    mainEl.dom.addEventListener("topo:cell:highlight", this.onCellSelected.bind(this));
-    mainEl.dom.addEventListener("topo:cell:unhighlight", this.onCellUnhighlight.bind(this));
-    mainEl.dom.addEventListener("topo:cell:contextmenu", this.onContextMenu.bind(this));
-    mainEl.dom.addEventListener("topo:element:pointerdblclick", this.onElementDblClick.bind(this));
-    mainEl.dom.addEventListener("topo:blank:pointerdown", this.onBlankSelected.bind(this));
-    mainEl.dom.addEventListener("topo:blank:contextmenu", this.onSegmentContextMenu.bind(this));
-    mainEl.dom.addEventListener("topo:node-search:result", this.onSearchResult.bind(this));
-    mainEl.dom.addEventListener("topo:scale-change", this.onScaleChange.bind(this));
+    let boundHandlers = {
+      onCellSelected: this.onCellSelected.bind(this),
+      onCellUnhighlight: this.onCellUnhighlight.bind(this),
+      onContextMenu: this.onContextMenu.bind(this),
+      onElementDblClick: this.onElementDblClick.bind(this),
+      onBlankSelected: this.onBlankSelected.bind(this),
+      onSegmentContextMenu: this.onSegmentContextMenu.bind(this),
+      onSearchResult: this.onSearchResult.bind(this),
+      onScaleChange: this.onScaleChange.bind(this),
+    };
+    mainEl.dom.addEventListener(module.CELL_HIGHLIGHT_EVENT, boundHandlers.onCellSelected);
+    mainEl.dom.addEventListener(module.CELL_UNHIGHLIGHT_EVENT, boundHandlers.onCellUnhighlight);
+    mainEl.dom.addEventListener(module.CELL_CONTEXTMENU_EVENT, boundHandlers.onContextMenu);
+    mainEl.dom.addEventListener(module.ELEMENT_POINTERDBLCLICK_EVENT, boundHandlers.onElementDblClick);
+    mainEl.dom.addEventListener(module.BLANK_POINTERDOWN_EVENT, boundHandlers.onBlankSelected);
+    mainEl.dom.addEventListener(module.BLANK_CONTEXTMENU_EVENT, boundHandlers.onSegmentContextMenu);
+    mainEl.dom.addEventListener(module.NODE_SEARCH_RESULT_EVENT, boundHandlers.onSearchResult);
+    mainEl.dom.addEventListener(module.SCALE_CHANGE_EVENT, boundHandlers.onScaleChange);
 
     this.removeHandlers = function(){
-      mainEl.dom.removeEventListener("topo:cell:highlight", this.onCellSelected);
-      mainEl.dom.removeEventListener("topo:cell:unhighlight", this.onCellUnhighlight);
-      mainEl.dom.removeEventListener("topo:cell:contextmenu", this.onContextMenu);
-      mainEl.dom.removeEventListener("topo:element:pointerdblclick", this.onElementDblClick);
-      mainEl.dom.removeEventListener("topo:blank:pointerdown", this.onBlankSelected);
-      mainEl.dom.removeEventListener("topo:blank:contextmenu", this.onSegmentContextMenu);
-      mainEl.dom.removeEventListener("topo:node-search:result", this.onSearchResult);
-      mainEl.dom.removeEventListener("topo:scale-change", this.onScaleChange);
+      mainEl.dom.removeEventListener(module.CELL_HIGHLIGHT_EVENT, boundHandlers.onCellSelected);
+      mainEl.dom.removeEventListener(module.CELL_UNHIGHLIGHT_EVENT, boundHandlers.onCellUnhighlight);
+      mainEl.dom.removeEventListener(module.CELL_CONTEXTMENU_EVENT, boundHandlers.onContextMenu);
+      mainEl.dom.removeEventListener(module.ELEMENT_POINTERDBLCLICK_EVENT, boundHandlers.onElementDblClick);
+      mainEl.dom.removeEventListener(module.BLANK_POINTERDOWN_EVENT, boundHandlers.onBlankSelected);
+      mainEl.dom.removeEventListener(module.BLANK_CONTEXTMENU_EVENT, boundHandlers.onSegmentContextMenu);
+      mainEl.dom.removeEventListener(module.NODE_SEARCH_RESULT_EVENT, boundHandlers.onSearchResult);
+      mainEl.dom.removeEventListener(module.SCALE_CHANGE_EVENT, boundHandlers.onScaleChange);
+      boundHandlers = null;
     };
-    console.log("MapRendererPlaceholder.initMap DOM", this.topoMap);
     this.panel.fireEvent("mapready");
   },
 
   onCellSelected: function(event){
     const data = event.detail.data;
-    console.log("Element attrs", data);
     this.panel.onCellSelected(data);
   },
 
   onBlankSelected: function(){
-    console.log("Blank selected");
     this.panel.onBlankSelected();
   },
 
   onSegmentContextMenu: function(event){
-    console.log("Segment context menu", event);
     this.panel.onSegmentContextMenu(event);
   },
 
   onContextMenu: function(event){
-    console.log("Element context menu", event);
     this.panel.onContextMenu(event);
   },
 
   onElementDblClick: function(event){
     const data = event.detail.data;
-    console.log("Element double click", data);
     this.panel.onElementDoubleClick(data);
   },
 
   onSearchResult: function(event){
     const detail = event.detail;
     if(detail.mode === "labelAndMove"){
-      console.log("Search result", detail);
       this.panel.fireEvent("searchResult", detail);
     }
   },
-  
+
   onCellUnhighlight: function(){
-    console.log("Unhighlight element");
     this.panel.onCellUnhighlight();
   },
 
@@ -112,13 +128,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   onScaleChange: function(event){
     this.zoomControlSetCustomField(event.detail.scale);
   },
-  
-  initFilters: function(){
-    console.warn("MapRendererPlaceholder.initFilters");
-  },
 
   renderMap: function(data){
-    console.warn("MapRendererPlaceholder.renderMap", data);
     this.topoMap.convertAndLoad(data);
     this.panel.app.viewStpButton.setDisabled(!data.caps.includes("Network | STP"));
     // Run status polling
@@ -131,7 +142,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   },
 
   applyObjectStatuses: function(data){
-    console.warn("MapRendererPlaceholder.applyObjectStatuses", data);
     this.topoMap.data.elements.setStatuses(data);
     // this.topoMap.data.elements.setRandomStatuses([
     //   {status_code: 0, metrics_label: ""},
@@ -139,10 +149,6 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     //   {status_code: 2, metrics_label: "CPU<br/>78%"},
     //   {status_code: 4, metrics_label: "Link<br/>Down"},
     // ]);
-  },
-
-  setPaperDimension: function(zoom){
-    console.warn("MapRendererPlaceholder.setPaperDimension", zoom);
   },
 
   setZoom: function(zoom){
@@ -160,7 +166,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
         this.zoomControlSetCustomField(this.topoMap.getScale());
         return;
     }
-       
+
     this.topoMap.setZoom(zoom/100);
   },
 
@@ -179,70 +185,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   setEditMode: function(){
     this.topoMap.setMode("edit");
   },
-  
+
   setPanMode: function(){
     this.topoMap.setMode("pan");
-  },
-  generateTopology: function(rows, cols){
-    const nodes = [];
-    const links = [];
-    const spacingX = 220;
-    const spacingY = 120;
-    const startX = 80;
-    const startY = 60;
-    let linkSeq = 1;
-    const statusClasses = ["gf-ok", "gf-warn", "gf-unknown", "gf-fail"];
-
-    const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-
-    for(let row = 0; row < rows; row += 1){
-      for(let col = 0; col < cols; col += 1){
-        const index = row * cols + col;
-        const id = `n${index + 1}`;
-        const statusClass = statusClasses[Math.floor(Math.random() * statusClasses.length)];
-      
-        const textLen = Math.floor(Math.random() * 30);
-        const loremText = lorem.slice(0, textLen);
-
-        nodes.push({
-          id,
-          x: startX + col * spacingX,
-          y: startY + row * spacingY,
-          attrs: {
-            title: {
-              text: `Node ${index + 1} ${loremText}`,
-            },
-            ipaddr: {
-              text: `10.42.${row + 1}.${col + 1}`,
-            },
-            icon: {
-              status: statusClass,
-            },
-          },
-        });
-
-        if(col < cols - 1){
-          links.push({
-            id: `l${linkSeq}`,
-            sourceId: id,
-            targetId: `n${index + 2}`,
-            // label: "1G",
-          });
-          linkSeq += 1;
-        }
-
-        if(row < rows - 1){
-          links.push({
-            id: `l${linkSeq}`,
-            sourceId: id,
-            targetId: `n${index + cols + 1}`,
-            // label: "10G",
-          });
-          linkSeq += 1;
-        }
-      }
-    }
-
-    return {nodes, links};
   },
 });

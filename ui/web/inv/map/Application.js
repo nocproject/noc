@@ -626,7 +626,6 @@ Ext.define("NOC.inv.map.Application", {
 
   resetSearchButton: function(){
     this.searchButton.setText(__("Search"));
-    this.mapPanel.setPaperDimension();
   },
 
   selected: function(objectId){
