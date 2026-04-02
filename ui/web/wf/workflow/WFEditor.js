@@ -71,24 +71,44 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     };
     Ext.apply(me, {
       tbar: [
-        me.getCloseButton(),
+        this.getCloseButton(),
         "-",
         {
           xtype: "button",
           tooltip: __("Delete Workflow"),
           text: __("Delete"),
           glyph: NOC.glyph.remove,
-          scope: me,
-          handler: me.onDeleteClick,
+          scope: this,
+          handler: this.onDeleteClick,
         },
-        "-",
         {
           xtype: "button",
           tooltip: __("Save Workflow"),
           text: __("Save"),
           glyph: NOC.glyph.save,
-          scope: me,
-          handler: me.onSaveClick,
+          scope: this,
+          handler: this.onSaveClick,
+        },
+        "-",
+        {
+          xtype: "button",
+          itemId: "undoButton",
+          tooltip: __("Undo"),
+          text: __("Undo"),
+          disabled: true,
+          glyph: NOC.glyph.undo,
+          scope: this,
+          handler: this.onUndoClick,
+        },
+        {
+          xtype: "button",
+          itemId: "redoButton",
+          tooltip: __("Redo"),
+          text: __("Redo"),
+          disabled: true,
+          glyph: NOC.glyph.repeat,
+          scope: this,
+          handler: this.onRedoClick,
         },
       ],
       layout: {
@@ -124,6 +144,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
         }
         if(me.onEditorContextMenuBound){
           me.editor.removeEventListener(module.WORKFLOW_CONTEXTMENU_EVENT, me.onEditorContextMenuBound);
+        }
+        if(me.changeUndoStateBound){
+          me.editor.removeEventListener(module.WORKFLOW_CAN_UNDO_CHANGE_EVENT, me.changeUndoStateBound);
+        }
+        if(me.changeRedoStateBound){
+          me.editor.removeEventListener(module.WORKFLOW_CAN_REDO_CHANGE_EVENT, me.changeRedoStateBound);
         }
       }
       if(Ext.isFunction(me.editor.destroy)){
@@ -169,8 +195,12 @@ Ext.define("NOC.wf.workflow.WFEditor", {
     me.onEditorContextMenuBound = function(event){
       me.onEditorContextMenu(event.detail);
     };
+    me.changeUndoStateBound = Ext.bind(me.changeUndoState, me);
+    me.changeRedoStateBound = Ext.bind(me.changeRedoState, me);
     me.editor.addEventListener(module.WORKFLOW_SELECTION_CHANGE_EVENT, me.onEditorSelectionChangeBound);
     me.editor.addEventListener(module.WORKFLOW_CONTEXTMENU_EVENT, me.onEditorContextMenuBound);
+    me.editor.addEventListener(module.WORKFLOW_CAN_UNDO_CHANGE_EVENT, me.changeUndoStateBound);
+    me.editor.addEventListener(module.WORKFLOW_CAN_REDO_CHANGE_EVENT, me.changeRedoStateBound);
     dom.addEventListener("contextmenu", me.onNativeContextMenuBound);
     me.setScriptsLoaded(true);
   },
@@ -834,5 +864,17 @@ Ext.define("NOC.wf.workflow.WFEditor", {
   },
   changeStatenameInTransition: function(){
     return;
+  },
+  onUndoClick: function(){
+    this.editor.undo();
+  },
+  onRedoClick: function(){
+    this.editor.redo();
+  },
+  changeUndoState: function(event){
+    this.down("#undoButton").setDisabled(!event.detail);
+  },
+  changeRedoState: function(event){
+    this.down("#redoButton").setDisabled(!event.detail);
   },
 });
