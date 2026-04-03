@@ -248,7 +248,7 @@ class ManagedObjectDS(BaseDataSource):
         FieldInfo(
             name="recv_syslog",
             type=FieldType.BOOL,
-            description="SNMP Trap is received",
+            description="Syslog is received",
             is_diagnostic_state=DiagnosticState.enabled,
             internal_name=SYSLOG_DIAG,
         ),
