@@ -41,7 +41,7 @@ from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
 from noc.core.service.loader import get_service
-from noc.core.models.servicestatus import Status
+from noc.core.models.servicestatus import Status, StatusAffectedItem
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
@@ -408,6 +408,8 @@ class Service(Document):
     def iter_changed_datastream(self, changed_fields=None):
         if config.datastream.enable_service:
             yield "service", self.id
+            if self.parent:
+                yield "service", self.parent.id
 
     @property
     def service_instances(self) -> List["ServiceInstance"]:
@@ -573,18 +575,26 @@ class Service(Document):
                 continue
             yield item.service, item.service.profile.weight
 
-    def set_oper_status(self, status: Status, timestamp: Optional[datetime.datetime] = None):
+    def set_oper_status(
+        self,
+        status: Status,
+        timestamp: Optional[datetime.datetime] = None,
+        affected: Optional[List[StatusAffectedItem]] = None,
+    ):
         """
         Set Operational Status for Service
         Args:
             status: New status
             timestamp: Time when status changed
+            affected: List factors affected to alarm Status
         """
         # Check state on is_productive
         # if not self.state.is_productive:
         #    return
         if isinstance(status, str):
             status = Status[status]
+        if status == Status.UNKNOWN:
+            status = self.get_default_oper_status()
         if self.oper_status == status:
             logger.debug("[%s] Status is same. Skipping", self.id)
             return
@@ -632,11 +642,20 @@ class Service(Document):
         )
         if self.profile.is_enabled_notification:
             headers = self.get_mx_message_headers(self.effective_labels)
-            logger.debug("Sending status change notification: H(%s)", headers)
+            logger.info("Sending status change notification: H(%s)", headers)
             msg = self.get_message_context()
             # msg["managed_object"] = self.managed_object.get_message_context()
             msg["from_status"] = {"id": os, "name": os.name}
             msg["ts"] = timestamp.replace(microsecond=0).isoformat()
+            for ai in affected or []:
+                msg["affected"].append(
+                    {
+                        "id": ai.id,
+                        "status": {"id": ai.status, "name": ai.status.name},
+                        "source": ai.source,
+                        "summary": ai.reason,
+                    }
+                )
             send_message(
                 data=msg,
                 message_type=MessageType.SERVICE_STATUS_CHANGE,
@@ -651,7 +670,10 @@ class Service(Document):
             return
         self.register_alarm(os)
 
-    def get_message_context(self) -> Dict[str, Any]:
+    def get_message_context(
+        self,
+        affected: Optional[List[StatusAffectedItem]] = None,
+    ) -> Dict[str, Any]:
         """Service Message Ctx"""
         r = {
             "id": str(self.id),
@@ -662,19 +684,24 @@ class Service(Document):
             "in_maintenance": self.in_maintenance,
             "agreement_id": self.agreement_id,
             "caps": self.get_caps(),
+            "affected": [],
         }
         if self.remote_system:
-            r["remote_system"] = {
-                "id": str(self.remote_system.id),
-                "name": self.remote_system.name,
+            r |= {
+                "remote_system": {
+                    "id": str(self.remote_system.id),
+                    "name": self.remote_system.name,
+                },
+                "remote_id": self.remote_id,
             }
-            r["remote_id"] = self.remote_id
         if self.profile.remote_system:
-            r["profile"]["remote_system"] = {
-                "id": str(self.profile.remote_system.id),
-                "name": self.profile.remote_system.name,
+            r["profile"] |= {
+                "remote_system": {
+                    "id": str(self.profile.remote_system.id),
+                    "name": self.profile.remote_system.name,
+                },
+                "remote_id": self.profile.remote_id,
             }
-            r["profile"]["remote_id"] = self.profile.remote_id
         return r
 
     def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
@@ -778,13 +805,26 @@ class Service(Document):
         logger.info("[%s] Send alarm message: %s", self.id, msg)
         svc.publish(orjson.dumps(msg), stream=stream, partition=partition)
 
+    def get_default_oper_status(self) -> Status:
+        """
+        Default Service Oper Status
+        UNKNOWN - disable calculate satus (if not set status_function)
+        UP - default
+        """
+        if self.calculate_status_function == "D" or (
+            self.calculate_status_function == "P" and self.profile.calculate_status_function == "D"
+        ):
+            return Status.UNKNOWN
+        return Status.UP
+
     def refresh_status(self):
         """Calculate Operative Status, maximum over Directed and Affected Status"""
-        status = self.get_direct_status()
+        affected = []
+        status = self.get_direct_status(affected=affected)
         status = max(status, self.get_affected_status())
-        self.set_oper_status(status)
+        self.set_oper_status(status, affected=affected)
 
-    def get_alarm_status(self) -> Status:
+    def get_alarm_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
         """
         Calculate alarm status for service
         1. If alarm affected policy is Disabled. Return UNKNOWN
@@ -823,6 +863,8 @@ class Service(Document):
             )
             if status == Status.UNKNOWN:
                 continue
+            if affected is not None:
+                affected.append(StatusAffectedItem.from_alarm(aa, status))
             if not rule.affected_instance:
                 alarm_status = max(status, alarm_status)
                 continue
@@ -874,7 +916,7 @@ class Service(Document):
         # Calculate affected status
         return self.calculate_status(r)
 
-    def get_diagnostics_status(self) -> Status:
+    def get_diagnostics_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
         if not self.profile.diagnostic_status:
             return Status.UNKNOWN
         values = self.get_diagnostic_values()
@@ -884,12 +926,19 @@ class Service(Document):
                 and d.diagnostic in values
                 and values[d.diagnostic].state == DiagnosticState.failed
             ):
+                if affected is not None:
+                    affected.append(
+                        StatusAffectedItem.from_diagnostic(values[d.diagnostic], d.failed_status)
+                    )
                 return d.failed_status
         return Status.UNKNOWN
 
-    def get_direct_status(self) -> Status:
+    def get_direct_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
         """Getting oper_status from Alarm and Diagnostics"""
-        return max(self.get_alarm_status(), self.get_diagnostics_status())
+        return max(
+            self.get_alarm_status(affected=affected),
+            self.get_diagnostics_status(affected=affected),
+        )
 
     def get_calculate_status_function(self) -> str:
         """"""
