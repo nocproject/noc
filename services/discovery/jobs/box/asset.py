@@ -252,7 +252,7 @@ class AssetCheck(DiscoveryCheck):
             # Create new object
             self.logger.info("Creating new object. model='%s', serial='%s'", m.name, serial)
             o_data = [
-                ObjectAttr(scope="", interface="asset", attr="part_no", value=[part_no]),
+                ObjectAttr(scope="", interface="asset", attr="part_no", value=part_no),
                 ObjectAttr(scope="", interface="asset", attr="serial", value=serial),
             ]
             if revision:
