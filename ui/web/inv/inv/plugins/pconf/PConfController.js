@@ -132,17 +132,17 @@ Ext.define("NOC.inv.inv.plugins.pconf.PConfController", {
       units = record.get("units"),
       allStatusConf = this.getView().getStatus(),
       status = record.get("status");
-    if(record.get("type") === "enum"){
-      var options = record.get("options") || [],
-        option = options.find(opt => opt.id === value);
-      displayValue = option ? option.label : value;
-    }
 
     if(Ext.isEmpty(value)){
       displayValue = "";
+    } else if(record.get("type") === "enum"){
+      var options = record.get("options") || [],
+        option = options.find(opt => opt.id === value);
+      displayValue = option ? option.label : value;
     } else{
       displayValue = value + "&nbsp;" + units || "";
     }
+    
     if(Ext.isEmpty(status)){
       if(record.get("read_only")){
         return "<i class='fas fa fa-lock' style='padding-right: 4px;' title='" + __("Read only") + "'></i>" + displayValue;

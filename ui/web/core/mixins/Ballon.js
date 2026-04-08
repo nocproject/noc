@@ -17,8 +17,8 @@ Ext.define("NOC.core.mixins.Ballon", {
         resource: resourceData,
       },
       success: function(response){
-        var result = Ext.decode(response.responseText),
-          tooltipConfig = {},
+        var tooltipConfig,
+          result = Ext.decode(response.responseText),
           path = Ext.Array.map(result.path || [], function(item){
             if(!item.id){
               return `<span>${item.label}</span>`

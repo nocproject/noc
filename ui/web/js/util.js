@@ -621,7 +621,7 @@ NOC.is_ipv4 = function(value){
 };
 //
 NOC.is_ipv4_prefix = function(value){
-  var arrayX = arrayX = value.split("/");
+  var arrayX = value.split("/");
   if(arrayX.length != 2)
     return false;
   if(!NOC.is_ipv4(arrayX[0]))

@@ -33,7 +33,7 @@ Ext.define("NOC.core.label.TreePickerController", {
     if(!record.get("leaf")){
       return;
     }
-    var parent = this.getView().scope, value = {}, isExist, pattern,
+    var parent = this.getView().scope, value, isExist, pattern,
       selected = parent.getValue();
     if(selected){
       pattern = record.id.toLowerCase();

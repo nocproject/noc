@@ -1,3 +1,4 @@
+/* eslint-disable */
 // https://tech.yandex.com/maps/doc/jsapi/2.1/quick-start/index-docpage/
 
 /* global ymaps: true */

@@ -24,9 +24,9 @@ export class ExtJsParser{
     } catch(error){
       if(error instanceof SyntaxError){
         console.error(`Syntax error while parsing contents: ${error.message}`);
-        throw new Error(`Syntax error while parsing contents: ${error.message}`);
+        throw new Error(`Syntax error while parsing contents: ${error.message}`, {cause: error});
       }
-      throw new Error(`Failed to parse contents: ${error}`);
+      throw new Error(`Failed to parse contents: ${error}`, {cause: error});
     }
   }
 

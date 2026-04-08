@@ -1283,7 +1283,7 @@ Ext.define("NOC.inv.inv.CreateConnectionForm", {
           offset += 2 * me.boxWidth * (side === "left" ? 1 : -1); // add offset for external arrow connection
         }
         if(!pointer){
-          pointer = surface.add({
+          surface.add({
             type: "pointer",
             id: "pointer",
             fromX: pointerX,

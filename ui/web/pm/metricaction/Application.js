@@ -578,7 +578,6 @@ Ext.define("NOC.pm.metricaction.Application", {
   //
   editRecord: function(record){
     var me = this,
-      i = 0,
       composeInputs = record.get("compose_inputs"),
       inputContainer = me.down("[itemId=input-container]"),
       objects = ["alarm_config", "activation_config", "deactivation_config"];
@@ -607,7 +606,7 @@ Ext.define("NOC.pm.metricaction.Application", {
     if(composeInputs){
       me.down("[name=metric_type0]").setValue(composeInputs[0].metric_type);
       if(composeInputs.length > 1){
-        for(i = 1; i < composeInputs.length; i++){
+        for(let i = 1; i < composeInputs.length; i++){
           me.addInput(composeInputs[i].metric_type);
         }
         me.down("[itemId=compose-set]").setDisabled(false);
