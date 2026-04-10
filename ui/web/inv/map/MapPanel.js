@@ -162,7 +162,7 @@ Ext.define("NOC.inv.map.MapPanel", {
         if(data.error){
           NOC.error(data.error);
         } else{
-          me.renderMap(data);
+          me.renderer.renderMap(data);
         }
       },
       failure: function(){
@@ -172,10 +172,6 @@ Ext.define("NOC.inv.map.MapPanel", {
         me.unmask();
       },
     });
-  },
-  //
-  renderMap: function(data){
-    this.renderer.renderMap(data);
   },
   //
   unhighlight: function(){
@@ -716,8 +712,8 @@ Ext.define("NOC.inv.map.MapPanel", {
       scope: me,
       success: function(response){
         var data = Ext.decode(response.responseText);
-        me.setStpBlocked(data.blocked);
-        me.setStpRoots(data.roots);
+        me.renderer.setStpBlocked(data.blocked);
+        me.renderer.setStpRoots(data.roots);
       },
       failure: function(){
         NOC.msg.failed(__("Failed to get STP status"));
@@ -725,58 +721,15 @@ Ext.define("NOC.inv.map.MapPanel", {
     });
   },
 
-  setStpRoots: function(roots){
-    var me = this,
-      newStpRoots = {};
-    // Set new STP roots
-    Ext.each(roots, function(rootId){
-      var root = me.objectNodes[rootId];
-      if(root){
-        if(!me.currentStpRoots[rootId]){
-          me.objectNodes[rootId].attr("text/class", "stp-root");
-        }
-        newStpRoots[rootId] = true;
-      }
-    });
-    // Remove previous STP roots
-    Ext.Object.each(me.currentStpRoots, function(k){
-      if(!newStpRoots[k]){
-        // Remove node style
-        me.objectNodes[k].attr("text/class", "");
-      }
-    });
-    me.currentStpRoots = newStpRoots;
-  },
-
-  setStpBlocked: function(blocked){
-    var me = this,
-      newStpBlocked = {};
-    Ext.each(me.graph.getLinks(), function(link){
-      var linkId = link.get("data").id;
-      if(blocked.indexOf(linkId) !== -1){
-        newStpBlocked[linkId] = true;
-        me.renderer.setLinkStyle(link, me.renderer.LINK_STP_BLOCKED);
-      }
-    });
-    // @todo: Remove changed styles
-    me.currentStpBlocked = newStpBlocked;
-    console.log("blocked", me.currentStpBlocked);
-  },
-
   onResize: function(){
     let main = this.down("#topoMap").getSize(),
       minimap = this.up().down("#miniMap").getSize(),
       payload = {main, minimap};
-    console.log("MapPanel resized", payload);
     this.renderer.topoMap.notifyResize(payload);
   },
 
   changeLabelText: function(showIPAddress){
     this.renderer.changeLabelText(showIPAddress);
-  },
-
-  setPaperDimension: function(){
-    this.renderer.setPaperDimension();
   },
 
   highlightAndMoveById: function(id){

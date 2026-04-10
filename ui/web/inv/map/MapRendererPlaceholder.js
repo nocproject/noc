@@ -19,6 +19,7 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   FIT_WIDTH: -2,
   removeHandlers: Ext.emptyFn,
   currentStpBlocked: {},
+  currentStpRoots: {},
 
   constructor: function(panel){
     this.panel = panel;
@@ -297,5 +298,35 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   onLinkOut: function(){
     this.panel.tip.hide();
+  },
+
+  setStpRoots: function(roots){
+    let newStpRoots = {};
+    // Set new STP roots
+    for(let Id of roots){
+      this.topoMap.setElementTextClass(Id, "stp-root", true);
+      newStpRoots[Id] = true;
+    }
+    // Remove previous STP roots
+    Ext.Object.each(this.currentStpRoots, (Id) => {
+      if(!newStpRoots[Id]){
+        // Remove node style
+        this.topoMap.setElementTextClass(Id, "stp-root", false);}
+    });
+    this.currentStpRoots = newStpRoots;
+  },
+
+  setStpBlocked: function(blocked){
+    let newStpBlocked = {};
+    if(blocked.length){
+      let links = this.topoMap.data.links.getAll();
+      for(let link of links){
+        if(blocked.indexOf(link.id) !== -1){
+          this.setLinkStyle(link, this.LINK_STP_BLOCKED);
+        }
+      };
+    }
+    // @todo: Remove changed styles
+    this.currentStpBlocked = newStpBlocked;
   },
 });
