@@ -7,6 +7,7 @@
 console.debug("Defining NOC.inv.map.MapRendererPlaceholder");
 
 Ext.define("NOC.inv.map.MapRendererPlaceholder", {
+  LOAD_METRICS: ["Interface | Load | In", "Interface | Load | Out"],
   // Link status
   LINK_OK: 0,
   LINK_ADMIN_DOWN: 1,
@@ -17,6 +18,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   FIT_HEIGHT: -1,
   FIT_WIDTH: -2,
   removeHandlers: Ext.emptyFn,
+  currentStpBlocked: {},
+
   constructor: function(panel){
     this.panel = panel;
   },
@@ -130,15 +133,17 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   },
 
   renderMap: function(data){
-    this.topoMap.convertAndLoad(data);
+    let document = this.topoMap.convertMapData(data);
+    this.topoMap.loadDocument(document);
     this.panel.app.viewStpButton.setDisabled(!data.caps.includes("Network | STP"));
     // Run status polling
     this.panel.startPolling();
     this.panel.fireEvent("renderdone");
   },
 
-  setLinkStyle: function(link, status){
-    console.warn("MapRendererPlaceholder.setLinkStyle", link, status);
+  setLinkStyle: function(linkId, status){
+    console.warn("MapRendererPlaceholder.setLinkStyle", linkId, status);
+    this.topoMap.setLinkStatus(linkId, status);
   },
 
   applyObjectStatuses: function(data){
@@ -170,12 +175,71 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     this.topoMap.setZoom(zoom/100);
   },
 
+  // Display links load
+  // data is dict of
+  // metric ->
+  // "4": {
+  //        "admin_status": true,
+  //        "oper_status": true,
+  //        "Interface | Load | In": 403,
+  //        "Interface | Load | Out": 2841
+  // },
   setLoadOverlayData: function(data){
-    console.warn("MapRendererPlaceholder.setLoadOverlayData", data);
+    let links = this.topoMap.data.links.getAll();
+    if(! links){
+      return;
+    }
+    for(let link of links){
+      const ports = link.data.ports,
+        isDown = (key) => !(data[ports[0]]?.[key] ?? true) || !(data[ports[1]]?.[key] ?? true);
+      //
+      if(isDown("admin_status")){
+        this.setLinkStyle(link.id, this.LINK_ADMIN_DOWN);
+      } else if(isDown("oper_status")){
+        this.setLinkStyle(link.id, this.LINK_OPER_DOWN);
+      } else if(!this.currentStpBlocked[link.id]){
+        this.applyLinkLoad(link, data);
+      }
+    }
+  },
+
+  applyLinkLoad: function(link, data){
+    let bw, td, dt, lu, 
+      ports = link.data.ports,
+      // Get bandwidth
+      sIn = data[ports[0]]?.[this.LOAD_METRICS[0]] ?? 0.0,
+      sOut = data[ports[0]]?.[this.LOAD_METRICS[1]] ?? 0.0,
+      dIn = data[ports[1]]?.[this.LOAD_METRICS[0]] ?? 0.0,
+      dOut = data[ports[1]]?.[this.LOAD_METRICS[1]] ?? 0.0;
+
+    bw = this.topoMap.data.links.getLinkBw(link.id);
+    // Destination to target
+    td = Math.max(sOut, dIn);
+    // Target to destination
+    dt = Math.max(sIn, dOut);
+    if(bw){
+      // Link utilization
+      lu = 0.0;
+      if(bw.in && bw.in > 0){
+        lu = Math.max(lu, dt / bw.in);
+      }
+      if(bw.out && bw.out > 0){
+        lu = Math.max(lu, td / bw.out);
+      }
+      this.topoMap.setLinkUtilization(link.id, lu);
+    }
+    // save link utilization
+    link.data.metrics = ports.map((port) => ({
+      port: port,
+      metrics: this.LOAD_METRICS.map((metric) => ({
+        metric: metric,
+        value: data?.[port]?.[metric] ?? "-",
+      })),
+    }));
   },
 
   resetOverlayData: function(){
-    console.warn("MapRendererPlaceholder.resetOverlayData");
+    this.topoMap.resetAllLinkPresentation();
   },
 
   changeLabelText: function(){
@@ -188,5 +252,10 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
 
   setPanMode: function(){
     this.topoMap.setMode("pan");
+  },
+
+  getMetrics: function(metrics){
+    let interfaces = this.topoMap.getInterfaces();
+    return metrics.flatMap((m) => interfaces.map((i) => ({...i, metric: m})));
   },
 });

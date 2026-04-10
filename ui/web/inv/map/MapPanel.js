@@ -454,19 +454,7 @@ Ext.define("NOC.inv.map.MapPanel", {
   getOverlayData: function(){
     switch(this.overlayMode){
       case this.LO_LOAD:
-        var r = [];
-        Ext.each(this.interfaceMetrics, function(m){
-          r.push({
-            id: m.id,
-            metric: "Interface | Load | In",
-            tags: m.tags,
-          });
-          r.push({
-            id: m.id,
-            metric: "Interface | Load | Out",
-            tags: m.tags,
-          });
-        });
+        var r = this.renderer.getMetrics(["Interface | Load | In", "Interface | Load | Out"]);
         Ext.Ajax.request({
           url: "/inv/map/metrics/",
           method: "POST",

@@ -1,0 +1,122 @@
+{
+    "23": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "21": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "7": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "15": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "19": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "1": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "17": {
+        "admin_status": false,
+        "oper_status": true
+    },
+    "3": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "22": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 235,
+        "Interface | Load | Out": 2635
+    },
+    "18": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 248,
+        "Interface | Load | Out": 2618
+    },
+    "8": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 2104,
+        "Interface | Load | Out": 6089
+    },
+    "6": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 431,
+        "Interface | Load | Out": 2791
+    },
+    "12": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 865,
+        "Interface | Load | Out": 3649
+    },
+    "0": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 439,
+        "Interface | Load | Out": 2846
+    },
+    "20": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 215,
+        "Interface | Load | Out": 2580
+    },
+    "14": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 264,
+        "Interface | Load | Out": 2724
+    },
+    "16": {
+        "admin_status": false,
+        "oper_status": true,
+        "Interface | Load | In": 266,
+        "Interface | Load | Out": 2677
+    },
+    "10": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 6046,
+        "Interface | Load | Out": 10889
+    },
+    "2": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 631,
+        "Interface | Load | Out": 3052
+    },
+    "4": {
+        "admin_status": true,
+        "oper_status": true,
+        "Interface | Load | In": 403,
+        "Interface | Load | Out": 2841
+    },
+    "5": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "9": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "11": {
+        "admin_status": true,
+        "oper_status": true
+    },
+    "13": {
+        "admin_status": true,
+        "oper_status": true
+    }
+}
