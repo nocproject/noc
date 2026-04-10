@@ -64,6 +64,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       onSegmentContextMenu: this.onSegmentContextMenu.bind(this),
       onSearchResult: this.onSearchResult.bind(this),
       onScaleChange: this.onScaleChange.bind(this),
+      onLinkHover: this.onLinkHover.bind(this),
+      onLinkOut: this.onLinkOut.bind(this),
     };
     mainEl.dom.addEventListener(module.CELL_HIGHLIGHT_EVENT, boundHandlers.onCellSelected);
     mainEl.dom.addEventListener(module.CELL_UNHIGHLIGHT_EVENT, boundHandlers.onCellUnhighlight);
@@ -73,7 +75,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
     mainEl.dom.addEventListener(module.BLANK_CONTEXTMENU_EVENT, boundHandlers.onSegmentContextMenu);
     mainEl.dom.addEventListener(module.NODE_SEARCH_RESULT_EVENT, boundHandlers.onSearchResult);
     mainEl.dom.addEventListener(module.SCALE_CHANGE_EVENT, boundHandlers.onScaleChange);
-
+    mainEl.dom.addEventListener(module.LINK_HOVER_EVENT, boundHandlers.onLinkHover);
+    mainEl.dom.addEventListener(module.LINK_MOUSEOUT_EVENT, boundHandlers.onLinkOut);
     this.removeHandlers = function(){
       mainEl.dom.removeEventListener(module.CELL_HIGHLIGHT_EVENT, boundHandlers.onCellSelected);
       mainEl.dom.removeEventListener(module.CELL_UNHIGHLIGHT_EVENT, boundHandlers.onCellUnhighlight);
@@ -83,6 +86,8 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       mainEl.dom.removeEventListener(module.BLANK_CONTEXTMENU_EVENT, boundHandlers.onSegmentContextMenu);
       mainEl.dom.removeEventListener(module.NODE_SEARCH_RESULT_EVENT, boundHandlers.onSearchResult);
       mainEl.dom.removeEventListener(module.SCALE_CHANGE_EVENT, boundHandlers.onScaleChange);
+      mainEl.dom.removeEventListener(module.LINK_HOVER_EVENT, boundHandlers.onLinkHover);
+      mainEl.dom.removeEventListener(module.LINK_MOUSEOUT_EVENT, boundHandlers.onLinkOut);
       boundHandlers = null;
     };
     this.panel.fireEvent("mapready");
@@ -229,13 +234,16 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       this.topoMap.setLinkUtilization(link.id, lu);
     }
     // save link utilization
-    link.data.metrics = ports.map((port) => ({
-      port: port,
-      metrics: this.LOAD_METRICS.map((metric) => ({
-        metric: metric,
-        value: data?.[port]?.[metric] ?? "-",
+    this.topoMap.data.links.updateData(link.id, {
+      metrics: ports.map((port) => ({
+        port: port,
+        metrics: this.LOAD_METRICS.map((metric) => ({
+          metric: metric,
+          value: data?.[port]?.[metric] ?? "-",
+        })),
       })),
-    }));
+    },
+    );
   },
 
   resetOverlayData: function(){
@@ -257,5 +265,33 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
   getMetrics: function(metrics){
     let interfaces = this.topoMap.getInterfaces();
     return metrics.flatMap((m) => interfaces.map((i) => ({...i, metric: m})));
+  },
+
+  onLinkHover: function(event){
+    if(this.panel.overlayMode === this.panel.LO_LOAD && this.panel.tip.isHidden()){
+      const data = event.detail;
+      let rows = [];
+
+      for(const metric of data.metrics){
+        const names = [], values = [];
+        for(const dat of metric.metrics){
+          values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
+          names.push(dat.metric === "Interface | Load | Out" ? "Out" : "In");
+        }
+        rows.push({
+          values: values.join(" / "),
+          names: names.join(" / "),
+          port: this.topoMap.data.elements.getLabelByPortId(metric.port),
+        });
+      }
+      if(rows.length){
+        this.panel.tip.setData(rows);
+        this.panel.tip.showAt(event.detail.position);
+      }
+    }
+  },
+
+  onLinkOut: function(){
+    this.panel.tip.hide();
   },
 });

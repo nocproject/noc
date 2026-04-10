@@ -40,7 +40,6 @@ Ext.define("NOC.inv.map.MapPanel", {
     me.usedImages = {};
     me.objectNodes = {};
     me.objectsList = [];
-    me.portObjects = {}; // port id -> object id
     me.currentStpRoots = {};
     me.currentStpBlocked = {};
     me.linkBw = {}; // Link id -> {in: ..., out: ...}
@@ -222,54 +221,54 @@ Ext.define("NOC.inv.map.MapPanel", {
     console.log("Segment context menu", clientX, clientY);
   },
 
-  onLinkOver: function(link, evt){
-    var me = this,
-      data,
-      rows = [],
-      nameByPort = function(portId){
-        var elementNameAttr = "name";
-        if(me.app.addressIPButton.pressed){
-          elementNameAttr = "address";
-        }
-        if(link.model.getTargetElement().get("data").id === me.portObjects[portId]){
-          return link.model.getTargetElement().get(elementNameAttr);
-        }
-        if(link.model.getSourceElement().get("data").id === me.portObjects[portId]){
-          return link.model.getSourceElement().get(elementNameAttr);
-        }
-      };
-    // prevent bounce
-    me.popupOffsetX = evt.offsetX;
-    me.popupOffsetY = evt.offsetY;
-    if(me.overlayMode === me.LO_LOAD && me.tip.isHidden()){
-      data = link.model.get("data");
-      Ext.each(data.metrics, function(metric){
-        var names = [],
-          values = [];
-        Ext.each(metric.metrics, function(dat){
-          values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
-          names.push(dat.metric === "Interface | Load | Out" ? "Out" : "In");
-        });
-        rows.push({
-          values: values.join(" / "),
-          names: names.join(" / "),
-          port: nameByPort(metric.port),
-        });
-      });
-      if(rows.length){
-        me.tip.setData(rows);
-        me.tip.showAt([evt.pageX, evt.pageY]);
-      }
-    }
-  },
+  // onLinkOver: function(link, evt){
+  //   var me = this,
+  //     data,
+  //     rows = [],
+  //     nameByPort = function(portId){
+  //       var elementNameAttr = "name";
+  //       if(me.app.addressIPButton.pressed){
+  //         elementNameAttr = "address";
+  //       }
+  //       if(link.model.getTargetElement().get("data").id === me.portObjects[portId]){
+  //         return link.model.getTargetElement().get(elementNameAttr);
+  //       }
+  //       if(link.model.getSourceElement().get("data").id === me.portObjects[portId]){
+  //         return link.model.getSourceElement().get(elementNameAttr);
+  //       }
+  //     };
+  //   // prevent bounce
+  //   me.popupOffsetX = evt.offsetX;
+  //   me.popupOffsetY = evt.offsetY;
+  //   if(me.overlayMode === me.LO_LOAD && me.tip.isHidden()){
+  //     data = link.model.get("data");
+  //     Ext.each(data.metrics, function(metric){
+  //       var names = [],
+  //         values = [];
+  //       Ext.each(metric.metrics, function(dat){
+  //         values.push(dat.value !== "-" ? (dat.value / 1024 / 1024).toFixed(2) : "-");
+  //         names.push(dat.metric === "Interface | Load | Out" ? "Out" : "In");
+  //       });
+  //       rows.push({
+  //         values: values.join(" / "),
+  //         names: names.join(" / "),
+  //         port: nameByPort(metric.port),
+  //       });
+  //     });
+  //     if(rows.length){
+  //       me.tip.setData(rows);
+  //       me.tip.showAt([evt.pageX, evt.pageY]);
+  //     }
+  //   }
+  // },
 
-  onLinkOut: function(link, evt){
-    var me = this;
-    // prevent bounce
-    if(me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY){
-      me.tip.hide();
-    }
-  },
+  // onLinkOut: function(link, evt){
+  //   var me = this;
+  //   // prevent bounce
+  //   if(me.popupOffsetX !== evt.offsetX && me.popupOffsetY !== evt.offsetY){
+  //     me.tip.hide();
+  //   }
+  // },
 
   onContextMenu: function(evt){
     evt.preventDefault();
