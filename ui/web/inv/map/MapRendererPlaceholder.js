@@ -272,6 +272,10 @@ Ext.define("NOC.inv.map.MapRendererPlaceholder", {
       const data = event.detail;
       let rows = [];
 
+      if(!data.metrics){
+        return;
+      }
+
       for(const metric of data.metrics){
         const names = [], values = [];
         for(const dat of metric.metrics){
