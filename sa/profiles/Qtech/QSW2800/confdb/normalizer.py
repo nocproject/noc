@@ -6,7 +6,8 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.confdb.normalizer.base import BaseNormalizer, match, ANY, REST
+from noc.core.confdb.normalizer.base import BaseNormalizer, match
+from noc.core.confdb.syntax.patterns import ANY, REST, INTEGER
 from noc.core.text import ranges_to_list
 
 
@@ -27,25 +28,24 @@ class Qtech2800Normalizer(BaseNormalizer):
     def normalize_username_password(self, tokens):
         yield self.make_user_encrypted_password(username=tokens[1], password=" ".join(tokens[3:]))
 
-    @match("snmp-server", "community", ANY, ANY, ANY, "access", ANY)
+    @match("snmp-server", "community", "ro", INTEGER, REST)
+    @match("snmp-server", "community", "rw", INTEGER, REST)
     def normalize_snmp_community_with_acl(self, tokens):
         yield self.make_snmp_community_level(
             community=tokens[4].strip('"'), level={"rw": "read-write", "ro": "read-only"}[tokens[2]]
         )
 
-    @match("snmp-server", "community", ANY, ANY)
+    # snmp-server community "COMMUNITY" rw encrypted
+    @match("snmp-server", "community", ANY, REST)
     def normalize_snmp_community_simple(self, tokens):
-        try:
+        if len(tokens) == 4:
+            yield self.make_snmp_community_level(community=tokens[2].strip('"'), level="read-only")
+        else:
+            # try:
             level = {"rw": "read-write", "ro": "read-only"}[tokens[3]]
-        except KeyError:
-            return
-        yield self.make_snmp_community_level(community=tokens[2].strip('"'), level=level)
-
-    @match("snmp-server", "community", ANY, ANY, "encrypted")
-    def normalize_snmp_community(self, tokens):
-        yield self.make_snmp_community_level(
-            community=tokens[2].strip('"'), level={"rw": "read-write", "ro": "read-only"}[tokens[3]]
-        )
+            # except KeyError:
+            #    return
+            yield self.make_snmp_community_level(community=tokens[2].strip('"'), level=level)
 
     @match("vlan", ANY, "name", ANY)
     def normalize_vlan_name(self, tokens):
