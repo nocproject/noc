@@ -101,6 +101,11 @@ const defaultColumns = [
     flex: 1,
   },
   {
+    text: __('FQDN'),
+    dataIndex: 'fqdn',
+    flex: 1,
+  },
+  {
     text: __("Interfaces"),
     dataIndex: "interface_count",
     width: 50,
