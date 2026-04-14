@@ -11,7 +11,5 @@ URL="https://cdn.getnoc.com/npkg/noc-ui-pkg%402.0.tar.bz2"
 rm -rf ui/pkg/
 curl -L "$URL" | tar jxf -
 cd ui/
-npm install --no-save
-npm run vendor
-npm run prod
-npm run build:bundles-prod
+pnpm install
+pnpm run build

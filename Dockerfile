@@ -95,7 +95,9 @@ RUN \
     && uv cache clean \
     && (curl -fsSL https://deb.nodesource.com/setup_24.x | bash -)\
     && apt-get install -y --no-install-recommends nodejs \
-    && (cd ui/ && npm install) \
+    && corepack enable \
+    && corepack prepare pnpm@10.33.0 --activate \
+    && (cd ui/ && pnpm install) \
     && mv ui/node_modules /workspaces\
     && rm -rf /var/lib/apt/lists/* /tmp/*.whl
 
