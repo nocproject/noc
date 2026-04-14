@@ -144,10 +144,8 @@ Ext.define("NOC.inv.map.MapPanel", {
     this.callParent();
   },
   loadSegment: function(generator, segmentId, forceSpring){
-    var me = this,
-      url;
-    me.generator = generator || "segment";
-    url = "/inv/map/" + me.generator + "/" + segmentId + "/data/";
+    let me = this,
+      url = `/inv/map/${me.generator = generator || "segment"}/${segmentId}/data/`;
     if(forceSpring){
       url += "?force=spring";
     }
