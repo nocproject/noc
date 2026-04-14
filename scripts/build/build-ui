@@ -11,5 +11,5 @@ URL="https://cdn.getnoc.com/npkg/noc-ui-pkg%402.0.tar.bz2"
 rm -rf ui/pkg/
 curl -L "$URL" | tar jxf -
 cd ui/
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --force
 pnpm run build
