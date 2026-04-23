@@ -34,15 +34,17 @@ Ext.define("NOC.core.mixins.Polling", {
       this.observer.observe(this.getEl().dom);
     }
 
+    this._windowFocused = document.hasFocus();
+
     this._handleWindowFocus = () => {
       if(this.destroyed) return;
+      this._windowFocused = true;
       setTimeout(() => { if(!this.destroyed) this.disableHandler(false); }, 100);
     };
     this._handleWindowBlur = () => {
       if(this.destroyed) return;
-      if(this.isFullScreen()){
-        return;
-      }
+      if(this.isFullScreen()) return;
+      this._windowFocused = false;
       this.disableHandler(true);
     };
     this._handleVisibilityChange = () => {
@@ -87,7 +89,12 @@ Ext.define("NOC.core.mixins.Polling", {
       this._handleWindowFocus = null;
       this._handleWindowBlur = null;
       this._handleVisibilityChange = null;
+      this._windowFocused = false;
     }
+  },
+
+  isFocused: function(){
+    return this._windowFocused;
   },
 
   disableHandler: function(state){

@@ -387,14 +387,14 @@ Ext.define("NOC.inv.map.MapPanel", {
 
   pollingTask: function(){
     if(this.destroyed) return;
-    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+    if(!document.hidden && this.isFocused() && this.isIntersecting){
       this.getObjectStatus();
     }
   },
 
   overlayPollingTask: function(){
     if(this.destroyed) return;
-    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+    if(!document.hidden && this.isFocused() && this.isIntersecting){
       this.getOverlayData();
     }
   },
@@ -467,7 +467,7 @@ Ext.define("NOC.inv.map.MapPanel", {
     if(this.destroyed) return;
     this.setDisabled(state);
     var isVisible = !document.hidden,
-      isFocused = document.hasFocus(),
+      isFocused = this.isFocused(),
       isIntersecting = this.isIntersecting;
     if(isIntersecting && isVisible && isFocused){
       this.app.setStatusIcon(this.generateIcon(true, "circle", NOC.colors.yes, __("online")));

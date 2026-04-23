@@ -588,7 +588,7 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
   //
   pollingTask: function(){
     if(this.destroyed) return;
-    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+    if(!document.hidden && this.isFocused() && this.isIntersecting){
       this.updateStatuses();
     }
   },

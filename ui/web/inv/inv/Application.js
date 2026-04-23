@@ -1124,7 +1124,7 @@ Ext.define("NOC.inv.inv.Application", {
   //
   pollingTask: function(){
     if(this.destroyed) return;
-    if(!document.hidden && document.hasFocus() && this.isIntersecting){
+    if(!document.hidden && this.isFocused() && this.isIntersecting){
       this.statusUpdate();
     }
   },

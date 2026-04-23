@@ -61,7 +61,7 @@ Ext.define("NOC.inv.inv.plugins.Mixins", {
   },
   checkVisibility: function(isIntersecting){
     var isVisible = !document.hidden,
-      isFocused = document.hasFocus();
+      isFocused = this.getController().isFocused();
     return isIntersecting && isVisible && isFocused;
   },
   reloadTask: function(callback, vm){
