@@ -141,7 +141,6 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       items: [me.mapPanel],
     });
     me.callParent();
-    this.subscribeToEvents();
   },
   //
   preview: function(data){
@@ -608,57 +607,20 @@ Ext.define("NOC.inv.inv.plugins.map.MapPanel", {
       this.getViewModel().set("icon", icon);
     }
   },
-  subscribeToEvents: function(){
-    this.handleWindowFocus = this.handleWindowFocus.bind(this);
-    this.handleWindowBlur = this.handleWindowBlur.bind(this);
-    window.addEventListener("focus", this.handleWindowFocus);
-    window.addEventListener("blur", this.handleWindowBlur);
-  },
-  
-  unsubscribeFromEvents: function(){
-    if(this.handleWindowFocus){
-      window.removeEventListener("focus", this.handleWindowFocus);
-    }
-    if(this.handleWindowBlur){
-      window.removeEventListener("blur", this.handleWindowBlur);
-    }
-  },
   //
   destroy: function(){
-    this.destroyed = true;
-    
-    this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
-    
     if(this.contextMenu){
       this.contextMenu.destroy();
       this.contextMenu = null;
     }
-    
     if(this.layers){
       this.layers = null;
     }
-    
     this.isRefreshing = false;
     this.isUpdatingStatuses = false;
-    
     this.callParent();
-  },
-  //
-  handleWindowFocus: function(){
-    if(this.destroyed) return;
-    var me = this;
-    setTimeout(function(){
-      if(!me.destroyed){
-        me.disableHandler(false);
-      }
-    }, 100);
-  },
-  //
-  handleWindowBlur: function(){
-    if(this.destroyed) return;
-    this.disableHandler(true);
   },
   //
   getVisibleFeaturesInLayer: function(layer){

@@ -31,24 +31,14 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
       },
     });
   },
-  init: function(view){
-    this.observer = new IntersectionObserver(function(entries){
-      view.isIntersecting = entries[0].isIntersecting;
-      if(!Ext.isEmpty(view.getController())){
-        view.getController().disableHandler(!entries[0].isIntersecting);
-      }
-    }, {
-      threshold: 0.1,
-    });
+  init: function(){
     this.callParent();
-    this.subscribeToEvents();
     var activeGridStore = this.lookupReference("fm-alarm-active").getStore();
     activeGridStore.addListener("beforeload", this.onBeforeLoad, this);
     activeGridStore.addListener("load", this.onLoad, this);
   },
   destroy: function(){
     var activeGrid = this.lookupReference("fm-alarm-active");
-    this.unsubscribeFromEvents();
     this.stopPolling();
     this.setContainerDisabled(false);
     if(Ext.isEmpty(activeGrid)){
@@ -70,33 +60,8 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
       this.getViewModel().set("icon", this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
     }
   },
-  subscribeToEvents: function(){
-    window.addEventListener("focus", this.handleWindowFocus.bind(this));
-    window.addEventListener("blur", this.handleWindowBlur.bind(this));
-  },
-  unsubscribeFromEvents: function(){
-    window.removeEventListener("focus", this.handleWindowFocus.bind(this));
-    window.removeEventListener("blur", this.handleWindowBlur.bind(this));
-  },
   onSoundToggle: function(self, pressed){
     this.getViewModel().set("volume", pressed);
-  },
-  handleWindowFocus: function(){
-    setTimeout(function(me){
-      me.disableHandler(false);
-    }, 100, this);
-  },
-  //
-  handleWindowBlur: function(){
-    this.disableHandler(true);
-  },
-  disableHandler: function(state){
-    var isVisible = !document.hidden, // check is user has switched to another tab browser
-      isIntersecting = this.getView().isIntersecting; // switch to other application tab
-    if(this.pollingTaskId && isIntersecting && isVisible){
-      this.setContainerDisabled(state);
-      this.pollingTask();
-    }
   },
   setContainerDisabled: function(value){
     var vm, app = this.getView().up("[itemId=fm-alarm]");
@@ -119,30 +84,15 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
       this.stopPolling();
     }
   },
-  startPolling: function(){
-    this.observer.observe(this.getView().getEl().dom);
-    if(Ext.isEmpty(this.pollingTaskId)){
-      this.pollingTaskId = Ext.TaskManager.start({
-        run: this.pollingTask,
-        interval: this.pollingInterval,
-        scope: this,
-      });
-    } else{
-      this.pollingTask();
-    }
-  },
-  stopPolling: function(){
-    if(this.pollingTaskId){
-      Ext.TaskManager.stop(this.pollingTaskId);
-      this.pollingTaskId = undefined;
-    }
+  getEl: function(){
+    return this.getView().getEl();
   },
   pollingTask: function(){
     var app = this.getView().up("[itemId=fm-alarm]"),
       gridsContainer = this.getView(),
       isVisible = !document.hidden, // check is user has switched to another tab browser
       isFocused = document.hasFocus(), // check is user has minimized browser window
-      isIntersecting = this.getView().isIntersecting; // switch to other application tab
+      isIntersecting = this.isIntersecting; // switch to other application tab
     
     // lib visibilityJS
     if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window

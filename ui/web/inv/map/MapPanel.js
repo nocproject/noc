@@ -8,7 +8,7 @@ console.debug("Defining NOC.inv.map.MapPanel");
 
 Ext.define("NOC.inv.map.MapPanel", {
   extend: "Ext.panel.Panel",
-  requires: ["NOC.inv.map.MapRendererPlaceholder", "NOC.core.mixins.Polling"],
+  requires: ["NOC.inv.map.MapRendererPlaceholder"],
   mixins: [
     "NOC.core.mixins.Polling",
   ],
