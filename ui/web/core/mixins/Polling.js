@@ -99,12 +99,10 @@ Ext.define("NOC.core.mixins.Polling", {
 
   disableHandler: function(state){
     if(this.destroyed) return;
-    var isVisible = !document.hidden,
-      isIntersecting = this.isIntersecting;
-    if(this.pollingTaskId && isIntersecting && isVisible){
-      if(Ext.isFunction(this.setContainerDisabled)){
-        this.setContainerDisabled(state);
-      }
+    if(Ext.isFunction(this.setContainerDisabled)){
+      this.setContainerDisabled(state);
+    }
+    if(!state && !document.hidden && this.isIntersecting){
       this.pollingTask();
     }
   },

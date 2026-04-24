@@ -88,34 +88,26 @@ Ext.define("NOC.fm.alarm.view.grids.ContainerController", {
     return this.getView().getEl();
   },
   pollingTask: function(){
+    if(this.destroyed) return;
+    if(!document.hidden && this.isFocused() && this.isIntersecting){
+      this.alarmsUpdate();
+    }
+  },
+  alarmsUpdate: function(){
     var app = this.getView().up("[itemId=fm-alarm]"),
-      gridsContainer = this.getView(),
-      isVisible = !document.hidden, // check is user has switched to another tab browser
-      isFocused = this.isFocused(), // check is user has minimized browser window
-      isIntersecting = this.isIntersecting; // switch to other application tab
-    
-    // lib visibilityJS
-    if(isIntersecting && isVisible && isFocused){ // check is user has switched to another tab or minimized browser window
-      this.setContainerDisabled(false);
-      // Check for new alarms and play sound
-      this.checkNewAlarms();
-      // Poll only application tab is visible
-      if(!app.ownerCt.isVisible()){ // e.g. app.isActive()
-        return;
+      gridsContainer = this.getView();
+    this.checkNewAlarms();
+    if(!app.ownerCt.isVisible()){
+      return;
+    }
+    if(!gridsContainer.isVisible()){
+      return;
+    }
+    if(this.isNotLocked(gridsContainer)){
+      gridsContainer.down("[reference=fm-alarm-active]").getStore().reload();
+      if(this.isRecentActive()){
+        gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload();
       }
-      // Poll only when in grid preview
-      if(!gridsContainer.isVisible()){
-        return;
-      }
-      // Poll only if polling is not locked
-      if(this.isNotLocked(gridsContainer)){
-        gridsContainer.down("[reference=fm-alarm-active]").getStore().reload();
-        if(this.isRecentActive()){
-          gridsContainer.down("[reference=fm-alarm-recent]").getStore().reload();
-        }
-      }
-    } else{
-      this.setContainerDisabled(true);
     }
   },
   isRecentActive: function(){

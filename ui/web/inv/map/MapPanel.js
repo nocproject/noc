@@ -392,6 +392,17 @@ Ext.define("NOC.inv.map.MapPanel", {
     }
   },
 
+  setContainerDisabled: function(state){
+    if(this.destroyed) return;
+    this.setDisabled(state);
+    this.app.setStatusIcon(
+      this.generateIcon(true,
+                        state ? "stop-circle-o" : "circle",
+                        state ? "grey" : NOC.colors.yes,
+                        state ? __("suspend") : __("online"),
+      ));
+  },
+
   overlayPollingTask: function(){
     if(this.destroyed) return;
     if(!document.hidden && this.isFocused() && this.isIntersecting){
@@ -465,18 +476,12 @@ Ext.define("NOC.inv.map.MapPanel", {
 
   disableHandler: function(state){
     if(this.destroyed) return;
-    this.setDisabled(state);
-    var isVisible = !document.hidden,
-      isFocused = this.isFocused(),
-      isIntersecting = this.isIntersecting;
-    if(isIntersecting && isVisible && isFocused){
-      this.app.setStatusIcon(this.generateIcon(true, "circle", NOC.colors.yes, __("online")));
+    this.setContainerDisabled(state);
+    if(!state && !document.hidden && this.isFocused() && this.isIntersecting){
       this.pollingTask();
       if(this.overlayPollingTaskId){
         this.overlayPollingTask();
       }
-    } else{
-      this.app.setStatusIcon(this.generateIcon(true, "stop-circle-o", "grey", __("suspend")));
     }
   },
 
