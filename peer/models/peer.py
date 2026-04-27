@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Peer model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ from noc.core.mx import send_message, MessageType, MX_PROFILE_ID
 from noc.core.model.decorator import on_save
 from noc.core.gridvcs.manager import GridVCSField
 from noc.core.wf.decorator import workflow
+from noc.core.change.decorator import change
 from noc.core.bgp import BGPState
 from noc.project.models.project import Project
 from noc.main.models.label import Label
@@ -45,6 +46,7 @@ logger = logging.getLogger(__name__)
 
 @Label.model
 @workflow
+@change
 @on_save
 class Peer(NOCModel):
     """
@@ -89,7 +91,7 @@ class Peer(NOCModel):
     last_seen = DateTimeField("Last Seen", null=True, blank=True)
     # Timestamp of first discovery
     first_discovered = DateTimeField("First Discovered", null=True, blank=True)
-    oper_status = IntegerField(
+    oper_status: Optional[int] = IntegerField(
         choices=[
             (1, "idle"),
             (2, "connect"),
@@ -113,11 +115,11 @@ class Peer(NOCModel):
     remote_backup_ip = INETField("Remote Backup IP", null=True, blank=True)
     import_filter = CharField("Import filter", max_length=64, default="any")
     # Override PeerProfile.local_pref
-    local_pref: int = IntegerField("Local Pref", null=True, blank=True)
+    local_pref: Optional[int] = IntegerField("Local Pref", null=True, blank=True)
     # Override PeerProfile.import_med
-    import_med: int = IntegerField("Import MED", blank=True, null=True)
+    import_med: Optional[int] = IntegerField("Import MED", blank=True, null=True)
     # Override PeerGroup.export_med
-    export_med: int = IntegerField("Export MED", blank=True, null=True)
+    export_med: Optional[int] = IntegerField("Export MED", blank=True, null=True)
     export_filter = CharField("Export filter", max_length=64, default="any")
     description = TextField("Description", null=True, blank=True)
     # Peer remark to be shown in RPSL
@@ -143,9 +145,17 @@ class Peer(NOCModel):
             return f" {self.remote_asn} ({self.remote_ip}@{self.peering_point.hostname})"
         return f" {self.remote_asn} ({self.remote_ip})"
 
+    @classmethod
+    def get_by_id(cls, oid: int) -> Optional["Peer"]:
+        return Peer.objects.filter(id=oid).first()
+
     @property
     def name(self) -> str:
         return str(self)
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_peer:
+            yield "peer", self.id
 
     def save(self, *args, **kwargs):
         if self.import_filter_name is not None and not self.import_filter_name.strip():
@@ -157,8 +167,10 @@ class Peer(NOCModel):
             self.touch_rpsl()
 
     @property
-    def all_communities(self):
+    def all_communities(self) -> str:
         r = {}
+        if not self.peering_point:
+            return ""
         for cl in [
             self.peering_point.communities,
             self.profile.get_data("communities"),
@@ -171,7 +183,9 @@ class Peer(NOCModel):
         c = sorted(r.keys())
         return " ".join(c)
 
-    def get_rpsl(self):
+    def get_rpsl(self) -> str:
+        if not self.peering_point:
+            return ""
         s = "import: from AS%d" % self.remote_asn
         s += " at %s" % self.peering_point.hostname
         actions = []
@@ -304,7 +318,7 @@ class Peer(NOCModel):
         timestamp = timestamp or now
         if self.oper_status_change and self.oper_status_change > timestamp:
             return
-        Peer.objects.filter(id=self.id).update(
+        self.__class__.objects.filter(id=self.id).update(
             oper_status=status.value, oper_status_change=timestamp
         )
         if self.profile.is_enabled_notification and self.oper_status is not None:

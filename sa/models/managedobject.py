@@ -3011,6 +3011,8 @@ class ManagedObject(NOCModel):
         #     for ris, rid in mappings.items():
         #         mo.set_mapping(ris, rid)
         for field, value in data.items():
+            if field == "description":
+                continue
             if hasattr(mo, field):
                 setattr(mo, field, value)
         return mo

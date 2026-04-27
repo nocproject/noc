@@ -106,18 +106,20 @@ class DiagnosticItem(BaseModel):
         value: Optional[DiagnosticValue] = None,
     ) -> "DiagnosticItem":
         """Create item from config"""
+        reason = cfg.reason
         if cfg.blocked:
             state = DiagnosticState.blocked
         elif not value or value.state == DiagnosticState.blocked:
             state = cfg.default_state
         else:
             state = value.state
+            reason = value.reason
         return DiagnosticItem(
             cfg=cfg,
             diagnostic=cfg.diagnostic,
             state=state,
             checks=value.checks if value else None,
-            reason=cfg.reason or None,
+            reason=reason or None,
             changed=value.changed if value else None,
         )
 

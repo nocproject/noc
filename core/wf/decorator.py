@@ -394,7 +394,6 @@ def workflow(cls):
         from mongoengine import signals as mongo_signals
 
         cls.set_state = document_set_state
-        mongo_signals.post_save.connect(_on_document_post_save, sender=cls)
         if "state_changed" in cls._fields:
             cls._has_state_changed = True
         if (
@@ -408,12 +407,12 @@ def workflow(cls):
             cls._has_diagnostics = True
         if "watchers" in cls._fields:
             cls._has_watchers = True
+        mongo_signals.post_save.connect(_on_document_post_save, sender=cls)
     else:
         # Django model
         from django.db.models import signals as django_signals
 
         cls.set_state = model_set_state
-        django_signals.post_save.connect(_on_model_post_save, sender=cls)
         fields = [f.name for f in cls._meta.get_fields()]
         if "state_changed" in fields:
             cls._has_state_changed = True
@@ -424,6 +423,7 @@ def workflow(cls):
             cls._has_diagnostics = True
         if "watchers" in fields or "watcher_wait_ts" in fields:
             cls._has_watchers = True
+        django_signals.post_save.connect(_on_model_post_save, sender=cls)
 
     cls.fire_transition = fire_transition
     cls.fire_event = fire_event
