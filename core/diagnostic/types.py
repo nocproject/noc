@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Diagnostic types
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -16,9 +16,10 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.checkers.base import Check, CheckResult
+from noc.core.models.inputsources import InputSource
 
 
-class DiagnosticState(str, enum.Enum):
+class DiagnosticState(enum.Enum):
     """
     Diagnostic state class
      * unknown - initial state, with no other calculate
@@ -134,6 +135,9 @@ class CheckStatus(BaseModel):
         arg0: Check params
         skipped: Check execution was skipped
         error: Error description for Fail status
+        remote_system: Remote System code for checks
+        expired: Timestamp before Result is actual
+        source: Source Result
     """
 
     name: str
@@ -142,9 +146,26 @@ class CheckStatus(BaseModel):
     skipped: bool = False
     error: Optional[str] = None
     remote_system: Optional[str] = None
+    expired: Optional[datetime.datetime] = None
+    source: InputSource = InputSource.UNKNOWN
+
+    def is_expired(self, ts: Optional[datetime.datetime] = None) -> bool:
+        if not self.expired:
+            return False
+        ts = ts or datetime.datetime.now()
+        return self.expired <= ts
 
     @classmethod
-    def from_result(cls, cr: CheckResult) -> "CheckStatus":
+    def from_result(
+        cls,
+        cr: CheckResult,
+        source: InputSource = InputSource.UNKNOWN,
+    ) -> "CheckStatus":
+        expired = None
+        if cr.ttl:
+            expired = datetime.datetime.now().replace(microsecond=0) + datetime.timedelta(
+                seconds=cr.ttl
+            )
         return CheckStatus(
             name=cr.check,
             status=cr.status,
@@ -152,6 +173,8 @@ class CheckStatus(BaseModel):
             error=cr.error.message if cr.error else None,
             arg0=cr.arg0,
             remote_system=cr.remote_system,
+            expired=expired,
+            source=source or InputSource.UNKNOWN,
         )
 
 
@@ -168,6 +191,10 @@ class DiagnosticValue(BaseModel):
     reason: Optional[str] = None
     changed: Optional[datetime.datetime] = None
 
-    def get_check_state(self):
-        # Any policy
-        return any(c.status for c in self.checks if not c.skipped)
+    @property
+    def expired(self) -> Optional[datetime.datetime]:
+        """Return expired check timestamp"""
+        r = [c.expired for c in self.checks or [] if c.expired]
+        if r:
+            return max(r)
+        return None

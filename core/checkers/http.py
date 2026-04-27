@@ -23,7 +23,7 @@ class HTTPChecker(BaseChecker):
     """
 
     name = "http"
-    CHECKS: List[str] = [HTTP_CHECK, HTTPS_CHECK]
+    CHECKS = [HTTP_CHECK, HTTPS_CHECK]
     CONNECT_TIMEOUT = 2
     REQUEST_TIMEOUT = 3
 

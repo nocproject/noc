@@ -274,7 +274,7 @@ def model_set_state(self, state, state_changed: datetime.datetime = None, bulk=N
             oid=self.id,
         )
     if self._has_diagnostics:
-        self.diagnostic.refresh_diagnostics()
+        self.diagnostic.reload_diagnostics()
         # self.diagnostic.reset_diagnostics(
         #    [d.diagnostic for d in state.iter_diagnostic_configs(self)]
         # )

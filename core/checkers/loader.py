@@ -18,7 +18,7 @@ class CheckersLoader(BaseLoader):
     name = "checkers"
     base_cls = BaseChecker
     base_path = ("core", "checkers")
-    ignored_names = {"base", "loader"}
+    ignored_names = {"base", "loader", "registry"}
 
     def __init__(self):
         super().__init__()

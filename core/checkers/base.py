@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
 # NOC Checker Base class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 from dataclasses import dataclass, field
-from typing import List, Optional, Dict, Any, Union, AsyncIterable, TypeVar, Callable
+from typing import List, Optional, Dict, Any, Union, AsyncIterable, TypeVar, Callable, ClassVar
 import threading
 
 # NOC modules
@@ -20,6 +20,7 @@ T = TypeVar("T")
 
 TCP_CHECK = "TCP"
 FAIL_CHECK = "FAIL"
+SUCCESS_CHECK = "SUCCESS"
 NODATA = "NODATA"
 CHECKS = []
 
@@ -36,6 +37,7 @@ class DataItem(object):
     name: str
     value: Any
     scope: Optional[str] = None  # caps/attribute
+    caps: Optional[str] = None  # Capability name
 
 
 @dataclass(frozen=True, eq=True)
@@ -47,6 +49,7 @@ class Check(object):
     port: Optional[int] = None  # TCP/UDP port
     script: Optional[str] = None
     remote_system: Optional[str] = None
+    ttl: Optional[int] = None
     credential: Optional[
         Union[
             SNMPCredential,
@@ -138,6 +141,7 @@ class CheckError(object):
 class CheckResult(object):
     check: str
     status: bool  # True - OK, False - Fail
+    # For requested copied from Check
     args: Optional[Dict[str, Any]] = None  # Checked Argument
     port: Optional[int] = None
     address: Optional[str] = None
@@ -146,8 +150,8 @@ class CheckResult(object):
     error: Optional[CheckError] = None  # Set if fail
     data: Optional[List[DataItem]] = None  # Collected check data
     remote_system: Optional[str] = None  # RemoteSystem
+    ttl: Optional[int] = None
     # Action: Set Profile, Credential, Send Notification (Diagnostic Header) ?
-    # caps: Optional[List[CapsItem]] = None
     # Metrics collected
     metrics: Optional[List[MetricValue]] = None
     # Credentials List, Return if suggests flag is set
@@ -182,7 +186,7 @@ class CheckResult(object):
         return "&".join(r)
 
     @property
-    def arg0(self):
+    def arg0(self) -> str:
         if self.args:
             return self.args.get("arg0")
         return None
@@ -214,8 +218,8 @@ class BaseChecker(object):
     Base class for Checkers. Check some facts and return result
     """
 
-    name: str
-    CHECKS: List[str]
+    name: ClassVar[str]
+    CHECKS: ClassVar[List[str]]
     USER_DISCOVERY_USE: bool = True  # Allow use in User Discovery
     _executor_lock = threading.Lock()
     _executor: Optional[ThreadPoolExecutor] = None
@@ -225,7 +229,7 @@ class BaseChecker(object):
         *,
         logger: Optional[logging.Logger] = None,
         address: Optional[str] = None,
-        **kwargs: Any,
+        **kwargs,
     ):
         self.logger = PrefixLoggerAdapter(logger or logging.getLogger(self.name), self.name)
         self.address = address
@@ -235,9 +239,6 @@ class BaseChecker(object):
         Iterate over result checks
         Args:
             checks: List checks param for run
-
-        Returns:
-            Yields CheckResult
         """
         raise NotImplementedError()
 

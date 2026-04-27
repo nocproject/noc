@@ -43,6 +43,7 @@ class ActionType(enum.Enum):
     FIRE_OBJ_EVENT = "fire_obj_event"
     SET_OPER_STATE = "set_oper_state"
     UP_DOWN_DIAGNOSTIC = "update_diagnostic"
+    REFRESH_DIAGNOSTICS = "refresh_diagnostics"
     HANDLER = "handler"
 
     def is_supported(self, obj) -> bool:
@@ -57,7 +58,7 @@ class ActionType(enum.Enum):
                 return getattr(obj, "_has_workflow", False)
             case self.SET_OPER_STATE:
                 return hasattr(obj, "set_oper_status")
-            case self.UP_DOWN_DIAGNOSTIC:
+            case self.UP_DOWN_DIAGNOSTIC | self.REFRESH_DIAGNOSTICS:
                 return hasattr(obj, "diagnostic")
             case self.FIRE_OBJ_EVENT:
                 return hasattr(obj, "event")
@@ -100,6 +101,8 @@ class ActionType(enum.Enum):
                 return partial(self.set_oper_status, **kwargs)
             case self.UP_DOWN_DIAGNOSTIC:
                 return partial(self.diagnostic_up_down, **kwargs)
+            case self.REFRESH_DIAGNOSTICS:
+                return partial(self.diagnostic_refresh, **kwargs)
             case self.FIRE_OBJ_EVENT:
                 return partial(self.send_obj_event, **kwargs)
             case self.HANDLER:
@@ -113,8 +116,13 @@ class ActionType(enum.Enum):
 
     @staticmethod
     def send_obj_event(obj, **kwargs):
-        """Send Workflow signal"""
+        """Send Event signal"""
         obj.event(**kwargs)
+
+    @staticmethod
+    def diagnostic_refresh(obj, **kwargs):
+        """Refresh Diagnostics"""
+        obj.diagnostic.refresh_diagnostics(**kwargs)
 
     @staticmethod
     def set_oper_status(obj, status, ts: Optional[datetime.datetime] = None, **kwargs):

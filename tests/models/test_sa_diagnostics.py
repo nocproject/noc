@@ -5,16 +5,15 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
+import datetime
+
 # Third-party modules
 from dataclasses import dataclass
 
 # NOC modules
-from noc.core.diagnostic.types import (
-    DiagnosticConfig,
-    DiagnosticState,
-    CheckResult,
-    Check,
-)
+from noc.core.checkers.base import Check, CheckResult
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.hub import DiagnosticHub, SNMP_DIAG
 from noc.core.diagnostic.decorator import diagnostic
 
@@ -38,7 +37,9 @@ class Object(object):
 
     def save_diagnostics(self, diagnostics, dry_run: bool = False):
         """Update Model Instance diagnostics"""
-        self.diagnostics = {d.diagnostic: d.get_value().model_dump() for d in diagnostics}
+        self.diagnostics = {
+            d.diagnostic: d.get_value().model_dump(mode="json") for d in diagnostics
+        }
 
     def can_create_box_alarms(self):
         """"""
@@ -112,10 +113,10 @@ def test_change_object_config_state():
     }
     o.diagnostic.set_dry_run()
     assert o.diagnostic.SNMP.state == DiagnosticState.failed
-    o.diagnostic.refresh_diagnostics()
+    o.diagnostic.reload_diagnostics()
     assert o.diagnostic.SNMP.state == DiagnosticState.failed
     o.access_preference = "C"
-    o.diagnostic.refresh_diagnostics()
+    o.diagnostic.reload_diagnostics()
     assert o.diagnostic.SNMP.state == DiagnosticState.blocked
 
 
@@ -139,3 +140,19 @@ def test_bulk_set_state():
         assert o.diagnostics["Access"]["state"] != "enabled"
 
     assert o.diagnostics["Access"]["state"] == "enabled"
+
+
+def test_expired_checks():
+    o = Object()
+    expired = datetime.datetime.now() - datetime.timedelta(hours=1)
+    o.diagnostics = {
+        "D2": {
+            "diagnostic": "D2",
+            "state": "unknown",
+            "reason": "1",
+            "checks": [{"name": "SNMPv1", "status": False, "error": "Timeout", "expired": expired}],
+        },
+    }
+    o.diagnostic.set_dry_run()
+    o.diagnostic.refresh_diagnostics()
+    assert o.diagnostic.D2.state == DiagnosticState.unknown

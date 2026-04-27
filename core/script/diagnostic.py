@@ -7,13 +7,14 @@
 
 # Python modules
 import logging
-from typing import List, Iterable, Optional, Tuple, Dict, Any
+from typing import List, Iterable, Optional, Tuple
 
 # NOC modules
 from noc.core.script.scheme import Protocol, SNMPCredential, SNMPv3Credential, CLICredential
-from noc.core.checkers.base import Check, CheckResult
-from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
+from noc.core.checkers.base import Check, CheckResult, DataItem
+from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus, DiagnosticState
 from noc.core.profile.loader import GENERIC_PROFILE
+from noc.core.models.inputsources import InputSource
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 
 
@@ -56,11 +57,11 @@ class SNMPSuggestsDiagnostic:
                     )
         yield tuple(r)
 
-    def get_result(
-        self, checks: List[CheckResult]
-    ) -> Optional[
-        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
-    ]:
+    def get_check_status(
+        self,
+        checks: List[CheckStatus],
+        **kwargs,
+    ) -> Tuple[Optional[DiagnosticState], Optional[str]]:
         """Getting Diagnostic result: State and reason"""
         error = ""
         for c in checks:
@@ -69,8 +70,16 @@ class SNMPSuggestsDiagnostic:
             if c.error and c.error.message:
                 error = c.error.message
             if c.status:
-                return True, None, {}, []
-        return False, error, None, []
+                return DiagnosticState.enabled, None
+        return DiagnosticState.failed, error
+
+    def process_result(
+        self,
+        checks: List[CheckResult],
+        source: Optional[InputSource] = InputSource.UNKNOWN,
+    ) -> Tuple[List[CheckStatus], List[DataItem]]:
+        """Processed checks result and Return Status"""
+        return [CheckStatus.from_result(c, source=source) for c in checks], []
 
 
 class CLISuggestsDiagnostic:
@@ -137,25 +146,30 @@ class CLISuggestsDiagnostic:
                     )
         yield r
 
-    def get_result(
-        self, checks: List[CheckResult]
-    ) -> Optional[
-        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
-    ]:
+    def get_check_status(
+        self,
+        checks: List[CheckStatus],
+        **kwargs,
+    ) -> Tuple[Optional[DiagnosticState], Optional[str]]:
         """Getting Diagnostic result: State and reason"""
         error = ""
-        r = {}
-        status = False
+        status = DiagnosticState.failed
         for c in checks:
             if c.skipped:
                 continue
-            if c.error and c.error.message:
-                error = c.error.message
-            if c.key not in r or not r[c.key].status:
-                r[c.key] = CheckStatus.from_result(c)
+            if c.error:
+                error = c.error
             if c.status and not status:
-                status = True
+                status = DiagnosticState.enabled
                 # return True, None, {}, []
         if status:
-            return True, None, {}, list(r.values())
-        return False, error, None, list(r.values())
+            return DiagnosticState.enabled, None
+        return DiagnosticState.failed, error
+
+    def process_result(
+        self,
+        checks: List[CheckResult],
+        source: Optional[InputSource] = InputSource.UNKNOWN,
+    ) -> Tuple[List[CheckStatus], List[DataItem]]:
+        """Processed checks result and Return Status"""
+        return [CheckStatus.from_result(c, source=source) for c in checks], []

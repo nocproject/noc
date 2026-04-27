@@ -11,8 +11,10 @@ from typing import List, Iterable, Optional, Dict
 # NOC modules
 from noc.models import is_document
 from noc.sa.models.diagnosticitem import DiagnosticItem as DiagnosticItemDoc
+from noc.core.watchers.types import ObjectEffect
 from .types import DiagnosticState, DiagnosticValue
-from .hub import DiagnosticHub, DiagnosticItem
+from .hub import DiagnosticHub
+from .item import DiagnosticItem
 
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
@@ -51,7 +53,18 @@ def save_document_diagnostics(
     dry_run: bool = False,
 ):
     """"""
+    # Expired/Add watchers
     self.diagnostics = [DiagnosticItemDoc.from_value(d) for d in diagnostics]
+    saved, expired = [], []
+    for d in diagnostics:
+        saved.append(DiagnosticItemDoc.from_value(d))
+        if d.expired:
+            expired.append(d.expired)
+    self.diagnostics = saved
+    if expired:
+        self.add_watch(ObjectEffect.DIAGNOSTIC_CHECK, after=max(expired), dry_run=dry_run)
+    else:
+        self.stop_watch(ObjectEffect.DIAGNOSTIC_CHECK)
     if dry_run or self._created:
         return
     self.update(diagnostics=self.diagnostics)
@@ -60,9 +73,19 @@ def save_document_diagnostics(
 
 def save_model_diagnostics(self, diagnostics: List[DiagnosticItem], dry_run: bool = False):
     """Update Model Instance diagnostics"""
-    self.diagnostics = {d.diagnostic: d.get_value().model_dump() for d in diagnostics}
+    saved, expired = {}, []
+    for d in diagnostics:
+        saved[d.diagnostic] = d.get_value().model_dump()
+        if d.expired:
+            expired.append(d.expired)
+    self.diagnostics = saved
+    if expired:
+        self.add_watch(ObjectEffect.DIAGNOSTIC_CHECK, after=max(expired), dry_run=dry_run)
+    else:
+        self.stop_watch(ObjectEffect.DIAGNOSTIC_CHECK)
     if dry_run and not self.id:
         return
+    # Expired/Add watchers
     self.__class__.objects.filter(id=self.id).update(diagnostics=self.diagnostics)
     self.update_init()
     self._reset_caches(self.id, credential=True)

@@ -9,22 +9,22 @@
 import datetime
 import logging
 import itertools
-from collections import defaultdict
 from functools import partial
-from typing import Optional, List, Dict, Any, Iterable, Tuple, Set, Union
+from typing import Optional, List, Dict, Any, Iterable, Tuple, Union, TypeVar
 
 # Third-party modules
 import orjson
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel
 
 # NOC modules
 from noc.core.ioloop.util import run_sync
 from noc.core.checkers.base import Check, CheckResult, MetricValue
-from noc.core.handler import get_handler
+from noc.core.checkers.registry import DiagnosticCheckRegister
+from noc.core.comp import DEFAULT_ENCODING
 from noc.config import config
 from noc.models import is_document
-from .types import DiagnosticConfig, DiagnosticState, CheckStatus, DiagnosticValue
-from .handler import DiagnosticHandler
+from .types import DiagnosticConfig, DiagnosticState, DiagnosticValue
+from .item import DiagnosticItem
 
 diagnostic_logger = logging.getLogger(__name__)
 
@@ -48,6 +48,8 @@ FM_DIAGS = {SNMPTRAP_DIAG, SYSLOG_DIAG}
 DIAGNOCSTIC_LABEL_SCOPE = "diag"
 DEFER_CHANGE_STATE = "noc.core.diagnostic.decorator.change_state"
 
+T = TypeVar("T")
+
 
 def json_default(obj):
     if isinstance(obj, BaseModel):
@@ -61,193 +63,6 @@ DIAGNOSTIC_CHECK_STATE: Dict[bool, DiagnosticState] = {
     True: DiagnosticState("enabled"),
     False: DiagnosticState("failed"),
 }
-
-
-class DiagnosticItem(BaseModel):
-    """Class for Diagnostic Result description"""
-
-    diagnostic: str
-    state: DiagnosticState = DiagnosticState("unknown")
-    checks: Optional[List[CheckStatus]] = None
-    # scope: Literal["access", "all", "discovery", "default"] = "default"
-    # policy: str = "ANY
-    reason: Optional[str] = None
-    changed: Optional[datetime.datetime] = None
-    _config: Optional[DiagnosticConfig] = PrivateAttr()
-    _handler: Optional[DiagnosticHandler] = PrivateAttr()
-
-    def __init__(self, cfg: Optional[DiagnosticConfig] = None, **data):
-        super().__init__(**data)
-        self._config = cfg
-
-    def __eq__(self, other: Union["DiagnosticItem", "DiagnosticValue"]) -> bool:
-        """Compare diagnostic by value"""
-        if self.diagnostic != other.diagnostic:
-            return False
-        return (
-            self.state == other.state
-            and self.checks == other.checks
-            and self.reason == other.reason
-            and self.changed == other.changed
-        )
-
-    @property
-    def config(self):
-        return self._config
-
-    @property
-    def show_in_display(self) -> bool:
-        """Show Diagnostic Value on Display"""
-        if (
-            self.config.show_in_display
-            and self.config.hide_enable
-            and self.state == DiagnosticState.enabled
-        ):
-            return False
-        return self.config.show_in_display
-
-    @property
-    def workflow_event(self) -> Optional[str]:
-        if not self.config.workflow_event:
-            return None
-        if self.state not in (DiagnosticState.enabled, DiagnosticState.blocked):
-            return self.config.workflow_event
-        return None
-
-    @property
-    def is_active(self) -> bool:
-        """
-        Check diagnostic has worked: Enabled or Failed state
-        """
-        return self.state in (DiagnosticState.enabled, DiagnosticState.failed)
-
-    @property
-    def is_failed(self) -> bool:
-        return self.state == DiagnosticState.failed
-
-    @classmethod
-    def from_config(
-        cls,
-        cfg: DiagnosticConfig,
-        value: Optional[DiagnosticValue] = None,
-    ) -> "DiagnosticItem":
-        """Create item from config"""
-        if cfg.blocked:
-            state = DiagnosticState.blocked
-        elif not value or value.state == DiagnosticState.blocked:
-            state = cfg.default_state
-        else:
-            state = value.state
-        return DiagnosticItem(
-            cfg=cfg,
-            diagnostic=cfg.diagnostic,
-            state=state,
-            checks=value.checks if value else None,
-            reason=cfg.reason or None,
-            changed=value.changed if value else None,
-        )
-
-    def reset(self, reason="Reset by"):
-        if self.config.blocked:
-            self.state = DiagnosticState.blocked
-            self.reason = self.config.reason
-        else:
-            self.state = self.config.default_state
-            self.reason = reason
-        self.checks = []
-        self.changed = datetime.datetime.now()
-
-    def get_handler(self, logger=None) -> DiagnosticHandler:
-        if not hasattr(self, "_handler"):
-            h = get_handler(self.config.diagnostic_handler)
-            if not h:
-                raise AttributeError("Unknown Diagnostic Handler")
-            try:
-                self._handler = h(config=self.config, logger=logger)
-            except TypeError as e:
-                raise AttributeError(str(e))
-        return self._handler
-
-    def iter_checks(
-        self,
-        logger=None,
-        **kwargs,
-    ) -> Iterable[Tuple[Check, ...]]:
-        """Iterate over checks"""
-        if not self.config.diagnostic_handler and not self.config.checks:
-            return
-        elif not self.config.diagnostic_handler:
-            yield tuple(self.config.checks)
-            return
-        h = self.get_handler(logger=logger)
-        yield from h.iter_checks(**kwargs)
-
-    def get_check_status(
-        self, checks: List[CheckResult]
-    ) -> Tuple[Optional[bool], Optional[str], Dict[str, Any], List[CheckStatus]]:
-        """
-        Calculate check status, ANY or ALL policy apply
-        """
-        if self.config.diagnostic_handler:
-            h = self.get_handler()
-            return h.get_result(checks)
-        state = None
-        data = {}
-        to_result = [CheckStatus.from_result(c) for c in checks if not c.skipped]
-        for c in checks:
-            c = CheckStatus.from_result(c)
-            if c.skipped:
-                continue
-            if not c.status and self.config.state_policy == "ALL":
-                state = False
-                break
-            if c.status and self.config.state_policy == "ANY":
-                state = True
-                break
-        if self.config.state_policy == "ANY" and checks and state is None:
-            state = False
-        return state, None, data, to_result
-
-    def update_checks(self, checks: List[CheckStatus]) -> bool:
-        """Update object checks"""
-        status = {c.name: c.status for c in self.checks or []}
-        changed = False
-        for c in checks:
-            if c.name not in status or c.status != status[c.name]:
-                changed = True
-                break
-        if changed:
-            self.checks = checks
-        return changed
-
-    def get_object_form(self) -> Dict[str, Any]:
-        """Displayed form"""
-        return {
-            "name": self.diagnostic[:6],
-            "description": self.config.display_description,
-            "state": self.state.value,
-            "state__label": self.state.value,
-            "details": [
-                {
-                    "name": c.name,
-                    "state": {True: "OK", False: "Error"}[c.status],
-                    "error": c.error,
-                }
-                for c in self.checks or []
-                if not c.skipped
-            ],
-            "reason": self.reason or "",
-        }
-
-    def get_value(self) -> DiagnosticValue:
-        """"""
-        return DiagnosticValue(
-            diagnostic=self.diagnostic,
-            state=self.state,
-            checks=self.checks,
-            reason=self.reason or None,
-            changed=self.changed,
-        )
 
 
 class DiagnosticHub(object):
@@ -273,15 +88,15 @@ class DiagnosticHub(object):
 
     def __init__(
         self,
-        o: Any,
+        o: T,
         dry_run: bool = False,
         sync_alarm: bool = True,
         sync_labels: bool = True,
-        logger=None,
+        logger: Optional[logging.Logger] = None,
     ):
-        self.logger = logger or logging.getLogger(__name__)
-        self.__diagnostics: Optional[Dict[str, DiagnosticItem]] = None  # Actual diagnostic state
-        self.__checks: Optional[Dict[str, Set[str]]] = None
+        self.logger: logging.Logger = logger or logging.getLogger(__name__)
+        self.__diagnostics: Dict[str, DiagnosticItem] = None  # Actual diagnostic state
+        self.__registry: DiagnosticCheckRegister = DiagnosticCheckRegister(self.logger)
         self.__depended: Dict[str, str] = {}  # Depended diagnostics
         if not hasattr(o, "diagnostics"):
             raise NotImplementedError("Diagnostic Interface not supported")
@@ -291,6 +106,7 @@ class DiagnosticHub(object):
         self.sync_alarm = sync_alarm
         self.sync_labels = sync_labels
         self.bulk_mode: bool = False
+        self.bulk_changes: int = 0
         # diagnostic state
 
     def get(self, name: str) -> Optional[DiagnosticItem]:
@@ -308,7 +124,7 @@ class DiagnosticHub(object):
             raise KeyError
         return v
 
-    def __getattr__(self, name: str, default: Optional[Any] = None) -> Optional["DiagnosticItem"]:
+    def __getattr__(self, name: str, default: Optional[Any] = None) -> "DiagnosticItem":
         v = self.get(name)
         if v is None:
             raise AttributeError(f"Unknown diagnostic {name}")
@@ -328,18 +144,23 @@ class DiagnosticHub(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.bulk_mode = False
         if not self.bulk_changes:
-            self.bulk_changes = 0
             return
         self.sync_diagnostics()
         # Hack for refresh diagnostic Hub on object
         # For fix it may be use set __diagnostics to object diagnostic
         self.__object.diagnostic.__diagnostics = None
+        self.__registry.reset_result()
+        self.bulk_changes = 0
 
-    def __iter__(self) -> Iterable[DiagnosticItem]:
+    def iter_diagnostics(self) -> Iterable[DiagnosticItem]:
+        """"""
         if self.__diagnostics is None:
             self.__load_diagnostics()
         for d in self.__diagnostics.values():
             yield d
+
+    def __iter__(self) -> Iterable[DiagnosticItem]:
+        yield from self.iter_diagnostics()
 
     def has_active_diagnostic(self, name: str) -> bool:
         """
@@ -369,33 +190,32 @@ class DiagnosticHub(object):
         return values.get(name)
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
-        for d in self:
+        for d in self.iter_diagnostics():
             yield d.config
 
     def __load_diagnostics(self):
         """Loading Diagnostic from Object Config"""
         r = {}
         values = self.__object.get_diagnostic_values()
-        locals = []
         for cfg in self.__object.iter_diagnostic_configs():
             r[cfg.diagnostic] = DiagnosticItem.from_config(cfg, value=values.get(cfg.diagnostic))
             for dd in cfg.dependent or []:
                 self.__depended[dd] = cfg.diagnostic
-            if cfg.is_local_status:
-                locals.append(cfg)
         self.__diagnostics = r
-        for cfg in locals:
-            h = self[cfg.diagnostic].get_handler(self.logger)
-            ctx = self.get_check_env(self.__object, cfg)
-            c_state, c_reason, c_data, c_checks = h.get_check_status(**ctx)
-            self.set_state(cfg.diagnostic, c_state, reason=c_reason, data=c_data)
+        # Rearrange
 
     def __load_checks(self):
         """Loading all diagnostic checks"""
         if self.__diagnostics is None:
             self.__load_diagnostics()
-        for d in self.__diagnostics:
-            list(self.iter_checks(d))
+        # Check DB, not binded to Object. Object Key, check key
+        for name in self.__diagnostics:
+            di = self[name]
+            # Replace to Object Ctx + Check Ctx (Diagnostic Ctx)
+            ctx = self.get_check_env(self.__object, di.config, self.__data)
+            for checks in di.iter_checks(**ctx, logger=self.logger):
+                self.__registry.add_checks(itertools.chain(checks), di.diagnostic)
+        self.__registry.loaded |= True
 
     @classmethod
     def get_check_env(
@@ -414,19 +234,16 @@ class DiagnosticHub(object):
         return ctx
 
     def iter_checks(self, name: str) -> Iterable[Tuple[Check, ...]]:
-        if self.__checks is None:
-            self.__checks = defaultdict(set)
         di = self[name]
         ctx = self.get_check_env(self.__object, di.config, self.__data)
         for checks in di.iter_checks(**ctx, logger=self.logger):
-            for c in itertools.chain(checks):
-                self.__checks[c.key].add(di.diagnostic)
+            ctx = self.get_check_env(self.__object, di.config, self.__data)
             yield checks
 
     def set_state(
         self,
         diagnostic: str,
-        state: DiagnosticState = DiagnosticState("unknown"),
+        state: Union[str, DiagnosticState] = "unknown",
         reason: Optional[str] = None,
         changed_ts: Optional[datetime.datetime] = None,
         data: Optional[Dict[str, Any]] = None,
@@ -440,6 +257,8 @@ class DiagnosticHub(object):
             changed_ts: Timestamp changed
             data: Collected checks data
         """
+        if isinstance(state, str):
+            state = DiagnosticState(state)
         d = self[diagnostic]
         if data:
             self.apply_context_data(d, data)
@@ -461,7 +280,7 @@ class DiagnosticHub(object):
         self.logger.debug("[%s] Update depended diagnostic", d.diagnostic)
         d = self[self.__depended[d.diagnostic]]
         states = []
-        for dd in d.config.dependent:
+        for dd in d.config.dependent or []:
             if dd in self:
                 states.append(self[dd].state)
         if d.config.state_policy == "ANY" and DiagnosticState.enabled not in states:
@@ -472,6 +291,15 @@ class DiagnosticHub(object):
             self.set_state(d.diagnostic, DiagnosticState.enabled)
         self.sync_diagnostics()
 
+    def refresh_status(self, diagnostic: str, dry_run: bool = False):
+        state, c_reason = self[diagnostic].get_check_status()
+        if state is None:
+            # Partial, more checks needed
+            return
+        self.set_state(diagnostic, state, reason=c_reason)
+        if self[diagnostic].is_changed:
+            self.sync_diagnostics(dry_run)
+
     def update_checks(self, checks: List[CheckResult], dry_run: bool = False):
         """
         Update checks on diagnostic and calculate state
@@ -479,59 +307,36 @@ class DiagnosticHub(object):
         * Calculate state
         * Set state
         """
-        now = datetime.datetime.now().replace(microsecond=0)
-        affected_diagnostics: Dict[str, List[CheckResult]] = defaultdict(list)
-        if not self.__checks:
+        if not self.__registry.is_loaded:
             self.__load_checks()
-        metrics = []
+        metrics, data = [], []
         for cr in checks:
-            if cr.key not in self.__checks:
-                self.logger.debug(
-                    "[%s|%s] Diagnostic not enabled: %s", cr.check, cr.key, self.__checks
-                )
-                continue
+            self.__registry.update_result(cr)
             if cr.metrics:
                 metrics += cr.metrics
-            m_labels = [f"noc::check::name::{cr.check}"]
-            if cr.args:
-                m_labels += [f"noc::check::arg0::{cr.arg}"]
-            if cr.address:
-                m_labels += [f"noc::check::address::{cr.address}"]
-            for d in self.__checks[cr.key]:
-                affected_diagnostics[d] += [cr]
-                if not cr.skipped:
-                    metrics += [
-                        MetricValue(
-                            "Check | Status",
-                            value=int(cr.status),
-                            labels=[*m_labels, f"noc::diagnostic::{d}"],
-                        )
-                    ]
+            if cr.data:
+                data += cr.data
         # Calculate State and Update diagnostic
-        for d, crs in affected_diagnostics.items():
-            c_state, c_reason, c_data, c_checks = self[d].get_check_status(crs)
-            if c_state is None:
-                # Partial, more checks needed
-                continue
-            self.set_state(
-                d,
-                DIAGNOSTIC_CHECK_STATE[c_state],
-                reason=c_reason,
-                changed_ts=now,
-                data=c_data,
-            )
-            changed = self[d].update_checks(c_checks)
-            if changed:
-                self.sync_diagnostics(dry_run)
+        # for d, crs in affected_diagnostics.items():
+        for d, crs in self.__registry.iter_affected_diagnostics():
+            _, c_data = self[d].update_checks(crs)
+            if c_data:
+                self.apply_context_data(self[d], {c.name: c.value for c in c_data})
+                data += c_data
+            # c_state, c_reason, c_data, c_checks = self[d].get_check_status(crs)
+            self.refresh_status(d, dry_run=dry_run)
         if metrics and not self.dry_run:
             self.register_diagnostic_metrics(metrics)
 
-    def refresh_diagnostics(self):
-        """
-        Reload diagnostic config and sync
-        """
+    def reload_diagnostics(self):
+        """Load Diagnostics from object"""
         self.__diagnostics = None
-        self.sync_diagnostics()
+        self.__load_diagnostics()
+
+    def refresh_diagnostics(self):
+        """Refresh Diagnostic state"""
+        for d in self.iter_diagnostics():
+            self.refresh_status(d.diagnostic)
 
     def reset_diagnostics(
         self, diagnostics: List[str], reason: Optional[str] = "By Reset Diagnostic"
@@ -565,14 +370,14 @@ class DiagnosticHub(object):
         dry_run |= self.dry_run
         new_diags, changed_states, wf_events = [], set(), set()
         changed = []
-        for di_new in self:
+        for di_new in self.iter_diagnostics():
             d_name = di_new.diagnostic
             d_current = self.get_object_diagnostic_value(d_name)
             if not d_current:
                 new_diags.append(di_new)
                 changed.append(d_name)
                 continue
-            if d_current == di_new and di_new.workflow_event:
+            if d_current.state == di_new.state and di_new.workflow_event:
                 self.logger.debug(
                     "[%s] Send Workflow Event: %s",
                     d_name,
@@ -653,7 +458,7 @@ class DiagnosticHub(object):
     @classmethod
     def sync_alarms(
         cls,
-        o: Any,
+        o: T,
         diagnostics: List[DiagnosticItem],
         alarm_disable: bool = False,
         dry_run: bool = False,
@@ -779,7 +584,7 @@ class DiagnosticHub(object):
             ts:
         """
         from noc.core.service.loader import get_service
-        from noc.core.mx import DEFAULT_ENCODING, MessageType
+        from noc.core.mx import MessageType
 
         from_state = from_state or DiagnosticState.unknown
         if self.dry_run:

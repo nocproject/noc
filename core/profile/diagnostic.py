@@ -1,22 +1,23 @@
 # ----------------------------------------------------------------------
 # Profile diagnostic
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 from collections import defaultdict
-from typing import List, Iterable, Optional, Tuple, Union, Dict, Set, Any
+from typing import List, Iterable, Optional, Tuple, Union, Dict, Set
 
 # NOC modules
 from noc.core.mib import mib
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential
 from noc.core.diagnostic.hub import HTTP_DIAG, HTTPS_DIAG
+from noc.core.models.inputsources import InputSource
 from noc.sa.models.profilecheckrule import ProfileCheckRule, SuggestProfile
-from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus
-from noc.core.checkers.base import Check, CheckResult
+from noc.core.diagnostic.types import DiagnosticConfig, CheckStatus, DiagnosticState
+from noc.core.checkers.base import Check, CheckResult, DataItem
 from noc.core.validators import is_oid
 
 
@@ -87,15 +88,15 @@ class ProfileDiagnostic:
             if not c.status:
                 self.unsupported_method.add(method)
                 continue
-            for d in c.data:
+            for d in c.data or []:
                 self.logger.info("[%s] Getting %s, Result: %s", method, d.name, d.value)
                 self.result_cache[(method, d.name)] = d.value
 
-    def get_result(
-        self, checks: List[CheckResult]
-    ) -> Optional[
-        Tuple[Optional[bool], Optional[str], Optional[Dict[str, Any]], List[CheckStatus]]
-    ]:
+    def process_result(
+        self,
+        checks: List[CheckResult],
+        source: Optional[InputSource] = InputSource.UNKNOWN,
+    ) -> Tuple[List[CheckStatus], List[DataItem]]:
         """Getting Diagnostic result: State and reason"""
         self.parse_checks(checks)
         if not self.result_cache:
@@ -123,12 +124,23 @@ class ProfileDiagnostic:
                 self.logger.info("Matched profile: %s (%s)", rule.profile, rule.name)
                 # @todo: process MAYBE rule
                 self.profile = rule.profile
-                return True, None, {"profile": rule.profile}, []
+                # {"profile": rule.profile}, []
+                return [], [DataItem(name="profile", value=rule.profile)]
             error = f"Not find profile for OID or HTTP string: {result}"
         self.logger.info("Cannot detect profile: %s", error)
         self.reason = error
         # Data
-        return False, self.reason, None, []
+        return [], []
+
+    def get_check_status(
+        self,
+        checks: List[CheckStatus],
+        **kwargs,
+    ) -> Tuple[Optional[DiagnosticState], Optional[str]]:
+        """"""
+        if self.profile:
+            return DiagnosticState.enabled, self.reason
+        return DiagnosticState.failed, self.reason
 
     def load_rules(self) -> Dict[Tuple[str, str, int], List[SuggestProfile]]:
         """
@@ -191,5 +203,7 @@ class ProfileDiagnostic:
             error = "Cannot fetch snmp data, check device for SNMP access"
         elif not http_result:
             error = "Cannot fetch HTTP data, check device for HTTP access"
+        else:
+            error = None
         self.logger.info("Cannot detect profile: %s", error)
         return None, error

@@ -495,7 +495,7 @@ class Service(Document):
             or "caps" in self._changed_fields
             or "effective_labels" in self._changed_fields
         ):
-            self.diagnostic.refresh_diagnostics()
+            self.diagnostic.reload_diagnostics()
             self.refresh_status()
             self._refresh_managed_object()
 

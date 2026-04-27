@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DiagnosticItem
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -22,6 +22,7 @@ from mongoengine.fields import (
 
 # NOC modules
 from noc.core.diagnostic.types import DiagnosticState, DiagnosticValue, CheckStatus
+from noc.core.models.inputsources import InputSource
 
 
 class CheckItem(EmbeddedDocument):
@@ -31,6 +32,8 @@ class CheckItem(EmbeddedDocument):
     status: bool = BooleanField(required=True)
     args: Dict[str, str] = DictField(required=False)
     skipped: bool = BooleanField(default=False)
+    expired: Optional[datetime.datetime] = DateTimeField(required=False)
+    source: InputSource = EnumField(InputSource, required=True, default=InputSource.UNKNOWN)
     error: Optional[str] = StringField(required=False)
 
     def __str__(self):
@@ -45,6 +48,8 @@ class CheckItem(EmbeddedDocument):
             status=self.status,
             skipped=self.skipped,
             error=self.error or None,
+            expired=self.expired or None,
+            source=self.source,
         )
 
     @classmethod
@@ -55,6 +60,8 @@ class CheckItem(EmbeddedDocument):
             status=value.status,
             skipped=value.skipped,
             error=value.error or None,
+            expired=value.expired,
+            source=value.source,
         )
 
 

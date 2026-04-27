@@ -66,4 +66,6 @@ class WatchItem:
             return ActionType.FIRE_WF_EVENT
         if self.effect == ObjectEffect.MX_EVENT:
             return ActionType.FIRE_OBJ_EVENT
+        if self.effect == ObjectEffect.DIAGNOSTIC_CHECK:
+            return ActionType.REFRESH_DIAGNOSTICS
         return None

@@ -1296,7 +1296,7 @@ class ManagedObject(NOCModel):
             self.diagnostic.reset_diagnostics(diagnostics)
         elif "effective_labels" in self.changed_fields:
             # Update configured diagnostic
-            self.diagnostic.refresh_diagnostics()
+            self.diagnostic.reload_diagnostics()
         # Apply discovery jobs
         self.ensure_discovery_jobs()
         # self.update_init()

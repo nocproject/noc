@@ -183,20 +183,24 @@ class CredentialChecker(object):
         :return:
         """
         # Try custom credential first
+        ordered_cli, ordered_snmp = [], []
+        for p in protocols:
+            if p in SUGGEST_CLI:
+                ordered_cli.append(p)
+            elif p in SUGGEST_SNMP:
+                ordered_snmp.append(p)
         for c in self.credentials:
             if isinstance(c, CLICredential):
-                cli = tuple(set(SUGGEST_CLI).intersection(set(protocols)))
                 yield SuggestCLIConfig(
-                    protocols=cli,
+                    protocols=tuple(ordered_cli),
                     user=c.user,
                     password=c.password or None,
                     super_password=c.super_password or None,
                     raise_privileges=self.raise_privilege,
                 )
             elif isinstance(c, SNMPCredential):
-                snmp = tuple(set(SUGGEST_SNMP).intersection(set(protocols)))
                 yield SuggestSNMPConfig(
-                    protocols=snmp,
+                    protocols=tuple(ordered_snmp),
                     snmp_ro=c.snmp_ro,
                     snmp_rw=c.snmp_rw,
                 )
