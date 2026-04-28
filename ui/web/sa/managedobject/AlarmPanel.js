@@ -130,11 +130,11 @@ Ext.define("NOC.sa.managedobject.AlarmPanel", {
   preview: function(record){
     var me = this;
     me.callParent(arguments);
-    var status = me.statusRadioButton.getValue().params,
-      url = Ext.String.format("/fm/alarm/?managed_object={0}&__format=ext&{1}", me.currentRecord.get("id"), status);
+    let status = me.statusRadioButton.getValue().params,
+      objectId = me.currentRecord.get("id");
     me.setTitle(record.get("name") + " alarms");
     Ext.Ajax.request({
-      url: url,
+      url: `/fm/alarm/?managed_object=${objectId}&__format=ext&${status}`,
       method: "GET",
       scope: me,
       success: function(response){
