@@ -31,6 +31,7 @@ from noc.core.protodcsources.loader import loader as pds_loader
 from noc.core.reporter.formatter.loader import loader as r_formatter_loader
 from noc.core.vlanroles import VLANRole
 from noc.main.reportsources.loader import loader as rds_loader
+from noc.main.models.messageroute import MessageRoute
 from noc.models import iter_model_id
 from noc import settings
 from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
@@ -159,10 +160,12 @@ class RefAppplication(ExtApplication):
         return r
 
     def build_unotificationmethod(self):
-        return sorted(
-            ({"id": s[0], "label": s[1]} for s in USER_NOTIFICATION_METHOD_CHOICES),
-            key=lambda x: x["label"],
-        )
+        r = []
+        for s in USER_NOTIFICATION_METHOD_CHOICES:
+            r.append({"id": s[0], "label": s[1]})
+        for mx in MessageRoute.objects.filter(register_notification_method=True):
+            r.append({"id": str(mx.id), "label": str(mx.name)})
+        return sorted(r, key=lambda x: x["label"])
 
     def build_windowfunction(self):
         return [{"id": x[0], "label": x[1]} for x in sorted(wf_choices, key=operator.itemgetter(1))]

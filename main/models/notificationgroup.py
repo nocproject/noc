@@ -80,6 +80,28 @@ class StaticMember(BaseModel):
     language: Optional[str] = None
     time_pattern: Optional[int] = None
 
+    def get_contacts(self) -> List[NotificationContact]:
+        """Build Notification Contact"""
+        from noc.main.models.messageroute import MessageRoute
+
+        r = []
+        method, route = self.notification_method, None
+        if method not in NOTIFICATION_METHODS:
+            # Try Forward
+            route = MessageRoute.get_by_id(method)
+            if route:
+                method, route = "webhook", str(route.id)
+        for c in self.contact.split(","):
+            r.append(
+                NotificationContact(
+                    contact=c,
+                    method=method,
+                    time_pattern=self.time_pattern,
+                    route=route,
+                ),
+            )
+        return r
+
 
 StaticMembers = RootModel[List[StaticMember]]
 
@@ -284,11 +306,11 @@ class NotificationGroup(NOCModel):
         user: User,
     ) -> Optional["SubscriptionSettingItem"]:
         """"""
-        for s in self.subscription_settings:
-            if "user" in s and s["user"] == user.id:
-                return SubscriptionSettingItem(**s)
-            if "group" in s and s["group"] in user.groups.values_list("id", flat=True):
-                return SubscriptionSettingItem(**s)
+        for s in self.iter_subscription_settings:
+            if (s.user and s.user == user.id) or (
+                s.group and s.group in user.groups.values_list("id", flat=True)
+            ):
+                return s
         return None
 
     @classmethod
@@ -330,6 +352,10 @@ class NotificationGroup(NOCModel):
 
     # def on_save(self):
     #    self.ensure_subscriptions()
+    def iter_conditions(self) -> Iterable[SubscriptionConditionItem]:
+        """"""
+        for s in self.conditions or []:
+            yield SubscriptionConditionItem.model_validate(s)
 
     def get_route_config(self):
         """Return data for configured Router"""
@@ -349,17 +375,21 @@ class NotificationGroup(NOCModel):
         }
         if not self.conditions:
             return r
-        for m in self.conditions:
+        for m in self.iter_conditions():
             c = {}
-            if m["resource_groups"]:
-                c[MessageMeta.GROUPS.value] = list(m["resource_groups"])
-            if m["labels"]:
-                c[MessageMeta.LABELS.value] = list(m["labels"])
-            if m["administrative_domain"]:
-                c[MessageMeta.ADM_DOMAIN.value] = m["administrative_domain"]
+            if m.resource_groups:
+                c[MessageMeta.GROUPS.value] = list(m.resource_groups)
+            if m.labels:
+                c[MessageMeta.LABELS.value] = list(m.labels)
+            if m.administrative_domain:
+                c[MessageMeta.ADM_DOMAIN.value] = m.administrative_domain
             if c:
                 r["match"].append(c)
         return r
+
+    def iter_static_members(self) -> Iterable[StaticMember]:
+        for ngo in self.static_members or []:
+            yield StaticMember.model_validate(ngo)
 
     @property
     def members(self) -> List[NotificationContact]:
@@ -367,14 +397,14 @@ class NotificationGroup(NOCModel):
         contacts = []
         ts = datetime.datetime.now()
         # Collect other notifications
-        for ngo in self.static_members:
-            for c in ngo["contact"].split(","):
+        for ngo in self.iter_static_members():
+            for c in ngo.contact.split(","):
                 if c not in contacts:
                     contacts.append(
                         NotificationContact(
                             contact=c,
-                            method=ngo["notification_method"],
-                            time_pattern=ngo.get("time_pattern") or None,
+                            method=ngo.notification_method,
+                            time_pattern=ngo.time_pattern,
                         )
                     )
         if not self.subscription_settings:
@@ -396,6 +426,8 @@ class NotificationGroup(NOCModel):
         """Getting Active user Contacts for send notification"""
         r = []
         us = self.get_user_settings(self, user)
+        if not us:
+            return r
         if us.time_pattern and not us.time_pattern.match(ts):
             return r
         for c in user.contacts:
@@ -418,15 +450,8 @@ class NotificationGroup(NOCModel):
     ) -> List[NotificationContact]:
         now = ts or datetime.datetime.now()
         contacts = []
-        for ngo in self.static_members:
-            for c in ngo["contact"].split(","):
-                contacts.append(
-                    NotificationContact(
-                        contact=c,
-                        method=ngo["notification_method"],
-                        time_pattern=ngo.get("time_pattern") or None,
-                    ),
-                )
+        for ngo in self.iter_static_members():
+            contacts += ngo.get_contacts()
         watchers = []
         if not self.subscription_settings:
             return contacts
@@ -437,7 +462,7 @@ class NotificationGroup(NOCModel):
         ):
             if ngu.policy == "D":
                 continue
-            if ngu.expired_at and ngu.expired_at > ts:
+            if ngu.expired_at and ngu.expired_at > now:
                 continue
             if ngu.policy == "W":
                 watchers.append(get_subscriber_id(ngu.user))
@@ -643,8 +668,8 @@ class NotificationGroup(NOCModel):
     @property
     def iter_subscription_settings(self) -> Iterable[SubscriptionSettingItem]:
         """Subscription Settings"""
-        for s in self.subscription_settings:
-            yield SubscriptionSettingItem(**s)
+        for s in self.subscription_settings or []:
+            yield SubscriptionSettingItem.model_validate(s)
 
     @classmethod
     def iter_object_subscription_settings(

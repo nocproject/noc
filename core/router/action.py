@@ -8,7 +8,7 @@
 # Python modules
 import datetime
 import logging
-from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List, Any
+from typing import Type, Tuple, Dict, Iterator, Literal, Optional, List, Any, ClassVar
 from dataclasses import dataclass
 
 # Third-party modules
@@ -27,6 +27,7 @@ from noc.core.mx import (
     MX_NOTIFICATION_GROUP_ID,
     MX_WATCH_FOR_ID,
     MX_TO,
+    MX_FWD_ROUTER,
 )
 from noc.config import config
 from noc.main.models.handler import Handler
@@ -37,6 +38,7 @@ logger = logging.getLogger(__name__)
 DROP = ""
 PASS = "<pass>"
 DUMP = "<dump>"
+FWD = "<fwd>"
 ACTION_TYPES: Dict[str, Type["Action"]] = {}
 
 
@@ -66,7 +68,7 @@ class ActionBase(type):
 
 
 class Action(object, metaclass=ActionBase):
-    name: str
+    name: ClassVar[str]
 
     def __init__(self, cfg: ActionCfg):
         self.headers: Dict[str, bytes] = {
@@ -284,11 +286,26 @@ class MessageAction(Action):
                     "subject": f"{c.title_tag} {body['subject']}",
                     "body": body["body"],
                 }
+            headers = {
+                MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING),
+                MX_NOTIFICATION_METHOD: c.method.encode(),
+            }
+            if c.route:
+                action = FWD
+                body = Message(
+                    value=body,
+                    subject=msg.subject,
+                    offset=msg.offset,
+                    timestamp=msg.timestamp,
+                    key=msg.key,
+                    partition=msg.partition,
+                    headers=headers,
+                )
+                headers[MX_FWD_ROUTER] = str(c.route).encode()
+            else:
+                action = NOTIFICATION_METHODS[c.method].decode()
             yield (
-                NOTIFICATION_METHODS[c.method].decode(),
-                {
-                    MX_TO: c.contact.encode(encoding=DEFAULT_ENCODING),
-                    MX_NOTIFICATION_METHOD: c.method.encode(),
-                },
+                action,
+                headers,
                 body,
             )

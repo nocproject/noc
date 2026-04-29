@@ -6,9 +6,9 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import List, Optional, Union
 import threading
 import operator
+from typing import List, Optional, Union, Dict, Any
 
 # Third-party modules
 import bson
@@ -66,7 +66,7 @@ class MRMatch(EmbeddedDocument):
     exclude_labels = ListField(StringField())
     resource_groups = PlainReferenceListField(ResourceGroup)
     administrative_domain = ForeignKeyField(AdministrativeDomain)
-    headers_match = EmbeddedDocumentListField(HeaderMatch)
+    headers_match: List[HeaderMatch] = EmbeddedDocumentListField(HeaderMatch)
     remote_system = PlainReferenceField(RemoteSystem)
 
     def __str__(self):
@@ -74,6 +74,25 @@ class MRMatch(EmbeddedDocument):
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
+
+    def get_matcher(self) -> Dict[str, Any]:
+        """"""
+        return {
+            MessageMeta.LABELS.value: list(self.labels),
+            "exclude_labels": list(self.exclude_labels),
+            MessageMeta.ADM_DOMAIN.value: (
+                AdministrativeDomain.get_nested_ids(self.administrative_domain)
+                if self.administrative_domain
+                else None
+            ),
+            MessageMeta.GROUPS.value: [str(g.id) for g in self.resource_groups or []],
+            MessageMeta.REMOTE_SYSTEM.value: (
+                str(self.remote_system.id) if self.remote_system else None
+            ),
+            "headers": [
+                {"header": m.header, "op": m.op, "value": m.value} for m in self.headers_match or []
+            ],
+        }
 
 
 class MRAHeader(EmbeddedDocument):
@@ -102,7 +121,7 @@ class MessageRoute(Document):
     transmute_handler = PlainReferenceField(Handler)
     transmute_template = ForeignKeyField(Template)
     # Message actions
-    action = StringField(
+    action: str = StringField(
         choices=[
             "drop",
             "dump",
@@ -112,10 +131,11 @@ class MessageRoute(Document):
         ],
         default="notification",
     )
+    register_notification_method = BooleanField(default=False)
     stream = StringField()
     notification_group = ForeignKeyField(NotificationGroup)
     render_template = ForeignKeyField(Template)
-    headers = EmbeddedDocumentListField(MRAHeader)
+    headers: List[MRAHeader] = EmbeddedDocumentListField(MRAHeader)
 
     _id_cache = cachetools.TTLCache(100, ttl=60)
 
@@ -132,10 +152,16 @@ class MessageRoute(Document):
         return self.name
 
     def clean(self):
-        if self.type == "metrics" and self.action == "notification":
+        if self.type == MessageType.METRICS and self.action == "notification":
             raise ValidationError({"action": "For type 'metric' Notification is not allowed"})
         if self.action == "stream" and not self.stream:
             raise ValidationError({"stream": "For 'stream' action Stream must be set"})
+        if self.register_notification_method and self.action != "stream":
+            raise ValidationError(
+                {
+                    "action": "For 'register_notification_method' flag only Stream are allowed",
+                }
+            )
         if self.action == "notification" and not self.notification_group:
             raise ValidationError(
                 {"notification_group": "For 'notification' action NotificationGroup must be set"}
@@ -155,12 +181,12 @@ class MessageRoute(Document):
         }
         if self.stream:
             r["stream"] = self.stream
-        if self.type == "metrics" and self.action == "stream":
+        if self.type == MessageType.METRICS and self.action == "stream":
             r["action"] = "metrics"
-        if self.action == "notification":
+        if self.action == "notification" and not self.register_notification_method:
             r["action"] = "message"
         if self.headers:
-            r["headers"] = [{"header": m.header, "value": m.value} for m in self.headers]
+            r["headers"] = [{"header": m.header, "value": m.value} for m in self.headers or []]
         if self.notification_group:
             r["notification_group"] = str(self.notification_group.id)
         if self.render_template:
@@ -170,23 +196,5 @@ class MessageRoute(Document):
         if self.transmute_handler:
             r["transmute_handler"] = str(self.transmute_handler.id)
         for match in self.match:
-            r["match"] += [
-                {
-                    MessageMeta.LABELS.value: list(match.labels),
-                    "exclude_labels": list(match.exclude_labels),
-                    MessageMeta.ADM_DOMAIN.value: (
-                        AdministrativeDomain.get_nested_ids(match.administrative_domain)
-                        if match.administrative_domain
-                        else None
-                    ),
-                    MessageMeta.GROUPS.value: [str(g.id) for g in match.resource_groups or []],
-                    MessageMeta.REMOTE_SYSTEM.value: (
-                        str(match.remote_system.id) if match.remote_system else None
-                    ),
-                    "headers": [
-                        {"header": m.header, "op": m.op, "value": m.value}
-                        for m in match.headers_match or []
-                    ],
-                }
-            ]
+            r["match"] += [match.get_matcher()]
         return r

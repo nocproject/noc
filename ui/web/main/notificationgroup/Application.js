@@ -17,6 +17,7 @@ Ext.define("NOC.main.notificationgroup.Application", {
     "NOC.main.timepattern.LookupField",
     "NOC.main.template.LookupField",
     "NOC.main.ref.messagetype.LookupField",
+    "NOC.main.ref.unotificationmethod.LookupField",
     "NOC.aaa.user.LookupField",
     "NOC.aaa.group.LookupField",
     "NOC.inv.resourcegroup.LookupField",
@@ -122,15 +123,8 @@ Ext.define("NOC.main.notificationgroup.Application", {
               text: __("Method"),
               dataIndex: "notification_method",
               width: 75,
-              editor: {
-                xtype: "combobox",
-                store: [
-                  ["mail", "Mail"],
-                  ["tg", "Telegram"],
-                  ["webhook", "WebHook"],
-                  ["xmpp", "Jabber"],
-                ],
-              },
+              renderer: NOC.render.Lookup("notification_method"),
+              editor: "main.ref.unotificationmethod.LookupField",
             },
             {
               text: __("Contact"),

@@ -18,6 +18,7 @@ from noc.aaa.models.group import Group
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
+from noc.main.models.messageroute import MessageRoute
 from noc.sa.interfaces.base import (
     ListOfParameter,
     ModelParameter,
@@ -37,6 +38,13 @@ class NotificationGroupApplication(ExtModelApplication):
     menu = [_("Notification Groups")]
     model = NotificationGroup
     glyph = "envelope-o"
+
+    NOTIFICATION_LABEL = {
+        "mail": "Mail",
+        "tg": "Telegram",
+        "webhook": "WebHook",
+        "xmpp": "Jabber",
+    }
 
     @view(
         url="^actions/test/$",
@@ -131,5 +139,16 @@ class NotificationGroupApplication(ExtModelApplication):
                 t = Template.get_by_id(int(ss["template"]))
                 ss["template__label"] = t.name
         for sm in r.get("static_members", []):
-            sm["time_pattern__label"] = TimePattern.get_by_id(sm["time_pattern"]).name
+            if sm.get("time_pattern"):
+                sm["time_pattern__label"] = TimePattern.get_by_id(sm["time_pattern"]).name
+            if sm["notification_method"] in self.NOTIFICATION_LABEL:
+                sm["notification_method__label"] = self.NOTIFICATION_LABEL[
+                    sm["notification_method"]
+                ]
+            else:
+                mx = MessageRoute.get_by_id(sm["notification_method"])
+                if mx:
+                    sm["notification_method__label"] = mx.name
+                else:
+                    sm["notification_method__label"] = sm["notification_method"]
         return r

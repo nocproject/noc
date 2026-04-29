@@ -118,6 +118,11 @@ Ext.define("NOC.main.messageroute.Application", {
               fieldLabel: __("Telemetry Sample"),
               uiStyle: "small",
               allowBlank: true,
+            },
+            {
+              name: "register_notification_method",
+              xtype: "checkbox",
+              boxLabel: __("Register as Notification"),
             }],
         },
         {
