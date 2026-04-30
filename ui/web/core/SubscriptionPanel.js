@@ -138,7 +138,7 @@ Ext.define("NOC.core.SubscriptionPanel", {
   //
   makeUrl: function(appId, recordId, suffix){ 
     var prefix = appId.replace(/\./g, "/");
-    return Ext.String.format("/{0}/{1}/{2}/", prefix, recordId, suffix);
+    return `/${prefix}/${recordId}/${suffix}/`;
   },
   //
   request: function(url, method, successCallback){

@@ -107,7 +107,7 @@ Ext.define("NOC.sa.managedobject.form.FormController", {
     });
     if(!Ext.Object.isEmpty(values)){
       values.ids = formPanel.ids;
-      var message = Ext.String.format("Do you wish to change {0} record(s): <br/><br/>{1}<br/>This operation cannot be undone!", values.ids.length, valuesTxt);
+      var message = `Do you wish to change ${values.ids.length} record(s): <br/><br/>${valuesTxt}<br/>This operation cannot be undone!`;
       Ext.Msg.show({
         title: __("Change records?"),
         msg: message,

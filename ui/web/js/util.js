@@ -109,11 +109,7 @@ Ext.apply(NOC.render, {
     var tpl = new Ext.XTemplate(fmt);
     return function(value, meta, record){
       var tooltip = tpl.apply(record.getData());
-      return Ext.String.format(
-        '<span title="{0}">{1}</span>',
-        Ext.htmlEncode(tooltip),
-        Ext.htmlEncode(value),
-      );
+      return `<span title="${Ext.htmlEncode(tooltip)}">${Ext.htmlEncode(value)}</span>`;
     }
   },
 
@@ -858,13 +854,7 @@ NOC.uiStyles = function(style, theme){
 //
 NOC.openHelp = function(topic){
   var url, win;
-  url = Ext.String.format(
-    "{0}/{1}/{2}/go.html#{3}",
-    NOC.settings.helpUrl,
-    NOC.settings.helpBranch,
-    NOC.settings.helpLanguage,
-    topic,
-  );
+  url = `${NOC.settings.helpUrl}/${NOC.settings.helpBranch}/${NOC.settings.helpLanguage}/go.html#${topic}`;
   win = window.open(url, "_blank");
   win.focus();
 };

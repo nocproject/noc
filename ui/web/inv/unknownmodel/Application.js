@@ -132,10 +132,7 @@ Ext.define("NOC.inv.unknownmodel.Application", {
                 cmd: {
                   cmd: "new",
                   args: {
-                    description: Ext.String.format("{0} generated from {1}, platform: {2}",
-                                                   me.currentRecord.get("description"),
-                                                   me.currentRecord.get("managed_object"),
-                                                   me.currentRecord.get("platform")),
+                    description: `${me.currentRecord.get("description")} generated from ${me.currentRecord.get("managed_object")}, platform: ${me.currentRecord.get("platform")}`,
                     data: {
                       asset: {
                         part_no: [me.currentRecord.get("part_no")],

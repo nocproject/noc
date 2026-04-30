@@ -80,25 +80,17 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
         case "inputMany": {
           secondPointXY = [attr.startXY[0] + attr.pinRadius * (attr.indexes[0] + 3) + attr.discriminatorsLength[0], attr.startXY[1]];
           thirdPointXY = [secondPointXY[0], attr.toXY[1]];
-          path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                   attr.startXY[0], attr.startXY[1],
-                                   secondPointXY[0], secondPointXY[1],
-                                   thirdPointXY[0], thirdPointXY[1],
-                                   attr.toXY[0], attr.toXY[1]);
+          path = `M${attr.startXY[0]},${attr.startXY[1]} L${secondPointXY[0]},${secondPointXY[1]} L${thirdPointXY[0]},${thirdPointXY[1]} L${attr.toXY[0]},${attr.toXY[1]}`;
           break;
         }
         case "outputMany": {
           secondPointXY = [attr.toXY[0] - attr.pinRadius * (attr.indexes[0] + 3) - attr.discriminatorsLength[1], attr.startXY[1]];
           thirdPointXY = [secondPointXY[0], attr.toXY[1]];
-          path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                   attr.startXY[0], attr.startXY[1],
-                                   secondPointXY[0], secondPointXY[1],
-                                   thirdPointXY[0], thirdPointXY[1],
-                                   attr.toXY[0], attr.toXY[1]);
+          path = `M${attr.startXY[0]},${attr.startXY[1]} L${secondPointXY[0]},${secondPointXY[1]} L${thirdPointXY[0]},${thirdPointXY[1]} L${attr.toXY[0]},${attr.toXY[1]}`;
           break;
         }
         case "single": {
-          path = Ext.String.format("M{0},{1} L{2},{3}", attr.startXY[0], attr.startXY[1], attr.toXY[0], attr.toXY[1]);
+          path = `M${attr.startXY[0]},${attr.startXY[1]} L${attr.toXY[0]},${attr.toXY[1]}`;
           break;
         }
       }
@@ -145,11 +137,7 @@ Ext.define("NOC.inv.objectmodel.sprites.Connection", {
       // length = 18 * (scale || 1),
       // width = 5.5 * (scale || 1),
       width = length / 3,
-      path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} Z",
-                               pointXY[0], pointXY[1],
-                               pointXY[0] - length, pointXY[1] + width,
-                               pointXY[0] - length, pointXY[1] - width,
-      );
+      path = `M${pointXY[0]},${pointXY[1]} L${pointXY[0] - length},${pointXY[1] + width} L${pointXY[0] - length},${pointXY[1] - width} Z`;
 
     return {
       type: "path",

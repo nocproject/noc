@@ -182,8 +182,8 @@ Ext.define("NOC.fm.event.EventInspector", {
       return;
     }
     var object = record.get("object") || {},
-      objectStr = Ext.Object.isEmpty(object) ? "-" : Ext.String.format("{0}({1})", object.name || "", object.address || ""),
-      remoteStr = Ext.isEmpty(record.get("remote_system")) ? "-" : Ext.String.format("{0}:{1}", record.get("remote_system"), record.get("remote_id")),
+      objectStr = Ext.Object.isEmpty(object) ? "-" : `${object.name || ""}(${object.address || ""})`,
+      remoteStr = Ext.isEmpty(record.get("remote_system")) ? "-" : `${record.get("remote_system")}:${record.get("remote_id")}`,
       labels = Ext.isEmpty(record.get("labels")) ? "-" : NOC.render.LabelField(record.get("labels")),
       varsData = [...this.makeVarsData(__("Raw vars"), record.get("raw_vars")),
                   ...this.makeVarsData(__("Vars"), record.get("vars"))];
@@ -196,7 +196,7 @@ Ext.define("NOC.fm.event.EventInspector", {
       labels: labels,
       event_class: record.get("event_class") || "-",
       remote: remoteStr,
-      target: Ext.String.format("{0}({1})", record.get("target") || "-", record.get("address") || "-"),
+      target: `${record.get("target") || "-"}(${record.get("address") || "-"})`,
       object: objectStr,
       segment: record.get("segment") || "",
     });

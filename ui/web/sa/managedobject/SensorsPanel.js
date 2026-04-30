@@ -139,7 +139,7 @@ Ext.define("NOC.sa.managedobject.SensorsPanel", {
   preview: function(record){
     var me = this;
     me.callParent(arguments);
-    me.setTitle(Ext.String.format("{0} {1}", record.get("name"), __("Sensors")));
+    me.setTitle(`${record.get("name")} ${__("Sensors")}`);
     Ext.Ajax.request({
       url: "/inv/sensor/?managed_object=" + record.get("id"),
       method: "GET",

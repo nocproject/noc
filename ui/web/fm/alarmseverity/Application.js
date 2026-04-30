@@ -148,7 +148,7 @@ Ext.define("NOC.fm.alarmseverity.Application", {
     if(!me.currentRecord.get("sound")){
       return;
     }
-    snd = new Audio(Ext.String.format("/ui/pkg/nocsound/{0}.mp3", me.currentRecord.get("sound")));
+    snd = new Audio(`/ui/pkg/nocsound/${me.currentRecord.get("sound")}.mp3`);
     snd.volume = (me.currentRecord.get("volume") || 100) / 100;
     snd.play();
   },

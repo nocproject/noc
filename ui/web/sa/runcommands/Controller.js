@@ -316,7 +316,7 @@ Ext.define("NOC.sa.runcommands.Controller", {
         method: "POST",
         params: JSON.stringify({objects: objects, config: config}),
         headers: {"Content-Type": "application/json"},
-        url: Ext.String.format("/sa/runcommands/render/{0}/{1}/", mode, me.idForRender),
+        url: `/sa/runcommands/render/${mode}/${me.idForRender}/`,
 
         success: function(response){
           var obj = Ext.decode(response.responseText);
@@ -415,7 +415,7 @@ Ext.define("NOC.sa.runcommands.Controller", {
     if(newValue){
       this.idForRender = newValue;
       Ext.Ajax.request({
-        url: Ext.String.format("/sa/runcommands/form/{0}/{1}/", mode, newValue),
+        url: `/sa/runcommands/form/${mode}/${newValue}/`,
 
         success: function(response){
           var obj = Ext.decode(response.responseText);

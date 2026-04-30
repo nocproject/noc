@@ -78,8 +78,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
       me.line = me.add({
         type: "path",
         lineWidth: 2,
-        path: Ext.String.format("M{0},{1} L{2},{3}",
-                                fromXY[0] + offsetX, fromXY[1], endXY[0], endXY[1]),
+        path: `M${fromXY[0] + offsetX},${fromXY[1]} L${endXY[0]},${endXY[1]}`,
         strokeStyle: "black",
       });
       me.labelBackground = me.add({
@@ -104,24 +103,10 @@ Ext.define("NOC.inv.inv.sprites.External", {
       var arrowStartXY = [endXY[0] + 0.5 * me.box[0], endXY[1]];
       var path;
       if(me.side === "left"){
-        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
-                                 arrowStartXY[0], arrowStartXY[1],
-                                 arrowStartXY[0], arrowStartXY[1] + 0.65 * me.box[1],
-                                 arrowStartXY[0] + 1.25 * me.box[0], arrowStartXY[1] + 0.65 * me.box[1],
-                                 arrowStartXY[0] + 2 * me.box[0], arrowStartXY[1],
-                                 arrowStartXY[0] + 1.25 * me.box[0], arrowStartXY[1] - 0.65 * me.box[1],
-                                 arrowStartXY[0], arrowStartXY[1] - 0.65 * me.box[1],
-        );
+        path = `M${arrowStartXY[0]},${arrowStartXY[1]} L${arrowStartXY[0]},${arrowStartXY[1] + 0.65 * me.box[1]} L${arrowStartXY[0] + 1.25 * me.box[0]},${arrowStartXY[1] + 0.65 * me.box[1]} L${arrowStartXY[0] + 2 * me.box[0]},${arrowStartXY[1]} L${arrowStartXY[0] + 1.25 * me.box[0]},${arrowStartXY[1] - 0.65 * me.box[1]} L${arrowStartXY[0]},${arrowStartXY[1] - 0.65 * me.box[1]} Z`;
       } else{
         arrowStartXY = [endXY[0] + length - 0.5* me.box[0], endXY[1]];
-        path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7} L{8},{9} L{10},{11} Z",
-                                 arrowStartXY[0], arrowStartXY[1],
-                                 arrowStartXY[0], arrowStartXY[1] + 0.65 * me.box[1],
-                                 arrowStartXY[0] - 1.25 * me.box[0], arrowStartXY[1] + 0.65 * me.box[1],
-                                 arrowStartXY[0] - 2 * me.box[0], arrowStartXY[1],
-                                 arrowStartXY[0] - 1.25 * me.box[0], arrowStartXY[1] - 0.65 * me.box[1],
-                                 arrowStartXY[0], arrowStartXY[1] - 0.65 * me.box[1],
-        );
+        path = `M${arrowStartXY[0]},${arrowStartXY[1]} L${arrowStartXY[0]},${arrowStartXY[1] + 0.65 * me.box[1]} L${arrowStartXY[0] - 1.25 * me.box[0]},${arrowStartXY[1] + 0.65 * me.box[1]} L${arrowStartXY[0] - 2 * me.box[0]},${arrowStartXY[1]} L${arrowStartXY[0] - 1.25 * me.box[0]},${arrowStartXY[1] - 0.65 * me.box[1]} L${arrowStartXY[0]},${arrowStartXY[1] - 0.65 * me.box[1]} Z`;
       }
       me.arrow = me.add({
         type: "path",
@@ -170,7 +155,7 @@ Ext.define("NOC.inv.inv.sprites.External", {
   },
   measureText: function(text){
     var me = this,
-      font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+      font = `${me.getFontWeight()} ${me.getFontSize()}px ${me.getFontFamily()}`;
     return Ext.draw.TextMeasurer.measureText(text, font).width;
   },
 });

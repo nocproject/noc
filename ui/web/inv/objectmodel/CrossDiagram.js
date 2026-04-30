@@ -215,7 +215,7 @@ Ext.define("NOC.inv.objectmodel.CrossDiagram", {
     this.getSurface().renderFrame();
   },
   measureText: function(text, fontSize, fontFamily){
-    var font = Ext.String.format("{0} {1}px {2}", "normal", fontSize, fontFamily);
+    var font = `${"normal"} ${fontSize}px ${fontFamily}`;
 
     if(Ext.isEmpty(text) || !Ext.isString(text)){
       return 0;

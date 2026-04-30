@@ -62,38 +62,35 @@ Ext.define("NOC.inv.inv.sprites.Pointer", {
 
           me.createSprites();
           var offset = me.getBoxWidth() * (attr.side === "left" ? (-4) : 4),
-            baselinePath = Ext.String.format("M{0} {1} L{2} {3}", fromX, fromY, toX, toY),
-            arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, y), mat.y(x, y)),
-            arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, mat.x(x, -y), mat.y(x, -y));
+            baselinePath = `M${fromX} ${fromY} L${toX} ${toY}`,
+            arrowLeftPath = `M${toX} ${toY} L${mat.x(x, y)} ${mat.y(x, y)}`,
+            arrowRightPath = `M${toX} ${toY} L${mat.x(x, -y)} ${mat.y(x, -y)}`;
 
           if(attr.lineType === "internal"){
             arrowX = (attr.side === "left" ? 1 : -1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale;
             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
 
-            baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                             fromX, fromY, fromX + offset, fromY, fromX + offset, toY, toX, toY);
-            arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
-            arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+            baselinePath = `M${fromX},${fromY} L${fromX + offset},${fromY} L${fromX + offset},${toY} L${toX},${toY}`;
+            arrowLeftPath = `M${toX} ${toY} L${toX - arrowX} ${toY + arrowY}`;
+            arrowRightPath = `M${toX} ${toY} L${toX - arrowX} ${toY - arrowY}`;
           }
           if(attr.lineType === "wire"){
             arrowX = (attr.side === "left" ? -1 : 1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale;
             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
 
             offset = attr.xOffsets || [offset, offset];
-            baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                             fromX, fromY, fromX + (attr.side === "left" ? -1 : 1) * offset[0], fromY, toX + (attr.side === "left" ? 1 : -1) * offset[1], toY, toX, toY);
-            arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
-            arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+            baselinePath = `M${fromX},${fromY} L${fromX + (attr.side === "left" ? -1 : 1) * offset[0]},${fromY} L${toX + (attr.side === "left" ? 1 : -1) * offset[1]},${toY} L${toX},${toY}`;
+            arrowLeftPath = `M${toX} ${toY} L${toX - arrowX} ${toY + arrowY}`;
+            arrowRightPath = `M${toX} ${toY} L${toX - arrowX} ${toY - arrowY}`;
           }
           if(attr.lineType === "loopback"){
             arrowX = (attr.side === "left" ? -1 : 1) * attr.arrowLength * cos(attr.arrowAngle) * attr.actualScale;
             arrowY = attr.arrowLength * sin(attr.arrowAngle) * attr.actualScale;
 
             offset = attr.xOffsets || [offset, offset];
-            baselinePath = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                             fromX, fromY, fromX + (attr.side === "left" ? 1 : -1) * offset[0], fromY, fromX + (attr.side === "left" ? 1 : -1) * offset[0], toY, toX, toY);
-            arrowLeftPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY + arrowY);
-            arrowRightPath = Ext.String.format("M{0} {1} L{2} {3}", toX, toY, toX - arrowX, toY - arrowY);
+            baselinePath = `M${fromX},${fromY} L${fromX + (attr.side === "left" ? 1 : -1) * offset[0]},${fromY} L${fromX + (attr.side === "left" ? 1 : -1) * offset[0]},${toY} L${toX},${toY}`;
+            arrowLeftPath = `M${toX} ${toY} L${toX - arrowX} ${toY + arrowY}`;
+            arrowRightPath = `M${toX} ${toY} L${toX - arrowX} ${toY - arrowY}`;
           }
           me.baseLine.setAttributes({
             path: baselinePath,

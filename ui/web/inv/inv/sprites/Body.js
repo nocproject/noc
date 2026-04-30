@@ -111,7 +111,7 @@ Ext.define("NOC.inv.inv.sprites.Body", {
   },
   measureText: function(text){
     var me = this,
-      font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+      font = `${me.getFontWeight()} ${me.getFontSize()}px ${me.getFontFamily()}`;
     return Ext.draw.TextMeasurer.measureText(text, font).width;
   },
   makeEllipses: function(text, reservedWidth){

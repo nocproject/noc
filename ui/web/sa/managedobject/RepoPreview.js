@@ -77,7 +77,7 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
       case "object": {
         me.clearHideCombo(me.diffCombo);
         me.objectCombo.show();
-        me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Object")));
+        me.menuBtn.setText(`${__("Compare With")} ${__("Object")}`);
         break;
       }
       case "revision": {
@@ -87,7 +87,7 @@ Ext.define("NOC.sa.managedobject.RepoPreview", {
           me.requestRevisions(id);
         }
         me.diffCombo.show();
-        me.menuBtn.setText(Ext.String.format("{0} {1}", __("Compare With"), __("Revision")));
+        me.menuBtn.setText(`${__("Compare With")} ${__("Revision")}`);
         break;
       }
     }

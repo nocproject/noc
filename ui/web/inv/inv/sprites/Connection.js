@@ -60,18 +60,10 @@ Ext.define("NOC.inv.inv.sprites.Connection", {
           me.cable = attr.cable;
           me.gainDb = attr.gainDb;
           if(attr.connectionType === "wire"){
-            path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                     attr.fromXY[0], attr.fromXY[1],
-                                     attr.fromXY[0] + attr.offset[0], attr.fromXY[1],
-                                     attr.toXY[0] - attr.offset[1], attr.toXY[1],
-                                     attr.toXY[0], attr.toXY[1]);
+            path = `M${attr.fromXY[0]},${attr.fromXY[1]} L${attr.fromXY[0] + attr.offset[0]},${attr.fromXY[1]} L${attr.toXY[0] - attr.offset[1]},${attr.toXY[1]} L${attr.toXY[0]},${attr.toXY[1]}`;
           }
           if(attr.connectionType === "loopback"){
-            path = Ext.String.format("M{0},{1} L{2},{3} L{4},{5} L{6},{7}",
-                                     attr.fromXY[0], attr.fromXY[1],
-                                     attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1]), attr.fromXY[1],
-                                     attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1]), attr.toXY[1],
-                                     attr.toXY[0], attr.toXY[1]);
+            path = `M${attr.fromXY[0]},${attr.fromXY[1]} L${attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1])},${attr.fromXY[1]} L${attr.fromXY[0] + (attr.fromSide === "left" ? 1 * attr.offset[0] : -1 * attr.offset[1])},${attr.toXY[1]} L${attr.toXY[0]},${attr.toXY[1]}`;
           }
           me.line.setAttributes({
             side: attr.fromSide,
@@ -210,7 +202,7 @@ Ext.define("NOC.inv.inv.sprites.Connection", {
   getMarker: function(id, side, scale){
     var point1X = (side === "left" ? -1 : 1) * scale * 20,
       point1Y = (side === "left" ? -1 : 1) * scale * 7.5,
-      path = Ext.String.format("M{0},{1} L{2},{3} L0,0 Z", point1X, point1Y, point1X, (-1) * point1Y);
+      path = `M${point1X},${point1Y} L${point1X},${(-1) * point1Y} L0,0 Z`;
     return {
       type: "path",
       id: id,
@@ -236,7 +228,7 @@ Ext.define("NOC.inv.inv.sprites.Connection", {
   },
   measureText: function(text){
     var me = this,
-      font = Ext.String.format("{0} {1}px {2}", me.getFontWeight(), me.getFontSize(), me.getFontFamily());
+      font = `${me.getFontWeight()} ${me.getFontSize()}px ${me.getFontFamily()}`;
     return Ext.draw.TextMeasurer.measureText(text, font).width;
   },
   getColor: function(attr){

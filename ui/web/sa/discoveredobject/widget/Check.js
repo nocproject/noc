@@ -197,7 +197,7 @@ Ext.define("NOC.sa.discoveredobject.widget.Check", {
         return form.isValid();
       }), function(form){
         var values = form.getValues();
-        return Ext.String.format("{0}{1}__{2}", values.name, values.port ? "__" + values.port : "", values.value);
+        return `${values.name}${values.port ? "__" + values.port : ""}__${values.value}`;
       });
     me.fireEvent("change", me, me.value);
   },

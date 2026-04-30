@@ -248,7 +248,7 @@ Ext.define("NOC.core.plugins.SubscriptionModalEditing", {
   //
   makeUrl: function(appId, objectId, groupId){ 
     var prefix = appId.replace(/\./g, "/");
-    return Ext.String.format("/{0}/{1}/object_subscription/{2}/update/", prefix, objectId, groupId);
+    return `/${prefix}/${objectId}/object_subscription/${groupId}/update/`;
   },
   //
   getValues: function(){

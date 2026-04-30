@@ -1255,14 +1255,13 @@ Ext.define("NOC.core.ModelApplication", {
   },
   //
   showOpError: function(action, op, status){
-    var text = Ext.String.format("Failed to {0}", action);
+    var text = `Failed to ${action}`;
     if(status){
       var m = status.message;
       if(status.status === 400){
         m = status.traceback;
       }
-      text = Ext.String.format("Failed to {0}!<br>{1}",
-                               action, m);
+      text = `Failed to ${action}!<br>${m}`;
     }
     NOC.error(text);
   },
@@ -1406,7 +1405,7 @@ Ext.define("NOC.core.ModelApplication", {
             autoScroll: true,
             layout: "fit",
             maximizable: true,
-            title: Ext.String.format("Result: {0}", action.text),
+            title: `Result: ${action.text}`,
           }).show();
         } else{
           NOC.info(r);
@@ -1429,9 +1428,7 @@ Ext.define("NOC.core.ModelApplication", {
           xtype: "form",
           items: action.form,
         }],
-        title: Ext.String.format("{0} on {1} records",
-                                 action.text,
-                                 records.length),
+        title: `${action.text} on ${records.length} records`,
         buttons: [{
           text: __("Run"),
           glyph: NOC.glyph.play,
@@ -1918,7 +1915,7 @@ Ext.define("NOC.core.ModelApplication", {
     });
     if(!Ext.Object.isEmpty(values)){
       values.ids = me.groupEditItems;
-      var message = Ext.String.format("Do you wish to change {0} record(s): <br/><br/>{1}<br/>This operation cannot be undone!", values.ids.length, valuesTxt);
+      var message = `Do you wish to change ${values.ids.length} record(s): <br/><br/>${valuesTxt}<br/>This operation cannot be undone!`;
       Ext.Msg.show({
         title: __("Change records?"),
         msg: message,

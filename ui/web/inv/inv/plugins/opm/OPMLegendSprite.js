@@ -117,7 +117,7 @@ Ext.define("NOC.inv.inv.plugins.opm.OPMLegendSprite", {
     return false;
   },
   measureText: function(text){
-    var font = Ext.String.format("{0} {1}px {2}", this.getFontWeight(), this.getFontSize(), this.getFontFamily());
+    var font = `${this.getFontWeight()} ${this.getFontSize()}px ${this.getFontFamily()}`;
     return Ext.draw.TextMeasurer.measureText(text, font).width;
   },
 });

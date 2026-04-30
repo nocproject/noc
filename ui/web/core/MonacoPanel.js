@@ -159,11 +159,12 @@ Ext.define("NOC.core.MonacoPanel", {
     }
   },
   startPreview: function(record, backItem){
-    var bi = backItem === undefined ? this.backItem : backItem;
+    var bi = backItem === undefined ? this.backItem : backItem,
+      pool_label = Ext.util.Format.lowercase(record.get("pool__label"));
     this.currentRecord = record;
     this.backItem = bi;
     this.setTitle(Ext.String.format(this.previewName, record.get("name")));
-    this.fileName = Ext.String.format("{0}_{1}", Ext.util.Format.lowercase(record.get("pool__label")), record.get("address"));
+    this.fileName = `${pool_label}_${record.get("address")}`;
   },
   requestText: function(record){
     this.rootUrl = Ext.String.format(this.restUrl, record.get("id"));

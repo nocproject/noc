@@ -98,8 +98,7 @@ Ext.define("NOC.inv.macdb.MACLogForm", {
         if(!r || !r.length){
           NOC.info(__("No MAC history found"));
         } else{
-          me.grid.setTitle(Ext.String.format(" MAC {0} history",
-                                             me.currentMAC));
+          me.grid.setTitle(` MAC ${me.currentMAC} history`);
           me.store.loadData(r);
         }
       },

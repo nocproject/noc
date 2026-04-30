@@ -148,7 +148,7 @@ Ext.define("NOC.core.TreePanel", {
           } else{
             padding = 16;
           }
-          return Ext.String.format('{0}<span style="padding-left: {1}px" title="{2}">{2}</span>', icon, padding, value);
+          return `${icon}<span style="padding-left: ${padding}px" title="${value}">${value}</span>`;
         },
       }, {
         width: this.iconWidth,

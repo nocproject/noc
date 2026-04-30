@@ -209,7 +209,7 @@ Ext.define("NOC.core.plugins.DynamicModalEditing", {
   //
   request: function(method, button){
     var record = this.record,
-      url = Ext.String.format("{0}/{1}/capabilities/{2}/", this.urlPrefix, record.get("object"), record.get("id")),
+      url = `${this.urlPrefix}/${record.get("object")}/capabilities/${record.get("id")}/`,
       data = this.formatResult(this.formPanel.getForm().getValues()[this.dataIndex]);
     Ext.Ajax.request({
       url: url,
