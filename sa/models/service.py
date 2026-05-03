@@ -50,9 +50,8 @@ from noc.core.etl.remotemappings import mappings
 from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState
 from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
-from noc.core.watchers.types import ObjectEffect, WatchItem
-from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
-from noc.core.scheduler.scheduler import Scheduler
+from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.decorator import watchers
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -573,7 +572,7 @@ class Service(Document):
         for item in self.dependency_services:
             if not item.is_match():
                 continue
-            yield item.service, item.service.profile.weight
+            yield item.service.oper_status, item.service.profile.weight
 
     def set_oper_status(
         self,
@@ -1083,41 +1082,6 @@ class Service(Document):
             svc = svc.parent
         return None
 
-    def update_object_watchers(
-        self,
-        to_watchers: List[WatchItem],
-        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
-        dry_run: bool = False,
-        bulk=None,
-    ):
-        """"""
-        updates = []
-        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
-        for w in self.watchers:
-            rs = w.remote_system.name if w.remote_system else None
-            key = w.key or None
-            if to_remove and (w.effect, key, rs) in to_remove:
-                continue
-            update = up_w.pop((w.effect, key, rs), None)
-            if update:
-                w = WatchDocumentItem.from_item(update)
-            updates.append(w)
-        for w in up_w.values():
-            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
-            updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
-        self.watchers = updates
-        wait_ts = self.get_wait_ts()
-        if self.watcher_wait_ts != wait_ts:
-            self.watcher_wait_ts = wait_ts
-        if dry_run or self._created:
-            return
-        m_ts = self.get_min_wait_ts()
-        if wait_ts and (not m_ts or wait_ts < m_ts):
-            scheduler = Scheduler(SCHEDULER)
-            scheduler.submit(jcls=WATCHER_JCLS, key="sa.Service", ts=get_next_ts(wait_ts))
-        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
-        self.update(**set_op)
-
     def on_save_caps(self, changed_fields=None, dry_run: bool = False, **kwargs):
         """"""
         self.sync_instances()
@@ -1296,7 +1260,7 @@ class Service(Document):
 def refresh_service_status(svc_ids: List[str]):
     logger.info("Refresh service status: %s", svc_ids)
     affected_paths = set()
-    for svc in Service.objects.filter(id__in=svc_ids):
+    for svc in Service.objects.filter(id__in=svc_ids).order_by("-parent"):
         os = svc.oper_status
         svc.refresh_status()
         if svc.parent and svc.oper_status != os:
@@ -1306,5 +1270,5 @@ def refresh_service_status(svc_ids: List[str]):
         return
     # Check changed
     # Update linked
-    for svc in Service.objects.filter(id__in=list(affected_paths)):
+    for svc in Service.objects.filter(id__in=list(affected_paths)).order_by("-parent"):
         svc.refresh_status()

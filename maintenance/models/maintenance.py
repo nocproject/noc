@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Maintenance
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -34,8 +34,8 @@ from noc.core.mongo.fields import ForeignKeyField, PlainReferenceField
 from noc.core.model.decorator import on_save, on_delete
 from noc.core.defer import call_later
 from noc.core.change.decorator import change
-from noc.core.watchers.types import ObjectEffect, WatchItem
-from noc.core.watchers.decorator import watchers, WATCHER_JCLS, get_next_ts
+from noc.core.watchers.types import ObjectEffect
+from noc.core.watchers.decorator import watchers
 from noc.core.mx import MessageType, send_message, MX_TO_STAGE_NAME
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.template import Template
@@ -297,47 +297,6 @@ class Maintenance(Document):
         elif self.direct_objects or self.remote_objects:
             ManagedObject.reset_maintenance(self.id)
 
-    def update_object_watchers(
-        self,
-        to_watchers: List[WatchItem],
-        to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]],
-        dry_run: bool = False,
-        bulk=None,
-    ):
-        """"""
-        from noc.core.scheduler.scheduler import Scheduler
-
-        updates = []
-        up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
-        for w in self.watchers:
-            rs = w.remote_system.name if w.remote_system else None
-            if to_remove and (w.effect, w.key, rs) in to_remove:
-                continue
-            update = up_w.pop((w.effect, w.key, rs), None)
-            if update:
-                w = WatchDocumentItem.from_item(update)
-            updates.append(w)
-        for w in up_w.values():
-            rs = RemoteSystem.get_by_name(w.remote_system) if w.remote_system else None
-            updates.append(WatchDocumentItem.from_item(w, remote_system=rs))
-        self.watchers = updates
-        if not updates:
-            wait_ts = None
-        else:
-            wait_ts, _ = self.active_interval
-        if self.watcher_wait_ts != wait_ts:
-            self.watcher_wait_ts = wait_ts
-        m_ts = self.get_min_wait_ts()
-        if wait_ts and (not m_ts or wait_ts <= m_ts):
-            scheduler = Scheduler(SCHEDULER)
-            scheduler.submit(
-                jcls=WATCHER_JCLS, key="maintenance.Maintenance", ts=get_next_ts(wait_ts)
-            )
-        if dry_run or self._created:
-            return
-        set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
-        self.update(**set_op)
-
     def ensure_jobs(self):
         """Ensure maintenance Job"""
         now = datetime.datetime.now()
@@ -405,8 +364,15 @@ class Maintenance(Document):
             not changed_fields or "is_completed" in changed_fields or "start" in changed_fields
         ) and not self.is_completed:
             # Gen MX Event
-            m_start, _ = self.active_interval
-            self.add_watch(ObjectEffect.MX_EVENT, after=m_start, once=True, stage="start")
+            m_start, m_stop = self.active_interval
+            self.add_watch(
+                ObjectEffect.MX_EVENT, key="start", after=m_start, once=True, stage="start"
+            )
+            if m_stop:
+                self.add_watch(
+                    ObjectEffect.MX_EVENT, key="stop", after=m_stop, once=True, stage="stop"
+                )
+                # Complete? flag - add when complete condition
         self.sync_affected()
         self.ensure_escalated_jobs()
         self.ensure_jobs()
@@ -492,6 +458,9 @@ def update_affected_objects(
         return so
 
     data = Maintenance.get_by_id(maintenance_id)
+    if not data:
+        logger.warning("Update maintenance with Unknown Id: %s", maintenance_id)
+        return
     logger.info("[%s] Processed update Maintenance affected", data.id)
     # Calculate affected objects
     affected: Set[int] = {o.object.id for o in data.direct_objects if o.object}

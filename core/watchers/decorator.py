@@ -7,13 +7,14 @@
 
 # Python modules
 import datetime
-from typing import Optional, List, Iterable, Tuple, Any
+from typing import Optional, List, Iterable, Tuple
 
 # Python modules
-from noc.models import is_document
+from noc.models import is_document, get_model_id
 from .types import ObjectEffect, WatchItem
 
 WATCHER_JCLS = "noc.services.scheduler.jobs.run_watchers.RunWatchersJob"
+SCHEDULER = "scheduler"
 WAIT_DEFAULT_INTERVAL_SEC = 180
 MIN_NEXT_SHIFT_SEC = 30
 
@@ -83,7 +84,7 @@ def add_watch(
     once: bool = True,
     after: Optional[datetime.datetime] = None,
     wait_avail: bool = False,
-    remote_system: Optional[Any] = None,
+    remote_system: Optional[str] = None,
     dry_run: bool = False,
     # action: Optional[ActionType] = None, # Reaction ?
     **kwargs,
@@ -101,7 +102,7 @@ def add_watch(
     # is_supported
     if effect not in self.supported_watcher_effects:
         raise ValueError("Not supported options")
-    to_watchers = []
+    to_watchers, key = [], key or None
     # When save - skip maintenance
     for w in self.iter_watchers():
         if (
@@ -116,12 +117,12 @@ def add_watch(
         to_watchers.append(
             WatchItem(
                 effect=effect,
-                key=str(key or ""),
+                key=key or None,
                 once=once,
                 after=after,
                 args=kwargs,  # Convert to string
                 wait_avail=wait_avail,
-                remote_system=remote_system.name if remote_system else None,
+                remote_system=remote_system if remote_system else None,
             )
         )
     if to_watchers:
@@ -132,7 +133,8 @@ def stop_watch(
     self,
     effect: ObjectEffect,
     key: Optional[str] = None,
-    remote_system: Optional[Any] = None,
+    remote_system: Optional[str] = None,
+    stop_effect: bool = False,
     dry_run: bool = False,
 ):
     """Stop waiting callback"""
@@ -140,10 +142,13 @@ def stop_watch(
     for w in self.iter_watchers():
         if (
             w.effect == effect
-            and w.key == key
-            and (not remote_system or remote_system.name == w.remote_system)
+            and (stop_effect or w.key == key)
+            and (not remote_system or remote_system == w.remote_system)
         ):
-            to_remove.append((w.effect, w.key, w.remote_system))
+            if w.remote_system:
+                to_remove.append((w.effect, w.key, w.remote_system.name))
+            else:
+                to_remove.append((w.effect, w.key, w.remote_system))
             continue
     if to_remove:
         self.update_watchers([], to_remove, dry_run=dry_run)
@@ -175,6 +180,7 @@ def touch_watch(
         # After processed - Remove if once
         if w.once:
             to_remove.append((w.effect, w.key, w.remote_system))
+        # Shift Runtime
     if to_remove and not dry_run:
         self.update_watchers([], to_remove, dry_run=dry_run)
     return r
@@ -189,6 +195,46 @@ def touch_watch(
 #     after: Optional[datetime.datetime] = None,
 # ):
 #     """Bulk update watchers"""
+
+
+def update_document_watchers(
+    self,
+    to_watchers: List[WatchItem],
+    to_remove: Optional[List[Tuple[ObjectEffect, str, Optional[str]]]] = None,
+    dry_run: bool = False,
+    bulk=None,
+):
+    """"""
+    from noc.core.scheduler.scheduler import Scheduler
+    from noc.sa.models.objectwatchersitem import WatchDocumentItem
+
+    updates = []
+    up_w = {(w.effect, w.key, w.remote_system): w for w in to_watchers}
+    for w in self.watchers:
+        wi = w.item
+        rs = w.remote_system.name if w.remote_system else None
+        if to_remove and (wi.effect, wi.key, rs) in to_remove:
+            continue
+        update = up_w.pop((wi.effect, wi.key, rs), None)
+        if update:
+            w = WatchDocumentItem.from_item(update)
+        updates.append(w)
+    for wi in up_w.values():
+        updates.append(WatchDocumentItem.from_item(wi, remote_system=wi.remote_system))
+    self.watchers = updates
+    wait_ts = self.get_wait_ts()
+    if self.watcher_wait_ts != wait_ts:
+        self.watcher_wait_ts = wait_ts
+    m_ts = self.get_min_wait_ts()
+    if dry_run:
+        return
+    if wait_ts and (not m_ts or wait_ts <= m_ts):
+        scheduler = Scheduler(SCHEDULER)
+        scheduler.submit(jcls=WATCHER_JCLS, key=get_model_id(self), ts=get_next_ts(wait_ts))
+    if self._created:
+        return
+    set_op = {"watchers": self.watchers, "watcher_wait_ts": self.watcher_wait_ts}
+    self.update(**set_op)
 
 
 def watchers(cls):
@@ -212,9 +258,11 @@ def watchers(cls):
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers
+        cls.update_watchers = update_document_watchers
     elif hasattr(cls, "update_object_watchers") and hasattr(cls, "iter_object_watchers"):
         # Django model
         cls.iter_watchers = iter_model_watchers
+        cls.update_watchers = update_watchers
     else:
         return cls
 
@@ -223,6 +271,5 @@ def watchers(cls):
     cls.add_watch = add_watch
     cls.stop_watch = stop_watch
     cls.touch_watch = touch_watch
-    cls.update_watchers = update_watchers
 
     return cls

@@ -21,7 +21,7 @@ class RunWatchersJob(PeriodicJob):
         model = get_model(self.attrs[self.ATTR_KEY])
         now = datetime.datetime.now().replace(microsecond=0)
         self.logger.info("[%s] Run watcher", model)
-        num, actions = 0, 0
+        num, actions, stopped = 0, 0, 0
         for svc in model.objects.filter(watcher_wait_ts__lte=now):
             num += 1
             for w in svc.touch_watch():
@@ -33,12 +33,15 @@ class RunWatchersJob(PeriodicJob):
                 a.run_action(svc, w.key, w.args)
                 actions += 1
                 if w.once:
+                    stopped += 1
                     svc.stop_watch(w.effect, w.key, remote_system=w.remote_system)
                 # Clean After
             # Bulk ?
         # Clean cache
         if num:
-            self.logger.info("[%s] Processed: %s, Action: %s", model, num, actions)
+            self.logger.info(
+                "[%s] Processed: %s, Action: %s, Stopeed: %s", model, num, actions, stopped
+            )
 
     def can_run(self):
         return True

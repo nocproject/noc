@@ -50,21 +50,24 @@ class WatchDocumentItem(EmbeddedDocument):
             key=self.key or None,
             after=self.after,
             once=self.once,
-            remote_system=self.remote_system,
+            remote_system=self.remote_system.name if self.remote_system else None,
             args=self.args,
         )
 
     @classmethod
-    def from_item(cls, item: WatchItem, remote_system: Optional[RemoteSystem] = None):
+    def from_item(cls, item: WatchItem, remote_system: Optional[str] = None) -> "WatchDocumentItem":
         """Create record from WatchItem"""
         if item.after:
             after = item.after.replace(microsecond=0)
         else:
             after = None
+        remote_system = item.remote_system or remote_system
+        if remote_system:
+            remote_system = RemoteSystem.get_by_name(remote_system)
         return WatchDocumentItem(
             effect=item.effect,
-            key=item.key or "",
-            remote_system=item.remote_system or remote_system,
+            key=item.key or None,
+            remote_system=remote_system,
             after=after,
             once=item.once,
             args=item.args,
