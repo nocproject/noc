@@ -67,8 +67,8 @@ class SNMPSuggestsDiagnostic:
         for c in checks:
             if c.skipped:
                 continue
-            if c.error and c.error.message:
-                error = c.error.message
+            if c.error:
+                error = c.error
             if c.status:
                 return DiagnosticState.enabled, None
         return DiagnosticState.failed, error

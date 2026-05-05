@@ -76,8 +76,7 @@ def save_model_diagnostics(self, diagnostics: List[DiagnosticItem], dry_run: boo
     saved, expired = {}, []
     for d in diagnostics:
         saved[d.diagnostic] = d.get_value().model_dump()
-        if d.expired:
-            expired.append(d.expired)
+        expired += [c.expired for c in d.checks or [] if c.expired]
     self.diagnostics = saved
     if expired:
         self.add_watch(ObjectEffect.DIAGNOSTIC_CHECK, after=max(expired), dry_run=dry_run)
