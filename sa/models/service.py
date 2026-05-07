@@ -528,10 +528,9 @@ class Service(Document):
             self.diagnostic.reload_diagnostics()
             self.refresh_status()
             self._refresh_managed_object()
-        print()
         if (
             not hasattr(self, "_changed_fields") and self.dependency_services
-        ) or "dependency_services" in self._changed_fields:
+        ) or (hasattr(self, "_changed_fields") and "dependency_services" in self._changed_fields):
             call_later(
                 "noc.sa.models.service.refresh_connected_services",
                 delay=20,
@@ -579,19 +578,10 @@ class Service(Document):
         """
         # Children
         nested = self.get_nested_ids()
-        # Services
-        services = []
-        for deps in ServiceInstance.objects.filter(
-            service=self,
-            dependencies__exists=True,
-            dependencies__ne=[],
-        ).scalar("dependencies"):
-            services += deps
-        for svc in Service.objects.filter(id__in=nested + services):
-            if svc.id in nested:
-                yield svc, "D"
-            else:
-                yield svc, "S"
+        for svc in Service.objects.filter(id__in=nested):
+            yield svc, "D"
+        for svc in self.get_connected_my():
+            yield svc, "S"
 
     def iter_dependencies_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
         """Iterate over service topology, with affected statuses"""
