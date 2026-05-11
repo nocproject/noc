@@ -952,6 +952,14 @@ class ManagedObject(NOCModel):
 
     BOX_DISCOVERY_JOB = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
     PERIODIC_DISCOVERY_JOB = "noc.services.discovery.jobs.periodic.job.PeriodicDiscoveryJob"
+    SUPPORTED_EFFECTS = frozenset(
+        [
+            ObjectEffect.MAINTENANCE,
+            ObjectEffect.WIPING,
+            ObjectEffect.WF_EVENT,
+            ObjectEffect.DIAGNOSTIC_CHECK,
+        ],
+    )
 
     _id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=1000, ttl=60)

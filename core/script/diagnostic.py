@@ -59,10 +59,12 @@ class SNMPSuggestsDiagnostic:
 
     def get_check_status(
         self,
-        checks: List[CheckStatus],
+        checks: Optional[List[CheckStatus]],
         **kwargs,
     ) -> Tuple[Optional[DiagnosticState], Optional[str]]:
         """Getting Diagnostic result: State and reason"""
+        if checks is None:
+            return DiagnosticState.unknown, None
         error = ""
         for c in checks:
             if c.skipped:
@@ -148,22 +150,20 @@ class CLISuggestsDiagnostic:
 
     def get_check_status(
         self,
-        checks: List[CheckStatus],
+        checks: Optional[List[CheckStatus]],
         **kwargs,
     ) -> Tuple[Optional[DiagnosticState], Optional[str]]:
         """Getting Diagnostic result: State and reason"""
+        if checks is None:
+            return DiagnosticState.unknown, None
         error = ""
-        status = DiagnosticState.failed
         for c in checks:
             if c.skipped:
                 continue
             if c.error:
                 error = c.error
-            if c.status and not status:
-                status = DiagnosticState.enabled
-                # return True, None, {}, []
-        if status:
-            return DiagnosticState.enabled, None
+            if c.status:
+                return DiagnosticState.enabled, None
         return DiagnosticState.failed, error
 
     def process_result(

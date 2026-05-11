@@ -18,13 +18,15 @@ from pydantic import BaseModel
 
 # NOC modules
 from noc.core.ioloop.util import run_sync
-from noc.core.checkers.base import Check, CheckResult, MetricValue
+from noc.core.checkers.base import Check, CheckResult, MetricValue, register_checks
 from noc.core.checkers.registry import DiagnosticCheckRegister
 from noc.core.comp import DEFAULT_ENCODING
+from noc.core.models.inputsources import InputSource
 from noc.config import config
 from noc.models import is_document
 from .types import DiagnosticConfig, DiagnosticState, DiagnosticValue
 from .item import DiagnosticItem
+
 
 diagnostic_logger = logging.getLogger(__name__)
 
@@ -247,6 +249,7 @@ class DiagnosticHub(object):
         reason: Optional[str] = None,
         changed_ts: Optional[datetime.datetime] = None,
         data: Optional[Dict[str, Any]] = None,
+        to_sync: bool = True,
     ):
         """
         Set diagnostic ok/fail state
@@ -273,9 +276,11 @@ class DiagnosticHub(object):
         d.changed = d.changed.replace(microsecond=0, tzinfo=None)
         d.state = state
         d.reason = reason
+        d.is_dirty |= True
         # Update dependent
         if d.diagnostic not in self.__depended:
-            self.sync_diagnostics()
+            if to_sync:
+                self.sync_diagnostics()
             return
         self.logger.debug("[%s] Update depended diagnostic", d.diagnostic)
         d = self[self.__depended[d.diagnostic]]
@@ -289,18 +294,22 @@ class DiagnosticHub(object):
             self.set_state(d.diagnostic, DiagnosticState.failed)
         else:
             self.set_state(d.diagnostic, DiagnosticState.enabled)
-        self.sync_diagnostics()
+        if to_sync:
+            self.sync_diagnostics()
 
     def refresh_status(self, diagnostic: str, dry_run: bool = False):
         state, c_reason = self[diagnostic].get_check_status()
         if state is None:
             # Partial, more checks needed
-            return
+            state = self[diagnostic].config.default_state
         self.set_state(diagnostic, state, reason=c_reason)
-        if self[diagnostic].is_changed:
-            self.sync_diagnostics(dry_run)
 
-    def update_checks(self, checks: List[CheckResult], dry_run: bool = False):
+    def update_checks(
+        self,
+        checks: List[CheckResult],
+        dry_run: bool = False,
+        source: InputSource = InputSource.UNKNOWN,
+    ):
         """
         Update checks on diagnostic and calculate state
         * Map diagnostic -> checks
@@ -316,17 +325,22 @@ class DiagnosticHub(object):
                 metrics += cr.metrics
             if cr.data:
                 data += cr.data
+        register_checks(checks, managed_object=self.__object.bi_id, source=source)
         # Calculate State and Update diagnostic
         # for d, crs in affected_diagnostics.items():
-        for d, crs in self.__registry.iter_affected_diagnostics():
-            _, c_data = self[d].update_checks(crs)
+        changed = False
+        for d_name, crs in self.__registry.iter_affected_diagnostics():
+            _, c_data = self[d_name].update_checks(crs)
             if c_data:
-                self.apply_context_data(self[d], {c.name: c.value for c in c_data})
+                self.apply_context_data(self[d_name], {c.name: c.value for c in c_data})
                 data += c_data
             # c_state, c_reason, c_data, c_checks = self[d].get_check_status(crs)
-            self.refresh_status(d, dry_run=dry_run)
+            self.refresh_status(d_name, dry_run=dry_run)
+            changed |= self[d_name].is_changed
         if metrics and not self.dry_run:
             self.register_diagnostic_metrics(metrics)
+        if changed:
+            self.sync_diagnostics()
 
     def reload_diagnostics(self):
         """Load Diagnostics from object"""
@@ -335,8 +349,12 @@ class DiagnosticHub(object):
 
     def refresh_diagnostics(self):
         """Refresh Diagnostic state"""
+        changed = False
         for d in self.iter_diagnostics():
             self.refresh_status(d.diagnostic)
+            changed |= d.is_changed
+        if changed:
+            self.sync_diagnostics()
 
     def reset_diagnostics(
         self, diagnostics: List[str], reason: Optional[str] = "By Reset Diagnostic"
@@ -389,6 +407,7 @@ class DiagnosticHub(object):
                 if d_current.state == DiagnosticState.failed or di_new.is_failed:
                     changed_states.add(d_name)
                 changed.append(d_name)
+                di_new.reset_changed()
                 self.register_diagnostic_change(
                     d_name,
                     state=di_new.state,
@@ -399,9 +418,12 @@ class DiagnosticHub(object):
                 if di_new.state == DiagnosticState.enabled and di_new.config.workflow_enabled_event:
                     wf_events.add(di_new.config.workflow_enabled_event)
             # Save diagnostic with checks value (for update checks)
-            elif d_current != di_new:
-                self.logger.debug("[%s] Diagnostic Same, next.", d_name)
+            elif di_new.is_dirty:
+                self.logger.info("[%s] Data changed", d_name)
                 changed.append(d_name)
+                di_new.reset_changed()
+            else:
+                self.logger.debug("[%s] Diagnostic Same, next.", d_name)
             new_diags.append(di_new)
         if changed:
             self.logger.info(

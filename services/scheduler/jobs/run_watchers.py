@@ -30,7 +30,7 @@ class RunWatchersJob(PeriodicJob):
                 if not a or not a.is_supported(svc):
                     continue
                 # Send to Worker
-                a.run_action(svc, w.key, w.args)
+                a.run_action(svc, w.key, w.args or {})
                 actions += 1
                 if w.once:
                     stopped += 1

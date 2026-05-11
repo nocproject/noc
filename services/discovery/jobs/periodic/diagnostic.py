@@ -17,6 +17,7 @@ from noc.core.service.error import RPCError
 from noc.core.diagnostic.types import DiagnosticState
 from noc.core.diagnostic.hub import DiagnosticHub
 from noc.core.script.scheme import SNMPCredential, CLICredential, SNMPv3Credential
+from noc.core.models.inputsources import InputSource
 from noc.sa.models.credentialcheckrule import CredentialCheckRule
 from noc.pm.models.metrictype import MetricType
 from noc.core.checkers.loader import loader
@@ -84,7 +85,7 @@ class DiagnosticCheck(DiscoveryCheck):
                             credential = cr.credential
                         checks.append(cr)
                     # Update diagnostics
-                    d_hub.update_checks(checks)
+                    d_hub.update_checks(checks, source=InputSource.DISCOVERY)
                     self.logger.debug("[%s] Collected check Result: %s", di.diagnostic, checks)
                 # Apply credentials
                 if credential and (

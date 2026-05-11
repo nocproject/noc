@@ -37,8 +37,8 @@ class DiagnosticCheckRegister:
         """Add check config"""
         for c in checks:
             self.checks[c.key] = c
-            # if c.is_wildcard:
-            #    self.w_checks[c.name].append(c)
+            if c.has_wildcard:
+                self.w_checks[c.name].append(c)
             self.check_diagnostic_map[c.key].add(diagnostic)
 
     def add_result(self, key: str, result: CheckResult):

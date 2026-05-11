@@ -9,7 +9,7 @@
 import enum
 import datetime
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional, Dict
 
 # NOC Modules
 from noc.core.models.cfgactions import ActionType
@@ -55,7 +55,7 @@ class WatchItem:
     after: Optional[datetime.datetime] = None
     once: bool = True
     wait_avail: bool = False
-    remote_system: Optional[Any] = None
+    remote_system: Optional[str] = None
     # deadline
     # Reaction ? User ?, Reason
     args: Optional[Dict[str, str]] = None

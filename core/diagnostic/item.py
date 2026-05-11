@@ -106,7 +106,7 @@ class DiagnosticItem(BaseModel):
         value: Optional[DiagnosticValue] = None,
     ) -> "DiagnosticItem":
         """Create item from config"""
-        reason = cfg.reason
+        checks, reason, is_dirty = None, cfg.reason, False
         if cfg.blocked:
             state = DiagnosticState.blocked
         elif not value or value.state == DiagnosticState.blocked:
@@ -114,13 +114,21 @@ class DiagnosticItem(BaseModel):
         else:
             state = value.state
             reason = value.reason
+        if value and value.checks:
+            now = datetime.datetime.now()
+            checks = [c for c in value.checks if not c.is_expired(now)]
+            if len(checks) != len(value.checks):
+                is_dirty = True
+                if not checks:
+                    reason = "Expired checks"
         return DiagnosticItem(
             cfg=cfg,
             diagnostic=cfg.diagnostic,
             state=state,
-            checks=value.checks if value else None,
+            checks=checks,
             reason=reason or None,
             changed=value.changed if value else None,
+            is_dirty=is_dirty,
         )
 
     def reset(self, reason="Reset by"):
@@ -167,15 +175,10 @@ class DiagnosticItem(BaseModel):
         if self.config.diagnostic_handler:
             h = self.get_handler()
             return h.get_check_status(self.checks)
-        now = datetime.datetime.now()
         state = None
         # Check Expired
         for c in self.checks or []:
             if c.skipped:
-                continue
-            if c.is_expired(now):
-                if not state:
-                    state = self.config.default_state
                 continue
             if not c.status and self.config.state_policy == "ALL":
                 state = DiagnosticState.failed
@@ -184,6 +187,7 @@ class DiagnosticItem(BaseModel):
                 state = DiagnosticState.enabled
                 break
         if self.config.state_policy == "ANY" and self.checks and state is None:
+            # All skipped
             state = DiagnosticState.failed
         # DiagnosticState
         return state, None
@@ -200,11 +204,15 @@ class DiagnosticItem(BaseModel):
         else:
             updated, data = [CheckStatus.from_result(c, source=source) for c in checks], []
         # Update status
-        status = {c.name: c.status for c in self.checks or []}
+        status = {c.name: c for c in self.checks or []}
         # Set is_dirty
         changed = False
         for c in updated or []:
-            if c.name not in status or c.status != status[c.name]:
+            if (
+                c.name not in status
+                or c.status != status[c.name].status
+                or c.expired != status[c.name].expired
+            ):
                 changed = True
                 break
         if changed:

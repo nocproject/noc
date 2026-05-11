@@ -7,13 +7,21 @@
 
 # Python modules
 import logging
+import datetime
+import socket
+import struct
 from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any, Union, AsyncIterable, TypeVar, Callable, ClassVar
 import threading
 
+# Third-party modules
+import orjson
+
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
+from noc.core.service.loader import get_service
 from noc.core.script.scheme import SNMPCredential, SNMPv3Credential, CLICredential, HTTPCredential
+from noc.core.models.inputsources import InputSource
 from noc.core.threadpool import ThreadPoolExecutor
 
 T = TypeVar("T")
@@ -23,6 +31,7 @@ FAIL_CHECK = "FAIL"
 SUCCESS_CHECK = "SUCCESS"
 NODATA = "NODATA"
 CHECKS = []
+CHECK_HISTORY_TABLE = "checkhistory"
 
 
 @dataclass(frozen=True)
@@ -91,6 +100,22 @@ class Check(object):
             r.append(f"remote_system={self.remote_system}")
         return "&".join(r)
 
+    @property
+    def keys(self) -> List[str]:
+        """Rerurn keys fields"""
+        r = []
+        if self.script and self.script != "*":
+            r.append("script")
+        if self.address and self.address != "*":
+            r.append("address")
+        if self.port and self.port != "*":
+            r.append("port")
+        if self.arg0 and self.arg0 != "*":
+            r.append("arg0")
+        if self.remote_system and self.remote_system != "*":
+            r.append("remote_system")
+        return r
+
     @classmethod
     def from_string(cls, url) -> "Check":
         """
@@ -127,6 +152,14 @@ class Check(object):
             script=self.script,
             credential=cred,
         )
+
+    @property
+    def has_wildcard(self) -> bool:
+        """Has wilcard param"""
+        return self.address == "*"
+
+    def is_match(self, result: "CheckResult") -> bool:
+        return all(getattr(result, k, None) == getattr(self, k, None) for k in self.keys)
 
 
 @dataclass(frozen=True)
@@ -212,6 +245,41 @@ class CheckResult(object):
         v["credential"] = cred
         return CheckResult(**v)
 
+    @classmethod
+    def from_history(
+        cls,
+        name,
+        status,
+        args,
+        remote_system,
+        data: Dict[str, str],
+    ) -> "CheckResult":
+        """Create instance from History Record"""
+        r = {
+            "check": name,
+            "status": bool(status),
+            "args": args or None,
+            "port": int(data["port"]) or None,
+            "address": None,
+            "skipped": bool(int(data["skipped"])),
+            "ttl": None,
+            "remote_system": remote_system or None,
+        }
+        if data.get("ttl"):
+            r["ttl"] = int(data["ttl"])
+        if data["address"] != "0.0.0.0":
+            r["address"] = data["address"]
+        if data.get("error"):
+            r["error"] = {
+                "message": data.get("error"),
+                "code": data.get("error_code"),
+                "is_available": bool(int(data["is_available"])),
+                "is_access": bool(int(data["is_access"])),
+            }
+        if data.get("data"):
+            r["data"] = orjson.loads(data["data"])
+        return CheckResult.from_dict(r)
+
 
 class BaseChecker(object):
     """
@@ -251,3 +319,61 @@ class BaseChecker(object):
                 executor = BaseChecker._executor
 
         return await executor.submit(fn)
+
+
+def register_checks(
+    checks: List[CheckResult],
+    source: Union[str, InputSource] = InputSource.UNKNOWN,
+    managed_object: Optional[int] = None,
+    service: Optional[int] = None,
+):
+    """Push check result to history"""
+    from noc.main.models.remotesystem import RemoteSystem
+
+    if isinstance(source, str):
+        source = InputSource(source)
+    source = source or InputSource.UNKNOWN
+    now = datetime.datetime.now().replace(microsecond=0)
+    svc = get_service()
+    data = []
+    for c in checks:
+        r = {
+            "date": now.date().isoformat(),
+            "ts": now.isoformat(),
+            "check_name": c.check,
+            "status": c.status,
+            "key": c.key,
+            "ttl": c.ttl,
+            "args": None,
+            "port": c.port or 0,
+            "address": None,
+            "source": source.value,
+            "script": c.script,
+            "skipped": c.skipped,
+            "data": "",
+        }
+        if c.error:
+            r |= {
+                "error": c.error.message,
+                "error_code": c.error.code,
+                "is_access": c.error.is_access,
+                "is_available": c.error.is_available,
+            }
+        if c.address:
+            r["address"] = struct.unpack("!I", socket.inet_aton(c.address))[0]
+        if c.port:
+            r["port"] = int(c.port)
+        if c.args:
+            r["args"] = {k: str(v) for k, v in c.args.items()}
+        if c.data:
+            r["data"] = orjson.dumps([{"name": d.name, "value": d.value} for d in data]).decode()
+        if managed_object:
+            r["managed_object"] = managed_object
+        if service:
+            r["service"] = service
+        if c.remote_system:
+            rs = RemoteSystem.get_by_name(c.remote_system)
+            if rs:
+                r["remote_system"] = rs.bi_id
+        data += [orjson.dumps(r)]
+    svc.publish(b"\n".join(data), f"ch.{CHECK_HISTORY_TABLE}")

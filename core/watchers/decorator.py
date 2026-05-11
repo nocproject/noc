@@ -252,9 +252,7 @@ def watchers(cls):
     if hasattr(cls, "SUPPORTED_EFFECTS"):
         cls.supported_watcher_effects = frozenset(cls.SUPPORTED_EFFECTS)
     else:
-        cls.supported_watcher_effects = frozenset(
-            [ObjectEffect.MAINTENANCE, ObjectEffect.WIPING, ObjectEffect.WF_EVENT],
-        )
+        cls.supported_watcher_effects = frozenset([ObjectEffect.WIPING, ObjectEffect.WF_EVENT])
     if is_document(cls):
         # MongoEngine model
         cls.iter_watchers = iter_document_watchers

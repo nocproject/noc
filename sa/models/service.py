@@ -298,6 +298,15 @@ class Service(Document):
     watcher_wait_ts: Optional[datetime.datetime] = DateTimeField(required=False)
     # maintenances
 
+    SUPPORTED_EFFECTS = frozenset(
+        [
+            ObjectEffect.MAINTENANCE,
+            ObjectEffect.WIPING,
+            ObjectEffect.WF_EVENT,
+            ObjectEffect.DIAGNOSTIC_CHECK,
+        ],
+    )
+
     _id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=500, ttl=60)
     _id_bi_id_map_cache = cachetools.LFUCache(maxsize=10000)
