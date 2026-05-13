@@ -95,6 +95,7 @@
 * [Upvel](Upvel/index.md)
 * [VMWare](VMWare/index.md)
 * [Vector](Vector/index.md)
+* [Vertiv](Vertiv/index.md)
 * [Vitesse](Vitesse/index.md)
 * [Vyatta](Vyatta/index.md)
 * [ZTE](ZTE/index.md)

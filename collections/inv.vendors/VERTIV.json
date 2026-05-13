@@ -1,0 +1,8 @@
+{
+    "name": "Vertiv",
+    "uuid": "71f5013c-3072-430f-a9a7-70cfb964ad61",
+    "full_name": "Vertiv | A global leader in critical digital infrastructure",
+    "code": ["VERTIV"],
+    "site": "https://www.vertiv.com",
+    "$collection": "inv.vendors"
+}
