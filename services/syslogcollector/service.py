@@ -12,7 +12,7 @@ import asyncio
 import uuid
 from collections import defaultdict
 from dataclasses import asdict
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Set
 
 # Third-party modules
 import orjson
@@ -34,6 +34,7 @@ from noc.core.mx import (
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.fm.enum import EventSource, SyslogSeverity
 from noc.core.service.stormprotection import StormProtection
+from noc.core.checkers.base import register_checks
 from noc.services.syslogcollector.syslogserver import SyslogServer
 from noc.services.syslogcollector.datastream import SysologDataStreamClient
 from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjectData
@@ -56,6 +57,7 @@ class SyslogCollectorService(FastAPIService):
         self.invalid_sources = defaultdict(int)  # ip -> count
         self.pool_partitions: Dict[str, int] = {}
         self.storm_protection: Optional[StormProtection] = None
+        self.updated: Set[str] = set()
 
     async def on_activate(self):
         # Listen sockets
@@ -174,6 +176,9 @@ class SyslogCollectorService(FastAPIService):
                 stream=cfg.stream,
                 partition=cfg.partition,
             )
+        changed = cfg.update_rcvd(timestamp, source_address)
+        if changed:
+            self.updated.add(cfg.id)
         now = datetime.datetime.now().replace(microsecond=0)
         if cfg.archive_events and cfg.bi_id:
             # Archive message
@@ -193,8 +198,7 @@ class SyslogCollectorService(FastAPIService):
             )
         if config.message.enable_syslog and not cfg.managed_object:
             self.logger.warning(
-                "[%s] Cfg source not ManagedObject Meta."
-                " Please Reboot cfgtarget datastream and reboot collector. Skipping..",
+                "[%s] Cfg source not ManagedObject Meta. Please Reboot cfgtarget datastream and reboot collector. Skipping..",
                 source_address,
             )
             return
@@ -254,15 +258,26 @@ class SyslogCollectorService(FastAPIService):
         """
         Report invalid event sources
         """
-        if not self.invalid_sources:
+        if self.invalid_sources:
+            total = sum(self.invalid_sources[s] for s in self.invalid_sources)
+            self.logger.info(
+                "Dropping %d messages with invalid sources: %s",
+                total,
+                ", ".join("%s: %s" % (s, self.invalid_sources[s]) for s in self.invalid_sources),
+            )
+            self.invalid_sources = defaultdict(int)
+        if not self.updated:
             return
-        total = sum(self.invalid_sources[s] for s in self.invalid_sources)
-        self.logger.info(
-            "Dropping %d messages with invalid sources: %s",
-            total,
-            ", ".join("%s: %s" % (s, self.invalid_sources[s]) for s in self.invalid_sources),
-        )
-        self.invalid_sources = defaultdict(int)
+        self.logger.info("Sending %s messages with updated checks", len(self.updated))
+        updated = list(self.updated)
+        self.updated = set()
+        for cfg_id in updated:
+            cfg = self.source_configs.get(cfg_id)
+            if not cfg or not cfg.bi_id:
+                continue
+            checks = cfg.get_checks()
+            if checks:
+                register_checks(checks, managed_object=cfg.bi_id)
 
     async def update_source(self, data):
         # Get old config

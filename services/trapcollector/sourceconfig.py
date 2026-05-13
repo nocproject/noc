@@ -11,6 +11,9 @@ from typing import Tuple, Optional, List
 
 # NOC modules
 from noc.core.checkers.base import CheckResult, NODATA
+from noc.config import config
+
+TARGET_CHECK_SEND_INTERVAL = 43000
 
 
 @dataclass
@@ -59,7 +62,10 @@ class SourceConfig(object):
         """Update source stat"""
         self.trap_rcvd_ts = timestamp
         self.trap_rcvd_address = address
-        return not self.checks_send_ts or (timestamp - self.checks_send_ts) > 3600
+        return (
+            not self.checks_send_ts
+            or (timestamp - self.checks_send_ts) > TARGET_CHECK_SEND_INTERVAL
+        )
 
     def get_checks(self):
         """Getting checks"""
@@ -69,7 +75,7 @@ class SourceConfig(object):
                 check=NODATA,
                 status=True,
                 address=self.trap_rcvd_address,
-                ttl=1800,
+                ttl=config.trapcollector.target_check_ttl,
                 args={"arg0": "trapcollector", "collector": "trapcollector"},
             )
         ]

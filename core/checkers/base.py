@@ -366,7 +366,7 @@ def register_checks(
         if c.args:
             r["args"] = {k: str(v) for k, v in c.args.items()}
         if c.data:
-            r["data"] = orjson.dumps([{"name": d.name, "value": d.value} for d in data]).decode()
+            r["data"] = orjson.dumps([{"name": d.name, "value": d.value} for d in c.data]).decode()
         if managed_object:
             r["managed_object"] = managed_object
         if service:

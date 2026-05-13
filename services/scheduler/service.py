@@ -29,6 +29,8 @@ class SchedulerService(FastAPIService):
         "noc.services.scheduler.jobs.network_instance_service.NetworkInstanceDiscoveryJob"
     )
 
+    UPDATE_CHECKERS_JOB = "noc.services.scheduler.jobs.update_checks.UpdateCheckersJob"
+
     async def on_activate(self):
         self.scheduler = Scheduler(
             "scheduler", reset_running=True, max_threads=config.scheduler.max_threads
@@ -77,6 +79,15 @@ class SchedulerService(FastAPIService):
         scheduler.submit(jcls=WATCHER_JCLS, key="sa.Service", keep_ts=True)
         scheduler.submit(jcls=WATCHER_JCLS, key="sa.ManagedObject", keep_ts=True)
         scheduler.submit(jcls=WATCHER_JCLS, key="inv.Sensor", keep_ts=True)
+
+    @classmethod
+    def ensure_checks_job(cls):
+        """Create diagnostic checks job"""
+        scheduler = Scheduler(cls.name)
+        scheduler.submit(
+            jcls=cls.UPDATE_CHECKERS_JOB,
+            ts=datetime.datetime.now() + datetime.timedelta(seconds=120),
+        )
 
 
 if __name__ == "__main__":

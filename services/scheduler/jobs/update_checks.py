@@ -21,11 +21,12 @@ from noc.core.scheduler.periodicjob import PeriodicJob
 from noc.main.models.remotesystem import RemoteSystem
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.service import Service
+from noc.config import config
 
 
 WAIT_DEFAULT_INTERVAL_SEC = 180
 MIN_NEXT_SHIFT_SEC = 30
-MAX_DEPTH_DAYS = 8
+MAX_DEPTH_INTERVAL = config.scheduler.diagnostic_check_depth_interval
 
 SQL = """
 select managed_object, service, max(last_ts), groupArray((check_name, c_status, args, remote_system,
@@ -55,7 +56,9 @@ class UpdateCheckersJob(PeriodicJob):
 
     def handler(self, **kwargs):
         # LIMIT BY 3 checks and calculate diff
-        depth: datetime.datetime = datetime.datetime.now() - datetime.timedelta(days=MAX_DEPTH_DAYS)
+        depth: datetime.datetime = datetime.datetime.now() - datetime.timedelta(
+            seconds=MAX_DEPTH_INTERVAL
+        )
         last_success = self.attrs.get(Job.ATTR_LAST_SUCCESS, depth).replace(microsecond=0)
         self.logger.info("Start update objects checks from history from: %s", last_success)
         ch = connection()
@@ -115,4 +118,4 @@ class UpdateCheckersJob(PeriodicJob):
         """
         Returns next repeat interval
         """
-        return 60
+        return WAIT_DEFAULT_INTERVAL_SEC
