@@ -20,7 +20,6 @@ class Migration(BaseMigration):
         bulk = []
         for row in coll.find({"data.attr": "part_no"}, {"data": 1}):
             for d in row["data"]:
-                print(d)
                 if (
                     d["attr"] == "part_no"
                     and d["value"]
@@ -28,7 +27,7 @@ class Migration(BaseMigration):
                     and isinstance(d["value"][0], list)
                 ):
                     d["value"] = d["value"][0]
-                    bulk += [UpdateOne({"_id": row["_id"]}, {"$set": row["data"]})]
+                    bulk += [UpdateOne({"_id": row["_id"]}, {"$set": {"$data": row["data"]}})]
                     break
             if len(bulk) > BULK_SIZE:
                 coll.bulk_write(bulk)
