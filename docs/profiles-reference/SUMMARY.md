@@ -20,6 +20,7 @@
 * [Cambium](Cambium/index.md)
 * [Carelink](Carelink/index.md)
 * [Cisco](Cisco/index.md)
+* [CleverElectronic](CleverElectronic/index.md)
 * [DCN](DCN/index.md)
 * [DLink](DLink/index.md)
 * [Dahua](Dahua/index.md)

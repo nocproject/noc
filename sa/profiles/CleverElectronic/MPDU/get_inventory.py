@@ -1,17 +1,17 @@
 # ---------------------------------------------------------------------
-# Vertiv.PDU.get_inventory
+# CleverElectronic.MPDU.get_inventory
 # ---------------------------------------------------------------------
 # Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.script.base import BaseScript
+from noc.sa.profiles.Generic.get_inventory import Script as BaseScript
 from noc.sa.interfaces.igetinventory import IGetInventory
 
 
 class Script(BaseScript):
-    name = "Vertiv.PDU.get_inventory"
+    name = "CleverElectronic.MPDU.get_inventory"
     interface = IGetInventory
 
     def get_chassis_sensors(self):
@@ -24,7 +24,7 @@ class Script(BaseScript):
                     "description": f"Баланс фазы {phase}",
                     "measurement": "%",
                     # "labels": self.femto_input_config_map[in_config]["labels"],
-                    "snmp_oid": f"1.3.6.1.4.1.21239.5.2.3.2.1.17.{phase}",
+                    "snmp_oid": f"1.3.6.1.4.1.30966.8.1.2.{phase}.4.0",
                 },
                 {
                     "name": f"PhaseRealPower{phase}",
@@ -32,7 +32,8 @@ class Script(BaseScript):
                     "description": f"Потребляемая мощность на фазе {phase}",
                     "measurement": "W",
                     # "labels": self.femto_input_config_map[in_config]["labels"],
-                    "snmp_oid": f"1.3.6.1.4.1.21239.5.2.3.2.1.12.{phase}",
+                    "snmp_oid": f"1.3.6.1.4.1.30966.8.1.2.{phase}.3.0",
+                    # .1.3.6.1.4.1.30966.8.1.2.1.1.0
                 },
                 {
                     "name": f"PhaseCurrent{phase}",
@@ -40,7 +41,7 @@ class Script(BaseScript):
                     "description": f"Потребляемый ток на фазе {phase}",
                     "measurement": "A",
                     # "labels": self.femto_input_config_map[in_config]["labels"],
-                    "snmp_oid": f"1.3.6.1.4.1.21239.5.2.3.2.1.8.{phase}",
+                    "snmp_oid": f"1.3.6.1.4.1.30966.8.1.2.{phase}.1.0",
                 },
                 {
                     "name": f"PhaseVoltage{phase}",
@@ -48,24 +49,23 @@ class Script(BaseScript):
                     "description": f"Напряжение на фазе {phase}",
                     "measurement": "VAC",
                     # "labels": self.femto_input_config_map[in_config]["labels"],
-                    "snmp_oid": f"1.3.6.1.4.1.21239.5.2.3.2.1.4.{phase}",
+                    "snmp_oid": f"1.3.6.1.4.1.30966.8.1.2.{phase}.2.0",
                 },
             ]
         return r
 
     def execute_snmp(self, **kwargs):
         # productModelNumber
-        part_no = self.snmp.get("1.3.6.1.4.1.21239.5.2.1.8.0")
-        serial = self.snmp.get("1.3.6.1.4.1.21239.5.2.1.10.0")
-        revision = self.snmp.get("1.3.6.1.4.1.21239.5.2.1.9.0")
+        platform = self.snmp.get("1.3.6.1.4.1.30966.8.1.1.2.0")
+        part_no = f"{platform.split()[0]}series"
         sensors = self.get_chassis_sensors()
         return [
             {
                 "type": "CHASSIS",
                 "vendor": "Vertiv",
                 "part_no": [part_no],
-                "serial": serial,
-                "revision": revision,
+                # "serial": serial,
+                # "revision": revision,
                 "sensors": sensors,
             }
         ]

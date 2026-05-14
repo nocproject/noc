@@ -1,0 +1,8 @@
+{
+    "name": "CleverElectronic",
+    "uuid": "3c084941-4e5d-45fb-a04f-482c8bb37650",
+    "full_name": "Shenzhen Clever Electronic Co., Ltd",
+    "code": ["CLEVER_ELECTRONIC", "CLEVERELECTRONIC"],
+    "site": "https://www.clever-electronic.com",
+    "$collection": "inv.vendors"
+}
