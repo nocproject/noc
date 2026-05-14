@@ -1,0 +1,8 @@
+{
+    "name": "C3Solution",
+    "uuid": "0a3fce9c-717b-4d1f-8359-19c4c12e0018",
+    "full_name": "C3 Solution",
+    "code": ["C3SOLUTION"],
+    "site": "https://c3solutions.ru",
+    "$collection": "inv.vendors"
+}
