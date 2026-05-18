@@ -528,9 +528,9 @@ class Service(Document):
             self.diagnostic.reload_diagnostics()
             self.refresh_status()
             self._refresh_managed_object()
-        if (
-            not hasattr(self, "_changed_fields") and self.dependency_services
-        ) or (hasattr(self, "_changed_fields") and "dependency_services" in self._changed_fields):
+        if (not hasattr(self, "_changed_fields") and self.dependency_services) or (
+            hasattr(self, "_changed_fields") and "dependency_services" in self._changed_fields
+        ):
             call_later(
                 "noc.sa.models.service.refresh_connected_services",
                 delay=20,

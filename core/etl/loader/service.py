@@ -15,7 +15,7 @@ from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
 from .base import BaseLoader
-from ..models.service import Service, Instance, InstanceType
+from ..models.service import Service, Instance
 
 
 class ServiceLoader(BaseLoader):
