@@ -200,6 +200,8 @@ class ValueType(enum.Enum):
     @staticmethod
     def decode_serial_num(value):
         """Check"""
+        if not value:
+            return value
         return str(value.strip())
 
     @staticmethod

@@ -577,8 +577,7 @@ class Service(Document):
         Iterable over dependent service, that affected self changed: status_change
         """
         # Children
-        nested = self.get_nested_ids()
-        for svc in Service.objects.filter(id__in=nested):
+        for svc in Service.objects.filter(parent=self):
             yield svc, "D"
         for svc in self.get_connected_my():
             yield svc, "S"
