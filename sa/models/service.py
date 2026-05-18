@@ -566,11 +566,17 @@ class Service(Document):
         seen -= {self.id}
         return list(seen)
 
-    def get_dependency_config(self, dependency: "Service") -> Optional[ServiceDependency]:
+    def get_dependency_config(
+        self, dependency: "Service", link_type: Optional[str] = None
+    ) -> Optional[ServiceDependency]:
         """Return Dependency config as rule"""
+        link_cfg = None
         for sd in self.dependency_services:
             if sd.is_match_service(dependency):
                 return sd
+            if link_type and not link_cfg and sd.type == link_type:
+                link_cfg = sd
+        return link_cfg
 
     def iter_dependent_services(self) -> Iterable[Tuple["Service", str]]:
         """
@@ -595,36 +601,15 @@ class Service(Document):
 
     def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
         """Iterate over dependency services status"""
-        for svc in Service.objects.filter(parent=self):
-            p = svc.get_status_transfer_policy()
-            if p == "S":
-                yield svc.oper_status, svc.profile.weight
-            elif p == "T":
-                # Transparent
-                # yield from svc.iter_dependency_status("self_only")
-                ...
-        # Service instance Deps
-        # get_dependency_status(service, instance?) ->
-        services = []
-        for deps in ServiceInstance.objects.filter(
-            service=self,
-            dependencies__exists=True,
-            dependencies__ne=[],
-        ).scalar("dependencies"):
-            services += deps
-        for svc in Service.objects.filter(id__in=services):
-            cfg = self.get_dependency_config(svc)
+        for svc, link_type in self.iter_dependent_services():
+            cfg = self.get_dependency_config(svc, link_type=link_type)
             if not cfg or not cfg.is_match_status(svc.oper_status):
                 continue
             if cfg.set_status:
                 yield cfg.set_status, svc.profile.weight
             else:
                 yield svc.oper_status, svc.profile.weight
-        # Group calculate count by instance
-        # for item in self.dependency_services:
-        #    if not item.is_match():
-        #        continue
-        #    yield item.service.oper_status, item.service.profile.weight
+            # Transparent
 
     def set_oper_status(
         self,
