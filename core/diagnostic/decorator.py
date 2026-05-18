@@ -57,9 +57,7 @@ def save_document_diagnostics(
     self.diagnostics = [DiagnosticItemDoc.from_value(d) for d in diagnostics]
     saved, expired = [], []
     for d in diagnostics:
-        saved.append(DiagnosticItemDoc.from_value(d))
-        if d.expired:
-            expired.append(d.expired)
+        expired.extend(c.expired for c in d.checks or [] if c.expired)
     self.diagnostics = saved
     if expired:
         self.add_watch(ObjectEffect.DIAGNOSTIC_CHECK, after=max(expired), dry_run=dry_run)

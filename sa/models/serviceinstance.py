@@ -8,9 +8,10 @@
 # Python modules
 import datetime
 import logging
-from typing import Optional, List, Iterable, Any, Dict, Tuple
+from typing import Optional, List, Iterable, Any, Dict, Tuple, Union
 
 # Third-party modules
+from bson import ObjectId
 from pymongo import UpdateOne, ReadPreference
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -41,11 +42,13 @@ from noc.core.models.valuetype import ValueType
 from noc.core.validators import is_ipv4, is_fqdn
 from noc.core.model.decorator import on_save
 from noc.core.checkers.base import Check
+from noc.core.change.decorator import change
 from noc.models import get_model_id
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary
 from noc.main.models.pool import Pool
+from noc.config import config
 
 DISCOVERY_SOURCE = InputSource.DISCOVERY
 CLIENT_INSTANCE_NAME = "client"
@@ -65,6 +68,7 @@ class AddressItem(EmbeddedDocument):
         self.address_bin = IP.prefix(self.address).d
 
 
+@change(audit=False)
 @on_save
 class ServiceInstance(Document):
     """
@@ -184,9 +188,17 @@ class ServiceInstance(Document):
             return f"[{self.type}|{self.remote_id}] {name}"
         return f"[{self.type}] {name}"
 
+    @classmethod
+    def get_by_id(cls, oid: Union[str, ObjectId]) -> Optional["ServiceInstance"]:
+        return ServiceInstance.objects.filter(id=oid).first()
+
     def on_save(self):
         if not hasattr(self, "_changed_fields") or "asset_refs" in self._changed_fields:
             ServiceInstance.refresh_local_network_instances([self])
+
+    def iter_changed_datastream(self, changed_fields=None):
+        if config.datastream.enable_service:
+            yield "service", self.service.id
 
     @classmethod
     def ensure_instance(
@@ -194,7 +206,7 @@ class ServiceInstance(Document):
         service,
         cfg: ServiceInstanceConfig,
         settings: Optional[ServiceInstanceTypeConfig] = None,
-    ) -> Optional["ServiceInstance"]:
+    ) -> "ServiceInstance":
         """ """
         settings = settings or ServiceInstanceTypeConfig()
         qs = cfg.get_queryset(service, settings)
@@ -231,6 +243,8 @@ class ServiceInstance(Document):
             self.asset_refs = cfg.asset_refs
         if self.fqdn != cfg.fqdn:
             self.fqdn = cfg.fqdn
+        if set(self.dependencies) != set(cfg.services or []):
+            self.dependencies = cfg.services or []
 
     def seen(
         self,
@@ -335,7 +349,15 @@ class ServiceInstance(Document):
         if addrs:
             q |= Q(addresses__address__in=addrs)
         # get_full_fqdn
-        q |= Q(fqdn=managed_object.name.lower().strip())
+        fqdn = managed_object.get_full_fqdn()
+        if fqdn:
+            q |= Q(fqdn=fqdn.lower().strip())
+        else:
+            hostname = managed_object.name.lower().strip()
+            q |= Q(fqdn=hostname)
+            hostname, *suffix = hostname.split(".", 1)
+            if suffix:
+                q |= Q(fqdn=hostname)
         # Capability Reference
         refs = []
         for c in managed_object.iter_caps():
@@ -475,7 +497,7 @@ class ServiceInstance(Document):
             changed |= True
             self.port = port
         # Update instance
-        if InputSource == InputSource.DISCOVERY:
+        if source == InputSource.DISCOVERY:
             self.seen(source, last_seen=ts)
         return changed
 
@@ -624,7 +646,7 @@ class ServiceInstance(Document):
         return r
 
     @classmethod
-    def refresh_local_network_instances(cls, instances: Optional[List] = None):
+    def refresh_local_network_instances(cls, instances=None):
         """"""
         from noc.inv.models.interface import Interface
 

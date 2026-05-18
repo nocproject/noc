@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Service Instances Typing
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Optional, Any, List, ClassVar, Type
 
 # Third-party modules
+import bson
 from mongoengine.queryset.visitor import Q
 
 # NOC Modules
@@ -65,7 +66,7 @@ class ServiceInstanceConfig:
     nri_port: Optional[str] = None
     fqdn: Optional[str] = None
     addresses: List[str] = None
-    services: List[str] = None
+    services: List[bson.ObjectId] = None
     port: int = 0
     asset_refs: List[str] = None
 
@@ -141,7 +142,7 @@ class NetworkHostInstance(ServiceInstanceConfig):
         settings: "ServiceInstanceTypeConfig",
         service,
         name: Optional[str] = None,
-    ) -> List["NetworkHostInstance"]:
+    ) -> List["ServiceInstanceConfig"]:
         """Create Config from settings"""
         if settings.asset_group and settings.asset_group.id in service.effective_client_groups:
             return cls.from_group(settings.asset_group)

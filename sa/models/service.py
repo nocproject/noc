@@ -11,7 +11,7 @@ import logging
 import operator
 from collections import defaultdict
 from threading import Lock
-from typing import Any, Dict, Optional, Iterable, List, Union, Tuple
+from typing import Any, Dict, Optional, Iterable, List, Union, Tuple, Set
 
 # Third-party modules
 import orjson
@@ -30,6 +30,7 @@ from mongoengine.fields import (
     BooleanField,
 )
 from mongoengine.queryset.visitor import Q as m_q
+from jinja2 import Template
 import cachetools
 
 # NOC modules
@@ -40,6 +41,7 @@ from noc.core.model.decorator import on_save, on_delete_check, on_init, tree
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
+from noc.core.change.policy import change_tracker
 from noc.core.service.loader import get_service
 from noc.core.models.servicestatus import Status, StatusAffectedItem
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
@@ -52,6 +54,7 @@ from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
 from noc.core.watchers.decorator import watchers
+from noc.core.defer import call_later
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -145,12 +148,27 @@ class ServiceDependency(EmbeddedDocument):
     # propagate_status = BooleanField(default=False)
     # ignore = BooleanField(default=False)
 
-    def is_match(self) -> bool:
-        if not self.service:
+    def is_match_status(self, status: Status) -> bool:
+        # port ?
+        if self.min_status and status < self.min_status:
             return False
-        if self.min_status and self.service.oper_status < self.min_status:
-            return False
-        return not (self.max_status and self.service.oper_status > self.max_status)
+        return not (self.max_status and status > self.max_status)
+
+    def get_names(self, me: "Service", connected: "Service") -> List[str]:
+        """Gen Connected instance name"""
+        r = {""}
+        if not self.name_template:
+            return list(r)
+        tmpl: Template = Template(self.name_template)
+        for num in range(self.active_instances):
+            r.add(tmpl.render(num=num, me=me, connected=connected))
+        return sorted(r)
+
+    def is_match_service(self, svc: "Service") -> bool:
+        """port ?"""
+        if self.service and self.service.id == svc.id:
+            return True
+        return self.group and self.group.id in svc.effective_service_groups
 
     # def is_match(
     #     self,
@@ -198,6 +216,7 @@ class Service(Document):
             "profile",
             "parent",
             "state",
+            "dependency_services.service",
             ("caps.capability", "caps.value"),
             ("mappings.remote_system", "mappings.remote_id"),
             "sla_probe",
@@ -221,8 +240,11 @@ class Service(Document):
     parent: "Service" = PlainReferenceField("self", required=False)
     # Subscriber information
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
+    # Oper Status Info
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
+    affect_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
+    direct_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     # Service oper status settings
     status_transfer_policy = StringField(
         choices=[
@@ -506,6 +528,14 @@ class Service(Document):
             self.diagnostic.reload_diagnostics()
             self.refresh_status()
             self._refresh_managed_object()
+        if (not hasattr(self, "_changed_fields") and self.dependency_services) or (
+            hasattr(self, "_changed_fields") and "dependency_services" in self._changed_fields
+        ):
+            call_later(
+                "noc.sa.models.service.refresh_connected_services",
+                delay=20,
+                svc_ids=[self.id],
+            )
 
     def _refresh_managed_object(self):
         from noc.sa.models.servicesummary import ServiceSummary
@@ -536,25 +566,27 @@ class Service(Document):
         seen -= {self.id}
         return list(seen)
 
+    def get_dependency_config(
+        self, dependency: "Service", link_type: Optional[str] = None
+    ) -> Optional[ServiceDependency]:
+        """Return Dependency config as rule"""
+        link_cfg = None
+        for sd in self.dependency_services:
+            if sd.is_match_service(dependency):
+                return sd
+            if link_type and not link_cfg and sd.type == link_type:
+                link_cfg = sd
+        return link_cfg
+
     def iter_dependent_services(self) -> Iterable[Tuple["Service", str]]:
         """
         Iterable over dependent service, that affected self changed: status_change
         """
         # Children
-        nested = self.get_nested_ids()
-        # Services
-        services = []
-        for deps in ServiceInstance.objects.filter(
-            service=self,
-            dependencies__exists=True,
-            dependencies__ne=[],
-        ).scalar("dependencies"):
-            services += deps
-        for svc in Service.objects.filter(id__in=nested + services):
-            if svc.id in nested:
-                yield svc, "D"
-            else:
-                yield svc, "S"
+        for svc in Service.objects.filter(parent=self):
+            yield svc, "D"
+        for svc in self.get_connected_my():
+            yield svc, "S"
 
     def iter_dependencies_services(self, filter_match_status: bool = False) -> Iterable["Service"]:
         """Iterate over service topology, with affected statuses"""
@@ -569,19 +601,15 @@ class Service(Document):
 
     def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
         """Iterate over dependency services status"""
-        for svc in Service.objects.filter(parent=self):
-            p = svc.get_status_transfer_policy()
-            if p == "S":
-                yield svc.oper_status, svc.profile.weight
-            elif p == "T":
-                # Transparent
-                # yield from svc.iter_dependency_status("self_only")
-                ...
-
-        for item in self.dependency_services:
-            if not item.is_match():
+        for svc, link_type in self.iter_dependent_services():
+            cfg = self.get_dependency_config(svc, link_type=link_type)
+            if not cfg or not cfg.is_match_status(svc.oper_status):
                 continue
-            yield item.service.oper_status, item.service.profile.weight
+            if cfg.set_status:
+                yield cfg.set_status, svc.profile.weight
+            else:
+                yield svc.oper_status, svc.profile.weight
+            # Transparent
 
     def set_oper_status(
         self,
@@ -825,11 +853,68 @@ class Service(Document):
             return Status.UNKNOWN
         return Status.UP
 
-    def refresh_status(self):
+    def get_connected_me(self) -> Iterable["Service"]:
+        """Get connected services to me"""
+        # Any config ?
+        # From Config
+        for svc in Service.objects.filter(dependency_services__service=self):
+            yield svc
+        # Groups
+        groups = []
+        for cfg in self.dependency_services:
+            if cfg.group and cfg.type == "S":
+                groups.append(cfg.group)
+        if groups:
+            for svc in Service.objects.filter(effective_client_groups__in=groups):
+                yield svc
+        # ETL Service Instance
+        for svc in ServiceInstance.objects.filter(
+            type=InstanceType.SERVICE_CLIENT,
+            remote_id=self.remote_id,  # source-etl
+        ).scalar("service"):
+            yield svc
+        # InstanceConfig
+
+    def get_connected_services(self) -> Dict[str, Set[str]]:
+        """"""
+        r = defaultdict(set)
+        for svc in self.get_connected_me():
+            cfg_deps = svc.get_dependency_config(self)
+            if not cfg_deps:
+                continue
+            for i_name in cfg_deps.get_names(svc, self):
+                r[i_name or None].add(svc.id)
+        return r
+
+    def get_connected_my(self):
+        """Get connected my services, Required for refresh service status"""
+        # From Config
+        from noc.sa.models.serviceinstance import ServiceInstance
+
+        for cfg in self.dependency_services:
+            if cfg.service:
+                yield cfg.service
+        # Group
+        if self.effective_client_groups:
+            for svc in Service.objects.filter(
+                effective_service_groups__in=self.effective_client_groups,
+            ):
+                yield svc
+        # ETL Service Instance
+        for svc in ServiceInstance.objects.filter(
+            type=InstanceType.SERVICE_CLIENT,
+            service=self.id,
+        ).scalar("service"):
+            yield svc
+
+    def refresh_status(self, update_direct: bool = True, update_affected: bool = True):
         """Calculate Operative Status, maximum over Directed and Affected Status"""
         affected = []
-        status = self.get_direct_status(affected=affected)
-        status = max(status, self.get_affected_status())
+        if update_direct:
+            self.direct_oper_status = self.get_direct_status(affected=affected)
+        if update_affected:
+            self.affect_oper_status = self.get_affected_status()
+        status = max(self.affect_oper_status, self.direct_oper_status)
         self.set_oper_status(status, affected=affected)
 
     def get_alarm_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
@@ -1095,7 +1180,7 @@ class Service(Document):
         """"""
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()
-        self.refresh_status()
+        self.refresh_status(update_affected=False)
         self._refresh_managed_object()
 
     def sync_instances(self):
@@ -1103,13 +1188,24 @@ class Service(Document):
         if self.profile.instance_policy != "C":
             return
         instances: List[ServiceInstanceConfig] = []
+        # Dependencies, nanme, Instance Config, port ?, service list
+        connected_services = self.get_connected_services()
         for settings in self.profile.instance_settings:
             i_type = settings.get_instance_type()
             cfgs = i_type.from_settings(settings.get_config(), self, settings.name)
             if not cfgs:
                 continue
-            instances += cfgs
+            for cfg in cfgs:
+                if cfg.type == InstanceType.SERVICE_ENDPOINT and cfg.name in connected_services:
+                    cfg.services = list(connected_services.pop(cfg.name))
+                instances += [cfg]
         # Deps
+        for name in connected_services:
+            i_type = ServiceInstanceConfig.get_type(InstanceType.SERVICE_ENDPOINT)
+            cfg = i_type.from_config(name, services=list(connected_services[name]))
+            if not cfg:
+                continue
+            instances += [cfg]
         logger.debug("[%s] Synced instances from config: %s", self, instances)
         self.update_instances(InputSource.CONFIG, instances)
 
@@ -1131,8 +1227,11 @@ class Service(Document):
             instance = ServiceInstance.ensure_instance(self, cfg, settings)
             # Update Data, Run sync
             instance.update_config(cfg)
+            # replace to get_dependencies(service, port)
+            # config instances
             instance.register_endpoint(source, cfg.addresses)
-            instance.dependencies = cfg.services or None
+            if set(instance.dependencies) != set(cfg.services or []):
+                instance.dependencies = cfg.services
             # Add Source
             instance.seen(source, last_update, dry_run=True)
             instance.save()
@@ -1179,6 +1278,11 @@ class Service(Document):
         settings = self.profile.get_instance_config(type, name)
         si = ServiceInstance.ensure_instance(self, cfg, settings)
         changed = False
+        # si.dependencies = cfg.services
+        deps = [x.id for x in self.get_connected_me()]
+        if set(deps) != set(si.dependencies):
+            si.dependencies = deps
+            changed |= True
         # Update data
         si.seen(source)
         if si.fqdn != fqdn:
@@ -1281,3 +1385,25 @@ def refresh_service_status(svc_ids: List[str]):
     # Update linked
     for svc in Service.objects.filter(id__in=list(affected_paths)).order_by("-parent"):
         svc.refresh_status()
+
+
+def refresh_connected_services(svc_ids: List[str]):
+    logger.info("Refresh connected services: %s", svc_ids)
+    from noc.sa.models.serviceinstance import ServiceInstance
+
+    affected = set()
+    for svc in Service.objects.filter(id__in=svc_ids):
+        connected = set(svc.get_connected_my())
+        if connected:
+            affected |= connected
+    for svc in ServiceInstance.objects.filter(
+        type=InstanceType.SERVICE_ENDPOINT,
+        dependencies__in=svc_ids,
+    ).scalar("service"):
+        affected.add(svc)
+    if not affected:
+        return
+    logger.info("Affected: %s", affected)
+    with change_tracker.bulk_changes():
+        for svc in affected:
+            svc.sync_instances()

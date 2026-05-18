@@ -15,7 +15,7 @@ from noc.sa.models.service import Service as ServiceModel
 from noc.sa.models.serviceprofile import ServiceProfile
 from noc.core.models.inputsources import InputSource
 from .base import BaseLoader
-from ..models.service import Service, Instance, InstanceType
+from ..models.service import Service, Instance
 
 
 class ServiceLoader(BaseLoader):
@@ -67,13 +67,7 @@ class ServiceLoader(BaseLoader):
         si = []
         for i in instances or []:
             i = Instance.model_validate(i)
-            cfg = i.config
-            if i.type == InstanceType.SERVICE_CLIENT:
-                svc = self.clean_remote_reference(o.remote_system.name, self.name, i.remote_id)
-                if not svc:
-                    raise self.Deferred()
-                cfg.services = [svc]
-            si.append(cfg)
+            si.append(i.config)
         o.update_instances(
             source=InputSource.ETL,
             instances=si,

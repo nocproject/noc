@@ -40,11 +40,11 @@ class StatusAffectedItem:
         )
 
     @classmethod
-    def from_diagnostic(cls, diagnosctic, status: Status) -> "StatusAffectedItem":
+    def from_diagnostic(cls, diagnostic, status: Status) -> "StatusAffectedItem":
         """Build item by diagnostic"""
         return StatusAffectedItem(
             status=status,
-            id=str(diagnosctic.diagnosctic),
+            id=str(diagnostic.diagnostic),
             reason="",
             source="diagnostic",
         )
