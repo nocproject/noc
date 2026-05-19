@@ -8,6 +8,7 @@
 # Python modules
 from dataclasses import dataclass
 from typing import Dict, Tuple, List, Optional, Set, Iterable, Union
+from typing_extensions import TypedDict, NotRequired
 
 # NOC modules
 from noc.core.perf import metrics
@@ -25,6 +26,20 @@ class ScopeInfo(object):
     required_labels: Tuple[str, ...]
     units: Dict[str, str]
     enable_timedelta: bool = False
+
+
+class MetricsItem(TypedDict, closed=True):
+    scope: str
+    ts: int
+    labels: List[str]
+    managed_object: int
+    sla_probe: NotRequired[int]
+    agent: NotRequired[int]
+    service: NotRequired[int]
+    sensor: NotRequired[int]
+    _units: Dict[str, str]
+    # Any key other than 'title' or 'year' must have a boolean value
+    __extra_items__: float
 
 
 @dataclass

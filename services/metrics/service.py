@@ -36,7 +36,7 @@ from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
-from noc.services.metrics.models.card import Card, ScopeInfo
+from noc.services.metrics.models.card import Card, ScopeInfo, MetricsItem
 from noc.services.metrics.models.rule import Rule
 from noc.services.metrics.models.target import (
     MetricKey,
@@ -184,7 +184,7 @@ class MetricsService(FastAPIService):
                 await asyncio.sleep(1)
 
     async def on_metrics(self, msg: Message) -> None:
-        data = orjson.loads(msg.value)
+        data: List[MetricsItem] = orjson.loads(msg.value)
         state = {}
         metrics["messages"] += 1
         for item in data:
