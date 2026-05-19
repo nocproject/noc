@@ -10,6 +10,9 @@ import sys
 from dataclasses import dataclass
 from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List
 
+# Python modules
+from noc.core.cdag.node.probe import ProbeNode
+
 MetricKey = Tuple[str, Tuple[Tuple[str, int], ...], Tuple[str, ...]]
 
 
@@ -29,7 +32,7 @@ class ComponentTarget:
     exposed_labels: Optional[Tuple[str, ...]]
 
     @classmethod
-    def from_data(cls, data):
+    def from_data(cls, data: Dict[str, Any]):
         """Create Instance from data"""
         return ComponentTarget(
             key_labels=tuple(sys.intern(ll) for ll in data["key"]),
@@ -37,6 +40,47 @@ class ComponentTarget:
             composed_metrics=tuple(sys.intern(m) for m in data.get("composed_metrics") or []),
             exposed_labels=None,
         )
+
+
+@dataclass(frozen=True, slots=True)
+class SensorComponentTarget:
+    bi_id: int
+    units: str
+    name: Optional[str]
+    managed_object: Optional[int]
+    rules: Optional[Tuple[Tuple[str, str], ...]]
+    exposed_labels: Optional[Tuple[str, ...]]
+    probe: ProbeNode
+    probe_delta: ProbeNode
+
+    @classmethod
+    def from_data(cls, data):
+        """Create Instance from data"""
+        return SensorComponentTarget(
+            bi_id=int(data["bi_id"]),
+            managed_object=int(data["managed_object"]) if "managed_object" in data else None,
+            name=data.get("name"),
+            rules=convert_rules(data.get("rules", [])),
+            exposed_labels=None,
+            units=data.get("units", "1"),
+            probe=None,
+            probe_delta=None,
+        )
+
+    def add_probe(self, scope: str, probe: ProbeNode):
+        """Add probe"""
+        if probe.node_id == "value":
+            self.probe = probe
+        elif probe.node_id == "value_delta":
+            self.probe_delta = probe
+
+    def get_probe(self, scope: str, probe: str) -> Optional[ProbeNode]:
+        """Request metric probe"""
+        if probe == "value":
+            return self.probe
+        if probe == "value_delta":
+            return self.probe_delta
+        return None
 
 
 @dataclass(frozen=True, slots=True)

@@ -29,8 +29,8 @@ class MetricsNodeConfig(BaseModel):
 NS = 1_000_000_000
 
 # scope -> name -> cleaner
-scope_cleaners: Dict[str, Dict[str, Callable]] = {}
-mx_converters: Optional[Dict[str, Callable]] = None
+scope_cleaners: Dict[str, Dict[str, Callable[[float], float]]] = {}
+mx_converters: Optional[Dict[str, Callable[[Dict[str, float]], Dict[str, float]]]] = None
 
 
 class MetricsNode(BaseCDAGNode):

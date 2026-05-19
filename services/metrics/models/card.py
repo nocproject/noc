@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Metrics card
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,8 +17,9 @@ from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.metrics import MetricsNode
 from noc.core.cdag.node.alarm import AlarmNode
+from noc.core.cdag.node.composeprobe import ComposeProbeNode
 from noc.core.cdag.node.threshold import ThresholdNode
-from .target import ManagedObjectTarget, ComponentTarget, SensorComponentTarget
+from .target import ManagedObjectTarget, SLAProbeTarget
 from .rule import Rule
 
 
@@ -56,36 +57,54 @@ class Card(object):
     Store Input probe nodes
     """
 
-    __slots__ = ("affected_rules", "alarms", "component", "config", "is_dirty", "probes", "senders")
-    probes: Dict[str, ProbeNode]
+    __slots__ = (
+        "affected_rules",
+        "alarms",
+        "config",
+        "is_dirty",
+        "probes",
+        "composed",
+        "senders",
+        "last_touch",
+    )
+    probes: Dict[Tuple[str, str], ProbeNode]
+    composed: Tuple[ComposeProbeNode]
     senders: Tuple[MetricsNode, ...]
     alarms: List[Union[ThresholdNode, AlarmNode]]
     affected_rules: Set[str]
-    config: Optional[Union[ManagedObjectTarget, SensorComponentTarget]]
-    component: Optional[ComponentTarget]
+    config: Optional[Union[ManagedObjectTarget, SLAProbeTarget]]
     is_dirty: bool
+    last_touch: Optional[datetime.datetime]
+
+    @classmethod
+    def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
+        """Iterate over nodes subscribed to Probes on Card"""
+        for s in node.iter_subscribers():
+            yield s.node
+            yield from cls.iter_subscribed_nodes(s.node)
+
+    def add_probe(self, scope: str, probe: ProbeNode):
+        """Add probe"""
+        if probe.name == "composeprobe":
+            self.composed = tuple([*list(self.composed or []), p])
+        else:
+            self.probes[(scope, unscope(probe.node_id))] = probe
+
+    def get_probe(self, scope: ScopeInfo, probe: str) -> Optional[ProbeNode]:
+        """Request metric probe"""
+        if (scope.scope, probe) in self.probes:
+            return self.probes[scope.scope, probe]
+        return None
 
     def get_sender(self, name: str) -> Optional[MetricsNode]:
         """Get probe sender by name"""
         return next((s for s in self.senders if s.config.scope == name), None)
-
     def apply_rule(self, rule: Rule):
         """Apply Metric Rule to card"""
 
-    def get_probe(self, metric: str) -> Optional[ProbeNode]:
-        return self.probes.get(metric)
-
-    def add_probe(self, metric_field: str, probe: ProbeNode):
-        self.probes[unscope(metric_field)] = probe
-
-    @classmethod
-    def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
-        """
-        Iterate over nodes subscribed to Probes on Card
-        """
-        for s in node.iter_subscribers():
-            yield s.node
-            yield from cls.iter_subscribed_nodes(s.node)
+    def touch(self, ts: int):
+        """"""
+        self.last_touch = ts
 
     def invalidate_card(self):
         """Remove all subscribed node and set  is_dirty for applied rules"""

@@ -106,7 +106,8 @@ class ProbeNode(BaseCDAGNode):
             scale, unit = unit.split(",")
         else:
             scale = "1"
-        self.fatal_error = None
+        if self.fatal_error:
+            self.fatal_error = None
         # No translation
         if unit == self.config.unit and not self.config.is_delta:
             return self._upscale(x, scale)
@@ -124,9 +125,13 @@ class ProbeNode(BaseCDAGNode):
             # No state dependency, just conversion
             self.set_state(None, None)
             return self._upscale(fn(**kwargs), scale)
+        # if self.state.lt is None or self.state.lv is None:
         if self.state.lt is None:
             # No previous measurement, store state and exit
             self.set_state(ts, x)
+            return None
+        if ts == self.state.lt and self.state.lv == x:
+            logger.debug("[%s] Same state exit", self.node_id)
             return None
         if ts <= self.state.lt:
             # Timer stepback, reset state and exit
