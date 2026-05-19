@@ -8,6 +8,7 @@
 # Python modules
 from typing import Optional, Dict, Callable, Iterable, Tuple
 from threading import Lock
+import sys
 import inspect
 import logging
 
@@ -26,6 +27,10 @@ MAX64 = 0xFFFFFFFFFFFFFFFF
 NS = 1_000_000_000
 
 logger = logging.getLogger(__name__)
+
+
+def unscope(x):
+    return sys.intern(x.rsplit("::", 1)[-1])
 
 
 class ProbeNodeState(BaseModel):
@@ -51,7 +56,7 @@ class ProbeNode(BaseCDAGNode):
     state_cls = ProbeNodeState
     categories = [Category.UTIL]
     dot_shape = "cds"
-    _conversions: Dict[str, Dict[str, Callable]] = {}
+    _conversions: Dict[Tuple[str, bool], Dict[str, Callable[..., float]]] = {}
     _scales: Dict[str, Tuple[int, int]] = {}
     _conv_lock = Lock()
     # Test stub, set by .set_convert() classmethod
@@ -59,15 +64,19 @@ class ProbeNode(BaseCDAGNode):
     # Test stub, set by .set_scale() classmethod
     _SCALE: Dict[str, Tuple[int, int]] = {}
 
-    __slots__ = "base", "convert", "exp"
+    __slots__ = "base", "convert", "exp", "fatal_error"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.convert = self.get_convert(self.config.unit, self.config.is_delta)
         self.base, self.exp = self.get_scale(self.config.scale)
+        self.fatal_error: Optional[str] = None
 
     def __str__(self):
         return f"{self.name}: {self.node_id}"
+
+    def get_error(self) -> Optional[str]:
+        return self.fatal_error or None
 
     def _upscale(self, v: ValueType, scale: str) -> Optional[ValueType]:
         if v is None:
@@ -97,17 +106,15 @@ class ProbeNode(BaseCDAGNode):
             scale, unit = unit.split(",")
         else:
             scale = "1"
+        self.fatal_error = None
         # No translation
         if unit == self.config.unit and not self.config.is_delta:
             return self._upscale(x, scale)
         # No conversation. Skipping
         if unit not in self.convert:
-            logger.warning(
-                "[%s] Not conversation rule from unit %s to %s",
-                self.node_id,
-                unit,
-                self.config.unit,
-            )
+            error = f"[{self.node_id}] Not conversation rule from unit {unit} to {self.config.unit}"
+            logger.debug(error)
+            self.set_fatal_error(error)
             return None
         fn = self.convert[unit]
         kwargs = {}
@@ -156,6 +163,10 @@ class ProbeNode(BaseCDAGNode):
         self.state.lt = lt
         self.state.lv = lv
 
+    def set_fatal_error(self, error: str):
+        """Set fatal error on probe processed"""
+        self.fatal_error = unscope(error)
+
     @staticmethod
     def get_bound(v: int) -> int:
         """
@@ -193,8 +204,8 @@ class ProbeNode(BaseCDAGNode):
         return d_wrap
 
     @classmethod
-    def get_convert(cls, unit: str, is_delta: bool = False) -> Dict[str, Callable]:
-        def q(expr: str) -> Callable:
+    def get_convert(cls, unit: str, is_delta: bool = False) -> Dict[str, Callable[..., float]]:
+        def q(expr: str) -> Callable[..., float]:
             fn = get_fn(expr)
             params = inspect.signature(fn).parameters
             fn.has_x = "x" in params

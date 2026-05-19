@@ -291,6 +291,8 @@ class Sensor(Document):
                 hints.append(f"oid::{sensor.snmp_oid}")
             if sensor.object and sensor.object.get_data("hw_path", "slot"):
                 hints.append(f"slot::{sensor.object.get_data('hw_path', 'slot')}")
+            if sensor.munits != "1":
+                hints.append(f"units::{sensor.munits}")
             yield MetricCollectorConfig(
                 collector="sensor",
                 metrics=tuple(metrics),
@@ -360,7 +362,7 @@ class Sensor(Document):
             )
 
     @classmethod
-    def get_metric_config(cls, sensor: "Sensor"):
+    def get_metric_config(cls, sensor: "Sensor") -> Dict[str, Any]:
         """Return MetricConfig for Metrics service"""
         if not sensor.state.is_productive or not sensor.profile.enable_collect:
             return {}

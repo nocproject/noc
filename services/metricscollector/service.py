@@ -231,7 +231,11 @@ class MetricsCollectorService(FastAPIService):
                 except KeyError:
                     continue
                 ts = datetime.datetime.fromtimestamp(clock)
-                parts[cfg.bi_id % self.n_parts].append(
+                if cfg.managed_object:
+                    part = cfg.managed_object % self.n_parts
+                else:
+                    part = cfg.bi_id % self.n_parts
+                parts[part].append(
                     {
                         "ts": (ts.timestamp() + config.tz_utc_offset) * NS,
                         "scope": "sensor",
