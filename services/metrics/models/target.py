@@ -67,14 +67,14 @@ class SensorComponentTarget:
             probe_delta=None,
         )
 
-    def add_probe(self, scope: str, probe: ProbeNode):
+    def add_probe(self, k: MetricKey, probe: ProbeNode):
         """Add probe"""
         if probe.node_id == "value":
             self.probe = probe
         elif probe.node_id == "value_delta":
             self.probe_delta = probe
 
-    def get_probe(self, scope: str, probe: str) -> Optional[ProbeNode]:
+    def get_probe(self, k: MetricKey, probe: str) -> Optional[ProbeNode]:
         """Request metric probe"""
         if probe == "value":
             return self.probe

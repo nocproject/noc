@@ -19,7 +19,7 @@ from noc.core.cdag.node.metrics import MetricsNode
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.node.composeprobe import ComposeProbeNode
 from noc.core.cdag.node.threshold import ThresholdNode
-from .target import ManagedObjectTarget, SLAProbeTarget
+from .target import MetricKey, ManagedObjectTarget, SLAProbeTarget
 from .rule import Rule
 
 
@@ -83,17 +83,17 @@ class Card(object):
             yield s.node
             yield from cls.iter_subscribed_nodes(s.node)
 
-    def add_probe(self, scope: str, probe: ProbeNode):
+    def add_probe(self, k: MetricKey, probe: ProbeNode):
         """Add probe"""
         if probe.name == "composeprobe":
             self.composed = tuple([*list(self.composed or []), p])
         else:
-            self.probes[(scope, unscope(probe.node_id))] = probe
+            self.probes[(k, unscope(probe.node_id))] = probe
 
-    def get_probe(self, scope: ScopeInfo, probe: str) -> Optional[ProbeNode]:
+    def get_probe(self, k: MetricKey, probe: str) -> Optional[ProbeNode]:
         """Request metric probe"""
-        if (scope.scope, probe) in self.probes:
-            return self.probes[scope.scope, probe]
+        if (k, probe) in self.probes:
+            return self.probes[k, probe]
         return None
 
     def get_sender(self, name: str) -> Optional[MetricsNode]:

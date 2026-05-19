@@ -279,6 +279,8 @@ class MetricsService(FastAPIService):
                 item["labels"] = labels + list(card.config.exposed_labels)
             if card:
                 card.touch(item["ts"])
+            if sensor:
+                sensor = self.sensors.get(sensor)
             state.update(self.activate_card(card, si, mk, item, sensor))
         # Save state change
         if state:
@@ -686,7 +688,7 @@ class MetricsService(FastAPIService):
         si: ScopeInfo,
         k: MetricKey,
         data: MetricsItem,
-        sensor: Optional[int] = None,
+        sensor: Optional[SensorComponentTarget] = None,
     ) -> Dict[Tuple[str, str], Dict[str, Any]]:
         """
         Activate card and return changed state
@@ -695,7 +697,6 @@ class MetricsService(FastAPIService):
         tx = self.graph.begin()
         ts = data["ts"]
         time_delta = None
-        sensor = self.sensors.get(sensor)
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
