@@ -710,10 +710,10 @@ class MetricsService(FastAPIService):
             if self.lazy_init and not probe:
                 if sensor:
                     probe = self.add_probe(card, n, k, unit=sensor.units)
-                    sensor.add_probe(k[0], probe)
+                    sensor.add_probe(k, probe)
                 else:
                     probe = self.add_probe(card, n, k)
-                    card.add_probe(k[0], probe)
+                    card.add_probe(k, probe)
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
@@ -822,7 +822,6 @@ class MetricsService(FastAPIService):
         self.mappings_ready_event.set()
         self.logger.info("%d Targets has been loaded", len(self.targets))
         self.logger.info("%d Sensors has been loaded", len(self.sensors))
-        print(self.sensors)
 
     def iter_cards(self, target: MetricTarget) -> Iterable[Card]:
         """Iter cards matched source config"""
