@@ -658,7 +658,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         ts: Optional[int] = None,
         labels: Optional[Union[List[str], Tuple[str]]] = None,
         type: str = "gauge",
-        scale: Union[float, int, Callable] = 1,
+        scale: Union[float, int, Callable[..., float]] = 1,
         units: str = "1",
         multi: bool = False,
         sensor: Optional[int] = None,
@@ -780,7 +780,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                 labels=mc.labels,
             )
 
-    SENSOR_OID_SCALE: Dict[str, Union[int, Callable]] = {}  # oid -> scale
+    SENSOR_OID_SCALE: Dict[str, Union[int, Callable[..., float]]] = {}  # oid -> scale
 
     def collect_sensor_metrics(self, metrics: List[MetricCollectorConfig]):
         """
@@ -802,6 +802,7 @@ class Script(BaseScript, metaclass=MetricScriptBase):
                     value=float(value),
                     scale=self.SENSOR_OID_SCALE.get(hints["oid"], 1),
                     sensor=sensor.sensor,
+                    units=hints.get("units", "1"),
                 )
             except Exception:
                 continue
