@@ -86,7 +86,7 @@ class MetricsService(FastAPIService):
         self.metric_configs: Dict[
             Tuple[str, str], Union[ProbeNodeConfig, ComposeProbeNodeConfig]
         ] = {}
-        self.compose_inputs: Dict[str, Set] = {}
+        self.compose_inputs: Dict[str, Set[str]] = {}
         self.scope_cdag: Dict[str, CDAG] = {}  # Scope graph cache
         self.cards: Dict[MetricKey, Card] = {}  # Metric cards
         self.graph: Optional[CDAG] = None  # Service Metric Graph
