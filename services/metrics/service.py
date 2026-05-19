@@ -15,7 +15,6 @@ import sys
 import asyncio
 import codecs
 import hashlib
-import datetime
 
 # Third-party modules
 import orjson
