@@ -9,10 +9,13 @@
 # Python modules
 from collections import defaultdict
 from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, Union
+from dataclasses import dataclass
+from time import perf_counter
 import sys
 import asyncio
 import codecs
 import hashlib
+import datetime
 
 # Third-party modules
 import orjson
@@ -25,6 +28,7 @@ from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.mongo.connection_async import connect_async
+from noc.core.ioloop.timers import PeriodicCallback
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
@@ -50,6 +54,18 @@ from noc.config import config as global_config
 
 # MetricKey - scope, key ctx: (managed_object, <bi_id>), Key Labels
 ObjectTarget = Union[ManagedObjectTarget, SLAProbeTarget]
+
+
+@dataclass
+class ErrorState:
+    message: str
+    metric: MetricKey
+    last_update: int
+    repeat: int = 1
+
+    def touch(self, ts: int):
+        self.repeat += 1
+        self.last_update = ts
 
 
 def unscope(x):
@@ -94,6 +110,7 @@ class MetricsService(FastAPIService):
         self.sync_cursor_condition: Optional[asyncio.Condition] = (
             None  # Condition for commit stream cursor
         )
+        self.node_errors: Dict[str, ErrorState] = {}
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -107,6 +124,9 @@ class MetricsService(FastAPIService):
         # Start tracking changes
         asyncio.get_running_loop().create_task(self.get_metric_rules_mappings())
         asyncio.get_running_loop().create_task(self.get_object_mappings())
+        # Callbacks
+        report_callback = PeriodicCallback(self.report, 60000)
+        report_callback.start()
         # Subscribe metrics stream
         asyncio.get_running_loop().create_task(self.subscribe_metrics())
 
@@ -182,6 +202,30 @@ class MetricsService(FastAPIService):
             except NOCError as e:
                 self.logger.info("Failed to get object mappings: %s", e)
                 await asyncio.sleep(1)
+
+    async def report(self):
+        """Report report some processed errors"""
+        if not self.node_errors:
+            return
+        now = perf_counter()
+        for key in list(self.node_errors.keys()):
+            error = self.node_errors[key]
+            self.logger.warning(
+                "[%s] Error when processed metrics: %s ...Repeat: %s",
+                error.metric,
+                error.message,
+                error.repeat,
+            )
+            if now - error.last_update > 3600:
+                del self.node_errors[key]
+
+    def set_error(self, k: MetricKey, msg: str, ts: Optional[int] = None):
+        """"""
+        ts = int(ts or perf_counter())
+        if msg in self.node_errors:
+            self.node_errors[msg].touch(ts)
+        else:
+            self.node_errors[msg] = ErrorState(message=msg, metric=k, last_update=ts)
 
     async def on_metrics(self, msg: Message) -> None:
         data: List[MetricsItem] = orjson.loads(msg.value)
@@ -647,6 +691,8 @@ class MetricsService(FastAPIService):
             probe.activate(tx, "ts", ts)
             probe.activate(tx, "x", data[n])
             probe.activate(tx, "unit", mu)
+            if probe.fatal_error:
+                self.set_error(k, probe.fatal_error)
         # Activate senders
         for sender in card.senders:
             for kf in si.key_fields:
