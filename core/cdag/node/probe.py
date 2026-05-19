@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, Dict, Callable, Iterable, Tuple, Any
+from typing import Optional, Dict, Callable, Iterable, Tuple
 from threading import Lock
 import sys
 import inspect
