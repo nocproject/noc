@@ -6,6 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
+import sys
 from dataclasses import dataclass
 from typing import Dict, Tuple, List, Optional, Set, Iterable, Union
 from typing_extensions import TypedDict, NotRequired
@@ -13,9 +14,16 @@ from typing_extensions import TypedDict, NotRequired
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.cdag.node.base import BaseCDAGNode
+from noc.core.cdag.node.probe import ProbeNode
+from noc.core.cdag.node.metrics import MetricsNode
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.node.threshold import ThresholdNode
 from .target import SensorTarget, ManagedObjectTarget, ComponentTarget
+from .rule import Rule
+
+
+def unscope(x):
+    return sys.intern(x.rsplit("::", 1)[-1])
 
 
 @dataclass
@@ -49,17 +57,26 @@ class Card(object):
     """
 
     __slots__ = ("affected_rules", "alarms", "component", "config", "is_dirty", "probes", "senders")
-    probes: Dict[str, BaseCDAGNode]
-    senders: Tuple[BaseCDAGNode, ...]
+    probes: Dict[str, ProbeNode]
+    senders: Tuple[MetricsNode, ...]
     alarms: List[Union[ThresholdNode, AlarmNode]]
     affected_rules: Set[str]
     config: Optional[Union[ManagedObjectTarget, SensorTarget]]
     component: Optional[ComponentTarget]
     is_dirty: bool
 
-    def get_sender(self, name: str) -> Optional[BaseCDAGNode]:
+    def get_sender(self, name: str) -> Optional[MetricsNode]:
         """Get probe sender by name"""
         return next((s for s in self.senders if s.config.scope == name), None)
+
+    def apply_rule(self, rule: Rule):
+        """Apply Metric Rule to card"""
+
+    def get_probe(self, metric: str) -> Optional[ProbeNode]:
+        return self.probes.get(metric)
+
+    def add_probe(self, metric_field: str, probe: ProbeNode):
+        self.probes[unscope(metric_field)] = probe
 
     @classmethod
     def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:

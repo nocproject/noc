@@ -10,7 +10,7 @@ import sys
 from dataclasses import dataclass
 from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List
 
-MetricKey = Tuple[str, Tuple[Tuple[str, Any], ...], Tuple[str, ...]]
+MetricKey = Tuple[str, Tuple[Tuple[str, int], ...], Tuple[str, ...]]
 
 
 def convert_rules(rules: List[Tuple[str, str]]) -> Tuple[Tuple[str, str], ...]:

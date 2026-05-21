@@ -37,6 +37,7 @@ from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
+from noc.services.datastream.models.cfgmetricrules import CfgMetricRule
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
 from noc.services.metrics.models.card import Card, ScopeInfo, MetricsItem
@@ -529,7 +530,7 @@ class MetricsService(FastAPIService):
         # Subscribe
         p.subscribe(sender, metric_field, dynamic=True, mark_bound=False)
         p.freeze()
-        card.probes[unscope(metric_field)] = p
+        card.add_probe(metric_field, p)
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
@@ -656,15 +657,15 @@ class MetricsService(FastAPIService):
                 continue
             # Add probe
             for m_field in self.compose_inputs[cp_metric_filed]:
-                if m_field in card.probes:
-                    card.probes[m_field].subscribe(cp, m_field, dynamic=True, mark_bound=False)
-                else:
+                p = card.get_probe(m_field)
+                if not p:
                     p = self.add_probe(m_field, k)
+                if p:
                     p.subscribe(cp, m_field, dynamic=True, mark_bound=False)
             self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(
-        self, card: Card, si: ScopeInfo, k: MetricKey, data: Dict[str, Any]
+        self, card: Card, si: ScopeInfo, k: MetricKey, data: MetricsItem
     ) -> Dict[Tuple[str, str], Dict[str, Any]]:
         """
         Activate card and return changed state
@@ -677,7 +678,7 @@ class MetricsService(FastAPIService):
             mu = units.get(n) or si.units.get(n)
             if not mu:
                 continue  # Missed field
-            probe = card.probes.get(n)
+            probe = card.get_probe(n)
             if self.lazy_init and not probe:
                 probe = self.add_probe(n, k, unit=card.m_unit)
             if not probe:
@@ -849,43 +850,14 @@ class MetricsService(FastAPIService):
     async def update_rules(self, data: Dict[str, Any]) -> None:
         """Apply Metric Rules change"""
         # Add Invalidate Graph
+        try:
+            rule = CfgMetricRule.model_validate(data)
+        except ValidationError as e:
+            self.logger.warning("[%s] Unknown Rule Format: %s", data["id"], e)
+            return
         invalidate_rules = set()
-        for action in data["actions"]:
-            rule_id = f"{data['id']}-{action['id']}"  # Rule id - join rule and action
-            graph = CDAG(f"{data['name']}-{action['name']}")
-            try:
-                g_config = GraphConfig(**action["graph_config"])
-            except ValidationError as e:
-                self.logger.warning("[%s] Unknown Rule Format: %s", rule_id, e)
-                continue
-            scopes = set()
-            for a_input in action["inputs"]:
-                scopes.add(a_input["sender_id"])
-                graph.add_node(
-                    f"{rule_id}::{a_input['probe_id']}",
-                    node_type="probe",
-                    config={"unit": "1"},
-                    sticky=True,
-                )
-            f = ConfigCDAGFactory(graph, g_config, namespace=rule_id)
-            f.construct()
-            configs = {}
-            for node in g_config.nodes:
-                if node.name == "probe" or not node.config:
-                    continue
-                if node.name in {"alarm", "threshold"} and "vars" in node.config:
-                    node.config["vars"] = [VarItem(**v) for v in node.config["vars"]]
-                configs[f"{rule_id}::{node.name}"] = node.config
-            r = Rule(
-                id=rule_id,
-                match_labels=frozenset(
-                    frozenset(sys.intern(label) for label in d["labels"]) for d in data["match"]
-                ),
-                exclude_labels=None,
-                match_scopes=scopes,
-                graph=graph,
-                configs=configs,
-            )
+        for action in rule.actions:
+            r = Rule.from_config(rule.id, action, rule_name=rule.name, conditions=rule.match)
             r_id = sys.intern(r.id)
             if r_id not in self.rules:
                 self.rules[r_id] = r
