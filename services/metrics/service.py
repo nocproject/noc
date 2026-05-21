@@ -247,12 +247,18 @@ class MetricsService(FastAPIService):
                 self.logger.debug("No labels: %s", item)
                 metrics["discard", ("reason", "no_labels")] += 1
                 return  # No labels
-            mk, tid, sid, req = self.get_key(si, item)
+            mk, tid, sensor, req = self.get_key(si, item)
             if si.required_labels and len(req) != len(si.required_labels):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
                 return  # Missed key label
-            card = await self.get_card(mk, labels)
+            # Gettig source config
+            target = self.targets.get(tid)
+            if sensor:
+                sensor = self.sensors.get(sensor)
+            if not target:
+                self.logger.info("[%s] Not Found Source info", mk[1])
+            card = await self.get_card(mk, labels, sensor or target)
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
@@ -260,9 +266,7 @@ class MetricsService(FastAPIService):
             if card.config and card.config.exposed_labels:
                 # Add component labels
                 item["labels"] = labels + list(card.config.exposed_labels)
-            if not tid and not sid:
-                self.logger.info("Not Found Source info")
-            state.update(self.activate_card(card, si, mk, item))
+            state.update(self.activate_card(card, si, mk, item, target))
         # Save state change
         if state:
             await self.change_log.feed(state)
@@ -366,7 +370,12 @@ class MetricsService(FastAPIService):
         l2_set = set(l2)
         return l2[:] + [x for x in l1 if x not in l2_set]
 
-    async def get_card(self, k: MetricKey, labels: List[str]) -> Optional[Card]:
+    async def get_card(
+        self,
+        k: MetricKey,
+        labels: List[str],
+        target: Optional[ManagedObjectTarget] = None,
+    ) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
         :param k: (scope, ((key field, key value), ...), (key label, ...))
@@ -375,10 +384,11 @@ class MetricsService(FastAPIService):
         :return:
         """
         card = self.cards.get(k)
-
+        if card and not card.config and target:
+            card.config = target
         if card and card.is_dirty:
             # Apply Rules after invalidate cache
-            self.apply_rules(k, labels)
+            self.apply_rules(k, labels, card)
             return card
         if card:
             return card
@@ -386,13 +396,12 @@ class MetricsService(FastAPIService):
         cdag = self.get_scope_cdag(k)
         if not cdag:
             return None
-        target, cp = self.get_target(k)
         # Apply CDAG to a common graph and collect inputs to the card
         card = await self.project_cdag(
             cdag,
             prefix=self.get_key_hash(k),
             config=target,
-            component=cp,
+            component=None,
         )
         metrics["project_cards"] += 1
         self.cards[k] = card
@@ -400,7 +409,7 @@ class MetricsService(FastAPIService):
             # Skip metric for sensor
             self.target_card_map[target.bi_id].append(k)
         # Apply Rules
-        self.apply_rules(k, labels)
+        self.apply_rules(k, labels, card)
         return card
 
     def get_scope_cdag(self, k: MetricKey) -> Optional[CDAG]:
@@ -530,7 +539,7 @@ class MetricsService(FastAPIService):
         prefix = self.get_key_hash(k)
         state_id = f"{prefix}::{metric_field}"
         cfg = self.metric_configs.get((k[0], metric_field))
-        if unit:
+        if cfg and unit:
             cfg.unit = unit
         # Create Probe
         p = probe_cls.construct(
@@ -547,40 +556,13 @@ class MetricsService(FastAPIService):
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
-    def get_target(
-        self, k: MetricKey
-    ) -> Optional[Tuple[Optional[MetricTarget], Optional[ComponentTarget]]]:
-        """Resolve metrics target"""
-        key_ctx = dict(k[1])
-        if key_ctx.get("sensor"):
-            tid = key_ctx["sensor"]
-            return self.sensors.get(tid), None
-        if key_ctx.get("sla_probe"):
-            tid = key_ctx["sla_probe"]
-        elif key_ctx.get("agent"):
-            tid = key_ctx["agent"]
-        elif "managed_object" in key_ctx:
-            tid = key_ctx["managed_object"]
-        else:
-            self.logger.info("Not Found Source info")
-            return None, None
-        target = self.targets.get(tid)
-        if not target:
-            self.logger.info("[%s] Unknown Source", tid)
-            return None, None
-        return target, None
-
-    def apply_rules(self, k: MetricKey, labels: List[str]):
+    def apply_rules(self, k: MetricKey, labels: List[str], card: Card):
         """
         Apply rule Graph
         :param k: Metric key
         :param labels: Metric labels
         :return:
         """
-        card = self.cards[k]
-        if not card.config or card.is_dirty:
-            # Getting Context
-            card.config, card.component = self.get_target(k)
         if not card.config:
             self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
             metrics["unknown_metric_source"] += 1
@@ -678,7 +660,12 @@ class MetricsService(FastAPIService):
             self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(
-        self, card: Card, si: ScopeInfo, k: MetricKey, data: MetricsItem
+        self,
+        card: Card,
+        si: ScopeInfo,
+        k: MetricKey,
+        data: MetricsItem,
+        target: Optional[ManagedObjectTarget] = None,
     ) -> Dict[Tuple[str, str], Dict[str, Any]]:
         """
         Activate card and return changed state
@@ -714,7 +701,7 @@ class MetricsService(FastAPIService):
                     sender.activate(tx, kf, kv)
             if si.enable_timedelta and time_delta:
                 sender.activate(tx, "time_delta", time_delta)
-            sender.activate(tx, "target", card.config)
+            sender.activate(tx, "target", target or card.config)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         # Alarm
