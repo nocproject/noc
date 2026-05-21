@@ -247,7 +247,7 @@ class MetricsService(FastAPIService):
                 self.logger.debug("No labels: %s", item)
                 metrics["discard", ("reason", "no_labels")] += 1
                 return  # No labels
-            mk, req = self.get_key(si, item)
+            mk, tid, sid, req = self.get_key(si, item)
             if si.required_labels and len(req) != len(si.required_labels):
                 self.logger.debug("Missed key label: %s", item)
                 metrics["discard", ("reason", "missed_keylabel")] += 1
@@ -260,6 +260,8 @@ class MetricsService(FastAPIService):
             if card.config and card.config.exposed_labels:
                 # Add component labels
                 item["labels"] = labels + list(card.config.exposed_labels)
+            if not tid and not sid:
+                self.logger.info("Not Found Source info")
             state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
@@ -309,7 +311,9 @@ class MetricsService(FastAPIService):
             )
 
     @staticmethod
-    def get_key(si: ScopeInfo, data: Dict[str, Any]) -> Tuple[MetricKey, Tuple[str, ...]]:
+    def get_key(
+        si: ScopeInfo, data: MetricsItem
+    ) -> Tuple[MetricKey, Optional[int], Optional[int], Tuple[str, ...]]:
         def iter_labels(f_labels):
             if not labels or not f_labels:
                 return
@@ -320,12 +324,21 @@ class MetricsService(FastAPIService):
 
         labels = data.get("labels")
         scopes = {f"{ll.rsplit('::', 1)[0]}::": ll for ll in labels or []}
+        # managed_object, sla_probe, agent
+        if "sla_probe" in data:
+            card_key = data["sla_probe"]
+        elif "agent" in data:
+            card_key = data["agent"]
+        else:
+            card_key = data.get("managed_object")
         return (
             (
                 si.scope,
                 tuple((k, data[k]) for k in si.key_fields if k in data),
                 tuple(iter_labels(si.key_labels)),
             ),
+            card_key,
+            data.get("sensor"),
             tuple(iter_labels(si.required_labels)),
         )
 
