@@ -256,7 +256,9 @@ class MetricsService(FastAPIService):
                 sensor = self.sensors.get(sensor)
             if not target:
                 self.logger.info("[%s] Not Found Source info", mk[1])
-            card = await self.get_card(mk, labels, sensor or target)
+            if scope == "sensor" and sensor:
+                target = sensor
+            card = await self.get_card(mk, labels, target)
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
@@ -387,7 +389,6 @@ class MetricsService(FastAPIService):
         if card and card.is_dirty:
             # Apply Rules after invalidate cache
             self.apply_rules(k, labels, card)
-            return card
         if card:
             return card
         # Generate new CDAG
@@ -511,7 +512,7 @@ class MetricsService(FastAPIService):
         return parts
 
     def add_probe(
-        self, metric_field: str, k: MetricKey, is_composed: bool = False, unit: Optional[str] = None
+        self, metric_field: str, k: MetricKey, is_composed: bool = False, cfg: Optional[ProbeNodeConfig] = None,
     ) -> Optional[ProbeNode]:
         """
         Add new probe to card
@@ -536,9 +537,7 @@ class MetricsService(FastAPIService):
             probe_cls = ComposeProbeNode
         prefix = self.get_key_hash(k)
         state_id = f"{prefix}::{metric_field}"
-        cfg = self.metric_configs.get((k[0], metric_field))
-        if cfg and unit:
-            cfg.unit = unit
+        cfg = cfg or self.metric_configs.get((k[0], metric_field))
         # Create Probe
         p = probe_cls.construct(
             metric_field,
@@ -642,6 +641,7 @@ class MetricsService(FastAPIService):
         card.is_dirty = False
         if rules and scopes:
             self.logger.info("[%s] Apply Rules: %s; To scopes: %s", k, rules, scopes)
+        card.refresh_composed_probes()
         # Add complex probe
         for cp_metric_filed in card.composed_metrics:
             cp = self.add_probe(cp_metric_filed, k, is_composed=True)
@@ -678,7 +678,7 @@ class MetricsService(FastAPIService):
                 continue  # Missed field
             probe = card.get_probe(n)
             if self.lazy_init and not probe:
-                probe = self.add_probe(n, k, unit=card.m_unit)
+                probe = self.add_probe(n, k)
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
