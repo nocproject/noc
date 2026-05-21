@@ -8,7 +8,7 @@
 # Python modules
 import operator
 from collections import defaultdict
-from typing import List, Dict, Any, Optional, Tuple, Set, Union, Callable, FrozenSet
+from typing import List, Dict, Any, Optional, Tuple, Set, Union, Callable, FrozenSet, Iterable
 from threading import Lock
 
 # Third-party modules
@@ -212,10 +212,17 @@ class MetricRule(Document):
                 )
         return tuple((x, r[x][0], r[x][1]) for x in r)
 
+    def iter_conditions(self) -> Iterable["Match"]:
+        """"""
+        for match in self.match or []:
+            if not match.labels and not match.exclude_labels:
+                continue
+            yield match
+
     def get_matcher(self) -> Optional[Callable]:
         """Build matcher structure"""
         expr = []
-        for mr in self.match or []:
+        for mr in self.iter_conditions():
             expr.append(mr.get_match_expr())
         if not expr:
             return None
@@ -310,7 +317,7 @@ class MetricRule(Document):
         return r
 
     @classmethod
-    def iter_rules_actions(cls, labels) -> Tuple[str, str]:
+    def iter_rules_actions(cls, labels) -> Iterable[Tuple[str, str]]:
         """Iter Rules for labels"""
         labels = set(labels)
         rules = cls.get_rules()
@@ -322,3 +329,52 @@ class MetricRule(Document):
                     yield str(rid), str(a.metric_action.id)
                 elif a.metric_type:
                     yield str(rid), str(a.metric_type.id)
+
+    @classmethod
+    def get_config(cls, rule: "MetricRule") -> Dict[str, Any]:
+        """Datastream rule config"""
+        actions = []
+        for num, action in enumerate(rule.actions):
+            if not action.is_active:
+                continue
+            if action.metric_type and action.thresholds:
+                actions += [
+                    {
+                        "id": str(action.metric_type.id),
+                        "name": str(f"Threshold_{action.metric_type.name}"),
+                        "graph_config": action.get_config(rule_id=rule.id).model_dump(),
+                        "inputs": [
+                            {
+                                "input_name": "in",
+                                "probe_id": action.metric_type.field_name,
+                                "sender_id": action.metric_type.scope.table_name,
+                            }
+                        ],
+                    }
+                ]
+                continue
+            if not action.metric_action:
+                continue
+            a_config = action.metric_action.get_config(
+                **action.metric_action_params,
+                rule_id=rule.id,
+                thresholds=[t.get_config() for t in action.thresholds],
+            )
+            if not a_config:
+                continue
+            r_action = {
+                "id": str(action.metric_action.id),
+                "name": str(action.metric_action),
+                "graph_config": a_config.model_dump(),
+                "inputs": [input.config for input in action.metric_action.compose_inputs],
+            }
+            actions += [r_action]
+        return {
+            "id": str(rule.id),
+            "name": rule.name,
+            "actions": actions,
+            "match": [
+                {"labels": m.labels or [], "exclude_labels": m.exclude_labels or []}
+                for m in rule.iter_conditions()
+            ],
+        }

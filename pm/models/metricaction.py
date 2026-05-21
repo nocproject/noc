@@ -94,6 +94,14 @@ class InputMapping(EmbeddedDocument):
     def json_data(self) -> Dict[str, Any]:
         return {"metric_type__name": self.metric_type.name, "input_name": self.input_name}
 
+    @property
+    def config(self) -> Dict[str, str]:
+        return {
+            "input_name": self.input_name,
+            "probe_id": self.metric_type.field_name,
+            "sender_id": self.metric_type.scope.table_name,
+        }
+
 
 class AlarmConfig(EmbeddedDocument):
     alarm_class: "AlarmClass" = PlainReferenceField(AlarmClass)
