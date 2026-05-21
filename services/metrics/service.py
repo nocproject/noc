@@ -400,14 +400,18 @@ class MetricsService(FastAPIService):
             target: Target Id
             sensor: Sensor Id
         """
-        card = self.t_cards.get(target)
+        if target:
+            card = self.t_cards.get(target.bi_id)
+        else:
+            card = self.m_cards.get(k)
         if card and not card.config and target:
             card.config = target
-        if card and not card.component and sensor:
-            card.component = sensor
+        if card and not card.get_sender(k[0]):
+            cdag = self.get_scope_cdag(k[0])
+            card.add_cdag(k[0], cdag, prefix=self.get_key_hash(k))
         if card and card.is_dirty:
             # Apply Rules after invalidate cache
-            self.apply_rules(k, labels, card)
+            self.apply_rules(card, k, labels)
         if card:
             # Apply Rules after invalidate cache
             # if card.is_diry:
@@ -422,12 +426,8 @@ class MetricsService(FastAPIService):
             config=target,
         )
         metrics["project_cards"] += 1
-        self.cards[k] = card
-        if target:
-            # Skip metric for sensor
-            self.target_card_map[target.bi_id].append(k)
         # Apply Rules
-        self.apply_rules(k, labels, card)
+        self.apply_rules(card, k, labels)
         metrics["project_cards"] += 1
         if not target:
             self.m_cards[k] = card
@@ -675,6 +675,7 @@ class MetricsService(FastAPIService):
                 continue
             # Add probe
             for m_field in self.compose_inputs[cp_metric_filed]:
+                cp.add_input(m_field, is_key=True)
                 p = card.get_probe(k, m_field)
                 if not p:
                     p = self.add_probe(card, m_field, k)
@@ -710,10 +711,9 @@ class MetricsService(FastAPIService):
             if self.lazy_init and not probe:
                 if sensor:
                     probe = self.add_probe(card, n, k, unit=sensor.units)
-                    sensor.add_probe(k, probe)
                 else:
                     probe = self.add_probe(card, n, k)
-                    card.add_probe(k, probe)
+                card.add_probe(k, probe)
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
@@ -728,10 +728,10 @@ class MetricsService(FastAPIService):
                 self.set_error(k, probe.fatal_error)
         # Compose nodes
         for probe in card.composed:
-            probe.activate(tx, "ts", ts)
+            # probe.activate(tx, "ts", ts)
             probe.activate(tx, "time_delta", time_delta)
         # Activate senders
-        for sender in card.senders:
+        for sender in card.iter_senders(k[0]):
             for kf in si.key_fields:
                 kv = data.get(kf)
                 if kv is not None:
@@ -794,7 +794,10 @@ class MetricsService(FastAPIService):
             return
         # Invalidate Cards
         self.targets[tid] = target
-        self.invalidate_card_config(target)
+        if tid in self.t_cards:
+            pass
+            # self.t_cards[tid]
+        # self.invalidate_card_config(target)
         # diff = self.sources_config[sc_id].is_differ(sc)
         # if "condition" in diff:
         #    self.invalidate_card_config(sc)
@@ -831,27 +834,7 @@ class MetricsService(FastAPIService):
         # Filter card by key labels
         for mk in self.target_card_map[target.bi_id]:
             self.logger.info("[%s] Found Card", mk)
-            yield self.cards[mk]
-
-    def invalidate_card_config(self, target: MetricTarget):
-        """Invalidate Cards on config"""
-        num = 0
-        for card in self.iter_cards(target):
-            # Invalidate all card otherwise check rules condition need labels from metrics
-            card.config = target
-            # if card.affected_rules:
-            #     card.invalidate_alarms()
-            #     card.affected_rules = set()
-            # else:
-            #     card.set_dirty()
-            # Check alarm
-            # for a in card.alarms:
-            #     if delete:
-            #         a.reset_state()
-            #         continue
-            num += 1
-        if num:
-            self.logger.info("Invalidate %s cards config", num)
+            yield self.m_cards[mk]
 
     async def invalidate_card_rules(
         self, rules: Iterable[str], is_delete: bool = False, is_new: bool = False
@@ -866,7 +849,7 @@ class MetricsService(FastAPIService):
         rules = set(rules)
         self.logger.info("Invalidate card for rules: %s", ";".join(rules))
         num = 0
-        for c in self.cards.values():
+        for c in self.m_cards.values():
             if is_new:
                 c.set_dirty()
                 num += 1

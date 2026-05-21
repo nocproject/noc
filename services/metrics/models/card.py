@@ -8,7 +8,7 @@
 # Python modules
 import sys
 from dataclasses import dataclass
-from typing import Dict, Tuple, List, Optional, Set, Iterable, Union
+from typing import Dict, Tuple, List, Optional, Set, Iterable, Union, Any
 from typing_extensions import TypedDict, NotRequired
 
 # NOC modules
@@ -86,7 +86,7 @@ class Card(object):
     def add_probe(self, k: MetricKey, probe: ProbeNode):
         """Add probe"""
         if probe.name == "composeprobe":
-            self.composed = tuple([*list(self.composed or []), p])
+            self.composed = tuple([*list(self.composed or []), probe])
         else:
             self.probes[(k, unscope(probe.node_id))] = probe
 
@@ -99,6 +99,47 @@ class Card(object):
     def get_sender(self, name: str) -> Optional[MetricsNode]:
         """Get probe sender by name"""
         return next((s for s in self.senders if s.config.scope == name), None)
+
+    def iter_senders(self, name: str):
+        for s in self.senders:
+            if s.config.scope == name:
+                yield s
+
+    def clone_and_add_node(
+        self,
+        n: BaseCDAGNode,
+        prefix: str,
+        config: Optional[Dict[str, Any]] = None,
+        static_config=None,
+        state=None,
+    ) -> BaseCDAGNode:
+        """
+        Clone node without subscribers and apply state and config
+        """
+        # state_id = f"{prefix}::{n.node_id}"
+        # state = self.start_state.pop(state_id, None)
+        new_node = n.clone(
+            n.node_id, prefix=prefix, state=state, config=config, static_config=static_config
+        )
+        # metrics["cdag_nodes", ("type", n.name)] += 1
+        return new_node
+
+    def add_cdag(self, name, src, prefix=None):
+        nodes = {}
+        for node in src.nodes.values():
+            # Apply sender nodes
+            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
+        # Subscribe
+        for o_node in src.nodes.values():
+            node = nodes[o_node.node_id]
+            for rs in o_node.iter_subscribers():
+                node.subscribe(
+                    nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
+                )
+        # Compact the storage
+        for node in nodes.values():
+            node.freeze()
+        self.senders = tuple(list(self.senders or []) + [node for node in nodes.values() if node.name == "metrics"])
 
     def apply_rule(self, rule: Rule):
         """Apply Metric Rule to card"""
@@ -151,19 +192,15 @@ class Card(object):
 
     def get_rules(self) -> Iterable[Tuple[str, str]]:
         """Get metric rules"""
-        if self.component:
-            return self.component.rules or []
-        if self.config:
-            return self.config.rules or []
-        return []
+        #if not self.component:
+        #    return self.config.rules or []
+        return self.config.rules or []
 
     @property
     def composed_metrics(self):
-        if self.component:
-            return self.component.composed_metrics or []
-        if self.config:
-            return self.config.composed_metrics or []
-        return []
+        # if not self.component:
+        #     return self.config.composed_metrics or []
+        return self.config.composed_metrics or []
 
     def get_probe_config(self) -> ProbeNodeConfig:
         """"""
