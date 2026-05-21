@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # cfgmetricrules
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,5 +21,4 @@ class CfgMetricRuleDataStream(DataStream):
         rule: "MetricRule" = MetricRule.objects.filter(id=id).first()
         if not rule or not rule.is_active or not rule.actions:
             raise KeyError()
-        cfg = MetricRule.get_config(rule)
-        return cfg
+        return MetricRule.get_config(rule)

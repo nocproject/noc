@@ -32,7 +32,7 @@ from noc.core.mongo.fields import PlainReferenceField
 from noc.core.change.decorator import change
 from noc.core.cdag.factory.config import NodeItem, GraphConfig
 from noc.core.cdag.node.alarm import VarItem
-from noc.core.matcher import build_matcher, MATCHER
+from noc.core.matcher import build_matcher
 from noc.main.models.label import Label
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricaction import MetricAction
@@ -199,7 +199,7 @@ class MetricRule(Document):
 
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_rule_cache"), lock=lambda _: rule_lock)
-    def get_rules_matcher(cls) -> Tuple[Tuple[Tuple[str, str], FrozenSet[str], MATCHER], ...]:
+    def get_rules_matcher(cls) -> Tuple[Tuple[Tuple[str, str], FrozenSet[str], Callable], ...]:
         """Build matcher based on Profile Match Rules"""
         r = {}
         for rule in MetricRule.objects.filter(is_active=True):
@@ -219,7 +219,7 @@ class MetricRule(Document):
                 continue
             yield match
 
-    def get_matcher(self) -> Optional[MATCHER]:
+    def get_matcher(self) -> Optional[Callable]:
         """Build matcher structure"""
         expr = []
         for mr in self.iter_conditions():

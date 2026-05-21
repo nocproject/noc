@@ -33,10 +33,8 @@ from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
-from noc.core.cdag.node.alarm import VarItem
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
-from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.services.datastream.models.cfgmetricrules import CfgMetricRule
 from noc.services.metrics.changelog import ChangeLog
 from noc.services.metrics.datastream import MetricsDataStreamClient, MetricRulesDataStreamClient
@@ -266,7 +264,7 @@ class MetricsService(FastAPIService):
             if card.config and card.config.exposed_labels:
                 # Add component labels
                 item["labels"] = labels + list(card.config.exposed_labels)
-            state.update(self.activate_card(card, si, mk, item, target))
+            state.update(self.activate_card(card, si, mk, item))
         # Save state change
         if state:
             await self.change_log.feed(state)
