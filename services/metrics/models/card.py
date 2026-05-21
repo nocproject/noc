@@ -74,7 +74,7 @@ class Card(object):
     affected_rules: Set[str]
     config: Optional[Union[ManagedObjectTarget, SLAProbeTarget]]
     is_dirty: bool
-    last_touch: Optional[datetime.datetime]
+    last_touch: Optional[int]
 
     @classmethod
     def iter_subscribed_nodes(cls, node) -> Iterable[BaseCDAGNode]:
@@ -99,6 +99,7 @@ class Card(object):
     def get_sender(self, name: str) -> Optional[MetricsNode]:
         """Get probe sender by name"""
         return next((s for s in self.senders if s.config.scope == name), None)
+
     def apply_rule(self, rule: Rule):
         """Apply Metric Rule to card"""
 

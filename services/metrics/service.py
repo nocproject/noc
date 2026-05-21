@@ -572,7 +572,7 @@ class MetricsService(FastAPIService):
         # Subscribe
         p.subscribe(sender, metric_field, dynamic=True, mark_bound=False)
         p.freeze()
-        card.add_probe(metric_field, p)
+        card.add_probe(k, p)
         metrics["cdag_nodes", ("type", p.name)] += 1
         return p
 
@@ -675,9 +675,9 @@ class MetricsService(FastAPIService):
                 continue
             # Add probe
             for m_field in self.compose_inputs[cp_metric_filed]:
-                p = card.get_probe(m_field)
+                p = card.get_probe(k, m_field)
                 if not p:
-                    p = self.add_probe(m_field, k)
+                    p = self.add_probe(card, m_field, k)
                 if p:
                     p.subscribe(cp, m_field, dynamic=True, mark_bound=False)
             self.logger.debug("Add compose node: %s", cp)
@@ -704,9 +704,9 @@ class MetricsService(FastAPIService):
             if data[n] is None:
                 continue  # Missed value
             if sensor:
-                probe = sensor.get_probe(si, n)
+                probe = sensor.get_probe(k, n)
             else:
-                probe = card.get_probe(si, n)
+                probe = card.get_probe(k, n)
             if self.lazy_init and not probe:
                 if sensor:
                     probe = self.add_probe(card, n, k, unit=sensor.units)
