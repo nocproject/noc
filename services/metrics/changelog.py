@@ -19,16 +19,18 @@ from noc.core.service.loader import get_service
 from noc.core.hash import hash_int
 from noc.core.clickhouse.connect import connection as ch_connection
 from noc.core.clickhouse.error import ClickhouseError
+from noc.config import config
 
 SQL_STATE = """
     SELECT node_id, argMax(state, ts) as state
     FROM metricstate
-    WHERE slot = %s
+    WHERE slot = %s and date > %s
     GROUP BY node_id
     FORMAT JSONEachRow
 
 """
 STATE_RETRY = 3.0
+STATE_TTL = datetime.timedelta(seconds=config.metrics.state_retention_interval)
 
 
 class ChangeLog(object):
@@ -62,10 +64,11 @@ class ChangeLog(object):
         self.logger.info("Retrieving current state")
         state = {}
         ch = ch_connection()
+        now = datetime.datetime.now() - STATE_TTL
         async with self.lock:
             self.logger.info("Lock acquired")
             n = 0
-            result = ch.execute(SQL_STATE % self.slot, return_raw=True)
+            result = ch.execute(SQL_STATE % self.slot, return_raw=True, args=[now.date().isoformat()])
             for row in result.splitlines():
                 row = orjson.loads(row)
                 state[row["node_id"]] = orjson.loads(row["state"])

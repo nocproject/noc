@@ -1082,6 +1082,7 @@ class Config(BaseConfig):
         compact_on_stop = BooleanParameter(default=False)
         flush_interval = SecondsParameter(default="1M")
         compact_interval = SecondsParameter(default="5M")
+        state_retention_interval = SecondsParameter(default="2d")
         # Metrics
         disable_spool = BooleanParameter(default=False, help="Disable send metrics to Clickhouse")
         # DCS Client
