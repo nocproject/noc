@@ -279,8 +279,6 @@ class MetricsService(FastAPIService):
                 item["labels"] = labels + list(card.config.exposed_labels)
             if card:
                 card.touch(item["ts"])
-            if sensor:
-                sensor = self.sensors.get(sensor)
             state.update(self.activate_card(card, si, mk, item, sensor))
         # Save state change
         if state:
@@ -711,7 +709,7 @@ class MetricsService(FastAPIService):
                 probe = card.get_probe(k, n)
             if self.lazy_init and not probe:
                 if sensor:
-                    probe = self.add_probe(card, n, k, cfg=sensor.units)
+                    probe = self.add_probe(card, n, k, cfg=sensor.get_probe_config())
                 else:
                     probe = self.add_probe(card, n, k)
                 card.add_probe(k, probe)
