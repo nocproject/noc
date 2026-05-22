@@ -55,7 +55,7 @@ class MetricTarget:
     @classmethod
     def from_config(
         cls, data: Dict[str, Any], r_type: str
-    ) -> Optional[Union["ManagedObjectTarget", "SensorTarget", "SLAProbeTarget"]]:
+    ) -> Optional[Union["ManagedObjectTarget", "SLAProbeTarget"]]:
         """Return classes"""
         if "$deleted" in data or r_type == "remote_system":
             return None
@@ -84,9 +84,6 @@ class MetricTarget:
                 return ManagedObjectTarget(**params)
             case "sla":
                 return SLAProbeTarget(**params)
-            case "sensor":
-                params["units"] = data["units"]
-                return SensorTarget(**params)
             case _:
                 return None
 
@@ -107,13 +104,6 @@ class ManagedObjectTarget(MetricTarget):
 
 
 @dataclass(frozen=True, slots=True)
-class SensorTarget(MetricTarget):
-    type = "sensor"
-
-    units: str
-
-
-@dataclass(frozen=True, slots=True)
 class SLAProbeTarget(MetricTarget):
     type = "sla_probe"
 
@@ -123,3 +113,41 @@ class SLAProbeTarget(MetricTarget):
     @property
     def meta(self):
         return self.opaque
+
+
+@dataclass(frozen=True, slots=True)
+class SensorComponentTarget:
+    id: str
+    bi_id: int
+    name: Optional[str]
+    units: Optional[str]
+    target: Optional[MetricTarget]
+    managed_object: Optional[int]
+    agent: Optional[int]
+    rules: Optional[Tuple[Tuple[str, str], ...]]
+    exposed_labels: Optional[Tuple[str, ...]]
+
+    @classmethod
+    def from_config(cls, data, target: Optional[MetricTarget] = None):
+        """Create Instance from data"""
+        return SensorComponentTarget(
+            id=str(data["id"]),
+            bi_id=int(data["bi_id"]),
+            name=data.get("name"),
+            managed_object=int(data["managed_object"]) if "managed_object" in data else None,
+            agent=int(data["agent"]) if "agent" in data else None,
+            rules=convert_rules(data.get("rules", [])),
+            exposed_labels=None,
+            units=data.get("units", "1"),
+            target=target,
+        )
+
+    @property
+    def meta(self):
+        if self.target:
+            return self.target.meta
+        return None
+
+    @property
+    def composed_metrics(self):
+        return None
