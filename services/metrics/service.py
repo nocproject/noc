@@ -93,7 +93,7 @@ class MetricsService(FastAPIService):
         self.start_state: Dict[str, Dict[str, Any]] = {}
         # Source Configs
         self.targets: Dict[int, ObjectTarget] = {}
-        self.sensors: Dict[int, SensorTarget] = {}
+        self.sensors: Dict[int, SensorComponentTarget] = {}
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
         # Options
