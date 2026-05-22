@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List
 
 # Python modules
-from noc.core.cdag.node.probe import ProbeNode
+from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 
 MetricKey = Tuple[str, Tuple[Tuple[str, int], ...], Tuple[str, ...]]
 
@@ -42,7 +42,7 @@ class ComponentTarget:
         )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class SensorComponentTarget:
     bi_id: int
     units: str
@@ -80,6 +80,14 @@ class SensorComponentTarget:
             return self.probe
         if probe == "value_delta":
             return self.probe_delta
+        return None
+
+    def get_probe_config(self) -> ProbeNodeConfig:
+        """"""
+        return ProbeNodeConfig(unit=self.units or "1")
+
+    @property
+    def meta(self):
         return None
 
 
@@ -157,41 +165,3 @@ class SLAProbeTarget(MetricTarget):
     @property
     def meta(self):
         return self.opaque
-
-
-@dataclass(frozen=True, slots=True)
-class SensorComponentTarget:
-    id: str
-    bi_id: int
-    name: Optional[str]
-    units: Optional[str]
-    target: Optional[MetricTarget]
-    managed_object: Optional[int]
-    agent: Optional[int]
-    rules: Optional[Tuple[Tuple[str, str], ...]]
-    exposed_labels: Optional[Tuple[str, ...]]
-
-    @classmethod
-    def from_config(cls, data, target: Optional[MetricTarget] = None):
-        """Create Instance from data"""
-        return SensorComponentTarget(
-            id=str(data["id"]),
-            bi_id=int(data["bi_id"]),
-            name=data.get("name"),
-            managed_object=int(data["managed_object"]) if "managed_object" in data else None,
-            agent=int(data["agent"]) if "agent" in data else None,
-            rules=convert_rules(data.get("rules", [])),
-            exposed_labels=None,
-            units=data.get("units", "1"),
-            target=target,
-        )
-
-    @property
-    def meta(self):
-        if self.target:
-            return self.target.meta
-        return None
-
-    @property
-    def composed_metrics(self):
-        return None

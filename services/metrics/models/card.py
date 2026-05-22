@@ -139,7 +139,9 @@ class Card(object):
         # Compact the storage
         for node in nodes.values():
             node.freeze()
-        self.senders = tuple(list(self.senders or []) + [node for node in nodes.values() if node.name == "metrics"])
+        self.senders = tuple(
+            list(self.senders or []) + [node for node in nodes.values() if node.name == "metrics"]
+        )
 
     def apply_rule(self, rule: Rule):
         """Apply Metric Rule to card"""
@@ -192,7 +194,7 @@ class Card(object):
 
     def get_rules(self) -> Iterable[Tuple[str, str]]:
         """Get metric rules"""
-        #if not self.component:
+        # if not self.component:
         #    return self.config.rules or []
         return self.config.rules or []
 

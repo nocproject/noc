@@ -86,7 +86,7 @@ class MetricsService(FastAPIService):
         self.compose_inputs: Dict[str, Set[str]] = {}
         self.scope_cdag: Dict[str, CDAG] = {}  # Scope graph cache
         self.t_cards: Dict[int, Card] = {}  # Target cards
-        self.m_cards: Dict[MetricKey, Card] = {} # Metric cards
+        self.m_cards: Dict[MetricKey, Card] = {}  # Metric cards
         self.graph: Optional[CDAG] = None  # Service Metric Graph
         # Graph node State
         self.change_log: Optional[ChangeLog] = None
@@ -537,6 +537,7 @@ class MetricsService(FastAPIService):
         metric_field: str,
         k: MetricKey,
         is_composed: bool = False,
+        cfg: Optional[ProbeNodeConfig] = None,
     ) -> Optional[ProbeNode]:
         """
         Add new probe to card
@@ -622,7 +623,7 @@ class MetricsService(FastAPIService):
                     and "compose_" not in node_id
                 ):
                     # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
-                    probe = self.add_probe(node_id, k)
+                    probe = self.add_probe(card, node_id, k)
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
@@ -710,7 +711,7 @@ class MetricsService(FastAPIService):
                 probe = card.get_probe(k, n)
             if self.lazy_init and not probe:
                 if sensor:
-                    probe = self.add_probe(card, n, k, unit=sensor.units)
+                    probe = self.add_probe(card, n, k, cfg=sensor.units)
                 else:
                     probe = self.add_probe(card, n, k)
                 card.add_probe(k, probe)
