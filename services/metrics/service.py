@@ -45,8 +45,8 @@ from noc.services.metrics.models.target import (
     MetricTarget,
     ManagedObjectTarget,
     SLAProbeTarget,
-    SensorTarget,
     ComponentTarget,
+    SensorComponentTarget,
 )
 from noc.config import config as global_config
 
@@ -109,6 +109,7 @@ class MetricsService(FastAPIService):
             None  # Condition for commit stream cursor
         )
         self.node_errors: Dict[str, ErrorState] = {}
+        self.unknown_sources: Set[Tuple[str, int]] = set()
 
     async def on_activate(self):
         self.slot_number, self.total_slots = await self.acquire_slot()
@@ -203,7 +204,7 @@ class MetricsService(FastAPIService):
 
     async def report(self):
         """Report report some processed errors"""
-        if not self.node_errors:
+        if not self.node_errors and not self.unknown_sources:
             return
         now = perf_counter()
         for key in list(self.node_errors.keys()):
@@ -216,6 +217,18 @@ class MetricsService(FastAPIService):
             )
             if now - error.last_update > 3600:
                 del self.node_errors[key]
+        if self.unknown_sources:
+            self.logger.info(
+                "Detect %d unknown sources. First 201: %s",
+                len(self.unknown_sources),
+                self.unknown_sources,
+            )
+            self.unknown_sources = set()
+
+    def register_unknown_source(self, k: MetricKey):
+        if len(self.unknown_sources) > 200:
+            return
+        self.unknown_sources.add(k[1])
 
     def set_error(self, k: MetricKey, msg: str, ts: Optional[int] = None):
         """"""
@@ -255,10 +268,9 @@ class MetricsService(FastAPIService):
             if sensor:
                 sensor = self.sensors.get(sensor)
             if not target:
-                self.logger.info("[%s] Not Found Source info", mk[1])
-            if scope == "sensor" and sensor:
-                target = sensor
-            card = await self.get_card(mk, labels, target)
+                self.logger.debug("[%s] Not Found Source info", mk[1])
+                self.register_unknown_source(mk)
+            card = await self.get_card(mk, labels, target, sensor)
             if not card:
                 self.logger.info("Cannot instantiate card: %s", item)
                 return  # Cannot instantiate card
@@ -342,7 +354,7 @@ class MetricsService(FastAPIService):
                 tuple(iter_labels(si.key_labels)),
             ),
             card_key,
-            data.get("sensor"),
+            data.get("sensor") if si.scope == "sensor" else None,
             tuple(iter_labels(si.required_labels)),
         )
 
@@ -375,6 +387,7 @@ class MetricsService(FastAPIService):
         k: MetricKey,
         labels: List[str],
         target: Optional[ManagedObjectTarget] = None,
+        sensor: Optional[SensorComponentTarget] = None,
     ) -> Optional[Card]:
         """
         Generate part of computation graph and collect its viable inputs
@@ -386,6 +399,8 @@ class MetricsService(FastAPIService):
         card = self.cards.get(k)
         if card and not card.config and target:
             card.config = target
+        if card and not card.component and sensor:
+            card.component = sensor
         if card and card.is_dirty:
             # Apply Rules after invalidate cache
             self.apply_rules(k, labels, card)
@@ -400,7 +415,7 @@ class MetricsService(FastAPIService):
             cdag,
             prefix=self.get_key_hash(k),
             config=target,
-            component=None,
+            component=sensor,
         )
         metrics["project_cards"] += 1
         self.cards[k] = card
@@ -512,7 +527,11 @@ class MetricsService(FastAPIService):
         return parts
 
     def add_probe(
-        self, metric_field: str, k: MetricKey, is_composed: bool = False, cfg: Optional[ProbeNodeConfig] = None,
+        self,
+        metric_field: str,
+        k: MetricKey,
+        is_composed: bool = False,
+        cfg: Optional[ProbeNodeConfig] = None,
     ) -> Optional[ProbeNode]:
         """
         Add new probe to card
@@ -596,7 +615,7 @@ class MetricsService(FastAPIService):
                     and "compose_" not in node_id
                 ):
                     # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
-                    probe = self.add_probe(node_id, k, unit=card.m_unit)
+                    probe = self.add_probe(node_id, k)
                     nodes[node.node_id] = probe
                     continue
                 config = rule.configs.get(node.node_id)
@@ -641,7 +660,6 @@ class MetricsService(FastAPIService):
         card.is_dirty = False
         if rules and scopes:
             self.logger.info("[%s] Apply Rules: %s; To scopes: %s", k, rules, scopes)
-        card.refresh_composed_probes()
         # Add complex probe
         for cp_metric_filed in card.composed_metrics:
             cp = self.add_probe(cp_metric_filed, k, is_composed=True)
@@ -663,7 +681,6 @@ class MetricsService(FastAPIService):
         si: ScopeInfo,
         k: MetricKey,
         data: MetricsItem,
-        target: Optional[ManagedObjectTarget] = None,
     ) -> Dict[Tuple[str, str], Dict[str, Any]]:
         """
         Activate card and return changed state
@@ -678,7 +695,7 @@ class MetricsService(FastAPIService):
                 continue  # Missed field
             probe = card.get_probe(n)
             if self.lazy_init and not probe:
-                probe = self.add_probe(n, k)
+                probe = self.add_probe(n, k, cfg=card.get_probe_config())
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
@@ -699,7 +716,7 @@ class MetricsService(FastAPIService):
                     sender.activate(tx, kf, kv)
             if si.enable_timedelta and time_delta:
                 sender.activate(tx, "time_delta", time_delta)
-            sender.activate(tx, "target", target or card.config)
+            sender.activate(tx, "target", card.config)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         # Alarm
@@ -715,7 +732,7 @@ class MetricsService(FastAPIService):
             return
         processed = set()
         for d in sensors:
-            sensor = MetricTarget.from_config(d, "sensor")
+            sensor = SensorComponentTarget.from_config(d, target=target)
             if not sensor:
                 continue
             self.sensors[sensor.bi_id] = sensor

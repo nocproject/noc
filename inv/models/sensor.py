@@ -313,6 +313,7 @@ class Sensor(Document):
         ts = ts or datetime.datetime.now().replace(microsecond=0)
         units = units or self.munits
         shards = shards or 1
+        shard_key = self.bi_id
         if bulk is None:
             parts = defaultdict(list)
         else:
@@ -329,6 +330,7 @@ class Sensor(Document):
         if self.remote_system:
             r["remote_system"] = self.remote_system.bi_id
         if self.managed_object:
+            shard_key = self.managed_object.bi_id
             r["managed_object"] = self.managed_object.bi_id
             # Register ManagedObject Metrics
             if self.profile.metric_type:
@@ -348,7 +350,7 @@ class Sensor(Document):
                         mt.field_name: value,
                     }
                 )
-        parts[self.bi_id % shards].append(r)
+        parts[shard_key % shards].append(r)
         if bulk is not None:
             return
         svc = get_service()

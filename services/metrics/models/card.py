@@ -14,11 +14,11 @@ from typing_extensions import TypedDict, NotRequired
 # NOC modules
 from noc.core.perf import metrics
 from noc.core.cdag.node.base import BaseCDAGNode
-from noc.core.cdag.node.probe import ProbeNode
+from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
 from noc.core.cdag.node.metrics import MetricsNode
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.node.threshold import ThresholdNode
-from .target import SensorTarget, ManagedObjectTarget, ComponentTarget
+from .target import ManagedObjectTarget, ComponentTarget, SensorComponentTarget
 from .rule import Rule
 
 
@@ -61,7 +61,7 @@ class Card(object):
     senders: Tuple[MetricsNode, ...]
     alarms: List[Union[ThresholdNode, AlarmNode]]
     affected_rules: Set[str]
-    config: Optional[Union[ManagedObjectTarget, SensorTarget]]
+    config: Optional[Union[ManagedObjectTarget, SensorComponentTarget]]
     component: Optional[ComponentTarget]
     is_dirty: bool
 
@@ -131,19 +131,22 @@ class Card(object):
 
     def get_rules(self) -> Iterable[Tuple[str, str]]:
         """Get metric rules"""
-        if not self.component:
+        if self.component:
+            return self.component.rules or []
+        if self.config:
             return self.config.rules or []
-        return self.component.rules or []
+        return []
 
     @property
     def composed_metrics(self):
-        if not self.component:
+        if self.component:
+            return self.component.composed_metrics or []
+        if self.config:
             return self.config.composed_metrics or []
-        return self.component.composed_metrics or []
+        return []
 
-    @property
-    def m_unit(self) -> Optional[str]:
+    def get_probe_config(self) -> ProbeNodeConfig:
         """"""
-        if self.config and self.config.type == "sensor":
-            return self.config.units
+        if self.component and hasattr(self.component, "units"):
+            return ProbeNodeConfig(unit=self.component.units or "1")
         return None
