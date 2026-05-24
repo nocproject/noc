@@ -13,7 +13,6 @@ from typing import Any, Dict, Optional, Set, FrozenSet, List, Tuple
 # NOC modules
 from noc.services.datastream.models.cfgmetricrules import RuleAction, RuleCondition
 from noc.core.cdag.graph import CDAG
-from noc.core.cdag.node.base import BaseCDAGNode
 from noc.core.cdag.node.alarm import VarItem, AlarmNode
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
 from noc.core.perf import metrics
@@ -49,7 +48,7 @@ class Rule(object):
         :return:
         """
         r = []
-        if set(self.graph.nodes) != set(rule.graph.nodes):
+        if {n.name for n in self.graph_config.nodes} != {n.name for n in rule.graph_config.nodes}:
             # If compare Graph Node config always diff if change
             r.append("graph")
         if self.match_labels != rule.match_labels:
@@ -79,7 +78,7 @@ class Rule(object):
             graph,
             self.graph_config,
             namespace=namespace,
-            node_configs=self.configs,
+            nodes_config=self.configs,
         )
         # node_configs, node_states, inputs ! prefix > to node_id
         f.construct()

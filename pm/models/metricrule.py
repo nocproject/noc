@@ -338,11 +338,12 @@ class MetricRule(Document):
             if not action.is_active:
                 continue
             if action.metric_type and action.thresholds:
+                a_config = action.get_config(rule_id=rule.id)
                 actions += [
                     {
                         "id": str(action.metric_type.id),
                         "name": str(f"Threshold_{action.metric_type.name}"),
-                        "graph_config": action.get_config(rule_id=rule.id).model_dump(),
+                        "graph_config": a_config.model_dump(),
                         "inputs": [
                             {
                                 "input_name": "in",

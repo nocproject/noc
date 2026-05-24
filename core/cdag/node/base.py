@@ -54,11 +54,9 @@ class ConfigProxy(object):
     Wrap BaseModel and override particular attributes
     """
 
-    __slots__ = ("__base", "__override", "__static")
+    __slots__ = ("__base", "__override")
 
-    def __init__(
-        self, base: BaseModel, override: Dict[str, Any], static: Optional[Dict[str, Any]] = None
-    ):
+    def __init__(self, base: BaseModel, override: Dict[str, Any]):
         """
         Base Configuration (on BaseModel)
         :param base:
@@ -67,13 +65,10 @@ class ConfigProxy(object):
         """
         self.__base = base
         self.__override = override
-        self.__static = static
 
     def __getattribute__(self, __name: str) -> Any:
         if __name.startswith("_"):
             return super().__getattribute__(__name)
-        if self.__static and __name in self.__static:
-            return self.__static[__name]
         v = self.__override.get(__name, config_proxy_sentinel)
         if v is config_proxy_sentinel:
             return getattr(self.__base, __name)
@@ -239,7 +234,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         if not hasattr(self, "config_cls"):
             cfg = None
         elif config:
-            cfg = ConfigProxy(self.config, config, static_config)
+            cfg = ConfigProxy(self.config, config)
         else:
             cfg = self.config
 
@@ -519,7 +514,7 @@ class BaseCDAGNode(object, metaclass=BaseCDAGNodeMetaclass):
         self._const_value = self.get_value(**const_inputs)
         return True
 
-    def add_input(self, name: str, is_key: bool = False) -> None:
+    def add_input(self, name: str, is_key: bool = False, is_required: bool = False) -> None:
         """
         Add new dynamic input
         :param name: Input name

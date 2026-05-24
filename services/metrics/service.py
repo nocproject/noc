@@ -30,8 +30,7 @@ from noc.core.mongo.connection_async import connect_async
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
-from noc.core.cdag.node.base import BaseCDAGNode
-from noc.core.cdag.node.probe import ProbeNode, ProbeNodeConfig
+from noc.core.cdag.node.probe import ProbeNodeConfig
 from noc.core.cdag.node.composeprobe import ComposeProbeNode, ComposeProbeNodeConfig
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.factory.scope import MetricScopeCDAGFactory
@@ -45,7 +44,6 @@ from noc.services.metrics.models.target import (
     MetricTarget,
     ManagedObjectTarget,
     SLAProbeTarget,
-    ComponentTarget,
     SensorComponentTarget,
 )
 from noc.config import config as global_config
@@ -504,11 +502,11 @@ class MetricsService(FastAPIService):
                 self.set_error(k, probe.fatal_error)
         for p in card.composed_metrics:
             p = card.probes.get(p)
-            if p not in card.probes:
+            if not p:
                 continue
-            card.probes[p].activate(tx, "time_delta", time_delta)
-            if card.probes[p].fatal_error:
-                self.set_error(k, card.probes[p].fatal_error)
+            p.activate(tx, "time_delta", time_delta)
+            if p.fatal_error:
+                self.set_error(k, p.fatal_error)
         # Activate senders
         for sender in card.senders:
             for kf in si.key_fields:
@@ -619,17 +617,9 @@ class MetricsService(FastAPIService):
         num = 0
         for card in self.iter_cards(target):
             # Invalidate all card otherwise check rules condition need labels from metrics
-            card.config = target
-            # if card.affected_rules:
-            #     card.invalidate_alarms()
-            #     card.affected_rules = set()
-            # else:
-            #     card.set_dirty()
-            # Check alarm
-            # for a in card.alarms:
-            #     if delete:
-            #         a.reset_state()
-            #         continue
+            if not card.config or card.config != target:
+                card.config = target
+            card.set_dirty()
             num += 1
         if num:
             self.logger.info("Invalidate %s cards config", num)
@@ -682,15 +672,15 @@ class MetricsService(FastAPIService):
                 await self.invalidate_card_rules(invalidate_rules, is_new=True)
                 continue
             diff = self.rules[r_id].is_differ(r)
-            if diff == {"configs"}:
-                # Config only update
-                uc = self.rules[r_id].update_config(r.configs)
-                self.logger.info("[%s] Update node configs: %s", r.id, uc)
-            elif diff.intersection({"conditions", "graph"}):
+            if diff.intersection({"conditions", "graph"}):
                 # Invalidate Cards
                 self.logger.info("[%s] %s Changed. Invalidate cards for rules", r.id, diff)
                 self.rules[r_id] = r
                 invalidate_rules.add(r_id)
+            elif diff.intersection({"configs"}):
+                # Config only update
+                uc = self.rules[r_id].update_config(r.configs)
+                self.logger.info("[%s] Update node configs: %s", r.id, uc)
         if not data["actions"]:
             await self.delete_rules(data["id"])
         if invalidate_rules:

@@ -234,12 +234,12 @@ class Card(object):
         # Add probe
         for m_field in self.compose_node_inputs[metric_field]:
             p = self.get_probe(m_field)
-            cp.add_input(m_field, is_key=True, is_required=True)
+            cp.add_input(m_field, is_key=True)
             if not p:
                 p = self.add_node_probe(m_field, k)
             if p:
                 p.subscribe(cp, m_field, dynamic=True, mark_bound=False)
-        logger.info("Add compose node: %s", cp)
+        logger.debug("Add compose node: %s", cp)
 
     def invalidate_card(self):
         """Remove all subscribed node and set  is_dirty for applied rules"""
@@ -325,6 +325,8 @@ class Card(object):
         )
         f.construct()
         self.graphs[graph.graph_id] = graph
+        if f"{namespace}::alarm" in graph.nodes:
+            self.alarms = [graph.nodes[f"{namespace}::alarm"]]
         self.affected_rules.add(sys.intern(rule.id))
 
     def refresh_card(
@@ -342,14 +344,14 @@ class Card(object):
         for c in set(self.composed_metrics) - self.probes.keys():
             self.add_compose_probe(c, k)
         # Refresh Rule
-        processed = set()
-        scopes = set()
-        for rule_id, action_id in self.get_rules():
+        processed, scopes = set(), set()
+        config_rules = self.get_rules()
+        for rule_id, action_id in config_rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
             rid = f"{rule_id}-{action_id}"
             if rid not in rules:
-                self.logger.warning("[%s] Broken rules", rid)
+                logger.warning("[%s] Broken rules", rid)
                 continue
             processed.add(rid)
             if rid in self.graphs:
@@ -357,6 +359,10 @@ class Card(object):
                 continue
             rule = rules[rid]
             if not rule or k[0] not in rule.match_scopes:
+                continue
+            if rule.inputs - self.probes.keys():
+                logger.info("Not activated probes: %s", rule.inputs)
+                self.set_dirty()
                 continue
             scopes.add(k[0])
             self.apply_rule(rule, k)
@@ -367,4 +373,6 @@ class Card(object):
             del graph
         if processed and scopes:
             logger.info("[%s] Apply Rules: %s; To scopes: %s", k, processed, scopes)
+        if config_rules and not scopes:
+            return
         self.is_dirty = False

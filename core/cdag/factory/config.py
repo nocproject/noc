@@ -69,12 +69,6 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         return match(self.ctx, expr)
 
     def clean_node_config(self, node_id: str, config: Optional[Dict[str, Any]]) -> Any:
-        if not self.nodes_config:
-            return config
-        node_id = node_id.rsplit("::", 1)[-1]
-        cid = f"{self.node_config_prefix}::{node_id}" if self.node_config_prefix else node_id
-        if cid in self.nodes_config:
-            return ConfigProxy(config, self.nodes_config[cid])
         return config
 
     def construct(self) -> None:
@@ -87,6 +81,11 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             # Check for prerequisites
             if not self.requirements_met(item.inputs):
                 continue
+            # Override config
+            override = None
+            if self.nodes_config:
+                config_id = f"{self.node_config_prefix}::{item.name}" if self.node_config_prefix else item.name
+                override = self.nodes_config.get(config_id)
             # Create node
             node_id = self.get_node_id(item.name)
             node = self.graph.add_node(
@@ -94,6 +93,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
                 node_type=item.type,
                 description=item.description,
                 config=self.clean_node_config(node_id, item.config),
+                override_config=override,
                 sticky=item.sticky,
             )
             # Connect node
