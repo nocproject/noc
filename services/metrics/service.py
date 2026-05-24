@@ -116,7 +116,9 @@ class MetricsService(FastAPIService):
         self.change_log = ChangeLog(self.slot_number)
         connect_async()
         self.load_scopes()
-        self.start_state = await self.change_log.get_state()
+        # self.start_state = await self.change_log.get_state()
+        Card.init_state |= await self.change_log.get_state()
+        Card.compose_node_inputs |= self.compose_inputs
         self.graph = CDAG("metrics")
         if global_config.metrics.flush_interval > 0:
             asyncio.create_task(self.log_runner())
@@ -403,7 +405,7 @@ class MetricsService(FastAPIService):
             card.component = sensor
         if card and card.is_dirty:
             # Apply Rules after invalidate cache
-            self.apply_rules(k, labels, card)
+            card.refresh_card(k, labels, self.rules)
         if card:
             return card
         # Generate new CDAG
@@ -411,7 +413,7 @@ class MetricsService(FastAPIService):
         if not cdag:
             return None
         # Apply CDAG to a common graph and collect inputs to the card
-        card = await self.project_cdag(
+        card = Card.from_graph(
             cdag,
             prefix=self.get_key_hash(k),
             config=target,
@@ -423,7 +425,7 @@ class MetricsService(FastAPIService):
             # Skip metric for sensor
             self.target_card_map[target.bi_id].append(k)
         # Apply Rules
-        self.apply_rules(k, labels, card)
+        card.refresh_card(k, labels, self.rules)
         return card
 
     def get_scope_cdag(self, k: MetricKey) -> Optional[CDAG]:
@@ -455,66 +457,6 @@ class MetricsService(FastAPIService):
         self.scope_cdag[k[0]] = cdag
         return cdag
 
-    def clone_and_add_node(
-        self,
-        n: BaseCDAGNode,
-        prefix: str,
-        config: Optional[Dict[str, Any]] = None,
-        static_config=None,
-    ) -> BaseCDAGNode:
-        """
-        Clone node without subscribers and apply state and config
-        """
-        state_id = f"{prefix}::{n.node_id}"
-        state = self.start_state.pop(state_id, None)
-        new_node = n.clone(
-            n.node_id, prefix=prefix, state=state, config=config, static_config=static_config
-        )
-        metrics["cdag_nodes", ("type", n.name)] += 1
-        return new_node
-
-    async def project_cdag(
-        self,
-        src: CDAG,
-        prefix: str,
-        config: Optional[ManagedObjectTarget] = None,
-        component: Optional[ComponentTarget] = None,
-    ) -> Card:
-        """
-        Project `src` to a current graph and return the controlling Card
-        Args:
-            src: Applied graph
-            prefix: Unique card prefix
-            config:
-            component:
-        """
-
-        nodes: Dict[str, BaseCDAGNode] = {}
-        # Clone nodes
-        for node in src.nodes.values():
-            # Apply sender nodes
-            nodes[node.node_id] = self.clone_and_add_node(node, prefix=prefix)
-        # Subscribe
-        for o_node in src.nodes.values():
-            node = nodes[o_node.node_id]
-            for rs in o_node.iter_subscribers():
-                node.subscribe(
-                    nodes[rs.node.node_id], rs.input, dynamic=rs.node.is_dynamic_input(rs.input)
-                )
-        # Compact the storage
-        for node in nodes.values():
-            node.freeze()
-        # Return resulting cards
-        return Card(
-            probes={unscope(node.node_id): node for node in nodes.values() if node.name == "probe"},
-            senders=tuple(node for node in nodes.values() if node.name == "metrics"),
-            alarms=[],
-            affected_rules=set(),
-            is_dirty=False,
-            config=config,
-            component=component,
-        )
-
     async def get_dispose_partitions(self, pool: str) -> int:
         """
         Returns an amount of dispose partitions
@@ -525,155 +467,6 @@ class MetricsService(FastAPIService):
             parts = await self.get_stream_partitions(f"dispose.{pool}")
             self.dispose_partitions[pool] = parts
         return parts
-
-    def add_probe(
-        self,
-        metric_field: str,
-        k: MetricKey,
-        is_composed: bool = False,
-        cfg: Optional[ProbeNodeConfig] = None,
-    ) -> Optional[ProbeNode]:
-        """
-        Add new probe to card
-        Args:
-            metric_field: Metric field name
-            k: Metric key
-            is_composed: Create ComposeProbeNode
-            unit: Measurement Unit
-        """
-        card = self.cards[k]
-        mt = MetricType.get_by_field_name(metric_field, k[0])
-        if not mt:
-            if not is_composed:
-                self.logger.warning("[%s] Unknown metric field: %s", k, metric_field)
-            return None
-        sender = card.get_sender(mt.scope.table_name)
-        if not sender:
-            self.logger.debug("[%s] Sender is not found on Card: %s", k, mt.scope.table_name)
-            return None
-        probe_cls = ProbeNode
-        if is_composed:
-            probe_cls = ComposeProbeNode
-        prefix = self.get_key_hash(k)
-        state_id = f"{prefix}::{metric_field}"
-        cfg = cfg or self.metric_configs.get((k[0], metric_field))
-        # Create Probe
-        p = probe_cls.construct(
-            metric_field,
-            prefix=prefix,
-            state=self.start_state.pop(state_id, None),
-            config=cfg,
-            sticky=True,
-        )
-        # Subscribe
-        p.subscribe(sender, metric_field, dynamic=True, mark_bound=False)
-        p.freeze()
-        card.add_probe(metric_field, p)
-        metrics["cdag_nodes", ("type", p.name)] += 1
-        return p
-
-    def apply_rules(self, k: MetricKey, labels: List[str], card: Card):
-        """
-        Apply rule Graph
-        :param k: Metric key
-        :param labels: Metric labels
-        :return:
-        """
-        if not card.config:
-            self.logger.debug("[%s] Unknown metric source. Skipping apply rules", k)
-            metrics["unknown_metric_source"] += 1
-            return
-        # s_labels = set(self.merge_labels(source.labels, labels))
-        # Apply matched rules
-        # for rule_id, rule in self.rules.items():
-        # Replace to card.iter_rules
-        rules = card.get_rules()
-        scopes = set()
-        for rule_id, action_id in rules:
-            # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
-            #    continue
-            rid = f"{rule_id}-{action_id}"
-            if rid not in self.rules:
-                self.logger.warning("[%s] Broken rules", rid)
-                continue
-            rule = self.rules[rid]
-            if not rule or k[0] not in rule.match_scopes:
-                continue
-            scopes.add(k[0])
-            nodes: Dict[str, BaseCDAGNode] = {}
-            # Node
-            for node in rule.graph.nodes.values():
-                # namespace, node_id split for connect to card probe
-                ns, node_id = node.node_id.rsplit("::", 1)
-                if node.name == "probe" and node_id in card.probes:
-                    # Probe node, will be replaced to Card probes
-                    nodes[node.node_id] = card.probes[node_id]
-                    continue
-                if (
-                    node.name == "probe"
-                    and node_id not in card.probes
-                    and "compose_" not in node_id
-                ):
-                    # Metrics probe is not initialized yet, add_probe. Skip compose  metric node
-                    probe = self.add_probe(node_id, k)
-                    nodes[node.node_id] = probe
-                    continue
-                config = rule.configs.get(node.node_id)
-                nodes[node.node_id] = self.clone_and_add_node(
-                    node,
-                    prefix=self.get_key_hash(k),
-                    config=config,
-                )
-            if (
-                f"{rid}::alarm" not in nodes
-                and f"{rid}::threshold" not in nodes
-                and f"{rid}::probe" not in nodes
-            ):
-                self.logger.warning(
-                    "[%s] Rules without ending output. Skipping", rule.graph.graph_id
-                )
-                continue
-            # Subscribe
-            # Probe node resubscribe to probe
-            for o_node in rule.graph.nodes.values():
-                node = nodes[o_node.node_id]
-                for rs in o_node.iter_subscribers():
-                    node.subscribe(
-                        nodes[rs.node.node_id],
-                        rs.input,
-                        dynamic=rs.node.is_dynamic_input(rs.input),
-                        mark_bound=False,
-                    )
-                if "_compose" in node.node_id:
-                    # Complex Node subscribe to sender
-                    sender = card.get_sender("interface")
-                    node.subscribe(sender, node.node_id, dynamic=True, mark_bound=False)
-            # Compact the storage
-            for node in nodes.values():
-                if node.bound_inputs:
-                    # Filter Probe nodes
-                    node.freeze()
-                # Add alarms nodes for clear alarm on delete
-                if node.name in {"alarm", "threshold"}:
-                    card.alarms += [node]
-            card.affected_rules.add(sys.intern(rid))
-        card.is_dirty = False
-        if rules and scopes:
-            self.logger.info("[%s] Apply Rules: %s; To scopes: %s", k, rules, scopes)
-        # Add complex probe
-        for cp_metric_filed in card.composed_metrics:
-            cp = self.add_probe(cp_metric_filed, k, is_composed=True)
-            if not cp:
-                # Not matched scope
-                continue
-            # Add probe
-            for m_field in self.compose_inputs[cp_metric_filed]:
-                p = card.get_probe(m_field)
-                if not p:
-                    p = self.add_probe(m_field, k)
-                if p:
-                    p.subscribe(cp, m_field, dynamic=True, mark_bound=False)
-            self.logger.debug("Add compose node: %s", cp)
 
     def activate_card(
         self,
@@ -695,11 +488,12 @@ class MetricsService(FastAPIService):
                 continue  # Missed field
             probe = card.get_probe(n)
             if self.lazy_init and not probe:
-                probe = self.add_probe(n, k, cfg=card.get_probe_config())
+                # probe = self.add_probe(n, k, cfg=card.get_probe_config())
+                cfg = card.get_probe_config() or self.metric_configs.get((k[0], n))
+                probe = card.add_node_probe(n, k, cfg=cfg)
             if not probe:
                 continue
             if probe.name == ComposeProbeNode.name:  # Skip composed probe
-                probe.activate(tx, "time_delta", time_delta)
                 continue
             if time_delta is None:
                 time_delta = probe.get_time_delta(ts)
@@ -708,6 +502,13 @@ class MetricsService(FastAPIService):
             probe.activate(tx, "unit", mu)
             if probe.fatal_error:
                 self.set_error(k, probe.fatal_error)
+        for p in card.composed_metrics:
+            p = card.probes.get(p)
+            if p not in card.probes:
+                continue
+            card.probes[p].activate(tx, "time_delta", time_delta)
+            if card.probes[p].fatal_error:
+                self.set_error(k, card.probes[p].fatal_error)
         # Activate senders
         for sender in card.senders:
             for kf in si.key_fields:

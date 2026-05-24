@@ -16,6 +16,7 @@ from jinja2 import Template
 from noc.core.matcher import match
 from .base import BaseCDAGFactory, FactoryCtx
 from ..graph import CDAG
+from ..node.base import ConfigProxy
 
 
 class InputItem(BaseModel):
@@ -49,9 +50,13 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         config: GraphConfig,
         ctx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
+        nodes_config: Optional[Dict[str, Dict[str, Any]]] = None,
+        node_config_prefix: Optional[str] = None,
     ):
         super().__init__(graph, ctx, namespace)
         self.config = config
+        self.nodes_config = nodes_config or {}
+        self.node_config_prefix = node_config_prefix
 
     def requirements_met(self, inputs: Optional[List[InputItem]]):
         if not inputs:
@@ -64,9 +69,17 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         return match(self.ctx, expr)
 
     def clean_node_config(self, node_id: str, config: Optional[Dict[str, Any]]) -> Any:
+        if not self.nodes_config:
+            return config
+        node_id = node_id.rsplit("::", 1)[-1]
+        cid = f"{self.node_config_prefix}::{node_id}" if self.node_config_prefix else node_id
+        if cid in self.nodes_config:
+            return ConfigProxy(config, self.nodes_config[cid])
         return config
 
     def construct(self) -> None:
+        # node_configs, node_states, inputs
+        # Raise KeyError when not required inputs
         for item in self.config.nodes:
             # Check match
             if not self.is_matched(item.match):
