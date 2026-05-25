@@ -115,7 +115,7 @@ class ThresholdNode(BaseCDAGNode):
 
     # check pool
     def get_value(self, x: ValueType, target: Any, **kwargs):
-        logger.info("[%s] Getting threshold value: %s", target.bi_id, x)
+        logger.debug("[%s] Getting threshold value: %s", target.bi_id, x)
         for num, th in self.iter_thresholds():
             if self.is_active(str(num)) and th.is_clear_match(x):
                 self.clear_alarm(str(num))
