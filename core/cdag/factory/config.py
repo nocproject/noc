@@ -84,7 +84,11 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             # Override config
             override = None
             if self.nodes_config:
-                config_id = f"{self.node_config_prefix}::{item.name}" if self.node_config_prefix else item.name
+                config_id = (
+                    f"{self.node_config_prefix}::{item.name}"
+                    if self.node_config_prefix
+                    else item.name
+                )
                 override = self.nodes_config.get(config_id)
             # Create node
             node_id = self.get_node_id(item.name)

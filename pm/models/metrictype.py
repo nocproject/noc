@@ -279,7 +279,9 @@ class MetricType(Document):
                 is_delta=self.is_delta,
             )
         return ProbeNodeConfig(
-            unit="1", scale=self.scale.code if self.scale else "1", is_delta=self.is_delta,
+            unit="1",
+            scale=self.scale.code if self.scale else "1",
+            is_delta=self.is_delta,
         )
 
     def on_save(self):
