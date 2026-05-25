@@ -80,10 +80,10 @@ class Card(object):
         "alarms",
         "component",
         "config",
+        "graphs",
         "is_dirty",
         "probes",
         "senders",
-        "graphs",
     )
     init_state: ClassVar[Dict[str, Dict[str, Any]]] = {}
     compose_node_inputs: ClassVar[Dict[str, Set[str]]] = {}
