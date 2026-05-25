@@ -49,9 +49,13 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         config: GraphConfig,
         ctx: Optional[FactoryCtx] = None,
         namespace: Optional[str] = None,
+        nodes_config: Optional[Dict[str, Dict[str, Any]]] = None,
+        node_config_prefix: Optional[str] = None,
     ):
         super().__init__(graph, ctx, namespace)
         self.config = config
+        self.nodes_config = nodes_config or {}
+        self.node_config_prefix = node_config_prefix
 
     def requirements_met(self, inputs: Optional[List[InputItem]]):
         if not inputs:
@@ -67,6 +71,8 @@ class ConfigCDAGFactory(BaseCDAGFactory):
         return config
 
     def construct(self) -> None:
+        # node_configs, node_states, inputs
+        # Raise KeyError when not required inputs
         for item in self.config.nodes:
             # Check match
             if not self.is_matched(item.match):
@@ -74,6 +80,15 @@ class ConfigCDAGFactory(BaseCDAGFactory):
             # Check for prerequisites
             if not self.requirements_met(item.inputs):
                 continue
+            # Override config
+            override = None
+            if self.nodes_config:
+                config_id = (
+                    f"{self.node_config_prefix}::{item.name}"
+                    if self.node_config_prefix
+                    else item.name
+                )
+                override = self.nodes_config.get(config_id)
             # Create node
             node_id = self.get_node_id(item.name)
             node = self.graph.add_node(
@@ -81,6 +96,7 @@ class ConfigCDAGFactory(BaseCDAGFactory):
                 node_type=item.type,
                 description=item.description,
                 config=self.clean_node_config(node_id, item.config),
+                override_config=override,
                 sticky=item.sticky,
             )
             # Connect node

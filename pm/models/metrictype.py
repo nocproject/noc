@@ -38,6 +38,8 @@ from noc.core.model.decorator import on_save, on_delete_check
 from noc.core.bi.decorator import bi_sync
 from noc.core.change.decorator import change
 from noc.core.expr import get_vars
+from noc.core.cdag.node.probe import ProbeNodeConfig
+from noc.core.cdag.node.composeprobe import ComposeProbeNodeConfig
 from noc.main.models.doccategory import category
 from noc.inv.models.capability import Capability
 from .metricscope import MetricScope
@@ -262,6 +264,26 @@ class MetricType(Document):
     @cachetools.cachedmethod(operator.attrgetter("_bi_id_cache"), lock=lambda _: id_lock)
     def get_by_bi_id(cls, bi_id: int) -> Optional["MetricType"]:
         return MetricType.objects.filter(bi_id=bi_id).first()
+
+    @property
+    def probe_config(self) -> ProbeNodeConfig:
+        if self.is_compose:
+            return ComposeProbeNodeConfig(
+                unit=(self.units.code or "1") if self.units else "1",
+                is_delta=self.is_delta,
+                expression=self.compose_expression,
+            )
+        if self.units:
+            return ProbeNodeConfig(
+                unit=self.units.code,
+                scale=self.scale.code if self.scale else "1",
+                is_delta=self.is_delta,
+            )
+        return ProbeNodeConfig(
+            unit="1",
+            scale=self.scale.code if self.scale else "1",
+            is_delta=self.is_delta,
+        )
 
     def on_save(self):
         call_later(

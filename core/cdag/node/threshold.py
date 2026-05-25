@@ -115,12 +115,15 @@ class ThresholdNode(BaseCDAGNode):
 
     # check pool
     def get_value(self, x: ValueType, target: Any, **kwargs):
-        logger.debug("[%s] Getting threshold value: %s", target, x)
+        logger.debug("[%s] Getting threshold value: %s", target.bi_id, x)
         for num, th in self.iter_thresholds():
             if self.is_active(str(num)) and th.is_clear_match(x):
                 self.clear_alarm(str(num))
             elif th.is_open_match(x) and not self.is_active(str(num)):
                 self.raise_alarm(x, target, th, str(num))
+
+    def get_vars(self) -> List[VarItem]:
+        return [VarItem(**v) for v in self.config.vars or []]
 
     def get_reference(self, th: ThresholdItem, target: Any) -> str:
         """Create Alarm reference by config"""
@@ -134,7 +137,7 @@ class ThresholdNode(BaseCDAGNode):
                 "object": target.managed_object,
                 "alarm_class": th.alarm_class,
                 "labels": th.alarm_labels or [],
-                "vars": {v.name: v.value for v in self.config.vars or []},
+                "vars": {v.name: v.value for v in self.get_vars() or []},
             }
         )
 
@@ -160,7 +163,7 @@ class ThresholdNode(BaseCDAGNode):
         }
         # Render vars
         if self.config.vars:
-            msg["vars"].update({v.name: v.value for v in self.config.vars})
+            msg["vars"].update({v.name: v.value for v in self.get_vars()})
         if self.config.error_text_template:
             msg["vars"]["message"] = self.config.error_text_template
         if target.type == "sla_probe":

@@ -10,7 +10,7 @@ import itertools
 from typing import Optional, Any, Dict, List
 
 # NOC modules
-from .node.base import BaseCDAGNode
+from .node.base import BaseCDAGNode, ConfigProxy
 from .node.loader import loader
 from .tx import Transaction
 
@@ -33,6 +33,7 @@ class CDAG(object):
         node_type: str,
         description: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None,
+        override_config: Optional[Dict[str, Any]] = None,
         sticky: bool = False,
     ) -> BaseCDAGNode:
         if node_id in self.nodes:
@@ -41,6 +42,8 @@ class CDAG(object):
         if not node_cls:
             raise ValueError("Invalid node type: %s" % node_type)
         config = config or {}
+        if override_config:
+            config = ConfigProxy(node_cls.config_cls(**config), override_config)
         node = node_cls.construct(
             node_id,
             description=description,
