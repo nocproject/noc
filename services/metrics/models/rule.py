@@ -13,9 +13,8 @@ from typing import Any, Dict, Optional, Set, FrozenSet, List, Tuple
 # NOC modules
 from noc.services.datastream.models.cfgmetricrules import RuleAction, RuleCondition
 from noc.core.cdag.graph import CDAG
-from noc.core.cdag.node.alarm import VarItem, AlarmNode
+from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
-from noc.core.perf import metrics
 
 
 @dataclass

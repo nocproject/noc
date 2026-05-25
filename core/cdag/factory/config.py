@@ -16,7 +16,6 @@ from jinja2 import Template
 from noc.core.matcher import match
 from .base import BaseCDAGFactory, FactoryCtx
 from ..graph import CDAG
-from ..node.base import ConfigProxy
 
 
 class InputItem(BaseModel):
