@@ -159,6 +159,8 @@
     https_proxy: "{{ http_proxy }}"
     http_proxy: "{{ http_proxy }}"
     LC_ALL: C
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
 
 - name: Install wheel
   pip:
@@ -169,6 +171,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   tags:
     - requirements
 
@@ -180,6 +184,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   tags:
     - requirements
 
@@ -199,6 +205,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   tags:
     - requirements
 
@@ -211,6 +219,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-activator-exec' in groups and inventory_hostname in groups['svc-activator-exec']"
   tags:
@@ -225,6 +235,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-classifier-exec' in groups and inventory_hostname in groups['svc-classifier-exec']"
   tags:
@@ -239,6 +251,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - login_methods is defined and 'ldap' in login_methods
   tags:
@@ -253,6 +267,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - login_methods is defined and 'radius' in login_methods
   tags:
@@ -267,6 +283,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   tags:
     - requirements
 
@@ -279,6 +297,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - noc_env_type == "prod"
   tags:
@@ -293,6 +313,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-memcached-exec' in groups and groups['svc-memcached-exec']|length>0 "
   tags:
@@ -307,6 +329,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-redis-exec' in groups and groups['svc-redis-exec']|length>0"
   tags:
@@ -321,6 +345,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-kafkasender-exec' in groups and inventory_hostname in groups['svc-kafkasender-exec']"
   tags:
@@ -335,6 +361,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-ping-exec' in groups and inventory_hostname in groups['svc-ping-exec']"
   tags:
@@ -349,6 +377,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
     PATH: "{{ ansible_env.PATH }}:/usr/pgsql-{{ postgres_version }}/bin/"
   tags:
     - requirements
@@ -362,6 +392,8 @@
   environment:
     http_proxy: "{{ http_proxy }}"
     https_proxy: "{{ http_proxy }}"
+    PIP_INDEX_URL: "{{ noc_pip_index_url }}"
+    PIP_TRUSTED_HOST: "{{ noc_pip_trusted_host }}"
   when:
     - "'svc-bh-exec' in groups and inventory_hostname in groups['svc-bh-exec']"
   tags:

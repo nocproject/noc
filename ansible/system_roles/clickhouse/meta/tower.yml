@@ -56,6 +56,7 @@ forms:
       label: "Expose metrics in Prometheus format"
       type: bool
       default: True  # yamllint disable-line rule:truthy
+
 services:
   clickhouse:
     level: system

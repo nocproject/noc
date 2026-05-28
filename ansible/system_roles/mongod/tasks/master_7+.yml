@@ -1,0 +1,84 @@
+---
+
+- name: Check if MongoDB replica set is initiated
+  command: >
+    {{ mongo_path }} --host {{ mongo_listen_addr }}
+    --port {{ mongo_port | default(27017) }}
+    --eval "try { db.hello().setName ? 'INITIATED' : 'NOT_INIT' } catch(e) { 'CONNECTION_ERROR' }"
+    --quiet
+  register: rs_status
+  failed_when: false
+  changed_when: >-
+    ("NOT_INIT" in (rs_status.stdout | default('')))
+    or
+    ("CONNECTION_ERROR" in (rs_status.stdout | default('')))
+  environment:
+    MONGO_NODE_TLS_VERIFY: 'false'
+    MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
+  tags:
+    - config
+
+- name: Create replica set configuration script
+  template:
+    src: rsinit.js.j2
+    dest: "{{ mongo_dir }}/rsinit.js"
+  register: rs_conf_status
+  tags:
+    - config
+
+- block:
+    - name: Initial replica set configuration
+      command: "{{ mongo_path }} {{ mongo_dir }}/rsinit.js"
+
+    - name: Create admin user configuration script
+      template:
+        src: admininit.js.j2
+        dest: "{{ mongo_dir }}/admininit.js"
+      no_log: "{{ tower_show_secrets }}"
+      tags:
+        - config
+
+    - name: Wait for MongoDB to elect PRIMARY
+      command: >
+        {{ mongo_path }} 127.0.0.1:{{ mongo_port | default(27017) }}
+        --eval "try { const status = rs.status(); status.myState === 1 ? 'PRIMARY' : 'WAITING'; } catch(e) { 'ERROR: ' + e.message; }"
+        --quiet --norc
+      args:
+        chdir: /tmp
+      register: mongo_rs_status
+      environment:
+        MONGO_NODE_TLS_VERIFY: 'false'
+        MONGO_SSL_ALLOW_INVALID_CERTIFICATES: 'true'
+      until: "'PRIMARY' in mongo_rs_status.stdout"
+      retries: 30
+      delay: 2
+      changed_when: false
+
+    - name: Create admin user
+      command: "{{ mongo_path }} admin {{ mongo_dir }}/admininit.js"
+  when: rs_status is changed
+
+- name: Create database user configuration script
+  template:
+    src: userinit.js.j2
+    dest: "{{ mongo_dir }}/userinit.js"
+  no_log: "{{ tower_show_secrets }}"
+  register: user_status
+  tags:
+    - config
+
+- name: Create database user
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' {{ mongod_db }} --authenticationDatabase admin {{ mongo_dir }}/userinit.js"  # noqa 204
+  when: user_status is changed
+  tags:
+    - skip_ansible_lint
+
+- name: Update replica set configuration
+  command: "{{ mongo_path }} -u {{ noc_mongo_admin_user }} -p '{{ mongod_password }}' admin {{ mongo_dir }}/rsinit.js"
+  when:
+    - rs_conf_status is changed
+    - rs_status is changed
+
+- name: set master_init done
+  set_fact:
+    mongo_master_init_done: "True"

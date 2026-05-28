@@ -1,0 +1,22 @@
+---
+- name: Install Debian system packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: "True"
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  vars:
+    packages:
+      - ca-certificates
+      - unzip
+      - sudo
+      - curl
+      - apt-transport-https
+      - dbus  # to setup hostname
+      - build-essential  #for ujson-x compiling
+  become: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements

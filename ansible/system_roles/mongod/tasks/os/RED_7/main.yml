@@ -13,6 +13,8 @@
     https_proxy: "{{ http_proxy }}"
   tags:
     - repo
+  when:
+    - not noc_closed_gap
 
 - name: Disable Transparent Hugepages (bootloader)
   template:

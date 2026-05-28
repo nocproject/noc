@@ -1,0 +1,50 @@
+---
+- name: Add Clickhouse apt repository key
+  get_url:
+    url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x{{ ch_apt_key_id }}"
+    dest: /etc/apt/trusted.gpg.d/clickhouse.asc
+    mode: '0644'
+    force: true
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Add CH repository
+  apt_repository:
+    repo: "{{ clickhouse_deb_repo }}"
+    state: present
+    update_cache: "True"
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - repo
+
+- name: Install CH
+  apt:
+    name: "{{ packages }}"
+    state: present
+    cache_valid_time: "{{ apt_cache_valid_time | default (3600) }}"
+  vars:
+    packages:
+      - clickhouse-client={{ clickhouse_version }}
+      - clickhouse-server={{ clickhouse_version }}
+      - clickhouse-common-static={{ clickhouse_version }}
+  environment:
+    https_proxy: "{{ http_proxy }}"
+    http_proxy: "{{ http_proxy }}"
+  tags:
+    - requirements
+
+- name: Patch openssl.conf on Debian10
+  replace:
+    path: /etc/ssl/openssl.cnf
+    regexp: '^ssl_conf = ssl_sect$'
+    replace: '#ssl_conf = ssl_sect'
+  when:
+    - ansible_distribution == "Debian"
+    - ansible_distribution_version is version('10', '>=')
+  tags:
+    - requirements
