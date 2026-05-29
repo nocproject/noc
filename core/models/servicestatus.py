@@ -20,19 +20,21 @@ class Status(enum.IntEnum):
 
 
 @dataclass
-class StatusAffectedItem:
-    status: Status
+class AffectedItem:
     id: str
     reason: str
+    service_status: Optional[Status] = None
     label: Optional[str] = None
     weight: int = 0
+    is_active: bool = True
+    # Add Maintenance
     source: Literal["alarm", "dependency", "diagnostic", "manual", "other"] = "other"
 
     @classmethod
-    def from_alarm(cls, alarm, status: Status) -> "StatusAffectedItem":
+    def from_alarm(cls, alarm, status: Status) -> "AffectedItem":
         """Build item by alarm"""
-        return StatusAffectedItem(
-            status=status,
+        return AffectedItem(
+            service_status=status,
             id=str(alarm.id),
             reason=str(alarm.subject),
             label=alarm.body,
@@ -40,20 +42,20 @@ class StatusAffectedItem:
         )
 
     @classmethod
-    def from_diagnostic(cls, diagnostic, status: Status) -> "StatusAffectedItem":
+    def from_diagnostic(cls, diagnostic, status: Status) -> "AffectedItem":
         """Build item by diagnostic"""
-        return StatusAffectedItem(
-            status=status,
+        return AffectedItem(
+            service_status=status,
             id=str(diagnostic.diagnostic),
             reason="",
             source="diagnostic",
         )
 
     @classmethod
-    def from_dependency(cls, service, status: Status) -> "StatusAffectedItem":
+    def from_dependency(cls, service, status: Status) -> "AffectedItem":
         """Build item by Service instance"""
-        return StatusAffectedItem(
-            status=status,
+        return AffectedItem(
+            service_status=status,
             id=str(service.id),
             reason="",
             label=str(service.label),

@@ -43,7 +43,7 @@ from noc.core.wf.decorator import workflow
 from noc.core.change.decorator import change
 from noc.core.change.policy import change_tracker
 from noc.core.service.loader import get_service
-from noc.core.models.servicestatus import Status, StatusAffectedItem
+from noc.core.models.servicestatus import Status, AffectedItem
 from noc.core.models.serviceinstanceconfig import InstanceType, ServiceInstanceConfig
 from noc.core.models.inputsources import InputSource
 from noc.core.mx import MessageType, send_message, MessageMeta, get_subscription_id
@@ -78,6 +78,54 @@ _path_cache = cachetools.TTLCache(maxsize=100, ttl=60)
 SVC_REF_PREFIX = "svc"
 SCHEDULER = "scheduler"
 SVC_AC = "Service | Status | Change"
+
+
+class StatusAffectedItem(EmbeddedDocument):
+    """
+    Factors affected to service oper status
+    Attributes:
+        * id: Factors instance id
+        * reason: Text reason that factors applied
+        * service_status: Set oper status/ for service factors
+        * label: Optional factor description
+        * weight: Factors weight
+        * inactive: Factors not affected
+        * source: Factor source
+    """
+
+    meta = {"strict": False, "auto_create_index": False}
+
+    id = StringField(required=True)
+    service_status: Status = EnumField(Status, default=Status.UNKNOWN)
+    reason = StringField(required=True)
+    label = StringField(required=False)
+    weight = IntField(default=1)
+    inactive = BooleanField(default=False)
+    source = StringField(required=True, default="other")
+
+    @property
+    def item(self) -> "AffectedItem":
+        """Return Affected"""
+        return AffectedItem(
+            id=self.id,
+            reason=self.reason,
+            service_status=self.service_status,
+            label=self.label or "",
+            weight=self.weight,
+            source=self.source,
+        )
+
+    @classmethod
+    def from_item(cls, data: AffectedItem) -> "StatusAffectedItem":
+        """Build item from data"""
+        return StatusAffectedItem(
+            id=str(data.id),
+            service_status=data.service_status,
+            reason=data.reason,
+            label=data.label,
+            weight=data.weight,
+            source=data.source,
+        )
 
 
 class ServiceDependency(EmbeddedDocument):
@@ -242,9 +290,9 @@ class Service(Document):
     subscriber: Optional[Subscriber] = ReferenceField(Subscriber, required=False)
     # Oper Status Info
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
+    # oper_status_factors: List[StatusAffectedItem] = EmbeddedDocumentListField()
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
-    affect_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
-    direct_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
+    oper_status_factors = EmbeddedDocumentListField(StatusAffectedItem)
     # Service oper status settings
     status_transfer_policy = StringField(
         choices=[
@@ -615,7 +663,7 @@ class Service(Document):
         self,
         status: Status,
         timestamp: Optional[datetime.datetime] = None,
-        affected: Optional[List[StatusAffectedItem]] = None,
+        affected: Optional[List[AffectedItem]] = None,
     ):
         """
         Set Operational Status for Service
@@ -654,8 +702,23 @@ class Service(Document):
 
         self.oper_status = status
         self.oper_status_change = timestamp
+        if status.value < 2 and self.oper_status_factors:
+            self.oper_status_factors = []
+        elif affected and not self.oper_status_factors:
+            self.oper_status_factors = [StatusAffectedItem.from_item(f) for f in affected or []]
+        else:
+            factors = {f.id: StatusAffectedItem.from_item(f) for f in affected or []}
+            for sf in self.oper_status_factors:
+                if sf.id in factors:
+                    del factors[sf.id]
+                else:
+                    sf.inactive = True
+            if factors:
+                self.oper_status_factors += list(factors.values())
         Service.objects.filter(id=self.id).update(
-            oper_status=self.oper_status, oper_status_change=self.oper_status_change
+            oper_status=self.oper_status,
+            oper_status_change=self.oper_status_change,
+            oper_status_factors=self.oper_status_factors[:10],
         )
         # Register outage
         svcs = get_service()
@@ -673,6 +736,8 @@ class Service(Document):
                     "from_status": os.value,
                     "to_status": self.oper_status.value,
                     "in_maintenance": int(self.in_maintenance),
+                    "affected": orjson.dumps([s.item for s in self.oper_status_factors]).decode(),
+                    # Affected
                 }
             ],
         )
@@ -683,15 +748,6 @@ class Service(Document):
             # msg["managed_object"] = self.managed_object.get_message_context()
             msg["from_status"] = {"id": os, "name": os.name}
             msg["ts"] = timestamp.replace(microsecond=0).isoformat()
-            for ai in affected or []:
-                msg["affected"].append(
-                    {
-                        "id": ai.id,
-                        "status": {"id": ai.status, "name": ai.status.name},
-                        "source": ai.source,
-                        "summary": ai.reason,
-                    }
-                )
             send_message(
                 data=msg,
                 message_type=MessageType.SERVICE_STATUS_CHANGE,
@@ -708,7 +764,7 @@ class Service(Document):
 
     def get_message_context(
         self,
-        affected: Optional[List[StatusAffectedItem]] = None,
+        affected: Optional[List[AffectedItem]] = None,
     ) -> Dict[str, Any]:
         """Service Message Ctx"""
         r = {
@@ -738,6 +794,16 @@ class Service(Document):
                 },
                 "remote_id": self.profile.remote_id,
             }
+        for ai in self.oper_status_factors:
+            r["affected"].append(
+                {
+                    "id": ai.id,
+                    "status": {"id": ai.service_status.value, "name": ai.service_status.name},
+                    "source": ai.source,
+                    "inactive": ai.inactive,
+                    "summary": ai.reason,
+                }
+            )
         return r
 
     def get_mx_message_headers(self, labels: Optional[List[str]] = None) -> Dict[str, bytes]:
@@ -917,7 +983,7 @@ class Service(Document):
         status = max(self.affect_oper_status, self.direct_oper_status)
         self.set_oper_status(status, affected=affected)
 
-    def get_alarm_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
+    def get_alarm_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
         """
         Calculate alarm status for service
         1. If alarm affected policy is Disabled. Return UNKNOWN
@@ -957,7 +1023,7 @@ class Service(Document):
             if status == Status.UNKNOWN:
                 continue
             if affected is not None:
-                affected.append(StatusAffectedItem.from_alarm(aa, status))
+                affected.append(AffectedItem.from_alarm(aa, status))
             if not rule.affected_instance:
                 alarm_status = max(status, alarm_status)
                 continue
@@ -1009,7 +1075,7 @@ class Service(Document):
         # Calculate affected status
         return self.calculate_status(r)
 
-    def get_diagnostics_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
+    def get_diagnostics_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
         if not self.profile.diagnostic_status:
             return Status.UNKNOWN
         values = self.get_diagnostic_values()
@@ -1021,12 +1087,12 @@ class Service(Document):
             ):
                 if affected is not None:
                     affected.append(
-                        StatusAffectedItem.from_diagnostic(values[d.diagnostic], d.failed_status)
+                        AffectedItem.from_diagnostic(values[d.diagnostic], d.failed_status)
                     )
                 return d.failed_status
         return Status.UNKNOWN
 
-    def get_direct_status(self, affected: Optional[List[StatusAffectedItem]] = None) -> Status:
+    def get_direct_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
         """Getting oper_status from Alarm and Diagnostics"""
         return max(
             self.get_alarm_status(affected=affected),
