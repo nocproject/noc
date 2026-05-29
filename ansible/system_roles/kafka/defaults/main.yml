@@ -14,7 +14,15 @@ kafka_install_dir: "kafka_install_dir"
 
 kafka_version: "3.6.2"
 kafka_scala_version: "2.13"
-kafka_download_url: "https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
+# yamllint disable rule:indentation
+kafka_download_url: >-
+  {%- if noc_closed_gap -%}
+    {{ noc_closed_gap_url }}/repo/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
+  {%- else -%}
+    https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz
+  {%- endif -%}
+# yamllint enable rule:indentation
+
 kafka_insecure_certs: true
 
 kafka_bootstrap_port: 9092

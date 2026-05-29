@@ -10,6 +10,8 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
+  when:
+    - not noc_closed_gap
 
 - name: Add MongoDB repository
   apt_repository:
@@ -22,6 +24,8 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
+  when:
+    - not noc_closed_gap
 
 - name: Disable Transparent Hugepages (bootloader)
   lineinfile:

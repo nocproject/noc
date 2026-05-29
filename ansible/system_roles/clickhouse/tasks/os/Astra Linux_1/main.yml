@@ -10,6 +10,8 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
+  when:
+    - not noc_closed_gap
 
 - name: Add CH repository
   apt_repository:
@@ -21,6 +23,8 @@
     http_proxy: "{{ http_proxy }}"
   tags:
     - repo
+  when:
+    - not noc_closed_gap
 
 - name: Install CH
   apt:

@@ -17,4 +17,12 @@ postgresql_conf_prefix: "/etc/postgresql/{{ postgres_version }}/main"
 postgres_proccess: postgres
 
 jemalloc_path: /usr/lib/x86_64-linux-gnu/libjemalloc.so.2
-noc_python_url: "https://cdn.getnoc.com/noc/repo/Debian/12/python{{ py_rel_name }}.tar.gz"
+
+# yamllint disable rule:indentation
+noc_python_url: >-
+  {%- if noc_closed_gap -%}
+    {{ noc_closed_gap_url }}/repo/Debian/12/python{{ py_rel_name }}.tar.gz
+  {%- else -%}
+    https://cdn.getnoc.com/noc/repo/Debian/12/python{{ py_rel_name }}.tar.gz
+  {%- endif -%}
+# yamllint enable rule:indentation
