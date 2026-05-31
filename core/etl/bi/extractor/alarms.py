@@ -105,14 +105,22 @@ class AlarmsExtractor(ArchivingExtractor):
                 reboots=n_reboots,
                 services=[
                     {
-                        "profile": ServiceProfile.get_by_id(ss["profile"]).bi_id,
+                        "profile": (
+                            ServiceProfile.get_by_id(ss["profile"]).bi_id
+                            if ServiceProfile.get_by_id(ss["profile"])
+                            else 0
+                        ),
                         "summary": ss["summary"],
                     }
                     for ss in d.get("direct_services", [])
                 ],
                 subscribers=[
                     {
-                        "profile": SubscriberProfile.get_by_id(ss["profile"]).bi_id,
+                        "profile": (
+                            SubscriberProfile.get_by_id(ss["profile"]).bi_id
+                            if SubscriberProfile.get_by_id(ss["profile"])
+                            else 0
+                        ),
                         "summary": ss["summary"],
                     }
                     for ss in d.get("direct_subscribers", [])

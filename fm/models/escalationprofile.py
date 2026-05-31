@@ -30,7 +30,7 @@ from noc.core.change.decorator import change
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.models.escalationpolicy import EscalationPolicy
 from noc.core.tt.types import TTSystemConfig, EscalationMember
-from noc.core.fm.enum import AlarmAction
+from noc.core.fm.enum import AlarmAction, GroupType
 from noc.core.fm.request import AlarmActionRequest, ActionConfig, AllowedAction, ActionItem
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.timepattern import TimePattern
@@ -345,6 +345,27 @@ class EscalationProfile(Document):
     def alarm_wait_ended(self) -> bool:
         """Alarm must wait escalation ended before close"""
         return self.end_condition in ("CT", "M")
+
+    def allowed_escalation(self, alarm: ActiveAlarm) -> bool:
+        """
+        Job Leader
+        * Always First
+        * Root
+        * Root First
+        """
+        if self.escalation_policy == EscalationPolicy.ALWAYS:
+            # Not control unique!
+            return True
+        if self.escalation_policy == EscalationPolicy.ROOT:
+            # Not allowed Group escalation
+            return not (alarm.root or alarm.group_type.value)
+        if alarm.group_type != GroupType.NEVER and not self.escalation_policy.allowed_group:
+            # Not allowed Group escalation
+            return False
+        if self.escalation_policy == EscalationPolicy.ROOT_FIRST:
+            return not bool(alarm.root)
+        # EscalationPolicy.ALWAYS_FIRST
+        return True
 
     def from_alarm(self, alarm: ActiveAlarm) -> AlarmActionRequest:
         """"""

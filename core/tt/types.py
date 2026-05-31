@@ -227,6 +227,19 @@ class EscalationContext(BaseModel):
             if i.item == "service":
                 return i
 
+    @property
+    def managed_object(self) -> Optional[EscalationItem]:
+        for i in self.items:
+            if i.item == "managed_object":
+                return i
+
+    @property
+    def container(self) -> Optional[EscalationItem]:
+        """"""
+        for i in self.items:
+            if i.item == "container":
+                return i
+
 
 class DeescalationContext(BaseModel):
     """
