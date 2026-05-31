@@ -59,7 +59,7 @@ class JobStatus(Enum):
 
 class GroupItem(EmbeddedDocument):
     reference = StringField()
-    id: StringField(required=True)
+    id = StringField(required=True)
 
 
 class AlarmItem(EmbeddedDocument):
