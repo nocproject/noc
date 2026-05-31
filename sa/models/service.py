@@ -15,6 +15,7 @@ from typing import Any, Dict, Optional, Iterable, List, Union, Tuple, Set
 
 # Third-party modules
 import orjson
+from hashlib import sha512
 from bson import ObjectId
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
@@ -836,6 +837,14 @@ class Service(Document):
             return default_map[self.oper_status.value]
         return 0
 
+    @classmethod
+    def get_alarm_reference(cls, sid: ObjectId, return_hash: bool = False) -> str:
+        """Generate Service Alarm Reference"""
+        reference = f"{SVC_REF_PREFIX}:{sid}"
+        if return_hash:
+            return sha512(reference.encode("utf-8")).digest()[:10]
+        return reference
+
     def get_alarm_msg(self, old_status):
         """"""
         iface = self.interface
@@ -843,7 +852,7 @@ class Service(Document):
             # Group
             msg = {
                 "$op": "ensure_group",
-                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "reference": self.get_alarm_reference(self.id),
                 "g_type": 3,
                 "name": self.label,
                 "alarm_class": SVC_AC,
@@ -864,7 +873,7 @@ class Service(Document):
             # Disposition
             msg = {
                 "$op": "disposition",
-                "reference": f"{SVC_REF_PREFIX}:{self.id}",
+                "reference": self.get_alarm_reference(self.id),
                 "name": self.label,
                 "alarm_class": self.profile.raise_alarm_class.name,
                 "labels": self.labels,
@@ -875,7 +884,7 @@ class Service(Document):
                     "from_status": old_status.name,
                     "to_status": self.oper_status.name,
                 },
-                "groups": [{"reference": f"{SVC_REF_PREFIX}:{self.id}"}],
+                "groups": [{"reference": self.get_alarm_reference(self.id)}],
             }
             if iface:
                 msg["vars"]["interface"] = str(iface.name)
