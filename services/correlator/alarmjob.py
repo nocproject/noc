@@ -11,7 +11,7 @@ import datetime
 import operator
 import time
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union, Dict, Iterable, Tuple, Set
+from typing import List, Optional, Any, Union, Dict, Iterable, Tuple
 
 # Third-party modules
 from bson import ObjectId
@@ -692,6 +692,7 @@ class AlarmJob(object):
         job = AlarmJob(
             # Job Context
             items=items,
+            groups=data.get("groups", []),
             name=str(data["name"]),
             profile=data.get("escalation_profile"),
             job_id=data["_id"],
