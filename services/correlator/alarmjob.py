@@ -11,7 +11,7 @@ import datetime
 import operator
 import time
 from dataclasses import dataclass
-from typing import List, Optional, Any, Union, Dict, Iterable, Tuple, Set
+from typing import List, Optional, Any, Union, Dict, Iterable, Tuple
 
 # Third-party modules
 from bson import ObjectId
@@ -21,6 +21,7 @@ from noc.core.log import PrefixLoggerAdapter
 from noc.core.fm.enum import ActionStatus, AlarmAction, ItemStatus, GroupType
 from noc.core.fm.request import AlarmActionRequest, ActionConfig, WhenCondition
 from noc.core.models.escalationpolicy import EscalationPolicy
+from noc.core.models.servicestatus import Status as ServiceStatus
 from noc.core.debug import error_report
 from noc.core.scheduler.job import Job
 from noc.core.scheduler.periodicjob import PeriodicJob
@@ -29,6 +30,7 @@ from noc.core.change.policy import change_tracker
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
+from noc.sa.models.service import Service
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.archivedalarm import ArchivedAlarm
 from noc.fm.models.alarmwatch import Effect, WatchItem
@@ -40,6 +42,21 @@ from .alarmaction import AlarmActionRunner
 WAIT_DEFAULT_INTERVAL_SEC = 120
 MIN_NEXT_SHIFT_SEC = 10
 ALARM_WATCHER_JCLS = "noc.services.correlator.alarmjob.AlarmWatchersJob"
+
+
+@dataclass(repr=True)
+class ServiceItem(object):
+    service: Service
+    managed_object_id: Optional[int] = None
+    service_status: ServiceStatus = ServiceStatus.UNKNOWN
+    # status_factors
+    # ctx
+    status: ItemStatus = ItemStatus.NEW
+
+    @classmethod
+    def from_service(cls, svc: Service) -> "ServiceItem":
+        """Create item from Service instance"""
+        return ServiceItem(service=svc, service_status=svc.oper_status)
 
 
 @dataclass(repr=True)
@@ -102,6 +119,7 @@ class AlarmJob(object):
         self,
         items: List[Item],
         actions: List[ActionLog],
+        groups: Optional[List[bytes]] = None,
         profile: Optional[str] = None,
         allowed_actions: Optional[List[AllowedAction]] = None,
         maintenance_policy: str = None,
@@ -126,8 +144,8 @@ class AlarmJob(object):
         self.name = name
         self.profile = profile
         self.items: List[Item] = items
-        self.services: List[str] = []
-        self.groups: List[bytes] = []
+        self.services: List[ServiceItem] = []
+        self.groups: List[bytes] = groups or []
         self.actions = actions
         self.base_severity = severity
         # Policies
@@ -245,12 +263,12 @@ class AlarmJob(object):
         return bool(self.groups)
 
     @classmethod
-    def ensure_profile_job(cls, alarm: ActiveAlarm, profile: str) -> "AlarmJob":
+    def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> "AlarmJob":
         """Ensure escalation Job"""
         from noc.fm.models.escalationprofile import EscalationProfile
         from noc.fm.models.alarmwatch import Effect
 
-        profile = EscalationProfile.get_by_id(profile)
+        profile = EscalationProfile.get_by_id(pid)
         if not profile:
             raise ValueError("Not found escalation profile by id")
         job = None
@@ -259,6 +277,8 @@ class AlarmJob(object):
                 job = AlarmJob.get_by_id(w.job)
         if job:
             return job
+        if not profile.allowed_escalation(alarm):
+            return None
         req = profile.from_alarm(alarm)
         job = AlarmJob.from_request(req, alarm=alarm, profile=str(profile.id))
         alarm.add_watch(Effect.ESCALATION, key=str(profile.id), job=str(job.id))
@@ -422,65 +442,48 @@ class AlarmJob(object):
             # Only if save-state
             self.save_state(is_completed=is_end)
 
-    def get_leader(self) -> Tuple[Optional[ActiveAlarm], List[bytes], Set[ObjectId]]:
-        """
-        Detect escalation Leader by Escalation Policy
-        Group
-        """
-        if self.alarm.root:
-            # Not Root Alarm not escalated, or ALWAYS ?
-            return None, [], set()
-        if self.alarm.group_type == GroupType.SERVICE and self.alarm.vars.get("service"):
-            services = {ObjectId(self.alarm.vars["service"])}
-        else:
-            services = set(self.alarm.affected_services)
-        if (
-            self.alarm.group_type in {GroupType.SERVICE, GroupType.GROUP}
-            and self.items_policy != EscalationPolicy.ROOT
-        ):
-            groups = {self.alarm.reference}
-        elif self.alarm.groups and self.items_policy in {
-            EscalationPolicy.ALWAYS_FIRST,
-            EscalationPolicy.ROOT_FIRST,
-        }:
-            groups = set(self.alarm.groups)
-        else:
-            groups = set()
-        # Apply Policy
-        if self.items_policy == EscalationPolicy.ROOT:
-            return self.alarm, [], services
-        return self.alarm, list(groups), set(services)
+    @classmethod
+    def get_leader(
+        cls,
+        policy: EscalationPolicy,
+        alarm: ActiveAlarm,
+    ) -> Tuple[Optional[ActiveAlarm], List[bytes]]:
+        """Detect escalation Leader by Escalation Policy"""
+        if policy in {EscalationPolicy.ALWAYS_FIRST, EscalationPolicy.ROOT_FIRST}:
+            # Group
+            if alarm.group_type != GroupType.NEVER:
+                return None, [alarm.reference]
+            return alarm, alarm.groups
+        return alarm, []
 
     def refresh_items(self, include_groups: bool = False):
-        """Build alarm items by Policy"""
-        alarms = {ii.alarm.id: ii for ii in self.items[1:]}
-        leader, groups, services = self.get_leader()
-        if not leader:
-            self.items = []
+        """Refresh Items"""
+        if self.items:
+            leader, items = self.alarm, [self.items[0]]
+        else:
+            leader, items = None, []
+        if self.items_policy == EscalationPolicy.ROOT and leader and leader.root:
+            # Execute only not root
             return
-        item = Item.from_alarm(leader)
-        if leader.managed_object:
-            item.managed_object_id = leader.managed_object.id
-        # First as Leader
-        items = [item]
+        groups, services = self.groups[:], set()
+        items_map = {ii.alarm.id: ii for ii in self.items[1:]}
         for aa in self.iter_escalation_alarms(leader, groups):
             if aa.affected_services:
                 services |= set(aa.affected_services)
-            if aa.id == leader.id:
+            if leader and aa.id == leader.id:
                 continue
-            item = alarms.pop(aa.id, None)
+            item = items_map.pop(aa.id, None)
             # Update Status ?
             if not item:
-                # Update status
+                # Update status, New
                 item = Item(alarm=aa, status=ItemStatus.from_alarm(aa))
             if aa.managed_object:
                 item.managed_object_id = aa.managed_object.id
             items.append(item)
-        for ii in alarms.values():
+        for ii in items_map.values():
             items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
-        # Refresh Maintenance ?
         self.items = items
-        self.services = list(services)
+        self.services = [ServiceItem.from_service(svc) for svc in services]
         if include_groups:
             self.groups = groups
 
@@ -508,10 +511,12 @@ class AlarmJob(object):
             alarm = get_alarm(req.item.alarm)
         if not alarm:
             raise ValueError("Not Found alarm by id: %s", req.item.alarm)
+        leader, groups = cls.get_leader(req.item_policy, alarm)
         start = req.start_at or datetime.datetime.now()
         return AlarmJob(
             # Job Context
-            items=[Item.from_alarm(alarm)],
+            items=[] if not leader else [Item.from_alarm(alarm)],
+            groups=groups,
             name=str(req.name),
             profile=profile,
             job_id=req.id,
@@ -627,10 +632,10 @@ class AlarmJob(object):
             error_report()
 
     @classmethod
-    def items_from_state(cls, items: List[Dict[str, Any]]) -> List[Item]:
+    def items_from_state(cls, state: List[Dict[str, str]]) -> List[Item]:
         """Build items from state"""
         r = []
-        items = {x["alarm"]: x["status"] for x in items}
+        items = {x["alarm"]: x["status"] for x in state}
         for aa in ActiveAlarm.objects.filter(id__in=list(items)):
             status = items.pop(aa.id, None)
             if not status:
@@ -653,21 +658,21 @@ class AlarmJob(object):
         """Iter over alarms on items"""
         if groups:
             yield from self.iter_groups_alarm(groups)
-        if not alarm.root:
+        if alarm and not alarm.root:
             yield from self.iter_consequence(alarm)
 
-    def iter_consequence(self, alarm: ActiveAlarm):
+    @classmethod
+    def iter_consequence(cls, alarm: ActiveAlarm):
         """Iter Alarm consequence"""
         if alarm.root:
             return
-        if self.items_policy == EscalationPolicy.ROOT:
-            yield alarm
+        # if self.items_policy == EscalationPolicy.ROOT:
+        #    yield alarm
         yield from alarm.iter_consequences()
 
-    def iter_groups_alarm(self, groups: List[bytes]):
+    @classmethod
+    def iter_groups_alarm(cls, groups: List[bytes]):
         """Iterate over groups alarm"""
-        if self.items_policy not in {EscalationPolicy.ROOT_FIRST, EscalationPolicy.ALWAYS_FIRST}:
-            return
         for aa in ActiveAlarm.objects.filter(groups__in=groups).order_by("root", "-timestamp"):
             yield aa
         for aa in ActiveAlarm.objects.filter(reference__in=groups):
@@ -687,6 +692,7 @@ class AlarmJob(object):
         job = AlarmJob(
             # Job Context
             items=items,
+            groups=data.get("groups", []),
             name=str(data["name"]),
             profile=data.get("escalation_profile"),
             job_id=data["_id"],

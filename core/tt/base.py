@@ -18,7 +18,6 @@ from .types import (
     TTInfo,
     TTCommentRequest,
     EscalationItem,
-    EscalationServiceItem,
     EscalationStatus,
     EscalationResult,
     TTChange,
@@ -202,7 +201,6 @@ class TTSystemCtx(object):
         login=None,
         actions=None,
         items=None,
-        services=None,
         assigned=None,
         suppress_tt_trace: bool = True,
         is_unavailable: bool = False,
@@ -214,7 +212,6 @@ class TTSystemCtx(object):
         self.reason: Optional[str] = reason
         self.login: Optional[str] = login
         self.items: List[EscalationItem] = items or []
-        self.services: List[EscalationServiceItem] = services or []
         self.actions: List[TTActionContext] = actions or []
         self.error_code: Optional[str] = None
         self.error_text: Optional[str] = ""
@@ -237,6 +234,10 @@ class TTSystemCtx(object):
         Escalation leader.
         """
         return self.items[0]
+
+    @property
+    def services(self):
+        return [i for i in self.items if i.item == "service"]
 
     def add_items(self, items: List[EscalationItem]):
         self.items += items
@@ -266,7 +267,6 @@ class TTSystemCtx(object):
             EscalationContext(
                 id=self.id,
                 queue=self.queue,
-                services=self.services,
                 reason=self.reason,
                 login=self.login,
                 timestamp=self.timestamp,

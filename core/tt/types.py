@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # EscalationContext
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024, The NOC Project
+# Copyright (C) 2007-2026, The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import enum
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime
 
 # Third-party modules
@@ -141,19 +141,6 @@ class EscalationMember(enum.Enum):
     HANDLER = "handler"
 
 
-class EscalationServiceItem(BaseModel):
-    """
-    Service Object Item
-    Attributes:
-        id: Service Id
-        tt_id: ID on Escalation System
-        oper_status ?
-    """
-
-    id: str
-    tt_id: str
-
-
 class EscalationItem(BaseModel):
     """
     Managed object item.
@@ -165,6 +152,10 @@ class EscalationItem(BaseModel):
 
     id: int
     tt_id: str
+    ctx: Optional[Dict[str, str]] = None
+    label: Optional[str] = None
+    item_status: str = "new"  # changed/removed
+    item: str = "other"  # service, managed_object, container
     _status: Optional[EscalationStatus] = PrivateAttr()
     _message: Optional[str] = PrivateAttr()
 
@@ -212,7 +203,6 @@ class EscalationContext(BaseModel):
 
     subject: str
     items: List[EscalationItem]
-    services: Optional[List[EscalationServiceItem]] = None
     id: Optional[str] = None
     body: Optional[str] = None
     timestamp: Optional[datetime] = None
@@ -232,9 +222,23 @@ class EscalationContext(BaseModel):
         return self.items[0]
 
     @property
-    def service(self) -> Optional[EscalationServiceItem]:
-        if self.services:
-            return self.services[0]
+    def service(self) -> Optional[EscalationItem]:
+        for i in self.items:
+            if i.item == "service":
+                return i
+
+    @property
+    def managed_object(self) -> Optional[EscalationItem]:
+        for i in self.items:
+            if i.item == "managed_object":
+                return i
+
+    @property
+    def container(self) -> Optional[EscalationItem]:
+        """"""
+        for i in self.items:
+            if i.item == "container":
+                return i
 
 
 class DeescalationContext(BaseModel):
@@ -309,6 +313,7 @@ class TTInfo(BaseModel):
 class TTCommentRequest(BaseModel):
     id: str
     body: str
+    queue: Optional[str] = None
     ts: Optional[datetime] = None
     login: Optional[str] = None
     subject: Optional[str] = None

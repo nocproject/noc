@@ -15,15 +15,14 @@ from logging import Logger
 from noc.core.perf import metrics
 from noc.core.tt.types import (
     EscalationItem as ECtxItem,
-    EscalationServiceItem,
     EscalationStatus,
+    TTAction,
     TTActionContext,
     TTUser,
 )
-from noc.core.tt.base import TTSystemCtx, TTAction
+from noc.core.tt.base import TTSystemCtx
 from noc.core.fm.enum import AlarmAction, ActionStatus
 from noc.core.fm.request import AllowedAction, ActionConfig, WhenCondition
-from noc.sa.models.service import Service
 from noc.fm.models.ttsystem import TTSystem
 from noc.fm.models.activealarm import ActiveAlarm
 from noc.fm.models.alarmwatch import Effect
@@ -134,20 +133,18 @@ class AlarmActionRunner(object):
             ei = ECtxItem(
                 id=str(item.managed_object.id),
                 tt_id=tt_system.get_object_tt_id(item.managed_object),
+                item="managed_object",
+                ctx=item.managed_object.get_message_context(),
             )
             r.append(ei)
-        return r
-
-    def get_affected_services_items(self, tt_system: TTSystem) -> List[EscalationServiceItem]:
-        """Return Affected Service item for escalation doc"""
-        r = []
-        # if "service" in self.alarm.components:
-        #     svc = self.alarm.components.service
-        #     return [EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc))]
-        if not self.services:
-            return r
-        for svc in Service.objects.filter(id__in=self.services):
-            r.append(EscalationServiceItem(id=str(svc.id), tt_id=tt_system.get_object_tt_id(svc)))
+        for si in self.services:
+            ei = ECtxItem(
+                id=str(si.service.id),
+                tt_id=tt_system.get_object_tt_id(si.service),
+                item="service",
+                ctx=si.service.get_message_context(),
+            )
+            r.append(ei)
         return r
 
     def get_action_context(self) -> List[TTActionContext]:
@@ -204,7 +201,6 @@ class AlarmActionRunner(object):
             timestamp=timestamp,
             actions=self.get_action_context(),
             items=self.get_escalation_items(tt_system, cfg.promote_item),
-            services=self.get_affected_services_items(tt_system),
             assigned=user,
         )
 

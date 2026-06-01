@@ -23,6 +23,10 @@ class EscalationPolicy(Enum):
     # Always escalate
     ALWAYS = 4
 
+    @property
+    def allowed_group(self) -> bool:
+        return self.value != 2
+
     @classmethod
     def try_from_label(cls, label: str) -> Optional["EscalationPolicy"]:
         """

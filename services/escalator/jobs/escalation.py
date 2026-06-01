@@ -21,7 +21,6 @@ from noc.core.lock.process import ProcessLock
 from noc.core.change.policy import change_tracker
 from noc.core.tt.types import (
     EscalationItem as ECtxItem,
-    EscalationServiceItem,
     EscalationStatus,
     EscalationResult,
     EscalationMember,
@@ -31,7 +30,6 @@ from noc.core.tt.types import (
 from noc.core.tt.base import TTSystemCtx
 from noc.core.perf import metrics
 from noc.sa.models.action import Action
-from noc.sa.models.service import Service
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.fm.models.escalation import Escalation
 from noc.fm.models.escalationprofile import EscalationItem
@@ -373,20 +371,6 @@ class EscalationJob(SequenceJob):
             r.append(ei)
         return r
 
-    def get_affected_services_items(self) -> List[EscalationServiceItem]:
-        """Return Affected Service item for escalation doc"""
-        if not self.object.affected_services:
-            return []
-        r = []
-        for svc in Service.objects.filter(id__in=self.object.affected_services):
-            r.append(
-                EscalationServiceItem(
-                    id=str(svc.id),
-                    tt_id=svc.remote_id or "",
-                )
-            )
-        return r
-
     def get_action_context(self) -> List[TTActionContext]:
         """Return Available Action Context for escalation"""
         r = []
@@ -424,7 +408,7 @@ class EscalationJob(SequenceJob):
             timestamp=self.object.timestamp,
             actions=actions,
             items=self.get_escalation_items(tt_system) if cfg.promote_item else [],
-            services=self.get_affected_services_items() or None,
+            # services=self.get_affected_services_items() or None,
         )
 
     def check_escalated(self):

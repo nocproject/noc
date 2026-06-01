@@ -59,7 +59,7 @@ class JobStatus(Enum):
 
 class GroupItem(EmbeddedDocument):
     reference = StringField()
-    id: StringField(required=True)
+    id = StringField(required=True)
 
 
 class AlarmItem(EmbeddedDocument):
@@ -74,6 +74,22 @@ class AlarmItem(EmbeddedDocument):
 
     alarm = ObjectIdField()
     # For requested Escalation by ManagedObject
+    # managed_object_id: Int
+    status = EnumField(ItemStatus, default=ItemStatus.NEW)
+    # Already escalated doc
+
+
+class ServiceItem(EmbeddedDocument):
+    """
+    Escalation affected items. First item it escalation leader
+    Attributes:
+        alarm: Alarm Id item
+        status: Item status
+    """
+
+    meta = {"strict": False}
+
+    service = ObjectIdField()
     # managed_object_id: Int
     status = EnumField(ItemStatus, default=ItemStatus.NEW)
     # Already escalated doc
@@ -161,6 +177,7 @@ class AlarmJob(Document):
     tt_docs = DictField()
     is_dirty = BooleanField(default=True)
     groups = ListField(BinaryField())
+    services: List[ServiceItem] = EmbeddedDocumentListField(ServiceItem)
     max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
     affected_services = ListField(ObjectIdField())

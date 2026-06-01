@@ -1434,6 +1434,8 @@ class ActiveAlarm(Document):
 
         if not job_id:
             job = AlarmJob.ensure_profile_job(self, profile)
+            if not job:
+                return
             if job.is_end:
                 # Can escalate ?
                 # Job already ended

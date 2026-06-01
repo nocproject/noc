@@ -19,7 +19,8 @@ from noc.aaa.models.user import User
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.template import Template
 from noc.fm.models.ttsystem import TTSystem
-from noc.fm.models.activealarm import ActiveAlarm, WatchItem, Effect
+from noc.fm.models.activealarm import ActiveAlarm
+from noc.fm.models.alarmwatch import WatchItem, Effect
 
 
 @dataclass(frozen=True)
