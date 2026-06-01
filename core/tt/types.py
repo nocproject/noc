@@ -313,6 +313,7 @@ class TTInfo(BaseModel):
 class TTCommentRequest(BaseModel):
     id: str
     body: str
+    queue: Optional[str] = None
     ts: Optional[datetime] = None
     login: Optional[str] = None
     subject: Optional[str] = None

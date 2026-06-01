@@ -456,36 +456,10 @@ class AlarmJob(object):
             return alarm, alarm.groups
         return alarm, []
 
-    def get_leader_old(self) -> Tuple[Optional[ActiveAlarm], List[bytes], Set[ObjectId]]:
-        """
-        Detect escalation Leader by Escalation Policy
-        Group
-        """
-        if self.alarm.group_type == GroupType.SERVICE and self.alarm.vars.get("service"):
-            services = {ObjectId(self.alarm.vars["service"])}
-        else:
-            services = set(self.alarm.affected_services)
-        if (
-            self.alarm.group_type in {GroupType.SERVICE, GroupType.GROUP}
-            and self.items_policy != EscalationPolicy.ROOT
-        ):
-            groups = {self.alarm.reference}
-        elif self.alarm.groups and self.items_policy in {
-            EscalationPolicy.ALWAYS_FIRST,
-            EscalationPolicy.ROOT_FIRST,
-        }:
-            groups = set(self.alarm.groups)
-        else:
-            groups = set()
-        # Apply Policy
-        if self.items_policy == EscalationPolicy.ROOT:
-            return self.alarm, [], services
-        return self.alarm, list(groups), set(services)
-
     def refresh_items(self, include_groups: bool = False):
         """Refresh Items"""
         if self.items:
-            leader, items = self.alarm = [self.items[0]]
+            leader, items = self.alarm, [self.items[0]]
         else:
             leader, items = None, []
         if self.items_policy == EscalationPolicy.ROOT and leader and leader.root:

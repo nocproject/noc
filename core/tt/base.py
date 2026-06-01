@@ -235,6 +235,10 @@ class TTSystemCtx(object):
         """
         return self.items[0]
 
+    @property
+    def services(self):
+        return [i for i in self.items if i.item == "service"]
+
     def add_items(self, items: List[EscalationItem]):
         self.items += items
 
