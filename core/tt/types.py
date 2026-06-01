@@ -152,7 +152,7 @@ class EscalationItem(BaseModel):
 
     id: int
     tt_id: str
-    ctx: Dict[str, str]
+    ctx: Optional[Dict[str, str]] = None
     label: Optional[str] = None
     item_status: str = "new"  # changed/removed
     item: str = "other"  # service, managed_object, container
