@@ -243,10 +243,10 @@ class AlarmActionRunner(object):
         is_clear = self.alarm.get_watchers(effect=Effect.CLEAR_ALARM)
         if is_clear:
             subject = "Alarm Was Reopen"
-            effect = None
+            effect, ex_effect = None, Effect.CLEAR_ALARM
         else:
             subject = "Alarm Was closed"
-            effect = Effect.CLEAR_ALARM
+            effect, ex_effect = Effect.CLEAR_ALARM, None
         if r.status != ActionStatus.SUCCESS:
             return ActionResult(status=r.status, error=r.error)
         return ActionResult(
@@ -260,6 +260,7 @@ class AlarmActionRunner(object):
                     # template=str(self.close_template.id) if self.close_template else None,
                     subject=subject,
                     has_effect=effect,
+                    ex_effect=ex_effect,
                     allow_fail=True,
                     login=login,
                     queue=queue,
@@ -496,7 +497,7 @@ class AlarmActionRunner(object):
                 login=login,
                 queue=queue,
                 pre_reason=pre_reason,
-                wait_tt=str(r.document) if wait_tt else None,
+                wait_tt=tt_system.get_tt_id(r.document) if wait_tt else None,
                 supress_job=True,
                 clear_template=kwargs.get("clear_template"),
             )
