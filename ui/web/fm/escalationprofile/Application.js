@@ -339,12 +339,6 @@ Ext.define("NOC.fm.escalationprofile.Application", {
               renderer: NOC.render.Bool,
             },
             {
-              text: __("Max. Repeats"),
-              dataIndex: "max_repeats",
-              editor: "numberfield",
-              width: 75,
-            },
-            {
               text: __("Stop"),
               dataIndex: "stop_processing",
               editor: "checkboxfield",

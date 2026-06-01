@@ -204,10 +204,12 @@ Ext.define("NOC.main.remotesystem.Model", {
     {
       name: "metrics_min_batch_size",
       type: "integer",
+      defaultValue: 5000,
     },
     {
       name: "metrics_batch_delay",
       type: "integer",
+      defaultValue: 10,
     },
     {
       name: "sync_policy",
@@ -230,6 +232,7 @@ Ext.define("NOC.main.remotesystem.Model", {
     {
       name: "event_sync_interval",
       type: "integer",
+      defaultValue: 0,
     },
   ],
 });
