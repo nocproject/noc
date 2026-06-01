@@ -300,7 +300,7 @@ class AlarmJob(object):
                 self.items[0] = Item(alarm=aa, status=ItemStatus.from_alarm(aa))
             return
         r = {}
-        for aa in ActiveAlarm.objects.filter(groups_in=self.groups):
+        for aa in ActiveAlarm.objects.filter(groups__in=self.groups):
             r[aa.id] = aa
         for ii in self.items:
             aa = r.get(ii.alarm.id)
@@ -483,7 +483,10 @@ class AlarmJob(object):
         for ii in items_map.values():
             items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
         self.items = items
-        self.services = [ServiceItem.from_service(svc) for svc in services]
+        if not services:
+            self.services = []
+        else:
+            self.services = [ServiceItem.from_service(svc) for svc in Service.objects.filter(id__in=services)]
         if include_groups:
             self.groups = groups
 
@@ -585,6 +588,7 @@ class AlarmJob(object):
             AlarmItem,
             ActionLog,
             JobStatus,
+            ServiceItem as ServiceItemState,
         )
 
         tt_docs, actions = {}, []
@@ -618,7 +622,7 @@ class AlarmJob(object):
             actions=actions,
             tt_docs=tt_docs,
             groups=self.groups,
-            affected_services=self.services,
+            affected_services=[ServiceItemState(service=s.service.id, status=s.status) for s in self.services],
             severity=self.severity,
             # total_objects=self.total_objects,
             # total_services=self.total_services,

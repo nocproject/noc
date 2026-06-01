@@ -7,7 +7,7 @@
 
 # Python modules
 import enum
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 # Third-party modules
@@ -150,9 +150,9 @@ class EscalationItem(BaseModel):
         tt_id: Managed Object's id in TT system.
     """
 
-    id: int
+    id: str
     tt_id: str
-    ctx: Optional[Dict[str, str]] = None
+    ctx: Optional[Dict[str, Any]] = None
     label: Optional[str] = None
     item_status: str = "new"  # changed/removed
     item: str = "other"  # service, managed_object, container

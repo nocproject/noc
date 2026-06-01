@@ -130,17 +130,23 @@ class AlarmActionRunner(object):
                 self.log_alarm(err)
                 # item.escalation_status = "fail"
                 continue
+            tt_id = tt_system.get_object_tt_id(item.managed_object)
+            if not tt_id:
+                continue
             ei = ECtxItem(
                 id=str(item.managed_object.id),
-                tt_id=tt_system.get_object_tt_id(item.managed_object),
+                tt_id=tt_id,
                 item="managed_object",
                 ctx=item.managed_object.get_message_context(),
             )
             r.append(ei)
         for si in self.services:
+            tt_id = tt_system.get_object_tt_id(si.service)
+            # if not tt_id:
+            #    continue
             ei = ECtxItem(
                 id=str(si.service.id),
-                tt_id=tt_system.get_object_tt_id(si.service),
+                tt_id=tt_id or "",
                 item="service",
                 ctx=si.service.get_message_context(),
             )

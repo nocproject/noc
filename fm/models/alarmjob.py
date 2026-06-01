@@ -178,10 +178,9 @@ class AlarmJob(Document):
     tt_docs = DictField()
     is_dirty = BooleanField(default=True)
     groups = ListField(BinaryField())
-    services: List[ServiceItem] = EmbeddedDocumentListField(ServiceItem)
     max_repeats: int = IntField(default=0)
     repeat_delay: int = IntField(default=60)
-    affected_services = ListField(ObjectIdField())
+    affected_services = EmbeddedDocumentListField(ServiceItem)
     affected_maintenances = ListField(ObjectIdField())
     # Escalation summary
     severity: int = IntField(min_value=0)
