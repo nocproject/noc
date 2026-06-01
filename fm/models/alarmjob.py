@@ -121,6 +121,7 @@ class ActionLog(EmbeddedDocument):
     alarm_ack = StringField()
     when = StringField(default="any")
     has_effect = EnumField(Effect, required=False)
+    ex_effect = EnumField(Effect, required=False)
     stop_processing: bool = BooleanField(default=False)
     allow_fail: bool = BooleanField(default=False)
     repeat_num: int = IntField(default=0)
