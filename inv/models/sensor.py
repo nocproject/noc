@@ -292,7 +292,7 @@ class Sensor(Document):
             if sensor.object and sensor.object.get_data("hw_path", "slot"):
                 hints.append(f"slot::{sensor.object.get_data('hw_path', 'slot')}")
             if sensor.munits != "1":
-                hints.append(f"units::{sensor.munits}")
+                hints.append(f"units::{sensor.munits.code}")
             yield MetricCollectorConfig(
                 collector="sensor",
                 metrics=tuple(metrics),
