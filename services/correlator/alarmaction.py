@@ -641,24 +641,29 @@ class AlarmActionRunner(object):
     ) -> ActionStatus:
         items, services = [], []
         for ii in self.items:
-            items.append({
-                "alarm_id": str(ii.alarm.id),
-                "subject": ii.alarm.subject,
-                "body": ii.alarm.body,
-                "vars": ii.alarm.vars,
-                "labels": list(ii.alarm.labels),
-                "item_status": ii.status.value,
-                "ctx": {},
-            })
+            items.append(
+                {
+                    "alarm_id": str(ii.alarm.id),
+                    "subject": ii.alarm.subject,
+                    "body": ii.alarm.body,
+                    "vars": ii.alarm.vars,
+                    "labels": list(ii.alarm.labels),
+                    "item_status": ii.status.value,
+                    "ctx": {},
+                }
+            )
         for ss in self.services:
-            services.append({
-                "service_id": str(ss.service.id),
-                "service_status": {
-                    "id": ss.service.oper_status.value, "name": ss.service.oper_status.name,
-                },
-                "item_status": ss.status.value,
-                "ctx": ss.service.get_message_context()
-            })
+            services.append(
+                {
+                    "service_id": str(ss.service.id),
+                    "service_status": {
+                        "id": ss.service.oper_status.value,
+                        "name": ss.service.oper_status.name,
+                    },
+                    "item_status": ss.status.value,
+                    "ctx": ss.service.get_message_context(),
+                }
+            )
         msg = {
             "timestamp": timestamp,
             "leader": str(self.alarm.id),
