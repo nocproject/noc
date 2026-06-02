@@ -141,7 +141,9 @@ class MatchItem(object):
                 "$in": frozenset(str(ad).encode() for ad in self.administrative_domain),
             }
         if self.remote_systems:
-            r[MessageMeta.REMOTE_SYSTEMS] = {"$all": frozenset(x.encode() for x in self.remote_systems)}
+            r[MessageMeta.REMOTE_SYSTEMS] = {
+                "$all": frozenset(x.encode() for x in self.remote_systems)
+            }
         if self.profile:
             r[MessageMeta.PROFILE.config.header] = str(self.profile).encode()
         if not self.headers:

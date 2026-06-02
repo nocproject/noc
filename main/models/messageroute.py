@@ -86,7 +86,9 @@ class MRMatch(EmbeddedDocument):
                 else None
             ),
             MessageMeta.GROUPS.value: [str(g.id) for g in self.resource_groups or []],
-            MessageMeta.REMOTE_SYSTEMS.value: [str(self.remote_system.id)] if self.remote_system else [],
+            MessageMeta.REMOTE_SYSTEMS.value: (
+                [str(self.remote_system.id)] if self.remote_system else []
+            ),
             "headers": [
                 {"header": m.header, "op": m.op, "value": m.value} for m in self.headers_match or []
             ],
