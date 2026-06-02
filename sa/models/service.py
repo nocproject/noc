@@ -828,6 +828,9 @@ class Service(Document):
             MessageMeta.PROFILE: get_subscription_id(self.profile),
             MessageMeta.GROUPS: list(self.effective_service_groups),
             MessageMeta.LABELS: list(self.effective_labels),
+            MessageMeta.REMOTE_SYSTEMS: [
+                str(m.remote_system.id) for m in self.iter_remote_mappings()
+            ],
         }
 
     def get_alarm_severity(self) -> int:

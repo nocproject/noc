@@ -376,6 +376,12 @@ Ext.define("NOC.fm.alarmrule.Application", {
               allowBlank: true,
             },
             {
+              name: "remote_system",
+              xtype: "main.remote_system.LookupField",
+              fieldLabel: __("Remote System"),
+              allowBlank: true,
+            },
+            {
               name: "reference_rx",
               xtype: "textfield",
               fieldLabel: __("Group Reference Regex"),

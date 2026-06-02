@@ -36,6 +36,7 @@ from noc.main.models.label import Label
 from noc.main.models.notificationgroup import NotificationGroup
 from noc.main.models.handler import Handler
 from noc.main.models.template import Template
+from noc.main.models.remotesystem import RemoteSystem
 from noc.aaa.models.user import User
 from noc.sa.models.action import Action as ObjectAction
 from .alarmseverity import AlarmSeverity
@@ -52,6 +53,7 @@ class Match(EmbeddedDocument):
     resource_groups = ListField(ObjectIdField())
     alarm_class: AlarmClass = ReferenceField(AlarmClass)
     severity: AlarmSeverity = ReferenceField(AlarmSeverity, required=False)
+    remote_system: RemoteSystem = ReferenceField(RemoteSystem)
     reference_rx = StringField()
 
     def __str__(self):
@@ -68,6 +70,8 @@ class Match(EmbeddedDocument):
             r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
         if self.alarm_class:
             r["alarm_class"] = {"$in": [str(self.alarm_class.id)]}
+        if self.remote_system:
+            r["remote_system"] = {"$in": [str(self.remote_system.id)]}
         if self.severity:
             r["severity"] = {"$gte": self.severity.severity}
         if self.reference_rx:
