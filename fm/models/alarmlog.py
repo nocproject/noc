@@ -21,8 +21,10 @@ class AlarmLog(EmbeddedDocument):
     # <external system name>:<external tt id>
     tt_id = StringField(required=False)
     internal = BooleanField(default=True)
+    error_code = StringField(required=False)
 
     def __str__(self):
+
         if self.tt_id:
             return "%s [%s -> %s]: [TT_ID: %s] %s" % (
                 self.timestamp,
@@ -31,9 +33,15 @@ class AlarmLog(EmbeddedDocument):
                 self.tt_id,
                 self.message,
             )
-        return "%s [%s -> %s]: %s" % (
+        prefix = " "
+        if self.tt_id:
+            prefix += f"[TT_ID: {self.tt_id}] "
+        if self.error_code:
+            prefix += "[ERROR] "
+        return "%s [%s -> %s]:%s%s" % (
             self.timestamp,
             self.from_status,
             self.to_status,
+            prefix,
             self.message,
         )

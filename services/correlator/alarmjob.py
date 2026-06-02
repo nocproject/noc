@@ -120,6 +120,7 @@ class AlarmJob(object):
         items: List[Item],
         actions: List[ActionLog],
         groups: Optional[List[bytes]] = None,
+        services: Optional[List[ServiceItem]] = None,
         profile: Optional[str] = None,
         allowed_actions: Optional[List[AllowedAction]] = None,
         maintenance_policy: str = None,
@@ -144,7 +145,7 @@ class AlarmJob(object):
         self.name = name
         self.profile = profile
         self.items: List[Item] = items
-        self.services: List[ServiceItem] = []
+        self.services: List[ServiceItem] = services or []
         self.groups: List[bytes] = groups or []
         self.actions = actions
         self.base_severity = severity
@@ -300,7 +301,7 @@ class AlarmJob(object):
                 self.items[0] = Item(alarm=aa, status=ItemStatus.from_alarm(aa))
             return
         r = {}
-        for aa in ActiveAlarm.objects.filter(groups_in=self.groups):
+        for aa in ActiveAlarm.objects.filter(groups__in=self.groups):
             r[aa.id] = aa
         for ii in self.items:
             aa = r.get(ii.alarm.id)
@@ -483,7 +484,12 @@ class AlarmJob(object):
         for ii in items_map.values():
             items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
         self.items = items
-        self.services = [ServiceItem.from_service(svc) for svc in services]
+        if not services:
+            self.services = []
+        else:
+            self.services = [
+                ServiceItem.from_service(svc) for svc in Service.objects.filter(id__in=services)
+            ]
         if include_groups:
             self.groups = groups
 
@@ -585,6 +591,7 @@ class AlarmJob(object):
             AlarmItem,
             ActionLog,
             JobStatus,
+            ServiceItem as ServiceItemState,
         )
 
         tt_docs, actions = {}, []
@@ -618,7 +625,9 @@ class AlarmJob(object):
             actions=actions,
             tt_docs=tt_docs,
             groups=self.groups,
-            affected_services=self.services,
+            affected_services=[
+                ServiceItemState(service=s.service.id, status=s.status) for s in self.services
+            ],
             severity=self.severity,
             # total_objects=self.total_objects,
             # total_services=self.total_services,
@@ -650,6 +659,18 @@ class AlarmJob(object):
             r.append(Item.from_alarm(alarm=aa))
         for _ in items:
             r.append(Item(alarm=None, status=ItemStatus.REMOVED))
+        return r
+
+    @classmethod
+    def services_from_state(cls, state: List[Dict[str, str]]) -> List[ServiceItem]:
+        """"""
+        r = []
+        items = {x["service"]: x["status"] for x in state}
+        for svc in Service.objects.filter(id__in=list(items)):
+            status = items.pop(svc.id, None)
+            if not status:
+                continue
+            r.append(ServiceItem.from_service(svc))
         return r
 
     def iter_escalation_alarms(
@@ -689,10 +710,15 @@ class AlarmJob(object):
             items = AlarmJob.items_from_state(data["items"])
         if not items:
             raise ValueError("Not Found alarm by id: %s", data["items"])
+        if data.get("affected_services"):
+            services = AlarmJob.services_from_state(data["affected_services"])
+        else:
+            services = []
         job = AlarmJob(
             # Job Context
             items=items,
             groups=data.get("groups", []),
+            services=services,
             name=str(data["name"]),
             profile=data.get("escalation_profile"),
             job_id=data["_id"],

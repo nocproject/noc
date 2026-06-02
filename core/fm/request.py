@@ -50,6 +50,7 @@ class ActionConfig(BaseModel):
     time_pattern: Optional[str] = None
     min_severity: Optional[int] = None
     has_effect: Optional[Effect] = None
+    ex_effect: Optional[Effect] = None
     # Retry until - Disable, Count, TTL
     max_retries: int = 1
     template: Optional[str] = None

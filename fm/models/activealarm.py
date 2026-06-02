@@ -399,6 +399,7 @@ class ActiveAlarm(Document):
         if not force and not self.allow_clear:
             self.add_watch(Effect.CLEAR_ALARM, key="", immediate=True)
             ActiveAlarm.objects.filter(id=self.id).update(watchers=self.watchers)
+            self.touch_watch(effect=Effect.ESCALATION)
             return None
         if self.alarm_class.clear_handlers:
             # Process clear handlers
