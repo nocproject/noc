@@ -639,6 +639,7 @@ class AlarmActionRunner(object):
         user: Optional[User] = None,
         **kwargs,
     ) -> ActionStatus:
+        """Generate escalation state Message"""
         items, services = [], []
         for ii in self.items:
             items.append(
@@ -649,23 +650,25 @@ class AlarmActionRunner(object):
                     "vars": ii.alarm.vars,
                     "labels": list(ii.alarm.labels),
                     "item_status": ii.status.value,
-                    "ctx": {},
+                    "managed_object": {},
                 }
             )
         for ss in self.services:
-            services.append(
-                {
-                    "service_id": str(ss.service.id),
-                    "service_status": {
-                        "id": ss.service.oper_status.value,
-                        "name": ss.service.oper_status.name,
-                    },
-                    "item_status": ss.status.value,
-                    "ctx": ss.service.get_message_context(),
+            ctx = ss.service.get_message_context()
+            if ss.service_status_from:
+                ctx["from_status"] = {
+                    "id": ss.service_status_from.value,
+                    "name": ss.service.oper_status.name,
                 }
-            )
+            else:
+                ctx["from_status"] = None
+            ctx["item_status"] = ss.status.value
         msg = {
-            "timestamp": timestamp,
+            "status": self.status,
+            "created_at": self.timestamp,
+            # "started_at": start_at,
+            "completed_at": None,
+            "severity": self.severity,
             "leader": str(self.alarm.id),
             "subject": subject,
             "body": body,

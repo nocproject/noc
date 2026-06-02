@@ -49,6 +49,7 @@ class ServiceItem(object):
     service: Service
     managed_object_id: Optional[int] = None
     service_status: ServiceStatus = ServiceStatus.UNKNOWN
+    service_status_from: Optional[ServiceStatus] = None
     # status_factors
     # ctx
     status: ItemStatus = ItemStatus.NEW
@@ -626,7 +627,12 @@ class AlarmJob(object):
             tt_docs=tt_docs,
             groups=self.groups,
             affected_services=[
-                ServiceItemState(service=s.service.id, status=s.status) for s in self.services
+                ServiceItemState(
+                    service=s.service.id,
+                    service_status=s.oper_status.value,
+                    status=s.status,
+                )
+                for s in self.services
             ],
             severity=self.severity,
             # total_objects=self.total_objects,
@@ -665,12 +671,23 @@ class AlarmJob(object):
     def services_from_state(cls, state: List[Dict[str, str]]) -> List[ServiceItem]:
         """"""
         r = []
-        items = {x["service"]: x["status"] for x in state}
+        items = {x["service"]: x for x in state}
         for svc in Service.objects.filter(id__in=list(items)):
-            status = items.pop(svc.id, None)
-            if not status:
+            item = items.pop(svc.id, None)
+            if not item:
                 continue
-            r.append(ServiceItem.from_service(svc))
+            r.append(
+                ServiceItem(
+                    service=svc,
+                    service_status=svc.oper_status,
+                    service_status_from=(
+                        ServiceStatus(item["service_status"])
+                        if item.get("service_status")
+                        else None
+                    ),
+                    status=ItemStatus(item["status"]),
+                )
+            )
         return r
 
     def iter_escalation_alarms(

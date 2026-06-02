@@ -58,7 +58,7 @@ class GroupItem(object):
     min_threshold: int = 0
     max_threshold: int = 0
     window: int = 0
-    g_type: GroupType.GROUP = GroupType.GROUP
+    g_type: GroupType = GroupType.GROUP
 
 
 @dataclass

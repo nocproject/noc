@@ -28,6 +28,7 @@ from mongoengine.fields import (
 
 # NOC models
 from noc.core.fm.enum import AlarmAction, ActionStatus, ItemStatus
+from noc.core.models.servicestatus import Status
 from noc.sa.models.servicesummary import SummaryItem, ObjectSummaryItem
 from noc.fm.models.alarmwatch import Effect
 
@@ -90,6 +91,7 @@ class ServiceItem(EmbeddedDocument):
     meta = {"strict": False}
 
     service = ObjectIdField()
+    service_status: Status = EnumField(Status)
     # managed_object_id: Int
     status = EnumField(ItemStatus, default=ItemStatus.NEW)
     # Already escalated doc
