@@ -257,7 +257,12 @@ class AlarmJob(object):
 
     @property
     def severity(self) -> int:
-        return self.alarm.severity
+        if not self.is_group:
+            return self.alarm.severity
+        for ii in self.items:
+            if ii.alarm.reference in self.groups:
+                return ii.alarm.severity
+        return self.base_severity
 
     @property
     def is_group(self) -> bool:

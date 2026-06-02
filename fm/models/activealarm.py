@@ -1407,6 +1407,8 @@ class ActiveAlarm(Document):
         }
         if self.managed_object:
             r["service_groups"] = list(self.managed_object.effective_service_groups)
+        if self.remote_system:
+            r["remote_systems"] = [str(self.remote_system.id)]
         return r
 
     def get_message_ctx(self, include_affected: bool = True):
