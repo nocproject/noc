@@ -29,7 +29,7 @@ from noc.core.service.fastapi import FastAPIService
 from noc.core.jsonutils import iter_chunks
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
-from noc.core.mx import MessageType, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEM, MX_ETL_LOADER
+from noc.core.mx import MessageType, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEMS, MX_ETL_LOADER
 from noc.core.fm.event import Event
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.sourceconfig import (
@@ -177,7 +177,7 @@ class MetricsCollectorService(FastAPIService):
                         ),
                         MessageType.ETL_PUSH,
                         headers={
-                            MX_REMOTE_SYSTEM: ch.remote_system.name.encode(),
+                            MX_REMOTE_SYSTEMS: ch.remote_system.name.encode(),
                             MX_ETL_LOADER: b"fmevent",
                         },
                     )

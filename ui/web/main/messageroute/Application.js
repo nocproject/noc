@@ -18,6 +18,7 @@ Ext.define("NOC.main.messageroute.Application", {
     "NOC.core.tagfield.Tagfield",
     "NOC.core.label.LabelField",
     "NOC.main.template.LookupField",
+    "NOC.main.remotesystem.LookupField",
     "NOC.main.handler.LookupField",
   ],
   model: "NOC.main.messageroute.Model",
@@ -252,6 +253,12 @@ Ext.define("NOC.main.messageroute.Application", {
               name: "administrative_domain",
               xtype: "sa.administrativedomain.LookupField",
               fieldLabel: __("Adm. Domain"),
+              allowBlank: true,
+            },
+            {
+              name: "remote_system",
+              xtype: "main.remote_system.LookupField",
+              fieldLabel: __("Remote System"),
               allowBlank: true,
             },
             {

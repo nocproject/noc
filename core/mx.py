@@ -76,7 +76,7 @@ MX_TO_STAGE_NAME = "Resource-To-Stage-Name"
 MX_LABELS = "Labels"
 MX_RESOURCE_GROUPS = "Resource-Group-Ids"
 MX_WATCH_FOR_ID = "Watch-For-Id"
-MX_REMOTE_SYSTEM = "Remote-System-Id"
+MX_REMOTE_SYSTEMS = "Remote-System-Ids"
 MX_ETL_LOADER = "ETL-Loader"
 # Notification headers
 MX_TO = "To"
@@ -126,6 +126,7 @@ class MessageType(enum.Enum):
     JOB = "job"
     MAINTENANCE_PROCESSED = "maintenance_processed"
     ETL_PUSH = "etl_push"
+    ESCALATE = "escalate"
     OTHER = "other"
 
 
@@ -157,7 +158,7 @@ class MessageMeta(enum.Enum):
     ADM_DOMAIN = "administrative_domain"
     FROM = "from"
     LABELS = "labels"
-    REMOTE_SYSTEM = "remote_system"
+    REMOTE_SYSTEMS = "remote_systems"
 
     def clean_header_value(self, value: Any) -> bytes:
         if self.config.is_list:
