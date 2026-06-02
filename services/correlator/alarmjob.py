@@ -629,7 +629,7 @@ class AlarmJob(object):
             affected_services=[
                 ServiceItemState(
                     service=s.service.id,
-                    service_status=s.oper_status.value,
+                    service_status=s.service.oper_status,
                     status=s.status,
                 )
                 for s in self.services
