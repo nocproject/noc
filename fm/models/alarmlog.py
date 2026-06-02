@@ -24,7 +24,6 @@ class AlarmLog(EmbeddedDocument):
     error_code = StringField(required=False)
 
     def __str__(self):
-
         if self.tt_id:
             return "%s [%s -> %s]: [TT_ID: %s] %s" % (
                 self.timestamp,
