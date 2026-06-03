@@ -143,7 +143,7 @@ CONFIGS = {
     "administrative_domain": MetaConfig(MX_ADMINISTRATIVE_DOMAIN_ID),
     "from": MetaConfig(MX_DATA_ID),
     "labels": MetaConfig(MX_LABELS, is_list=True),
-    "remote_system": MetaConfig(MX_REMOTE_SYSTEMS, is_list=True),
+    "remote_systems": MetaConfig(MX_REMOTE_SYSTEMS, is_list=True),
 }
 
 

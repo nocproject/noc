@@ -7,9 +7,9 @@
 
 # Python modules
 import operator
+from collections import defaultdict
 from threading import Lock
-from typing import Optional, Dict, Any, Iterable, List, Union
-
+from typing import Optional, Dict, Any, Iterable, List, Union, Tuple, Callable
 
 # Third-party modules
 from bson import ObjectId
@@ -23,6 +23,8 @@ from mongoengine.fields import (
     ReferenceField,
     LongField,
     IntField,
+    ObjectIdField,
+    EnumField,
 )
 from mongoengine.queryset.base import NULLIFY
 from mongoengine.errors import ValidationError
@@ -32,14 +34,17 @@ import cachetools
 from noc.core.mongo.fields import PlainReferenceField
 from noc.core.bi.decorator import bi_sync
 from noc.core.prettyjson import to_json
-from noc.core.diagnostic.types import DiagnosticConfig, CtxItem
+from noc.core.diagnostic.types import DiagnosticConfig, DiagnosticState, CtxItem
 from noc.core.checkers.base import Check
+from noc.core.matcher import build_matcher
 from noc.fm.models.alarmclass import AlarmClass
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
 
 id_lock = Lock()
+rule_lock = Lock()
+matcher_lock = Lock()
 
 
 class Match(EmbeddedDocument):
@@ -47,6 +52,8 @@ class Match(EmbeddedDocument):
 
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
+    resource_groups = ListField(ObjectIdField(required=True))
+    remote_system: RemoteSystem = ReferenceField(RemoteSystem)
 
     def __str__(self):
         return f"{', '.join(self.labels)}"
@@ -54,10 +61,17 @@ class Match(EmbeddedDocument):
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
 
-    def is_match(self, labels: List[str]):
-        if self.exclude_labels and not set(self.exclude_labels) - set(labels):
-            return False
-        return bool(not set(self.labels) - set(labels))
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        if self.exclude_labels:
+            r["labels"] = {"$all_ne": list(self.labels)}
+        if self.resource_groups:
+            r["service_groups"] = {"$all": list(self.resource_groups)}
+        if self.remote_system:
+            r["remote_system"] = self.remote_system.id
+        return r
 
 
 class DiagnosticCheck(EmbeddedDocument):
@@ -112,10 +126,12 @@ class ObjectDiagnosticConfig(Document):
     description = StringField()
     # Display settings
     show_in_display = BooleanField(default=True)
+    hide_enable = BooleanField(default=False)
     display_order = IntField(default=900)
     #
     # saved_result = BooleanField(default=False)
     #
+    default_state = EnumField(DiagnosticState, default=DiagnosticState.unknown)
     state_policy = StringField(choices=["ALL", "ANY"], default="ANY")
     checks: List[DiagnosticCheck] = EmbeddedDocumentListField(DiagnosticCheck)
     diagnostics = ListField(ReferenceField("self", reverse_delete_rule=NULLIFY))
@@ -138,6 +154,8 @@ class ObjectDiagnosticConfig(Document):
     _name_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _bi_id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
     _active_diagnostic_cache = cachetools.TTLCache(maxsize=10, ttl=600)
+    _object_diagnostics_matcher = cachetools.TTLCache(maxsize=100, ttl=300)
+    _diagnostic_rules = cachetools.TTLCache(maxsize=15, ttl=600)
 
     def __str__(self):
         return self.name
@@ -223,13 +241,14 @@ class ObjectDiagnosticConfig(Document):
                     name=c.check,
                     script=c.script,
                     args=c_args or None,
-                    remote_system=c.remote_system.name,
+                    remote_system=c.remote_system.name if c.remote_system else None,
                 ),
             )
         return DiagnosticConfig(
             diagnostic=self.name,
             checks=checks,
             dependent=self.diagnostics,
+            default_state=DiagnosticState(self.default_state or "unknown"),
             diagnostic_ctx=d_ctx,
             state_policy=self.state_policy,
             run_policy=self.run_policy,
@@ -238,10 +257,45 @@ class ObjectDiagnosticConfig(Document):
             discovery_periodic=self.enable_periodic,
             save_history=self.save_history,
             show_in_display=self.show_in_display,
+            hide_enable=self.hide_enable,
             display_order=self.display_order,
             alarm_class=self.alarm_class,
             alarm_labels=self.alarm_labels,
         )
+
+    @cachetools.cachedmethod(
+        operator.attrgetter("_object_diagnostics_matcher"),
+        lock=lambda _: matcher_lock,
+        key=operator.attrgetter("id"),
+    )
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for mr in self.match_rules:
+            expr.append(mr.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_diagnostic_rules"),
+        key=lambda x: "ruleset",
+        lock=lambda _: rule_lock,
+    )
+    def get_diagnostics_matcher(cls) -> Tuple[Tuple[str, Tuple[Callable, ...]], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = defaultdict(list)
+        for mop_id, rules in ObjectDiagnosticConfig.objects.filter().values_list("id", "match"):
+            for mr in rules:
+                r[str(mop_id)].append(build_matcher(mr.get_match_expr()))
+        return tuple((x, tuple(r[x])) for x in r)
 
     @classmethod
     def iter_object_diagnostics(cls, o) -> Iterable[DiagnosticConfig]:
@@ -250,9 +304,15 @@ class ObjectDiagnosticConfig(Document):
         First - diagnostic with checks only
         Second - Diagnostic with Dependency
         """
+        ctx = o.get_matcher_ctx()
         deferred = []
-        for odc in cls.get_active_diagnostics():
-            if not odc.is_allowed(labels=getattr(o, "effective_labels", [])):
+        for d_id, matches in cls.get_diagnostics_matcher():
+            odc = None
+            for match in matches:
+                if match(ctx):
+                    odc = ObjectDiagnosticConfig.get_by_id(d_id)
+                    break
+            if not odc:
                 continue
             dc = odc.get_config(o)
             if odc.diagnostics:

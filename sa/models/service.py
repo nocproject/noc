@@ -70,6 +70,7 @@ from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.diagnosticitem import DiagnosticItem
 from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.objectwatchersitem import WatchDocumentItem
+from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
 from noc.pm.models.agent import Agent
 from noc.config import config
 
@@ -1415,7 +1416,9 @@ class Service(Document):
             run_policy="D",
             checks=[Check(name=CAPS_PROFILE_CHECK, address="*")],
         )
-        yield from self.profile.iter_diagnostic_configs(self)
+        for dc in ObjectDiagnosticConfig.iter_object_diagnostics(self):
+            yield dc
+        # yield from self.profile.iter_diagnostic_configs(self)
 
     @classmethod
     def update_maintenance(

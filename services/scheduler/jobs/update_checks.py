@@ -103,12 +103,11 @@ class UpdateCheckersJob(PeriodicJob):
             len(services_checks),
             len(common_checks),
         )
-        print(mos_checks, services_checks)
         if services_checks:
-            for svc in Service.objects.filter(bi_id__in=services_checks):
+            for svc in Service.objects.filter(bi_id__in=list(services_checks.keys())):
                 svc.diagnostic.update_checks(services_checks[svc.bi_id])
         if mos_checks:
-            for mo in ManagedObject.objects.filter(bi_id__in=mos_checks):
+            for mo in ManagedObject.objects.filter(bi_id__in=list(mos_checks.keys())):
                 mo.diagnostic.update_checks(mos_checks[mo.bi_id])
 
     def can_run(self):
