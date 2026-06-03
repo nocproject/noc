@@ -350,6 +350,9 @@ class DiagnosticHub(object):
     def refresh_diagnostics(self):
         """Refresh Diagnostic state"""
         changed = False
+        if self.__object and hasattr(self.__object, "iter_instance_checks"):
+            checks = list(self.__object.iter_instance_checks())
+            self.update_checks(checks, dry_run=True, source=InputSource.CONFIG)
         for d in self.iter_diagnostics():
             self.refresh_status(d.diagnostic)
             changed |= d.is_changed

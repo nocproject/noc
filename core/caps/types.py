@@ -20,6 +20,8 @@ class CapsConfig(object):
     default_value: Optional[Any] = None
     ref_scope: Optional[str] = None
     set_label: Optional[str] = None
+    required: bool = False
+    expose_models: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)

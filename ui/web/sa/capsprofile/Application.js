@@ -286,6 +286,18 @@ Ext.define("NOC.sa.capsprofile.Application", {
           ],
         },
         {
+          name: "error_caps_policy",
+          xtype: "combobox",
+          fieldLabel: __("Errors Policy"),
+          allowBlank: true,
+          uiStyle: "medium",
+          store: [
+            ["I", "Ignore"],
+            ["S", "Strict"],
+            ["C", "Register Check"],
+          ],
+        },
+        {
           name: "caps",
           xtype: "gridfield",
           fieldLabel: __("Capabilities"),
@@ -299,15 +311,22 @@ Ext.define("NOC.sa.capsprofile.Application", {
               editor: "inv.capability.LookupField",
             },
             {
+              text: __("Required"),
+              dataIndex: "required",
+              width: 75,
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
+            },
+            {
               text: __("Default Value"),
               dataIndex: "default_value",
-              width: 150,
+              width: 100,
               editor: "textfield",
             },
             {
               text: __("Allow Manual"),
               dataIndex: "allow_manual",
-              width: 150,
+              width: 75,
               editor: "checkbox",
               renderer: NOC.render.Bool,
             },
@@ -318,11 +337,19 @@ Ext.define("NOC.sa.capsprofile.Application", {
               editor: {
                 xtype: "main.label.LookupField",
                 // filterProtected: false,
-                query: {
-                  "set_wildcard": true,
-                }
+                // query: {
+                //   "set_wildcard": true,
+                //
+                // },
               },
               renderer: NOC.render.Lookup("set_label"),
+            },
+            {
+              editor: "stringlistfield",
+              dataIndex: "expose_models",
+              width: 200,
+              text: __("Expose Models"),
+              sortable: false,
             },
           ],
         },

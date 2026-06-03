@@ -18,6 +18,7 @@ from mongoengine.fields import (
     BooleanField,
     DynamicField,
     ReferenceField,
+    ListField,
     EmbeddedDocumentListField,
 )
 import cachetools
@@ -44,6 +45,8 @@ class CapsSettings(EmbeddedDocument):
     # Wildcard
     set_label: Optional["Label"] = ReferenceField(Label, required=False)
     # ref_remote_system
+    expose_models = ListField(StringField(required=True))
+    required = BooleanField(default=False)
 
     def __str__(self):
         return f"{self.capability.name}: D:{self.default_value}; M: {self.allow_manual}"
@@ -65,6 +68,7 @@ class CapsSettings(EmbeddedDocument):
             allow_manual=self.allow_manual,
             ref_scope=self.ref_scope,
             set_label=self.set_label.name if self.set_label else None,
+            required=self.required,
         )
 
 
@@ -238,6 +242,9 @@ class CapsProfile(Document):
         default="T",
     )
     # Capabilities
+    error_caps_policy = StringField(
+        choices=[("I", "Ignore"), ("C", "Check"), ("S", "Strict")], default="I"
+    )
     caps: List[CapsSettings] = EmbeddedDocumentListField(CapsSettings)
 
     L2_SECTIONS = ["bfd", "cdp", "fdp", "huawei_ndp", "lacp", "lldp", "oam", "rep", "stp", "udld"]
