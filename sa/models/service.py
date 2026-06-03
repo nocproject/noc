@@ -56,6 +56,7 @@ from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
 from noc.core.watchers.decorator import watchers
 from noc.core.defer import call_later
+from noc.core.checkers.base import CheckResult, CAPS_PROFILE_CHECK
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -293,6 +294,8 @@ class Service(Document):
     oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     # oper_status_factors: List[StatusAffectedItem] = EmbeddedDocumentListField()
     oper_status_change = DateTimeField(required=False, default=datetime.datetime.now)
+    # affect_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
+    # direct_oper_status: Status = EnumField(Status, default=Status.UNKNOWN)
     oper_status_factors = EmbeddedDocumentListField(StatusAffectedItem)
     # Service oper status settings
     status_transfer_policy = StringField(
@@ -988,11 +991,7 @@ class Service(Document):
     def refresh_status(self, update_direct: bool = True, update_affected: bool = True):
         """Calculate Operative Status, maximum over Directed and Affected Status"""
         affected = []
-        if update_direct:
-            self.direct_oper_status = self.get_direct_status(affected=affected)
-        if update_affected:
-            self.affect_oper_status = self.get_affected_status()
-        status = max(self.affect_oper_status, self.direct_oper_status)
+        status = max(self.get_direct_status(affected=affected), self.get_affected_status())
         self.set_oper_status(status, affected=affected)
 
     def get_alarm_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
@@ -1253,6 +1252,18 @@ class Service(Document):
                 return svc.agent
             svc = svc.parent
         return None
+
+    def iter_instance_checks(self) -> Iterable[CheckResult]:
+        """Return instance supported checks"""
+        if not self.profile.caps_profile or self.profile.caps_profile.error_caps_policy != "C":
+            yield CheckResult(check=CAPS_PROFILE_CHECK, status=True, skipped=True, args={})
+            return
+        status = True
+        for c in self.iter_checks():
+            if c.config.required and not c.value:
+                status = False
+                break
+        yield CheckResult(check=CAPS_PROFILE_CHECK, status=status, args={})
 
     def on_save_caps(self, changed_fields=None, dry_run: bool = False, **kwargs):
         """"""

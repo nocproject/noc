@@ -217,6 +217,9 @@ class DiagnosticHub(object):
             ctx = self.get_check_env(self.__object, di.config, self.__data)
             for checks in di.iter_checks(**ctx, logger=self.logger):
                 self.__registry.add_checks(itertools.chain(checks), di.diagnostic)
+        if self.__object and hasattr(self.__object, "iter_instance_checks"):
+            for cr in self.__object.iter_instance_checks():
+                self.__registry.update_result(cr)
         self.__registry.loaded |= True
 
     @classmethod

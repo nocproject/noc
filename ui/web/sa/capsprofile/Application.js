@@ -286,6 +286,16 @@ Ext.define("NOC.sa.capsprofile.Application", {
           ],
         },
         {
+          text: __("Errors Policy"),
+          dataIndex: "error_caps_policy",
+          width: 100,
+          renderer: NOC.render.Choices({
+            I: "Ignore",
+            S: "Strict",
+            C: "Register Check",
+          }),
+        },
+        {
           name: "caps",
           xtype: "gridfield",
           fieldLabel: __("Capabilities"),
@@ -297,6 +307,13 @@ Ext.define("NOC.sa.capsprofile.Application", {
               renderer: NOC.render.Lookup("capability"),
               width: 250,
               editor: "inv.capability.LookupField",
+            },
+            {
+              text: __("Required"),
+              dataIndex: "required",
+              width: 150,
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
             },
             {
               text: __("Default Value"),
@@ -318,11 +335,19 @@ Ext.define("NOC.sa.capsprofile.Application", {
               editor: {
                 xtype: "main.label.LookupField",
                 // filterProtected: false,
-                query: {
-                  "set_wildcard": true,
-                },
+                // query: {
+                //   "set_wildcard": true,
+                //
+                // },
               },
               renderer: NOC.render.Lookup("set_label"),
+            },
+            {
+              editor: "stringlistfield",
+              dataIndex: "expose_models",
+              width: 400,
+              text: __("Expose Models"),
+              sortable: false,
             },
           ],
         },
