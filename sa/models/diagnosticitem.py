@@ -75,7 +75,7 @@ class DiagnosticItem(EmbeddedDocument):
     changed: Optional[datetime.datetime] = DateTimeField(required=False)
 
     def __str__(self):
-        return f"{self.diagnostic}: {','.join(c for c in self.checks)}; C: {self.changed}"
+        return f"{self.diagnostic}: {','.join(c.name for c in self.checks)}; C: {self.changed}"
 
     def get_value(self) -> DiagnosticValue:
         """Convert to Value"""
