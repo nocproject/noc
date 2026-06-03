@@ -142,6 +142,11 @@ Ext.define("NOC.sa.capsprofile.Model", {
       defaultValue: "T",
     },
     {
+      name: "error_caps_policy",
+      type: "string",
+      defaultValue: "I",
+    },
+    {
       name: "caps",
       type: "auto",
     },

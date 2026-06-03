@@ -286,14 +286,16 @@ Ext.define("NOC.sa.capsprofile.Application", {
           ],
         },
         {
-          text: __("Errors Policy"),
-          dataIndex: "error_caps_policy",
-          width: 100,
-          renderer: NOC.render.Choices({
-            I: "Ignore",
-            S: "Strict",
-            C: "Register Check",
-          }),
+          name: "error_caps_policy",
+          xtype: "combobox",
+          fieldLabel: __("Errors Policy"),
+          allowBlank: true,
+          uiStyle: "medium",
+          store: [
+            ["I", "Ignore"],
+            ["S", "Strict"],
+            ["C", "Register Check"],
+          ],
         },
         {
           name: "caps",
@@ -311,20 +313,20 @@ Ext.define("NOC.sa.capsprofile.Application", {
             {
               text: __("Required"),
               dataIndex: "required",
-              width: 150,
+              width: 75,
               editor: "checkbox",
               renderer: NOC.render.Bool,
             },
             {
               text: __("Default Value"),
               dataIndex: "default_value",
-              width: 150,
+              width: 100,
               editor: "textfield",
             },
             {
               text: __("Allow Manual"),
               dataIndex: "allow_manual",
-              width: 150,
+              width: 75,
               editor: "checkbox",
               renderer: NOC.render.Bool,
             },
@@ -345,7 +347,7 @@ Ext.define("NOC.sa.capsprofile.Application", {
             {
               editor: "stringlistfield",
               dataIndex: "expose_models",
-              width: 400,
+              width: 200,
               text: __("Expose Models"),
               sortable: false,
             },

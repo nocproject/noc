@@ -68,6 +68,7 @@ class CapsSettings(EmbeddedDocument):
             allow_manual=self.allow_manual,
             ref_scope=self.ref_scope,
             set_label=self.set_label.name if self.set_label else None,
+            required=self.required,
         )
 
 

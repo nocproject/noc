@@ -56,7 +56,7 @@ from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
 from noc.core.watchers.decorator import watchers
 from noc.core.defer import call_later
-from noc.core.checkers.base import CheckResult, CAPS_PROFILE_CHECK
+from noc.core.checkers.base import CheckResult, Check, CAPS_PROFILE_CHECK
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
 from noc.main.models.remotesystem import RemoteSystem
@@ -1259,7 +1259,7 @@ class Service(Document):
             yield CheckResult(check=CAPS_PROFILE_CHECK, status=True, skipped=True, args={})
             return
         status = True
-        for c in self.iter_checks():
+        for c in self.iter_caps(include_default=True):
             if c.config.required and not c.value:
                 status = False
                 break
@@ -1405,6 +1405,14 @@ class Service(Document):
 
     def iter_diagnostic_configs(self) -> Iterable[DiagnosticConfig]:
         """Iterable diagnostic Config"""
+        yield DiagnosticConfig(
+            # Reset if change IP/Policy change
+            "CAPS_REQ",
+            display_description="Capabilities check",
+            hide_enable=True,
+            run_policy="D",
+            checks=[Check(name=CAPS_PROFILE_CHECK, address="*")],
+        )
         yield from self.profile.iter_diagnostic_configs(self)
 
     @classmethod
