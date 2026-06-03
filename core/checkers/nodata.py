@@ -18,7 +18,7 @@ class NoDataChecker(BaseChecker):
     """
 
     name = "nodata"
-    CHECKS: List[str] = [NODATA]
+    CHECKS = [NODATA]
 
     async def iter_result(self, checks: List[Check]) -> AsyncIterable[CheckResult]:
         for c in checks:
