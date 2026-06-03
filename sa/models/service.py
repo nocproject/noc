@@ -1409,6 +1409,7 @@ class Service(Document):
             # Reset if change IP/Policy change
             "CAPS_REQ",
             display_description="Capabilities check",
+            blocked=not self.profile.caps_profile or self.profile.caps_profile.error_caps_policy != "C",
             hide_enable=True,
             run_policy="D",
             checks=[Check(name=CAPS_PROFILE_CHECK, address="*")],
