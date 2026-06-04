@@ -18,9 +18,9 @@ class CfgMetricsTargetDataStream(DataStream):
     name = "cfgmetricstarget"
 
     @classmethod
-    def get_object(cls, sid: str) -> Dict[str, Any]:
+    def get_object(cls, id: str) -> Dict[str, Any]:
         # Split source by model_id and bi_id
-        model, sid = sid.split("::")
+        model, sid = id.split("::")
         sid = int(sid)
         model = get_model(model)
         if not model:
@@ -43,7 +43,7 @@ class CfgMetricsTargetDataStream(DataStream):
         :return:
         """
         if "::" in sid:
-            source_type, sid = sid.split("::")
+            _, sid = sid.split("::")
         return {"id": str(sid), "$deleted": True}
 
     @classmethod
