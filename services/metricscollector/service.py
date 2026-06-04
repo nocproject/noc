@@ -45,6 +45,7 @@ from noc.services.metricscollector.models.channel import (
 
 NS = 1_000_000_000
 MAX_UNKNOWN_METRICS = 200
+TARGET_CHECK_SEND_INTERVAL = 3600
 
 
 @dataclass(frozen=True)
@@ -594,7 +595,7 @@ class MetricsCollectorService(FastAPIService):
     def register_source(self, sid: str):
         if sid not in self.received:
             self.received[sid] = int(perf_counter())
-        elif int(perf_counter()) - self.received[sid] > 3600:
+        elif int(perf_counter()) - self.received[sid] > TARGET_CHECK_SEND_INTERVAL:
             del self.received[sid]
             self.updated.add(sid)
 

@@ -132,7 +132,7 @@ class SourceConfig(object):
             CheckResult(
                 check=NODATA,
                 status=True,
-                ttl=3600,
+                ttl=config.metricscollector.target_check_ttl,
                 args={"arg0": "metricscollector", "collector": "metricscollector"},
             )
         ]
