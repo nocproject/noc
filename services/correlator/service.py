@@ -426,9 +426,12 @@ class CorrelatorService(FastAPIService):
         alarm.severity = e_severity
         alarm.base_severity = severity or alarm.base_severity
         alarm.last_update = datetime.datetime.now().replace(microsecond=0)
-        ActiveAlarm.objects.filter(id=alarm.id).update(
-            severity=alarm.severity, base_severity=alarm.base_severity, last_update=alarm.last_update,
-        )
+        # ActiveAlarm.objects.filter(id=alarm.id).update(
+        #     severity=alarm.severity,
+        #     base_severity=alarm.base_severity,
+        #     last_update=alarm.last_update,
+        # )
+        alarm.save()
         alarm.touch_watch(effect=Effect.SEVERITY)
 
     async def apply_rules(
