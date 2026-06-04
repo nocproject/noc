@@ -3,5 +3,4 @@ members = [
     "agent",
     "datastream",
     "dnssync",
-    "pyip",
 ]
