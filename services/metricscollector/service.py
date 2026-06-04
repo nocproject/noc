@@ -31,6 +31,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
 from noc.core.mx import MessageType, MX_FROM_COLLECTOR, MX_REMOTE_SYSTEMS, MX_ETL_LOADER
 from noc.core.fm.event import Event
+from noc.core.checkers.base import register_checks
 from noc.services.metricscollector.datastream import MetricsDataStreamClient, SourceStreamClient
 from noc.services.metricscollector.sourceconfig import (
     SourceConfig,
@@ -44,6 +45,7 @@ from noc.services.metricscollector.models.channel import (
 
 NS = 1_000_000_000
 MAX_UNKNOWN_METRICS = 200
+TARGET_CHECK_SEND_INTERVAL = 3600
 
 
 @dataclass(frozen=True)
@@ -109,6 +111,8 @@ class MetricsCollectorService(FastAPIService):
         # Sensors
         self.sensor_configs: Dict[str, SensorConfig] = {}
         self.stopping = False
+        self.updated: Set[str] = set()
+        self.received: Dict[str, int] = {}
         # Queue of channels to flush
         self.flush_queue: asyncio.Queue[RemoteSystemChannel] = asyncio.Queue()
         if config.metricscollector.listen:
@@ -315,6 +319,23 @@ class MetricsCollectorService(FastAPIService):
                     len(ch.unknown_metrics),
                     ";".join(itertools.islice(ch.unknown_metrics, MAX_UNKNOWN_METRICS)),
                 )
+        if not self.updated:
+            return
+        self.logger.info("Sending %s messages with updated checks", len(self.updated))
+        updated = list(self.updated)
+        self.updated = set()
+        for cfg_id in updated:
+            cfg = self.source_configs.get(cfg_id)
+            if not cfg or not cfg.bi_id:
+                continue
+            checks = cfg.get_checks()
+            if not checks:
+                continue
+            if cfg.services:
+                for bi_id in cfg.services:
+                    register_checks(checks, managed_object=cfg.bi_id, service=bi_id)
+            else:
+                register_checks(checks, managed_object=cfg.bi_id)
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -559,8 +580,10 @@ class MetricsCollectorService(FastAPIService):
         # Lowe
         hostname = f"name:{hostname.lower()}"
         if hostname in self.source_map:
+            self.register_source(self.source_map[hostname])
             return self.source_configs[self.source_map[hostname]]
         if f"name:{name.lower()}" in self.source_map:
+            self.register_source(self.source_map[f"name:{name.lower()}"])
             return self.source_configs[self.source_map[f"name:{name.lower()}"]]
         # Register invalid event source
         if self.source_configs and collector:
@@ -568,6 +591,13 @@ class MetricsCollectorService(FastAPIService):
         else:
             metrics["error", ("type", "object_not_found")] += 1
         return None
+
+    def register_source(self, sid: str):
+        if sid not in self.received:
+            self.received[sid] = int(perf_counter())
+        elif int(perf_counter()) - self.received[sid] > TARGET_CHECK_SEND_INTERVAL:
+            del self.received[sid]
+            self.updated.add(sid)
 
     def lookup_remote_sensor(self, sid: str, remote_system: str) -> Optional[SensorConfig]:
         """Lookup remote_sensor"""

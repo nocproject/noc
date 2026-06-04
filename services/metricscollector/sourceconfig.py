@@ -10,6 +10,7 @@ from dataclasses import dataclass
 from typing import Tuple, Optional, Iterable, List
 
 # NOC Modules
+from noc.core.checkers.base import CheckResult, NODATA
 from noc.config import config
 
 
@@ -85,6 +86,7 @@ class SourceConfig(object):
     no_data_check: bool = False
     mapping_refs: Optional[Tuple[str, ...]] = None
     sensors: Optional[Tuple[str, ...]] = None
+    services: Optional[Tuple[int, ...]] = None
 
     @classmethod
     def from_data(cls, data) -> "SourceConfig":
@@ -111,6 +113,7 @@ class SourceConfig(object):
             managed_object=mo,
             mapping_refs=tuple(mappings),
             sensors=tuple(sensors),
+            services=tuple(int(svc) for svc in data.get("services", [])),
         )
 
     def is_diff(self, cfg: "SourceConfig") -> bool:
@@ -122,3 +125,14 @@ class SourceConfig(object):
         if not self.mapping_refs:
             return []
         return self.mapping_refs
+
+    def get_checks(self):
+        """Getting checks"""
+        return [
+            CheckResult(
+                check=NODATA,
+                status=True,
+                ttl=config.metricscollector.target_check_ttl,
+                args={"arg0": "metricscollector", "collector": "metricscollector"},
+            )
+        ]

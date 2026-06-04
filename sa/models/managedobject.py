@@ -2726,6 +2726,8 @@ class ManagedObject(NOCModel):
         from noc.inv.models.interfaceprofile import InterfaceProfile
         from noc.pm.models.metricrule import MetricRule
         from noc.inv.models.sensor import Sensor
+        from noc.sa.models.serviceinstance import ServiceInstance
+        from noc.core.models.serviceinstanceconfig import InstanceType
         from noc.core.checkers.base import NODATA
 
         if Interaction.ServiceActivation not in mo.interactions:
@@ -2781,6 +2783,13 @@ class ManagedObject(NOCModel):
             "type": "managed_object",
             "bi_id": mo.bi_id,
             "name": mo.name,
+            "services": [
+                str(svc.bi_id)
+                for svc in ServiceInstance.objects.filter(
+                    managed_object=mo.id, type=InstanceType.ASSET
+                ).values_list("service")
+            ]
+            or None,
             "addresses": [mo.address],
             "mapping_refs": refs,
             "fm_pool": mo.get_effective_fm_pool().name,

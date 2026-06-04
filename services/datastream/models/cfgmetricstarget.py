@@ -50,6 +50,7 @@ class CfgMetricsTarget(BaseModel):
     bi_id: int
     sharding_key: int
     # Service
+    services: Optional[List[str]] = None
     mapping_refs: Optional[List[str]] = None
     # Collector received
     enable_fmevent: bool = False

@@ -472,6 +472,9 @@ class Config(BaseConfig):
         batch_max_message_size = IntParameter(default=307200, help="Max message size for Send")
         nodata_record_ttl = SecondsParameter(default="1h")
         nodata_round_duration = SecondsParameter(default="1M")
+        target_check_ttl = SecondsParameter(
+            default="2h", help="TTL between received tartget metrics"
+        )
 
     class memcached(ConfigSection):
         addresses = ServiceParameter(service="memcached", wait=True, full_result=True)
