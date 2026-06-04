@@ -257,7 +257,7 @@ Ext.define("NOC.main.messageroute.Application", {
             },
             {
               name: "remote_system",
-              xtype: "main.remote_system.LookupField",
+              xtype: "main.remotesystem.LookupField",
               fieldLabel: __("Remote System"),
               allowBlank: true,
             },

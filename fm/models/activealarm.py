@@ -766,7 +766,8 @@ class ActiveAlarm(Document):
                 continue
             if w.after and w.after > now:
                 continue
-            if w.job:
+            if w.job and w.effect != Effect.ESCALATION:
+                # Escalation - refresh_escalation_job
                 jobs.add(w.job)
             try:
                 w.run(self, is_clear=is_clear, dry_run=dry_run)
@@ -775,7 +776,7 @@ class ActiveAlarm(Document):
             except Exception as e:
                 print(f"Exception when run Watch Action: {e}")
         for job in jobs:
-            self.refresh_job(job, is_clear=is_clear)
+            self.refresh_job(job, is_clear=is_clear, is_update=is_update)
 
     @property
     def duration(self) -> int:
@@ -1450,7 +1451,13 @@ class ActiveAlarm(Document):
         pool = Pool.get_default_fm_pool()
         self.refresh_job(job_id, pool=pool.name)
 
-    def refresh_job(self, job_id: str, is_clear: bool = False, pool: Optional[str] = None):
+    def refresh_job(
+        self,
+        job_id: str,
+        is_clear: bool = False,
+        is_update: bool = False,
+        pool: Optional[str] = None,
+    ):
         """Refresh Alarm Job by changes"""
         shard = 0
         if not pool and self.managed_object:
@@ -1464,6 +1471,7 @@ class ActiveAlarm(Document):
             delay=2,
             shard=shard,
             job_id=job_id,
+            is_update=is_update,
         )
 
     def get_resources(self) -> List[str]:

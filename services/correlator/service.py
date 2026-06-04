@@ -420,13 +420,19 @@ class CorrelatorService(FastAPIService):
             # For retry alarm, stop clear
             alarm.stop_watch(Effect.CLEAR_ALARM, key="")
             alarm.save()
-        e_severity = alarm.get_effective_severity()
+        e_severity = alarm.get_effective_severity(severity=severity)
         if e_severity == alarm.severity:
             return
         alarm.severity = e_severity
+        alarm.base_severity = severity or alarm.base_severity
         alarm.last_update = datetime.datetime.now().replace(microsecond=0)
-        alarm.touch_watch(effect=Effect.SEVERITY)
+        # ActiveAlarm.objects.filter(id=alarm.id).update(
+        #     severity=alarm.severity,
+        #     base_severity=alarm.base_severity,
+        #     last_update=alarm.last_update,
+        # )
         alarm.save()
+        alarm.touch_watch(effect=Effect.SEVERITY)
 
     async def apply_rules(
         self,
@@ -668,6 +674,10 @@ class CorrelatorService(FastAPIService):
         a.deferred_groups = deferred_groups
         if subject:
             a.custom_subject = subject
+        for g in all_groups:
+            for w in g.get_watchers(Effect.ESCALATION):
+                a.add_watch(w.effect, w.key, job=w.job)
+            g.touch_watch(is_update=True)
         # Save
         a.save()
         # if event:
@@ -1298,6 +1308,7 @@ class CorrelatorService(FastAPIService):
         if req.g_type == GroupType.SERVICE and not req.alarms:
             # For auto groups not clear Group Alarm
             self.resolve_deferred_groups(group_alarm.reference)
+            self.refresh_alarm(group_alarm, now, severity=req.severity)
             return
         # Fetch all open alarms in group
         open_alarms: Dict[bytes, ActiveAlarm] = {

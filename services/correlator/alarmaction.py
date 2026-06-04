@@ -8,6 +8,7 @@
 # Python modules
 import datetime
 import logging
+import uuid
 from typing import Optional, Any, Dict, List
 from logging import Logger
 
@@ -640,40 +641,71 @@ class AlarmActionRunner(object):
         **kwargs,
     ) -> ActionStatus:
         """Generate escalation state Message"""
-        items, services = [], []
-        for ii in self.items:
-            items.append(
-                {
-                    "alarm_id": str(ii.alarm.id),
-                    "subject": ii.alarm.subject,
-                    "body": ii.alarm.body,
-                    "vars": ii.alarm.vars,
-                    "labels": list(ii.alarm.labels),
-                    "item_status": ii.status.value,
-                    "managed_object": {},
-                }
-            )
+        items, services, headers = [], [], {}
         for ss in self.services:
             ctx = ss.service.get_message_context()
-            if ss.service_status_from:
+            if not headers:
+                headers = ss.service.get_mx_message_headers()
+            if ss.status_from:
                 ctx["from_status"] = {
-                    "id": ss.service_status_from.value,
-                    "name": ss.service.oper_status.name,
+                    "id": ss.status_from.value,
+                    "name": ss.status_from.name,
                 }
             else:
                 ctx["from_status"] = None
             ctx["item_status"] = ss.status.value
+            services.append(ctx)
+        for ii in self.items:
+            alarm = ii.alarm
+            if alarm.reference in self.groups:
+                continue
+            item = {
+                "alarm_id": str(alarm.id),
+                "subject": alarm.subject,
+                "body": alarm.body,
+                "vars": alarm.vars,
+                "labels": list(alarm.labels),
+                "item_status": ii.status.value,
+                "managed_object": {},
+            }
+            if alarm.remote_system:
+                item |= {
+                    "remote_system": {
+                        "id": str(alarm.remote_system.id),
+                        "name": alarm.remote_system.name,
+                    },
+                    "remote_id": alarm.remote_id,
+                }
+            items.append(item)
+        tt_id = tt_id or str(uuid.uuid4())
         msg = {
-            "status": self.status,
-            "created_at": self.timestamp,
+            # "status": self.status,
+            "timestamp": timestamp,
             # "started_at": start_at,
+            "tt_id": tt_id,
+            "is_completed": subject == "Closed",
             "completed_at": None,
-            "severity": self.severity,
+            # "severity": self.severity,
             "leader": str(self.alarm.id),
             "subject": subject,
             "body": body,
             "items": items,
-            "service": services,
+            "services": services,
         }
-        send_message(orjson.dumps(msg), MessageType.ESCALATE, headers={})
-        return ActionResult(status=ActionStatus.SUCCESS, document_id=tt_id)
+        send_message(orjson.dumps(msg), MessageType.ESCALATE, headers=headers)
+        return ActionResult(
+            status=ActionStatus.SUCCESS,
+            document_id=tt_id,
+            actions=[
+                ActionConfig(
+                    when=WhenCondition.ON_END,
+                    action=AlarmAction.REGISTER_MESSAGE,
+                    key=str(tt_id),
+                    # template=str(self.close_template.id) if self.close_template else None,
+                    subject="Closed",
+                    allow_fail=False,
+                    login=login,
+                    queue=queue,
+                )
+            ],
+        )

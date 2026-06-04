@@ -49,7 +49,7 @@ class ServiceItem(object):
     service: Service
     managed_object_id: Optional[int] = None
     service_status: ServiceStatus = ServiceStatus.UNKNOWN
-    service_status_from: Optional[ServiceStatus] = None
+    status_from: Optional[ServiceStatus] = None
     # status_factors
     # ctx
     status: ItemStatus = ItemStatus.NEW
@@ -317,11 +317,13 @@ class AlarmJob(object):
 
     def sync_items_status(self):
         """Sync items status after Processed, Reset New Elements"""
-        new_groups = []
+        new_groups, groups = [], []
         for ii in self.items[1:]:
             if self.is_group and ii.status == ItemStatus.NEW:
                 # Ensure Profile
                 new_groups.append(ii.alarm.id)
+                if ii.alarm.reference in self.groups:
+                    groups.append(ii.alarm.reference)
             if ii.status in {ItemStatus.NEW, ItemStatus.CHANGED}:
                 ii.status = ItemStatus.PROCESSED
         # Set Escalation on groups
@@ -329,6 +331,12 @@ class AlarmJob(object):
             ActiveAlarm.objects.filter(id__in=new_groups).update(
                 push__watchers=WatchItem(
                     effect=Effect.ESCALATION, key=str(self.profile), job=str(self.id)
+                ),
+            )
+        if self.profile and groups:
+            ActiveAlarm.objects.filter(reference__in=groups).update(
+                push__watchers=WatchItem(
+                    effect=Effect.SEVERITY, key=str(self.profile), job=str(self.id)
                 ),
             )
 
@@ -685,7 +693,7 @@ class AlarmJob(object):
                 ServiceItem(
                     service=svc,
                     service_status=svc.oper_status,
-                    service_status_from=(
+                    status_from=(
                         ServiceStatus(item["service_status"])
                         if item.get("service_status")
                         else None

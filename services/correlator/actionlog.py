@@ -153,6 +153,8 @@ class ActionLog(object):
         ):
             r["tt_system"] = TTSystem.get_by_id(self.key)
             r["tt_id"] = self.document_id or document_id
+        elif self.action == AlarmAction.REGISTER_MESSAGE:
+            r["tt_id"] = self.document_id or document_id
         elif self.action == AlarmAction.NOTIFY:
             r["notification_group"] = NotificationGroup.get_by_id(int(self.key))
         if self.template:

@@ -106,6 +106,11 @@ class StatusAffectedItem(EmbeddedDocument):
     inactive = BooleanField(default=False)
     source = StringField(required=True, default="other")
 
+    def __str__(self) -> str:
+        if self.inactive:
+            return f"{self.source} ({self.service_status}) INACTIVE"
+        return f"{self.source} ({self.service_status})"
+
     @property
     def item(self) -> "AffectedItem":
         """Return Affected"""
@@ -707,9 +712,7 @@ class Service(Document):
 
         self.oper_status = status
         self.oper_status_change = timestamp
-        if status.value < 2 and self.oper_status_factors:
-            self.oper_status_factors = []
-        elif affected and not self.oper_status_factors:
+        if affected and not self.oper_status_factors:
             self.oper_status_factors = [StatusAffectedItem.from_item(f) for f in affected or []]
         else:
             factors = {f.id: StatusAffectedItem.from_item(f) for f in affected or []}
@@ -723,7 +726,8 @@ class Service(Document):
         Service.objects.filter(id=self.id).update(
             oper_status=self.oper_status,
             oper_status_change=self.oper_status_change,
-            oper_status_factors=self.oper_status_factors[:10],
+            # For register message
+            oper_status_factors=self.oper_status_factors[:10] if status.value > 1 else [],
         )
         # Register outage
         svcs = get_service()
@@ -863,6 +867,7 @@ class Service(Document):
                 "g_type": 3,
                 "name": self.label,
                 "alarm_class": SVC_AC,
+                "severity": self.get_alarm_severity(),
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,
@@ -883,6 +888,7 @@ class Service(Document):
                 "reference": self.get_alarm_reference(self.id),
                 "name": self.label,
                 "alarm_class": self.profile.raise_alarm_class.name,
+                "severity": self.get_alarm_severity(),
                 "labels": self.labels,
                 "vars": {
                     "description": self.description,
@@ -905,7 +911,7 @@ class Service(Document):
         old_status: Previous status
         """
         # Raise alarm
-        if self.oper_status > Status.UP >= old_status:
+        if self.oper_status > Status.UP:
             msg = self.get_alarm_msg(old_status)
             if not msg:
                 return
@@ -932,6 +938,8 @@ class Service(Document):
         if self.calculate_status_function == "D" or (
             self.calculate_status_function == "P" and self.profile.calculate_status_function == "D"
         ):
+            return Status.UNKNOWN
+        if not self.state.is_productive:
             return Status.UNKNOWN
         return Status.UP
 
