@@ -445,7 +445,7 @@ class EscalationProfile(Document):
         alarm.add_watch(
             Effect.ESCALATION,
             key=str(profile.id),
-            once=True,
+            once=False,
             after=after,
             root_only=root_only,
             keep_args=True,

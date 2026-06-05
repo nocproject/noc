@@ -53,6 +53,11 @@ class ServiceItem(object):
     # status_factors
     # ctx
     status: ItemStatus = ItemStatus.NEW
+    to_processed: bool = True
+
+    @property
+    def is_changed(self) -> bool:
+        return self.status == ItemStatus.NEW
 
     @classmethod
     def from_service(cls, svc: Service) -> "ServiceItem":
@@ -69,9 +74,14 @@ class Item(object):
     # For requested Escalation by ManagedObject
     managed_object_id: Optional[int] = None
     status: ItemStatus = ItemStatus.NEW
+    to_processed: bool = True
 
     def __str__(self):
         return f"{self.alarm}: {self.status}"
+
+    @property
+    def is_changed(self) -> bool:
+        return self.status in {ItemStatus.NEW, ItemStatus.CHANGED}
 
     @property
     def managed_object(self) -> Optional[ManagedObject]:
@@ -177,12 +187,12 @@ class AlarmJob(object):
         return self.__str__()
 
     @classmethod
-    def get_by_id(cls, oid) -> Optional["AlarmJob"]:
+    def get_by_id(cls, oid: str, is_dirty: bool = False) -> Optional["AlarmJob"]:
         from noc.fm.models.alarmjob import AlarmJob as AlarmJobState
 
         state = AlarmJobState.objects.filter(id=oid).as_pymongo()
         if state:
-            return AlarmJob.from_state(state[0])
+            return AlarmJob.from_state(state[0], is_dirty=is_dirty)
         return None
 
     @property
@@ -269,6 +279,11 @@ class AlarmJob(object):
         """Group Alarm Escalation"""
         return bool(self.groups)
 
+    @property
+    def is_changed(self) -> bool:
+        """Has new escalation elements"""
+        return any(i.to_processed for i in self.items[1:]) or any(s.to_processed for s in self.services)
+
     @classmethod
     def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> "AlarmJob":
         """Ensure escalation Job"""
@@ -326,6 +341,11 @@ class AlarmJob(object):
                     groups.append(ii.alarm.reference)
             if ii.status in {ItemStatus.NEW, ItemStatus.CHANGED}:
                 ii.status = ItemStatus.PROCESSED
+            ii.to_processed = False
+        for ii in self.services:
+            if ii.status in {ItemStatus.NEW, ItemStatus.CHANGED}:
+                ii.status = ItemStatus.PROCESSED
+            ii.to_processed = False
         # Set Escalation on groups
         if self.profile and new_groups:
             ActiveAlarm.objects.filter(id__in=new_groups).update(
@@ -355,6 +375,7 @@ class AlarmJob(object):
         ts: Optional[datetime.datetime] = None,
         save_state: bool = True,
         force_end: bool = False,
+        is_update: bool = False,
     ):
         """Main run action for job"""
         now = ts or datetime.datetime.now().replace(microsecond=0)
@@ -363,6 +384,8 @@ class AlarmJob(object):
             return
         changed = self.severity != self.base_severity
         is_end = force_end or self.is_end
+        if not is_end:
+            changed |= self.is_changed
         self.logger.info(
             "Start actions at: %s (End: %s,Severity: %s, Actions: %s)",
             now,
@@ -731,7 +754,7 @@ class AlarmJob(object):
 
     @classmethod
     def from_state(
-        cls, data: Dict[str, Any], stub_alarms: Optional[List[ActiveAlarm]] = None
+        cls, data: Dict[str, Any], is_dirty: bool = False, stub_alarms: Optional[List[ActiveAlarm]] = None
     ) -> Optional["AlarmJob"]:
         """"""
         if stub_alarms:
@@ -765,7 +788,7 @@ class AlarmJob(object):
             ctx_id=data.get("ctx_id"),
             telemetry_sample=data["telemetry_sample"],
         )
-        if data.get("is_dirty"):
+        if data.get("is_dirty") or is_dirty:
             # On first Run
             job.refresh_items(include_groups=True)
         return job
@@ -847,8 +870,9 @@ class AlarmWatchersJob(PeriodicJob):
         return next_ts
 
 
-def run_alarm_job(job_id: str, *args, **kwargs):
-    job = AlarmJob.get_by_id(job_id)
+def run_alarm_job(job_id: str, is_update: bool = False, *args, **kwargs):
+    job = AlarmJob.get_by_id(job_id, is_dirty=is_update)
+    print("REQ", args, kwargs)
     if not job:
         print(f"{job} Unknown job")
         return

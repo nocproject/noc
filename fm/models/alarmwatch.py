@@ -74,7 +74,9 @@ class WatchItem(EmbeddedDocument):
         r |= alarm.get_message_body(is_clear=is_clear, template=template)
         return r
 
-    def run(self, alarm, is_clear: bool = False, dry_run: bool = False):
+    def run(
+        self, alarm, is_clear: bool = False, is_update: bool = False, dry_run: bool = False,
+    ):
         match self.effect:
             case Effect.TT_SYSTEM:
                 AlarmEscalation.watch_alarm(**self.get_args(alarm, is_clear))
@@ -95,6 +97,7 @@ class WatchItem(EmbeddedDocument):
                 alarm.refresh_escalation_job(
                     profile=self.key,
                     is_clear=is_clear,
+                    is_update=is_update,
                     job_id=self.job,
                 )
             case Effect.REWRITE_ALARM_CLASS:

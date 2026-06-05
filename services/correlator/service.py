@@ -677,7 +677,6 @@ class CorrelatorService(FastAPIService):
         for g in all_groups:
             for w in g.get_watchers(Effect.ESCALATION):
                 a.add_watch(w.effect, w.key, job=w.job)
-            g.touch_watch(is_update=True)
         # Save
         a.save()
         # if event:
@@ -708,7 +707,7 @@ class CorrelatorService(FastAPIService):
         # Update groups summary
         await self.update_groups_summary(a.groups)
         # Apply actions
-        a.touch_watch()
+        a.touch_watch(is_update=True)
         # Watch for escalations, when necessary
         if config.correlator.auto_escalation and not a.root:
             AlarmEscalation.watch_escalations(a)

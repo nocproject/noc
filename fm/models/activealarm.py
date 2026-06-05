@@ -812,7 +812,7 @@ class ActiveAlarm(Document):
                 # Escalation - refresh_escalation_job
                 jobs.add(w.job)
             try:
-                w.run(self, is_clear=is_clear, dry_run=dry_run)
+                w.run(self, is_clear=is_clear, is_update=is_update, dry_run=dry_run)
                 if w.after:
                     w.after = None
             except Exception as e:
@@ -1472,7 +1472,11 @@ class ActiveAlarm(Document):
         }
 
     def refresh_escalation_job(
-        self, profile: str, is_clear: bool = False, job_id: Optional[str] = None
+        self,
+        profile: str,
+        is_clear: bool = False,
+        is_update: bool = False,
+        job_id: Optional[str] = None,
     ):
         """"""
         from noc.services.correlator.alarmjob import AlarmJob
@@ -1491,7 +1495,7 @@ class ActiveAlarm(Document):
             job_id = str(job.id)
         # Run Scheduler
         pool = Pool.get_default_fm_pool()
-        self.refresh_job(job_id, pool=pool.name)
+        self.refresh_job(job_id, is_update=is_update, pool=pool.name)
 
     def refresh_job(
         self,
