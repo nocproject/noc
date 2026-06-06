@@ -1034,7 +1034,7 @@ class ManagedObjectProfile(NOCModel):
                 display_description="Check Device response by CLI (TELNET/SSH) request",
                 checks=(
                     [Check(name="TELNET"), Check(name="SSH")]
-                    if o.scheme == 1
+                    if o and o.scheme == 1
                     else [Check(name="SSH"), Check(name="TELNET")]
                 ),
                 discovery_box=True,
