@@ -541,6 +541,11 @@ class Service(Document):
                 return True
         return False
 
+    @property
+    def is_productive(self) -> bool:
+        """Apply calculate oper status"""
+        return self.state.is_productive
+
     def check_deployed(self) -> Optional[str]:
         """Generate Workflow signal"""
         statuses = {si.is_deployed for si in self.service_instances}
@@ -632,6 +637,11 @@ class Service(Document):
         for sd in self.dependency_services:
             if sd.is_match_service(dependency):
                 return sd
+            if link_type and not link_cfg and sd.type == link_type:
+                link_cfg = sd
+        if link_cfg:
+            return link_cfg
+        for sd in self.profile.calculate_status_rules:
             if link_type and not link_cfg and sd.type == link_type:
                 link_cfg = sd
         return link_cfg
@@ -939,8 +949,6 @@ class Service(Document):
             self.calculate_status_function == "P" and self.profile.calculate_status_function == "D"
         ):
             return Status.UNKNOWN
-        if not self.state.is_productive:
-            return Status.UNKNOWN
         return Status.UP
 
     def get_connected_me(self) -> Iterable["Service"]:
@@ -1000,7 +1008,10 @@ class Service(Document):
     def refresh_status(self, update_direct: bool = True, update_affected: bool = True):
         """Calculate Operative Status, maximum over Directed and Affected Status"""
         affected = []
-        status = max(self.get_direct_status(affected=affected), self.get_affected_status())
+        if self.is_productive:
+            status = max(self.get_direct_status(affected=affected), self.get_affected_status())
+        else:
+            status = Status.UNKNOWN
         self.set_oper_status(status, affected=affected)
 
     def get_alarm_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:

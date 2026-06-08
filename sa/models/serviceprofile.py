@@ -185,6 +185,17 @@ class CalculatedStatusRule(EmbeddedDocument):
 
     meta = {"strict": False, "auto_create_index": False}
 
+    group: Optional["ResourceGroup"] = ReferenceField(ResourceGroup, required=False)
+    type = StringField(
+        choices=[
+            ("S", "Service (Using)"),
+            ("C", "Client (Using)"),
+            # ("G", "Service Group (Using)"),
+            ("U", "Parent (UP)"),
+            ("D", "Children (Down)"),
+        ],
+        default="S",
+    )
     weight_function = StringField(
         choices=[
             ("C", "Count"),
