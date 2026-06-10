@@ -529,7 +529,7 @@ class RemoteSystem(Document):
         """Return MetricConfig for Target service"""
         enable_fmevent = remote_system.enable_fmevent and remote_system.event_sync_mode == "P"
         if not remote_system.enable_metrics and not enable_fmevent:
-            return {}
+            raise KeyError
         return {
             "type": "remote_system",
             "name": remote_system.name,

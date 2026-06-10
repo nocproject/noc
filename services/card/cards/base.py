@@ -128,7 +128,7 @@ class BaseCard(object):
                     )
                     with open(tp) as f:
                         self.template_cache[name] = env.from_string(f.read())
-
+                    break
         return self.template_cache[name]
 
     def render(self):
