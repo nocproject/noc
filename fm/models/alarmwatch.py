@@ -75,7 +75,11 @@ class WatchItem(EmbeddedDocument):
         return r
 
     def run(
-        self, alarm, is_clear: bool = False, is_update: bool = False, dry_run: bool = False,
+        self,
+        alarm,
+        is_clear: bool = False,
+        is_update: bool = False,
+        dry_run: bool = False,
     ):
         from noc.services.correlator.alarmjob import AlarmJob
 
