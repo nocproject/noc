@@ -239,6 +239,35 @@ Ext.define("NOC.sa.serviceprofile.Application", {
               allowBlank: true,
               columns: [
                 {
+                  text: __("Group"),
+                  dataIndex: "group",
+                  renderer: NOC.render.Lookup("group"),
+                  width: 200,
+                  editor: {
+                    xtype: "inv.resourcegroup.LookupField",
+                  },
+                },
+                {
+                  text: __("Type"),
+                  dataIndex: "type",
+                  width: 100,
+                  editor: {
+                    xtype: "combobox",
+                    store: [
+                      ["S", "Service (Using)"],
+                      ["C", "Client (Using)"],
+                      ["T", "Parent (UP)"],
+                      ["D", "Children (Down)"],
+                    ],
+                  },
+                  renderer: NOC.render.Choices({
+                    "S": "Service (Using)",
+                    "C": "Client (Using)",
+                    "T": "Parent (UP)",
+                    "D": "Children (Down)",
+                  }),
+                },
+                {
                   text: __("Function"),
                   dataIndex: "weight_function",
                   width: 150,

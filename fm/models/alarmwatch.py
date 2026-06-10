@@ -74,7 +74,15 @@ class WatchItem(EmbeddedDocument):
         r |= alarm.get_message_body(is_clear=is_clear, template=template)
         return r
 
-    def run(self, alarm, is_clear: bool = False, dry_run: bool = False):
+    def run(
+        self,
+        alarm,
+        is_clear: bool = False,
+        is_update: bool = False,
+        dry_run: bool = False,
+    ):
+        from noc.services.correlator.alarmjob import AlarmJob
+
         match self.effect:
             case Effect.TT_SYSTEM:
                 AlarmEscalation.watch_alarm(**self.get_args(alarm, is_clear))
@@ -92,11 +100,17 @@ class WatchItem(EmbeddedDocument):
             case Effect.ALARM_JOB:
                 alarm.refresh_job(self.key, is_clear=is_clear)
             case Effect.ESCALATION:
-                alarm.refresh_escalation_job(
-                    profile=self.key,
-                    is_clear=is_clear,
-                    job_id=self.job,
-                )
+                # alarm.refresh_escalation_job(
+                if not self.job:
+                    job = AlarmJob.ensure_profile_job(alarm, self.key)
+                    if not job:
+                        return
+                    if job.is_end:
+                        # Can escalate ?
+                        # Job already ended
+                        return
+                    job.save_state(is_dirty=True)
+                    self.job = str(job.id)
             case Effect.REWRITE_ALARM_CLASS:
                 alarm.refresh_alarm_class(dry_run=dry_run)
             case Effect.CLEAR_ALARM:

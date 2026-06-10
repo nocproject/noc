@@ -541,6 +541,11 @@ class Service(Document):
                 return True
         return False
 
+    @property
+    def is_productive(self) -> bool:
+        """Apply calculate oper status"""
+        return self.state.is_productive
+
     def check_deployed(self) -> Optional[str]:
         """Generate Workflow signal"""
         statuses = {si.is_deployed for si in self.service_instances}
@@ -634,6 +639,11 @@ class Service(Document):
                 return sd
             if link_type and not link_cfg and sd.type == link_type:
                 link_cfg = sd
+        if link_cfg:
+            return link_cfg
+        for sd in self.profile.calculate_status_rules:
+            if link_type and not link_cfg and sd.type == link_type:
+                link_cfg = sd
         return link_cfg
 
     def iter_dependent_services(self) -> Iterable[Tuple["Service", str]]:
@@ -657,17 +667,41 @@ class Service(Document):
                 for svc in Service.objects.filter(effective_service_groups=item.group):
                     yield svc
 
-    def iter_dependency_status(self) -> Iterable[Tuple[Status, int]]:
+    def iter_dependency_status(self) -> Iterable[Tuple[Status, "Service"]]:
         """Iterate over dependency services status"""
         for svc, link_type in self.iter_dependent_services():
             cfg = self.get_dependency_config(svc, link_type=link_type)
             if not cfg or not cfg.is_match_status(svc.oper_status):
                 continue
             if cfg.set_status:
-                yield cfg.set_status, svc.profile.weight
+                yield cfg.set_status, svc
             else:
-                yield svc.oper_status, svc.profile.weight
+                yield svc.oper_status, svc
             # Transparent
+
+    @property
+    def oper_status_root_factor(self) -> Optional[AffectedItem]:
+        """Calculate root factor affected to OperStatus"""
+        root = None
+        for item in self.oper_status_factors:
+            if item.inactive or item.service_status < self.oper_status:
+                continue
+            # Direct - priority
+            if item.source == "alarm":
+                return item.item
+            root = item.item
+        return root
+
+    def get_alarm_root_factor(self) -> Optional[str]:
+        """"""
+        o = self.oper_status_root_factor
+        if not o or o.source == "alarm":
+            return o
+        if o.source == "dependency":
+            svc = Service.get_by_id(o.id)
+            if svc:
+                return svc.get_alarm_root_factor()
+        return None
 
     def set_oper_status(
         self,
@@ -939,8 +973,6 @@ class Service(Document):
             self.calculate_status_function == "P" and self.profile.calculate_status_function == "D"
         ):
             return Status.UNKNOWN
-        if not self.state.is_productive:
-            return Status.UNKNOWN
         return Status.UP
 
     def get_connected_me(self) -> Iterable["Service"]:
@@ -1000,7 +1032,13 @@ class Service(Document):
     def refresh_status(self, update_direct: bool = True, update_affected: bool = True):
         """Calculate Operative Status, maximum over Directed and Affected Status"""
         affected = []
-        status = max(self.get_direct_status(affected=affected), self.get_affected_status())
+        if self.is_productive:
+            status = max(
+                self.get_direct_status(affected=affected),
+                self.get_affected_status(affected=affected),
+            )
+        else:
+            status = Status.UNKNOWN
         self.set_oper_status(status, affected=affected)
 
     def get_alarm_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
@@ -1147,18 +1185,21 @@ class Service(Document):
                 return status
         return Status.UNKNOWN
 
-    def get_affected_status(self) -> Status:
+    def get_affected_status(self, affected: Optional[List[AffectedItem]] = None) -> Status:
         """Getting operational status from dependencies services"""
         r = {}
         if self.profile.calculate_status_function == "D":
             return Status.UNKNOWN
-        for status, weight in self.iter_dependency_status():
+        for status, svc in self.iter_dependency_status():
             if status == Status.UNKNOWN:
                 continue
+            weight = svc.profile.weight
             if status not in r:
                 r[status] = weight
             else:
                 r[status] += weight
+            if status.value > 1 and affected is not None:
+                affected.append(AffectedItem.from_dependency(svc, status))
         if not r:
             return Status.UNKNOWN
         return self.calculate_status(r)
@@ -1173,7 +1214,7 @@ class Service(Document):
             svc_id = alarm.components.service.id
         else:
             return r
-        for svc in Service.objects.filter(service_path=svc_id):
+        for svc in Service.objects.filter(id=svc_id):
             if svc.profile.get_rule_by_alarm(alarm):
                 r.append(svc.id)
         if not r:
