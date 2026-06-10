@@ -58,6 +58,7 @@ from noc.main.models.style import Style
 from noc.main.models.template import Template
 from noc.main.models.label import Label
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.pool import Pool
 from noc.sa.models.managedobject import ManagedObject
 from noc.sa.models.servicesummary import ServiceSummary, SummaryItem, ObjectSummaryItem
 from noc.inv.models.object import Object
@@ -808,17 +809,18 @@ class ActiveAlarm(Document):
                 continue
             if w.after and w.after > now:
                 continue
-            if w.job and w.effect != Effect.ESCALATION:
-                # Escalation - refresh_escalation_job
-                jobs.add(w.job)
             try:
                 w.run(self, is_clear=is_clear, is_update=is_update, dry_run=dry_run)
                 if w.after:
                     w.after = None
             except Exception as e:
                 print(f"Exception when run Watch Action: {e}")
+            if w.job:
+                # Escalation - refresh_escalation_job
+                jobs.add(w.job)
+        pool = Pool.get_default_fm_pool()
         for job in jobs:
-            self.refresh_job(job, is_clear=is_clear, is_update=is_update)
+            self.refresh_job(job, is_clear=is_clear, is_update=is_update, pool=pool.name)
 
     @property
     def duration(self) -> int:
@@ -1518,6 +1520,7 @@ class ActiveAlarm(Document):
             shard=shard,
             job_id=job_id,
             is_update=is_update,
+            is_clear=is_clear,
         )
 
     def get_resources(self) -> List[str]:

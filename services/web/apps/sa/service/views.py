@@ -61,6 +61,13 @@ class ServiceApplication(ExtDocApplication):
         "remote_id",
     ]
 
+    ignored_fields = ExtDocApplication.ignored_fields | {
+        "global_cpe_id",
+        "local_cpe_id",
+        "remote_system",
+        "remote_id",
+    }
+
     resource_group_fields = [
         "static_service_groups",
         "effective_service_groups",

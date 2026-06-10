@@ -282,7 +282,9 @@ class AlarmJob(object):
     @property
     def is_changed(self) -> bool:
         """Has new escalation elements"""
-        return any(i.to_processed for i in self.items[1:]) or any(s.to_processed for s in self.services)
+        return any(i.to_processed for i in self.items[1:]) or any(
+            s.to_processed for s in self.services
+        )
 
     @classmethod
     def ensure_profile_job(cls, alarm: ActiveAlarm, pid: str) -> "AlarmJob":
@@ -458,7 +460,7 @@ class AlarmJob(object):
                     self.actions.append(aa.get_repeat(self.repeat_delay))
                 # Add return actions
                 for action in r.actions or []:
-                    self.actions.append(
+                    self.add_action(
                         ActionLog.from_request(
                             action,
                             started_at=aa.timestamp,
@@ -479,6 +481,13 @@ class AlarmJob(object):
         if save_state:
             # Only if save-state
             self.save_state(is_completed=is_end)
+
+    def add_action(self, action: ActionLog):
+        """Add action to log"""
+        for a in self.actions:
+            if a.action == action.action and a.key == action.key:
+                return
+        self.actions.append(action)
 
     @classmethod
     def get_leader(
@@ -521,12 +530,14 @@ class AlarmJob(object):
         for ii in items_map.values():
             items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
         self.items = items
-        if not services:
-            self.services = []
-        else:
-            self.services = [
-                ServiceItem.from_service(svc) for svc in Service.objects.filter(id__in=services)
-            ]
+        svc_map = {ii.service.id: ii for ii in self.services}
+        if services:
+            for svc in Service.objects.filter(id__in=services):
+                item = svc_map.pop(svc.id, None)
+                if not item:
+                    self.services.append(ServiceItem.from_service(svc))
+        for svc in svc_map.values():
+            svc.status = ItemStatus.REMOVED
         if include_groups:
             self.groups = groups
 
@@ -754,7 +765,10 @@ class AlarmJob(object):
 
     @classmethod
     def from_state(
-        cls, data: Dict[str, Any], is_dirty: bool = False, stub_alarms: Optional[List[ActiveAlarm]] = None
+        cls,
+        data: Dict[str, Any],
+        is_dirty: bool = False,
+        stub_alarms: Optional[List[ActiveAlarm]] = None,
     ) -> Optional["AlarmJob"]:
         """"""
         if stub_alarms:
@@ -870,8 +884,8 @@ class AlarmWatchersJob(PeriodicJob):
         return next_ts
 
 
-def run_alarm_job(job_id: str, is_update: bool = False, *args, **kwargs):
-    job = AlarmJob.get_by_id(job_id, is_dirty=is_update)
+def run_alarm_job(job_id: str, is_update: bool = False, is_clear: bool = False, *args, **kwargs):
+    job = AlarmJob.get_by_id(job_id, is_dirty=is_update | is_clear)
     print("REQ", args, kwargs)
     if not job:
         print(f"{job} Unknown job")
