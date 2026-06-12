@@ -316,12 +316,14 @@ Ext.define("NOC.sa.capsprofile.Application", {
               width: 75,
               editor: "checkbox",
               renderer: NOC.render.Bool,
+              sortable: false,
             },
             {
               text: __("Default Value"),
               dataIndex: "default_value",
               width: 100,
               editor: "textfield",
+              sortable: false,
             },
             {
               text: __("Allow Manual"),
@@ -329,6 +331,15 @@ Ext.define("NOC.sa.capsprofile.Application", {
               width: 75,
               editor: "checkbox",
               renderer: NOC.render.Bool,
+              sortable: false,
+            },
+            {
+              text: __("Expose Caps"),
+              dataIndex: "exposed",
+              width: 75,
+              editor: "checkbox",
+              renderer: NOC.render.Bool,
+              sortable: false,
             },
             {
               text: __("Set Label"),
@@ -343,12 +354,6 @@ Ext.define("NOC.sa.capsprofile.Application", {
                 // },
               },
               renderer: NOC.render.Lookup("set_label"),
-            },
-            {
-              editor: "stringlistfield",
-              dataIndex: "expose_models",
-              width: 200,
-              text: __("Expose Models"),
               sortable: false,
             },
           ],

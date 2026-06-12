@@ -446,6 +446,7 @@ class ServiceProfile(Document):
     diagnostic_status: List[DiagnosticSettings] = EmbeddedDocumentListField(DiagnosticSettings)
     # Capabilities
     caps_profile: Optional[CapsProfile] = ReferenceField(CapsProfile, required=False)
+    caps_exposed: bool = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -635,3 +636,31 @@ def refresh_interface_profiles(sp_id, ip_id):
     bulk = []
     bulk += [UpdateOne({"_id": {"$in": svc}}, {"$set": {"profile": ip_id}})]
     collection.bulk_write(bulk, ordered=False)
+
+
+def sync_exposed_caps(
+    profile_ids: List[str],
+    user: Optional[str] = None,
+):
+    """Syncronize exposed caps"""
+    from .service import Service
+    from .serviceinstance import ServiceInstance
+    from noc.sa.models.managedobject import ManagedObject
+
+    r = defaultdict(dict)
+    for o in Service.objects.filter(profile__in=profile_ids):
+        caps = o.get_caps(exposed_scope="sa.ManagedObject")
+        if caps:
+            r[o.id] |= caps
+    coll = ServiceInstance._get_collection()
+    updated = defaultdict(dict)
+    for row in coll.aggregate([
+        {"$match": {"managed_object": {"$exists": True}, "type": "asset", "service": {"$in": list(r.keys())}}},
+        {"$project": {"managed_object": 1, "service": 1}},
+        {"$group": {"_id": "$managed_object", "services": {"$push": "$service"}}}]
+    ):
+        for svc_id in row["services"]:
+            if svc_id in r:
+                updated[row["managed_object"]] |= r[svc_id]
+    for mo in ManagedObject.objects.filter(id__in=list(updated.keys())):
+        mo.update_caps(updated[mo.id], scope="sa.Service")

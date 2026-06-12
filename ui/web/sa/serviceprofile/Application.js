@@ -150,6 +150,12 @@ Ext.define("NOC.sa.serviceprofile.Application", {
           },
         },
         {
+          name: "caps_exposed",
+          xtype: "checkbox",
+          boxLabel: __("Exposed Caps to Objects"),
+          allowBlank: true,
+        },
+        {
           name: "interface_profile",
           xtype: "inv.interfaceprofile.LookupField",
           fieldLabel: __("Interface Profile"),

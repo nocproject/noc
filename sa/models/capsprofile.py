@@ -18,14 +18,13 @@ from mongoengine.fields import (
     BooleanField,
     DynamicField,
     ReferenceField,
-    ListField,
     EmbeddedDocumentListField,
 )
 import cachetools
 
 # NOC modules
 from noc.core.caps.types import CapsConfig
-from noc.core.model.decorator import on_delete_check
+from noc.core.model.decorator import on_delete_check, on_save
 from noc.core.change.decorator import change
 from noc.inv.models.capability import Capability
 from noc.main.models.label import Label
@@ -45,7 +44,7 @@ class CapsSettings(EmbeddedDocument):
     # Wildcard
     set_label: Optional["Label"] = ReferenceField(Label, required=False)
     # ref_remote_system
-    expose_models = ListField(StringField(required=True))
+    exposed = BooleanField(default=False)
     required = BooleanField(default=False)
 
     def __str__(self):
@@ -73,6 +72,7 @@ class CapsSettings(EmbeddedDocument):
 
 
 @change
+@on_save
 @on_delete_check(
     check=[("sa.ManagedObjectProfile", "caps_profile"), ("sa.ServiceProfile", "caps_profile")]
 )
@@ -268,6 +268,8 @@ class CapsProfile(Document):
     def get_default_profile(cls):
         return CapsProfile.objects.filter(name=cls.DEFAULT_PROFILE_NAME).first()
 
+    # ensure_profile
+
     def get_sections(self, mop, nsp) -> List[str]:
         """
         Returns a list of enabled sections
@@ -305,3 +307,6 @@ class CapsProfile(Document):
         if self.enable_l3:
             r += [m for m in self.L3_SECTIONS if l3_is_enabled(m)]
         return r
+
+    def on_save(self):
+        """"""
