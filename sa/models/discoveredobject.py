@@ -40,6 +40,8 @@ from noc.core.purgatorium import (
     iter_discovered_object,
     SOURCES,
     ETL_SOURCE,
+    HOSTNAME_FIELD_NAME,
+    HOSTNAME_ASSET_CAPS,
 )
 from noc.core.mongo.fields import PlainReferenceField
 from noc.config import config
@@ -331,7 +333,7 @@ class DiscoveredObject(Document):
         rule: Optional[str] = None,
         update_ts: Optional[datetime.datetime] = None,
         dry_run: bool = False,
-    ) -> Optional["DiscoveredObject"]:
+    ) -> "DiscoveredObject":
         """Check Discovered Object Exists"""
         oo = cls.find_object_by_data(address, pool, data)
         if len(oo) > 1:
@@ -372,7 +374,7 @@ class DiscoveredObject(Document):
         address: str,
         data: List[PurgatoriumData],
         dry_run: bool = False,
-    ) -> ["DiscoveredObject", List[PurgatoriumData]]:
+    ) -> Tuple["DiscoveredObject", List[PurgatoriumData]]:
         """
         get_moved object
 
@@ -1002,6 +1004,7 @@ class DiscoveredObject(Document):
             checks: List processed checks
         """
         processed_keys = set()
+        hostname_caps = Capability.get_by_name(HOSTNAME_ASSET_CAPS)
         # Merge Data
         for d in data:
             if d.source not in self.sources:
@@ -1021,6 +1024,18 @@ class DiscoveredObject(Document):
                 except ValueError:
                     logger.warning("[%s] Bad value for caps: %s", c, caps[c])
                     continue
+            # Register Hostname Caps? Maybe config param
+            if d.remote_system and d.data and HOSTNAME_FIELD_NAME in d.data and hostname_caps:
+                try:
+                    caps[HOSTNAME_ASSET_CAPS] = hostname_caps.clean_value(
+                        d.data[HOSTNAME_FIELD_NAME]
+                    )
+                except ValueError:
+                    logger.warning(
+                        "[%s] Unknown HostName format: %s",
+                        self.address,
+                        d.data[HOSTNAME_FIELD_NAME],
+                    )
             # Check Update ts, if deleted
             self.set_data(
                 d.source,

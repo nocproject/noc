@@ -36,6 +36,8 @@ SCAN_SOURCE = "network-scan"
 MANUAL_SOURCE = "manual"
 SNMP_TRAP_SOURCE = "snmptrap"
 NEIGHBOR_SOURCE = "neighbor"
+HOSTNAME_FIELD_NAME = "hostname"
+HOSTNAME_ASSET_CAPS = "Asset | Hostname"
 SOURCES = {ETL_SOURCE, MANUAL_SOURCE, SCAN_SOURCE, SNMP_TRAP_SOURCE, NEIGHBOR_SOURCE}
 
 
@@ -209,7 +211,7 @@ def register(
     if chassis_id:
         data["chassis_id"] = chassis_id
     if hostname:
-        data["hostname"] = hostname
+        data[HOSTNAME_FIELD_NAME] = hostname
     if uptime is not None:
         data["uptime"] = int(uptime)
     if labels:

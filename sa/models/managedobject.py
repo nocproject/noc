@@ -3054,7 +3054,7 @@ class ManagedObject(NOCModel):
         changed = False
         if capabilities:
             self.update_caps(capabilities, source="template")
-        groups = [str(g.id) for g in static_service_groups]
+        groups = [str(g.id) for g in static_service_groups or []]
         if set(self.static_service_groups) != set(groups):
             self.static_service_groups = groups
             changed |= True
@@ -3070,6 +3070,8 @@ class ManagedObject(NOCModel):
             if hasattr(self, field) and getattr(self, field) != value:
                 setattr(self, field, value)
                 changed |= True
+        if mappings:
+            self.update_remote_mappings(mappings, dry_run=True)
         return changed
 
     def get_controller_credentials(self):
