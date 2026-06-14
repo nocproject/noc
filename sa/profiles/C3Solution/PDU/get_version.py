@@ -1,12 +1,9 @@
 # ----------------------------------------------------------------------
 # C3Solution.PDU.get_version
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
-
-# Python modules
-import re
 
 # NOC modules
 from noc.core.script.base import BaseScript
