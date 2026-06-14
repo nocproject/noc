@@ -55,7 +55,8 @@ from noc.core.diagnostic.decorator import diagnostic
 from noc.core.validators import is_objectid
 from noc.core.watchers.types import ObjectEffect
 from noc.core.watchers.decorator import watchers
-from noc.core.defer import call_later
+from noc.core.defer import call_later, defer
+from noc.core.hash import hash_int
 from noc.core.checkers.base import CheckResult, Check, CAPS_PROFILE_CHECK
 from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.supplier import Supplier
@@ -450,7 +451,7 @@ class Service(Document):
         ).scalar("id")
 
     @classmethod
-    def get_exposed_labels_for_object(cls, mo_id: int) -> List[str]:
+    def get_exposed_labels_for_object(cls, mo_id: int) -> Iterable[List[str]]:
         """Return exposed labels for Managed Object"""
         from noc.sa.models.serviceinstance import ServiceInstance
 
@@ -1320,7 +1321,12 @@ class Service(Document):
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()
         self.refresh_status(update_affected=False)
-        self._refresh_managed_object()
+        if self.profile.caps_exposed:
+            defer(
+                "noc.sa.models.service.refresh_exposed_caps",
+                key=hash_int(self.id),
+                svc_ids=[str(self.id)],
+            )
 
     def sync_instances(self):
         """Synchronize Config-base instance"""
@@ -1558,3 +1564,53 @@ def refresh_connected_services(svc_ids: List[str]):
     with change_tracker.bulk_changes():
         for svc in affected:
             svc.sync_instances()
+
+
+def refresh_exposed_caps(
+    object_ids: Optional[List[str]] = None,
+    svc_profile_ids: Optional[List[str]] = None,
+    svc_ids: Optional[List[str]] = None,
+    user: Optional[str] = None,
+):
+    """Syncronize exposed caps"""
+    from .serviceinstance import ServiceInstance
+    from noc.sa.models.managedobject import ManagedObject
+
+    if svc_profile_ids and not svc_ids:
+        for x in svc_profile_ids:
+            # Reset Profile Cache
+            ServiceProfile._reset_caches(ObjectId(x))
+        svc_ids = list(Service.objects.filter(profile__in=svc_profile_ids).values_list("id"))
+    match = {}
+    if object_ids:
+        match = {"managed_object": {"$in": [int(x) for x in object_ids]}}
+    elif svc_ids:
+        match = {
+            "managed_object": {"$exists": True},
+            "type": "asset",
+            "service": {"$in": [ObjectId(x) for x in svc_ids]},
+        }
+    else:
+        raise ValueError("Nothing update")
+
+    coll = ServiceInstance._get_collection()
+    r = defaultdict(set)
+    for row in coll.aggregate(
+        [
+            {"$match": match},
+            {"$project": {"managed_object": 1, "service": 1}},
+            {"$group": {"_id": "$managed_object", "services": {"$push": "$service"}}},
+        ]
+    ):
+        for svc_id in row["services"]:
+            r[svc_id].add(row["_id"])
+    if not r:
+        logger.info("Notfing to sync for exposed caps")
+        return
+    exposed_caps = defaultdict(dict)
+    for svc in Service.objects.filter(id__in=list(r.keys())):
+        for mo_id in r[svc.id]:
+            exposed_caps[mo_id] |= svc.get_caps(exposed_scope="sa.ManagedObject")
+    print("EX", exposed_caps, r)
+    for mo in ManagedObject.objects.filter(id__in=list(exposed_caps.keys())):
+        mo.update_caps(exposed_caps.get(mo.id, {}), source=InputSource.DATABASE, scope="sa.Service")

@@ -446,6 +446,7 @@ class ServiceProfile(Document):
     diagnostic_status: List[DiagnosticSettings] = EmbeddedDocumentListField(DiagnosticSettings)
     # Capabilities
     caps_profile: Optional[CapsProfile] = ReferenceField(CapsProfile, required=False)
+    caps_exposed: bool = BooleanField(default=False)
     # Integration with external NRI and TT systems
     # Reference to remote system object has been imported from
     remote_system = ReferenceField(RemoteSystem)
@@ -477,12 +478,21 @@ class ServiceProfile(Document):
         return ServiceProfile.objects.filter(code=code).first()
 
     def on_save(self):
+        cf = frozenset(getattr(self, "_changed_fields", []))
         if not hasattr(self, "_changed_fields") or "interface_profile" in self._changed_fields:
             defer(
                 "noc.sa.models.serviceprofile.refresh_interface_profiles",
                 key=hash_int(self.id),
                 sp_id=str(self.id),
                 ip_id=str(self.interface_profile.id) if self.interface_profile else None,
+            )
+        if (not hasattr(self, "_changed_fields") and self.caps_exposed) or cf.intersection(
+            {"caps_profile", "caps_exposed"}
+        ):
+            defer(
+                "noc.sa.models.service.refresh_exposed_caps",
+                key=hash_int(self.id),
+                svc_profile_ids=[str(self.id)],
             )
 
     @classmethod
@@ -509,8 +519,12 @@ class ServiceProfile(Document):
         r = {}
         if not self.caps_profile:
             return r
+        if self.caps_exposed:
+            exposed_models = ["sa.ManagedObject"]
+        else:
+            exposed_models = None
         for c in self.caps_profile.caps:
-            r[str(c.capability.id)] = c.get_config()
+            r[str(c.capability.id)] = c.get_config(exposed_models=exposed_models)
         return r
 
     def get_instance_config(
@@ -613,7 +627,14 @@ class ServiceProfile(Document):
                 r[str(q)] += [pid]
         return [(queries[x] if x else x, r[x]) for x in r]
 
-    def iter_configured_instances(self) -> List["ServiceInstanceConfig"]:
+    @classmethod
+    def _reset_caches(cls, id):
+        try:
+            del cls._id_cache[id,]  # Tuple
+        except KeyError:
+            pass
+
+    def iter_configured_instances(self) -> Iterable["ServiceInstanceConfig"]:
         """Get configuration"""
         for settings in self.instance_settings:
             yield settings.get_instance_type()

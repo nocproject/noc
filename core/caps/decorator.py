@@ -54,6 +54,8 @@ def iter_model_caps(
         return
     for c, cfg in configs.items():
         c = Capability.get_by_id(c)
+        if not c:
+            continue
         yield CapsValue(
             capability=c,
             value=c.clean_value(cfg.default_value) if cfg.default_value else None,
@@ -91,7 +93,7 @@ def iter_document_caps(
         return
     for c, cfg in configs.items():
         c = Capability.get_by_id(c)
-        if c.id in processed:
+        if not c or c.id in processed:
             continue
         yield CapsValue(
             capability=c,
@@ -112,10 +114,6 @@ def save_document_caps(
     from noc.inv.models.capsitem import CapsItem
 
     prev_labels, caps_labels, new_caps = set(), set(), []
-    for c in self.iter_caps():
-        if c.config.set_label:
-            prev_labels |= set(c.get_labels()) | {c.config.set_label}
-
     for c in caps:
         new_caps.append(
             CapsItem(
@@ -124,13 +122,17 @@ def save_document_caps(
         )
         if c.config.set_label:
             caps_labels |= set(c.get_labels()) | {c.config.set_label}
+    for c in self.iter_caps():
+        if c.config.set_label and frozenset(c.get_labels()) - caps_labels:
+            prev_labels |= set(c.get_labels()) | {c.config.set_label}
     self.caps = new_caps
     if dry_run or self._created:
         return
     set_op = {"caps": self.caps}
+    changed_fields = changed_fields or []
     # Update database include effective labels directly
     # to avoid full save
-    if hasattr(self, "effective_labels") and bool(caps_labels.symmetric_difference(prev_labels)):
+    if hasattr(self, "effective_labels") and (caps_labels or prev_labels):
         obj_labels = set(self.effective_labels)
         if obj_labels and prev_labels:
             obj_labels -= set(prev_labels)
@@ -164,9 +166,6 @@ def save_model_caps(
 ):
     """"""
     prev_labels, caps_labels, new_caps = set(), set(), []
-    for c in self.iter_caps():
-        if c.config.set_label:
-            prev_labels |= set(c.get_labels()) | {c.config.set_label}
     for c in caps:
         new_caps.append(
             {
@@ -178,13 +177,18 @@ def save_model_caps(
         )
         if c.config.set_label:
             caps_labels |= set(c.get_labels()) | {c.config.set_label}
+    for c in self.iter_caps():
+        if c.config.set_label and frozenset(c.get_labels()) - caps_labels:
+            prev_labels |= set(c.get_labels()) | {c.config.set_label}
     self.caps = new_caps
     if dry_run or not self.id:
         return
     set_op = {"caps": self.caps}
+    changed_fields = changed_fields or []
     # Update database include effective labels directly
     # to avoid full save
-    if hasattr(self, "effective_labels") and bool(caps_labels.symmetric_difference(prev_labels)):
+    print("Update caps labels", new_caps, caps_labels, prev_labels)
+    if hasattr(self, "effective_labels") and (caps_labels or prev_labels):
         obj_labels = set(self.effective_labels)
         if obj_labels and prev_labels:
             obj_labels -= set(prev_labels)
@@ -209,7 +213,9 @@ def save_model_caps(
     self._reset_caches(self.id, credential=True)
 
 
-def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
+def get_caps(
+    self, scope: Optional[str] = None, exposed_scope: Optional[str] = None
+) -> Dict[str, Any]:
     """
     Returns a dict of effective object capabilities
     """
@@ -217,6 +223,10 @@ def get_caps(self, scope: Optional[str] = None) -> Dict[str, Any]:
     caps = {}
     for c in self.iter_caps(scope=scope):
         if c.name in caps and c.scope:
+            continue
+        if exposed_scope and (
+            not c.config.expose_models or exposed_scope not in c.config.expose_models
+        ):
             continue
         caps[c.name] = c.value
     return caps
@@ -417,6 +427,7 @@ def update_caps(
             continue
         new_caps += [ci]
     # Add new capabilities
+    configs = self.get_caps_config()
     for cn in set(caps) - seen:
         c = Capability.get_by_name(cn)
         if not c:
@@ -430,6 +441,7 @@ def update_caps(
                 value=value,
                 source=source,
                 scope=scope or "",
+                config=configs.pop(str(c.id), CapsConfig()),
             )
         )
         changed |= True

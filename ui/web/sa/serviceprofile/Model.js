@@ -93,6 +93,10 @@ Ext.define("NOC.sa.serviceprofile.Model", {
       type: "auto",
     },
     {
+      name: "caps_exposed",
+      type: "boolean",
+    },
+    {
       name: "diagnostic_status",
       type: "auto",
     },

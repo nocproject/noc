@@ -23,7 +23,6 @@ from noc.crm.models.subscriber import Subscriber
 from noc.crm.models.subscriberprofile import SubscriberProfile
 from noc.sa.models.managedobjectprofile import ManagedObjectProfile
 from noc.inv.models.interfaceprofile import InterfaceProfile
-from noc.main.models.label import Label
 from .serviceprofile import ServiceProfile
 
 logger = logging.getLogger(__name__)
@@ -287,8 +286,6 @@ class ServiceSummary(Document):
                 logger.error("Bulk write error: '%s'", e.details)
                 logger.error("Stopping check")
         mo = ManagedObject.get_by_id(managed_object)
-        # Refresh labels for ServiceInstancesUpdate
-        Label._refresh_object_labels(mo)
         NetworkSegment.update_summary(mo.segment)
 
     @classmethod
