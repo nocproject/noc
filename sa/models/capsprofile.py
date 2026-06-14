@@ -60,7 +60,7 @@ class CapsSettings(EmbeddedDocument):
             if self.capability.type.is_logical and self.set_label.is_scoped:
                 raise ValueError("On boolean type only not-scoped Set")
 
-    def get_config(self) -> CapsConfig:
+    def get_config(self, exposed_models: Optional[List[str]] = None) -> CapsConfig:
         """"""
         return CapsConfig(
             default_value=self.default_value or None,
@@ -68,6 +68,7 @@ class CapsSettings(EmbeddedDocument):
             ref_scope=self.ref_scope,
             set_label=self.set_label.name if self.set_label else None,
             required=self.required,
+            expose_models=exposed_models if self.exposed else None,
         )
 
 

@@ -510,8 +510,12 @@ class ServiceProfile(Document):
         r = {}
         if not self.caps_profile:
             return r
+        if self.caps_exposed:
+            exposed_models = ["sa.ManagedObject"]
+        else:
+            exposed_models = None
         for c in self.caps_profile.caps:
-            r[str(c.capability.id)] = c.get_config()
+            r[str(c.capability.id)] = c.get_config(exposed_models=exposed_models)
         return r
 
     def get_instance_config(
@@ -614,7 +618,7 @@ class ServiceProfile(Document):
                 r[str(q)] += [pid]
         return [(queries[x] if x else x, r[x]) for x in r]
 
-    def iter_configured_instances(self) -> List["ServiceInstanceConfig"]:
+    def iter_configured_instances(self) -> Iterable["ServiceInstanceConfig"]:
         """Get configuration"""
         for settings in self.instance_settings:
             yield settings.get_instance_type()

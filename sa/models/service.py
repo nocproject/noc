@@ -72,6 +72,7 @@ from noc.sa.models.serviceinstance import ServiceInstance
 from noc.sa.models.objectwatchersitem import WatchDocumentItem
 from noc.sa.models.objectdiagnosticconfig import ObjectDiagnosticConfig
 from noc.pm.models.agent import Agent
+from noc.models import get_model_id
 from noc.config import config
 
 logger = logging.getLogger(__name__)
@@ -450,7 +451,7 @@ class Service(Document):
         ).scalar("id")
 
     @classmethod
-    def get_exposed_labels_for_object(cls, mo_id: int) -> List[str]:
+    def get_exposed_labels_for_object(cls, mo_id: int) -> Iterable[List[str]]:
         """Return exposed labels for Managed Object"""
         from noc.sa.models.serviceinstance import ServiceInstance
 
@@ -1320,7 +1321,7 @@ class Service(Document):
         self.sync_instances()
         self.diagnostic.refresh_diagnostics()
         self.refresh_status(update_affected=False)
-        self._refresh_managed_object()
+        # self._refresh_managed_object()
 
     def sync_instances(self):
         """Synchronize Config-base instance"""
