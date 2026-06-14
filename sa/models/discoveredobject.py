@@ -1027,9 +1027,15 @@ class DiscoveredObject(Document):
             # Register Hostname Caps? Maybe config param
             if d.remote_system and d.data and HOSTNAME_FIELD_NAME in d.data and hostname_caps:
                 try:
-                    caps[HOSTNAME_ASSET_CAPS] = hostname_caps.clean_value(d.data[HOSTNAME_FIELD_NAME])
+                    caps[HOSTNAME_ASSET_CAPS] = hostname_caps.clean_value(
+                        d.data[HOSTNAME_FIELD_NAME]
+                    )
                 except ValueError:
-                    logger.warning("[%s] Unknown HostName format: %s",self.address, d.data[HOSTNAME_FIELD_NAME])
+                    logger.warning(
+                        "[%s] Unknown HostName format: %s",
+                        self.address,
+                        d.data[HOSTNAME_FIELD_NAME],
+                    )
             # Check Update ts, if deleted
             self.set_data(
                 d.source,
