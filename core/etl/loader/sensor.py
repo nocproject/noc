@@ -23,6 +23,7 @@ class SensorLoader(BaseLoader):
 
     discard_deferred = True
     workflow_event_model = True
+    workflow_seen_supported = True
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

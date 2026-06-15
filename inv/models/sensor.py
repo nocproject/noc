@@ -167,6 +167,10 @@ class Sensor(Document):
         if config.datastream.enable_cfgmetricstarget:
             if self.managed_object:
                 yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
+            elif changed_fields and changed_fields.get("managed_object"):
+                mo = ManagedObject.objects.filter(id=changed_fields["managed_object"]).values_list("bi_id").first()
+                if mo:
+                    yield "cfgmetricstarget", f"sa.ManagedObject::{mo[0]}"
             if self.agent:
                 yield "cfgmetricstarget", f"pm.Agent::{self.agent.bi_id}"
             if self.object and self.object.get_data("management", "managed_object"):
@@ -202,7 +206,7 @@ class Sensor(Document):
         if self.profile.mx_policy == "L":
             return self.label
         if self.profile.mx_policy == "A":
-            return self.label
+            return self.profile.alias_template
         return None
 
     def seen(self, source: Optional[str] = None):

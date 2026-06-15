@@ -312,7 +312,7 @@ def update_remote_mappings(
         changed |= True
     if changed:
         logger.info("[%s] Saving mappings", self)
-        self.save_remote_mappings(new_mappings)
+        self.save_remote_mappings(new_mappings, dry_run=dry_run)
     return changed
 
 

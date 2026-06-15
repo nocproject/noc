@@ -88,6 +88,7 @@ class BaseLoader(object):
     workflow_state_sync = False
     workflow_fields: Set[str] = {"state", "state_changed", "event"}
     workflow_event_model = False
+    workflow_seen_supported = False
     workflow_add_event = "seen"
     workflow_delete_event = "missed"
     # Effect
@@ -593,7 +594,9 @@ class BaseLoader(object):
         else:
             self.c_add += 1
             o = self.create_object(v, state=getattr(item, "state", None), mappings=mappings)
-            if self.workflow_event_model:
+            if self.workflow_seen_supported:
+                o.seen(source="etl")
+            elif self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
         if o and psf:
             self.post_save(o, psf)
@@ -685,7 +688,9 @@ class BaseLoader(object):
             self.c_delete += 1
             try:
                 obj = self.model.objects.get(pk=self.mappings[r_id])
-                if self.workflow_event_model:
+                if self.workflow_seen_supported:
+                    obj.unseen(source="etl")
+                elif self.workflow_event_model:
                     obj.fire_event(self.workflow_delete_event)
                 else:
                     obj.delete()

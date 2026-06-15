@@ -84,7 +84,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           name: "mx_policy",
           xtype: "combobox",
           fieldLabel: __("MX Policy"),
-          allowBlank: false,
+          allowBlank: true,
           queryMode: "local",
           displayField: "label",
           valueField: "id",
@@ -103,7 +103,7 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           name: "alias_template",
           xtype: "textfield",
           fieldLabel: __("Sensor Alias Template"),
-          allowBlank: false,
+          allowBlank: true,
           uiStyle: "medium",
         },
         {

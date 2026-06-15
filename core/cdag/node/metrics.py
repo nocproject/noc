@@ -96,13 +96,13 @@ class MetricsNode(BaseCDAGNode):
 
     def send_mx_sensor(self, data, sensor, target):
         """Send collected metrics to MX Route"""
-        if not sensor:
+        if not sensor or not sensor.mx_alias:
             return
         key = data.get("managed_object", data["sensor"])
         name = [ll.split("::")[-1] for ll in data["labels"] if ll.startswith("noc::sensor::")]
         name = sensor.mx_alias or name[0]
         # Name
-        r = {name: data["value"], "ts": data["ts"]}
+        r = {name: data["value"], "ts": data["ts"], "labels": data["labels"]}
         if "value_delta" in data:
             r[f"{name}_delta"] = data["value_delta"]
         if target and target.meta:

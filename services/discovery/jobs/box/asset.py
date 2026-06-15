@@ -16,6 +16,7 @@ from typing import Optional, List, Dict, Set, Tuple, Iterable, Any, Union
 
 # Third-party modules
 import cachetools
+from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -65,7 +66,7 @@ class AssetCheck(DiscoveryCheck):
             ]
         ] = []  # [(type, object, context, serial, data)]
         self.sensors: Dict[
-            Tuple[Optional[Object], str] : Dict[str, Any]
+            Tuple[Optional[Object], str], Dict[str, Any]
         ] = {}  # object, sensor -> sensor data
         # Upper object, lower object
         self.to_disconnect: Set[Tuple[Object, Object]] = set()
@@ -218,6 +219,8 @@ class AssetCheck(DiscoveryCheck):
                         description,
                     )
                     self.register_unknown_part_no(vnd, part_no, description)
+                    if sensors:
+                        self.register_sensors(sensors)
                     return
 
         # Sanitize serial number against the model
@@ -363,8 +366,7 @@ class AssetCheck(DiscoveryCheck):
         self.objects += [(o_type, o, self.ctx.copy(), serial, data, constant_data)]
         # Collect sensors
         if sensors:
-            for s in sensors:
-                self.sensors[(o, s["name"])] = s
+            self.register_sensors(sensors, o)
         # Collect stack members
         if number and o.get_data("stack", "stackable"):
             self.stack_member[o] = number
@@ -624,7 +626,7 @@ class AssetCheck(DiscoveryCheck):
     def sync_sensors(self):
         obj_sensors: Dict[Tuple[Optional[Object], str], Sensor] = {
             (s.object, s.local_id): s
-            for s in Sensor.objects.filter(object__in=[s[0] for s in self.sensors])
+            for s in Sensor.objects.filter(managed_object=self.object)
         }
         for obj, sn in obj_sensors:
             si = obj_sensors[(obj, sn)]
@@ -802,6 +804,11 @@ class AssetCheck(DiscoveryCheck):
             for pp in part_no:
                 self.unknown_part_no[p].add(pp)
             UnknownModel.mark_unknown(vendor.code[0], self.object, p, descripton)
+
+    def register_sensors(self, sensors: List[Dict[str, Any]], t_object: Optional[Object] = None):
+        """"""
+        for s in sensors:
+            self.sensors[(t_object, s["name"])] = s
 
     def get_unknown_part_no(self) -> List[List[str]]:
         """
