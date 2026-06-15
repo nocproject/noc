@@ -7,7 +7,6 @@
 
 # NOC modules
 import operator
-from random import choices
 import re
 from collections import defaultdict
 from threading import Lock
