@@ -63,11 +63,40 @@ class AuditTrailApplication(ExtApplication):
         Returns a list of requested object objects
         """
         q = self.parse_request_query(request)
-        print("QUERY", q)
-        # QUERY {'_dc': '1727112212246', '__format': 'ext', '__page': '1', '__start': '0', '__limit': '50'}
+        # QUERY {'_dc': '1727112212246', '__format': 'ext', '__page': '1', '__start': '0', '__limit': '50', '__query': 'fieldname', 'op': 'C'}
         ch = connection(read_only=True)
+        _query = q.get("__query")
+        _op = q.get("op")
+
+        # __sort=[{"property":"timestamp","direction":"ASC"}]
+        _sort = q.get("__sort", "[{}]")
+        _sort = orjson.loads(_sort)
+        sort_column = _sort[0].get("property", "timestamp")
+        if sort_column not in ("timestamp", "user", "object_name"):
+            sort_column = "timestamp"
+        sort_direction = _sort[0].get("direction", "DESC")
+
+        ch_query = ""
+
+        queries = []
+        if _query:
+            queries.append("object_name = '%s'\n" % (_query))
+        if _op:
+            queries.append("op = '%s'\n" % (_op))
+
+        if queries:
+            ch_query += "WHERE\n" + " AND ".join(queries)
+
+        cnt_query = "SELECT count(*) as count FROM noc.changes\n" + ch_query
+
+        cnt_data = ch.execute(cnt_query, return_raw=True)
+        cnt_data = orjson.loads(cnt_data)
+
+        ch_query = "SELECT * FROM noc.changes\n" + ch_query
+        ch_query += f"ORDER BY {sort_column} {sort_direction} LIMIT %s OFFSET %s FORMAT JSON"
+
         data = ch.execute(
-            "SELECT * FROM noc.changes ORDER BY timestamp LIMIT %s OFFSET %s FORMAT JSON",
+            ch_query,
             args=[int(q["__limit"]), int(q["__start"])],
             return_raw=True,
         )
@@ -76,7 +105,7 @@ class AuditTrailApplication(ExtApplication):
         for d in data["data"]:
             out.append(self.instance_to_dict(d))
         return self.response(
-            {"total": data["statistics"]["rows_read"], "success": True, "data": out},
+            {"total": cnt_data, "success": True, "data": out},
             status=self.OK,
         )
 
