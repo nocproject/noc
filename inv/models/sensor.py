@@ -168,7 +168,11 @@ class Sensor(Document):
             if self.managed_object:
                 yield "cfgmetricstarget", f"sa.ManagedObject::{self.managed_object.bi_id}"
             elif changed_fields and changed_fields.get("managed_object"):
-                mo = ManagedObject.objects.filter(id=changed_fields["managed_object"]).values_list("bi_id").first()
+                mo = (
+                    ManagedObject.objects.filter(id=changed_fields["managed_object"])
+                    .values_list("bi_id")
+                    .first()
+                )
                 if mo:
                     yield "cfgmetricstarget", f"sa.ManagedObject::{mo[0]}"
             if self.agent:

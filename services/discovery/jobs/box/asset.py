@@ -16,7 +16,6 @@ from typing import Optional, List, Dict, Set, Tuple, Iterable, Any, Union
 
 # Third-party modules
 import cachetools
-from mongoengine.queryset.visitor import Q as m_q
 
 # NOC modules
 from noc.services.discovery.jobs.base import DiscoveryCheck
@@ -65,9 +64,9 @@ class AssetCheck(DiscoveryCheck):
                 List[ObjectAttr],
             ]
         ] = []  # [(type, object, context, serial, data)]
-        self.sensors: Dict[
-            Tuple[Optional[Object], str], Dict[str, Any]
-        ] = {}  # object, sensor -> sensor data
+        self.sensors: Dict[Tuple[Optional[Object], str], Dict[str, Any]] = (
+            {}
+        )  # object, sensor -> sensor data
         # Upper object, lower object
         self.to_disconnect: Set[Tuple[Object, Object]] = set()
         self.rule: Dict[str, List[ConnectionRule]] = defaultdict(
@@ -625,8 +624,7 @@ class AssetCheck(DiscoveryCheck):
 
     def sync_sensors(self):
         obj_sensors: Dict[Tuple[Optional[Object], str], Sensor] = {
-            (s.object, s.local_id): s
-            for s in Sensor.objects.filter(managed_object=self.object)
+            (s.object, s.local_id): s for s in Sensor.objects.filter(managed_object=self.object)
         }
         for obj, sn in obj_sensors:
             si = obj_sensors[(obj, sn)]
