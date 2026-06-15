@@ -45,6 +45,15 @@ Ext.define("NOC.inv.sensorprofile.Model", {
       defaultValue: "R",
     },
     {
+      name: "mx_policy",
+      type: "string",
+      defaultValue: "D",
+    },
+    {
+      name: "alias_template",
+      type: "string",
+    },
+    {
       name: "enable_collect",
       type: "boolean",
     },

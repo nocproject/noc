@@ -23,6 +23,7 @@ class SensorItem(BaseModel):
     rules: Optional[List[str]] = None
     profile: Optional[str] = None
     protocol: str = "other"
+    mx_alias: Optional[str] = None
     hints: Optional[List[str]] = None
 
 
