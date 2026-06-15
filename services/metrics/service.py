@@ -516,6 +516,7 @@ class MetricsService(FastAPIService):
             if si.enable_timedelta and time_delta:
                 sender.activate(tx, "time_delta", time_delta)
             sender.activate(tx, "target", card.config)
+            sender.activate(tx, "component", card.component)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
         # Alarm

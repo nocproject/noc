@@ -29,8 +29,8 @@ class MetricsNodeConfig(BaseModel):
 NS = 1_000_000_000
 
 # scope -> name -> cleaner
-scope_cleaners: Dict[str, Dict[str, Callable]] = {}
-mx_converters: Optional[Dict[str, Callable]] = None
+scope_cleaners: Dict[str, Dict[str, Callable[[ValueType], ValueType]]] = {}
+mx_converters: Optional[Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]]] = None
 
 
 class MetricsNode(BaseCDAGNode):
@@ -45,7 +45,7 @@ class MetricsNode(BaseCDAGNode):
     mx_scopes = set(config.message.enable_metric_scopes)
 
     def get_value(
-        self, ts: int, labels: List[str], target: Optional[Any], **kwargs
+        self, ts: int, labels: List[str], target: Optional[Any], component: Optional[Any], **kwargs
     ) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
