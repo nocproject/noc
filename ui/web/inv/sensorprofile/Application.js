@@ -81,6 +81,32 @@ Ext.define("NOC.inv.sensorprofile.Application", {
           allowBlank: true,
         },
         {
+          name: "mx_policy",
+          xtype: "combobox",
+          fieldLabel: __("MX Policy"),
+          allowBlank: false,
+          queryMode: "local",
+          displayField: "label",
+          valueField: "id",
+          store: {
+            fields: ["id", "label"],
+            data: [
+              {id: "D", label: "Disable"},
+              {id: "L", label: "As Sensor Label"},
+              {id: "A", label: "As Alias"},
+            ],
+          },
+          defaultValue: "D",
+          uiStyle: "medium",
+        },
+        {
+          name: "alias_template",
+          xtype: "textfield",
+          fieldLabel: __("Sensor Alias Template"),
+          allowBlank: false,
+          uiStyle: "medium",
+        },
+        {
           name: "dynamic_classification_policy",
           xtype: "combobox",
           fieldLabel: __("Dynamic Classification Policy"),

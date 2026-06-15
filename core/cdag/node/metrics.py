@@ -29,8 +29,8 @@ class MetricsNodeConfig(BaseModel):
 NS = 1_000_000_000
 
 # scope -> name -> cleaner
-scope_cleaners: Dict[str, Dict[str, Callable]] = {}
-mx_converters: Optional[Dict[str, Callable]] = None
+scope_cleaners: Dict[str, Dict[str, Callable[[ValueType], ValueType]]] = {}
+mx_converters: Optional[Dict[str, Callable[[Dict[str, Any]], Dict[str, Any]]]] = None
 
 
 class MetricsNode(BaseCDAGNode):
@@ -45,7 +45,7 @@ class MetricsNode(BaseCDAGNode):
     mx_scopes = set(config.message.enable_metric_scopes)
 
     def get_value(
-        self, ts: int, labels: List[str], target: Optional[Any], **kwargs
+        self, ts: int, labels: List[str], target: Optional[Any], component: Optional[Any], **kwargs
     ) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
@@ -76,11 +76,16 @@ class MetricsNode(BaseCDAGNode):
         if self.config.spool:
             svc.register_metrics(self.config.scope, [r])
         if self.config.spool_message and self.config.scope in self.mx_scopes:
-            self.send_mx(r, target)
+            if self.config.scope == "sensor":
+                self.send_mx_sensor(r, component, target)
+            else:
+                self.send_mx(r, target)
         return r
 
     @staticmethod
-    def set_scope_cleaners(scope: str, cleaners: Dict[str, Callable]) -> None:
+    def set_scope_cleaners(
+        scope: str, cleaners: Dict[str, Callable[[ValueType], ValueType]]
+    ) -> None:
         """
         Set cleaners for scope
         :param scope: Scope name
@@ -88,6 +93,33 @@ class MetricsNode(BaseCDAGNode):
         """
         if scope not in scope_cleaners:
             scope_cleaners[scope] = cleaners
+
+    def send_mx_sensor(self, data, sensor, target):
+        """Send collected metrics to MX Route"""
+        if not sensor:
+            return
+        key = data.get("managed_object", data["sensor"])
+        name = [ll.split("::")[-1] for ll in data["labels"] if ll.startswith("noc::sensor::")]
+        name = sensor.mx_alias or name[0]
+        # Name
+        r = {name: data["value"], "ts": data["ts"]}
+        if "value_delta" in data:
+            r[f"{name}_delta"] = data["value_delta"]
+        if target and target.meta:
+            r["meta"] = target.meta
+        if sensor:
+            data["munits"] = sensor.units
+        svc = get_service()
+        svc.register_message(
+            r,
+            MessageType.METRICS,
+            {
+                MX_METRICS_SCOPE: self.config.scope.encode(encoding="utf-8"),
+                # MX_LABELS: self.config.message_labels or b"",
+            },
+            key,
+            group_key=f"{self.config.scope}-{key}",
+        )
 
     def send_mx(self, data, target):
         """

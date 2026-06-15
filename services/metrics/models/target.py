@@ -121,6 +121,7 @@ class SensorComponentTarget:
     bi_id: int
     name: Optional[str]
     units: Optional[str]
+    mx_alias: Optional[str]
     target: Optional[MetricTarget]
     managed_object: Optional[int]
     agent: Optional[int]
@@ -139,6 +140,7 @@ class SensorComponentTarget:
             rules=convert_rules(data.get("rules", [])),
             exposed_labels=None,
             units=data.get("units", "1"),
+            mx_alias=data.get("mx_alias"),
             target=target,
         )
 

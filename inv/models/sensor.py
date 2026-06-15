@@ -197,6 +197,14 @@ class Sensor(Document):
         """
         return self.profile.units or self.units
 
+    @property
+    def mx_alias(self) -> str:
+        if self.profile.mx_policy == "L":
+            return self.label
+        if self.profile.mx_policy == "A":
+            return self.label
+        return None
+
     def seen(self, source: Optional[str] = None):
         """
         Seen sensor
@@ -373,6 +381,7 @@ class Sensor(Document):
             "bi_id": sensor.bi_id,
             "name": sensor.label,
             "units": sensor.munits.code,
+            "mx_alias": sensor.mx_alias,
             "protocol": sensor.protocol,
             "exposed_labels": Label.build_expose_labels(
                 sensor.effective_labels,

@@ -117,6 +117,10 @@ class SensorProfile(Document):
     # PM Integration
     units: Optional[MeasurementUnits] = PlainReferenceField(MeasurementUnits)
     metric_type: Optional["MetricType"] = PlainReferenceField(MetricType)
+    mx_policy = StringField(
+        choices=[("D", "Disable"), ("L", "Sensor Label"), ("A", "By Alias")], defaul="D"
+    )
+    alias_template = StringField()
     wiping_ttl = IntField(min_value=0, default=0)
     # Dynamic Profile Classification
     dynamic_classification_policy = StringField(
