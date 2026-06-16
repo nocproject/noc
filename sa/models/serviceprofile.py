@@ -622,7 +622,8 @@ class ServiceProfile(Document):
         for pid, rules, policy in ServiceProfile.get_alarm_rules():
             if rules is None and policy == "A":
                 q = ServiceInstance.get_instance_filter_by_alarm(
-                    alarm, include_object=True,
+                    alarm,
+                    include_object=True,
                 )
                 if q:
                     queries[str(q)] = q

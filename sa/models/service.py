@@ -1067,7 +1067,9 @@ class Service(Document):
         # Calculate Alarm status
         for aa in ActiveAlarm.objects.filter(affected_services=self.id):
             # Match Rule
-            rule = self.profile.get_rule_by_alarm(aa, is_reference=aa.vars.get("service") == str(self.id))
+            rule = self.profile.get_rule_by_alarm(
+                aa, is_reference=aa.vars.get("service") == str(self.id)
+            )
             if not rule:
                 continue
             # Calculate Status
