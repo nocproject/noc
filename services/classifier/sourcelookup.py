@@ -38,7 +38,7 @@ class SourceConfig(object):
             sa_profile=data.get("sa_profile"),
             effective_labels=tuple(data.get("effective_labels") or []),
             watchers=tuple(data.get("watchers") or []),
-            services=tuple(int(svc["bi_id"]) for svc in data["opaque_data"].get("services") or []),
+            services=tuple(int(svc["bi_id"]) for svc in data.get("services") or []),
             mapping_refs=tuple(data.get("mapping_refs") or []),
         )
 

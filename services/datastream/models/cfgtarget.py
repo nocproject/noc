@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Optional, List
+from typing import Optional, List, Dict
 
 # Third-party modules
 from pydantic import BaseModel
@@ -68,6 +68,7 @@ class CfgTarget(BaseModel):
     syslog: Optional[SyslogSettings] = None
     trap: Optional[TrapSettings] = None
     # checks: Optional[List[CheckConfig]] = None
+    services: Optional[List[Dict[str, str]]] = None
     dependencies: Optional[List[Dependency]] = None
     mapping_refs: Optional[List[str]] = None
     watchers: Optional[List[str]] = None

@@ -302,6 +302,7 @@ class AlarmStatusRule(EmbeddedDocument):
     include_labels = ListField(StringField())
     exclude_labels = ListField(StringField())
     affected_instance = BooleanField(default=False)  # Include ServiceInstance to
+    required_reference = BooleanField(default=False)  # Required service component on Alarm
     min_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Min Severity
     max_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Max Severity
     # set_weight
@@ -310,8 +311,10 @@ class AlarmStatusRule(EmbeddedDocument):
     def __str__(self):
         return f"{self.alarm_class_template or 'ANY'} (AF:{self.affected_instance})"
 
-    def is_match(self, alarm) -> bool:
+    def is_match(self, alarm, is_reference: bool = False) -> bool:
         """"""
+        if self.required_reference and not is_reference:
+            return False
         if self.min_severity and alarm.severity < self.min_severity.severity:
             return False
         if self.max_severity and alarm.severity > self.max_severity.severity:
@@ -400,9 +403,9 @@ class ServiceProfile(Document):
     alarm_affected_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("B", "By Object"),
+            ("B", "By Reference"),
             ("A", "By Instance"),
-            ("O", "By Filter"),
+            ("O", "Only Filter"),
         ],
         default="D",
     )
@@ -560,9 +563,13 @@ class ServiceProfile(Document):
             type: service, client
         """
 
-    def get_rule_by_alarm(self, aa) -> Optional["AlarmStatusRule"]:
+    def get_rule_by_alarm(self, aa, is_reference: bool = False) -> Optional["AlarmStatusRule"]:
+        if self.alarm_affected_policy in {"D"}:
+            return None
+        if self.alarm_affected_policy == "B" and not self.alarm_status_rules:
+            return AlarmStatusRule(affected_instance=False)
         for r in self.alarm_status_rules:
-            if r.is_match(aa):
+            if r.is_match(aa, is_reference=is_reference):
                 return r
         # if self.alarm_affected_policy == "B" or self.alarm_affected_policy == "I":
         #    return AlarmStatusRule(affected_instance=True)
@@ -587,31 +594,41 @@ class ServiceProfile(Document):
     @classmethod
     @cachetools.cachedmethod(operator.attrgetter("_alarm_rule_cache"), lock=lambda _: id_lock)
     def get_alarm_rules(cls) -> List[Tuple[str, Optional[Tuple[AlarmStatusRule, ...]], str]]:
-        """"""
+        """
+        Getting rules by policy
+          * D - Not processed
+          * B - For alarms on service component
+          * A - Match Service Instance
+          * O - Only Rules
+        """
         r = []
         for p in ServiceProfile.objects.filter(alarm_affected_policy__ne="D"):
-            if p.alarm_affected_policy != "O":
+            if p.alarm_affected_policy == "O" and not p.alarm_status_rules:
+                # Not settings
+                continue
+            if not p.alarm_status_rules:
                 r.append((p.id, None, p.alarm_affected_policy))
             else:
                 r.append((p.id, tuple(p.alarm_status_rules), p.alarm_affected_policy))
         return r
 
     @classmethod
-    def get_alarm_service_filter(cls, alarm) -> List[Tuple[m_q, List[str]]]:
+    def get_alarm_service_filter(cls, alarm) -> List[Tuple[Optional[m_q], List[str]]]:
         """Getting alarm filter by ServiceProfile rules"""
         from noc.sa.models.serviceinstance import ServiceInstance
 
         r = defaultdict(list)
-        queries = {}
+        queries: Dict[str, Optional[m_q]] = {}
         for pid, rules, policy in ServiceProfile.get_alarm_rules():
-            if rules is None:
+            if rules is None and policy == "A":
                 q = ServiceInstance.get_instance_filter_by_alarm(
-                    alarm, include_object=policy == "B"
+                    alarm,
+                    include_object=True,
                 )
                 if q:
                     queries[str(q)] = q
                     r[str(q)] += [pid]
-            if not rules:
+            if not rules or policy == "B":
                 continue
             q = m_q()
             for rule in rules:

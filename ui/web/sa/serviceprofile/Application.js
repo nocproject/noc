@@ -398,12 +398,14 @@ Ext.define("NOC.sa.serviceprofile.Application", {
               fieldLabel: __("Alarm Affected Policy"),
               tooltip: __("Transfer alarm to OperStatus <br/>" +
                                 "D - Disable Alarm Transfer<br/>" +
-                                "A - Any alarm by Resource"),
+                                "B - Service Component on Alarm<br/>" +
+                                "B - Instance Filter<br/>" +
+                                "O - Only By Filter Rule (Empty - Disable)"),
               store: [
                 ["D", __("Disable")],
-                ["B", __("By Object")],
+                ["B", __("By Service Component")],
                 ["A", __("By Instance")],
-                ["O", __("By Filter")],
+                ["O", __("Only By Filter")],
               ],
               allowBlank: true,
               value: "A",
@@ -437,6 +439,13 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                     },
                   },
                   width: 200,
+                },
+                {
+                  text: __("Ref. Only"),
+                  dataIndex: "required_reference",
+                  width: 100,
+                  editor: "checkbox",
+                  renderer: NOC.render.Bool,
                 },
                 {
                   text: __("Affected Instance"),

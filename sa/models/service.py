@@ -1067,7 +1067,9 @@ class Service(Document):
         # Calculate Alarm status
         for aa in ActiveAlarm.objects.filter(affected_services=self.id):
             # Match Rule
-            rule = self.profile.get_rule_by_alarm(aa)
+            rule = self.profile.get_rule_by_alarm(
+                aa, is_reference=aa.vars.get("service") == str(self.id)
+            )
             if not rule:
                 continue
             # Calculate Status
@@ -1210,16 +1212,14 @@ class Service(Document):
         """Find affected services on topology"""
         r = []
         if "service" in alarm.vars and is_objectid(alarm.vars["service"]):
-            svc_id = alarm.vars["service"]
-        elif "service" in alarm.components and getattr(alarm.components, "service", None):
-            svc_id = alarm.components.service.id
-        else:
-            return r
-        for svc in Service.objects.filter(id=svc_id):
-            if svc.profile.get_rule_by_alarm(alarm):
-                r.append(svc.id)
-        if not r:
-            r.append(ObjectId(svc_id))
+            return [ObjectId(alarm.vars["service"])]
+        if "service" in alarm.components and getattr(alarm.components, "service", None):
+            return [alarm.components.service.id]
+        # for svc in Service.objects.filter(id=svc_id):
+        #    if svc.profile.get_rule_by_alarm(alarm, is_reference=True):
+        #        r.append(svc.id)
+        # if not r:
+        #    r.append(ObjectId(svc_id))
         return r
 
     @classmethod
@@ -1227,6 +1227,7 @@ class Service(Document):
         """Return service Ids for requested alarm"""
         if alarm.alarm_class.name == SVC_AC:
             return []
+        services = set()
         if "service" in alarm.components or "service" in alarm.vars:
             return cls.find_alarm_affected_services(alarm)
         q = m_q()
@@ -1236,7 +1237,7 @@ class Service(Document):
         if not q and not filters:
             return []
         logger.info("Match Profiles: %s", filters)
-        services, profile_rules = set(), []
+        profile_rules = []
         # Iter Alarm filters
         for instance_q, profiles in filters:
             if instance_q is None:
@@ -1611,6 +1612,5 @@ def refresh_exposed_caps(
     for svc in Service.objects.filter(id__in=list(r.keys())):
         for mo_id in r[svc.id]:
             exposed_caps[mo_id] |= svc.get_caps(exposed_scope="sa.ManagedObject")
-    print("EX", exposed_caps, r)
     for mo in ManagedObject.objects.filter(id__in=list(exposed_caps.keys())):
         mo.update_caps(exposed_caps.get(mo.id, {}), source=InputSource.DATABASE, scope="sa.Service")
