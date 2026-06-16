@@ -206,6 +206,7 @@ def send_message(
     message_type: MessageType,
     headers: Optional[Dict[str, bytes]],
     sharding_key: int = 0,
+    fwd_to: Optional[str] = None,
 ):
     """
     Build message and schedule to send to mx service
@@ -222,6 +223,8 @@ def send_message(
     }
     if headers:
         msg_headers.update(headers)
+    if fwd_to:
+        msg_headers[MX_FWD_ROUTER] = fwd_to.encode()
     svc = get_service()
     run_sync(partial(svc.send_message, data, message_type, headers, sharding_key))
     # n_partitions = get_mx_partitions()
@@ -238,6 +241,7 @@ def send_notification(
     body: str,
     to: str,  # ? method::/address
     notification_method: str = "mail",
+    fwd_to: Optional[str] = None,
     **kwargs,
 ):
     """
@@ -255,6 +259,8 @@ def send_notification(
         MX_NOTIFICATION_METHOD: notification_method.encode(),
         MX_TO: to.encode(DEFAULT_ENCODING),
     }
+    if fwd_to:
+        msg_headers[MX_FWD_ROUTER] = fwd_to.encode()
     svc = get_service()
     data = {"body": body, "subject": subject, "address": to}
     if kwargs:
