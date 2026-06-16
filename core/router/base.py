@@ -32,7 +32,6 @@ from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.config import get_stream
 from noc.core.span import Span
-from noc.core.msgstream.message import Message as StreamMessage
 from .route import Route, DefaultNotificationRoute, DefaultJobRoute, DefaultETLEventRoute
 from .action import DROP, DUMP, FWD
 
