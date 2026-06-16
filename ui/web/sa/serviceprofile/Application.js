@@ -439,6 +439,13 @@ Ext.define("NOC.sa.serviceprofile.Application", {
                   width: 200,
                 },
                 {
+                  text: __("Ref. Only"),
+                  dataIndex: "required_reference",
+                  width: 100,
+                  editor: "checkbox",
+                  renderer: NOC.render.Bool,
+                },
+                {
                   text: __("Affected Instance"),
                   dataIndex: "affected_instance",
                   width: 100,
