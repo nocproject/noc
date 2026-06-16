@@ -7,6 +7,7 @@
 
 # Python modules
 from typing import TypeVar, Optional, Callable, Any
+import enum
 from logging import Logger
 from inspect import signature
 
@@ -16,6 +17,13 @@ from ..env import Environment
 
 REQ = TypeVar("REQ")
 RESP = TypeVar("RESP")
+
+
+class ActionResultCode(enum.Enum):
+    OK = "OK"
+    PARTIAL = "PARTIAL"
+    FAIL = "FAIL"
+    UNEXPECTED = "UNEXPECTED"
 
 
 class ActionError(NOCError):

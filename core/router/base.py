@@ -32,6 +32,7 @@ from noc.core.perf import metrics
 from noc.core.ioloop.util import run_sync
 from noc.core.msgstream.config import get_stream
 from noc.core.span import Span
+from noc.core.msgstream.message import Message as StreamMessage
 from .route import Route, DefaultNotificationRoute, DefaultJobRoute, DefaultETLEventRoute
 from .action import DROP, DUMP, FWD
 
@@ -76,6 +77,19 @@ class Router(object):
             route_id: Router identifier
         """
         return route_id in self.routes
+
+    @classmethod
+    def build_message(
+        cls, msg: Message, body: Dict[str, Any], headers: Dict[str, bytes]
+    ) -> Message:
+        if not isinstance(body, bytes):
+            body = orjson.dumps(body)
+        return Message(
+            value=body,
+            timestamp=msg.timestamp,
+            key=msg.key,
+            headers=headers,
+        )
 
     def change_route(self, data):
         """
@@ -312,7 +326,7 @@ class Router(object):
                     logger.info(logger.debug("[%s] Fofward to: %s", msg_id, self.routes[router_id]))
                     await self.to_route(
                         self.routes[router_id],
-                        body,
+                        self.build_message(msg, body, action_headers),
                         msg_type,
                         msg_id=msg_id,
                     )

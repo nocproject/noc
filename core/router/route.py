@@ -40,10 +40,11 @@ from noc.core.mx import (
     MX_JOB_HANDLER,
     MX_DISABLE_MUTATIONS,
     MX_REMOTE_SYSTEMS,
+    MX_FWD_ROUTER,
     MessageType,
     MessageMeta,
 )
-from .action import Action, NotificationAction, MessageAction, ActionCfg, JobAction, HeaderItem
+from .action import Action, NotificationAction, MessageAction, ActionCfg, JobAction, HeaderItem, FWD
 
 T_BODY = Union[bytes, Any]
 
@@ -335,6 +336,8 @@ class DefaultNotificationRoute(Route):
     ) -> Iterator[Tuple[str, Dict[str, bytes], T_BODY]]:
         if MX_NOTIFICATION_GROUP_ID in msg.headers:
             yield from self.message_action.iter_action(msg, message_type)
+        elif MX_FWD_ROUTER in msg.headers:
+            yield FWD, msg.headers, msg.value
         else:
             yield from self.notification_action.iter_action(msg, message_type)
 

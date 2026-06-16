@@ -525,9 +525,17 @@ class NotificationGroup(NOCModel):
             body: Notification body
             attachments:
         """
+        from noc.main.models.messageroute import MessageRoute
+
+        route = None
         if method not in NOTIFICATION_METHODS:
             logger.error("Unknown notification method: %s", method)
-            return
+            route = MessageRoute.get_by_id(method)
+            if route:
+                method, route = "webhook", str(route.id)
+            else:
+                logger.error("Unknown notification method: %s", method)
+                return
         logger.debug("Sending notification to %s via %s", address, method)
         send_notification(
             subject=subject,
@@ -535,6 +543,7 @@ class NotificationGroup(NOCModel):
             to=address,
             notification_method=method,
             attachments=attachments or [],
+            fwd_to=route,
         )
 
     @classmethod

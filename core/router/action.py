@@ -274,12 +274,14 @@ class MessageAction(Action):
         if MX_WATCH_FOR_ID in msg.headers:
             obj = msg.headers[MX_WATCH_FOR_ID].decode()[2:]
         ts = datetime.datetime.now()
-        body, message_type = None, MessageType(message_type.decode())
+        message_type = MessageType(message_type.decode())
+        body: Optional[Dict[str, Any]] = None
         for c in ng.get_active_contacts(obj, ts=ts):
             body = body or self.render_template(
                 message_type, msg, c.language, notification_group=ng
             )
             if not body:
+                logger.warning("Uknown template for message type: %s", message_type)
                 break
             if c.title_tag:
                 body = {
@@ -291,21 +293,7 @@ class MessageAction(Action):
                 MX_NOTIFICATION_METHOD: c.method.encode(),
             }
             if c.route:
-                action = FWD
-                body = Message(
-                    value=body,
-                    subject=msg.subject,
-                    offset=msg.offset,
-                    timestamp=msg.timestamp,
-                    key=msg.key,
-                    partition=msg.partition,
-                    headers=headers,
-                )
                 headers[MX_FWD_ROUTER] = str(c.route).encode()
+                yield FWD, headers, body
             else:
-                action = NOTIFICATION_METHODS[c.method].decode()
-            yield (
-                action,
-                headers,
-                body,
-            )
+                yield NOTIFICATION_METHODS[c.method].decode(), headers, body
