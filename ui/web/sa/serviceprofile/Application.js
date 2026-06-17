@@ -739,7 +739,8 @@ Ext.define("NOC.sa.serviceprofile.Application", {
               fieldLabel: __("Status Alarm Policy"),
               store: [
                 ["D", __("Disable")],
-                ["R", __("Group")],
+                ["R", __("Root Group (Only Root Severvice)")],
+                ["G", __("Group")],
                 ["A", __("Direct Alarm")],
               ],
               value: "R",

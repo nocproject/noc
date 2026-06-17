@@ -413,7 +413,8 @@ class ServiceProfile(Document):
     raise_status_alarm_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("R", "Group"),
+            ("G", "Group"),
+            ("R", "Root Group"),
             ("A", "Direct"),
         ],
         default="R",
