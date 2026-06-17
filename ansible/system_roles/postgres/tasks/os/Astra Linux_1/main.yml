@@ -23,3 +23,11 @@
     dest: "/etc/security/limits.d/postgres_limits.conf"
   tags:
     - config
+
+#echo "ac_ignore_maclabel = true" > /etc/postgresql/15/main/conf.d/00_disable_mac.conf
+- name: Disable MAC for postgresql
+  copy:
+    dest: /etc/postgresql/15/main/conf.d/00_disable_mac.conf
+    content: |
+      ac_ignore_maclabel = true
+
