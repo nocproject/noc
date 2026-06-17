@@ -143,7 +143,7 @@ class Action(EmbeddedDocument):
         if self.user:
             r.append(f"U::{self.user.username}")
         if self.object_action:
-            r.append(f"OA::{self.user.username}")
+            r.append(f"OA::{self.object_action}")
         return f"{self.when}: {';'.join(r)}"
 
     def get_config(self) -> List["ActionConfig"]:
@@ -289,7 +289,7 @@ class AlarmRule(Document):
     @classmethod
     def get_config(cls, rule: "AlarmRule"):
         """Generate Rule config"""
-        r = {
+        r: Dict[str, Any] = {
             "id": str(rule.id),
             "name": rule.name,
             "is_active": rule.is_active,
