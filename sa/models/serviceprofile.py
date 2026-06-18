@@ -309,7 +309,7 @@ class AlarmStatusRule(EmbeddedDocument):
     status = EnumField(Status, required=False)  # Default status by Severity
 
     def __str__(self):
-        return f"{self.alarm_class_template or 'ANY'} (AF:{self.affected_instance})"
+        return f"{self.alarm_class_template or 'ANY'} (AF:{self.affected_instance}, RR:{self.required_reference})"
 
     def is_match(self, alarm, is_reference: bool = False) -> bool:
         """"""
@@ -413,7 +413,8 @@ class ServiceProfile(Document):
     raise_status_alarm_policy = StringField(
         choices=[
             ("D", "Disable"),
-            ("R", "Group"),
+            ("G", "Group"),
+            ("R", "Root Group"),
             ("A", "Direct"),
         ],
         default="R",

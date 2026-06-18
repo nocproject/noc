@@ -346,7 +346,7 @@ class EscalationProfile(Document):
         """Alarm must wait escalation ended before close"""
         return self.end_condition in ("CT", "M")
 
-    def allowed_escalation(self, alarm: ActiveAlarm) -> bool:
+    def allowed_escalation(self, alarm: ActiveAlarm, check_active_groups: bool = False) -> bool:
         """
         Job Leader
         * Always First
@@ -361,6 +361,14 @@ class EscalationProfile(Document):
             return not (alarm.root or alarm.group_type.value)
         if alarm.group_type != GroupType.NEVER and not self.escalation_policy.allowed_group:
             # Not allowed Group escalation
+            return False
+        if (
+            alarm.group_type == GroupType.NEVER
+            and self.escalation_policy.value in {1, 3}
+            and not alarm.groups
+            and check_active_groups
+        ):
+            # Not allowed escalation alarm without active group
             return False
         if self.escalation_policy == EscalationPolicy.ROOT_FIRST:
             return not bool(alarm.root)
@@ -426,11 +434,13 @@ class EscalationProfile(Document):
         return r
 
     @classmethod
-    def watch_escalation(cls, profile: str, alarm: ActiveAlarm, force: bool = False):
+    def watch_escalation(cls, pid: str, alarm: ActiveAlarm, force: bool = False):
         """Check Alarm fow"""
-        profile = EscalationProfile.get_by_id(profile)
+        profile = EscalationProfile.get_by_id(pid)
         if not profile:
             # Unknown escalation Profile
+            return
+        if not profile.allowed_escalation(alarm):
             return
         # After
         delay = profile.get_delay()

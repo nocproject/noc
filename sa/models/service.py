@@ -894,7 +894,7 @@ class Service(Document):
     def get_alarm_msg(self, old_status):
         """"""
         iface = self.interface
-        if self.profile.raise_status_alarm_policy == "R":
+        if self.profile.raise_status_alarm_policy in {"G", "R"}:
             # Group
             msg = {
                 "$op": "ensure_group",

@@ -53,16 +53,16 @@ class ServiceItem(object):
     # status_factors
     # ctx
     status: ItemStatus = ItemStatus.NEW
-    to_processed: bool = True
+    to_processed: bool = False
 
     @property
     def is_changed(self) -> bool:
         return self.status == ItemStatus.NEW
 
     @classmethod
-    def from_service(cls, svc: Service) -> "ServiceItem":
+    def from_service(cls, svc: Service, to_processed: bool = False) -> "ServiceItem":
         """Create item from Service instance"""
-        return ServiceItem(service=svc, service_status=svc.oper_status)
+        return ServiceItem(service=svc, service_status=svc.oper_status, to_processed=to_processed)
 
 
 @dataclass(repr=True)
@@ -74,7 +74,7 @@ class Item(object):
     # For requested Escalation by ManagedObject
     managed_object_id: Optional[int] = None
     status: ItemStatus = ItemStatus.NEW
-    to_processed: bool = True
+    to_processed: bool = False
 
     def __str__(self):
         return f"{self.alarm}: {self.status}"
@@ -301,7 +301,7 @@ class AlarmJob(object):
                 job = AlarmJob.get_by_id(w.job)
         if job:
             return job
-        if not profile.allowed_escalation(alarm):
+        if not profile.allowed_escalation(alarm, check_active_groups=True):
             return None
         req = profile.from_alarm(alarm)
         job = AlarmJob.from_request(req, alarm=alarm, profile=str(profile.id))
@@ -389,10 +389,12 @@ class AlarmJob(object):
         if not is_end:
             changed |= self.is_changed
         self.logger.info(
-            "Start actions at: %s (End: %s,Severity: %s, Actions: %s)",
+            "Start actions at: %s (End: %s, Changed: %s, Severity: %s (%s), Actions: %s)",
             now,
             is_end,
             changed,
+            self.severity,
+            self.base_severity,
             len(self.actions),
         )
         runner = self.get_runner()
@@ -513,6 +515,8 @@ class AlarmJob(object):
             # Execute only not root
             return
         groups, services = self.groups[:], set()
+        if leader:
+            services = set(leader.affected_services)
         items_map = {ii.alarm.id: ii for ii in self.items[1:]}
         for aa in self.iter_escalation_alarms(leader, groups):
             if aa.affected_services:
@@ -523,23 +527,25 @@ class AlarmJob(object):
             # Update Status ?
             if not item:
                 # Update status, New
-                item = Item(alarm=aa, status=ItemStatus.from_alarm(aa))
+                item = Item(alarm=aa, status=ItemStatus.from_alarm(aa), to_processed=True)
             if aa.managed_object:
                 item.managed_object_id = aa.managed_object.id
             items.append(item)
         for ii in items_map.values():
-            items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED))
+            items.append(Item(alarm=ii.alarm, status=ItemStatus.REMOVED, to_processed=True))
         self.items = items
         svc_map = {ii.service.id: ii for ii in self.services}
         if services:
             for svc in Service.objects.filter(id__in=services):
                 item = svc_map.pop(svc.id, None)
                 if not item:
-                    self.services.append(ServiceItem.from_service(svc))
+                    self.services.append(ServiceItem.from_service(svc, to_processed=True))
         for svc in svc_map.values():
             svc.status = ItemStatus.REMOVED
+            svc.to_processed = True
         if include_groups:
             self.groups = groups
+        self.logger.info("Refresh job items: %s, %s", items, services)
 
     def update_item(self, alarm: ActiveAlarm, is_clear: bool = False):
         """Update job item"""

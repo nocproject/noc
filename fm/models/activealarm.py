@@ -756,8 +756,6 @@ class ActiveAlarm(Document):
             if w.clear_only and not is_clear:
                 # Watch alarm_clear
                 continue
-            if w.once and is_update:
-                continue
             if w.root_only and self.root:
                 continue
             if effect and w.effect != effect:
@@ -776,6 +774,9 @@ class ActiveAlarm(Document):
             if w.job:
                 # Escalation - refresh_escalation_job
                 jobs.add(w.job)
+            if w.once:
+                # stop
+                self.stop_watch(w.effect, w.key)
         pool = Pool.get_default_fm_pool()
         for job in jobs:
             self.refresh_job(job, is_clear=is_clear, is_update=is_update, pool=pool.name)
@@ -1369,7 +1370,7 @@ class ActiveAlarm(Document):
         if self.managed_object:
             r["service_groups"] = list(self.managed_object.effective_service_groups)
         if self.remote_system:
-            r["remote_systems"] = [str(self.remote_system.id)]
+            r["remote_system"] = str(self.remote_system.id)
         return r
 
     def get_message_ctx(self, include_affected: bool = True):
