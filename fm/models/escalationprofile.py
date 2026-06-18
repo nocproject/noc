@@ -362,7 +362,12 @@ class EscalationProfile(Document):
         if alarm.group_type != GroupType.NEVER and not self.escalation_policy.allowed_group:
             # Not allowed Group escalation
             return False
-        if alarm.group_type == GroupType.NEVER and self.escalation_policy.value in {1, 3} and not alarm.groups and check_active_groups:
+        if (
+            alarm.group_type == GroupType.NEVER
+            and self.escalation_policy.value in {1, 3}
+            and not alarm.groups
+            and check_active_groups
+        ):
             # Not allowed escalation alarm without active group
             return False
         if self.escalation_policy == EscalationPolicy.ROOT_FIRST:
