@@ -41,7 +41,10 @@ def _get_field_snapshot(sender, instance):
         nv = instance._data.get(field)
         if nv:
             # Resolve references when necessary
-            return getattr(instance, field)
+            v = getattr(instance, field)
+            if v and isinstance(v, dict):
+                return v.copy()
+            return v
         return nv
 
     if is_document(sender):
