@@ -137,7 +137,7 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         cf = get_changed(f_name)
         if cf:
             changed_fields.append(cf)
-    logger.info("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
+    logger.debug("[%s|%s] Change detected: %s;%s", model_id, document.id, op, changed_fields)
     change_tracker.register(
         op=op,
         model=model_id,
