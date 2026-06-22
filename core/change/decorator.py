@@ -93,24 +93,26 @@ def _on_document_change(sender, document, created=False, *args, **kwargs):
         Return changed field with new and old value
         """
         ov, key, ov_label = None, None, None
-        if hasattr(document, "initial_data"):
+        if hasattr(document, "initial_data") and field_name in document.initial_data:
             ov = document.initial_data[field_name]
         if hasattr(ov, "pk"):
             ov = str(ov.pk)
             ov_label = repr(ov)
-        elif hasattr(ov, "_instance"):
+        elif hasattr(ov, "_instance") and not isinstance(ov, dict):
             # Embedded field
             ov = [str(x) for x in ov]
         elif "." in field_name:
             # Dict Field for key - extra_labels["sa"] = labels
             field_name, key = field_name.split(".", 1)
+            if hasattr(document, "initial_data") and field_name in document.initial_data:
+                ov = document.initial_data[field_name][key]
         elif ov:
             ov = str(ov)
         nv, nv_label = getattr(document, field_name), None
         if hasattr(nv, "pk"):
             nv = str(nv.pk)
             nv_label = repr(nv)
-        elif hasattr(nv, "_instance"):
+        elif hasattr(nv, "_instance") and not isinstance(nv, dict):
             # Embedded field
             nv = [str(x) for x in nv]
         elif key:
