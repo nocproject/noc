@@ -42,9 +42,7 @@ class SNMPSuggestsDiagnostic:
         if not suggests_snmp:
             yield tuple(x for x in r if x.credential)
             return
-        for s in CredentialCheckRule.get_suggest_rules():
-            if not s.is_match(labels):
-                continue
+        for s in CredentialCheckRule.get_suggests_by(labels, groups):
             for c in s.credentials:
                 if isinstance(c, SNMPCredential):
                     r += [
@@ -123,9 +121,7 @@ class CLISuggestsDiagnostic:
             )
         if not suggests_cli:
             yield r
-        for s in CredentialCheckRule.get_suggest_rules():
-            if not s.is_match(labels):
-                continue
+        for s in CredentialCheckRule.get_suggests_by(labels, groups):
             for cr in s.credentials:
                 if not isinstance(cr, CLICredential):
                     continue
