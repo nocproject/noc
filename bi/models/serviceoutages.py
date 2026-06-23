@@ -31,6 +31,7 @@ class ServiceOutages(Model):
     # Service ID
     service = UInt64Field(description="Service BI ID")
     service_id = StringField(description="Service Object ID")
+    maintenance_id = StringField(description="Maintenance Interval Outages")
 
     # Outage
     start = DateTimeField(description=_("Start Outage"))
