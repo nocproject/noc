@@ -59,6 +59,7 @@ SQL_REMOVE = """
   WHERE affected_maintenances ? %s
 """
 SCHEDULER = "scheduler"
+rx_mail = re.compile(r"(?P<mail>[A-Za-z0-9\.\_\-]+\@[A-Za-z0-9\@\.\_\-]+)", re.MULTILINE)
 
 
 class RemoteObject(EmbeddedDocument):
@@ -219,6 +220,36 @@ class Maintenance(Document):
             stage: on_start, on_end, on_stage
             data:
         """
+        m_start, m_stop = self.active_interval
+        if stage == "completed":
+            # Register Outages
+            now = datetime.datetime.now().replace(microsecond=0)
+            if m_stop and m_stop > now:
+                m_stop = now
+            Service.update_maintenance(
+                self.id,
+                [ds.service for ds in self.direct_services],
+                m_start,
+                stop=m_stop,
+                remote_system=self.remote_system,
+                remote_ids=[
+                    oo.remote_id for oo in self.remote_objects if oo.model_id == "sa.Service"
+                ],
+                event="completed",
+            )
+        elif stage == "start":
+            # Register oper status changes
+            Service.update_maintenance(
+                self.id,
+                [ds.service for ds in self.direct_services],
+                m_start,
+                stop=m_stop,
+                remote_system=self.remote_system,
+                remote_ids=[
+                    oo.remote_id for oo in self.remote_objects if oo.model_id == "sa.Service"
+                ],
+                event="start",
+            )
         logger.info("[%s|%s] Sending maintenance event message", self.subject, stage)
         d = self.get_message_context()
         if data:
@@ -228,6 +259,7 @@ class Maintenance(Document):
             message_type=MessageType.MAINTENANCE_PROCESSED,
             headers={MX_TO_STAGE_NAME: stage.encode()},
         )
+        self.notify()
 
     def get_message_context(self) -> Dict[str, Any]:
         """Service Message Ctx"""
@@ -297,6 +329,21 @@ class Maintenance(Document):
         elif self.direct_objects or self.remote_objects:
             ManagedObject.reset_maintenance(self.id)
 
+    def notify(self):
+        """Send contacts notification"""
+        if not self.template:
+            return
+        contacts: List[str] = rx_mail.findall(self.contacts)
+        if not contacts:
+            return
+        ctx = self.get_message_context()
+        ctx["maintenance"] = self
+        # Create message
+        subject = self.template.render_subject(**ctx)
+        body = self.template.render_body(**ctx)
+        for mail in contacts:
+            NotificationGroup.send_notification("mail", mail, subject, body)
+
     def ensure_jobs(self):
         """Ensure maintenance Job"""
         now = datetime.datetime.now()
@@ -358,8 +405,8 @@ class Maintenance(Document):
         if hasattr(self, "_changed_fields"):
             changed_fields = set(self._changed_fields)
         if (not changed_fields or "is_completed" in changed_fields) and self.is_completed:
+            self.event("completed")
             self.remove_maintenance()
-            self.event("on_completed")
         if (
             not changed_fields or "is_completed" in changed_fields or "start" in changed_fields
         ) and not self.is_completed:
@@ -379,6 +426,8 @@ class Maintenance(Document):
 
     def on_delete(self):
         self.remove_maintenance()
+        if self.is_active and not self.is_completed:
+            self.event("completed")
 
     def remove_maintenance(self):
         Service.reset_maintenance(self.id)
@@ -539,39 +588,12 @@ def update_affected_objects(
 
 
 def stop(maintenance_id):
-    rx_mail = re.compile(r"(?P<mail>[A-Za-z0-9\.\_\-]+\@[A-Za-z0-9\@\.\_\-]+)", re.MULTILINE)
     # Find Active Maintenance
     mai = Maintenance.get_by_id(maintenance_id)
     if not mai:
         logger.warning("Stop for maintenance with Unknown Id: %s", maintenance_id)
         return
     logger.info("[%s] Run stop Maintenance Job", mai)
-    mai.is_completed = True
-    # Find email addresses on Maintenance Contacts
-    if mai.template:
-        ctx = {"maintenance": mai}
-        contacts = rx_mail.findall(mai.contacts)
-        if contacts:
-            # Create message
-            subject = mai.template.render_subject(**ctx)
-            body = mai.template.render_body(**ctx)
-            for mail in contacts:
-                nf = NotificationGroup()
-                nf.send_notification(
-                    "mail",
-                    mail,
-                    subject,
-                    body,
-                )
-    Maintenance._get_collection().update_many(
-        {"_id": maintenance_id}, {"$set": {"is_completed": True}}
-    )
-    mai_objects: List[int] = list(
-        ManagedObject.objects.filter(
-            is_managed=True, affected_maintenances__has_key=str(maintenance_id)
-        ).values_list("id", flat=True)
-    )
-    ManagedObject.reset_maintenance(maintenance_id)
-    # Clear cache
-    for mo_id in mai_objects:
-        ManagedObject._reset_caches(mo_id)
+    if not mai.is_completed:
+        mai.is_completed = True
+        mai.save()
