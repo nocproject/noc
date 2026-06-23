@@ -404,7 +404,6 @@ class Maintenance(Document):
         changed_fields = set()
         if hasattr(self, "_changed_fields"):
             changed_fields = set(self._changed_fields)
-        print("CF", changed_fields)
         if (not changed_fields or "is_completed" in changed_fields) and self.is_completed:
             self.event("completed")
             self.remove_maintenance()

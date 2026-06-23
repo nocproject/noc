@@ -812,7 +812,7 @@ class Service(Document):
             # For register message
             oper_status_factors=self.oper_status_factors[:10] if status.value > 1 else [],
         )
-        self.register_status_change(os, timestamp, self.in_maintenance)
+        self.register_status_change(os, ots, timestamp)
         if self.profile.raise_status_alarm_policy == "D":
             return
         if self.profile.raise_status_alarm_policy == "R" and len(self.service_path) != 1:
