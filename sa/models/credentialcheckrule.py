@@ -7,12 +7,14 @@
 
 # Python modules
 import operator
-from threading import Lock
-from typing import List, Set, Union, FrozenSet, Tuple
+from collections import defaultdict
 from dataclasses import dataclass
+from threading import Lock
+from typing import List, Set, Union, FrozenSet, Tuple, Dict, Any, Optional, Iterable, Callable
 
 # Third-party modules
 import cachetools
+import bson
 from mongoengine.document import Document, EmbeddedDocument
 from mongoengine.fields import (
     StringField,
@@ -20,17 +22,22 @@ from mongoengine.fields import (
     EmbeddedDocumentListField,
     ListField,
     BooleanField,
+    ObjectIdField,
 )
 from mongoengine.errors import ValidationError
 from pymongo import ReadPreference
+from django.db.models.query_utils import Q as d_Q
 
 # NOC modules
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.script.scheme import Protocol, SNMPCredential, CLICredential, CLI_PROTOCOLS
 from noc.core.validators import is_oid
+from noc.core.matcher import build_matcher
+from noc.core.change.decorator import change
 from noc.main.models.label import Label
 from noc.sa.models.authprofile import AuthProfile
 
+id_lock = Lock()
 rules_lock = Lock()
 
 
@@ -61,12 +68,37 @@ class SuggestItem(object):
 class Match(EmbeddedDocument):
     labels = ListField(StringField())
     exclude_labels = ListField(StringField())
+    groups = ListField(ObjectIdField(required=True))
+    exclude_groups = ListField(ObjectIdField(required=True))
 
     def __str__(self):
         return ", ".join(self.labels)
 
     def get_labels(self):
         return list(Label.objects.filter(name__in=self.labels))
+
+    def get_match_expr(self) -> Dict[str, Any]:
+        r = {}
+        if self.labels:
+            r["labels"] = {"$all": list(self.labels)}
+        elif self.exclude_labels:
+            r["labels"] = {"$all_ne": list(self.exclude_labels)}
+        if self.groups:
+            r["service_groups"] = {"$all": [str(x) for x in self.resource_groups]}
+        if self.exclude_groups:
+            r["service_groups"] = {"$all_ne": [str(x) for x in self.resource_groups]}
+        return r
+
+    def get_q(self):
+        """Return instance queryset"""
+        q = d_Q()
+        if self.labels:
+            q &= d_Q(effective_labels__contains=self.labels)
+        # if self.exclude_labels:
+        #
+        if self.resource_groups:
+            q &= d_Q(effective_service_groups__contains=[str(x) for x in self.resource_groups])
+        return q
 
 
 class SuggestSNMP(EmbeddedDocument):
@@ -84,6 +116,7 @@ class SuggestAuthProfile(EmbeddedDocument):
     auth_profile: "AuthProfile" = ForeignKeyField(AuthProfile)
 
 
+@change
 class CredentialCheckRule(Document):
     meta = {
         "collection": "noc.credentialcheckrules",
@@ -107,10 +140,18 @@ class CredentialCheckRule(Document):
     # SNMP OID's for check
     suggest_snmp_oids: List[str] = ListField(StringField(validation=check_model))
 
+    _id_cache = cachetools.TTLCache(maxsize=100, ttl=300)
     _rules_cache = cachetools.TTLCache(10, ttl=300)
+    _credential_rules_matcher = cachetools.TTLCache(maxsize=100, ttl=300)
+    _credential_rules = cachetools.TTLCache(maxsize=10, ttl=300)
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    @cachetools.cachedmethod(operator.attrgetter("_id_cache"), lock=lambda _: id_lock)
+    def get_by_id(cls, oid: Union[str, bson.ObjectId]) -> Optional["CredentialCheckRule"]:
+        return CredentialCheckRule.objects.filter(id=oid).first()
 
     def get_suggest_proto(self) -> List[Protocol]:
         return [Protocol[sp] for sp in self.suggest_protocols]
@@ -199,10 +240,7 @@ class CredentialCheckRule(Document):
         cls, o
     ) -> List[Tuple[Tuple[Protocol, ...], Union[SNMPCredential, CLICredential]]]:
         r = []
-        labels = set(o.effective_labels)
-        for s in cls.get_suggest_rules():
-            if not s.is_match(labels):
-                continue
+        for s in cls.get_suggests_by(o.effective_labels, o.effective_service_groups):
             for c in s.credentials:
                 if isinstance(c, CLICredential) and c.raise_privilege != o.to_raise_privileges:
                     c = CLICredential(
@@ -212,6 +250,86 @@ class CredentialCheckRule(Document):
                         raise_privilege=o.to_raise_privileges,
                     )
                 r.append((s.protocols, c))
+        return r
+
+    @cachetools.cachedmethod(
+        operator.attrgetter("_credential_rules_matcher"),
+        lock=lambda _: rules_lock,
+        key=operator.attrgetter("id"),
+    )
+    def get_matcher(self) -> Callable:
+        """"""
+        expr = []
+        for mr in self.match:
+            expr.append(mr.get_match_expr())
+        if len(expr) == 1:
+            return build_matcher(expr[0])
+        return build_matcher({"$or": expr})
+
+    def is_match(self, o) -> bool:
+        """Local Match rules"""
+        matcher = self.get_matcher()
+        ctx = o.get_matcher_ctx()
+        return matcher(ctx)
+
+    @classmethod
+    @cachetools.cachedmethod(
+        operator.attrgetter("_credential_rules"),
+        key=lambda x: "ruleset",
+        lock=lambda _: rules_lock,
+    )
+    def get_profiles_matcher(cls) -> Tuple[Tuple[str, Tuple[Callable, ...]], ...]:
+        """Build matcher based on Profile Match Rules"""
+        r = defaultdict(list)
+        for rule_id, pref, rules in CredentialCheckRule.objects.filter(is_active=True).values_list(
+            "id", "preference", "match"
+        ):
+            for mr in rules:
+                r[(str(rule_id), pref)].append(build_matcher(mr.get_match_expr()))
+        return tuple((x[0], tuple(r[x])) for x in sorted(r, key=lambda i: i[1]))
+
+    @classmethod
+    def iter_suggests_rules(
+        cls, labels: List[str], groups: List[str]
+    ) -> Iterable["CredentialCheckRule"]:
+        """"""
+        ctx = {"labels": labels, "groups": groups}
+        for rule_id, matches in cls.get_profiles_matcher():
+            for match in matches:
+                if match(ctx):
+                    rule = CredentialCheckRule.get_by_id(rule_id)
+                    if rule:
+                        yield rule
+                    break
+
+    @classmethod
+    def get_suggests_by(cls, labels: List[str], groups: List[str]) -> List["SuggestItem"]:
+        r = []
+        for rule in cls.iter_suggests_rules(labels, groups):
+            snmp: List[SNMPCredential] = rule.get_suggest_snmp()
+            protos: List[Protocol] = rule.get_suggest_proto()
+            if snmp:
+                r.append(
+                    SuggestItem(
+                        snmp,
+                        labels,
+                        tuple(
+                            p
+                            for p in Protocol
+                            if p.config.snmp_version and (not protos or p in protos)
+                        ),
+                    )
+                )
+            cli: List[CLICredential] = rule.get_suggest_cli()
+            if cli:
+                c_protos = protos or CLI_PROTOCOLS
+                r.append(
+                    SuggestItem(
+                        cli,
+                        labels,
+                        tuple(Protocol(p) for p in c_protos if not protos or p in protos),
+                    )
+                )
         return r
 
     # def clean(self):
