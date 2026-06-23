@@ -704,6 +704,55 @@ class Service(Document):
                 return svc.get_alarm_root_factor()
         return None
 
+    def register_status_change(
+        self,
+        from_status: Status,
+        from_ts: datetime.datetime,
+        timestamp: datetime.datetime,
+        maintenance: Optional[str] = None,
+        register_outage: bool = True,
+    ):
+        """Register change event"""
+        # Register outage
+        svcs = get_service()
+        if register_outage:
+            svcs.register_metrics(
+                "serviceoutages",
+                [
+                    {
+                        "date": timestamp.date().isoformat(),
+                        "ts": timestamp.replace(microsecond=0).isoformat(sep=" "),
+                        "service": self.bi_id,
+                        "service_id": str(self.id),
+                        # Outage
+                        "start": from_ts.replace(microsecond=0).isoformat(sep=" "),
+                        "stop": timestamp.replace(microsecond=0).isoformat(sep=" "),
+                        "from_status": from_status.value,
+                        "to_status": self.oper_status.value,
+                        "in_maintenance": int(self.in_maintenance),
+                        "maintenance_id": maintenance,
+                        "affected": orjson.dumps(
+                            [s.item for s in self.oper_status_factors]
+                        ).decode(),
+                        # Affected
+                    }
+                ],
+            )
+        if self.profile.is_enabled_notification:
+            headers = self.get_mx_message_headers(self.effective_labels)
+            logger.info("Sending status change notification: H(%s)", headers)
+            msg = self.get_message_context()
+            # msg["managed_object"] = self.managed_object.get_message_context()
+            msg["from_status"] = {"id": from_status, "name": from_status.name}
+            msg["ts"] = timestamp.replace(microsecond=0).isoformat()
+            send_message(
+                data=msg,
+                message_type=MessageType.SERVICE_STATUS_CHANGE,
+                headers=headers,
+            )
+        # Run Service Status Refresh
+        # Set Outage
+
     def set_oper_status(
         self,
         status: Status,
@@ -744,7 +793,6 @@ class Service(Document):
             return
         # Register Outage, Register Maintenance
         os, ots = self.oper_status, self.oper_status_change
-
         self.oper_status = status
         self.oper_status_change = timestamp
         if affected and not self.oper_status_factors:
@@ -764,41 +812,7 @@ class Service(Document):
             # For register message
             oper_status_factors=self.oper_status_factors[:10] if status.value > 1 else [],
         )
-        # Register outage
-        svcs = get_service()
-        svcs.register_metrics(
-            "serviceoutages",
-            [
-                {
-                    "date": timestamp.date().isoformat(),
-                    "ts": timestamp.replace(microsecond=0).isoformat(sep=" "),
-                    "service": self.bi_id,
-                    "service_id": str(self.id),
-                    # Outage
-                    "start": ots.isoformat(sep=" "),
-                    "stop": self.oper_status_change.isoformat(sep=" "),
-                    "from_status": os.value,
-                    "to_status": self.oper_status.value,
-                    "in_maintenance": int(self.in_maintenance),
-                    "affected": orjson.dumps([s.item for s in self.oper_status_factors]).decode(),
-                    # Affected
-                }
-            ],
-        )
-        if self.profile.is_enabled_notification:
-            headers = self.get_mx_message_headers(self.effective_labels)
-            logger.info("Sending status change notification: H(%s)", headers)
-            msg = self.get_message_context()
-            # msg["managed_object"] = self.managed_object.get_message_context()
-            msg["from_status"] = {"id": os, "name": os.name}
-            msg["ts"] = timestamp.replace(microsecond=0).isoformat()
-            send_message(
-                data=msg,
-                message_type=MessageType.SERVICE_STATUS_CHANGE,
-                headers=headers,
-            )
-        # Run Service Status Refresh
-        # Set Outage
+        self.register_status_change(os, ots, timestamp)
         if self.profile.raise_status_alarm_policy == "D":
             return
         if self.profile.raise_status_alarm_policy == "R" and len(self.service_path) != 1:
@@ -1482,17 +1496,32 @@ class Service(Document):
         maintenance_id: str,
         services: List["Service"],
         start: datetime.datetime,
+        stop: Optional[datetime.datetime] = None,
         affected_topology: bool = False,
         remote_system: Optional[RemoteSystem] = None,
         remote_ids: Optional[List[str]] = None,
+        event: str = "update",
     ):
         """Update Maintenance"""
         svcs = [s.id for s in services]
         if remote_system and remote_ids:
             svcs += Service.get_by_remote_ids(remote_system, remote_ids)
-        logger.info("Update maintenance on Services: %s", svcs)
+        logger.info("Processed event (%s) maintenance on Services: %s", event, svcs)
+        if not svcs:
+            return
         for svc in Service.objects.filter(id__in=svcs):
-            svc.add_watch(ObjectEffect.MAINTENANCE, key=str(maintenance_id), once=False)
+            if event == "update":
+                svc.add_watch(ObjectEffect.MAINTENANCE, key=str(maintenance_id), once=False)
+            elif event == "completed":
+                svc.register_status_change(svc.oper_status, start, stop, str(maintenance_id))
+            elif event == "start":
+                svc.register_status_change(
+                    svc.oper_status,
+                    svc.oper_status_change,
+                    start,
+                    str(maintenance_id),
+                    register_outage=False,
+                )
 
     @classmethod
     def reset_maintenance(cls, maintenance_id: ObjectId):
