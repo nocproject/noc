@@ -14,8 +14,10 @@ from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 
 # NOC modules
-from noc.sa.models.service import Service
+from noc.core.watchers.types import ObjectEffect
+from noc.sa.models.service import Service, WatchDocumentItem
 from noc.main.models.remotesystem import RemoteSystem
+from noc.maintenance.models.maintenance import Maintenance
 from ..base import NBIAPI, API_ACCESS_HEADER, FORBIDDEN_MESSAGE
 
 router = APIRouter()
@@ -35,6 +37,18 @@ class RemoteId(BaseModel):
     remote_id: str
 
 
+class RemoteSystemItem(BaseModel):
+    id: str
+    name: str
+
+
+class ParentService(BaseModel):
+    id: str
+    label: str
+    remote_system: Optional[RemoteSystemItem] = None
+    remote_id: Optional[str] = None
+
+
 class ServiceStatusRequest(BaseModel):
     services: List[Union[ServiceId, RemoteId]]
     changed_at: Optional[datetime.datetime] = None
@@ -46,7 +60,7 @@ class Status(BaseModel):
     status: ServiceStatus
     change: datetime.datetime
     in_maintenance: bool = False
-    parent: Optional[str] = None
+    parent: Optional[ParentService] = None
     remote_mappings: Optional[Dict[str, str]] = None
 
 
@@ -70,6 +84,17 @@ class ServiceStatusAPI(NBIAPI):
         }
         return [route]
 
+    @classmethod
+    def in_maintenance(cls, watchers: List[WatchDocumentItem]) -> bool:
+        """Check active maintenance by watchers"""
+        for w in watchers:
+            if w.effect != ObjectEffect.MAINTENANCE:
+                continue
+            mai = Maintenance.get_by_id(w.key)
+            if mai and mai.is_active:
+                return True
+        return False
+
     async def handler(
         self, req: ServiceStatusRequest, access_header: str = Header(..., alias=API_ACCESS_HEADER)
     ):
@@ -91,17 +116,25 @@ class ServiceStatusAPI(NBIAPI):
         if not ids:
             raise HTTPException(400, "Not requested service")
         statuses = []
-        for svc_id, parent, status, change, mapps in Service.objects.filter(
+        for svc_id, parent, status, change, mapps, watchers in Service.objects.filter(
             id__in=list(ids)
-        ).scalar("id", "parent", "oper_status", "oper_status_change", "mappings"):
+        ).scalar("id", "parent", "oper_status", "oper_status_change", "mappings", "watchers"):
             r = {
                 "id": str(svc_id),
                 "status": {"id": status.value, "name": status.name},
-                "in_maintenance": False,
+                "in_maintenance": self.in_maintenance(watchers),
                 "change": change,
             }
             if parent:
-                r["parent"] = parent
+                r["parent"] = {"id": str(parent.id), "label": str(parent.label)}
+                if parent.remote_system:
+                    r["parent"] |= {
+                        "remote_system": {
+                            "id": str(parent.remote_system.id),
+                            "name": parent.remote_system.name,
+                        },
+                        "remote_id": parent.remote_id,
+                    }
             if mapps:
                 r["mappings"] = {m.remote_system.name: m.remote_id for m in mapps}
             statuses.append(r)
