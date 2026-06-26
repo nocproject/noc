@@ -301,6 +301,7 @@ class AlarmStatusRule(EmbeddedDocument):
     allow_partial: bool = BooleanField(default=False)
     include_labels = ListField(StringField())
     exclude_labels = ListField(StringField())
+    remote_system: Optional["RemoteSystem"] = ReferenceField(RemoteSystem)
     affected_instance = BooleanField(default=False)  # Include ServiceInstance to
     required_reference = BooleanField(default=False)  # Required service component on Alarm
     min_severity: Optional["AlarmSeverity"] = PlainReferenceField(AlarmSeverity)  # Min Severity
@@ -318,6 +319,10 @@ class AlarmStatusRule(EmbeddedDocument):
         if self.min_severity and alarm.severity < self.min_severity.severity:
             return False
         if self.max_severity and alarm.severity > self.max_severity.severity:
+            return False
+        if self.remote_system and (
+            not alarm.remote_system or alarm.remote_system.id != self.remote_system.id
+        ):
             return False
         if self.allow_partial and self.alarm_class_template:
             return bool(re.match(self.alarm_class_template, alarm.alarm_class.name))
