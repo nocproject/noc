@@ -17,6 +17,8 @@ from noc.services.metricscollector.sourceconfig import RemoteSystemConfig
 from noc.core.etl.models.fmevent import FMEventObject
 from noc.core.fm.event import Event
 
+TARGET_CHECK_SEND_INTERVAL = 3600
+
 
 class RemoteSystemChannel(object):
     def __init__(
@@ -47,7 +49,10 @@ class RemoteSystemChannel(object):
         self.flush_unknown_hosts = False
         self.unknown_metrics: Set[str] = set()
         self.unknown_hosts: Set[str] = set()
+        self.updated: Set[str] = set()
+        self.received: Dict[str, int] = {}
         self.last_received_hosts: Dict[str, int] = {}
+        self.forwarder: Dict[str, str] = {}
         self.min_batch_size = remote_system.batch_size
         if batch_delay:
             self.ttl = float(batch_delay)
@@ -58,6 +63,13 @@ class RemoteSystemChannel(object):
     def is_banned(self) -> bool:
         return False
 
+    def register_source(self, sid: str):
+        if sid not in self.received:
+            self.received[sid] = int(perf_counter())
+        elif int(perf_counter()) - self.received[sid] > TARGET_CHECK_SEND_INTERVAL:
+            del self.received[sid]
+            self.updated.add(sid)
+
     async def feed(
         self,
         target: str,
@@ -65,6 +77,7 @@ class RemoteSystemChannel(object):
         values: List[Tuple[int, float]],
         labels: Optional[Iterable[str]] = None,
         sensor_id: Optional[str] = None,
+        forwarder_id: Optional[str] = None,
     ):
         """Feed the message. Returns optional offset of last saved message"""
         # Try sensor
@@ -84,6 +97,14 @@ class RemoteSystemChannel(object):
                 return
         elif cfg.no_data_check and values:
             self.last_received_hosts[cfg.id] = values[0][0]
+        if cfg:
+            self.register_source(cfg.id)
+        if forwarder_id:
+            fwd = self.forwarder.get(cfg.id)
+            if not fwd:
+                self.forwarder[cfg.id] = forwarder_id
+            elif fwd != forwarder_id:
+                return
         # if metric in self.unknown_metrics:
         #     return
         # Parse Labels for metrics
@@ -137,7 +158,9 @@ class RemoteSystemChannel(object):
         self.sensors_data = {}
         self.size = 0
         self.records = 0
+        self.deduplicated = 0
         self.expired = None
+        self.updated = set()
         if self.flush_unknown_metrics:
             self.unknown_metrics = set()
             self.flush_unknown_metrics = False
@@ -149,6 +172,10 @@ class RemoteSystemChannel(object):
             self.flush_unknown_hosts = False
             self.logger.info(
                 "[%s] Clean unknown Hosts: %s", self.remote_system.name, len(self.unknown_hosts)
+            )
+        if self.deduplicated:
+            self.logger.info(
+                "[%s] Deduplicated metrics: %s", self.remote_system.name, self.deduplicated
             )
         self.feed_ready.set()
 

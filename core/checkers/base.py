@@ -328,6 +328,7 @@ def register_checks(
     source: Union[str, InputSource] = InputSource.UNKNOWN,
     managed_object: Optional[int] = None,
     service: Optional[int] = None,
+    remote_system: Optional[int] = None,
 ):
     """Push check result to history"""
     from noc.main.models.remotesystem import RemoteSystem
@@ -377,5 +378,7 @@ def register_checks(
             rs = RemoteSystem.get_by_name(c.remote_system)
             if rs:
                 r["remote_system"] = rs.bi_id
+        elif remote_system:
+            r["remote_system"] = remote_system
         data += [orjson.dumps(r)]
     svc.publish(b"\n".join(data), f"ch.{CHECK_HISTORY_TABLE}")

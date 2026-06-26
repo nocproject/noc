@@ -151,10 +151,11 @@ class VMAgentAPI(object):
                 metric_name,
                 [(int(s.timestamp / MS), s.value) for s in ts.samples],
                 labels=labels,
+                forwarder_id=request.client,
             )
             received += 1
         if received:
-            logger.info(
+            logger.debug(
                 "[%s|%s] Received series: %s", self.api_name, channel.remote_system.name, received
             )
         return ORJSONResponse({}, status_code=200)
