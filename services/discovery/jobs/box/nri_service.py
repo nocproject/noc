@@ -93,9 +93,9 @@ class NRIServiceCheck(DiscoveryCheck):
             return
         # Refresh resources
         for si, rs in resources.items():
-            si.update_resources(rs, source=InputSource.CONFIG, bulk=bulk)
+            si.update_resources(rs, source=InputSource.DISCOVERY, bulk=bulk)
         for si in set(processed_instances) - {x.id for x in resources}:
-            processed_instances[si].update_resources([], source=InputSource.CONFIG, bulk=bulk)
+            processed_instances[si].update_resources([], source=InputSource.DISCOVERY, bulk=bulk)
         for iface, profile in profiles.items():
             if iface.profile != profile:
                 self.logger.info("[%s] Set profile from service: %s", iface, profile)

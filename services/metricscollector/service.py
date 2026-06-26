@@ -111,8 +111,6 @@ class MetricsCollectorService(FastAPIService):
         # Sensors
         self.sensor_configs: Dict[str, SensorConfig] = {}
         self.stopping = False
-        self.updated: Set[str] = set()
-        self.received: Dict[str, int] = {}
         # Queue of channels to flush
         self.flush_queue: asyncio.Queue[RemoteSystemChannel] = asyncio.Queue()
         if config.metricscollector.listen:
@@ -258,6 +256,14 @@ class MetricsCollectorService(FastAPIService):
                 await self.send_records(items, partition)
                 await asyncio.sleep(1)
             del parts
+            if ch.updated:
+                self.logger.info(
+                    "[%s] Sending %s messages with updated checks",
+                    ch.remote_system.name,
+                    len(ch.updated),
+                )
+                updated = list(ch.updated)
+                await self.register_checks(updated, remote_system=ch.remote_system.bi_id)
             ch.flush_complete()
 
     async def send_events(self, events: List[Event], partition: Optional[int] = None):
@@ -277,6 +283,28 @@ class MetricsCollectorService(FastAPIService):
                 partition=partition,  # self.object.bi_id % metrics_svc_slots,
                 headers={},
             )
+
+    async def register_checks(self, targets: List[str], remote_system: Optional[int] = None):
+        """Register checks"""
+        for cfg_id in targets:
+            cfg = self.source_configs.get(cfg_id)
+            if not cfg or not cfg.bi_id:
+                continue
+            checks = cfg.get_checks()
+            if not checks:
+                continue
+            if cfg.services:
+                for bi_id in cfg.services:
+                    register_checks(
+                        checks,
+                        managed_object=cfg.bi_id,
+                        service=bi_id,
+                        remote_system=remote_system or None,
+                    )
+            else:
+                register_checks(
+                    checks, managed_object=cfg.bi_id, remote_system=remote_system or None
+                )
 
     async def report_invalid_sources(self):
         """Report invalid event sources"""
@@ -319,23 +347,6 @@ class MetricsCollectorService(FastAPIService):
                     len(ch.unknown_metrics),
                     ";".join(itertools.islice(ch.unknown_metrics, MAX_UNKNOWN_METRICS)),
                 )
-        if not self.updated:
-            return
-        self.logger.info("Sending %s messages with updated checks", len(self.updated))
-        updated = list(self.updated)
-        self.updated = set()
-        for cfg_id in updated:
-            cfg = self.source_configs.get(cfg_id)
-            if not cfg or not cfg.bi_id:
-                continue
-            checks = cfg.get_checks()
-            if not checks:
-                continue
-            if cfg.services:
-                for bi_id in cfg.services:
-                    register_checks(checks, managed_object=cfg.bi_id, service=bi_id)
-            else:
-                register_checks(checks, managed_object=cfg.bi_id)
 
     async def init_api(self):
         # Postpone initialization process until config datastream is fully processed
@@ -580,10 +591,8 @@ class MetricsCollectorService(FastAPIService):
         # Lowe
         hostname = f"name:{hostname.lower()}"
         if hostname in self.source_map:
-            self.register_source(self.source_map[hostname])
             return self.source_configs[self.source_map[hostname]]
         if f"name:{name.lower()}" in self.source_map:
-            self.register_source(self.source_map[f"name:{name.lower()}"])
             return self.source_configs[self.source_map[f"name:{name.lower()}"]]
         # Register invalid event source
         if self.source_configs and collector:
@@ -591,13 +600,6 @@ class MetricsCollectorService(FastAPIService):
         else:
             metrics["error", ("type", "object_not_found")] += 1
         return None
-
-    def register_source(self, sid: str):
-        if sid not in self.received:
-            self.received[sid] = int(perf_counter())
-        elif int(perf_counter()) - self.received[sid] > TARGET_CHECK_SEND_INTERVAL:
-            del self.received[sid]
-            self.updated.add(sid)
 
     def lookup_remote_sensor(self, sid: str, remote_system: str) -> Optional[SensorConfig]:
         """Lookup remote_sensor"""

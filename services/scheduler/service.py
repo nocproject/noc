@@ -40,6 +40,7 @@ class SchedulerService(FastAPIService):
         self.ensure_purgatorium_job()
         self.ensure_network_instance_discovery_job()
         self.ensure_watchers_job()
+        self.ensure_checks_job()
 
     @classmethod
     def ensure_topology_job(cls):
