@@ -45,7 +45,13 @@ class MetricsNode(BaseCDAGNode):
     mx_scopes = set(config.message.enable_metric_scopes)
 
     def get_value(
-        self, ts: int, labels: List[str], target: Optional[Any], component: Optional[Any], **kwargs
+        self,
+        ts: int,
+        labels: List[str],
+        target: Optional[Any],
+        component: Optional[Any],
+        update_checks: Optional[Dict[str, str]],
+        **kwargs,
     ) -> Optional[Dict[str, ValueType]]:
         r = {}
         rk = {}
@@ -63,6 +69,8 @@ class MetricsNode(BaseCDAGNode):
                 except ValueError:
                     continue
             r[k] = v
+            if update_checks and k in update_checks and target:
+                target.received_metrics.add(update_checks[k])
         if not r:
             return None
         r.update(rk)

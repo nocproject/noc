@@ -26,6 +26,13 @@ class ActionInput(BaseModel):
     sender_id: str
 
 
+class CheckInput(BaseModel):
+    input_name: Optional[str]
+    metric_id: str
+    probe_id: str
+    sender_id: str
+
+
 class RuleAction(BaseModel):
     id: str
     name: str
@@ -39,3 +46,4 @@ class CfgMetricRule(BaseModel):
     name: str
     actions: List[RuleAction]
     match: List[RuleCondition]
+    check_metrics: Optional[List[CheckInput]] = None
