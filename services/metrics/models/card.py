@@ -10,6 +10,7 @@ import sys
 import logging
 import hashlib
 import codecs
+import time
 from dataclasses import dataclass
 from typing import Dict, Tuple, List, Optional, Set, Iterable, Union, Any, ClassVar, FrozenSet
 from typing_extensions import TypedDict, NotRequired
@@ -37,8 +38,8 @@ from .target import (
 )
 from .rule import Rule
 
-
 logger = logging.getLogger(__name__)
+NS = 1_000_000_000
 
 
 def unscope(x):
@@ -52,6 +53,7 @@ class ScopeInfo(object):
     key_labels: Tuple[str, ...]
     required_labels: Tuple[str, ...]
     units: Dict[str, str]
+    metric_id_map: Dict[str, str]
     enable_timedelta: bool = False
 
 
@@ -81,8 +83,10 @@ class Card(object):
         "component",
         "config",
         "graphs",
+        "input_checks",
         "is_dirty",
         "probes",
+        "refresh_check",
         "senders",
     )
     init_state: ClassVar[Dict[str, Dict[str, Any]]] = {}
@@ -95,6 +99,8 @@ class Card(object):
     graphs: Dict[str, CDAG]
     config: Optional[Union[ManagedObjectTarget, SLAProbeTarget]]
     component: Optional[Union[ComponentTarget, SensorComponentTarget]]
+    input_checks: Optional[FrozenSet[str]]
+    refresh_check: Optional[int]
     is_dirty: bool
 
     def get_sender(self, name: str) -> Optional[MetricsNode]:
@@ -177,6 +183,8 @@ class Card(object):
             is_dirty=False,
             config=config,
             component=component,
+            refresh_check=0,
+            input_checks=None,
         )
 
     def add_node_probe(
@@ -346,6 +354,7 @@ class Card(object):
         # Refresh Rule
         processed, scopes = set(), set()
         config_rules = self.get_rules()
+        input_checks = set()
         for rule_id, action_id in config_rules:
             # if k[0] not in rule.match_scopes or not rule.is_matched(s_labels):
             #    continue
@@ -358,6 +367,8 @@ class Card(object):
                 # Already applied
                 continue
             rule = rules[rid]
+            if rule and rule.check_metrics:
+                input_checks |= {x[1] for x in rule.check_metrics.values() if x[0] == k[0]}
             if not rule or k[0] not in rule.match_scopes:
                 continue
             if rule.inputs - self.probes.keys():
@@ -371,8 +382,22 @@ class Card(object):
         for rule_id in self.graphs.keys() - processed:
             graph = self.graphs.pop(rule_id, None)
             del graph
+        if input_checks:
+            self.input_checks = frozenset(input_checks)
+            self.refresh_check = time.time_ns()
+        elif not input_checks and self.input_checks:
+            self.input_checks = None
+            self.refresh_check = 0
         if processed and scopes:
             logger.info("[%s] Apply Rules: %s; To scopes: %s", k, processed, scopes)
+        if input_checks:
+            logger.info("[%s] Inputs Checks applied to Rule: %s", k, input_checks)
         if config_rules and not scopes:
             return
         self.is_dirty = False
+
+    def has_refresh_inputs(self, ts: int) -> bool:
+        """Refresh target metrics from card input"""
+        if not self.refresh_check:
+            return False
+        return (ts - self.refresh_check) > 3600 * NS

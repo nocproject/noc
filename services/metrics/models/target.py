@@ -1,14 +1,18 @@
 # ----------------------------------------------------------------------
 # Metrics source
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import sys
 from dataclasses import dataclass
-from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List
+from typing import Any, Tuple, Optional, Dict, FrozenSet, Union, ClassVar, List, Set
+
+# NOC Modules
+from noc.core.checkers.base import CheckResult, SUCCESS_CHECK
+from .rule import Rule
 
 MetricKey = Tuple[str, Tuple[Tuple[str, int], ...], Tuple[str, ...]]
 
@@ -50,6 +54,8 @@ class MetricTarget:
     rules: Optional[Tuple[Tuple[str, str], ...]]
     exposed_labels: Optional[Tuple[str, ...]]
     composed_metrics: Optional[Tuple[str, ...]]
+    services: Optional[Tuple[int, ...]]
+    received_metrics: Set[str]  # Register received metics from Card
     # not_save_metrics
 
     @classmethod
@@ -70,6 +76,8 @@ class MetricTarget:
             "rules": convert_rules(data.get("rules", [])),
             "exposed_labels": tuple(sys.intern(ll) for ll in data.get("exposed_labels", [])),
             "composed_metrics": tuple(sys.intern(ll) for ll in data.get("composed_metrics", [])),
+            "services": tuple(int(svc) for svc in data.get("services", [])),
+            "received_metrics": set(),
         }
         match r_type:
             case "managed_object":
@@ -86,6 +94,33 @@ class MetricTarget:
                 return SLAProbeTarget(**params)
             case _:
                 return None
+
+    def get_checks(self, rules: Dict[str, Rule]) -> List[CheckResult]:
+        """Getting target diagnostic checks"""
+        if not self.rules or not self.received_metrics:
+            return []
+        r, processed = [], set()
+        for rid1, rid2 in self.rules:
+            rid = f"{rid1}-{rid2}"
+            rule = rules.get(rid)
+            if not rule or not rule.check_metrics:
+                continue
+            print("RM", self.received_metrics)
+            if not (rule.check_metrics.keys() - self.received_metrics):
+                r.append(
+                    CheckResult(
+                        check=SUCCESS_CHECK,
+                        status=True,
+                        ttl=1200,
+                        args={"arg0": rid1, "rule": "metrics"},
+                    )
+                )
+                processed |= rule.check_metrics.keys()
+        for p in processed:
+            self.received_metrics.remove(p)
+        if processed:
+            print("RM2", processed, self.received_metrics)
+        return r
 
 
 @dataclass(frozen=True, slots=True)

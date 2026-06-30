@@ -22,6 +22,7 @@ from mongoengine.fields import (
     StringField,
     BooleanField,
     ObjectIdField,
+    ReferenceField,
     EmbeddedDocumentListField,
 )
 from mongoengine.queryset.visitor import Q as m_q
@@ -34,9 +35,10 @@ from noc.core.cdag.factory.config import NodeItem, GraphConfig
 from noc.core.cdag.node.alarm import VarItem
 from noc.core.matcher import build_matcher
 from noc.main.models.label import Label
+from noc.main.models.pool import Pool
 from noc.pm.models.metrictype import MetricType
 from noc.pm.models.metricaction import MetricAction
-from noc.main.models.pool import Pool
+from noc.inv.models.sensorprofile import SensorProfile
 from noc.fm.models.alarmclass import AlarmClass
 from noc.config import config
 
@@ -54,6 +56,8 @@ class Match(EmbeddedDocument):
         r = f"L: [{self.labels}]"
         if self.exclude_labels:
             r += f";EX:{self.exclude_labels}"
+        if self.resource_groups:
+            r += f";GROUPS:{self.resource_groups}"
         return r
 
     def clean(self):
@@ -172,6 +176,25 @@ class MetricActionItem(EmbeddedDocument):
         )
 
 
+class RuleMetric(EmbeddedDocument):
+    meta = {"strict": False}
+    metric_type = ReferenceField(MetricType, required=False)
+    sensor_profile = ReferenceField(SensorProfile, required=False)
+    # Metric collection settings
+    # Send metrics to persistent store
+    # is_stored = BooleanField(default=True)
+    exclude_check = BooleanField(default=False)
+    # Interval for collecter metrics
+    # interval = IntField(min_value=0)
+
+    def __str__(self):
+        return self.metric_type.name
+
+    def clean(self) -> None:
+        if not self.metric_type and not self.sensor_profile:
+            raise ValueError("Metric Type or Sensor Profile must be set")
+
+
 @change
 class MetricRule(Document):
     meta = {
@@ -183,6 +206,10 @@ class MetricRule(Document):
     description = StringField()
     is_active = BooleanField(default=True)
     match: List["Match"] = EmbeddedDocumentListField(Match)
+    diagnostic_policy = StringField(
+        choices=[("D", "Disabled"), ("A", "All Inputs"), ("M", "Metric Settings")], default="D"
+    )
+    metrics: List["RuleMetric"] = EmbeddedDocumentListField(RuleMetric)
     actions: List["MetricActionItem"] = EmbeddedDocumentListField(MetricActionItem)
 
     _id_cache = cachetools.TTLCache(maxsize=100, ttl=60)
@@ -333,7 +360,7 @@ class MetricRule(Document):
     @classmethod
     def get_config(cls, rule: "MetricRule") -> Dict[str, Any]:
         """Datastream rule config"""
-        actions = []
+        actions, check_metrics = [], []
         for num, action in enumerate(rule.actions):
             if not action.is_active:
                 continue
@@ -370,6 +397,18 @@ class MetricRule(Document):
                 "inputs": [input.config for input in action.metric_action.compose_inputs],
             }
             actions += [r_action]
+        for m in rule.metrics or []:
+            if m.exclude_check:
+                continue
+            if m.metric_type:
+                check_metrics.append(
+                    {
+                        "input_name": None,
+                        "metric_id": str(m.metric_type.id),
+                        "probe_id": m.metric_type.field_name,
+                        "sender_id": m.metric_type.scope.table_name,
+                    }
+                )
         return {
             "id": str(rule.id),
             "name": rule.name,
@@ -378,4 +417,5 @@ class MetricRule(Document):
                 {"labels": m.labels or [], "exclude_labels": m.exclude_labels or []}
                 for m in rule.iter_conditions()
             ],
+            "check_metrics": check_metrics,
         }

@@ -216,6 +216,7 @@ def test_case():
         # Activate sender
         sender.activate(tx, "target", None)
         sender.activate(tx, "component", None)
+        sender.activate(tx, "update_checks", None)
         sender.activate(tx, "ts", ts)
         sender.activate(tx, "labels", data["labels"])
         result = tx.inputs.get(cdag.nodes["check"]) or None
