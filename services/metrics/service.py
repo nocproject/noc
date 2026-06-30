@@ -8,7 +8,7 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, Union
+from typing import Any, Dict, Tuple, List, Optional, Set, Iterable, Union, FrozenSet
 from dataclasses import dataclass
 from time import perf_counter
 import sys
@@ -28,6 +28,7 @@ from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.mongo.connection_async import connect_async
 from noc.core.ioloop.timers import PeriodicCallback
+from noc.core.checkers.base import register_checks
 from noc.pm.models.metricscope import MetricScope
 from noc.pm.models.metrictype import MetricType
 from noc.core.cdag.node.probe import ProbeNodeConfig
@@ -94,6 +95,7 @@ class MetricsService(FastAPIService):
         self.sensors: Dict[int, SensorComponentTarget] = {}
         self.dispose_partitions: Dict[str, int] = {}
         self.rules: Dict[str, Rule] = {}  # Action -> Graph Config
+        self.check_inputs: Dict[str, FrozenSet[str]] = {}
         # Options
         self.lazy_init: bool = True  # Load Nodes on processed metrics
         self.disable_spool: bool = (
@@ -204,8 +206,8 @@ class MetricsService(FastAPIService):
 
     async def report(self):
         """Report report some processed errors"""
-        if not self.node_errors and not self.unknown_sources:
-            return
+        # if not self.node_errors and not self.unknown_sources:
+        #    return
         now = perf_counter()
         for key in list(self.node_errors.keys()):
             error = self.node_errors[key]
@@ -224,6 +226,15 @@ class MetricsService(FastAPIService):
                 self.unknown_sources,
             )
             self.unknown_sources = set()
+        self.logger.info("Processed Targets: %s", len(self.targets))
+        processed, p_checks = 0, 0
+        for target in self.targets.values():
+            checks = target.get_checks(self.rules)
+            if checks:
+                # Services
+                register_checks(checks, managed_object=target.managed_object)
+                p_checks += len(checks)
+        self.logger.info("End Processed Targets: %s, Registered checks: %s", processed, p_checks)
 
     def register_unknown_source(self, k: MetricKey):
         if len(self.unknown_sources) > 200:
@@ -289,7 +300,9 @@ class MetricsService(FastAPIService):
         :return:
         """
         units: Dict[str, Dict[str, str]] = defaultdict(dict)
+        metric_id_map: Dict[str, Dict[str, str]] = defaultdict(dict)
         for mt in MetricType.objects.all():
+            metric_id_map[mt.scope.table_name][str(mt.field_name)] = str(mt.id)
             if mt.units:
                 units[mt.scope.id][mt.field_name] = mt.units.code
             if mt.compose_expression:
@@ -316,6 +329,7 @@ class MetricsService(FastAPIService):
                 required_labels=tuple(sorted(kl.label[:-1] for kl in ms.labels if kl.is_required)),
                 units=units[ms.id],
                 enable_timedelta=ms.enable_timedelta,
+                metric_id_map=metric_id_map.get(ms.table_name, {}),
             )
             self.scopes[ms.table_name] = si
             self.logger.debug(
@@ -479,7 +493,15 @@ class MetricsService(FastAPIService):
         units: Dict[str, str] = data.get("_units") or {}
         tx = self.graph.begin()
         ts = data["ts"]
-        time_delta = None
+        time_delta, update_checks = None, None
+        refresh_inputs = False
+        if card.has_refresh_inputs(ts=ts):
+            refresh_inputs = True
+            # Define update checks on target and pop for update, udate after success check from rules
+            # Or define update_checks on card
+            update_checks = {
+                x: si.metric_id_map[x] for x in card.input_checks if x in si.metric_id_map
+            }
         for n in data:
             mu = units.get(n) or si.units.get(n)
             if not mu:
@@ -519,11 +541,14 @@ class MetricsService(FastAPIService):
             sender.activate(tx, "component", card.component)
             sender.activate(tx, "ts", ts)
             sender.activate(tx, "labels", data.get("labels") or [])
+            sender.activate(tx, "update_checks", update_checks)
         # Alarm
         for alarm in card.alarms:
             if card.config:
                 alarm.activate(tx, "target", card.config)
                 # Labels
+        if refresh_inputs and not update_checks:
+            card.refresh_check = ts
         return tx.get_changed_state()
 
     def update_sensors(self, target: ObjectTarget, sensors: List[Dict[str, Any]]):
@@ -664,7 +689,13 @@ class MetricsService(FastAPIService):
             return
         invalidate_rules = set()
         for action in rule.actions:
-            r = Rule.from_config(rule.id, action, rule_name=rule.name, conditions=rule.match)
+            r = Rule.from_config(
+                rule.id,
+                action,
+                rule_name=rule.name,
+                conditions=rule.match,
+                check_inputs=rule.check_metrics or [],
+            )
             r_id = sys.intern(r.id)
             if r_id not in self.rules:
                 self.rules[r_id] = r

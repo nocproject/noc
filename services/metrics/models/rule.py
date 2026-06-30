@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional, Set, FrozenSet, List, Tuple
 
 # NOC modules
-from noc.services.datastream.models.cfgmetricrules import RuleAction, RuleCondition
+from noc.services.datastream.models.cfgmetricrules import RuleAction, RuleCondition, CheckInput
 from noc.core.cdag.graph import CDAG
 from noc.core.cdag.node.alarm import AlarmNode
 from noc.core.cdag.factory.config import ConfigCDAGFactory, GraphConfig
@@ -27,6 +27,7 @@ class Rule(object):
     match_labels: FrozenSet[FrozenSet[str]]
     exclude_labels: Optional[FrozenSet[FrozenSet[str]]]
     graph_config: GraphConfig
+    check_metrics: Dict[str, Tuple[str, str]]
     match_scopes: Set[str]
     inputs: Set[str]
     configs: Dict[str, Dict[str, Any]]  # NodeId -> Config
@@ -90,6 +91,7 @@ class Rule(object):
         action: RuleAction,
         rule_name: str,
         conditions: List[RuleCondition],
+        check_inputs: List[CheckInput],
     ) -> "Rule":
         """Build rule from config"""
         rule_id = f"{rule_id}-{action.id}"
@@ -100,10 +102,12 @@ class Rule(object):
             # if node.name in {"alarm", "threshold"} and "vars" in node.config:
             #     node.config["vars"] = [VarItem(**v) for v in node.config["vars"]]
             configs[f"{rule_id}::{node.name}"] = node.config
-        scopes, inputs = set(), set()
+        scopes, inputs, check_metrics = set(), set(), {}
         for a in action.inputs:
             scopes.add(a.sender_id)
             inputs.add(a.probe_id)
+        for c in check_inputs:
+            check_metrics[c.metric_id] = (c.sender_id, c.probe_id)
         return Rule(
             id=rule_id,
             match_labels=frozenset(
@@ -115,4 +119,5 @@ class Rule(object):
             inputs=inputs,
             alarms=[],
             configs=configs,
+            check_metrics=check_metrics,
         )
