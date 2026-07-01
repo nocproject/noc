@@ -70,7 +70,7 @@ class MetricsNode(BaseCDAGNode):
                     continue
             r[k] = v
             if update_checks and k in update_checks and target:
-                target.received_metrics.add(update_checks[k])
+                target.received_metrics.add(update_checks.pop(k))
         if not r:
             return None
         r.update(rk)

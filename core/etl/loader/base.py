@@ -594,12 +594,13 @@ class BaseLoader(object):
         else:
             self.c_add += 1
             o = self.create_object(v, state=getattr(item, "state", None), mappings=mappings)
+        if o:
             if self.workflow_seen_supported:
                 o.seen(source="etl")
             elif self.workflow_event_model:
                 o.fire_event(self.workflow_add_event)
-        if o and psf:
-            self.post_save(o, psf)
+            if psf:
+                self.post_save(o, psf)
         self.set_mappings(item.id, o.id)
 
     def on_change(self, o: BaseModel, n: BaseModel):

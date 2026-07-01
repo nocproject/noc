@@ -89,6 +89,7 @@ class VarItem(EmbeddedDocument):
         default="eq",
     )
     value = StringField(required=False)
+    default_value = StringField(required=False)
     choices = ListField(StringField(), required=False)
     # Normalize
     enum = PlainReferenceField(Enumeration)
@@ -96,6 +97,7 @@ class VarItem(EmbeddedDocument):
     alias = StringField(required=False)
     # Affected
     affected_model = StringField(required=False)
+    apply_profile_action = BooleanField(default=False)
     update_oper_status: str = StringField(
         choices=[("N", "Disable"), ("U", "UP"), ("D", "Down"), ("V", "By Var")],
         default="N",
@@ -121,10 +123,13 @@ class VarItem(EmbeddedDocument):
         r = {"name": self.name, "required": self.required}
         if self.value_type:
             r["value_type"] = self.value_type.value
+            if self.default_value:
+                r["default_value"] = self.default_value
         if self.affected_model:
             r |= {
                 "affected_model": self.affected_model,
                 "update_oper_status": self.update_oper_status,
+                "apply_profile_action": self.apply_profile_action,
             }
         if self.alias:
             r["alias"] = self.alias
@@ -149,6 +154,10 @@ class VarItem(EmbeddedDocument):
             r |= {"condition": self.condition, "value": self.value}
         if self.enum:
             r["enum__name"] = self.enum.name
+        if self.value_type:
+            r["value_type"] = self.value_type.value
+            if self.default_value:
+                r["default_value"] = self.default_value
         if self.alias:
             r["alias"] = self.alias
         if self.affected_model:
@@ -436,7 +445,7 @@ class DispositionRule(Document):
         if self.conditions:
             r["conditions"] = [m.json_data for m in self.conditions]
         if self.vars_op:
-            r["vars"] = [m.json_data for m in self.vars_op]
+            r["vars_op"] = [m.json_data for m in self.vars_op]
             r["vars_conditions_op"] = self.vars_conditions_op
         if self.replace_rule:
             r |= {
