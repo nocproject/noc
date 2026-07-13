@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # inv.inv pconf plugin
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -490,18 +490,14 @@ class PConfPlugin(InvPlugin):
 
     def get_pconf_beef(self, obj: Object) -> None:
         box = obj.get_box()
-        d = box.get_data("debug", "beef_path", scope="get_params")
-        if not d:
+        ref = box.get_data("debug", "beef_path", scope="get_params")
+        if not ref:
             return None
-        storage_name, path = d.split(":", 1)
-        self.logger.info("Trying to get beef fron %s", d)
-        storage = ExtStorage.get_by_name(storage_name)
-        if not storage:
-            self.logger.info("Storage %s is not found, skipping", storage_name)
+        try:
+            return orjson.loads(ExtStorage.read_bytes_from_ref(ref))
+        except ExtStorage.StorageErrors as e:
+            self.logger.error("Failed to download: %s", e)
             return None
-        fs = storage.open_fs()
-        with fs.open(path) as fp:
-            return orjson.loads(fp.read())
 
     @classmethod
     def get_model_name(cls, obj: Object) -> str:

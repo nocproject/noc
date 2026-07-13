@@ -84,6 +84,7 @@ from noc.aaa.models.group import Group
 from noc.main.models.pool import Pool
 from noc.main.models.timepattern import TimePattern
 from noc.main.models.remotesystem import RemoteSystem
+from noc.main.models.extstorage import ExtStorage
 from noc.vc.models.l2domain import L2Domain
 from noc.main.models.label import Label
 from noc.inv.models.networksegment import NetworkSegment
@@ -140,7 +141,7 @@ from noc.core.change.policy import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
 from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
 from noc.core.confdb.engine.base import Engine
-from noc.core.comp import smart_text, DEFAULT_ENCODING
+from noc.core.comp import smart_text
 from noc.main.models.glyph import Glyph
 from noc.core.topology.types import (
     ShapeOverlayPosition,
@@ -1690,15 +1691,10 @@ class ManagedObject(NOCModel):
             self.object_profile.config_mirror_storage.name,
             path,
         )
-        dir_path = os.path.dirname(path)
         try:
-            with storage.open_fs() as fs:
-                if dir_path and dir_path != "/" and not fs.isdir(dir_path):
-                    logger.debug("[%s] Ensuring directory: %s", self.name, dir_path)
-                    fs.makedirs(dir_path, recreate=True)
-                logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
-                fs.writebytes(path, data.encode(encoding=DEFAULT_ENCODING))
-        except storage.Error as e:
+            logger.debug("[%s] Mirroring %d bytes", self.name, len(data))
+            storage.write_bytes(path, data.encode())
+        except ExtStorage.StorageErrors as e:
             logger.error("[%s] Failed to mirror config: %s", self.name, e)
 
     def to_validate(self, changed):
