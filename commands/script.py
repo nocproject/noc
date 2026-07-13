@@ -12,12 +12,13 @@ import pprint
 import datetime
 import re
 from collections import namedtuple
-
-# Third-party modules
-import orjson
 import yaml
 import codecs
 import uuid
+from pathlib import Path
+
+# Third-party modules
+import orjson
 
 # NOC modules
 from noc.core.management.base import BaseCommand
@@ -170,10 +171,7 @@ class Command(BaseCommand):
         if beef_output:
             bdata = self.get_beef(scr, obj)
             beef = Beef.from_json(bdata)
-            storage = StorageStub("osfs:///")
-            sdata = beef.get_data(decode=True)
-            with storage.open_fs() as fs:
-                fs.writebytes(beef_output, smart_bytes(yaml.safe_dump(sdata)))
+            Path(beef_output).write_text(yaml.safe_dump(beef.get_data(decode=True)))
 
     def get_object(self, object_name):
         """
@@ -504,16 +502,3 @@ class JSONObject:
 
     def get_controller_credentials(self):
         return None
-
-
-class StorageStub:
-    def __init__(self, url):
-        self.url = url
-
-    def open_fs(self):
-        from fs import open_fs
-
-        return open_fs(self.url)
-
-    class Error(Exception):
-        pass

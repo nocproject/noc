@@ -1,12 +1,11 @@
 # ----------------------------------------------------------------------
 # Beef API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import os
 from collections import namedtuple
 import bisect
 import itertools
@@ -19,6 +18,7 @@ from typing import NamedTuple
 
 # NOC modules
 from noc.core.comp import smart_text, smart_bytes
+from noc.main.models.extstorage import ExtStorage
 
 Box = namedtuple("Box", ["profile", "vendor", "platform", "version"])
 CLIFSM = namedtuple("CLIFSM", ["state", "reply"])
@@ -167,7 +167,7 @@ class Beef:
         }
 
     @staticmethod
-    def compress_gzip(data):
+    def compress_gzip(data: bytes) -> bytes:
         import gzip
 
         f = StringIO()
@@ -176,13 +176,13 @@ class Beef:
         return f.getvalue()
 
     @staticmethod
-    def compress_bz2(data):
+    def compress_bz2(data: bytes) -> bytes:
         import bz2
 
         return bz2.compress(data)
 
     @staticmethod
-    def decompress_gzip(data):
+    def decompress_gzip(data: bytes) -> bytes:
         import gzip
 
         f = StringIO(data)
@@ -190,12 +190,12 @@ class Beef:
             return z.read()
 
     @staticmethod
-    def decompress_bz2(data):
+    def decompress_bz2(data: bytes) -> bytes:
         import bz2
 
         return bz2.decompress(data)
 
-    def save(self, storage, path):
+    def save(self, storage: ExtStorage, path: str) -> tuple[int, int]:
         """
         Write beef to external storage. Compression depends on extension.
         Following extensions are supported:
@@ -209,19 +209,15 @@ class Beef:
         """
         data = orjson.dumps(self.get_data())
         usize = len(data)
-        dir_path = os.path.dirname(path)
         if path.endswith(".gz"):
             data = self.compress_gzip(data)
         elif path.endswith(".bz2"):
             data = self.compress_bz2(data)
         csize = len(data)
         try:
-            with storage.open_fs() as fs:
-                if dir_path and dir_path != "/":
-                    fs.makedirs(dir_path, recreate=True)
-                fs.writebytes(path, data)
-        except storage.Error as e:
-            raise OSError(str(e))
+            storage.write_bytes(path, data)
+        except storage.StorageErrors as e:
+            raise OSError(str(e)) from e
         return csize, usize
 
     @classmethod
@@ -234,21 +230,17 @@ class Beef:
         """
         if isinstance(storage, str):
             # Load from URL
-            from fs import open_fs
-            from fs.errors import FSError
-
             try:
-                with open_fs(storage) as fs:
-                    data = fs.readbytes(smart_text(path))
-            except FSError as e:
-                raise OSError(str(e))
+                with ExtStorage.from_url(storage) as blob:
+                    data = blob[smart_text(path)]
+            except ExtStorage.StorageErrors as e:
+                raise OSError(str(e)) from e
         else:
             # Load from external storage
             try:
-                with storage.open_fs() as fs:
-                    data = fs.readbytes(smart_text(path))
-            except storage.Error as e:
-                raise OSError(str(e))
+                data = storage.read_bytes(path)
+            except ExtStorage.StorageErrors as e:
+                raise OSError(str(e)) from e
         if path.endswith(".gz"):
             data = cls.decompress_gzip(data)
         elif path.endswith(".json.bz2"):

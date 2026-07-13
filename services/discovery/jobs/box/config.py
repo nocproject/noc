@@ -1,13 +1,14 @@
 # ---------------------------------------------------------------------
 # Config check
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # NOC modules
 from noc.core.error import NOCError
 from noc.services.discovery.jobs.base import DiscoveryCheck
+from noc.main.models.extstorage import ExtStorage
 
 
 class ConfigCheck(DiscoveryCheck):
@@ -73,7 +74,7 @@ class ConfigCheck(DiscoveryCheck):
                     diagnostic="CLI" if e.remote_code in self.error_map else None,
                 )
 
-    def get_config_download(self):
+    def get_config_download(self) -> str | None:
         self.logger.info("Downloading config from external storage")
         # Check storage is set
         storage = self.object.object_profile.config_download_storage
@@ -93,9 +94,8 @@ class ConfigCheck(DiscoveryCheck):
         # Download
         self.logger.info("Downloading from %s:%s", storage.name, path)
         try:
-            with storage.open_fs() as fs, fs.open(path) as f:
-                return f.read()
-        except storage.Error as e:
+            return storage.read_bytes(path).decode()
+        except ExtStorage.StorageErrors as e:
             self.logger.info("Failed to download: %s", e)
             return None
 
