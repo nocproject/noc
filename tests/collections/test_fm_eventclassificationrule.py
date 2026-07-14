@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # EventClassificationRule test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import os
 # Third-party modules
 import pytest
 import orjson
-import fsspec
+from gufo.blob.sync import open_blob
 
 # NOC modules
 from noc.services.classifier.ruleset import RuleSet
@@ -58,18 +58,15 @@ def iter_json_loader(urls):
     if not urls:
         urls = []
     for url in urls:
-        fs, url_path = fsspec.url_to_fs(url)
-        for path, _, files in fs.walk(url_path):
-            for name in files:
-                if not name.endswith(".json"):
+        with open_blob(url) as blob:
+            for key in blob.scan(""):
+                if not key.endswith(".json"):
                     continue
-                path = os.path.join(path, name)
-                with fs.open(os.path.join(path, name), mode="rb") as f:
-                    data = orjson.loads(f.read())
+                data = orjson.loads(blob[key])
                 if not isinstance(data, list):
                     data = [data]
                 for i in data:
-                    yield path, i
+                    yield key, i
 
 
 @pytest.fixture(scope="module")

@@ -18,7 +18,7 @@ import warnings
 import pytest
 import orjson
 from django.db import models
-from gufo.blob.sync.base import open_blob
+from gufo.blob.sync import open_blob
 
 # NOC modules
 from noc.config import config
