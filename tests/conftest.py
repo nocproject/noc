@@ -16,9 +16,9 @@ import warnings
 
 # Third-party modules
 import pytest
-import fsspec
 import orjson
 from django.db import models
+from gufo.blob.sync.base import open_blob
 
 # NOC modules
 from noc.config import config
@@ -272,13 +272,11 @@ def _load_mibs():
 @with_timing("load_fixtures")
 def _load_fixtures():
     for url in config.tests.fixtures_paths:
-        fs, fs_path = fsspec.url_to_fs(url)
-        for path, _, files in fs.walk(fs_path):
-            for name in files:
-                if not name.endswith(".json"):
+        with open_blob(url) as blob:
+            for key in blob.scan(""):
+                if not key.endswith(".json"):
                     continue
-                with fs.open(os.path.join(path, name), mode="rb") as f:
-                    data = orjson.loads(f.read())
+                data = orjson.loads(blob[key])
                 if not isinstance(data, list):
                     data = [data]
                 for i in data:
