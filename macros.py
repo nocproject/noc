@@ -50,7 +50,6 @@ def define_env(env):
         Link to Merge Request. Usage:
 
         {{ mr(123) }}
-        :param iid:
         :return:
         """
         return f"[MR{iid}]({GITLAB_ROOT}/merge_requests/{iid})"

@@ -109,7 +109,6 @@ class TimePattern:
     def match(self, d):
         """
         Check datetime object matches time pattern
-        :param d:
         :return: Boolean result
         """
         return eval(self.code, {"T": d})
@@ -119,7 +118,6 @@ class TimePattern:
         """
         Convert a string of a list of time pattern declarations
         to the python expression
-        :param tp:
         :return:
         """
 

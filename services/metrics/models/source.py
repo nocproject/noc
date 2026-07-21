@@ -86,7 +86,6 @@ class SourceConfig:
         * condition - Diff labels
         * items - Diff items
         * metrics (additional Compose Metrics)
-        :param sc:
         :return:
         """
         r = []

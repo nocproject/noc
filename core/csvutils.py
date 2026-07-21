@@ -33,7 +33,6 @@ def update_if_changed(obj, values):
     :param values: New values
     :type values: dict
     :returns: List of changed (key, value)
-    :rtype: list
     """
     changes = []
     for k, v in values.items():

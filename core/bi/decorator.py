@@ -38,7 +38,6 @@ BI_ID_FIELD = "bi_id"
 def bi_hash(v):
     """
     Calculate BI hash from given value
-    :param v:
     :return:
     """
     if not isinstance(v, str):
@@ -58,7 +57,6 @@ def new_bi_id():
 def bi_sync(cls):
     """
     Denote class to add bi_id defaults
-    :param cls:
     :return:
     """
     if is_document(cls):

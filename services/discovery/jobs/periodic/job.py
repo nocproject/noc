@@ -127,7 +127,6 @@ class PeriodicDiscoveryJob(MODiscoveryJob):
     def get_discovery_interval(self, name) -> int:
         """
         Getting discovery interval by check name
-        :param name:
         :return:
         """
         if not getattr(self.object.object_profile, f"enable_periodic_discovery_{name}"):

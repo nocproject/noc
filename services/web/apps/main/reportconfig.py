@@ -92,9 +92,6 @@ class ReportConfigApplication(ExtDocApplication):
     ) -> list:
         """
         Get columns filter
-        :param report:
-        :param checked:
-        :param pref_lang:
         :return:
         """
         r = []
@@ -281,8 +278,6 @@ class ReportConfigApplication(ExtDocApplication):
     def api_report_run(self, request, report_id: str):
         """
 
-        :param request:
-        :param report_id:
         :return:
         """
         q = {str(k): v[0] if len(v) == 1 else v for k, v in request.GET.lists()}

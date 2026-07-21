@@ -44,7 +44,6 @@ class DialPlan(Document):
     def get_category(self, number):
         """
         Returns number category for a number
-        :param number:
         :return:
         """
         from .numbercategory import NumberCategory

@@ -45,8 +45,6 @@ class IsolatorClass:
     def default(self, num, index):
         """
         Last metthod
-        :param num:
-        :param index:
         :return:
         """
         raise NotImplementedError()
@@ -154,8 +152,6 @@ class CapabilitiesIsolator(IsolatorClass):
     def f_has(self, num, value):
         """
         Caps
-        :param num:
-        :param value:
         :return:
         """
         # print("Has a %s, %s" % (num, value))
@@ -270,8 +266,6 @@ class StatusIsolator(IsolatorClass):
     def f_is(self, num, value):
         """
 
-        :param num:
-        :param value:
         :return:
         """
         # print "Is a %s, %s" % (num, value)

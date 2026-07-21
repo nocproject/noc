@@ -15,8 +15,6 @@ from noc.core.comp import smart_text
 def render_bin(oid: str, value: bytes) -> bytes:
     """
     Render raw binary
-    :param oid:
-    :param value:
     :return:
     """
     return value
@@ -25,8 +23,6 @@ def render_bin(oid: str, value: bytes) -> bytes:
 def render_utf8(oid: str, value: bytes) -> str:
     """
     Render as UTF-8 text. Ignore errors
-    :param oid:
-    :param value:
     :return:
     """
     return smart_text(value, errors="ignore")
@@ -35,7 +31,6 @@ def render_utf8(oid: str, value: bytes) -> str:
 def get_text_renderer(encoding: str | None = "utf-8") -> Callable[[str, bytes], str]:
     """
     Return text renderer for arbitrary encoding
-    :param encoding:
     :return:
     """
 
@@ -48,8 +43,6 @@ def get_text_renderer(encoding: str | None = "utf-8") -> Callable[[str, bytes], 
 def render_empty(oid: str, value: bytes) -> str:
     """
     Always render empty string
-    :param oid:
-    :param value:
     :return:
     """
     return ""
@@ -58,8 +51,6 @@ def render_empty(oid: str, value: bytes) -> str:
 def render_mac(oid: str, value: bytes) -> str:
     """
     Render 6 octets as MAC address. Render empty string on length mismatch
-    :param oid:
-    :param value:
     :return:
     """
     if len(value) != 6:
@@ -70,8 +61,6 @@ def render_mac(oid: str, value: bytes) -> str:
 def render_IPV6(oid: str, value: bytes) -> str:
     """
     Render 16 octets as ip address V6. Render empty string on length mismatch
-    :param oid:
-    :param value:
     :return:
     """
     if len(value) != 16:
@@ -84,7 +73,6 @@ def render_IPV6(oid: str, value: bytes) -> str:
 def get_string_renderer(v: str) -> Callable[[str, bytes], str]:
     """
     Always renders arbitrary string
-    :param v:
     :return:
     """
 

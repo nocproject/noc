@@ -267,7 +267,6 @@ class ManagedObjectDS(BaseDataSource):
         Method for query report data. Return pandas dataframe.
         :param fields: list fields for filtered on query
         :param args: arguments for report query
-        :param kwargs:
         :return:
         """
         if "detail_query" in kwargs:
@@ -330,7 +329,6 @@ class ManagedObjectDS(BaseDataSource):
     def get_caps_default(caps: Capability):
         """
         Capability field default value
-        :param caps:
         :return:
         """
         if caps.type is ValueType.STRING:

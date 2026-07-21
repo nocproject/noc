@@ -80,7 +80,6 @@ class VRPNormalizer(BaseNormalizer):
     def normalize_vlan_id_batch(self, tokens):
         """
         vlan batch 3 99 102 401 to 448 501 to 549  format
-        :param tokens:
         :return:
         """
         r = []

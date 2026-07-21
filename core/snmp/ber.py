@@ -22,9 +22,6 @@ from noc.core.mib import mib
 def did(tag_class: int, is_constructed: int, tag_id: int) -> int:
     """
     Calculate decoder_id as <tag id > | tag_class | constructed
-    :param tag_class:
-    :param is_constructed:
-    :param tag_id:
     :return:
     """
     did = tag_class >> 5
@@ -107,7 +104,6 @@ class BERDecoder:
         >>> BERDecoder().parse_int('\\xff\\x7f')
         -129
 
-        :param msg:
         :return: integer
         """
         if not msg:
@@ -201,7 +197,6 @@ class BERDecoder:
 
     def parse_compressed_oid(self, msg: bytes) -> str:
         """
-        :param msg:
         :return:
         """
         pos = msg[0] - 1
@@ -244,7 +239,6 @@ class BERDecoder:
     def parse_float(self, msg):
         """
         ANSI/IEEE Std 754-1985 binary floating point
-        :param msg:
         :return:
         """
         return struct.unpack("!f", msg)[0]
@@ -252,7 +246,6 @@ class BERDecoder:
     def parse_double(self, msg):
         """
         ANSI/IEEE Std 754-1985 binary floating point
-        :param msg:
         :return:
         """
         return struct.unpack("!d", msg)[0]
@@ -368,7 +361,6 @@ class BEREncoder:
         >>> BEREncoder().encode_octet_string("")
         '\\x04\\x00'
 
-        :param data:
         :return:
         """
         return self.encode_tlv(4, True, data)
@@ -432,7 +424,6 @@ class BEREncoder:
         >>> BEREncoder().encode_real(float("1.5"))
         '\\t\\t0x0315E-1'
 
-        :param data:
         :return:
         """
         if data == self.INF:
@@ -467,7 +458,6 @@ class BEREncoder:
         >>> BEREncoder().encode_oid("1.3.6.1.2.1.1.5.0")
         '\\x06\\x08+\\x06\\x01\\x02\\x01\\x01\\x05\\x00'
 
-        :param data:
         :return:
         """
         return encode_oid(smart_bytes(data))

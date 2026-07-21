@@ -74,18 +74,6 @@ async def fetch(
     :param method: request method "GET", "POST", "PUT" etc
     :param headers: Dict of additional headers
     :param body: Request body for POST and PUT request
-    :param connect_timeout:
-    :param request_timeout:
-    :param resolver:
-    :param follow_redirects:
-    :param max_redirects:
-    :param validate_cert:
-    :param allow_proxy:
-    :param proxies:
-    :param user:
-    :param password:
-    :param max_buffer_size:
-    :param content_encoding:
     :param eof_mark: Do not consider connection reset as error if
       eof_mark received (string or list)
     :return: code, headers, body

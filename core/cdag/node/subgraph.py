@@ -59,9 +59,6 @@ class SubgraphCDAGFactory(ConfigCDAGFactory):
     def set_node_config(self, node: str, param: str, value: Any) -> None:
         """
         Set additional node config
-        :param node:
-        :param param:
-        :param value:
         :return:
         """
         self.node_cfg[node][param] = value

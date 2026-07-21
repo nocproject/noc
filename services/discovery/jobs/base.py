@@ -227,7 +227,6 @@ class MODiscoveryJob(PeriodicJob):
     def update_diagnostics(self, problems: list[ProblemItem]):
         """
         Syn problems to object diagnostic statuses
-        :param problems:
         :return:
         """
         self.logger.debug("Updating diagnostics statuses: %s", problems)
@@ -331,7 +330,6 @@ class MODiscoveryJob(PeriodicJob):
     def get_umbrella_settings(self) -> bool:
         """
         Check enable Alarm for Discovery
-        :param self:
         :return:
         """
         prev_status = self.context.get("umbrella_settings", False)
@@ -518,7 +516,6 @@ class DiscoveryCheck:
     def build_effective_labels(obj) -> list[str]:
         """
         Build object effective labels
-        :param obj:
         :return:
         """
         return [
@@ -917,9 +914,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
     def cached_neighbors(self, mo, key, iter_neighbors):
         """
         Cache iter_neighbors results according to profile settings
-        :param mo:
-        :param key:
-        :param iter_neighbors:
         :return:
         """
         ttl = mo.object_profile.neighbor_cache_ttl
@@ -1543,9 +1537,6 @@ class TopologyDiscoveryCheck(DiscoveryCheck):
         """
         Set interface alias
         Aliases will be finally resolved by clean_interface
-        :param object:
-        :param interface_name:
-        :param alias:
         :return:
         """
         self.interface_aliases[object.id, alias] = interface_name

@@ -576,7 +576,6 @@ class ObjectModel(Document):
         :param key: Data key on Model Interface
         :param connection: Data For connection
         :param context: Data Configuration Context
-        :param params:
         :return:
         """
         # Getting default context from ObjectConfigurationRule
@@ -642,8 +641,6 @@ class ObjectModel(Document):
     ) -> tuple[bool, str]:
         """
 
-        :param lc:
-        :param rc:
         :return:
         """
         # Check genders are compatible

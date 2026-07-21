@@ -41,10 +41,6 @@ class PrefixBookmark(NOCModel):
     def user_bookmarks(cls, user, vrf=None, afi=None):
         """
         Returns a prefixes bookmarked by user
-        :param cls:
-        :param user:
-        :param vrf:
-        :param afi:
         :return:
         """
         q = Q(user=user)

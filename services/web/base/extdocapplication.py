@@ -242,7 +242,6 @@ class ExtDocApplication(ExtApplication):
         :param data: dict of parameters
         :type data: dict
         :return: dict of cleaned parameters of raised InterfaceTypeError
-        :rtype: dict
         """
         # Strip ignored fields and convert empty strings to None
         data = {
@@ -319,9 +318,6 @@ class ExtDocApplication(ExtApplication):
     def set_file(self, files, o, file_attrs=None):
         """
         Proccessed uploaded file
-        :param files:
-        :param o:
-        :param file_attrs:
         :return:
         """
         return True
@@ -611,8 +607,6 @@ class ExtDocApplication(ExtApplication):
     def _api_share_info(self, request, id):
         """
         Additional information for JSON sharing process
-        :param request:
-        :param id:
         :return:
         """
         o = self.get_object_or_404(self.model, id=id)
@@ -628,7 +622,6 @@ class ExtDocApplication(ExtApplication):
     def _bulk_field_is_builtin(self, data):
         """
         Apply is_builtin field
-        :param data:
         :return:
         """
         builtins = Collection.get_builtins(self.json_collection)

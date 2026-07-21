@@ -345,8 +345,6 @@ class ResourceGroup(Document):
     def unset_service_group(self, model_id: str, changed_ids: list[str] | None = None):
         """
         Remove ServiceGroup from model
-        :param model_id:
-        :param changed_ids:
         :return:
         """
         if changed_ids is not None:
@@ -531,11 +529,6 @@ class ResourceGroup(Document):
 
         Raises ManagedObject.DoesNotExists if object is not found.
         Raises ResourceGroup.DoesNotExists if resource group is not found
-        :param cls:
-        :param s:
-        :param model_id:
-        :param include_labels:
-        :param exclude_labels:
         :return:
         """
         from noc.core.validators import is_int, is_objectid
@@ -722,8 +715,6 @@ class ResourceGroup(Document):
 def invalidate_instance_cache(model_id: str, ids: list[int]):
     """
     Defer task for invalidate instance with __reset_caches
-    :param model_id:
-    :param ids:
     :return:
     """
     if not model_id:

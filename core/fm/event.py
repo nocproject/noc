@@ -165,7 +165,6 @@ class Event(BaseModel):
     def resolve_managed_object_target(bi_id) -> tuple[str, str]:
         """
         Try resolva ManagedObject for old format event
-        :param bi_id:
         :return:
         """
         from noc.sa.models.managedobject import ManagedObject
@@ -179,7 +178,6 @@ class Event(BaseModel):
     def from_json(cls, data: dict[str, Any]) -> "Event":
         """
         Build instance from clickhouse query
-        :param data:
         :return:
         """
         ts = datetime.datetime.fromisoformat(data["timestamp"])
@@ -240,7 +238,6 @@ class Event(BaseModel):
     ) -> Optional["Event"]:
         """
 
-        :param event_id:
         :return:
         """
         event_id = str(ObjectId(event_id))

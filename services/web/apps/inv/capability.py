@@ -43,7 +43,6 @@ class CapabilityApplication(ExtDocApplication):
             { text: 'buy lottery tickets', leaf: true }
         ]
         }
-        :param request:
         :return:
         """
         root_c = {"text": "root", "children": []}

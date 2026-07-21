@@ -145,7 +145,6 @@ class DesktopApplication(ExtApplication):
         Return current NOC version
 
         :returns: version string
-        :rtype: Str
         """
         return version.version
 
@@ -155,7 +154,6 @@ class DesktopApplication(ExtApplication):
         Check wrether the session is authenticated.
 
         :returns: True if session authenticated, False otherwise
-        :rtype: Bool
         """
         return request.user.is_authenticated()
 
@@ -186,7 +184,6 @@ class DesktopApplication(ExtApplication):
         """
         Return user's navigation menu tree
 
-        :param node:
         :returns:
         """
 
@@ -242,7 +239,6 @@ class DesktopApplication(ExtApplication):
     def api_get_state(self, request):
         """
         Get user state
-        :param request:
         :return:
         """
         uid = request.user.id
@@ -252,7 +248,6 @@ class DesktopApplication(ExtApplication):
     def api_get_state_by_name(self, request, name):
         """
         Get user state
-        :param request:
         :return:
         """
         uid = request.user.id
@@ -262,8 +257,6 @@ class DesktopApplication(ExtApplication):
     def api_clear_state(self, request, name):
         """
         Clear user state
-        :param request:
-        :param name:
         :return:
         """
         uid = request.user.id
@@ -274,8 +267,6 @@ class DesktopApplication(ExtApplication):
     def api_set_state(self, request, name):
         """
         Clear user state
-        :param request:
-        :param name:
         :return:
         """
         uid = request.user.id

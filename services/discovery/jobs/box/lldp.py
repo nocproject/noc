@@ -144,8 +144,6 @@ class LLDPCheck(TopologyDiscoveryCheck):
     def get_interface_by_description(self, port, object):
         """
         Find remote port by interface description.
-        :param object:
-        :param port:
         :return: port name if found, None otherwise.
         """
         self.logger.debug("Searching port by description: %s:%s", object.name, port)
@@ -172,8 +170,6 @@ class LLDPCheck(TopologyDiscoveryCheck):
     def get_interface_by_local(self, port, object):
         """
         Try to guess remote port from free-form description
-        :param object:
-        :param port:
         :return:
         """
         self.logger.debug("Searching port by local: %s:%s", object.name, port)
@@ -201,8 +197,6 @@ class LLDPCheck(TopologyDiscoveryCheck):
     def get_interface_by_unspecified(self, port_id, object):
         """
         Try to guess remote port from description of undetermined subtype.
-        :param object:
-        :param port:
         :return:
         """
         port = port_id["remote_port"]

@@ -44,7 +44,6 @@ class VLANApplication(ExtDocApplication):
     def get_l2domain_interfaces_count(self, l2_domain: str) -> dict[int, int]:
         """
         Calculate VLAN Count by interface on ManagedObject list
-        :param l2_domain:
         :return:
         """
         mos = L2Domain.get_l2_domain_object_ids(l2_domain)
@@ -135,8 +134,6 @@ class VLANApplication(ExtDocApplication):
     def api_interfaces(self, request, vlan_id: int):
         """
         Returns a dict of {untagged: ..., tagged: ...., l3: ...}
-        :param request:
-        :param vlan_id:
         :return:
         """
         vlan: "VLAN" = self.get_object_or_404(VLAN, id=vlan_id)

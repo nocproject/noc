@@ -108,8 +108,6 @@ class JsonDSAPI:
     ):
         """
         Method for /search endpoint on datasource
-        :param req:
-        :param user:
         :return:
         """
         self.logger.info("Search Request: %s", req)
@@ -120,8 +118,6 @@ class JsonDSAPI:
     ):
         """
         Method for /search endpoint on datasource
-        :param payload:
-        :param user:
         :return:
         """
         self.logger.info("Search Request: %s", payload)
@@ -132,8 +128,6 @@ class JsonDSAPI:
     ):
         """
         Method for /variable endpoint on datasource
-        :param req:
-        :param user:
         :return:
         """
         self.logger.info("Variable Request: %s", req)
@@ -151,8 +145,6 @@ class JsonDSAPI:
     ):
         """
         Method for /annotations endpoint on datasource
-        :param req:
-        :param user:
         :return:
         """
         self.logger.debug("Annotation Request: %s", req)
@@ -211,8 +203,6 @@ class JsonDSAPI:
     def clean_func_expr(field_name, function: str | None = None) -> str:
         """
         Return function expression for field
-        :param field_name:
-        :param function:
         :return:
         """
         if not function:
@@ -225,8 +215,6 @@ class JsonDSAPI:
         """
         Method for /query endpoint on datasource
 
-        :param req:
-        :param user:
         :return:
         """
         self.logger.info("Query Request: %s", req)
@@ -299,10 +287,6 @@ class JsonDSAPI:
         )
         GROUP BY target FORMAT JSON
 
-        :param req:
-        :param table_name:
-        :param query_condition:
-        :param query_configs:
         :return:
         """
         # TS Filter
@@ -370,7 +354,6 @@ class JsonDSAPI:
     def get_target_expression(table_name: str = None) -> tuple[str, str | None]:
         """
         Getting Target name format for table
-        :param table_name:
         :return:
         """
         return "arrayStringConcat(labels,'/')", "target"
@@ -379,7 +362,6 @@ class JsonDSAPI:
     def convert_ts_range(req) -> tuple[datetime.datetime, datetime.datetime]:
         """
         Convert request range param to local datetime
-        :param req:
         :return:
         """
         start, end = req.range.from_, req.range.to
@@ -398,7 +380,6 @@ class JsonDSAPI:
         Convert Range params to where expression
 
         date >= toDate(1650542193) AND ts >= toDateTime(1650542193)
-        :param req:
         :return:
         """
         start, end = cls.convert_ts_range(req)
@@ -440,10 +421,6 @@ class JsonDSAPI:
     ) -> Any | None:
         """
         Resolve object in Query by Value
-        :param model_id:
-        :param value:
-        :param query_function:
-        :param user:
         :return:
         """
         model = get_model(model_id)
@@ -477,9 +454,6 @@ class JsonDSAPI:
         """
         Convert payload target to where expression
         Processed requested Scope key fields
-        :param metric_type:
-        :param payload:
-        :param user:
         :return:
         """
         if not payload:
@@ -551,7 +525,6 @@ class JsonDSAPI:
     def get_tag_values(self, key: str):
         """
         Get Values by Requested key
-        :param key:
         :return:
         """
         return []

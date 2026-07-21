@@ -174,7 +174,6 @@ class ExtApplication(Application):
     def parse_request_query(self, request) -> dict[str, Any]:
         """
 
-        :param request:
         :return:
         """
         if request.method != "POST":
@@ -312,7 +311,6 @@ class ExtApplication(Application):
         """
         Finally process list_data result. Override to enrich with
         additional fields
-        :param data:
         :return:
         """
         return self.apply_bulk_fields(data)

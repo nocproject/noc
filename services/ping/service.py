@@ -260,7 +260,6 @@ class PingService(FastAPIService):
     def get_status_message(cls, status: bool) -> dict[str, Any]:
         """
         Construct status message event
-        :param status:
         :return:
         """
         return {"source": "system", "$event": {"class": cls.PING_CLS[status], "vars": {}}}

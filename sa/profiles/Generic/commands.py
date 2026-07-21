@@ -140,8 +140,6 @@ class Script(BaseScript):
     def find_match(self, patterns, s):
         """
         Return match object for list of patterns against string
-        :param patterns:
-        :param s:
         :return:
         """
         for rx in patterns:

@@ -38,7 +38,6 @@ class BaseCompressor:
     def get_path(cls, path: str) -> str:
         """
         Convert path and add extension when needed
-        :param path:
         :return:
         """
         if cls.ext:

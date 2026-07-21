@@ -76,11 +76,6 @@ def is_connected():
 
 
 def get_connection():
-    """
-
-    :return:
-    :rtype: pymongo.collection.Connection
-    """
     return _get_connection()
 
 
@@ -88,6 +83,5 @@ def get_db():
     """
 
     :return:
-    :rtype: pymongo.database.Database
     """
     return _get_db()

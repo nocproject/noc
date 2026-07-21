@@ -195,8 +195,6 @@ class Script(BaseScript):
              2  Activating           5       1   Normal        Normal
              3  Activating           5       1   Normal        Normal
 
-        :param v:
-        :param slot_n:
         :return:
         """
         ports = {}
@@ -235,8 +233,6 @@ class Script(BaseScript):
     def get_svc(self, interfaces, slot_n):
         """
         service-port board command. Use on GPON board
-        :param interfaces:
-        :param slot_n:
         :return:
         """
         try:
@@ -266,7 +262,6 @@ class Script(BaseScript):
     def get_l3_interfaces(self, interfaces):
         """
         Getting L3 interfaces by "display interface" command
-        :param interfaces:
         :return:
         """
         v = self.cli("display interface")

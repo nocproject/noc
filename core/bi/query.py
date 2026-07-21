@@ -50,7 +50,6 @@ class OP:
 def f_lookup(seq, model=None):
     """
     $lookup (dictionary, id [,field])
-    :param seq:
     :param model
     :return:
     """
@@ -72,8 +71,6 @@ def f_lookup(seq, model=None):
 def in_lookup(seq, model=None):
     """
     $lookup (field, expr)
-    :param seq:
-    :param model:
     :return:
     """
     s3 = " NOT" if ("$not" in seq) or ("$NOT" in seq) else ""
@@ -91,8 +88,6 @@ def in_lookup(seq, model=None):
 def f_ternary_if(seq, model=None):
     """
     $?
-    :param seq:
-    :param model:
     :return:
     """
     return f"(({to_sql(seq[0])}) ? ({to_sql(seq[1])}) : ({to_sql(seq[2])}))"
@@ -101,8 +96,6 @@ def f_ternary_if(seq, model=None):
 def f_between(seq, model=None):
     """
     $between(a, b)
-    :param seq:
-    :param model:
     :return:
     """
     return f"(({to_sql(seq[0])}) BETWEEN ({to_sql(seq[1])}) AND ({to_sql(seq[2])}))"
@@ -111,8 +104,6 @@ def f_between(seq, model=None):
 def f_names(seq, model=None):
     """
     $names (dict, field)
-    :param seq:
-    :param model:
     :return:
     """
     dict_name = seq[0]
@@ -124,8 +115,6 @@ def f_names(seq, model=None):
 def f_duration(seq, model=None):
     """
     $duration (dict, field)
-    :param seq:
-    :param model:
     :return:
     """
     return (
@@ -139,8 +128,6 @@ def f_duration(seq, model=None):
 def f_selector(seq, model=None):
     """
     $selector (expr, model, query)
-    :param seq:
-    :param model:
     :return:
     """
     expr, model_name, query = seq
@@ -255,8 +242,6 @@ def escape_field(s):
 def to_sql(expr, model=None):
     """
     Convert query expression to sql
-    :param expr:
-    :param model:
     :return:
     """
     if isinstance(expr, dict):

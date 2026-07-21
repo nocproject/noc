@@ -1,13 +1,14 @@
 # ----------------------------------------------------------------------
 #  Alcatel.TIMOS.get_interfaces
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 
 # Python modules
 import re
+from typing import Any
 
 # NOC modules
 from noc.sa.profiles.Generic.get_interfaces import Script as BaseScript
@@ -201,10 +202,7 @@ class Script(BaseScript):
     )
 
     @staticmethod
-    def fix_protocols(protocols):
-        """
-        :rtype : list
-        """
+    def fix_protocols(protocols) -> list[str]:
         proto = []
         if "None" in protocols:
             return []
@@ -224,10 +222,7 @@ class Script(BaseScript):
     def fix_status(status):
         return "up" in status.lower()
 
-    def fix_ip_addr(self, ipaddr_section):
-        """
-        :rtype : dict
-        """
+    def fix_ip_addr(self, ipaddr_section) -> dict[str, Any]:
         result = {"ipv4_addresses": [], "ipv6_addresses": [], "enabled_afi": []}
         if not ipaddr_section:
             return result

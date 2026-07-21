@@ -59,9 +59,6 @@ class VLANFilterApplication(ExtDocApplication):
     def lookup_vc(self, q, name, value):
         """
         Resolve __vc lookups
-        :param q:
-        :param name:
-        :param value:
         :return:
         """
         value = IntParameter().clean(value)

@@ -72,9 +72,7 @@ def SGSeries(v):
 def SFSeries(v):
     """
     SFxxx series selector
-    :param v:
     :type v: dict
     :return:
-    :rtype: bool
     """
     return "SF" in v["platform"]

@@ -19,7 +19,6 @@ class Script(BaseScript):
         """
         Detect should we check ifHighSpeed
         :param data: dict with
-        :param speed:
         :return:
         """
         return data.get("oper_status") and speed == self.HIGH_SPEED

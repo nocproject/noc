@@ -89,7 +89,6 @@ class Script(BaseScript):
     def get_oids_by_caps(self, oids_map):
         """
         Process caps -> [oid, ...] mappings
-        :param oids_map:
         :return:
         """
         oids = set()

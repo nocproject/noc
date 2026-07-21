@@ -50,7 +50,6 @@ class BaseBioSegPolicy:
     def get_power(self, seg: NetworkSegment) -> int:
         """
         Calculate network segment's power
-        :param seg:
         :return:
         """
         pwr = self._powers.get(seg)
@@ -79,8 +78,6 @@ class BaseBioSegPolicy:
     def consume_objects(self, src: NetworkSegment, dst: NetworkSegment) -> None:
         """
         Move all objects from src to dst
-        :param src:
-        :param dst:
         :return:
         """
         self.logger.info("%s consumes objects from %s", dst.name, src.name)
@@ -130,7 +127,6 @@ class BaseBioSegPolicy:
         """
         Try to destroy empty network segment
 
-        :param seg:
         :return:
         """
         self.logger.info(f"Try to destroy segment {seg.name}")

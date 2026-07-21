@@ -133,7 +133,6 @@ class Dictionary(metaclass=DictionaryBase):
         """
         Returns dictionary class referred by name
         @todo: Process custom/
-        :param name:
         :return:
         """
         m = importlib.import_module(f"noc.core.bi.dictionaries.{name}")
@@ -150,7 +149,6 @@ class Dictionary(metaclass=DictionaryBase):
         """
         Returns field type
 
-        :param name:
         :return:
         """
         return cls._meta.fields[name].get_db_type()

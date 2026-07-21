@@ -445,7 +445,6 @@ class InvApplication(ExtApplication):
     )
     def api_insert(self, request, container, objects, position):
         """
-        :param request:
         :param container: ObjectID after/in that insert
         :param objects: List ObjectID for insert
         :param position: 'append', 'before', 'after'
@@ -505,7 +504,6 @@ class InvApplication(ExtApplication):
         Denied connections:
            * internal and external pin
            * Same pin
-        :param request:
         :param o1: From object
         :param o2: To Object
         :param left_filter: From object connection pin

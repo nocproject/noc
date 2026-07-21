@@ -160,7 +160,6 @@ def _iter_split_alnum(s: str) -> Iterable[str]:
     """
     Iterator yielding alphabetic and numeric sections if string
 
-    :param s:
     :return:
     """
     for match in rx_split_alnum.finditer(s):

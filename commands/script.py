@@ -288,7 +288,6 @@ class Command(BaseCommand):
         Update named spec
         :param name: Spec name
         :param script: BaseScript instance
-        :param save:
         :return:
         """
         from noc.dev.models.quiz import Quiz

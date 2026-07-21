@@ -24,7 +24,6 @@ def test_iter_model_id():
 def test_model_loading(model_id):
     """
     Check model referred by id can be loaded
-    :param model_id:
     :return:
     """
     model = get_model(model_id)

@@ -241,7 +241,6 @@ class KafkaClient:
     def get_topic_config(name, replication_factor: int = 1) -> dict[str, str]:
         """
         Return topic retention settings
-        :param name:
         :param replication_factor: Cluster replicator factor
         :return:
         """
@@ -272,10 +271,6 @@ class KafkaClient:
     ) -> None:
         """
         Create Stream by settings
-        :param name:
-        :param group:
-        :param partitions:
-        :param replication_factor:
         :return:
         """
         admin_client = await self.get_kafka_admin_client()
@@ -337,10 +332,6 @@ class KafkaClient:
         :param partition: Partition num (for manual assign)
         :param start_offset: Offset for staring read
         :param start_timestamp: Timestamp for staring read
-        :param resume:
-        :param cursor_id:
-        :param timeout:
-        :param allow_isr:
         :return:
         """
         consumer = await self.get_consumer(group_id=group_id)
@@ -397,14 +388,6 @@ class KafkaClient:
     ) -> AsyncIterable[Message]:
         """
         For compatible NOC Client method
-        :param stream:
-        :param partition:
-        :param start_offset:
-        :param start_timestamp:
-        :param resume:
-        :param cursor_id:
-        :param timeout:
-        :param allow_isr:
         :return:
         """
         # async with consumer as c:
@@ -432,12 +415,6 @@ class KafkaClient:
     ) -> None:
         """
         Publish message to stream
-        :param value:
-        :param stream:
-        :param key:
-        :param partition:
-        :param headers:
-        :param kwargs:
         :return:
         """
         logger.debug("Sending to topic %s", stream)
@@ -477,7 +454,6 @@ class KafkaClient:
         Fetch cursor offset for stream
         :param stream: Topic name
         :param partition: Partition number
-        :param cursor_id:
         :return:
         """
         consumer = await self.get_consumer(group_id=stream)
@@ -488,8 +464,6 @@ class KafkaClient:
         Setting cursor offset for stream
         :param stream: Topic name
         :param partition: Partition number
-        :param cursor_id:
-        :param offset:
         :return:
         """
         logger.debug("[%s|%s] Set cursor to1: %s", stream, partition, offset)

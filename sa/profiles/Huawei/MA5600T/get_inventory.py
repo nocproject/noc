@@ -264,7 +264,6 @@ class Script(BaseScript):
         :param out: 'display elabel output'
         :type out: str
         :return:
-        :rtype: inventory_item
         """
         r = []
         parent = None
@@ -336,7 +335,6 @@ class Script(BaseScript):
     def execute_snmp(self, **kwargs):
         """
         Slot part_no is not full (ex. ADFE)
-        :param kwargs:
         :return:
         """
         r = []
@@ -392,7 +390,6 @@ class Script(BaseScript):
     def execute_inventory_board(self, **kwargs):
         """
         Uses if display elabel command unsupported
-        :param kwargs:
         :return:
         """
         r = []

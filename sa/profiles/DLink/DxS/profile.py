@@ -498,7 +498,6 @@ class Profile(BaseProfile):
 def DES1210(v):
     """
     DES-1210-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DES-1210")
@@ -507,7 +506,6 @@ def DES1210(v):
 def DES30xx(v):
     """
     DES-30xx-series
-    :param v:
     :return:
     """
     return (
@@ -521,7 +519,6 @@ def DES30xx(v):
 def DES3028(v):
     """
     DES-3028-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DES-3028")
@@ -530,7 +527,6 @@ def DES3028(v):
 def DES3x2x(v):
     """
     DES-3x2x-series
-    :param v:
     :return:
     """
     return (
@@ -544,7 +540,6 @@ def DES3x2x(v):
 def DES3500(v):
     """
     DES-3500-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DES-35")
@@ -553,7 +548,6 @@ def DES3500(v):
 def DES3200(v):
     """
     DES-3200-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DES-3200")
@@ -562,7 +556,6 @@ def DES3200(v):
 def DGS3120(v):
     """
     DGS-3120-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DGS-3120")
@@ -571,7 +564,6 @@ def DGS3120(v):
 def DGS3400(v):
     """
     DGS-3400-series
-    :param v:
     :return:
     """
     return "DGS-3420" not in v["platform"] and v["platform"].startswith("DGS-34")
@@ -580,7 +572,6 @@ def DGS3400(v):
 def DGS3420(v):
     """
     DGS-3420-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DGS-3420")
@@ -589,7 +580,6 @@ def DGS3420(v):
 def DGS3600(v):
     """
     DGS-3600-series
-    :param v:
     :return:
     """
     return (
@@ -602,7 +592,6 @@ def DGS3600(v):
 def DGS3620(v):
     """
     DGS-3620-series
-    :param v:
     :return:
     """
     return v["platform"].startswith("DGS-3620")

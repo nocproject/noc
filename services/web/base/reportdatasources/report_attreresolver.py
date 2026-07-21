@@ -24,9 +24,7 @@ class ReportAttrResolver(BaseReportColumn):
 
     def extract(self):
         """
-        :param ids:
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
-        :rtype: dict
         """
         platform = {
             str(p["_id"]): p["name"]

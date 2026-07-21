@@ -334,7 +334,6 @@ class Script(BaseScript):
         Get Vlan to port mappings for Juniper EX series.
         Returns two dicts: port -> untagged vlan, port -> tagged vlans
         :return: tagged map, untagged map
-        :rtype: tuple
         """
 
         def clean_interface(s):

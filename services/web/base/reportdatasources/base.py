@@ -75,10 +75,7 @@ class BaseReportColumn:
     # {"Series1_name": dataseries1, "Series2_name": dataseries2}
 
     def __init__(self, sync_ids=None) -> None:
-        """
-
-        :param sync_ids:
-        """
+        """ """
         self.sync_ids = sync_ids  # Sorted Index list
         self.sync_ids_i = iter(self.sync_ids)
         self._current_id = self.next_id()
@@ -256,7 +253,6 @@ class ReportModelFilter:
     def decode(self, formula):
         """
         Decode stat formula and return isolated set
-        :param formula:
         :return: moss: Result Query for Object
         :return: ids: Result id list for object
         """

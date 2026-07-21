@@ -569,7 +569,6 @@ class BaseService:
             """
             Synchronous version of cursor setter.
             Blocks until the cursor is really set.
-            :param offset:
             :return:
             """
             await client.set_cursor(
@@ -583,7 +582,6 @@ class BaseService:
             """
             Asynchronous version of cursor setter. Doesn't block subscriber loop,
             though committed cursor position may lag behind the really processed one.
-            :param offset:
             :return:
             """
             nonlocal cursor_cond, cursor_offset
@@ -684,11 +682,6 @@ class BaseService:
     ):
         """
         Schedule publish request
-        :param value:
-        :param stream:
-        :param partition:
-        :param key:
-        :param headers:
         :return:
         """
         if not self.publish_queue:
@@ -904,7 +897,6 @@ class BaseService:
         :param message_type: Message type
         :param headers: additional message headers
         :param sharding_key: Key for sharding over MX services
-        :param group_key:
         :return:
         """
         msg = Router.get_message(
@@ -942,7 +934,6 @@ class BaseService:
     def is_valid_health_check(self, service_id):
         """
         Check received service id matches own service id
-        :param service_id:
         :return:
         """
         return not (
@@ -969,7 +960,6 @@ class BaseService:
     async def get_stream_partitions(self, stream: str) -> int:
         """
 
-        :param stream:
         :return:
         """
         async with MessageStreamClient() as client:

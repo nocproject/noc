@@ -137,7 +137,6 @@ class MIB(Document):
     def load_data(self, data):
         """
         Load mib data from list of {oid:, name:, description:, syntax:}
-        :param data:
         :return:
         """
         # Get MIB preference
@@ -322,9 +321,6 @@ class MIB(Document):
         """
         Resolve FM key -> value dict according to MIBs
 
-        :param cls:
-        :param vars:
-        :param include_raw:
         :return:
         """
         r = {}
@@ -399,8 +395,6 @@ class MIB(Document):
     def guess_encoding(cls, s: bytes, encodings: list[str] | None = None) -> str:
         """
         Try to guess encoding
-        :param s:
-        :param encodings:
         :return:
         """
         encodings = encodings or TRY_ENCODINGS

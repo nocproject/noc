@@ -141,7 +141,6 @@ class ChangeTracker:
         """
         Push new effective policy for the current thread,
         store current one in the stack
-        :param policy:
         :return:
         """
         # Store previous policy

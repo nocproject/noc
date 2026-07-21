@@ -48,7 +48,6 @@ class Profile(BaseProfile):
     def get_interface_names(self, name):
         """
         LLDP port format is number: 1, 17 etc...
-        :param name:
         :return:
         """
 

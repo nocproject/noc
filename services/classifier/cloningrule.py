@@ -45,7 +45,6 @@ class CloningRule:
     def match(self, rule):
         """
         Check cloning rule matches classification rule
-        :rtype: bool
         """
         if self.re_mode:
             return any(

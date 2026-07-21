@@ -155,7 +155,6 @@ class InterfaceApplication(ExtDocApplication):
     def api_get_interfaces(self, request, managed_object):
         """
         GET interfaces
-        :param managed_object:
         :return:
         """
 

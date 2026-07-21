@@ -81,7 +81,6 @@ class Script(GetMetricsScript):
     def get_beacon_iface(self, ifaces):
         """
         Beacon iface. Add Status and mapping for SSID <-> Radio interface
-        :param ifaces:
         :return:
         """
         for s in ifaces:

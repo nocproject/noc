@@ -115,10 +115,6 @@ class AdmDivExtractor(BaseExtractor):
         """
         Checking duble oktmo code
 
-        :param ter:
-        :param kod1:
-        :param kod2:
-        :param kod3:
         :return:
         """
         if kod3 == "000":
@@ -132,10 +128,6 @@ class AdmDivExtractor(BaseExtractor):
         """
         Creating parent code
 
-        :param ter:
-        :param kod1:
-        :param kod2:
-        :param kod3:
         :return:
         """
         if self.region != "0" and kod1[1:3] == "00" and kod2 == "000" and kod3 == "000":

@@ -70,10 +70,6 @@ class PrefixAccess(NOCModel):
     def user_can_view(cls, user, vrf, afi, prefix):
         """
         Check user has read access to prefix
-        :param user:
-        :param vrf:
-        :param afi:
-        :param prefix:
         :return:
         """
         if user.is_superuser:
@@ -97,11 +93,6 @@ class PrefixAccess(NOCModel):
     def user_can_change(cls, user, vrf, afi, prefix):
         """
         Check user has write access to prefix
-        :param cls:
-        :param user:
-        :param vrf:
-        :param afi:
-        :param prefix:
         :return:
         """
         if user.is_superuser:
@@ -126,9 +117,6 @@ class PrefixAccess(NOCModel):
         """
         Returns django Q with read restrictions.
         Q can be applied to prefix
-        :param user:
-        :param field:
-        :param table:
         :return:
         """
         if user.is_superuser:

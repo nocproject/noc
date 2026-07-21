@@ -213,7 +213,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def bulk_field_interface_count(self, data):
         """
         Apply interface_count fields
-        :param data:
         :return:
         """
         mo_ids = [x["id"] for x in data]
@@ -235,7 +234,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def bulk_field_oper_state(self, data):
         """
         Apply oper_state field
-        :param data:
         :return:
         """
         # IsManaged check if lookup field. Possibly extract if for id
@@ -303,8 +301,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def instance_to_dict_list(self, o: "ManagedObject", fields=None):
         """
 
-        :param o:
-        :param fields:
         :return:
         """
         if not o.is_managed or not o.object_profile.enable_ping:
@@ -411,7 +407,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def get_caps_Q(self, nq: dict[str, Any]) -> tuple["d_Q", list[str]]:
         """
         Resolve caps on query to queryset
-        :param nq:
         :return:
         """
         q, jp_clauses = d_Q(), []
@@ -673,7 +668,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_interface(self, request, id):
         """
         GET interfaces
-        :param managed_object:
         :return:
         """
 
@@ -862,8 +856,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_delete(self, request, id):
         """
         Override default method
-        :param request:
-        :param id:
         :return:
         """
         try:
@@ -1237,8 +1229,6 @@ class ManagedObjectApplication(ExtModelApplication):
     def api_cpe(self, request, id):
         """
         GET CPEs
-        :param request:
-        :param id:
         :return:
         """
 

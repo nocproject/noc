@@ -19,7 +19,6 @@ class BaseMacro:
     def parse_args(cls, args):
         """
         Converts a string of html-like attributes to hash
-        :param args:
         :return:
         """
         if isinstance(args, dict):
@@ -30,8 +29,6 @@ class BaseMacro:
     def expand(cls, args, text):
         """
         Decodes args and calls handle method
-        :param args:
-        :param text:
         :return:
         """
         return cls.handle(cls.parse_args(args), text)

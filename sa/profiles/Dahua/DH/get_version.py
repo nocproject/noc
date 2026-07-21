@@ -31,7 +31,6 @@ class Script(BaseScript):
         {"HardwareVersion":"Unknow","ModuleName":"Camera","SoftwareVersion":"Unknow","State":"Normal"}]},
         "result":true,"session":43241591}
         :return: PTZ Driver Version
-        :rtype: str
         """
         r = self.http.post(
             "/RPC2", data={"method": "magicBox.getSubModules", "params": None}, json=True

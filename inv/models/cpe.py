@@ -392,7 +392,6 @@ class CPE(Document):
     ):
         """
         Set oper CPE status
-        :param status:
         :param bulk: List for append bulk op
         :param change_ts: Status change Timestamp
         :return:

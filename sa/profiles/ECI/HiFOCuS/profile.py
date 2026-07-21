@@ -89,10 +89,7 @@ class Profile(BaseProfile):
     def get_boards(self, script, shelf_num=0):
         """
         Parse board table and return active
-        :param script:
-        :param shelf_num:
         :return: List boards
-        :rtype: dict
         """
         v = script.cli("GETPOP %d" % shelf_num, cached=True)
         r = []

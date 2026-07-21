@@ -736,8 +736,6 @@ class BaseLoader:
     def post_save(self, o, fields: dict[str, Any]):
         """
         Method fields updated separate method (example - capabilities)
-        :param o:
-        :param fields:
         :return:
         """
         return

@@ -259,7 +259,6 @@ class ConnectionType(Document):
     def get_matched_scopes(self, protocols):
         """
         Returns set of matched scopes against the list of protocols
-        :param protocols:
         :return:
         """
         return {m.scope for m in self.matchers if m.protocol in protocols}
@@ -267,8 +266,6 @@ class ConnectionType(Document):
     def is_matched_scope(self, scope, protocols):
         """
         Check if connection type matches scope against list of protocols
-        :param scope:
-        :param protocols:
         :return:
         """
         return any(True for m in self.matchers if m.scope == scope and m.protocol in protocols)

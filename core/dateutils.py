@@ -62,13 +62,11 @@ def humanize_distance(d):
     return dist
 
 
-def total_seconds(td):
+def total_seconds(td: datetime.timedelta) -> float:
     """
     Return total seconds in timedelta object
     :param td: timedelta
-    :type td: datetime.timedelta
     :return: seconds
-    :rtype: float
     """
     return (td.microseconds + (td.seconds + td.days * 86400) * 1000000) / 1000000.0
 

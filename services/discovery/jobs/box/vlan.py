@@ -216,7 +216,6 @@ class VLANCheck(PolicyDiscoveryCheck):
     def merge_vlans(vlans: list["DiscoveryVLAN"]) -> list["DiscoveryVLAN"]:
         """
         Merge object vlans with artifactory ones
-        :param vlans:
         :return:
         """
         r = []

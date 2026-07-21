@@ -100,8 +100,6 @@ class Command(BaseCommand):
     def handle_add(self, *args, **options):
         """
         Add link
-        :param args:
-        :param options:
         :return:
         """
         if len(args) != 2:
@@ -120,8 +118,6 @@ class Command(BaseCommand):
     def handle_remove(self, *args, **options):
         """
         Remove link
-        :param args:
-        :param options:
         :return:
         """
         for i in args:

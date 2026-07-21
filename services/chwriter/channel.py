@@ -36,7 +36,6 @@ class Channel:
     async def feed(self, msg: Message):
         """
         Feed the message. Returns optional offset of last saved message.
-        :param msg:
         :return:
         """
         # Wait until feed became possible
@@ -55,7 +54,6 @@ class Channel:
     def is_expired(self, ts: float) -> bool:
         """
         Check if channel is expired to given timestamp
-        :param ts:
         :return:
         """
         return self.expired and self.expired < ts

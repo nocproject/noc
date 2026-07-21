@@ -53,7 +53,6 @@ class IGetMPLSVPN(BaseInterface):
     def clean_result(self, result):
         """
         Inject vpn_id
-        :param result:
         :return:
         """
         result = super().clean_result(result)
@@ -64,7 +63,6 @@ class IGetMPLSVPN(BaseInterface):
     def script_clean_result(self, __profile, result):
         """
         Inject vpn_id
-        :param result:
         :return:
         """
         result = super().script_clean_result(__profile, result)

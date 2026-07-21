@@ -261,7 +261,6 @@ class State(Document):
     def on_enter_state(self, obj):
         """
         Called when object enters state
-        :param obj:
         :return:
         """
         # Process on enter handlers
@@ -302,7 +301,6 @@ class State(Document):
     def on_leave_state(self, obj):
         """
         Called when object leaves state
-        :param obj:
         :return:
         """
         if self.on_leave_handlers:
@@ -322,9 +320,6 @@ class State(Document):
     def fire_transition(self, transition, obj, bulk=None):
         """
         Process transition from state
-        :param transition:
-        :param obj:
-        :param bulk:
         :return:
         """
         assert obj.state == self
@@ -340,9 +335,6 @@ class State(Document):
     def fire_event(self, event, obj, bulk=None):
         """
         Fire transition by event name
-        :param event:
-        :param obj:
-        :param bulk:
         :return:
         """
         from .transition import Transition
@@ -385,7 +377,6 @@ class State(Document):
     def is_enabled_interaction(self, interaction: str | Interaction) -> bool:
         """
         Check diagnostic state: on/off
-        :param interaction:
         :return:
         """
         if self.is_wiping or self.disable_all_interaction:

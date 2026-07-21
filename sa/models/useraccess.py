@@ -43,8 +43,6 @@ class UserAccess(NOCModel):
     def Q(cls, user):
         """
         Returns Q object for user access
-        :param cls:
-        :param user:
         :return:
         """
         if user.is_superuser:

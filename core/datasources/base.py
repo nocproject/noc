@@ -283,7 +283,6 @@ class BaseDataSource:
         Sync method for query report data
         :param fields: list fields for filtered on query
         :param args: arguments for report query
-        :param kwargs:
         :return:
         """
         from noc.core.ioloop.util import run_sync
@@ -502,7 +501,6 @@ class BaseDataSource:
         Iterate data as row
         :param fields: list fields for filtered on query
         :param args: arguments for report query
-        :param kwargs:
         :return:
         """
         r = {}
@@ -523,7 +521,6 @@ class BaseDataSource:
         Method for query report data. Iterate over field data
         :param fields: list fields for filtered on query
         :param args: arguments for report query
-        :param kwargs:
         :return:
         """
 

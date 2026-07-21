@@ -89,7 +89,6 @@ class LabelApplication(ExtDocApplication):
     def api_ac_lookup(self, request):
         """
         Legacy AutoCompleteTags widget support
-        :param request:
         :return:
         """
         q = {}

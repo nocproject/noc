@@ -300,7 +300,6 @@ class Job:
         :param delta: Run after *delta* seconds
         :param keep_ts: Do not touch timestamp of existing jobs,
             set timestamp only for created jobs
-        :param shard:
         """
         from .scheduler import Scheduler
 
@@ -354,8 +353,6 @@ class Job:
     def get_next_timestamp(interval, offset=0.0, ts=None):
         """
         Calculate next timestamp
-        :param interval:
-        :param offset:
         :param ts: current timestamp
         :return: datetime object
         """

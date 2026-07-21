@@ -17,8 +17,6 @@ def do_var(parser, token):
     {% var <name> <type> %}
     where type is one of:
         * internal or hidden
-    :param parser:
-    :param token:
     :return:
     """
     try:
@@ -42,8 +40,6 @@ def do_python(parser, token):
     {% python %}
     ...
     {% endpython %}
-    :param parser:
-    :param token:
     :return:
     """
     nodelist = parser.parse(("endpython",))

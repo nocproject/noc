@@ -53,7 +53,6 @@ class Script(BaseScript):
         WaveLength: 1570nm, Transmission Distance: 140km
         Rx Power: -31.54dBm, Warning range: [-33.979,  -9.003]dBm
         Tx Power:   3.03dBm, Warning range: [1.999,  6.999]dBm
-        :param interface:
         :return:
         """
         cmd = "display interface phy-option"
@@ -116,7 +115,6 @@ class Script(BaseScript):
           User Set Tx Power High Threshold(dBM)    :6.99
           User Set Tx Power Low Threshold(dBM)     :2.00
         -------------------------------------------------------------
-        :param interface:
         :return:
         """
         cmd = "dis transceiver verbose"

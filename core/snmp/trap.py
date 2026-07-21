@@ -19,8 +19,6 @@ class UnsupportedSNMPVersion(Exception):
 
 def decode_trap(packet, raw=False):
     """
-    :param packet:
-    :param raw:
     :return:
     """
     (version, community, pdu), raw_pdu, raw_varbinds = decode(packet, include_raw=raw)

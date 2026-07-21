@@ -169,8 +169,6 @@ class Platform(Document):
     def ensure_platform(cls, vendor, name, strict=False, labels=None):
         """
         Get or create platform by vendor and code
-        :param vendor:
-        :param name:
         :param strict: Return None if platform is not found
         :param labels: List of platform labels
         :return:

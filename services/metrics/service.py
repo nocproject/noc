@@ -369,8 +369,6 @@ class MetricsService(FastAPIService):
     def merge_labels(l1: list[str] | None, l2: list[str]) -> list[str]:
         """
         Merge labels list
-        :param l1:
-        :param l2:
         :return:
         """
         if not l1:
@@ -427,7 +425,6 @@ class MetricsService(FastAPIService):
     def get_scope_cdag(self, k: MetricKey) -> CDAG | None:
         """
         Generate CDAG for a given metric key
-        :param k:
         :return:
         """
         # @todo: Still naive implementation based around the scope

@@ -74,8 +74,6 @@ class Command(BaseCommand):
     def get_source(self, name, iface: str | None = None):
         """
         Get source
-        :param name:
-        :param iface:
         :return:
         """
         from noc.core.mongo.connection import connect

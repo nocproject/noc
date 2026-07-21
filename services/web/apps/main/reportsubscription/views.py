@@ -24,7 +24,6 @@ class ReportSubscriptionApplication(ExtDocApplication):
     def bulk_field_report_label(self, data):
         """
         Apply report_label field
-        :param data:
         :return:
         """
         for x in data:

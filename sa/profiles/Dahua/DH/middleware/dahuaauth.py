@@ -43,7 +43,6 @@ class DahuaAuthMiddeware(BaseMiddleware):
         :param params: response params dictionary
         :type params: dict
         :return: Password string
-        :rtype: str
         """
         if params["encryption"] == "Basic":
             return codecs.encode(f"{self.user}:{self.password}", "base64")
@@ -65,9 +64,6 @@ class DahuaAuthMiddeware(BaseMiddleware):
     def process_post(self, url, body, headers):
         """
         Dahua Web auth procedure
-        :param url:
-        :param body:
-        :param headers:
         :return:
         """
         if self.http.session_id:

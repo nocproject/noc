@@ -93,7 +93,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def item_to_default(cls, item: T) -> BaseModel:
         """
         Convert model item to response model for view `default`
-        :param item:
         :return:
         """
 
@@ -101,7 +100,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def item_to_label(cls, item: T) -> LabelItem:
         """
         Convert model item to response model for view `label`
-        :param item:
         :return:
         """
         return LabelItem(id=str(item.id), label=str(item))
@@ -128,7 +126,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_scope_read(self, view: str) -> str:
         """
         Get read scope for view
-        :param view:
         :return:
         """
         return getattr(self, f"get_scope_read_{view}", self.get_scope_read_default)()
@@ -136,7 +133,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_scope_write(self) -> str:
         """
         Get write scope
-        :param view:
         :return:
         """
         return f"{self.api_name}:write"
@@ -144,7 +140,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_scope_delete(self) -> str:
         """
         Get delete scope
-        :param view:
         :return:
         """
         return f"{self.api_name}:delete"
@@ -166,7 +161,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_total_items(self, user: User, transforms: list[Callable] | None = None) -> int:
         """
         Calculate total amount of items, satisfying criteria
-        :param user:
         :return:
         """
 
@@ -176,9 +170,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     ) -> int:
         """
         Calculate total amount of items, satisfying criteria
-        :param user:
-        :param field:
-        :param transforms:
         :return:
         """
 
@@ -193,11 +184,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     ) -> list[T]:
         """
         Get list of items, satisfying criteria
-        :param user:
-        :param sort:
-        :param limit:
-        :param offset:
-        :param transforms:
         :return:
         """
 
@@ -205,8 +191,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def get_item(self, id: str, user: User) -> T | None:
         """
         Get item by id, if accessible to user
-        :param id:
-        :param user:
         :return:
         """
 
@@ -214,8 +198,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def delete_item(self, id: str, user: User) -> bool:
         """
         Delete item if accessible by user. Returns True if item is deleted.
-        :param id:
-        :param user:
         :return:
         """
 
@@ -223,8 +205,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def create_item(self, user: User, **kwargs) -> None:
         """
         Create item from given parameters
-        :param user:
-        :param kwargs:
         :return:
         """
 
@@ -232,9 +212,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
     def update_item(self, id: str, user: User, **kwargs) -> None:
         """
         Update item with given parameters
-        :param id:
-        :param user:
-        :param kwargs:
         :return:
         """
 
@@ -474,7 +451,6 @@ class BaseResourceAPI(Generic[T], metaclass=ABCMeta):
         Parse sort expression and convert to the iterable
         of order_by items
 
-        :param expr:
         :return:
         """
 

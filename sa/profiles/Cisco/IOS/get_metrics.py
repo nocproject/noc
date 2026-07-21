@@ -396,7 +396,6 @@ class Script(GetMetricsScript):
     def collect_sla_metrics(self, metrics: list[MetricCollectorConfig]):
         """
         Collect SLA metrics for Cisco
-        :param metrics:
         :return:
         """
         # SLA Metrics

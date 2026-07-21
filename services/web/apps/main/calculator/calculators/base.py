@@ -36,7 +36,6 @@ class BaseCalculator:
     def calculate(**kwargs):
         """
         Returns a list of pairs or None
-        :param kwargs:
         :return:
         """
         return

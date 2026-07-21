@@ -626,16 +626,6 @@ class Label(Document):
     ) -> Optional["Label"]:
         """
         Ensure label is exists, create when necessary
-        :param name:
-        :param description:
-        :param is_protected:
-        :param model_ids:
-        :param bg_color1:
-        :param fg_color1:
-        :param bg_color2:
-        :param fg_color2:
-        :param expose_metric:
-        :param expose_datastream:
         :return:
         """
         # if Label.objects.filter(name=name).first():  # Do not use get_by_name. Cached None !
@@ -1017,7 +1007,6 @@ class Label(Document):
         :param model_id: Model ID
         :param add_labels: Labels for add to effective_labels
         :param remove_labels: Labels for remove from effective_labels
-        :param instance_filters:
         :param effective_only: Apply only effective labels field
         :return:
         """
@@ -1083,7 +1072,6 @@ class Label(Document):
         :param model_id: Model ID
         :param add_labels: Labels for add to effective_labels
         :param remove_labels: Labels for remove from effective_labels
-        :param instance_filters:
         :param effective_only: Apply only effective labels field
         :return:
         """
@@ -1160,9 +1148,7 @@ class Label(Document):
     ) -> str | None:
         """
         Return Profile ID for labels if it support Labels Classification
-        :param profile_model:
         :param labels: Labels for profile classification
-        :param kwargs:
         :return:
         """
         # effective_labels = labels or Label.merge_labels(instance.iter_effective_labels(instance))
@@ -1248,13 +1234,6 @@ class Label(Document):
         ):
             """
 
-            :param sender:
-            :param instance:
-            :param document:
-            :param profile_model_id:
-            :param profile_field:
-            :param args:
-            :param kwargs:
             :return:
             """
             profile_model = get_model(profile_model_id)
@@ -1337,8 +1316,6 @@ class Label(Document):
     def filter_labels(cls, labels: list[str], pred: Callable) -> list[str]:
         """
         Filter labels satisfying predicate
-        :param labels:
-        :param pred:
         :return:
         """
         if not labels:
@@ -1379,8 +1356,6 @@ class Label(Document):
     def get_effective_prefixfilter_labels(cls, scope: str, value: str) -> list[str]:
         """
 
-        :param scope:
-        :param value:
         :return:
         """
         mq = m_Q()
@@ -1401,8 +1376,6 @@ class Label(Document):
     def get_effective_vlanfilter_labels(cls, scope: str, value: int | list[int]) -> list[str]:
         """
 
-        :param scope:
-        :param value:
         :return:
         """
         mq = m_Q()
@@ -1447,7 +1420,6 @@ class Label(Document):
     ):
         """
         Update profile by match rule
-        :param model_id:
         :param model_profile_id: Profile model
         :param profile_field: Field name for profile assigned
         :param query_filter: Optional filter by list (field, value)

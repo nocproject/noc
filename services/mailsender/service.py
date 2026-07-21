@@ -41,7 +41,6 @@ class MailSenderService(FastAPIService):
         Process incoming message. Usually forwarded by `mx` service.
         Message MUST have `To` header, containing target Mail topic.
 
-        :param msg:
         :return:
         """
         metrics["messages"] += 1

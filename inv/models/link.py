@@ -157,7 +157,6 @@ class Link(Document):
     def other(self, interface):
         """
         Return other interfaces of the link
-        :param interface:
         :return:
         """
         return [i for i in self.interfaces if i.id != interface.id]
@@ -165,7 +164,6 @@ class Link(Document):
     def other_ptp(self, interface):
         """
         Return other interface of ptp link
-        :param interface:
         :return:
         """
         return self.other(interface)[0]

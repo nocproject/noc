@@ -77,7 +77,6 @@ class AddressCheck(DiscoveryCheck):
     def sync_addresses(self, addresses):
         """
         Apply addresses to database
-        :param addresses:
         :return:
         """
         # vpn_id -> [address, ]
@@ -305,8 +304,6 @@ class AddressCheck(DiscoveryCheck):
         Check which method is preferable
 
         Preference order: interface, management, neighbor
-        :param old_method:
-        :param new_method:
         :return:
         """
         return PREF_VALUE[old_method] <= PREF_VALUE[new_method]
@@ -511,7 +508,6 @@ class AddressCheck(DiscoveryCheck):
     def fire_seen(self, address: Address):
         """
         Fire `seen` event and process `seen_propagation_policy`
-        :param address:
         :return:
         """
         address.fire_event("seen")
@@ -522,7 +518,6 @@ class AddressCheck(DiscoveryCheck):
     def propagate_seen(self, prefix):
         """
         Propagate `seen` through prefix hierarchy
-        :param prefix:
         :return:
         """
         if prefix.id in self.propagated_prefixes:

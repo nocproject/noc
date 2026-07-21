@@ -228,7 +228,6 @@ class MIBAPI(JSONRPCAPI):
     def lookup(self, oid):
         """
         Convert oid to symbolic name and vise versa
-        :param oid:
         :return:
         """
         if self.rx_oid.match(oid):

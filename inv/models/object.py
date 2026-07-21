@@ -456,9 +456,7 @@ class Object(Document):
         Get multiple keys from single interface. Returns dict with values for every given key.
         If key is missed, return None value
 
-        :param interface:
         :param keys: Iterable contains key names
-        :param scope:
         :return:
         """
         kset = set(keys)
@@ -476,9 +474,7 @@ class Object(Document):
         Get multiple keys from single interface. Returns tuple with values for every given key.
         If key is missed, return None value
 
-        :param interface:
         :param keys: List or tuple with key names
-        :param scope:
         :return:
         """
         r = self.get_data_dict(interface, keys, scope)
@@ -1439,8 +1435,6 @@ class Object(Document):
     def iter_by_address_id(cls, address: str | list[str], scope: str = None) -> Iterable["Object"]:
         """
         Get objects
-        :param address:
-        :param scope:
         :return:
         """
         q = {

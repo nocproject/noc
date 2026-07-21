@@ -34,7 +34,6 @@ class WhoisOriginRoute(Document):
     def upload(cls, data):
         """
         Replace cache with the new data
-        :param cls:
         :param data: List of {origin:, routes:}
         :return: Number of inserted records
         """

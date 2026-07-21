@@ -33,7 +33,6 @@ class DatabaseWrapper(PGDatabaseWrapper):
     def get_new_connection(self, conn_params):
         """
         Return raw psycopg connection. Do not mess with django setup phase
-        :param conn_params:
         :return:
         """
 

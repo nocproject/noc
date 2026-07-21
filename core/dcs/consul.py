@@ -340,7 +340,6 @@ class ConsulDCS(DCSBase):
     async def get_slot_limit(self, name: str) -> int | None:
         """
         Return the current limit for given slot
-        :param name:
         :return:
         """
         manifest_path = self._get_manifest_path(name)
@@ -478,11 +477,6 @@ class ConsulDCS(DCSBase):
         Synchronous call to resolve nearby service
         Commonly used for external services like databases
         :param name: Service name
-        :param wait:
-        :param timeout:
-        :param full_result:
-        :param hint:
-        :param critical:
         :return: address:port
         """
         self.logger.debug("Resolve near service %s", name)

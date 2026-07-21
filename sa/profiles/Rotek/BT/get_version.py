@@ -37,7 +37,6 @@ class Script(BaseScript):
         # RT-Pwr-220-U,4250L 4.3.0-d883291  5312480
         # RT-Pwr,4250LSR 1.4.0-b32048bc  5331034
 
-        :param oid:
         :return: Platform and Version
 
         """

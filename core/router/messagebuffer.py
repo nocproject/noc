@@ -38,8 +38,6 @@ class MBuffer:
     def put(self, msg: Message, group_key: str | None = None):
         """
         Put block of data to buffer
-        :param msg:
-        :param group_key:
         :return:
         """
         if not msg.value:

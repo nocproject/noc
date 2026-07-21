@@ -152,9 +152,6 @@ class Firmware(Document):
     def ensure_firmware(cls, profile, vendor, version) -> Optional["Firmware"]:
         """
         Get or create firmware by profile, vendor and version
-        :param profile:
-        :param vendor:
-        :param version:
         :return:
         """
         while True:

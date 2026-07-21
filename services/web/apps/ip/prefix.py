@@ -64,8 +64,6 @@ class PrefixApplication(ExtModelApplication):
     def api_suggest_free(self, request, prefix_id):
         """
         Suggest free blocks of different sizes
-        :param request:
-        :param prefix_id:
         :return:
         """
         prefix = self.get_object_or_404(Prefix, id=int(prefix_id))

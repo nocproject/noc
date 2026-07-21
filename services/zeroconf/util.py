@@ -37,10 +37,6 @@ def find_agent(
 ):
     """
     Find agent by combination of credentials
-    :param agent_id:
-    :param serial:
-    :param mac:
-    :param ip:
     :return:
     """
     if agent_id:
@@ -78,7 +74,6 @@ def find_agent(
 def get_config(agent: Agent, level: int = 0, base: str = "") -> ZkConfig:
     """
     Generate agent config
-    :param agent:
     :param level: Authorization level
     :param base: Base url
     :return:
@@ -112,7 +107,6 @@ def iter_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
 def iter_service_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     """
     Iterate over service settings
-    :param agent:
     :return:
     """
     coll = Service._get_collection()
@@ -199,7 +193,6 @@ def iter_service_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
 def iter_sensor_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     """
     Iterate over sensor settings
-    :param agent:
     :return:
     """
     for sensor in Sensor.objects.filter(agent=agent.id):
@@ -214,7 +207,6 @@ def iter_sensor_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
 def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
     """
     Generate modbus_rtu collectors for sensor
-    :param sensor:
     :return:
     """
     if not sensor.modbus_register or not sensor.modbus_format:
@@ -246,7 +238,6 @@ def iter_modbus_rtu_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
 def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
     """
     Generate modbus_tcp collectors for sensor
-    :param sensor:
     :return:
     """
     if not sensor.modbus_register or not sensor.modbus_format:
@@ -275,7 +266,6 @@ def iter_modbus_tcp_collectors(sensor: Sensor) -> Iterable[ZkConfigCollector]:
 def iter_sla_collectors(agent: Agent) -> Iterable[ZkConfigCollector]:
     """
 
-    :param agent:
     :return:
     """
     for slaprobe in SLAProbe.objects.filter(agent=agent.id):

@@ -1124,7 +1124,6 @@ class ManagedObject(NOCModel):
 
         :param user: User
         :type user: User instance
-        :rtype: Queryset instance
         """
         return cls.objects.filter(UserAccess.Q(user))
 
@@ -1134,7 +1133,6 @@ class ManagedObject(NOCModel):
 
         :param user: User
         :type user: User instance
-        :rtype: Bool
         """
         if user.is_superuser:
             return True
@@ -1145,7 +1143,6 @@ class ManagedObject(NOCModel):
         """
         Get list of user granted access to object
 
-        :rtype: List of User instancies
         """
         return [
             u
@@ -1158,7 +1155,6 @@ class ManagedObject(NOCModel):
         """
         Get list of groups granted access to object
 
-        :rtype: List of Group instancies
         """
         return [
             g
@@ -1359,8 +1355,6 @@ class ManagedObject(NOCModel):
     def get_attr(self, name, default=None):
         """
         Return attribute as string
-        :param name:
-        :param default:
         :return:
         """
         warnings.warn(
@@ -1376,8 +1370,6 @@ class ManagedObject(NOCModel):
     def get_attr_bool(self, name, default=False):
         """
         Return attribute as bool
-        :param name:
-        :param default:
         :return:
         """
         v = self.get_attr(name)
@@ -1388,8 +1380,6 @@ class ManagedObject(NOCModel):
     def get_attr_int(self, name, default=0):
         """
         Return attribute as integer
-        :param name:
-        :param default:
         :return:
         """
         v = self.get_attr(name)
@@ -1403,8 +1393,6 @@ class ManagedObject(NOCModel):
     def set_attr(self, name, value):
         """
         Set attribute
-        :param name:
-        :param value:
         :return:
         """
         value = smart_text(value)
@@ -1629,9 +1617,6 @@ class ManagedObject(NOCModel):
     def notify_config_changes(self, is_new, data, diff):
         """
         Notify about config changes
-        :param is_new:
-        :param data:
-        :param diff:
         :return:
         """
         self.event(self.EV_CONFIG_CHANGED, {"is_new": is_new, "config": data, "diff": diff})
@@ -1844,7 +1829,6 @@ class ManagedObject(NOCModel):
     def get_linecard(self, ifname):
         """
         Returns linecard number related to interface
-        :param ifname:
         :return:
         """
         return self.get_profile().get_linecard(ifname)
@@ -1961,7 +1945,6 @@ class ManagedObject(NOCModel):
     def can_notify(self, depended=False):
         """
         Check alarm can be notified via escalation
-        :param depended:
         :return:
         """
         if self.escalation_policy == "E":
@@ -2490,7 +2473,6 @@ class ManagedObject(NOCModel):
     def update_links(cls, linked_objects: list[int], exclude_link_ids: list[str] = None) -> None:
         """
 
-        :param linked_objects:
         :param exclude_link_ids: Exclude link ID from update
         :return:
         """
@@ -2550,7 +2532,6 @@ class ManagedObject(NOCModel):
     def get_active_maintenances(self, timestamp: datetime.datetime | None = None) -> list[str]:
         """
         Getting device active maintenances ids
-        :param timestamp:
         :return:
         """
         timestamp = timestamp or datetime.datetime.now()
@@ -2666,7 +2647,6 @@ class ManagedObject(NOCModel):
     ) -> Iterable[MetricCollectorConfig]:
         """
         Return metrics setting for collected by box or periodic
-        :param run:
         :return:
         """
         if Interaction.ServiceActivation not in self.interactions:
@@ -2707,7 +2687,6 @@ class ManagedObject(NOCModel):
     def get_metric_config(cls, mo: "ManagedObject"):
         """
         Return MetricConfig for Metrics service
-        :param mo:
         :return:
         """
         from noc.inv.models.interface import Interface

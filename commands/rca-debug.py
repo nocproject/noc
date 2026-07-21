@@ -115,8 +115,6 @@ class Command(BaseCommand):
         def can_correlate(a1, a2):
             """
             Check if alarms can be correlated together (within corellation window)
-            :param a1:
-            :param a2:
             :return:
             """
             return (
@@ -128,7 +126,6 @@ class Command(BaseCommand):
         def all_uplinks_failed(a1):
             """
             Check if all uplinks for alarm is failed
-            :param a1:
             :return:
             """
             if not a1.uplinks:
@@ -142,7 +139,6 @@ class Command(BaseCommand):
             Uplinks are ordered according to path length.
             Return first applicable
 
-            :param a1:
             :return:
             """
             for u in a1.uplinks:
@@ -154,7 +150,6 @@ class Command(BaseCommand):
         def iter_downlink_alarms(a1):
             """
             Yield all downlink alarms
-            :param a1:
             :return:
             """
             imo = a1.managed_object.id
@@ -165,7 +160,6 @@ class Command(BaseCommand):
         def correlate(a1):
             """
             Correlate with uplink alarms if all uplinks are faulty.
-            :param a1:
             :return:
             """
             if not all_uplinks_failed(a1):

@@ -74,7 +74,6 @@ class Profile(BaseProfile):
         6     ADSL2+(SGN)   UTA6044AD   UTA6044AD09N  Z08092012G      In Service
         --------------------------------------------------------------------------------
 
-        :param script:
         :return:
         """
         c = self.rx_board.findall(script.cli("show board", cached=True))

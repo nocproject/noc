@@ -40,7 +40,6 @@ helper = PCRHelper(ProfileCheckRule)
 def teardown_module(module=None):
     """
     Reset all helper caches when leaving module
-    :param module:
     :return:
     """
     helper.teardown()

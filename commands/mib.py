@@ -101,7 +101,6 @@ class Command(BaseCommand):
     def open_output(self, path=None):
         """
         Context manager for output writer
-        :param path:
         :return:
         """
         if path:
@@ -257,8 +256,6 @@ class Command(BaseCommand):
     def upload_mib(self, path, local=False):
         """
         Upload mib from file
-        :param path:
-        :param local:
         :return:
         """
         with open(path, "rb") as f:

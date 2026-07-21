@@ -127,7 +127,6 @@ class Model(metaclass=ModelBase):
         """
         Clickhouse-safe field names
 
-        :param name:
         :return:
         """
         if "." in name:
@@ -198,7 +197,6 @@ class Model(metaclass=ModelBase):
         """
         Convert dict of kwargs to JSON-serializable dict
 
-        :param kwargs:
         :return:
         """
         r = {}
@@ -286,8 +284,6 @@ class Model(metaclass=ModelBase):
     def check_old_schema(cls, connect: "ClickhouseClient", table_name: str) -> bool:
         """
         Ensure create table Syntax. False for old Syntax, True for New
-        :param connect:
-        :param table_name:
         :return:
         """
         r = connect.execute(
@@ -376,8 +372,6 @@ class Model(metaclass=ModelBase):
     def transform_query(cls, query, user):
         """
         Transform query, possibly applying access restrictions
-        :param query:
-        :param user:
         :return: query dict or None if access denied
         """
         if not user or user.is_superuser:
@@ -673,7 +667,6 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
         """
         Returns field type
 
-        :param name:
         :return:
         """
         return cls._meta.fields[name].get_db_type()
@@ -770,7 +763,6 @@ class DictionaryModel(Model, metaclass=DictionaryBase):
     def ensure_dictionary(cls, connect=None) -> bool:
         """
         Check dictionary is exists
-        :param connect:
         :return: True, if table has been altered, False otherwise
         """
         # changed = False
@@ -807,7 +799,6 @@ class ViewModel(Model, metaclass=ModelBase):
         7. rename table MVX_store to MVX
         8. create materialized view MVX_mv to MVX as select ....
         9. start ingestion
-        :param connect:
         :return:
         """
         if not cls.is_aggregate():

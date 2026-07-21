@@ -37,7 +37,6 @@ class BaseConstraint:
         """
         Check if interface is valid interface on the path
 
-        :param interface:
         :return:
         """
         return True

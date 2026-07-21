@@ -67,10 +67,6 @@ class ManagedObjectJsonDS(JsonDSAPI):
     ) -> Any | None:
         """
         Resolve object in Query by Value
-        :param model_id:
-        :param value:
-        :param query_function:
-        :param user:
         :return:
         """
         model = get_model(model_id)

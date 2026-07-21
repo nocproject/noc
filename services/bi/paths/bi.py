@@ -217,7 +217,6 @@ class BIAPI(JSONRPCAPI):
             * name
             * description
             * type
-        :param name:
         :return:
         """
         for ds in self.get_datasources():
@@ -257,7 +256,6 @@ class BIAPI(JSONRPCAPI):
         * owner
         * created
         * changed
-        :param query:
         :return:
         """
         user = self.current_user
@@ -288,7 +286,6 @@ class BIAPI(JSONRPCAPI):
     def _get_dashboard(self, id, access_level=DAL_RO):
         """
         Returns dashboard or None
-        :param id:
         :return:
         """
         user = self.current_user
@@ -313,7 +310,6 @@ class BIAPI(JSONRPCAPI):
     def get_dashboard(self, id):
         """
         Returns dashboard config by id
-        :param id:
         :return:
         """
         d = self._get_dashboard(id)
@@ -332,7 +328,6 @@ class BIAPI(JSONRPCAPI):
     def set_dashboard(self, config):
         """
         Save dashboard config.
-        :param config:
         :return: datshboard id
         """
         if "id" in config:
@@ -363,7 +358,6 @@ class BIAPI(JSONRPCAPI):
     def remove_dashboard(self, id):
         """
         Remove user dashboard
-        :param id:
         :return:
         """
         d = self._get_dashboard(id, access_level=2)
@@ -378,7 +372,6 @@ class BIAPI(JSONRPCAPI):
     def get_hierarchy(self, params):
         """
         Get Hierarchy data for field
-        :param params:
         :return:
         """
 
@@ -563,8 +556,6 @@ class BIAPI(JSONRPCAPI):
     def set_dashboard_access(self, id, items):
         """
 
-        :param id:
-        :param items:
         :return:
         """
         if not id.get("id"):
@@ -577,8 +568,6 @@ class BIAPI(JSONRPCAPI):
     def set_dashboard_access_user(self, id, items):
         """
 
-        :param id:
-        :param items:
         :return:
         """
         if not id.get("id"):
@@ -590,8 +579,6 @@ class BIAPI(JSONRPCAPI):
     def set_dashboard_access_group(self, id, items):
         """
 
-        :param id:
-        :param items:
         :return:
         """
         if not id.get("id"):

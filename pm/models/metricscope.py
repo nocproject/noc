@@ -322,7 +322,6 @@ class MetricScope(Document):
         def ensure_column(table_name, column):
             """
             If path not exists on column - new schema
-            :param table_name:
             :return:
             """
             return bool(

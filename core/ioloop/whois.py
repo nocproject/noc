@@ -31,7 +31,6 @@ FIELDS_MAP = {
 def parse_response(data):
     """Parse whois response
 
-    :param data:
     :return:
     """
     r = []
@@ -72,8 +71,6 @@ async def send_whois_request(host: str, port: int, query: bytes) -> bytes:
 async def whois_async(query, fields=None):
     """
     Perform whois request
-    :param query:
-    :param fields:
     :return:
     """
     logger.debug("whois %s", query)

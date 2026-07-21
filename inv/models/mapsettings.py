@@ -237,9 +237,6 @@ class MapSettings(Document):
     def ensure_settings(cls, gen_type: str, gen_id, **kwargs) -> "MapSettings":
         """
         Ensure MapSettings Exists and create it if not
-        :param gen_type:
-        :param gen_id:
-        :param kwargs:
         :return:
         """
         gen_id = str(gen_id)
@@ -259,7 +256,6 @@ class MapSettings(Document):
     def is_change_layout(self, topology: TopologyBase) -> bool:
         """
         Check rebuild layout needed
-        :param topology:
         :return:
         """
         if topology.meta.layout == Layout("FA"):

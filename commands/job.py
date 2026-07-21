@@ -213,8 +213,6 @@ class Command(BaseCommand):
     def get_next_timestamp(interval, offset=0.0, ts=None):
         """
         Calculate next timestamp
-        :param interval:
-        :param offset:
         :param ts: current timestamp
         :return: datetime object
         """

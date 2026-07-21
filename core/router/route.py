@@ -255,7 +255,6 @@ class Route:
     def is_differ(self, data) -> bool:
         """
 
-        :param data:
         :return:
         """
         return True

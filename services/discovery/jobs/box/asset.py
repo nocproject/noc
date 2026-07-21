@@ -1190,7 +1190,6 @@ class AssetCheck(DiscoveryCheck):
     def get_serial_mask(self, mask):
         """
         Compile serial mask and cache value
-        :param mask:
         :return:
         """
         return re.compile(mask)

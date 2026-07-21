@@ -25,7 +25,6 @@ async def get_current_user(
     """
     Get request current user
 
-    :param remote_user:
     :return:
     """
     if not remote_user and not getattr(svc, "auth_required", False):
@@ -46,8 +45,6 @@ def get_user_scope(
     """
     Get request current user, when having scope access
 
-    :param scopes:
-    :param remote_user:
     :return:
     """
     if not remote_user:

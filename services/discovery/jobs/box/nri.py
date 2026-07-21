@@ -54,8 +54,6 @@ class NRICheck(TopologyDiscoveryCheck):
     def get_remote_interface(self, remote_object, remote_interface):
         """
         Real values are set by set_interface alias
-        :param remote_object:
-        :param remote_interface:
         :return:
         """
         return remote_interface
@@ -63,7 +61,6 @@ class NRICheck(TopologyDiscoveryCheck):
     def set_nri_aliases(self, mo):
         """
         Fill interface alias cache with nri names
-        :param mo:
         :return:
         """
         if mo in self.seen_neighbors:

@@ -116,7 +116,6 @@ class Target(
     def enable_syslog_source(self, source: str) -> bool:
         """
         Check syslog source is enabled
-        :param source:
         :return:
         """
         if source == "s" and not self.syslog_source_ip:
@@ -128,7 +127,6 @@ class Target(
     def enable_snmptrap_source(self, source: str) -> bool:
         """
         Check SNMP Trap source is enabled
-        :param source:
         :return:
         """
         if source == "s" and not self.trap_source_ip:

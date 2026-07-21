@@ -148,8 +148,6 @@ class ObjectConfigurationRule(Document):
     def get_scope(self, param: "ConfigurationParam", oc) -> ConfigurationScope | None:
         """
         Check ObjectModel Connection Match with Rule
-        :param param:
-        :param oc:
         :return:
         """
         protocols = set(oc.protocols)

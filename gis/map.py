@@ -40,9 +40,6 @@ class Map:
     def get_db_point(self, x, y, srid=None):
         """
         Return GeoJSON Point translated to database projection
-        :param x:
-        :param y:
-        :param srid:
         :return:
         """
         srid = srid or self.db_srid

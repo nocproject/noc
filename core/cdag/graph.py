@@ -82,7 +82,6 @@ class CDAG:
     def merge(self, other: "CDAG", prefix: str | None = "") -> "CDAG":
         """
         Merge other graph into this one
-        :param other:
         :param prefix: Optional merged node's prefix
         :return:
         """

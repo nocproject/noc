@@ -135,7 +135,6 @@ class DatastreamAPI:
     def _run_callbacks(self, queue):
         """
         Execute callbacks from queue
-        :param queue:
         :return:
         """
         while True:
@@ -148,8 +147,6 @@ class DatastreamAPI:
     def watch_waiter(self, coll, queue):
         """
         Waiter thread tracking mongo's ChangeStream
-        :param coll:
-        :param queue:
         :return:
         """
         while True:
@@ -168,8 +165,6 @@ class DatastreamAPI:
     def sleep_waiter(self, coll, queue):
         """
         Simple timeout waiter
-        :param coll:
-        :param queue:
         :return:
         """
         TIMEOUT = 60

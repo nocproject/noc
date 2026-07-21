@@ -64,9 +64,6 @@ def find_corrupt(vcs, revs, corrupt):
 def cut_corrupt(vcs, revs, cidx):
     """
     Cut corrupted part of the history
-    :param vcs:
-    :param revs:
-    :param cidx:
     :return:
     """
     # Start of slice

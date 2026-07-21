@@ -340,8 +340,6 @@ class Interface(Document):
         def link_mismatched_lag(agg, phy):
             """
             Try to link LAG to physical interface
-            :param agg:
-            :param phy:
             :return:
             """
             l_members = [i for i in agg.lag_members if i.oper_status]

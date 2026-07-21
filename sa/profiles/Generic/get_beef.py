@@ -59,7 +59,6 @@ class Script(BaseScript):
     def get_cli_results(self, spec):
         """
         Returns "cli" section
-        :param spec:
         :return:
         """
         r = []

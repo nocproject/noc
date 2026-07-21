@@ -14,7 +14,6 @@ def parse_osm_bounds(tag):
     Parse OSM <bounds> tag
     :param tag: String containing full <bounds ... /> tag
     :return: [minlon, minlat, maxlon, maxlat]
-    :rtype: list of float
 
     >>> parse_osm_bounds('<bounds minlat="56.0756000" minlon="43.4516000" maxlat="56.1294000" maxlon="43.5866000"/>')
     [43.4516000, 56.0756000, 43.5866000, 56.1294000]

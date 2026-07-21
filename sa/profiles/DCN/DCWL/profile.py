@@ -56,7 +56,6 @@ class Profile(BaseProfile):
     def table_parser(v):
         """
         Parse table
-        :param v:
         :return:
         """
         r = {}

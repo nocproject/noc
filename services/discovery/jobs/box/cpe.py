@@ -118,7 +118,6 @@ class CPECheck(DiscoveryCheck):
     def submit_managed_object(self, cpe: CPE):
         """
         Create ManagedObject for CPE instance
-        :param cpe:
         :return:
         """
         from django.db.models.query_utils import Q

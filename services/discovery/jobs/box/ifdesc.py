@@ -122,8 +122,6 @@ class IfDescCheck(TopologyDiscoveryCheck):
     def resolve_via_handler(self, hi: Handler, iface: Interface) -> Interface | None:
         """
         Try to resolve remote interface via handler
-        :param hi:
-        :param iface:
         :return:
         """
         handler = hi.get_handler()
@@ -268,8 +266,6 @@ class IfDescCheck(TopologyDiscoveryCheck):
         """
         Auto-create remote interface, if possible
 
-        :param mo:
-        :param name:
         :return:
         """
         if self.object.object_profile.ifdesc_symmetric:

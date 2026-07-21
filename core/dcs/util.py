@@ -45,12 +45,6 @@ def resolve(
     """
     Returns *hint* when service is active or new service
     instance,
-    :param name:
-    :param hint:
-    :param wait:
-    :param timeout:
-    :param full_result:
-    :param near:
     :return:
     """
 

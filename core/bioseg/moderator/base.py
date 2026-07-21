@@ -32,7 +32,6 @@ def moderate_trial(trial: BioSegTrial) -> None:
     """
     Moderate single trial
 
-    :param trial:
     :return:
     """
     # Get objects when necessary
@@ -111,10 +110,6 @@ def moderate(
     """
     Perform trial moderation
 
-    :param attacker:
-    :param target:
-    :param attacker_object:
-    :param target_object:
     :return: outcome, error, fatal
     """
     attacker_c_policy = get_collision_policy(

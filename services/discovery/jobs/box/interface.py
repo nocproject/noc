@@ -724,7 +724,6 @@ class InterfaceCheck(PolicyDiscoveryCheck):
         Collation is the process of binding between physical and logical inventory.
         I.e. assigning interface names to inventory slots.
 
-        :param if_map:
         :returns:
         """
 

@@ -34,7 +34,5 @@ class ReportSource:
     def get_data(self, request, **kwargs) -> list[Band]:
         """
         Return Report Data
-        :param request:
-        :param kwargs:
         :return:
         """

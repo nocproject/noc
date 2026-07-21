@@ -407,7 +407,6 @@ class ServiceParameter(BaseParameter[list[ServiceItem]]):
         """
         Change parameter's critical status
 
-        :param critical:
         :return:
         """
         self.critical = critical

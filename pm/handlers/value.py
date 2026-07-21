@@ -9,11 +9,6 @@
 def bw_percent(v, in_speed=None, out_speed=None, bandwidth=None, **kwargs):
     """
     Convert speed to speed to bandwidth percent ratio
-    :param v:
-    :param in_speed:
-    :param out_speed:
-    :param bandwidth:
-    :param kwargs:
     :return:
     """
     value = v // 1000000

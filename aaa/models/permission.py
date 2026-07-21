@@ -85,14 +85,12 @@ class Permission(NOCModel):
         return set(user.permissions.values_list("name", flat=True))
 
     @classmethod
-    def set_user_permissions(cls, user, perms):
+    def set_user_permissions(cls, user: User, perms: set[str]) -> None:
         """
         Set user permissions
 
         :param user: User
-        :type user: User
         :param perms: Set of new permissions
-        :type perms: Set
         """
         # Add implied permissions
         perms = set(perms)  # Copy
@@ -117,14 +115,9 @@ class Permission(NOCModel):
         return set(group.permissions.values_list("name", flat=True))
 
     @classmethod
-    def set_group_permissions(cls, group, perms):
+    def set_group_permissions(cls, group: Group, perms: set[str]) -> None:
         """
         Set group permissions
-
-        :param group: Group
-        :type group: Group
-        :param perms: Set of permissions
-        :type perms: Set
         """
         # Add implied permissions
         perms = set(perms)  # Copy

@@ -42,7 +42,6 @@ class Profile(BaseProfile):
         """
         Starting from v3.14 we can specify console options
         during login process
-        :param script:
         :return:
         """
         if script.parent is None:
@@ -108,9 +107,6 @@ class Profile(BaseProfile):
     def cli_detail(self, script, cmd, cached=False):
         """
         Parse RouterOS .... print detail output
-        :param script:
-        :param cmd:
-        :param cached:
         :return:
         """
         if cached:
@@ -137,7 +133,6 @@ class Profile(BaseProfile):
 
     def parse_detail(self, s):
         """
-        :param s:
         :return:
         """
         # Normalize

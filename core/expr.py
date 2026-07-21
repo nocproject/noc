@@ -46,7 +46,6 @@ class _VarVisitor(ast.NodeVisitor):
 def get_vars(expr: str) -> list[str]:
     """
     Parse expression and get the list of variables
-    :param expr:
     :return:
     """
     tree = ast.parse(expr, mode="eval")
@@ -58,7 +57,6 @@ def get_vars(expr: str) -> list[str]:
 def get_fn(expr: str) -> Callable:
     """
     Compile expression to function
-    :param expr:
     :return:
     """
     x_vars = get_vars(expr)

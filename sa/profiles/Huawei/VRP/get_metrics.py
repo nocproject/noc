@@ -247,7 +247,6 @@ class Script(GetMetricsScript):
     def get_interface_cbqos_metrics_snmp(self, metrics):
         """
         Use available SNMP Table for collecting value
-        :param metrics:
         :return:
         """
         if self.has_capability("Huawei | OID | hwCBQoSPolicyStatisticsClassifierTable"):

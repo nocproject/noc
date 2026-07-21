@@ -404,7 +404,6 @@ class Command(BaseCommand):
     def iter_tabify(cls, iter):
         """
         Replace tabs to spaces in non-quoted parts
-        :param iter:
         :return:
         """
         for item in iter:
@@ -417,7 +416,6 @@ class Command(BaseCommand):
     def iter_strip_comments(cls, iter):
         """
         Cut comments to end of line
-        :param iter:
         :return:
         """
         for item in iter:
@@ -575,7 +573,6 @@ class Command(BaseCommand):
     def parse_ttl(cls, line):
         """
         Parse RFC2308 TTL
-        :param line:
         :return:
         """
         parts = split_alnum(line.strip())

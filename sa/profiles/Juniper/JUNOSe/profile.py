@@ -57,9 +57,6 @@ class Profile(BaseProfile):
         Common forms are:
             X.Y.Z release-A.B
             X.Y.Z patch-A.B
-        :param cls:
-        :param v1:
-        :param v2:
         :return:
         """
 

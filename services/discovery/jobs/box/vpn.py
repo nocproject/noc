@@ -61,7 +61,6 @@ class VPNCheck(DiscoveryCheck):
         """
         Apply VPNs to database.
         Temporary solution, applies only type == "vrf"
-        :param vpns:
         :return:
         """
         # Get existing VRFs
@@ -209,8 +208,6 @@ class VPNCheck(DiscoveryCheck):
         Check which method is preferable
 
         Preference order: interface, management, neighbor
-        :param old_method:
-        :param new_method:
         :return:
         """
         return PREF_VALUE[old_method] <= PREF_VALUE[new_method]

@@ -167,7 +167,6 @@ class ExtModelApplication(ExtApplication):
     def get_validator(self, field):
         """
         Returns Parameter instance or None to clean up field
-        :param field:
         :type field: Field
         :return:
         """
@@ -255,7 +254,6 @@ class ExtModelApplication(ExtApplication):
         :param data: dict of parameters
         :type data: dict
         :return: dict of cleaned parameters of raised InterfaceTypeError
-        :rtype: dict
         """
         # Strip ignored fields and convert empty strings to None
         data = {
@@ -510,9 +508,6 @@ class ExtModelApplication(ExtApplication):
     def update_file(self, files, o, file_attrs=None):
         """
         Proccessed uploaded file
-        :param files:
-        :param o:
-        :param file_attrs:
         :return:
         """
         return True
@@ -556,7 +551,6 @@ class ExtModelApplication(ExtApplication):
         """
         Check user can create object. Used to additional
         restrictions after permissions check
-        :param user:
         :param obj: Object instance
         :return: True if access granted
         """
@@ -566,7 +560,6 @@ class ExtModelApplication(ExtApplication):
         """
         Check user can update object. Used to additional
         restrictions after permissions check
-        :param user:
         :param obj: Object instance
         :return: True if access granted
         """
@@ -576,7 +569,6 @@ class ExtModelApplication(ExtApplication):
         """
         Check user can delete object. Used to additional
         restrictions after permissions check
-        :param user:
         :param obj: Object instance
         :return: True if access granted
         """
@@ -796,8 +788,6 @@ class ExtModelApplication(ExtApplication):
     def _api_share_info(self, request, id):
         """
         Additional information for JSON sharing process
-        :param request:
-        :param id:
         :return:
         """
         o = self.get_object_or_404(self.model, id=id)
@@ -812,7 +802,6 @@ class ExtModelApplication(ExtApplication):
     def _bulk_field_is_builtin(self, data):
         """
         Apply is_builtin field
-        :param data:
         :return:
         """
         builtins = Collection.get_builtins(self.json_collection)

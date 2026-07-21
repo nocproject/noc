@@ -28,7 +28,6 @@ class ReportDiscoveryProblem:
     def __init__(self, mos, avail_only=False, match=None) -> None:
         """
 
-        :param mos:
         :type mos: ManagedObject.objects.filter()
         """
         self.mo_ids = list(mos.values_list("id", flat=True))
@@ -47,7 +46,6 @@ class ReportDiscoveryProblem:
         :param match: Match filter
         :type match: dict
         :return:
-        :rtype: list
         """
         discovery = "noc.services.discovery.jobs.box.job.BoxDiscoveryJob"
         pipeline = [

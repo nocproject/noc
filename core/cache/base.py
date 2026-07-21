@@ -29,9 +29,6 @@ class BaseCache:
     def get(self, key: str, default: Any | None = None, version: int | None = None) -> Any | None:
         """
         Returns value or raise KeyError
-        :param key:
-        :param version:
-        :param default:
         :return:
         """
         return default
@@ -39,9 +36,6 @@ class BaseCache:
     def set(self, key: str, value: Any, ttl: int | None = None, version: int | None = None) -> None:
         """
         Set key
-        :param key:
-        :param value:
-        :param ttl:
         :return:
         """
 

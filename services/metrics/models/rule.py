@@ -59,7 +59,6 @@ class Rule:
     def update_config(self, configs: dict[str, dict[str, Any]]) -> set[str]:
         """
         Update node config, return changed node
-        :param configs:
         :return:
         """
         update_configs = set()

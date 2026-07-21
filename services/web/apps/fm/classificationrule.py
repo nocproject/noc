@@ -207,8 +207,6 @@ class EventClassificationRuleApplication(ExtDocApplication):
     def api_from_event(self, request, event_id):
         """
         Create classification rule from event
-        :param request:
-        :param event_id:
         :return:
         """
         q = self.parse_request_query(request)

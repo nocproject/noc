@@ -435,7 +435,6 @@ class AlarmClass(Document):
     def convert_labels_var(self, labels: list[str]) -> dict[str, str]:
         """
         Convert labels to dict
-        :param labels:
         :return:
         """
         r = {}

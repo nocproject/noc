@@ -93,7 +93,6 @@ def urlopen(url, auto_deflate=False):
 def iter_open(path):
     """
     Generator yielding file-like objects from path
-    :param path:
     :return:
     """
     if path.endswith("tar.gz") or path.endswith("tgz"):

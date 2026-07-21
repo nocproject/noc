@@ -96,7 +96,6 @@ class Command(BaseCommand):
         iface:<MONAME>::<IFACE_NAME>,
         mo:<MONAME>
         sla:<SLAPROBE_ID>
-        :param source:
         :return:
         """
         from noc.core.mongo.connection import connect
@@ -168,11 +167,6 @@ class Command(BaseCommand):
     ):
         """
 
-        :param source:
-        :param metrics:
-        :param start:
-        :param end:
-        :param register_metric:
         :return:
         """
         from noc.core.clickhouse.connect import connection
@@ -258,13 +252,6 @@ class Command(BaseCommand):
     ):
         """
         Test configured action
-        :param config:
-        :param f_input:
-        :param f_output:
-        :param start:
-        :param end:
-        :param args:
-        :param kwargs:
         :return:
         """
         if end:

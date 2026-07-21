@@ -61,8 +61,6 @@ class LiftBridgeClient(GugoLiftbridgeClient):
     def get_topic_config(name, replication_factor: int | None = 0) -> dict[str, int]:
         """
         Return topic retention settings
-        :param name:
-        :param replication_factor:
         :return:
         """
         if name.startswith("__"):
@@ -94,10 +92,6 @@ class LiftBridgeClient(GugoLiftbridgeClient):
     ) -> None:
         """
         Create Stream by settings
-        :param name:
-        :param group:
-        :param partitions:
-        :param replication_factor:
         :return:
         """
         await super().create_stream(

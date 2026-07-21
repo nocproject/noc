@@ -247,7 +247,6 @@ async def auth_authorization_bearer(
 def is_pinhole(path: str) -> bool:
     """
     Check if path should be pinholed (allowed unconditionaly)
-    :param path:
     :return:
     """
     idx = path.find("?")

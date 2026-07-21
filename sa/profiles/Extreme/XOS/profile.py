@@ -62,7 +62,6 @@ class Profile(BaseProfile):
         Parse header structured multiline format:
         Config    Current Agg     Min    Ld Share  Flags Ld Share  Agg Link  Link Up
         Master    Master  Control Active Algorithm       Group     Mbr State Transitions
-        :param v:
         :return: Dictionary {start column position: header}
         {10: 'Config Master', 18: 'Current Master', 26: 'Agg Control', 33: 'Min Active',
          43: 'Ld Share Algorithm', 49: 'Flags ', 59: 'Ld Share Group', 63: 'Agg Mbr', 69: 'Link State'}
@@ -111,11 +110,6 @@ class Profile(BaseProfile):
         1:49           0    0x0419  02:04:96:98:d1:86      0    0x03ff   2
         ================================================================================
         parse_table_struct(t, header_start="Lag", table_start="-------", table_end="=======")
-        :param v:
-        :param header_start:
-        :param header_end:
-        :param table_start:
-        :param table_end:
         :return:
         """
         r = []

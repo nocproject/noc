@@ -55,12 +55,8 @@ class MACDB(Document):
         """
         Submit mac to database
         Returns True if database been changed
-        :param cls:
-        :param mac:
         :param vc_domain
         :param vlan
-        :param interface:
-        :param timestamp:
         :return:
         """
         if not timestamp:

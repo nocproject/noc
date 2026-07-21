@@ -80,8 +80,6 @@ class CSVApplication(Application):
     def view_import(self, request, model):
         """
         Import from CSV file
-        :param request:
-        :param model:
         :return:
         """
         app, model = model.split(".", 1)

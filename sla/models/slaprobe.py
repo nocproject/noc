@@ -241,7 +241,6 @@ class SLAProbe(Document):
     def get_metric_config(cls, sla_probe: "SLAProbe"):
         """
         Return MetricConfig for Metrics service
-        :param sla_probe:
         :return:
         """
         if not sla_probe.state.is_productive:

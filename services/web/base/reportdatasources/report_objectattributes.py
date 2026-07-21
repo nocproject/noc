@@ -19,9 +19,7 @@ class ReportObjectAttributes(BaseReportColumn):
 
     def extract(self):
         """
-        :param ids:
         :return: Dict tuple MO attributes mo_id -> (attrs_list)
-        :rtype: dict
         """
         attr_list = ["Serial Number", "HW version", "Boot PROM", "Patch Version"]
         cursor = connection.cursor()

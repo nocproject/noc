@@ -65,7 +65,6 @@ class Script(BaseScript):
     def clear_platform(self, platform):
         """
         Clear platform string
-        :param platform:
         :return:
         """
         # Clear K9 in platform

@@ -20,7 +20,6 @@ class AbductDetector:
         Register link up
 
         :param ts: Event timestamp
-        :param interface:
         :return:
         """
         mo = interface.managed_object
@@ -40,7 +39,6 @@ class AbductDetector:
         Register link down
 
         :param ts: Event timestamp
-        :param interface:
         :return: True, if massive outage detected
         """
         mo = interface.managed_object

@@ -143,7 +143,6 @@ class DNSZone(NOCModel):
         * F - forward zone
 
         :return: Zone type
-        :rtype: String
         """
         nl = name.lower()
         if nl.endswith(".in-addr.arpa"):
@@ -160,7 +159,6 @@ class DNSZone(NOCModel):
         Appropriative prefix for reverse zone
 
         :return: IPv4 or IPv6 prefix
-        :rtype: String
         """
         if self.type == ZONE_REVERSE_IPV4:
             # Get IPv4 prefix covering reverse zone
@@ -248,7 +246,6 @@ class DNSZone(NOCModel):
         to follow common practive.
 
         :return: Zone serial number
-        :rtype: int
         """
         T = time.gmtime()
         base = T[0] * 10000 + T[1] * 100 + T[2]
@@ -288,7 +285,6 @@ class DNSZone(NOCModel):
         at the end.
 
         :return: List of zone NSes
-        :rtype: List of string
         """
         return sorted(self.get_ns_name(ns) for ns in self.profile.authoritative_servers)
 
@@ -299,8 +295,7 @@ class DNSZone(NOCModel):
         at the end.
 
         :return: List of zone master NSes
-        :rtype: List of string
-        :return:
+                :return:
         """
         return sorted(self.get_ns_name(ns) for ns in self.profile.masters.all())
 
@@ -311,8 +306,7 @@ class DNSZone(NOCModel):
         at the end.
 
         :return: List of zone slave NSes
-        :rtype: List of string
-        :return:
+                :return:
         """
         return sorted(self.get_ns_name(ns) for ns in self.profile.slaves.all())
 
@@ -323,7 +317,6 @@ class DNSZone(NOCModel):
         attributes
 
         :return: RPSL
-        :rtype: String
         """
         if self.type == ZONE_FORWARD:
             return ""

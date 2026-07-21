@@ -26,7 +26,6 @@ ns_cache = cachetools.TTLCache(
 async def resolve_async(host: str) -> str | None:
     """
     Resolve host and return address
-    :param host:
     :return:
     """
     with ns_lock:
@@ -50,7 +49,6 @@ async def resolve_async(host: str) -> str | None:
 def resolve_sync(host: str) -> str | None:
     """
     Resolve host and return address
-    :param host:
     :return:
     """
     with ns_lock:

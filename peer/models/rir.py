@@ -49,8 +49,6 @@ class RIR(NOCModel):
         """
         Update RIR's database API and returns report
 
-        :param data:
-        :param maintainer:
         :return:
         """
         rir = "RIPE" if self.name == "RIPE NCC" else self.name
@@ -59,8 +57,6 @@ class RIR(NOCModel):
     def update_rir_db_RIPE(self, data, maintainer):
         """
         RIPE NCC Update API
-        :param data:
-        :param maintainer:
         :return:
         """
         data = [x for x in data.split("\n") if x]  # Strip empty lines

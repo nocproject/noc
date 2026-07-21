@@ -152,7 +152,6 @@ class ServiceStub:
     async def get_stream_partitions(self, stream: str) -> int:
         """
 
-        :param stream:
         :return:
         """
         async with MessageStreamClient() as client:
@@ -171,7 +170,6 @@ class ServiceStub:
     def get_slot_limits(slot_name):
         """
         Get slot count
-        :param slot_name:
         :return:
         """
         dcs = get_dcs(DEFAULT_DCS)

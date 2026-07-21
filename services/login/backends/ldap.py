@@ -187,9 +187,6 @@ class LdapBackend(BaseAuthBackend):
     def get_connection_kwargs(self, ldap_domain: "AuthLDAPDomain", user: str, password: str):
         """
         Return LDAP connection instance
-        :param ldap_domain:
-        :param user:
-        :param password:
         :return:
         """
         if ldap_domain.type == "ad":

@@ -101,7 +101,6 @@ class ProtocolVariant:
         LLDP -> LLDP
         >LLDP > LLDP, >
         >::LLDP > LLDP, >
-        :param code:
         :return:
         """
         # d_code, *x = code.split("::")

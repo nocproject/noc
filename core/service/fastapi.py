@@ -76,8 +76,6 @@ class FastAPIService(BaseService):
     async def request_validation_error_handler(self, request: "Request", exc) -> Response:
         """
         Handle request validation and customize response
-        :param request:
-        :param exc:
         :return:
         """
         return JSONResponse(

@@ -1,12 +1,13 @@
 # ----------------------------------------------------------------------
 # ArchivingExtractor
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 from collections import defaultdict
+from typing import Any
 
 # Third-party modules
 import bisect
@@ -53,23 +54,20 @@ class ArchivingExtractor(BaseExtractor):
         """
         return iter(())
 
-    def iter_archived_collections(self):
+    def iter_archived_collections(self) -> Iterable[str]:
         """
         Generator yielding archived collection names
         :return:
-        :rtype: str
         """
         for c in self._archive_db.list_collection_names():
             if not c.startswith(self.archive_collection_prefix):
                 continue
             yield c
 
-    def calculate_meta(self, collection_name):
+    def calculate_meta(self, collection_name) -> dict[str, Any]:
         """
         Calculate Meta Information about archived collection
-        :param collection_name:
         :return:
-        :rtype: dict
         """
         coll = self._archive_db.get_collection(collection_name)
         start_document = coll.find_one(

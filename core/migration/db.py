@@ -254,8 +254,6 @@ class DB:
         """
         Return the CREATE INDEX SQL statements for a single model field
 
-        :param model:
-        :param field:
         :return:
         """
 

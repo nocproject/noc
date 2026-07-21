@@ -78,9 +78,6 @@ class MapApplication(ExtApplication):
     def api_data(self, request, gen_type, gen_id):
         """
         Return data for render map
-        :param request:
-        :param gen_type:
-        :param gen_id:
         :return:
         """
         try:
@@ -99,9 +96,6 @@ class MapApplication(ExtApplication):
     def api_save(self, request, gen_type, gen_id):
         """
         Save Manual layout
-        :param request:
-        :param gen_type:
-        :param gen_id:
         :return:
         """
         data = self.deserialize(request.body)
@@ -175,9 +169,6 @@ class MapApplication(ExtApplication):
     def inspector_link(self, request, id, link_id):
         """
         Link inpector
-        :param request:
-        :param id:
-        :param link_id:
         :return:
         """
         link = self.get_object_or_404(Link, id=link_id)
@@ -278,7 +269,6 @@ class MapApplication(ExtApplication):
     def inspector(self, request, inspector, gen_id, r_id):
         """
         API for map inspectors
-        :param request:
         :param inspector: Inspector name (node type)
         :param gen_id: Generator Id
         :param r_id: node_id
@@ -364,8 +354,6 @@ class MapApplication(ExtApplication):
     def api_lookup_maps_get_path(self, request, gen_id):
         """
 
-        :param request:
-        :param gen_id:
         :return:
         """
         # Parse params

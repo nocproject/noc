@@ -252,7 +252,6 @@ class ThreadPoolExecutor:
     def apply_metrics(self, d: dict[str, Any]) -> None:
         """
         Append threadpool metrics to dictionary d
-        :param d:
         :return:
         """
         with self.mutex:

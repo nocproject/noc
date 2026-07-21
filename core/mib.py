@@ -99,7 +99,6 @@ class MIBRegistry:
     def is_loaded(self, name: str) -> bool:
         """
         Check MIB is loaded
-        :param name:
         :return:
         """
         return name in self.loaded_mibs
@@ -118,8 +117,6 @@ class MIBRegistry:
     def longest_match(d: dict[str, Any], k: str) -> Any | None:
         """
         Returns longest match of key `k` in dict `d`
-        :param d:
-        :param k:
         :return:
         """
         for prefix in d:

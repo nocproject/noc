@@ -35,8 +35,6 @@ class MessageStreamQueue:
     def put(self, req: PublishRequest, fifo: bool = True) -> None:
         """
         Put request into queue
-        :param req:
-        :param fifo:
         :return:
         """
         with self.lock:
@@ -54,7 +52,6 @@ class MessageStreamQueue:
         """
         Get request from queue. Wait forever, if timeout is None,
         of return None if timeout is expired.
-        :param timeout:
         :return:
         """
         with self.lock:

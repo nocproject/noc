@@ -57,7 +57,6 @@ class MonitorApplication(ObjectListApplication):
     def bulk_field_managed_object(self, data):
         """
         Apply managed objects field
-        :param data:
         :return:
         """
         mo_ids = [x["id"] for x in data]

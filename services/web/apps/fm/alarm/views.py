@@ -603,7 +603,6 @@ class AlarmApplication(ExtApplication):
     def get_nested_alarms(self, alarm, include_groups=True):
         """
         Return nested alarms as a part of NodeInterface
-        :param alarm:
         :param include_groups
         :return:
         """

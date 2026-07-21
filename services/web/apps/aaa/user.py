@@ -101,7 +101,6 @@ class UserApplication(ExtModelApplication):
         """
         Finally process list_data result. Override to enrich with
         additional fields
-        :param data:
         :return:
         """
         r = super().apply_bulk_fields(data=data)
@@ -149,9 +148,6 @@ class UserApplication(ExtModelApplication):
     def view_change_password(self, request, object_id, password):
         """
         Change user's password
-        :param request:
-        :param object_id:
-        :param password:
         :return:
         """
         if not request.user.is_superuser:

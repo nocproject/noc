@@ -39,7 +39,6 @@ class DocumentResourceAPI(BaseResourceAPI[T]):
     def queryset(cls, user: User) -> QuerySet:
         """
         Get django's queryset adjusted to current user
-        :param user:
         :return:
         """
         return cls.model.objects.all()
@@ -56,9 +55,6 @@ class DocumentResourceAPI(BaseResourceAPI[T]):
     ) -> list[SummaryItem]:
         """
         Calculate total amount of items, satisfying criteria
-        :param user:
-        :param field:
-        :param transforms:
         :return:
         """
         if field not in self.model._fields:

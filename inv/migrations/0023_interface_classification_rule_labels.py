@@ -162,8 +162,6 @@ class InterfaceClassifierLabels:
     ) -> list[str]:
         """
 
-        :param match_rules:
-        :param rule_name:
         :return:
         """
         r = []

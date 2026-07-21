@@ -173,8 +173,6 @@ class BaseCommand:
     def progress(self, iter, max_value=None):
         """
         Yield iterable and show progressbar
-        :param iter:
-        :param max_value:
         :return:
         """
         if self.no_progressbar:
@@ -187,8 +185,6 @@ class BaseCommand:
     def show_usage(self, start, stop):
         """
         Show resource usage
-        :param start:
-        :param stop:
         :return:
         """
         r = [

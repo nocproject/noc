@@ -59,7 +59,6 @@ class ConfigProxy:
     def __init__(self, base: BaseModel, override: dict[str, Any]) -> None:
         """
         Base Configuration (on BaseModel)
-        :param base:
         :param override: Override part of config, used for override config param
         :param static: Static part of config, used for store values on ConfigStore
         """
@@ -364,7 +363,6 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
     def is_dynamic_input(self, name: str) -> bool:
         """
         Check if input is dynamic
-        :param name:
         :return:
         """
         return self.get_input_type(name) == IN_OPTIONAL
@@ -389,8 +387,6 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
         """
         Activate const input. Called during construction time.
 
-        :param name:
-        :param value:
         :return:
         """
         name = sys.intern(name)
@@ -518,7 +514,6 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
         """
         Add new dynamic input
         :param name: Input name
-        :param is_key:
         :return:
         """
         if not self.allow_dynamic:

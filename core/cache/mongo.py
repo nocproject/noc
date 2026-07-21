@@ -50,9 +50,6 @@ class MongoCache(BaseCache):
     def set(self, key, value, ttl=None, version=None):
         """
         Set key
-        :param key:
-        :param value:
-        :param ttl:
         :return:
         """
         k = self.make_key(key, version)

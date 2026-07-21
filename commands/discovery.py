@@ -186,7 +186,6 @@ class ServiceStub:
     def get_slot_limits(slot_name):
         """
         Get slot count
-        :param slot_name:
         :return:
         """
         from noc.core.dcs.loader import get_dcs, DEFAULT_DCS

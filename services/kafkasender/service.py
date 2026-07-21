@@ -54,7 +54,6 @@ class KafkaSenderService(FastAPIService):
         Message MUST have `To` header, containing target Kafka topic.
         Optional parameter 'Kafka_partition' can be specified.
 
-        :param msg:
         :return:
         """
         metrics["messages"] += 1
@@ -78,10 +77,6 @@ class KafkaSenderService(FastAPIService):
         """
         Send data to kafka topic
 
-        :param topic:
-        :param data:
-        :param key:
-        :param partition:
         :return:
         """
         self.logger.debug("Sending to topic %s, partition: %s", topic, partition)

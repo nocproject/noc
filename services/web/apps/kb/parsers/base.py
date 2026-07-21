@@ -43,9 +43,6 @@ class BaseParser:
         TT<n> - Link to Trouble Ticket <n>
         attach:<name> - Link to attachment <name>
 
-        :param kb_entry:
-        :param link:
-        :param text:
         :return:
         """
         if text is None:

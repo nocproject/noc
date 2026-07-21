@@ -50,10 +50,6 @@ def view(url, access, url_name=None, menu=None, method=None, validate=None, api=
     """
     @view decorator
     :param url: URL relative to application root
-    :param access:
-    :param url_name:
-    :param menu:
-    :param method:
     :param validate: Form class or callable to check input
     :param api: Does the view exposed as API function
     """
@@ -404,7 +400,6 @@ class Application(metaclass=ApplicationBase):
     def response_bad_request(self, text=None):
         """
         Render 400 Bad Request
-        :param text:
         :return:
         """
         return HttpResponse(text, status=400)
@@ -412,7 +407,6 @@ class Application(metaclass=ApplicationBase):
     def response_accepted(self, location=None):
         """
         Render 202 Accepted
-        :param location:
         :return:
         """
         r = HttpResponse("", status=202)
@@ -577,7 +571,6 @@ class Application(metaclass=ApplicationBase):
     def to_json(self, v):
         """
         Convert custom types to json string
-        :param v:
         :return:
         """
         if v is None:

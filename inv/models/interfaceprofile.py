@@ -321,8 +321,6 @@ class InterfaceProfile(Document):
     ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
-        :param m:
-        :param profile_interval:
         :return:
         """
         return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)
@@ -375,9 +373,6 @@ class InterfaceProfile(Document):
     ) -> bool:
         """
         Check metric collected policy by interface status
-        :param admin_status:
-        :param oper_status:
-        :param metric_type:
         :return:
         """
         if self.status_discovery == "d" or self.metric_collected_policy == "e":

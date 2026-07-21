@@ -42,7 +42,6 @@ class WhoisCache:
     def has_asset(cls, as_set):
         """
         Returns true if as-set has members in cache
-        :param as_set:
         :return:
         """
         if is_asn(as_set[2:]):

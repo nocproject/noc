@@ -214,7 +214,6 @@ def get_spans():
 def span_to_dict(span):
     """
     Convert span to object
-    :param span:
     :return:
     """
     return dict(zip(SpanItemFields, span))

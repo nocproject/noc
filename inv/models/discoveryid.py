@@ -327,8 +327,6 @@ class DiscoveryID(Document):
     def macs_for_object(cls, object):
         """
         Get MAC addresses for object
-        :param cls:
-        :param object:
         :return: list of (fist_mac, last_mac)
         """
         # Get discovered chassis id range
@@ -353,11 +351,9 @@ class DiscoveryID(Document):
     def macs_for_objects(cls, objects_ids):
         """
         Get MAC addresses for object
-        :param cls:
         :param objects_ids: Lis IDs of Managed Object Instance
         :type: list
         :return: Dictionary mac: objects
-        :rtype: dict
         """
         if not objects_ids:
             return None

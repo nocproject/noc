@@ -26,7 +26,6 @@ class Script(BaseScript):
         """
         Return optical and RF ports
         :return:
-        :rtype: list
         """
         ports = [
             {

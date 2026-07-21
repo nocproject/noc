@@ -41,7 +41,6 @@ class PrefixTable(NOCModel):
 
         :param prefix: Prefix
         :type prefix: str
-        :rtype: bool
         """
         p = IP.prefix(prefix)
         return (

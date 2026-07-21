@@ -142,7 +142,6 @@ class ObjectStatus(Document):
     def update_status_bulk(cls, statuses: list[tuple[int, bool, int | None]]):
         """
         Update statuses bulk
-        :param statuses:
         :return:
         """
         from noc.sa.models.managedobject import ManagedObject

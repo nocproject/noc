@@ -19,9 +19,6 @@ def check_query(query: str, args: dict[str, Any], expected: list[dict[str, Any]]
     so we need additional helper to check
     if all results matched
 
-    :param query:
-    :param args:
-    :param expected:
     :return:
     """
     e = Engine()

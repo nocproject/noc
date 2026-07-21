@@ -275,7 +275,6 @@ class NetworkSegment(Document):
     def set_redundancy(self, status):
         """
         Change interface redundancy status
-        :param status:
         :return:
         """
         siblings = list(self.get_siblings())
@@ -477,7 +476,6 @@ class NetworkSegment(Document):
     def iter_vlan_domain_segments(cls, segment):
         """
         Get all segments related to same VLAN domains
-        :param segment:
         :return:
         """
 
@@ -500,7 +498,6 @@ class NetworkSegment(Document):
     def get_vlan_domain_segments(cls, segment):
         """
         Get list of all segments related to same VLAN domains
-        :param segment:
         :return:
         """
         return list(cls.iter_vlan_domain_segments(segment))
@@ -511,7 +508,6 @@ class NetworkSegment(Document):
         """
         Get list of all managed object ids belonging to
         same VLAN domain
-        :param segment:
         :return:
         """
         from noc.sa.models.managedobject import ManagedObject

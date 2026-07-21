@@ -305,7 +305,6 @@ class CorrelatorService(FastAPIService):
     def set_reverse_root_cause(self, a: ActiveAlarm) -> bool:
         """
         Set `a` as root cause for existing events
-        :param a:
         :return: True, if set as root
         """
         found = False
@@ -374,7 +373,6 @@ class CorrelatorService(FastAPIService):
 
         :param reference: Reference hash
         :param timestamp: New alarm timestamp
-        :param event:
         :returns: Reopened alarm, when found, None otherwise
         """
         arch = ArchivedAlarm.objects.filter(
@@ -1203,7 +1201,6 @@ class CorrelatorService(FastAPIService):
     def parse_object(self, oid) -> ManagedObject | None:
         """
         Resolve ManagedObject instance from message id
-        :param oid:
         :return:
         """
         if oid.startswith("bi_id:"):
@@ -1577,15 +1574,12 @@ class CorrelatorService(FastAPIService):
     async def topology_rca(self, alarm: ActiveAlarm):
         """
         Topology-based RCA
-        :param alarm:
         :return:
         """
 
         def can_correlate(a1, a2):
             """
             Check if alarms can be correlated together (within corellation window)
-            :param a1:
-            :param a2:
             :return:
             """
             return (
@@ -1597,7 +1591,6 @@ class CorrelatorService(FastAPIService):
         def all_uplinks_failed(a1):
             """
             Check if all uplinks for alarm is failed
-            :param a1:
             :return:
             """
             if not a1.uplinks:
@@ -1611,7 +1604,6 @@ class CorrelatorService(FastAPIService):
             Uplinks are ordered according to path length.
             Return first applicable
 
-            :param a1:
             :return:
             """
             for u in a1.uplinks:
@@ -1635,7 +1627,6 @@ class CorrelatorService(FastAPIService):
         def iter_downlink_alarms(a1):
             """
             Yield all downlink alarms
-            :param a1:
             :return:
             """
             mo = a1.managed_object.id
@@ -1646,7 +1637,6 @@ class CorrelatorService(FastAPIService):
         def correlate_uplinks(ca: ActiveAlarm) -> bool:
             """
             Correlate with uplink alarms if all uplinks are faulty.
-            :param ca:
             :return:
             """
             if not all_uplinks_failed(ca):
@@ -1663,7 +1653,6 @@ class CorrelatorService(FastAPIService):
         def correlate_merge_downlinks(ca: ActiveAlarm) -> bool:
             """
             Donwlink merge correlation
-            :param ca:
             :return:
             """
             if not ca.uplinks or not ca.rca_neighbors:

@@ -88,7 +88,6 @@ class Vendor(Document):
     def _get_by_code(cls, code):
         """
         Uncached version of get_by_code
-        :param code:
         :return:
         """
         code = code.upper()
@@ -138,7 +137,6 @@ class Vendor(Document):
     def ensure_vendor(cls, code):
         """
         Get or create vendor by code
-        :param code:
         :return:
         """
         # Try to get cached version

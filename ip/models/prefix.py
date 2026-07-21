@@ -456,7 +456,6 @@ class Prefix(NOCModel):
     def can_view(self, user) -> bool:
         """
         Returns True if user has view access
-        :param user:
         :return:
         """
         return PrefixAccess.user_can_view(user, self.vrf, self.afi, self.prefix)
@@ -464,7 +463,6 @@ class Prefix(NOCModel):
     def can_change(self, user) -> bool:
         """
         Returns True if user has change access
-        :param user:
         :return:
         """
         return PrefixAccess.user_can_change(user, self.vrf, self.afi, self.prefix)
@@ -472,7 +470,6 @@ class Prefix(NOCModel):
     def has_bookmark(self, user) -> bool:
         """
         Check the user has bookmark on prefix
-        :param user:
         :return:
         """
         from .prefixbookmark import PrefixBookmark  # noqa
@@ -482,7 +479,6 @@ class Prefix(NOCModel):
     def toggle_bookmark(self, user) -> bool:
         """
         Toggle user bookmark. Returns new bookmark state
-        :param user:
         :return:
         """
         from .prefixbookmark import PrefixBookmark  # noqa
@@ -554,8 +550,6 @@ class Prefix(NOCModel):
     def rebase(self, vrf, new_prefix) -> Optional["Prefix"]:
         """
         Rebase prefix to a new location
-        :param vrf:
-        :param new_prefix:
         :return:
         """
         b = IP.prefix(self.prefix)

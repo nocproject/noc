@@ -86,10 +86,6 @@ class PeerApplication(ExtModelApplication):
     def set_peer_status(self, request, queryset, event, message):
         """
         Change peer status
-        :param request:
-        :param queryset:
-        :param status:
-        :param message:
         :return:
         """
         count = 0

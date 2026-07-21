@@ -245,7 +245,6 @@ class ProfileChecker:
     def snmp_v1_get(self, param):
         """
         Perform SNMP v1 request. May be overridden for testing
-        :param param:
         :return:
         """
         self.logger.info("SNMP v1 GET: %s", param)
@@ -260,7 +259,6 @@ class ProfileChecker:
     def snmp_v2c_get(self, param):
         """
         Perform SNMP v2c request. May be overridden for testing
-        :param param:
         :return:
         """
         self.logger.info("SNMP v2c GET: %s", param)

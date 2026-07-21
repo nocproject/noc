@@ -29,7 +29,6 @@ class Stream:
     """
     Base class for approximate quantiles compulation
 
-    :param n:
     """
 
     def __init__(self, buff_size) -> None:
@@ -54,7 +53,6 @@ class Stream:
     def insert(self, v):
         """
         Submit value to stream
-        :param v:
         :return:
         """
         # Fast unsorted insert untill buffer limit is reached or first query
@@ -174,7 +172,6 @@ class Stream:
     def query(self, q):
         """
         Query returns computed q-th percentile value.
-        :param q:
         :return:
         """
         assert 0.0 <= q <= 1.0
@@ -221,8 +218,6 @@ class BiasedStream(Stream):
     where needed quantiles are not known a priori, but
     error guarantees can still be given
 
-    :param n:
-    :param epsilon:
     """
 
     def __init__(self, n, epsilon) -> None:
@@ -266,7 +261,6 @@ class TargetedStream(Stream):
     their absolute errors, i.e. the true quantile of a value returned by a query
     is guaranteed to be within (Quantile±Epsilon).
 
-    :param n:
     :param targets: List of (quantile, epsilon)
     """
 

@@ -44,8 +44,6 @@ class SegmentationCheck(DiscoveryCheck):
     def segmentation(self, if_map):
         """
         Perform segmentation of seen objects
-        :param if_map:
-        :param target_segment:
         :return:
         """
         sp = self.object.get_autosegmentation_policy()

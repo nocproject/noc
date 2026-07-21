@@ -175,6 +175,5 @@ class TGBotTTSystem(BaseTTSystem):
     def get_tt(self, tt_id: str) -> TTInfo | None:
         """
         getUpdates
-        :param tt_id:
         :return:
         """

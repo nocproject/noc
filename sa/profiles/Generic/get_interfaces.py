@@ -224,9 +224,6 @@ class Script(BaseScript):
     def filter_interface(self, ifindex: int, name: str, oper_status: bool) -> bool:
         """
         Filter interface
-        :param ifindex:
-        :param name:
-        :param oper_status:
         :return:
         """
         return True
@@ -389,7 +386,6 @@ class Script(BaseScript):
         """
         Merge iterables into single table
 
-        :param args:
         :return:
         """
         r = {}
@@ -442,7 +438,6 @@ class Script(BaseScript):
         """
         Collect part of IF-MIB table.
 
-        :param key:
         :param oid: Base oid, either in numeric or symbolic form
         :param ifindexes: Collect information for single interface only, if set
         :param clean: Cleaning function
@@ -489,7 +484,6 @@ class Script(BaseScript):
     def get_interface_ifindex(self, name: str) -> int:
         """
         Get ifindex for given interface
-        :param name:
         :return:
         """
         for r_oid, v in self.snmp.getnext(

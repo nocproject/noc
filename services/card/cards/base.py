@@ -67,7 +67,6 @@ class BaseCard:
         """
         Redirect to another card.
         Can only be called within dereference method
-        :param url:
         :return:
         """
         raise cls.RedirectError(url)
@@ -76,7 +75,6 @@ class BaseCard:
         """
         Resolve object by id.
         When redirect method called within, card will be redirected
-        :param id:
         :return:
         """
         if self.model and id != "ajax":

@@ -34,17 +34,6 @@ class DNSZoneProfile(NOCModel):
     """
     DNS Zone profile is a set of common parameters, shared between zones.
 
-    :param name:
-    :param masters:
-    :param slaves:
-    :param zone_soa:
-    :param zone_contact:
-    :param zone_refresh:
-    :param zone_retry:
-    :param zone_expire:
-    :param zone_ttl:
-    :param notification_group:
-    :param description:
     """
 
     class Meta:

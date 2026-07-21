@@ -69,12 +69,10 @@ class ReportDiscoveryResult(BaseReportColumn):
     def pipeline(filter_ids, match=None):
         """
         Generate pipeline for request
-        :param filter_ids:
         :type filter_ids: list
         :param match: Match filter
         :type match: dict
         :return:
-        :rtype: list
         """
         pipeline = [
             {

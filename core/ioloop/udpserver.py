@@ -45,7 +45,6 @@ class UDPServer:
         * address:port
         * port
 
-        :param cfg:
         :return:
         """
         for listen in cfg.split(","):

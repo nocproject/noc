@@ -63,8 +63,6 @@ class GridVCS:
     def apply_delta_F(src: str, delta: bytes) -> str:
         """
         Raw string
-        :param src:
-        :param delta:
         :return:
         """
         return delta.decode()
@@ -74,8 +72,6 @@ class GridVCS:
         """
         Mercurial mdiff. Slow python implementation ported from Mercurial 0.4.
         For legacy installations support only
-        :param src:
-        :param delta:
         :return:
         """
         last = pos = 0
@@ -96,8 +92,6 @@ class GridVCS:
     def apply_delta_B(src: str, delta: bytes) -> str:
         """
         BSDIFF4 diff
-        :param src:
-        :param delta:
         :return:
         """
         return bsdiff4.patch(src, delta).decode()
@@ -192,7 +186,6 @@ class GridVCS:
     def delete(self, object: int) -> None:
         """
         Delete object's data and history
-        :param object:
         :return:
         """
         for r in self.iter_revisions(object):
@@ -201,7 +194,6 @@ class GridVCS:
     def iter_revisions(self, object: int, reverse: bool | None = False) -> Iterable[Revision]:
         """
         Get object's revision
-        :param object:
         :return: List of Revisions
         """
         d = pymongo.DESCENDING if reverse else pymongo.ASCENDING
@@ -211,7 +203,6 @@ class GridVCS:
     def find_last_revision(self, object: int) -> Revision | None:
         """
         Find last revision or return None
-        :param object:
         :return:
         """
         r = self.files.find_one({"object": object}, sort=[("ts", pymongo.DESCENDING)])
@@ -221,7 +212,6 @@ class GridVCS:
 
     def find_revision(self, object: int, revision: str) -> Revision | None:
         """
-        :param object:
         :param revision: Revision id
         :return:
         """
@@ -244,9 +234,6 @@ class GridVCS:
     def diff(self, object: int, rev1: str, rev2: str) -> str:
         """
         Get unified diff between revisions
-        :param object:
-        :param rev1:
-        :param rev2:
         :return:
         """
         src = self.get(object, rev1) or ""
@@ -257,10 +244,6 @@ class GridVCS:
         """
         Get unified diff between multiple object's revisions
 
-        :param obj1:
-        :param rev1:
-        :param obj2:
-        :param rev2:
         :return:
         """
         src = self.get(obj1, rev1) or ""

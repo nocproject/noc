@@ -34,7 +34,6 @@ class MetricItem:
     def is_run(self, collected_interval, source_code: int, buckets: int = 1, run: int = 0) -> bool:
         """
 
-        :param source_code:
         :return:
         """
         # Effective collected interval

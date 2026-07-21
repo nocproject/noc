@@ -57,7 +57,6 @@ class DNSZoneDataStream(DataStream):
     def get_records(cls, zone: DNSZone):
         """
         Get zone records
-        :param zone:
         :return:
         """
         zone_iters = [cls.iter_soa(zone)]
@@ -102,7 +101,6 @@ class DNSZoneDataStream(DataStream):
     def iter_ns(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield NS records
-        :param zone:
         :return:
         """
         for ns in zone.ns_list:
@@ -112,7 +110,6 @@ class DNSZoneDataStream(DataStream):
     def iter_forward(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield forward zone records
-        :param zone:
         :return:
         """
         return chain(
@@ -127,7 +124,6 @@ class DNSZoneDataStream(DataStream):
     def iter_reverse_ipv4(cls, zone):
         """
         Yield IPv4 reverse zone
-        :param zone:
         :return:
         """
         return chain(
@@ -141,7 +137,6 @@ class DNSZoneDataStream(DataStream):
     def iter_reverse_ipv6(cls, zone):
         """
         Yield IPv6 reverse zone
-        :param zone:
         :return:
         """
         return chain(cls.iter_ns(zone), cls.iter_rr(zone), cls.iter_ipam_ptr6(zone))
@@ -150,7 +145,6 @@ class DNSZoneDataStream(DataStream):
     def iter_nested_ns(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield NS/A records for nested zones
-        :param zone:
         :return:
         """
         suffix = f".{zone.name}."
@@ -223,7 +217,6 @@ class DNSZoneDataStream(DataStream):
     def iter_ipam_ptr4(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield IPv4 PTR records from IPAM
-        :param zone:
         :return:
         """
 
@@ -272,7 +265,6 @@ class DNSZoneDataStream(DataStream):
     def iter_missed_ns_a(cls, zone: DNSZone) -> Iterable[RR]:
         """
         Yield missed A record for NS'es
-        :param zone:
         :return:
         """
         suffix = f".{zone.name}."
@@ -360,7 +352,6 @@ class DNSZoneDataStream(DataStream):
         """
         DNS Zone changed, increase serial
 
-        :param data:
         :return:
         """
         zone = DNSZone.objects.filter(id=data["id"])[:1]

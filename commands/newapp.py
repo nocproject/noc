@@ -124,15 +124,12 @@ class Command(BaseCommand):
     def to_js(self, data, indent=0):
         """
         Convert list of lists to JS list of dict
-        :param data:
-        :param indent:
         :return:
         """
 
         def js_f(data):
             """
             Convert list of pairs to JS dict
-            :param data:
             :type data: list
             :return:
             """
@@ -140,7 +137,6 @@ class Command(BaseCommand):
             def js_v(s):
                 """
                 Convert python value to js
-                :param s:
                 :return:
                 """
                 if isinstance(s, str):

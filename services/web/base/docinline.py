@@ -185,7 +185,6 @@ class DocInline:
         :param data: dict of parameters
         :type data: dict
         :return: dict of cleaned parameters of raised InterfaceTypeError
-        :rtype: dict
         """
         # Delete id
         if "id" in data:

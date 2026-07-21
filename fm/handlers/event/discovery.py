@@ -35,8 +35,6 @@ def schedule_discovery_config(event, managed_object):
 def on_system_start(event, managed_object):
     """
     Called when reboot detected
-    :param event:
-    :param managed_object:
     :return:
     """
     if managed_object.object_profile.box_discovery_on_system_start:
@@ -48,8 +46,6 @@ def on_system_start(event, managed_object):
 def on_config_change(event, managed_object):
     """
     Called when config change detected
-    :param event:
-    :param managed_object:
     :return:
     """
     if managed_object.object_profile.box_discovery_on_config_changed:

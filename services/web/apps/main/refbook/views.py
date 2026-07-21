@@ -43,7 +43,6 @@ class RefBookAppplication(Application):
     def view_index(self, request):
         """
         Render list of refbooks
-        :param request:
         :return:
         """
         ref_books = RefBook.objects.filter(is_enabled=True).order_by("name")
@@ -53,8 +52,6 @@ class RefBookAppplication(Application):
     def view_view(self, request, refbook_id):
         """
         Refbook preview
-        :param request:
-        :param refbook_id:
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
@@ -87,9 +84,6 @@ class RefBookAppplication(Application):
     def view_item(self, request, refbook_id, record_id):
         """
         Item preview
-        :param request:
-        :param refbook_id:
-        :param record_id:
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
@@ -103,9 +97,6 @@ class RefBookAppplication(Application):
     def view_edit(self, request, refbook_id, record_id=0):
         """
         Edit item
-        :param request:
-        :param refbook_id:
-        :param record_id:
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
@@ -134,9 +125,6 @@ class RefBookAppplication(Application):
     def view_delete(self, request, refbook_id, record_id):
         """
         Delete refbook record
-        :param request:
-        :param refbook_id:
-        :param record_id:
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))
@@ -153,8 +141,6 @@ class RefBookAppplication(Application):
     def view_new(self, request, refbook_id):
         """
         Create refbook record
-        :param request:
-        :param refbook_id:
         :return:
         """
         rb = get_object_or_404(RefBook, id=int(refbook_id))

@@ -119,7 +119,6 @@ $TTL %(ttl)d
     def pretty_time(t):
         """
         Format seconds to human-readable time for comments
-        :param t:
         :return:
         """
         if not t:
@@ -143,7 +142,6 @@ $TTL %(ttl)d
     def split_txt(cls, value):
         """
         Split TXT to up-to MAX_TXT parts
-        :param value:
         :return:
         """
         if len(value) <= cls.MAX_TXT:

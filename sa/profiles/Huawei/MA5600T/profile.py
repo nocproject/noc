@@ -123,7 +123,6 @@ class Profile(BaseProfile):
     def get_slots_n(self, script):
         """
         If slots 7 - MA5603, 14 - MA5600
-        :param script:
         :return:
         """
         i = -1

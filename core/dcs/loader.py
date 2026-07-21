@@ -73,7 +73,6 @@ class DCSRunner:
     async def trampoline(self, aw: Awaitable) -> Any:
         """
         Trampoline awaitable to dedicated loop
-        :param aw:
         :return:
         """
 

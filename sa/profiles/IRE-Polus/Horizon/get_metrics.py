@@ -28,7 +28,6 @@ class Script(GetMetricsScript):
     def collect_sensor_metrics(self, metrics: list[MetricCollectorConfig]):
         """
         Collect sensor metrics method. Configured by profile
-        :param metrics:
         :return:
         """
         # devices: Dict[int, Device] = {}  # slot -> device info

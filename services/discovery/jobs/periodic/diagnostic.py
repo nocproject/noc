@@ -128,7 +128,6 @@ class DiagnosticCheck(DiscoveryCheck):
           noc::diagnostic::<name>
           noc::check::<name>
           arg0
-        :param metrics:
         :return:
         """
         r = {}

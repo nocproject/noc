@@ -197,7 +197,6 @@ class MetricScriptBase(BaseScriptMetaclass):
             -+-+-
             M|3|1
             C|2|0
-            :param s:
             :return:
             """
             if s.startswith(PROFILES_PATH):
@@ -272,7 +271,6 @@ class MetricScriptBase(BaseScriptMetaclass):
     def get_snmp_handler_name(mcs, metric):
         """
         Generate python function name
-        :param metric:
         :return:
         """
         return "get_snmp_json_{}".format(mcs.rx_mt_name.sub("_", str(metric.lower())))
@@ -466,7 +464,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
             "_units": {mt.field_name: units},
             "managed_object": mo.bi_id,
         }
-        :param result:
         :return:
         """
         data = {}
@@ -668,7 +665,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     ):
         """
         Append metric to output
-        :param id:
             Opaque id, as in request.
             May be tuple of (metric, labels), then it will be resolved automatically
             and *metric* and *labels* parameters may be ommited
@@ -678,7 +674,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
         :param ts: Timestamp (nanoseconds precision)
         :param labels: labels. Either as requested, or refined.
             When None, try to get from id tuple
-        :param type:
             Measure type. Possible values:
             "gauge"
             "counter"
@@ -785,7 +780,6 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def collect_sensor_metrics(self, metrics: list[MetricCollectorConfig]):
         """
         Collect sensor metrics method. Configured by profile
-        :param metrics:
         :return:
         """
         for sensor in metrics:
@@ -810,14 +804,12 @@ class Script(BaseScript, metaclass=MetricScriptBase):
     def collect_sla_metrics(self, metrics: list[MetricCollectorConfig]):
         """
         Collect for SLA metrics method. Replaced by profile
-        :param metrics:
         :return:
         """
 
     def collect_cpe_metrics(self, metrics: list[MetricCollectorConfig]):
         """
         Collect for CPE metrics method. Replaced by profile
-        :param metrics:
         :return:
         """
 

@@ -564,7 +564,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         ```
         :param str prefix: IP Prefix
         :return: IP MASK notation
-        :rtype: str
         """
         if "/" in prefix and self.requires_netmask_conversion:
             prefix = IPv4(prefix)
@@ -584,7 +583,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         ```
         :param str mac:
         :return: MAC-address HH:HH:HH:HH:HH:HH
-        :rtype: str
         """
         return mac
 
@@ -599,7 +597,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         :param str mac: HH:HH:HH:HH:HH:HH
 
         :return: MAC-address HHHH.HHHH.HHHH
-        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return f"{v[:4]}.{v[4:8]}.{v[8:]}"
@@ -613,7 +610,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         '0011-2233-4455'
         ```
         :return: MAC-address HHHH-HHHH-HHHH
-        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return f"{v[:4]}-{v[4:8]}-{v[8:]}"
@@ -628,7 +624,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         ```
         :param str mac: MAC-address HH:HH:HH:HH:HH:HH
         :return: MAC-address HH-HH-HH-HH-HH-HH
-        :rtype: str
         """
         v = mac.replace(":", "").lower()
         return f"{v[:2]}-{v[2:4]}-{v[4:6]}-{v[6:8]}-{v[8:10]}-{v[10:]}"
@@ -646,7 +641,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         :param str s: Interface Name
 
         :return: Normalize interface name
-        :rtype: str
         """
         return s
 
@@ -708,7 +702,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         :param str name: Interface Name
 
         :return: List Alternative interface names
-        :rtype: list
         """
         return []
 
@@ -836,7 +829,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         3. If device supported stack - add first stack_member or 0
         4. Reverse path
         5. Product all variants with protocol prefix
-        :param port:
         :return:
         """
         if len(port.path) <= 1 and port.stack_num is None:
@@ -914,7 +906,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
         :param str cfg: Configuration
 
         :return: Clean up configuration
-        :rtype: str
         """
         if self.config_volatile:
             # Wipe out volatile strings before returning result
@@ -1032,8 +1023,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     def get_mml_command(self, cmd, **kwargs):
         """
         Generate MML command
-        :param cmd:
-        :param kwargs:
         :return:
         """
 
@@ -1088,7 +1077,6 @@ class BaseProfile(metaclass=BaseProfileMetaclass):
     def get_confdb_defaults(cls, object):
         """
         Returns a list of confdb defaults to be inserted on every ConfDB creation
-        :param object:
         :return:
         """
         return cls.confdb_defaults

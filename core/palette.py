@@ -376,7 +376,6 @@ def get_avatar_bg_color(n: int) -> str:
 def split_rgb(color: str) -> tuple[int, int, int]:
     """
     Split color #RRGGBB to a tuple of (R, G, B)
-    :param color:
     :return:
     """
     return int(color[1:3], 16), int(color[3:5], 16), int(color[5:], 16)
@@ -385,7 +384,6 @@ def split_rgb(color: str) -> tuple[int, int, int]:
 def get_fg_color(color: str) -> str:
     """
     Return contrast foreground color
-    :param color:
     :return:
     """
 

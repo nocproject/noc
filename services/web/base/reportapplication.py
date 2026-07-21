@@ -47,7 +47,6 @@ class ReportApplication(Application):
         """
         Return report results to render
         Overriden in subclasses
-        :param kwargs:
         :return:
         """
 
@@ -55,8 +54,6 @@ class ReportApplication(Application):
         """
         Returns render report as HTML
         :param request: HTTP Request
-        :param result:
-        :param query:
         :return:
         """
 
@@ -67,8 +64,6 @@ class ReportApplication(Application):
     def view_report(self, request, format="html"):
         """
         Render report
-        :param request:
-        :param format:
         :return:
         """
         query = {}

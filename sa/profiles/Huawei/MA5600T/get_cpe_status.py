@@ -33,7 +33,6 @@ class Script(BaseScript):
         """
         Sometimes start line shift more than 15 spaces. Fix it
                                              F/S/P   ONT-ID   Description
-        :param header:
         :return:
         """
         if len(header) > 0:

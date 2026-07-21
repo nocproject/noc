@@ -393,7 +393,6 @@ class Profile(BaseProfile):
         Parse header structured multiline format:
         Config    Current Agg     Min    Ld Share  Flags Ld Share  Agg Link  Link Up
         Master    Master  Control Active Algorithm       Group     Mbr State Transitions
-        :param v:
         :return: Dictionary {start column position: header}
         {10: 'Config Master', 18: 'Current Master', 26: 'Agg Control', 33: 'Min Active',
          43: 'Ld Share Algorithm', 49: 'Flags ', 59: 'Ld Share Group', 63: 'Agg Mbr', 69: 'Link State'}

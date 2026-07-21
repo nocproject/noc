@@ -233,9 +233,6 @@ class Script(BaseScript):
 
     @staticmethod
     def fix_protocols(protocols: str) -> list[str]:
-        """
-        :rtype : list
-        """
         proto = []
         if "None" in protocols:
             return []
@@ -267,9 +264,6 @@ class Script(BaseScript):
         return fitype
 
     def fix_ip_addr(self, ipaddr_section: str) -> dict[str, list[str]]:
-        """
-        :rtype : dict
-        """
         result = {"ipv4_addresses": [], "ipv6_addresses": [], "enabled_afi": []}
         if "Unnumbered If" in ipaddr_section:
             return result

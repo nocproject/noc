@@ -148,8 +148,6 @@ class SLAProfile(Document):
     ) -> "MetricConfig":
         """
         Returns MetricConfig from .metrics field
-        :param m:
-        :param profile_interval:
         :return:
         """
         return MetricConfig(m.metric_type, m.is_stored, m.interval or profile_interval)

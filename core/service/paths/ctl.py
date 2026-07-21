@@ -224,10 +224,6 @@ async def stop_memtrace():
 
 async def trace_leak(svc, delay=60, top=20, trace=1):
     """
-    :param svc:
-    :param delay:
-    :param top:
-    :param trace:
     :return:
     """
     logger.info("Start trace: delay: %s, top: %s, trace: %s", delay, top, trace)

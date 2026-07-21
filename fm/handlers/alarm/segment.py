@@ -18,7 +18,6 @@ logger = logging.getLogger(__name__)
 def set_segment_redundancy(alarm):
     """
     Set lost_redundancy to segment when redundant object is down
-    :param alarm:
     :return:
     """
     if alarm.root:
@@ -36,7 +35,6 @@ def check_segment_redundancy(alarm):
     """
     Reset lost_redundancy from segment when all redundant objects
     are up
-    :param alarm:
     :return:
     """
     mo = alarm.managed_object

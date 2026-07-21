@@ -322,7 +322,6 @@ class Script(BaseScript):
     def get_enterprise_id(self, version=None):
         """
         Returns EnterpriseID number from sysObjectID
-        :param version:
         :return:
         """
         if self.has_snmp():
@@ -397,7 +396,6 @@ class Script(BaseScript):
     def is_requested(self, section):
         """
         Check if section is requested
-        :param section:
         :return:
         """
         if self.requested:
@@ -543,8 +541,6 @@ class Script(BaseScript):
     def apply_capability(self, name, value):
         """
         Apply capability to capabilities immediately
-        :param name:
-        :param value:
         :return:
         """
         self.capabilities[name] = value

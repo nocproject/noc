@@ -40,10 +40,6 @@ class InterfaceStatusCheck(DiscoveryCheck):
         * c - Send `clear` message for 'Link Down' message if Oper -> Up
         * ca - Send `clear` message for 'Link Down' message if Oper -> Up or Admin -> Down
         * rc - Send `raise` message if Oper -> Down and `clear` if Oper -> Up or Admin -> Down
-        :param o_status:
-        :param a_status:
-        :param iface:
-        :param timestamp:
         :return:
         """
         alarm_class = self.get_ac_link_down()

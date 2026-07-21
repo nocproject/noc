@@ -98,7 +98,6 @@ class BaseField:
     def to_python(self, value):
         """
         Use method when field convert to python object
-        :param value:
         :return:
         """
         return value
@@ -288,7 +287,6 @@ class IPv4Field(BaseField):
         """
         Convert IPv4 as integer
 
-        :param value:
         :return:
         """
         if value is None:
@@ -311,7 +309,6 @@ class IPv6Field(BaseField):
         """
         Convert IPv6 as integer
 
-        :param value:
         :return:
         """
         if value is None:

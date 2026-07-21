@@ -65,7 +65,6 @@ class Script(BaseScript):
     def fix_last_port_description(self, interfaces):
         """
         For last N interfaces fill description and MAC
-        :param interfaces:
         :return:
         """
         for ifname in sorted(interfaces, reverse=True, key=alnum_key)[:3]:

@@ -71,7 +71,6 @@ class TTCard(BaseCard):
     def redirect_to_alarm(self, tt_id):
         """
         Find first alarm relative to URL
-        :param tt_id:
         :return:
         """
         a = ActiveAlarm.objects.filter(escalation_tt=tt_id).order_by("timestamp").only("id").first()

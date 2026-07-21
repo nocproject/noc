@@ -128,7 +128,6 @@ class WhoisCacheLoader:
         :param key_field: key field
         :param values_field: falue field
         :param forward: True for forward lookup, False otherwise
-        :param parser:
         :return: Number of parsed items
         """
         if forward:

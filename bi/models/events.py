@@ -113,8 +113,6 @@ class Events(Model):
     def check_old_schema(cls, connect: "ClickhouseClient", table_name: str) -> bool:
         """
         Check syntax
-        :param connect:
-        :param table_name:
         :return:
         """
         c1 = super().check_old_schema(connect=connect, table_name=table_name)

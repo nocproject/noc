@@ -60,7 +60,6 @@ class PrefixCheck(DiscoveryCheck):
     def sync_prefixes(self, prefixes: dict[tuple[str, str], DiscoveredPrefix]):
         """
         Apply prefixes to database
-        :param prefixes:
         :return:
         """
         # vpn_id -> [prefix, ]
@@ -177,8 +176,6 @@ class PrefixCheck(DiscoveryCheck):
         Check which method is preferable
 
         Preference order: interface, management, neighbor
-        :param old_method:
-        :param new_method:
         :return:
         """
         return PREF_VALUE[old_method] <= PREF_VALUE[new_method]
@@ -339,7 +336,6 @@ class PrefixCheck(DiscoveryCheck):
     def fire_seen(self, prefix):
         """
         Fire `seen` event and process `seen_propagation_policy`
-        :param prefix:
         :return:
         """
         if prefix.id in self.propagated_prefixes:

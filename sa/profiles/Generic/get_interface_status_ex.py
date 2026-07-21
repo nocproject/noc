@@ -59,7 +59,6 @@ class Script(BaseScript):
         If ifindex - collect information on the given interfaces
         Else - collect information for all interfaces
         :param oid: IfTable OID
-        :param ifindexes:
         :return:
         """
         if "::" in oid:
@@ -164,7 +163,6 @@ class Script(BaseScript):
         """
         Detect should we check ifHighSpeed
         :param data: dict with
-        :param speed:
         :return:
         """
         return speed == self.HIGH_SPEED

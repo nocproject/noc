@@ -40,7 +40,6 @@ class CLIProtocolChecker(BaseChecker):
     def is_unsupported_error(message) -> bool:
         """
         Todo replace to error_code
-        :param message:
         :return:
         """
         if "Exception: TimeoutError()" in message:
@@ -57,7 +56,6 @@ class CLIProtocolChecker(BaseChecker):
     ) -> Iterable[tuple[Protocol, CLICredential]]:
         """
 
-        :param check:
         :return:
         """
         if check.credential:

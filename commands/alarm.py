@@ -132,7 +132,6 @@ class Command(BaseCommand):
     def resolve_object(self, managed_object: str) -> ManagedObject | None:
         """
         Resolve managed_object
-        :param managed_object:
         :return:
         """
         if managed_object.isdigit():

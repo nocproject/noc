@@ -21,8 +21,6 @@ class Script(BaseScript):
     def get_ports_attrs(self, cli_stp, instance_sep):
         """
         Get port attributes (Link type and edge status)
-        :param cli_stp:
-        :param instance_sep:
         :return: hash of instance_id -> port -> {link_type: , edge, role,
             status}
         """

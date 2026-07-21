@@ -18,8 +18,6 @@ from noc.core.snmp.get import GetResponse, BERDecoder, PDU_RESPONSE
 def parse_get_response(pdu: bytes, display_hints=None) -> GetResponse:
     """
     Common response parser
-    :param pdu:
-    :param display_hints:
     :return:
     """
     decoder = BERDecoder(display_hints=display_hints)

@@ -27,8 +27,6 @@ class IgnorePatternApplication(ExtDocApplication):
     def api_from_event(self, request, event_id):
         """
         Create ignore pattern rule from event
-        :param request:
-        :param event_id:
         :return:
         """
         req = self.parse_request_query(request)

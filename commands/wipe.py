@@ -16,6 +16,8 @@ from noc.core.mongo.connection import connect
 from noc.core.validators import is_int
 from noc.core.change.policy import change_tracker
 from noc.models import get_model
+from noc.sa.models.managedobject import ManagedObject
+from noc.aaa.models.user import User
 
 
 class Command(BaseCommand):
@@ -124,7 +126,6 @@ class Command(BaseCommand):
         with self.log(message):
             do something
 
-        :param message:
         :param newline: Add newline
         :return:
         """
@@ -138,14 +139,12 @@ class Command(BaseCommand):
         sys.stdout.write("done\n")
         sys.stdout.flush()
 
-    def get_managed_object(self, o_id):
+    def get_managed_object(self, o_id: str | int) -> ManagedObject | None:
         """
         Get ManagedObject by id or name
         :param o_id: Object's id or name
         :return: ManagedObject
-        :rtype: ManagedObject
         """
-        from noc.sa.models.managedobject import ManagedObject
 
         # Try to get object by id
         if is_int(o_id):
@@ -173,14 +172,12 @@ class Command(BaseCommand):
 
         wipe(o)
 
-    def get_user(self, u_id):
+    def get_user(self, u_id: str | int) -> User | None:
         """
         Get User by id or name
         :param u_id: Object's id or name
-        :return: ManagedObject
-        :rtype: ManagedObject
+        :return: User
         """
-        from noc.aaa.models.user import User
 
         # Try to get object by id
         if is_int(u_id):

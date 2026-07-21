@@ -19,7 +19,6 @@ class Script(BaseScript):
         """
         Detect should we check ifHighSpeed
         :param data: dict with
-        :param speed:
         :return:
         """
         # Some devices reporting 1410065408 instead 4294967295

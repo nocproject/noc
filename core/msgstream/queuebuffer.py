@@ -30,9 +30,6 @@ class QBuffer:
     def put(self, stream: str, partition: int, data: list[dict[str, Any]]):
         """
         Put block of data to buffer
-        :param stream:
-        :param partition:
-        :param data:
         :return:
         """
         if not data:

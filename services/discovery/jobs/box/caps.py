@@ -103,7 +103,6 @@ class CapsCheck(PolicyDiscoveryCheck):
     def is_requested(self, section):
         """
         Check if section is requested
-        :param section:
         :return:
         """
         if self.sections:

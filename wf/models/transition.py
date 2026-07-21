@@ -203,7 +203,6 @@ class Transition(Document):
     def is_allowed(self, labels: list[str]) -> bool:
         """
         Check transition allowed
-        :param labels:
         :return:
         """
         if not self.required_rules:
@@ -213,7 +212,6 @@ class Transition(Document):
     def on_transition(self, obj):
         """
         Called during transition
-        :param obj:
         :return:
         """
         if self.handlers:

@@ -224,9 +224,6 @@ class Command(BaseCommand):
     def handle_export(self, storage, path, export_path=None, *args, **options):
         """
         Export Beef to yaml file
-        :param storage:
-        :param path:
-        :param export_path:
         :return:
         """
         st = self.get_storage(storage, beef=True)
@@ -246,9 +243,6 @@ class Command(BaseCommand):
     def handle_import(self, storage, path=None, paths=None, *args, **options):
         """
         Importing yaml file to beef
-        :param storage:
-        :param path:
-        :param paths:
         :return:
         """
         for import_path in paths:
@@ -490,19 +484,11 @@ class Command(BaseCommand):
             self.print(f"[{n:04d}] Writing {rn}")
             test_st.write_bytes(smart_text(rn), data)
 
-    def get_storage(self, name, beef=False, beef_test=False, beef_test_config=False):
+    def get_storage(
+        self, name: str, beef: bool = False, beef_test: bool = False, beef_test_config: bool = False
+    ) -> ExtStorage:
         """
         Get beef storage by name
-        :param name:
-        :type name: str
-        :param beef:
-        :type beef: bool
-        :param beef_test:
-        :type beef_test: bool
-        :param beef_test_config:
-        :type beef_test_config: bool
-        :return:
-        :rtype: ExtStorage
         """
         beef_type = "beef"
         if beef_test:
@@ -543,13 +529,7 @@ class Command(BaseCommand):
     def beef_filter(self, storage=None, path="/", uuids=None, profile=None, with_tests=False):
         """
         Get beef storage by name
-        :param storage:
-        :param path:
-        :param uuids:
-        :param profile:
-        :param with_tests:
         :return:
-        :rtype: list
         """
         test_config = {}
         try:

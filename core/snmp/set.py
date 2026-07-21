@@ -17,8 +17,6 @@ from .version import SNMP_v1, SNMP_v2c
 def set_pdu(community, varbinds, request_id=None, version=SNMP_v2c):
     """
     Generate SNMP v2c SET PDU
-    :param version:
-    :param community:
     :param varbinds: List of (oid, value)
     :return:
     """

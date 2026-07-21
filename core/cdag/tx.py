@@ -31,7 +31,6 @@ class Transaction:
     def get_inputs(self, node) -> dict[str, ValueType]:
         """
         Get node's actual inputs
-        :param node:
         :return:
         """
         inputs = self.inputs.get(node)
@@ -64,7 +63,6 @@ class Transaction:
         """
         Mark state as changed
 
-        :param node:
         :return:
         """
         state = node.get_state()

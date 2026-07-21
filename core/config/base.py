@@ -298,7 +298,6 @@ class BaseConfig(metaclass=ConfigBase):
     def update(self, cfg):
         """
         Update config from dictionary
-        :param cfg:
         :return:
         """
         assert isinstance(cfg, dict)

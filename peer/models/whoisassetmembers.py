@@ -34,7 +34,6 @@ class WhoisASSetMembers(Document):
     def upload(cls, data):
         """
         Replace cache with the new data
-        :param cls:
         :param data: Dict of asset -> [members]
         :return: Number of inserted records
         """

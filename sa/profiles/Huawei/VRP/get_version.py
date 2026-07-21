@@ -105,7 +105,6 @@ class Script(BaseScript):
     def fix_platform_name(self, platform):
         """
         Extended detect platfrom name for old releases
-        :param platform:
         :return:
         """
         try:

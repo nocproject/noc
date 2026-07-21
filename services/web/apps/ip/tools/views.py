@@ -43,10 +43,6 @@ class ToolsAppplication(Application):
     def view_index(self, request, vrf_id, afi, prefix):
         """
         An index of tools available for block
-        :param request:
-        :param vrf_id:
-        :param afi:
-        :param prefix:
         :return:
         """
         vrf = self.get_object_or_404(VRF, id=int(vrf_id))
@@ -71,10 +67,6 @@ class ToolsAppplication(Application):
         """
         Download block's allocated IPs in CSV format
         Columns are: ip,fqdn,description,tt
-        :param request:
-        :param vrf_id:
-        :param afi:
-        :param prefix:
         :return:
         """
 
@@ -115,10 +107,6 @@ class ToolsAppplication(Application):
     def view_upload_axfr(self, request, vrf_id, afi, prefix):
         """
         Import via zone transfer
-        :param request:
-        :param vrf_id:
-        :param afi:
-        :param prefix:
         :return:
         """
 

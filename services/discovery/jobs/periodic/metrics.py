@@ -119,7 +119,6 @@ class MetricsCheck(DiscoveryCheck):
     def clean_result(self, result):
         """
         Clean result for send to Metrics Service
-        :param result:
         :return:
         """
         data = {}

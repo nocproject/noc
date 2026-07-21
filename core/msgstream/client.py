@@ -120,7 +120,6 @@ class MessageStreamClient:
     def publish_sync(self, req: PublishRequest, wait_for_stream: bool = False) -> None:
         """
         Send publish request and wait for acknowledge
-        :param req:
         :param wait_for_stream: Wait for stream being created.
         :return:
         """
@@ -155,10 +154,6 @@ class MessageStreamClient:
     ) -> None:
         """
         Create Stream by settings
-        :param name:
-        :param group:
-        :param partitions:
-        :param replication_factor:
         :return:
         """
         await self.client.create_stream(
@@ -178,8 +173,6 @@ class MessageStreamClient:
     async def ensure_stream(self, name: str, partitions: int | None = None) -> bool:
         """
         Ensure stream settings
-        :param name:
-        :param partitions:
         :return:
         """
         # Get stream config
@@ -215,9 +208,6 @@ class MessageStreamClient:
     async def fetch_cursor(self, stream: str, partition: int, cursor_id: str) -> int:
         """
         Getting stream cursor value
-        :param stream:
-        :param partition:
-        :param cursor_id:
         :return:
         """
         return await self.client.fetch_cursor(stream, partition, cursor_id)
@@ -225,10 +215,6 @@ class MessageStreamClient:
     async def set_cursor(self, stream: str, partition: int, cursor_id: str, offset: int) -> None:
         """
         Set stream cursor value
-        :param stream:
-        :param partition:
-        :param cursor_id:
-        :param offset:
         :return:
         """
         await self.client.set_cursor(stream, partition, cursor_id, offset=offset)

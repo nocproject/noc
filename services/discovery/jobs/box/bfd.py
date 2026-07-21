@@ -33,8 +33,6 @@ class BFDCheck(TopologyDiscoveryCheck):
     def get_remote_interface(self, remote_object, remote_interface):
         """
         Real values are set by set_interface alias
-        :param remote_object:
-        :param remote_interface:
         :return:
         """
         return remote_interface

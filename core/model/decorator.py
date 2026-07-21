@@ -22,7 +22,6 @@ from noc.core.model.fields import ObjectIDArrayField
 def is_document(klass):
     """
     Check klass is Document instance
-    :param klass:
     :return:
     """
     return isinstance(klass._meta, dict)
@@ -240,8 +239,6 @@ def on_delete_check(
     def is_list(model, field) -> bool:
         """
         Detect field is array
-        :param model:
-        :param field:
         :return:
         """
         if "__" in field:
@@ -266,9 +263,6 @@ def on_delete_check(
     def get_related_query(o, model, field):
         """
         Prepare query for request related objects
-        :param o:
-        :param model:
-        :param field:
         :return:
         """
         if setup["is_label"] and is_document(model) and field == "labels":

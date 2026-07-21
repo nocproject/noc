@@ -197,10 +197,7 @@ class Address(NOCModel):
     def get_collision(cls, vrf: "VRF", address: str) -> Optional["Address"]:
         """
         Check VRFGroup restrictions
-        :param vrf:
-        :param address:
         :return: VRF already containing address or None
-        :rtype: VRF or None
         """
         if not vrf.vrf_group or vrf.vrf_group.address_constraint != "G":
             return None
@@ -216,7 +213,6 @@ class Address(NOCModel):
         """
         Override default save() method to set AFI,
         parent prefix, and check VRF group restrictions
-        :param kwargs:
         :return:
         """
         self.clean()

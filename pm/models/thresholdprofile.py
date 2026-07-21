@@ -63,7 +63,6 @@ class ThresholdConfig(EmbeddedDocument):
     def is_open_match(self, value):
         """
         Check if threshold profile is matched for open condition
-        :param value:
         :return:
         """
         return (
@@ -76,7 +75,6 @@ class ThresholdConfig(EmbeddedDocument):
     def is_clear_match(self, value):
         """
         Check if threshold profile is matched for clear condition
-        :param value:
         :return:
         """
         return (

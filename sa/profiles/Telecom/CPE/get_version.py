@@ -32,7 +32,6 @@ class Script(BaseScript):
         attributes:
             kernel: 5.4.238
 
-        :param oid:
         :return: platform, version, attributes
         """
         platform, version, attributes = None, None, {}

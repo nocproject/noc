@@ -78,7 +78,6 @@ class Profile(BaseProfile):
         tengigabitethernet1/1/2 - TenGigabitEthernet1/1/2
         Port-Channel1 - Po1
         1 - Vlan1
-        :param interface:
         :return:
         """
         if not self.rx_iface_format.match(interface):

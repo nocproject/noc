@@ -413,7 +413,6 @@ class Site:
         Schedule application class to be installed to the router.
         Scheduling is necessary to allow the class decorators to add custom views
 
-        :param app_class:
         :return:
         """
         app_id = app_class.get_app_id()
@@ -425,7 +424,6 @@ class Site:
         """
         Actually register class
 
-        :param app_class:
         :return:
         """
         # Register application
@@ -583,7 +581,6 @@ class Site:
     def is_json(cls, content_type: str) -> bool:
         """
         Check if content-type is JSON
-        :param content_type:
         :return:
         """
         if content_type in cls.JSON_CONTENT_TYPES:

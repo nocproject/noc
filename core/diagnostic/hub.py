@@ -660,7 +660,6 @@ class DiagnosticHub:
           noc::diagnostic::<name>
           noc::check::<name>
           arg0
-        :param metrics:
         :return:
         """
         from noc.core.service.loader import get_service

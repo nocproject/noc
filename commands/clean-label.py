@@ -38,7 +38,6 @@ class Command(BaseCommand):
     def is_document(self, klass):
         """
         Check klass is Document instance
-        :param cls:
         :return:
         """
         return isinstance(klass._meta, dict)

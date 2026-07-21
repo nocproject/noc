@@ -12,9 +12,6 @@ import math
 def hsv_to_rgb(h, s, v):
     """
     HSV -> RGB convertor, for Python 2.5 compatibility
-    :param h:
-    :param s:
-    :param v:
     :return:
     """
     h = float(h)

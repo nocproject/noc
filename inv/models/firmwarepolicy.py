@@ -178,7 +178,6 @@ class FirmwarePolicy(Document):
     def is_fw_match(self, firmware: "Firmware"):
         """
         Check if firmware match Policy
-        :param firmware:
         :return:
         """
         if not firmware:
@@ -197,8 +196,6 @@ class FirmwarePolicy(Document):
     ) -> list["FirmwarePolicy"]:
         """
 
-        :param version:
-        :param platform:
         :return:
         """
         if not version:

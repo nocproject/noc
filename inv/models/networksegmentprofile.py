@@ -143,7 +143,6 @@ class BioCollisionPolicy(EmbeddedDocument):
     def check_type(self, persistent: bool) -> bool:
         """
         Check for matching by type
-        :param persistent:
         :return:
         """
         if self.match_type == "p" and not persistent:

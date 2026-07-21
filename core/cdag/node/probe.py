@@ -171,7 +171,6 @@ class ProbeNode(BaseCDAGNode):
     def get_bound(v: int) -> int:
         """
         Detect wrap bound
-        :param v:
         :return:
         """
         if v <= MAX31:
@@ -183,8 +182,6 @@ class ProbeNode(BaseCDAGNode):
     def get_delta(self, value: ValueType, ts: int) -> ValueType | None:
         """
         Calculate value from delta, gently handling overflows
-        :param value:
-        :param ts:
         """
         dv = value - self.state.lv
         if dv >= 0:
@@ -251,7 +248,6 @@ class ProbeNode(BaseCDAGNode):
     def iter_conversion(cls, code: str) -> Iterable[tuple[str, str]]:
         """
         Iterate all possible conversions for unit code
-        :param code:
         :return:
         """
         if cls._MS_CONVERT:
@@ -279,7 +275,6 @@ class ProbeNode(BaseCDAGNode):
     def set_convert(cls, data: dict[str, dict[str, str]]) -> None:
         """
         Override database-based measure units by test data
-        :param data:
         :return:
         """
         cls._MS_CONVERT = data
@@ -296,7 +291,6 @@ class ProbeNode(BaseCDAGNode):
     def set_scale(cls, data: dict[str, tuple[int, int]]) -> None:
         """
         Override database-based scales by test data
-        :param data:
         :return:
         """
         cls._SCALE = data

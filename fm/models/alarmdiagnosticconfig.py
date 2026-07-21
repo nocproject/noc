@@ -88,7 +88,6 @@ class AlarmDiagnosticConfig(Document):
     def on_raise(cls, alarm):
         """
         Submit raise and periodic jobs
-        :param alarm:
         :return:
         """
         r_cfg = defaultdict(list)
@@ -157,7 +156,6 @@ class AlarmDiagnosticConfig(Document):
     def on_clear(cls, alarm):
         """
         Submit clear jobs
-        :param alarm:
         :return:
         """
         cfg = defaultdict(list)

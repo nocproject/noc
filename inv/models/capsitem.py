@@ -38,7 +38,6 @@ class CapsItem(EmbeddedDocument):
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
-        :param args:
         :param scope: Scope Name
         :return:
         """
@@ -73,7 +72,6 @@ class ModelCapsItem(BaseModel):
         caps name -> caps value. First appearance of capability
         overrides later ones.
 
-        :param args:
         :return:
         """
         r: dict[str, Any] = {}

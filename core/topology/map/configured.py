@@ -92,7 +92,6 @@ class ConfiguredTopology(TopologyBase):
     def add_objects_links(self, object_ids: list[int]):
         """
         Add ManagedObject Links to topology
-        :param object_ids:
         :return:
         """
         # Get all links, belonging to object list
@@ -212,7 +211,6 @@ class ConfiguredTopology(TopologyBase):
     def q_node(node):
         """
         Format graph node
-        :param node:
         :return:
         """
         x = node.copy()

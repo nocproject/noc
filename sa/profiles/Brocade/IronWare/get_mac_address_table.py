@@ -22,7 +22,6 @@ class Script(BaseScript):
     def parse_mac_table(self, s):
         """
         Parse MAC address table
-        :param s:
         :return:
         """
         r = []

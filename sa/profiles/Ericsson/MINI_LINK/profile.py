@@ -38,9 +38,6 @@ class Profile(BaseProfile):
     def cli_clean(self, script, cmd, cached=False):
         """
         Modify rogue_chars pattern
-        :param script:
-        :param cmd:
-        :param cached:
         :return:
         """
         prompt = script.get_cli_stream().patterns["prompt"].pattern

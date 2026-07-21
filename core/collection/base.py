@@ -166,7 +166,6 @@ class Collection:
     def save_state(self, state: dict[str, str]) -> None:
         """
         Save collection state
-        :param state:
         :return:
         """
         coll = self.get_state_collection()
@@ -186,7 +185,6 @@ class Collection:
     def get_builtins(cls, name: str) -> set[str]:
         """
         Returns set of UUIDs for collection
-        :param name:
         :return:
         """
         return set(Collection(name).get_state())
@@ -467,8 +465,6 @@ class Collection:
     def fix_uuids(self):
         """
         Convert string UUIDs to binary
-        :param name:
-        :param model:
         :return:
         """
         bulk = []
@@ -484,7 +480,6 @@ class Collection:
     def install(cls, data):
         """
         Write data to the proper path
-        :param data:
         :return:
         """
         c = Collection(data["$collection"])

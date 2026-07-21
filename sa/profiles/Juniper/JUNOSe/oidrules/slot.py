@@ -20,7 +20,6 @@ class SlotRule(OIDRule):
         6 for ERX-7xx models
         13 for ERX-14xx models
         16 for E320 models
-        :param metrics:
         :return:
         """
         juniSystemSlotLevel = [1]

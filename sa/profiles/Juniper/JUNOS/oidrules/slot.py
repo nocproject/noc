@@ -20,7 +20,6 @@ class SlotRule(OIDRule):
         PIC
         FPC
         MIC
-        :param metric:
         :return:
         """
         for i, desc in script.snmp.getnext("1.3.6.1.4.1.2636.3.1.13.1.5"):

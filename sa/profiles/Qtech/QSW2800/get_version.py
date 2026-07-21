@@ -110,7 +110,6 @@ class Script(BaseScript):
     def fix_platform(self, platform: str) -> str:
         """
         For customize
-        :param platform:
         :return:
         """
         return platform

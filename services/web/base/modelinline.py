@@ -163,7 +163,6 @@ class ModelInline:
     def get_validator(self, field):
         """
         Returns Parameter instance or None to clean up field
-        :param field:
         :type field: Field
         :return:
         """
@@ -219,7 +218,6 @@ class ModelInline:
         :param data: dict of parameters
         :type data: dict
         :return: dict of cleaned parameters of raised InterfaceTypeError
-        :rtype: dict
         """
         # Delete id
         if "id" in data:

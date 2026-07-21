@@ -29,8 +29,6 @@ def mq(s: str) -> str:
 def rel_ref(from_path: str, to_path: str) -> str:
     """
     Calculate related reference
-    :param from_path:
-    :param to_path:
     :return:
     """
     path1 = from_path.split("/")[:-1]

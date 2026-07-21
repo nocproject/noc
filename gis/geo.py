@@ -41,8 +41,6 @@ def bounded(v, l, u):
 def xy_to_ll(zoom, px):
     """
     Convert tile index to EPSG:4326 lon/lat pair
-    :param zoom:
-    :param px:
     :return:
     """
     e = zc[zoom]
@@ -55,8 +53,6 @@ def xy_to_ll(zoom, px):
 def ll_to_xy(zoom, ll):
     """
     Convert EPSG:4326 lon/lat pair to tile index
-    :param zoom:
-    :param ll:
     :return:
     """
     d = zc[zoom]
@@ -69,7 +65,6 @@ def ll_to_xy(zoom, ll):
 def inverse_mercator(xy):
     """
     Convert EPSG:900913 to EPSG:4326 lon/lat pair
-    :param xy:
     :return:
     """
     lon = (xy[0] / 20037508.34) * 180

@@ -102,10 +102,6 @@ class PhoneRange(Document):
     def get_closest_range(cls, dialplan, from_number, to_number=None, exclude_range=None):
         """
         Find closest range enclosing given range
-        :param dialplan:
-        :param from_number:
-        :param to_number:
-        :param exclude_range:
         :return: Phone range or None
         """
         to_number = to_number or from_number

@@ -47,8 +47,6 @@ class BaseGeocoder:
     def iter_query(self, query: str, bounds=None) -> Iterator[GeoCoderResult]:
         """
         Get list of probable address candidates
-        :param query:
-        :param bounds:
         :return:
         """
         raise NotImplementedError()
@@ -56,8 +54,6 @@ class BaseGeocoder:
     def iter_recursive_query(self, query: str, bounds=None) -> Iterator[GeoCoderResult]:
         """
         Get list of all addresses within the query
-        :param query:
-        :param bounds:
         :return:
         """
         yield from self.iter_query(query, bounds)
@@ -65,7 +61,6 @@ class BaseGeocoder:
     def get(self, url: str) -> tuple[int, bytes]:
         """
         Perform get request
-        :param url:
         :type url: str
         :return:
         """
@@ -83,8 +78,6 @@ class BaseGeocoder:
     def get_path(data, path):
         """
         Returns nested object referred by dot-separated path, or None
-        :param data:
-        :param path:
         :return:
         """
         o = data

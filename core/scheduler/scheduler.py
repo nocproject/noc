@@ -559,7 +559,6 @@ class Scheduler:
     def apply_metrics(self, d):
         """
         Append scheduler metrics to dictionary d
-        :param d:
         :return:
         """
         if self.executor:

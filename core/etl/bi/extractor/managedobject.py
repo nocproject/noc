@@ -250,9 +250,7 @@ class ManagedObjectsExtractor(BaseExtractor):
     def get_object_metrics(start, stop):
         """
 
-        :param start:
         :type stop: datetime.datetime
-        :param stop:
         :type stop: datetime.datetime
         :return:
         """

@@ -212,10 +212,6 @@ class AddressRange(NOCModel):
     def get_overlapping_ranges(cls, vrf, afi, from_address, to_address):
         """
         Returns a list of overlapping ranges
-        :param vrf:
-        :param afi:
-        :param from_address:
-        :param to_address:
         :return:
         """
         return AddressRange.objects.raw(

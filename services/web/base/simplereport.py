@@ -219,7 +219,6 @@ class TableColumn(ReportNode):
     def contribute_data(self, s):
         """
         Contribute data to totals
-        :param s:
         :return:
         """
         if self.total:
@@ -228,7 +227,6 @@ class TableColumn(ReportNode):
     def format_data(self, s):
         """
         Return formatted cell
-        :param s:
         :return:
         """
         if s is None or s == "":
@@ -255,7 +253,6 @@ class TableColumn(ReportNode):
     def format_html(self, s):
         """
         Render single cell
-        :param s:
         :return:
         """
         d = self.format_data(s)
@@ -279,7 +276,6 @@ class TableColumn(ReportNode):
     def format_html_subtotal(self, d):
         """
         Render subtotals
-        :param d:
         :return:
         """
         if self.total:
@@ -293,7 +289,6 @@ class TableColumn(ReportNode):
     def f_date(self, f):
         """
         Display date according to settings
-        :param f:
         :return:
         """
         return DateFormat(f).format(config.date_time_formats.date_format)
@@ -301,7 +296,6 @@ class TableColumn(ReportNode):
     def f_time(self, f):
         """
         Display time according to settings
-        :param f:
         :return:
         """
         return DateFormat(f).format(config.date_time_formats.time_format)
@@ -309,7 +303,6 @@ class TableColumn(ReportNode):
     def f_datetime(self, f):
         """
         Display date and time according to settings
-        :param f:
         :return:
         """
         return DateFormat(f).format(config.date_time_formats.datetime_format)
@@ -317,7 +310,6 @@ class TableColumn(ReportNode):
     def f_size(self, f):
         """
         Display pretty size
-        :param f:
         :return:
         """
         f = decimal.Decimal(f)
@@ -330,7 +322,6 @@ class TableColumn(ReportNode):
     def f_numeric(self, f):
         """
         Display pretty numeric
-        :param f:
         :return:
         """
         if not f:

@@ -36,7 +36,6 @@ class Outage(Document):
     def register_outage(cls, object, status, ts=None):
         """
         Change current outage status
-        :param cls:
         :param object: Managed Object
         :param status: True - if object is down, False - otherwise
         :param ts: Effective event timestamp. None for current time

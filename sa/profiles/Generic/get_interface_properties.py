@@ -97,7 +97,6 @@ class Script(BaseScript):
         """
         Merge iterables into single table
 
-        :param args:
         :return:
         """
         r = {}
@@ -161,7 +160,6 @@ class Script(BaseScript):
     def get_interface_ifindex(self, name: str) -> int:
         """
         Get ifindex for given interface
-        :param name:
         :return:
         """
         for r_oid, v in self.snmp.getnext(

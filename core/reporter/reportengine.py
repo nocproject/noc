@@ -113,14 +113,6 @@ class ReportEngine:
         user: str | None = None,
     ):
         """
-        :param rc:
-        :param start:
-        :param end:
-        :param params:
-        :param successfully:
-        :param canceled:
-        :param error_text:
-        :param user:
         :return:
         """
         from noc.core.service.loader import get_service

@@ -120,8 +120,6 @@ class ResourcePool(Document):
                     resource.
         return
 
-        :param pools:
-        :param owner:
         :return:
         """
         owner = owner or get_api_code_default()

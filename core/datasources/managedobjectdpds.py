@@ -1,12 +1,12 @@
 # ----------------------------------------------------------------------
 # Managed Object Discovery Problem DataSource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-from typing import Iterable, AsyncIterable
+from typing import Iterable, AsyncIterable, Any
 
 # Third-party modules
 from pymongo import ReadPreference
@@ -68,13 +68,11 @@ class ManagedObjectDPDS(BaseDataSource):
     ] + [FieldInfo(name=f"dp.{fn}") for fn in ATTRS]
 
     @staticmethod
-    def pipeline(filter_ids):
+    def pipeline(filter_ids) -> list[dict[str, Any]]:
         """
         Generate pipeline for request
-        :param filter_ids:
         :type filter_ids: list
         :return:
-        :rtype: list
         """
         return [
             {

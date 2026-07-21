@@ -87,11 +87,6 @@ class DCSBase:
     ):
         """
         Register service
-        :param name:
-        :param address:
-        :param port:
-        :param pool:
-        :param lock:
         :param tags: List of extra tags
         :param check_interval: DCS Check Interval
         :param check_timeout: DCS Check Timeout
@@ -106,7 +101,6 @@ class DCSBase:
     async def get_slot_limit(self, name: str) -> int | None:
         """
         Return the current limit for given slot
-        :param name:
         :return:
         """
         raise NotImplementedError()
@@ -183,9 +177,6 @@ class DCSBase:
         """
         Returns *hint* when service is active or new service
         instance,
-        :param name:
-        :param hint:
-        :param full_result:
         :return:
         """
 
