@@ -7,7 +7,7 @@
 
 # Python modules
 from collections import defaultdict
-from typing import Any
+from typing import Any, Iterable
 
 # Third-party modules
 import bisect
