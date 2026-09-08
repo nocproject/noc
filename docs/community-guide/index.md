@@ -39,6 +39,16 @@ Choose the groups you want to join:
 * [Official English NOC Telegram](https://t.me/noc_en)
 * [Official Russian NOC Telegram](https://t.me/noc_ru)
 
+## Discord Server
+
+The NOC community is also available on Discord.
+
+The Discord server provides a convenient place to connect with other community members, discuss NOC and related projects, get user support, and participate in development discussions.
+
+The server includes dedicated channels for users, support, and development, with English, Russian, and Italian language channels available.
+
+[Join the official Gufo Labs Discord Server](https://discord.gg/VefFd6GGp)
+
 ## Funding and Support
 
 NOC is a fully open-source project and free to use.

@@ -1,3 +1,4 @@
+[![Discord](https://img.shields.io/discord/1545437404159156304?label=Discord&logo=discord&logoColor=white)](https://discord.gg/VefFd6GGp)
 [![codecov](https://codecov.io/gh/gufolabs/noc/graph/badge.svg?token=s2OGCsO5ZW)](https://codecov.io/gh/gufolabs/noc)
 ![Sponsors](https://img.shields.io/github/sponsors/gufolabs)
 
