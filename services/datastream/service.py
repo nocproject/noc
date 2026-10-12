@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 
 
-class DataStreamService(FastAPIService):
+class DataStreamService(BaseService):
     name = "datastream"
     use_mongo = True
     use_watchdog = config.watchdog.enable_watchdog

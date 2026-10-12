@@ -20,7 +20,7 @@ import orjson
 from gufo.ping import Ping
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.ioloop.timers import PeriodicOffsetCallback
@@ -30,7 +30,7 @@ from noc.services.ping.probesetting import ProbeSetting, Policy
 from noc.services.ping.datastream import PingDataStreamClient
 
 
-class PingService(FastAPIService):
+class PingService(BaseService):
     name = "ping"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"

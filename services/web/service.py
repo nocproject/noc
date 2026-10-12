@@ -15,12 +15,12 @@ from django.core.wsgi import get_wsgi_application
 # NOC modules
 from noc.config import config
 from noc.services.web.urls import set_url_patterns
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.main.models.customfield import CustomField
 from noc.services.web.base.site import site
 
 
-class WebService(FastAPIService):
+class WebService(BaseService):
     name = "web"
     api = []
     use_translation = True

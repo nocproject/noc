@@ -12,13 +12,13 @@ import operator
 import time
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.debug import error_report
 from noc.core.span import Span, PARENT_SAMPLE
 from noc.services.selfmon.loader import loader
 
 
-class SelfMonService(FastAPIService):
+class SelfMonService(BaseService):
     name = "selfmon"
     use_mongo = True
 

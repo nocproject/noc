@@ -22,7 +22,7 @@ from atomicl import AtomicLong
 
 # NOC modules
 from noc.config import config
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.perf import metrics
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO, MX_SHARDING_KEY, KAFKA_PARTITION
@@ -33,7 +33,7 @@ from noc.core.timeout import retry_timeout
 KAFKASENDER_STREAM = "kafkasender"
 
 
-class KafkaSenderService(FastAPIService):
+class KafkaSenderService(BaseService):
     name = "kafkasender"
     use_telemetry = True
     number_message = defaultdict(lambda: AtomicLong(-1))

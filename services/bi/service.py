@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class BIService(FastAPIService):
+class BIService(BaseService):
     name = "bi"
     use_translation = True
     use_mongo = True

@@ -28,7 +28,7 @@ import bson
 
 # NOC modules
 from noc.config import config
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.perf import metrics
 from noc.core.error import NOCError
 from noc.core.version import version
@@ -99,7 +99,7 @@ CABLE_ABDUCT = "Security | Abduct | Cable Abduct"
 SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
-class ClassifierService(FastAPIService):
+class ClassifierService(BaseService):
     """
     Events-classification service
     """

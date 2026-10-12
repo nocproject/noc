@@ -15,14 +15,14 @@ import asyncio
 # import time
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 from noc.core.msgstream.message import Message
 from noc.services.login.auth import get_exp_from_jwt
 from noc.core.comp import smart_bytes
 
 
-class LoginService(FastAPIService):
+class LoginService(BaseService):
     name = "login"
     process_name = "noc-%(name).10s-%(instance).2s"
     use_mongo = True

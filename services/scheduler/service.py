@@ -12,10 +12,10 @@ import datetime
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class SchedulerService(FastAPIService):
+class SchedulerService(BaseService):
     name = "scheduler"
     leader_lock_name = "scheduler"
     use_mongo = True

@@ -10,14 +10,14 @@
 import asyncio
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.mx import MX_STREAM
 from noc.core.router.base import Router
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 
 
-class MXService(FastAPIService):
+class MXService(BaseService):
     name = "mx"
     use_mongo = True
     use_router = False

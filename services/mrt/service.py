@@ -7,11 +7,11 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 
 
-class MRTService(FastAPIService):
+class MRTService(BaseService):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
     use_mongo = True

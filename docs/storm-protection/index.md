@@ -31,7 +31,7 @@ Example code for using message storm protection:
 
 ```python
 # creating and initializing `StormProtection` instance
-class TrapCollectorService(FastAPIService):
+class TrapCollectorService(BaseService):
     async def on_activate(self):
         ...
         self.storm_protection = StormProtection(

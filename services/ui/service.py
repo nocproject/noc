@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 
 
-class UIService(FastAPIService):
+class UIService(BaseService):
     name = "ui"
     traefik_routes_rule = "PathPrefix(`/api/ui`)"
     use_mongo = True

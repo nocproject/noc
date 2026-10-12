@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class ZeroConfService(FastAPIService):
+class ZeroConfService(BaseService):
     name = "zeroconf"
     use_mongo = True
     traefik_routes_rule = "PathPrefix(`/api/zeroconf`)"

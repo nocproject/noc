@@ -15,14 +15,14 @@ from noc.config import config
 from noc.core.error import NOCError
 from noc.core.debug import ErrorReport
 from noc.core.change.policy import change_tracker
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.sa.models.managedobject import ManagedObject, ObjectUplinks
 from noc.services.topo.datastream import TopoDataStreamClient
 from noc.services.topo.topo import Topo
 from noc.services.topo.types import ObjectSnapshot
 
 
-class TopoService(FastAPIService):
+class TopoService(BaseService):
     name = "topo"
     use_mongo = True
 

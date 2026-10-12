@@ -30,7 +30,7 @@ from pymongo import UpdateOne
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.mongo.connection import connect
 from noc.core.change.policy import change_tracker
 from noc.sa.models.managedobject import ManagedObject
@@ -81,7 +81,7 @@ ta_DisposeRequest = TypeAdapter(DisposeRequest)
 DEFAULT_REFERENCE = "REFERENCE"
 
 
-class CorrelatorService(FastAPIService):
+class CorrelatorService(BaseService):
     name = "correlator"
     pooled = True
     use_mongo = True

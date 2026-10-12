@@ -13,10 +13,10 @@ from typing import Any
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.scheduler.job import Job
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class DiscoveryService(FastAPIService):
+class DiscoveryService(BaseService):
     name = "discovery"
     pooled = True
     use_mongo = True

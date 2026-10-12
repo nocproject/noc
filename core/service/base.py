@@ -28,6 +28,13 @@ import socket
 
 # Third-party modules
 import setproctitle
+import uvicorn
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+from starlette.responses import Response, JSONResponse
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.encoders import jsonable_encoder
+from fastapi.middleware.wsgi import WSGIMiddleware
 
 # NOC modules
 from noc.config import config
@@ -52,8 +59,13 @@ from noc.core.error import NOCError
 from noc.core.mx import MX_STREAM, MX_SPAN_CTX, MX_SPAN_ID, MessageType
 from noc.core.span import Span
 from noc.core.validators import is_ipv4
+from noc.core.version import version
+from noc.core.log import PrefixLoggerAdapter
 from .rpc import RPCProxy
 from .loader import set_service
+from .paths.loader import loader, ServicePathLoader
+from .middleware.logging import LoggingMiddleware
+from .middleware.span import SpanMiddleware
 from ..router.datastream import RouteDataStreamClient
 
 T = TypeVar("T")
@@ -63,6 +75,13 @@ dcs_slot_lock = threading.Lock()
 
 class BaseService:
     """Basic service implementation."""
+
+    BASE_OPENAPI_TAGS_DOCS = {
+        "internal": "NOC internal API, including healthchecks, monitoring and tooling",
+        "JSON-RPC API": "Implemented by JSON-RPC specification 1.0",
+    }
+    # Additional OpenAPI tags docs, tag -> description
+    OPENAPI_TAGS_DOCS: dict[str, str] = {}
 
     # Service name
     name: str
@@ -125,6 +144,12 @@ class BaseService:
         # Effective address and port
         self.address = None
         self.port = None
+        self.app: FastAPI | None = None
+        # WSGI application of any third-party framework attached to the main API.
+        self.wsgi_app = None
+        # Collect 'api_requests' metric for API calls
+        self.collect_req_api_metric = False
+        self.server: uvicorn.Server | None = None
         self.is_active = False
         # Can be initialized in subclasses
         self.scheduler = None
@@ -353,13 +378,121 @@ class BaseService:
                 return r[0]
         return addr  # Leave untouched
 
+    async def error_handler(self, request: Request, exc: Exception) -> Response:
+        """Handle unhandled API exceptions."""
+        error_report(logger=self.logger)
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error": "internal_error",
+                "error_description": f"Internal Server Error: {exc}",
+                "error_uri": str(request.url),
+            },
+        )
+
+    async def http_error_handler(self, request: Request, exc: HTTPException) -> Response:
+        """Handle HTTP errors."""
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={
+                "error": "invalid_request",
+                "error_description": f"{exc.detail}",
+                "error_uri": str(request.url),
+            },
+        )
+
+    async def request_validation_error_handler(
+        self, request: Request, exc: RequestValidationError
+    ) -> Response:
+        """Handle request validation and customize the response."""
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error": "invalid_request",
+                "error_description": jsonable_encoder(exc.errors()),
+                "error_uri": str(request.url),
+            },
+        )
+
     async def init_api(self) -> None:
-        """Initialize API routers and handlers"""
-        raise NotImplementedError
+        """Initialize the FastAPI application, routers, middleware, and server."""
+        # Build tags docs
+        openapi_tags = [
+            {"name": tag, "description": self.BASE_OPENAPI_TAGS_DOCS[tag]}
+            for tag in self.BASE_OPENAPI_TAGS_DOCS
+        ]
+        if self.OPENAPI_TAGS_DOCS:
+            openapi_tags.extend(
+                {"name": tag, "description": self.OPENAPI_TAGS_DOCS[tag]}
+                for tag in self.OPENAPI_TAGS_DOCS
+            )
+        app = FastAPI(
+            title=f"NOC '{self.name or 'unknown'}' Service API",
+            version=version.version,
+            openapi_url=f"/api/{self.name}/openapi.json",
+            docs_url=f"/api/{self.name}/docs",
+            redoc_url=f"/api/{self.name}/redoc",
+            openapi_tags=openapi_tags,
+            exception_handlers={
+                Exception: self.error_handler,
+                HTTPException: self.http_error_handler,
+                RequestValidationError: self.request_validation_error_handler,
+            },
+        )
+        self.app = app
+        app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
+        app.add_middleware(
+            LoggingMiddleware,
+            logger=PrefixLoggerAdapter(self.logger, "api"),
+            is_wsgi_app=bool(self.wsgi_app),
+            collect_req_api_metric=self.collect_req_api_metric,
+        )
+        app.add_middleware(SpanMiddleware, service_name=self.name)
+        # Initialize routers
+        for path in loader.iter_classes():
+            app.include_router(loader.get_class(path))
+        service_paths = ("services", self.name, "paths")
+        if os.path.exists(os.path.join(*service_paths)):
+            extra_loader = ServicePathLoader()
+            extra_loader.base_path = service_paths
+            for path in extra_loader.iter_classes():
+                kls = extra_loader.get_class(path)
+                if kls:
+                    app.include_router(kls)
+        # Attach third-party WSGI application
+        if self.wsgi_app:
+            app.mount("/", WSGIMiddleware(self.wsgi_app))
+        addr, port = self.get_service_address()
+        uvi_config = uvicorn.Config(
+            self.app, host=addr, port=port, lifespan="on", access_log=False, loop="none"
+        )
+        server = uvicorn.Server(config=uvi_config)
+        self.server = server
+        uvi_config.get_loop_factory()
+        uvi_config.load()
+        server.lifespan = uvi_config.lifespan_class(uvi_config)
+        await server.startup()
+        self.address, self.port = self.get_effective_address()
+        self.logger.info("Running HTTP APIs at http://%s:%s/", self.address, self.port)
+        self.logger.info(
+            "Running HTTP APIs Docs at http://%s:%s/api/%s/docs", self.address, self.port, self.name
+        )
+        self.loop.create_task(server.main_loop())
 
     async def shutdown_api(self) -> None:
-        """Stop API services"""
-        raise NotImplementedError
+        """Stop the API server."""
+        self.logger.info("Shutdown FAST API")
+        assert self.server is not None
+        if self.watchdog_waiter:
+            self.server.force_exit = True
+        await self.server.shutdown()
+
+    def get_effective_address(self) -> tuple[str, int]:
+        assert self.server is not None
+        for srv in self.server.servers:
+            for sock in srv.sockets:
+                return sock.getsockname()
+        raise RuntimeError("No listening socket found")
 
     async def activate(self) -> None:
         """Initialize services before run"""

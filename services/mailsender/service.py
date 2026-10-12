@@ -19,7 +19,7 @@ from email.header import Header
 
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO
 from noc.core.perf import metrics
@@ -28,7 +28,7 @@ from noc.config import config
 MAILSENDER_STREAM = "mailsender"
 
 
-class MailSenderService(FastAPIService):
+class MailSenderService(BaseService):
     name = "mailsender"
     use_telemetry = True
 

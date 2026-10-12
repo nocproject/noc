@@ -16,7 +16,7 @@ from urllib.parse import urlencode
 from gufo.http import DEFLATE, GZIP, Proxy
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.msgstream.message import Message
 from noc.core.mx import MX_TO, MX_WH_API_URL, MX_NOTIFICATION_METHOD
 from noc.core.perf import metrics
@@ -31,7 +31,7 @@ MAX_BODY_SIZE = config.tgsender.max_body_size
 FILE_SIZE = int(5e7)  # 50Mb
 
 
-class TgSenderService(FastAPIService):
+class TgSenderService(BaseService):
     name = "tgsender"
     use_telemetry = True
 

@@ -19,7 +19,7 @@ from bson import ObjectId
 from pymongo import InsertOne, UpdateOne
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 from noc.core.runner.runner import Runner
@@ -34,7 +34,7 @@ ta_RunnerRequest = TypeAdapter(RunnerRequest)
 STREAM = "submit"
 
 
-class RunnerService(FastAPIService):
+class RunnerService(BaseService):
     name = "runner"
     use_mongo = True
 

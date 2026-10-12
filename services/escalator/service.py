@@ -12,11 +12,11 @@ from collections import defaultdict
 # NOC modules
 from noc.config import config
 from noc.core.scheduler.scheduler import Scheduler
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.fm.models.ttsystem import TTSystem, DEFAULT_TTSYSTEM_SHARD
 
 
-class EscalatorService(FastAPIService):
+class EscalatorService(BaseService):
     name = "escalator"
     leader_lock_name = "escalator"
     use_telemetry = True

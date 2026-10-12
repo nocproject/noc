@@ -23,7 +23,7 @@ import cachetools
 from pydantic import ValidationError
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.msgstream.message import Message
 from noc.core.perf import metrics
 from noc.core.error import NOCError
@@ -69,7 +69,7 @@ def unscope(x):
     return sys.intern(x.rsplit("::", 1)[-1])
 
 
-class MetricsService(FastAPIService):
+class MetricsService(BaseService):
     name = "metrics"
     use_mongo = True
     use_router = True

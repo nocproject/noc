@@ -11,7 +11,7 @@ import contextlib
 import threading
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.main.models.pool import Pool
 from noc.config import config
 
@@ -19,7 +19,7 @@ from noc.config import config
 from psycopg2.pool import ThreadedConnectionPool
 
 
-class SAEService(FastAPIService):
+class SAEService(BaseService):
     name = "sae"
     # Some activator pools may be unavailable
     # while SAE remains healthy

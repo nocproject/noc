@@ -20,7 +20,7 @@ import orjson
 # NOC modules
 from noc.config import config
 from noc.core.error import NOCError
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.perf import metrics
 from noc.core.mx import (
     MX_STREAM,
@@ -42,7 +42,7 @@ from noc.services.syslogcollector.sourceconfig import SourceConfig, ManagedObjec
 SYSLOGCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 
 
-class SyslogCollectorService(FastAPIService):
+class SyslogCollectorService(BaseService):
     name = "syslogcollector"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"

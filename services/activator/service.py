@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 
 
-class ActivatorService(FastAPIService):
+class ActivatorService(BaseService):
     name = "activator"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"

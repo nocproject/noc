@@ -30,7 +30,7 @@
 
 ```python
 # создание и инициализация объекта `StormProtection`
-class TrapCollectorService(FastAPIService):
+class TrapCollectorService(BaseService):
     async def on_activate(self):
         ...
         self.storm_protection = StormProtection(

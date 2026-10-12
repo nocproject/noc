@@ -7,9 +7,9 @@
 # ---------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class GrafanaDSService(FastAPIService):
+class GrafanaDSService(BaseService):
     name = "grafanads"
     use_mongo = True

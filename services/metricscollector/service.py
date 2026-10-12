@@ -26,7 +26,7 @@ import orjson
 from noc.config import config
 from noc.core.error import NOCError
 from noc.core.perf import metrics
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.jsonutils import iter_chunks
 from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.service.nodatachecker import NoDataChecker
@@ -78,7 +78,7 @@ class CfgItem:
         )
 
 
-class MetricsCollectorService(FastAPIService):
+class MetricsCollectorService(BaseService):
     name = "metricscollector"
     # use_mongo = True
     traefik_routes_rule = "PathPrefix(`/api/metricscollector`)"

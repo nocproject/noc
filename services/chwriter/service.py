@@ -14,7 +14,7 @@ from collections.abc import AsyncIterable
 # Third-party modules
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.http.aio import HttpClient, DEFLATE, GZIP
 from noc.config import config
 from noc.core.perf import metrics
@@ -23,7 +23,7 @@ from noc.core.ioloop.timers import PeriodicCallback
 from noc.core.msgstream.client import MessageStreamClient
 
 
-class CHWriterService(FastAPIService):
+class CHWriterService(BaseService):
     name = "chwriter"
 
     CH_SUSPEND_ERRORS = {598, 599}

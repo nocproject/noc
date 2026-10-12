@@ -7,9 +7,9 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 
 
-class MIBService(FastAPIService):
+class MIBService(BaseService):
     name = "mib"
     use_mongo = True

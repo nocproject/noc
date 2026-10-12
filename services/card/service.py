@@ -7,11 +7,11 @@
 # ----------------------------------------------------------------------
 
 # NOC modules
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.config import config
 
 
-class CardService(FastAPIService):
+class CardService(BaseService):
     name = "card"
 
     use_translation = True

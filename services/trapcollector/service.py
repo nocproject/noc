@@ -21,7 +21,7 @@ import orjson
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError
-from noc.core.service.fastapi import FastAPIService
+from noc.core.service.base import BaseService
 from noc.core.fm.enum import EventSource
 from noc.core.mx import (
     MX_STREAM,
@@ -45,7 +45,7 @@ TRAPCOLLECTOR_STORM_ALARM_CLASS = "NOC | Managed Object | Storm Control"
 SNMP_TRAP_OID = "1.3.6.1.6.3.1.1.4.1.0"
 
 
-class TrapCollectorService(FastAPIService):
+class TrapCollectorService(BaseService):
     name = "trapcollector"
     pooled = True
     process_name = "noc-%(name).10s-%(pool).5s"
