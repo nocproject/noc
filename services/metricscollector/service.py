@@ -81,7 +81,6 @@ class CfgItem:
 class MetricsCollectorService(BaseService):
     name = "metricscollector"
     # use_mongo = True
-    traefik_routes_rule = "PathPrefix(`/api/metricscollector`)"
     # Cache regex for partial match
     _rx_name_cache = cachetools.LRUCache(1000)
     _rs_key_cache = cachetools.TTLCache(10, ttl=120)

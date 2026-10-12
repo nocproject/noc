@@ -21,7 +21,6 @@ class MXService(BaseService):
     name = "mx"
     use_mongo = True
     use_router = False
-    traefik_routes_rule = "PathPrefix(`/api/mx`)"
 
     def __init__(self) -> None:
         super().__init__()

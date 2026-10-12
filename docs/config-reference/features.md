@@ -14,10 +14,6 @@ Features service configuration
 
 {{ config_param("features.sentry") }}
 
-## traefik
-
-{{ config_param("features.traefik") }}
-
 ## cpclient
 
 {{ config_param("features.cpclient") }}

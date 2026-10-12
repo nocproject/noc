@@ -104,9 +104,6 @@ class BaseService:
     use_jinja = False
     # Collect and send spans
     use_telemetry = False
-    # Traefik routing rule
-    # Requires config.features.traefik option
-    traefik_routes_rule: str | None = None
     # Require DCS health status to be considered healthy
     # Usually means resolution error to required services
     # temporary leads service to unhealthy state
@@ -553,27 +550,7 @@ class BaseService:
         self.die("")
 
     def get_register_tags(self) -> list[str]:
-        tags = ["noc"]
-        if config.features.traefik and self.traefik_routes_rule and self.name:
-            tags += [
-                # Traefik used with exposeedByDefault=false
-                # So enable routing
-                "traefik.enable=true",
-                # Apply routing rule
-                f"traefik.http.routers.{self.name}.rule={self.traefik_routes_rule}",
-                # Set service name
-                f"traefik.http.routers.{self.name}.service={self.name}",
-                f"traefik.http.service.{self.name}",
-                # Set up healthchecks
-                f"traefik.http.services.{self.name}.loadbalancer.healthcheck.path=/health?{self.name}",
-            ]
-            # weight = self.get_backend_weight()
-            # if weight:
-            #     tags += [f"traefik.backend.weight={weight}"]
-            # limit = self.get_backend_limit()
-            # if limit:
-            #     tags += [f"traefik.backend.maxconn.amount={limit}"]
-        return tags
+        return ["noc"]
 
     async def on_register(self) -> None:
         addr, port = self.get_service_address()
@@ -988,20 +965,6 @@ class BaseService:
     def get_leader_lock_name(self) -> str | None:
         if self.leader_lock_name:
             return self.leader_lock_name % {"pool": config.pool}
-        return None
-
-    def get_backend_weight(self) -> int | None:
-        """Return backend weight for weighted load balancers
-        (i.e. traefik).
-        Return None for default weight
-        """
-        return None
-
-    def get_backend_limit(self) -> int | None:
-        """Return backend connection limit for load balancers
-        (i.e. traefik)
-        Return None for no limits
-        """
         return None
 
     def is_valid_health_check(self, service_id: str) -> bool:

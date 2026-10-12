@@ -14,7 +14,6 @@ class BIService(BaseService):
     name = "bi"
     use_translation = True
     use_mongo = True
-    traefik_routes_rule = "PathPrefix(`/api/bi`)"
 
     def __init__(self) -> None:
         super().__init__()

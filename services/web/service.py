@@ -27,7 +27,6 @@ class WebService(BaseService):
     use_mongo = True
     use_router = True
     use_watchdog = config.watchdog.enable_watchdog
-    traefik_routes_rule = "!PathPrefix(`/api/`) && !PathPrefix(`/ui/`) && PathPrefix(`/`)"
 
     def __init__(self) -> None:
         super().__init__()

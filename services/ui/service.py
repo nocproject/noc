@@ -13,6 +13,5 @@ from noc.config import config
 
 class UIService(BaseService):
     name = "ui"
-    traefik_routes_rule = "PathPrefix(`/api/ui`)"
     use_mongo = True
     use_watchdog = config.watchdog.enable_watchdog

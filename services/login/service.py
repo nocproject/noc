@@ -28,7 +28,6 @@ class LoginService(BaseService):
     use_mongo = True
     use_translation = True
     use_watchdog = config.watchdog.enable_watchdog
-    traefik_routes_rule = "PathPrefix(`/api/login`) || PathPrefix(`/api/auth/auth`)"
 
     OPENAPI_TAGS_DOCS = {
         "login": "Authentication services",

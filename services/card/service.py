@@ -18,4 +18,3 @@ class CardService(BaseService):
     use_jinja = True
     use_mongo = True
     use_watchdog = config.watchdog.enable_watchdog
-    traefik_routes_rule = "PathPrefix(`/api/card`)"

@@ -355,7 +355,6 @@ params:
   features.service_registration:
     default: 'True'
   features.telemetry: {}
-  features.traefik: {}
   features.use_uvloop: {}
   fm.active_window:
     default: '86400'

@@ -15,7 +15,6 @@ class MRTService(BaseService):
     name = "mrt"
     use_telemetry = config.mrt.enable_command_logging
     use_mongo = True
-    traefik_routes_rule = "PathPrefix(`/api/mrt`)"
 
     async def on_activate(self) -> None:
         self.sae = self.open_rpc("sae")

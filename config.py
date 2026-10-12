@@ -299,7 +299,6 @@ class Config(BaseConfig):
         use_uvloop = BooleanParameter(default=False)
         cp = BooleanParameter(default=True)
         sentry = BooleanParameter(default=False)
-        traefik = BooleanParameter(default=False)
         cpclient = BooleanParameter(default=False)
         telemetry = BooleanParameter(
             default=False, help="Enable internal telemetry export to Clickhouse"
