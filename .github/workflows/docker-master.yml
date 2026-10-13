@@ -63,14 +63,12 @@ jobs:
 
       - name: Build and push image
         if: steps.check.outputs.skip != 'true'
-        env:
-          IMAGE: ghcr.io/gufolabs/noc:${{ matrix.tag }}
-          COMMIT: ${{ steps.check.outputs.commit }}
-        run: |
-          docker buildx build \
-            --platform linux/amd64,linux/arm64 \
-            --push \
-            --tag "$IMAGE" \
-            --target code \
-            --annotation "index:org.opencontainers.image.revision=$COMMIT" \
-            .
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/gufolabs/noc:${{ matrix.tag }}
+          target: code
+          annotations: |
+            index:org.opencontainers.image.revision=${{ steps.check.outputs.commit }}
