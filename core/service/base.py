@@ -498,8 +498,9 @@ class BaseService:
             port=port,
             interface=Interfaces.ASGI,
             backlog=2048,
-            log_access=False,
-            log_enabled=False,
+            log_access=True,
+            log_access_format="%(method)s %(path)s %(status)d",
+            log_enabled=True,
             **self.get_granian_options(),
         )
         self.server = server
