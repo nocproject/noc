@@ -16,10 +16,6 @@
 	"forwardPorts": [
 		3000
 	],
-	// Environment
-	"containerEnv": {
-		"PYTHONPATH": "src"
-	},
 	// VSCode settings
 	"customizations": {
 		"vscode": {

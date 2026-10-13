@@ -1,7 +1,6 @@
 # Basic Python image
 FROM python:3.13-slim-trixie AS python
 ENV \
-    PYTHONPATH=/opt\
     DEBIAN_FRONTEND=noninteractive
 RUN \
     set -x \
@@ -33,12 +32,13 @@ RUN\
 
 # Base layer containing system packages and requirements
 FROM python AS code
-ENV\
+ENV \
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
-    PROJ_DIR=/usr
+    PROJ_DIR=/usr \
+    PYTHONPATH=/opt/noc/src
 COPY . /opt/noc/
 COPY --from=build-ui /opt/noc/ui/dist/ /opt/noc/src/noc/ui/
 WORKDIR /opt/noc/
@@ -52,11 +52,12 @@ RUN \
     && chown noc /opt/noc
 
 FROM python AS devcontainer
-ENV\
+ENV \
     DJANGO_SETTINGS_MODULE=noc.settings \
     NOC_THREAD_STACK_SIZE=524288 \
     NOC_PYTHON_INTERPRETER=/usr/local/bin/python3 \
     NOC_LISTEN="auto:1200" \
+    PYTHONPATH=/workspaces/noc/src \
     PROJ_DIR=/usr\
     NODE_OPTIONS=--max-old-space-size=8192\
     PATH=$PATH:/workspaces/node_modules/.bin
