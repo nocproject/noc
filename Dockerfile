@@ -14,7 +14,7 @@ RUN \
     && (curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin sh)
 
 # Build web
-FROM node:24-trixie-slim AS build-ui
+FROM --platform=$BUILDPLATFORM node:24-trixie-slim AS build-ui
 COPY . /opt/noc
 WORKDIR /opt/noc
 ENV \
