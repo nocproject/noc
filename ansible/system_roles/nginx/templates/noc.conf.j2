@@ -170,10 +170,6 @@ server {
         error_page 401 = @error401;
     }
 
-    location /ui/bi2/ {
-        alias {{ noc_root }}/ui/bi2/;
-        try_files $uri /index.html =404;
-    }
 {% endif %}
 
 {% if 'svc-grafanads-exec' in groups and groups['svc-grafanads-exec'] | length > 0 %}
@@ -243,38 +239,19 @@ server {
         expires 1M;
     }
 
-    # UI files
+    # UI files are served by Granian in the web service.
     location ^~ /ui/ {
-    {% if custom_path is defined and custom_path %}
-        root {{ custom_path }};
-        try_files $uri @noc_ui;
-    {% elif custom_path is undefined %}
-        alias {{ noc_root }}/ui/;
-    {% endif %}
-        add_header Cache-Control public;
-        add_header Pragma public;
-        expires 1w;
-        error_page 401 = @error401;
+        proxy_pass http://noc-web;
+        auth_request off;
+        proxy_set_header Authorization "";
     }
-
-    {% if custom_path is defined and custom_path %}
-    location @noc_ui {
-        root {{ noc_root }};
-        add_header Cache-Control public;
-        add_header Pragma public;
-        expires 1w;
-        error_page 401 = @error401;
-    }
-    {% endif %}
 
 {% if 'svc-bi-exec' in groups and groups['svc-bi-exec'] | length > 0 %}
-    location /ui/bi/editor/ {
-        alias {{ noc_root }}/ui/bi/;
-        try_files $uri /index.html =404;
-        add_header Cache-Control public;
-        add_header Pragma public;
-        expires 1w;
-        error_page 401 = @error401;
+    # BI editor assets are served from the web service's /ui/bi/ directory.
+    location ^~ /ui/bi/editor/ {
+        proxy_pass http://noc-web/ui/bi/;
+        auth_request off;
+        proxy_set_header Authorization "";
     }
 {% endif %}
 
@@ -297,24 +274,27 @@ server {
     }
 {% endif %}
 
+    location = / {
+        proxy_pass http://noc-web;
+        auth_request off;
+        proxy_set_header Authorization "";
+    }
+
+    location = /main/desktop/ {
+        proxy_pass http://noc-web;
+        auth_request off;
+        proxy_set_header Authorization "";
+    }
+
     location = /index.html {
         proxy_pass http://noc-web;
-        proxy_set_header Remote-User $user;
-        proxy_set_header Remote-Groups $groups;
-        proxy_set_header Host $http_host;
-        proxy_set_header X-Scheme $scheme;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        auth_request off;
         proxy_set_header Authorization "";
     }
 
     location / {
-        rewrite ^/$ /index.html;
-        rewrite ^/main/desktop/$ /index.html;
         proxy_pass http://noc-web;
         auth_request /api/auth/auth/;
-
         auth_request_set $user $upstream_http_remote_user;
         auth_request_set $groups $upstream_http_remote_groups;
         error_page 401 = @error401;

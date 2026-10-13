@@ -40,12 +40,11 @@ ENV\
     NOC_LISTEN="auto:1200" \
     PROJ_DIR=/usr
 COPY . /opt/noc/
-COPY --from=build-ui /opt/noc/ui/dist/ /www/
+COPY --from=build-ui /opt/noc/ui/dist/ /opt/noc/src/noc/ui/
 WORKDIR /opt/noc/
 RUN \
     set -x \
     && uv pip install --system -e . \
-    && (curl -L https://raw.githubusercontent.com/static-web-server/static-web-server/refs/tags/v2.40.1/scripts/installer.sh | sed 's/sudo //g' | sh) \
     && find /opt/noc/ -type f -name "*.py" -print0 | xargs -0 python3 -m py_compile \
     && uv cache clean \
     && rm -rf /var/lib/apt/lists/* /tmp/*.whl\

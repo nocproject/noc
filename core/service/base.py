@@ -424,6 +424,13 @@ class BaseService:
             },
         )
 
+    def get_granian_options(self) -> dict[str, Any]:
+        """Return service-specific Granian server options."""
+        return {}
+
+    def configure_api_routes(self, app: FastAPI) -> None:
+        """Configure service-specific API routes."""
+
     async def init_api(self) -> None:
         """Initialize the FastAPI application, routers, middleware, and server."""
         # Build tags docs
@@ -468,6 +475,7 @@ class BaseService:
                 kls = extra_loader.get_class(path)
                 if kls:
                     app.include_router(kls)
+        self.configure_api_routes(app)
         # Attach third-party WSGI application
         if self.wsgi_app:
             app.mount("/", WSGIMiddleware(self.wsgi_app))
@@ -492,6 +500,7 @@ class BaseService:
             backlog=2048,
             log_access=False,
             log_enabled=False,
+            **self.get_granian_options(),
         )
         self.server = server
         assert self.loop is not None
