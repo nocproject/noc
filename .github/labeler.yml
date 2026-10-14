@@ -125,7 +125,6 @@ s-other:
           - "services/selfmon/**"
           - "services/topo/**"
           - "services/worker/**"
-          - "services/zeroconf/**"
 tests:
   - changed-files:
       - any-glob-to-any-file:
