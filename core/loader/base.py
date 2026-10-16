@@ -99,7 +99,7 @@ class BaseLoader:
         Returns:
             Path to the object's Python source file.
         """
-        p = (base, *cast(tuple[str, ...], self.base_path), f"{name}.py")
+        p = (base or "src/noc", *cast(tuple[str, ...], self.base_path), f"{name}.py")
         return os.path.join(*p)
 
     def get_module_name(self, base: str, name: str) -> str:
