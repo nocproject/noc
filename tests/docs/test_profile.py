@@ -10,7 +10,8 @@ from pathlib import Path
 import cachetools
 import pytest
 
-PROFILES_ROOT = Path("sa", "profiles")
+SRC = Path("src", "noc")
+PROFILES_ROOT = SRC / "sa" / "profiles"
 PROFILE_DOCS_BASE = Path("docs", "profiles-reference")
 XFAIL_VENDORS = {"OS"}
 

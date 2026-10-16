@@ -20,7 +20,7 @@ def get_json_paths():
     """
     r = []
     metrics_dirs = []
-    for root, dirs, files in os.walk(os.path.join("sa", "profiles")):
+    for root, dirs, files in os.walk(os.path.join("src", "noc", "sa", "profiles")):
         if "snmp_metrics" in dirs:
             metrics_dirs += [os.path.join(root, "snmp_metrics")]
     for root in metrics_dirs:
