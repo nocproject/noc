@@ -14,7 +14,8 @@ from pathlib import Path
 
 
 ROOT = Path.cwd()
-PROFILES_ROOT = ROOT / "sa" / "profiles"
+SRC = ROOT / "src" / "noc"
+PROFILES_ROOT = SRC / "sa" / "profiles"
 DOC_ROOT = ROOT / "docs"
 COLLECTIONS_ROOT = ROOT / "collections"
 GITLAB_ROOT = "https://code.getnoc.com/noc/noc"
