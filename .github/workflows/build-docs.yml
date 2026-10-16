@@ -6,7 +6,7 @@ on:
     paths: &on-paths
       - ".github/workflows/build-docs.yml"
       - "mkdocs.yml"
-      - "pypproject.toml"
+      - "pyproject.toml"
       - "macros.py"
       - "docs/**"
       - "**.md"
