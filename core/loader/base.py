@@ -183,7 +183,8 @@ class BaseLoader:
         """
         names = set()
         base_path = cast(tuple[str, ...], self.base_path)
-        for dn in config.get_customized_paths(os.path.join(*base_path)):
+        for base in config.get_customized_paths("", prefer_custom=True):
+            dn = os.path.join(base or "src/noc", *base_path)
             for fn in os.listdir(dn):
                 if fn.startswith("_") or not fn.endswith(".py"):
                     continue
