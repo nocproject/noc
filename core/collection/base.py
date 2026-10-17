@@ -47,7 +47,6 @@ state_lock = threading.Lock()
 
 class Collection:
     PREFIX = "collections"
-    CUSTOM_PREFIX = config.get_customized_paths(PREFIX, prefer_custom=True)
     STATE_COLLECTION = "noc.collectionstates"
     DEFAULT_API_VERSION = 1
 
