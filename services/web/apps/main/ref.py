@@ -17,7 +17,6 @@ from mongoengine.base.common import _document_registry
 # NOC modules
 from noc.services.web.base.extapplication import ExtApplication, api
 from noc.services.web.base.site import site
-from noc.core.interface.loader import loader as interface_loader
 from noc.core.profile.loader import loader as profile_loader
 from noc.core.script.loader import loader as script_loader
 from noc.core.checkers.loader import loader as checker_loader
@@ -60,13 +59,6 @@ class RefAppplication(ExtApplication):
         for h in dir(self):
             if h.startswith("build_"):
                 self.refs[h[6:]] = getattr(self, h)()
-
-    def build_interface(self):
-        """
-        Interface names
-        :return: (interface name, interface name)
-        """
-        return [{"id": n, "label": n} for n in interface_loader.iter_interfaces()]
 
     def build_profile(self):
         """

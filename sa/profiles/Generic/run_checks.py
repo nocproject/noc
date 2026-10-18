@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Generic.run_checks
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ from typing import Any
 
 # NOC modules
 from noc.core.script.base import BaseScript
-from noc.core.checkers.loader import loader
+from noc.sa.interfaces.iping import IPing
 from noc.sa.interfaces.idiagnosticheck import IDiagnosticCheck
 from noc.core.validators import is_ipv4
 
@@ -24,8 +24,9 @@ class Script(BaseScript):
     interface = IDiagnosticCheck
 
     def get_script_by_check(self, check) -> str | None:
-        iface = loader.get_interface_by_check(check)
-        return iface.check_script
+        if check == IPing.check:
+            return IPing.check_script
+        return None
 
     def execute(self, checks: list[dict[str, Any]]):
         r = []
@@ -51,9 +52,9 @@ class Script(BaseScript):
                 continue
             script = getattr(self.scripts, script)
             # interface: BaseInterface = script._interface
-            interface = loader.get_interface_by_check(c["name"])
-            if interface.check != c["name"]:
-                raise ValueError(f"Interface {interface!s} Not supported check: {c['name']}")
+            if c["name"] != IPing.check:
+                raise ValueError(f"Unsupported script check: {c['name']}")
+            interface = IPing
             params = interface().get_check_params(c)
             result = script(**params)
             s = interface().clean_check_result(c, result)

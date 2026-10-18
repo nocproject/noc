@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Checkers loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ from itertools import chain
 
 # NOC modules
 from noc.core.loader.base import BaseLoader
-from noc.core.interface.loader import loader as sa_interface_loader
+from noc.sa.interfaces.iping import IPing
 from .base import BaseChecker
 
 
@@ -33,10 +33,7 @@ class CheckersLoader(BaseLoader):
                 continue
             for c in checker.CHECKS:
                 self.checkers[c] = checker.name
-        for iface in sa_interface_loader.iter_interfaces():
-            iface = sa_interface_loader.get_interface(iface)
-            if iface and iface.check:
-                self.script_checkers[iface.check] = iface
+        self.script_checkers[IPing.check] = IPing
 
     def get_class(self, name):
         name = self.checkers.get(name, name)
@@ -45,9 +42,6 @@ class CheckersLoader(BaseLoader):
     def is_script(self, name) -> bool:
         """Return if checker is ScriptChecker"""
         return name in self.script_checkers
-
-    def get_interface_by_check(self, name):
-        return self.script_checkers[name]
 
     def choices(self):
         return [(p, p) for p in chain(self.checkers, self.script_checkers)]
