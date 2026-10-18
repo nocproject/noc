@@ -1214,28 +1214,31 @@ class Config(BaseConfig):
         os.environ["TZ"] = self.timezone.key
         time.tzset()
 
-    def get_customized_paths(self, *args, **kwargs):
+    def get_customized_paths(self, *args: str, prefer_custom: bool = False) -> list[str]:
         """
-        Check for customized path for given repo path.
+        Get repository and customized paths for a repository-relative path.
 
-        Repo path may be given in os.path.join-style components.
-        Returns list of possible paths. One of elements is always repo path,
-        while other may be custom counterpart, if exists.
+        The repository-relative path can be supplied as one path or as multiple
+        components, which are joined using :func:`os.path.join`. The returned
+        paths always include the repository path. If the corresponding path
+        exists in the custom directory, it is included as well.
 
         !!! warning
 
             This method is not package-safe and must be revised.
 
         Args:
-            prefer_custom:
-                True: customized path first.
-                False: repo path first.
-            args: Path or path components in os.path.join-style
+            *args: One or more string path components, in the order expected by
+                :func:`os.path.join`. These form the path relative to the
+                repository root and, when configured, the custom root.
+            prefer_custom: If ``True``, return an existing custom path before
+                the repository path. If ``False``, return the repository path
+                first. The custom path is only included when it exists.
 
         Returns:
-            List of possible paths.
+            A list of paths as strings. The repository path is always present;
+            an existing customized counterpart is included as the other item.
         """
-        prefer_custom = kwargs.get("prefer_custom", False)
         rpath = os.path.join(*args)
         if not self.path.custom_path:
             return [rpath]
