@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseCollector implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ from collections.abc import Iterable
 
 # Third-party modules
 from django.db import connection
+from gufo.loader import Loader
 
 # NOC modules
 from noc.core.perf import metrics
@@ -84,3 +85,9 @@ class BaseCollector:
     @staticmethod
     def metric(metric: str, *, value: int, **kwargs: Any) -> tuple[tuple[Any], int]:
         return ((metric, *tuple((k, v) for k, v in kwargs.items() if v is not None)), value)
+
+
+collector_loader = Loader[type[BaseCollector]](
+    bases=config.iter_customized_bases("noc.services.selfmon.collectors"),
+    exclude=("base",),
+)

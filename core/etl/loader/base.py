@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Data Loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,6 +18,9 @@ from collections import defaultdict
 from io import StringIO, TextIOWrapper
 from typing import Any
 from collections.abc import Iterable
+
+# Third-party modules
+from gufo.loader import Loader
 
 # NOC modules
 from noc.core.log import PrefixLoggerAdapter
@@ -1118,3 +1121,9 @@ class BaseLoader:
             else:
                 u += 1
         return i, u, d
+
+
+etl_loader = Loader[type[BaseLoader]](
+    bases=config.iter_customized_bases("noc.core.etl.loader"),
+    exclude=("base",),
+)

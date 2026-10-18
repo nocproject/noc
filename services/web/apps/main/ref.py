@@ -24,15 +24,15 @@ from noc.core.checkers.loader import loader as checker_loader
 from noc.core.window import wf_choices
 from noc.core.topology.base import loader as topo_loader
 from noc.core.mx import MessageType, MESSAGE_HEADERS
-from noc.core.datasources.loader import loader as ds_loader
-from noc.core.protodcsources.loader import loader as pds_loader
-from noc.core.reporter.formatter.loader import loader as r_formatter_loader
+from noc.core.datasources.base import data_source_loader
+from noc.core.protodcsources.base import discriminator_source_loader
+from noc.core.reporter.formatter.base import data_formatter_loader
 from noc.core.vlanroles import VLANRole
 from noc.main.reportsources.loader import loader as rds_loader
 from noc.main.models.messageroute import MessageRoute
 from noc.models import iter_model_id
 from noc import settings
-from noc.services.web.apps.kb.parsers.loader import loader as kbparser_loader
+from noc.services.web.apps.kb.parsers.base import kb_parser_loader
 from noc.main.models.notificationgroup import USER_NOTIFICATION_METHOD_CHOICES
 from noc.inv.models.objectmodel import ContainerType
 
@@ -158,7 +158,7 @@ class RefAppplication(ExtApplication):
         return [{"id": x, "label": x} for x in sorted(iter_model_id())]
 
     def build_kbparser(self):
-        return [{"id": x, "label": x} for x in sorted(kbparser_loader)]
+        return [{"id": x, "label": x} for x in sorted(kb_parser_loader)]
 
     def build_messagetype(self):
         return [{"id": x.value, "label": x.name} for x in sorted(MessageType, key=lambda x: x.name)]
@@ -190,8 +190,8 @@ class RefAppplication(ExtApplication):
         :return:
         """
         r = []
-        for name in ds_loader:
-            ds = ds_loader[name]
+        for name in data_source_loader:
+            ds = data_source_loader.get(name)
             if not ds or not getattr(ds, "name", None):
                 continue
             r.append({"id": name, "label": ds.name})
@@ -216,8 +216,8 @@ class RefAppplication(ExtApplication):
         :return:
         """
         r = []
-        for name in r_formatter_loader:
-            repo_fmt = r_formatter_loader[name]
+        for name in data_formatter_loader:
+            repo_fmt = data_formatter_loader.get(name)
             if not repo_fmt:
                 continue
             r.append({"id": name, "label": repo_fmt.label or name})
@@ -229,8 +229,8 @@ class RefAppplication(ExtApplication):
         :return:
         """
         r = []
-        for name in pds_loader:
-            ds = pds_loader[name]
+        for name in discriminator_source_loader:
+            ds = discriminator_source_loader.get(name)
             if not ds:
                 continue
             r.append({"id": name, "label": ds.name})

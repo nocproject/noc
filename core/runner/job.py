@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Runner Job implementation
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from jinja2 import Template, TemplateSyntaxError
 # NOC modules
 from .models.jobreq import JobRequest
 from noc.sa.models.job import JobStatus
-from .actions.loader import loader
+from .actions.base import action_loader
 from .actions.base import BaseAction
 from .env import Environment
 
@@ -301,7 +301,7 @@ class Job:
         if req.action and req.jobs:
             msg = "action and jobs cannot be used together"
             raise ValueError(msg)
-        if req.action and req.action not in loader:
+        if req.action and req.action not in action_loader:
             msg = f"Invalid action {req.action}"
             raise ValueError(msg)
         if req.inputs and not req.action:
@@ -309,7 +309,7 @@ class Job:
             raise ValueError(msg)
         # Validate inputs
         if req.inputs:
-            action: type[BaseAction] = loader[req.action]
+            action: type[BaseAction] | None = action_loader.get(req.action)
             seen_inputs: set[str] = set()
             for i in req.inputs:
                 if not i.is_kv:
@@ -392,7 +392,7 @@ class Job:
         leader = Job(
             id=req.id,
             name=req.name,
-            action=loader[req.action] if req.action else None,
+            action=action_loader.get(req.action) if req.action else None,
             status=cls._get_initial_status(req),
             allow_fail=req.allow_fail,
             parent=parent,
@@ -434,7 +434,7 @@ class Job:
         job = Job(
             id=doc["_id"],
             name=doc["name"],
-            action=loader[doc["action"]] if doc.get("action") else None,
+            action=action_loader.get(doc["action"]) if doc.get("action") else None,
             status=JobStatus(doc["status"]),
             allow_fail=doc["allow_fail"],
             parent=jmap[doc["parent"]] if doc.get("parent") else None,

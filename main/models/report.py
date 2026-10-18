@@ -30,7 +30,7 @@ from mongoengine.fields import (
 import cachetools
 
 # NOC modules
-from noc.core.datasources.loader import loader
+from noc.core.datasources.base import data_source_loader
 from noc.core.mongo.fields import ForeignKeyField
 from noc.core.reporter.types import (
     ReportConfig,
@@ -461,7 +461,7 @@ class Report(Document):
             for num, q in enumerate(root_band.queries):
                 if not q.datasource:
                     continue
-                ds = loader[q.datasource]
+                ds = data_source_loader.get(q.datasource)
                 r[q.datasource] = [f.name for f in ds.iter_ds_fields()]
                 if num == 0:
                     # default
@@ -471,7 +471,7 @@ class Report(Document):
     def get_root_datasource(self):
         for b in self.bands:
             if b.is_root and b.queries and b.queries[0].datasource:
-                return loader[b.queries[0].datasource]
+                return data_source_loader.get(b.queries[0].datasource)
         return None
 
     @classmethod

@@ -12,7 +12,11 @@ import enum
 from logging import Logger
 from inspect import signature
 
+# Third-party modules
+from gufo.loader import Loader
+
 # NOC modules
+from noc.config import config
 from noc.core.error import NOCError
 from ..env import Environment
 
@@ -95,3 +99,9 @@ class BaseAction(metaclass=ActionMetaclass):
     def _clean_bool(x: str) -> bool:
         s = x.lower()
         return s in ("true", "on", "yes")
+
+
+action_loader = Loader[type[BaseAction]](
+    bases=config.iter_customized_bases("noc.core.runner.actions"),
+    exclude=("base",),
+)

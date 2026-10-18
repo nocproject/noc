@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Loader chain
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,8 +11,7 @@
 import cachetools
 
 # NOC modules
-from .loader import loader as loader_loader
-from noc.core.etl.loader.base import BaseLoader
+from noc.core.etl.loader.base import BaseLoader, etl_loader
 
 
 class LoaderChain:
@@ -26,8 +25,8 @@ class LoaderChain:
     def get_loader(self, name: str) -> BaseLoader:
         loader = self.loaders.get(name)
         if not loader:
-            lc = loader_loader.get_loader(name)
-            loader = lc(self)
+            loader_cls = etl_loader.get(name)
+            loader = loader_cls(self)
             self.loaders[name] = loader
             self.lseq.append(loader)
         return loader

@@ -140,7 +140,7 @@ from noc.core.matcher import match
 from noc.core.change.decorator import change, get_datastreams
 from noc.core.change.policy import change_tracker
 from noc.core.resourcegroup.decorator import resourcegroup
-from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
+from noc.core.confdb.tokenizer.base import tokenizer_loader
 from noc.core.confdb.engine.base import Engine
 from noc.core.comp import smart_text
 from noc.main.models.glyph import Glyph
@@ -2188,7 +2188,7 @@ class ManagedObject(NOCModel):
         t_name, t_config = self.profile.get_profile().get_config_tokenizer(self)
         if not t_name:
             return  # no tokenizer
-        t_cls = tokenizer_loader.get_class(t_name)
+        t_cls = tokenizer_loader.get(t_name)
         if not t_cls:
             raise ValueError("Invalid tokenizer")
         tokenizer = t_cls(config, **t_config)

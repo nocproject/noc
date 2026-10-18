@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Compressor tests
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import pytest
 import io
 
 # NOC modules
-from noc.core.compressor.loader import loader
+from noc.core.compressor.base import compressor_loader
 from noc.core.compressor.base import BaseCompressor
 from noc.core.fileutils import temporary_file
 
@@ -28,24 +28,24 @@ def test_base_close():
         BaseCompressor(path).close()
 
 
-@pytest.mark.parametrize("fmt", list(loader.iter_classes()))
+@pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
 def test_file_instance(fmt):
-    comp_cls = loader.get_class(fmt)
+    comp_cls = compressor_loader.get(fmt)
     with temporary_file() as path, comp_cls(path, mode="w") as f:
         assert isinstance(f, io.TextIOWrapper)
 
 
-@pytest.mark.parametrize("fmt", list(loader.iter_classes()))
+@pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
 def test_ext(fmt):
-    comp_cls = loader.get_class(fmt)
+    comp_cls = compressor_loader.get(fmt)
     assert comp_cls.ext is not None
     if comp_cls.ext:
         assert comp_cls.ext.startswith(".")
 
 
-@pytest.mark.parametrize("fmt", list(loader.iter_classes()))
+@pytest.mark.parametrize("fmt", list(compressor_loader.keys()))
 def test_compressor(fmt):
-    comp_cls = loader.get_class(fmt)
+    comp_cls = compressor_loader.get(fmt)
     with temporary_file() as path:
         # Write samples
         with comp_cls(path, mode="w") as f:

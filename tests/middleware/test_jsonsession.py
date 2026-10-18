@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test JSONSession
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import pytest
 
 # NOC modules
 from noc.core.script.http.base import HTTP
-from noc.core.script.http.middleware.loader import loader
+from noc.core.script.http.middleware.base import middleware_loader
 
 
 @pytest.mark.parametrize(
@@ -26,7 +26,7 @@ from noc.core.script.http.middleware.loader import loader
 def test_jsonsession(body, config, session_id, expected):
     http = HTTP(None)
     http.set_session_id(session_id)
-    mw_cls = loader.get_class("jsonsession")
+    mw_cls = middleware_loader.get("jsonsession")
     middleware = mw_cls(http, **config)
     url = "http://127.0.0.1"
     # POST

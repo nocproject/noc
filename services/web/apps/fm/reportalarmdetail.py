@@ -22,7 +22,7 @@ from noc.sa.models.useraccess import UserAccess
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_bytes
-from noc.core.datasources.loader import loader as ds_loader
+from noc.core.datasources.base import data_source_loader
 from noc.core.datasources.base import BaseDataSource
 
 
@@ -200,11 +200,11 @@ class ReportAlarmDetailApplication(ExtApplication):
                         "Report more than 1 year not allowed. If nedeed - request it from Administrator"
                     )
                 )
-            report: "BaseDataSource" = ds_loader[report_ds]
+            report: "BaseDataSource" = data_source_loader.get(report_ds)
             out_columns = [ff.name for ff in report.fields]
         else:
             report_ds = "reportdsalarms"
-            report: "BaseDataSource" = ds_loader[report_ds]
+            report: "BaseDataSource" = data_source_loader.get(report_ds)
         if not report:
             return HttpResponseNotFound(_(f"Report DataSource {report_ds} Not found"))
 

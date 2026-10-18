@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
 # Ensure MongoDB indexes
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.management.base import BaseCommand
 from noc.models import get_model, iter_model_id, is_document
-from noc.core.datastream.loader import loader as ds_loader
+from noc.core.datastream.base import data_stream_loader
 from noc.core.gridvcs.base import GridVCS
 from noc.core.gridvcs.utils import REPOS
 from noc.core.mongo.connection import connect, get_db
@@ -94,10 +94,10 @@ class Command(BaseCommand):
         model.ensure_indexes()
 
     def index_datastreams(self):
-        for name in ds_loader:
+        for name in data_stream_loader:
             if not getattr(config.datastream, f"enable_{name}", False):
                 continue
-            ds = ds_loader[name]
+            ds = data_stream_loader.get(name)
             self.print(f"[{ds.name}] Indexing datastream")
             ds.ensure_collection()
 

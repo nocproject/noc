@@ -1,12 +1,19 @@
 # ---------------------------------------------------------------------
 # Abstract Wiki parsers class
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+
+# Third-party modules
+from gufo.loader import Loader
+
 # NOC modules
+from noc.config import config
 from noc.core.validators import is_int
+
 
 BASE_PATH = "/api/card/view/kb"
 
@@ -77,3 +84,9 @@ class BaseParser:
         elif href.startswith("attachment:"):
             href = href[11:]
         return f"/kb/kbentry/{int(kb_entry.id)}/attachment/{href}/"
+
+
+kb_parser_loader = Loader[type[BaseParser]](
+    bases=config.iter_customized_bases("noc.services.web.apps.kb.parsers"),
+    exclude=("base",),
+)

@@ -13,6 +13,7 @@ import logging
 from collections import defaultdict
 
 # Third-party modules
+from gufo.loader import Loader
 import orjson
 import bson
 import bson.errors
@@ -22,6 +23,7 @@ from typing import Any
 from collections.abc import Iterable, Callable
 
 # NOC modules
+from noc.config import config
 from noc.core.perf import metrics
 from noc.core.mongo.connection import get_db
 from noc.core.comp import smart_text
@@ -766,3 +768,8 @@ class DataStream:
             "[%s] Update object diagnostic: %s,%s (%s)", mo, cls.DIAGNOSTIC, is_blocked, reason
         )
         mo.diagnostic.reset_diagnostics([cls.DIAGNOSTIC], reason=reason)
+
+
+data_stream_loader = Loader[type[DataStream]](
+    bases=config.iter_customized_bases("noc.services.datastream.streams"),
+)

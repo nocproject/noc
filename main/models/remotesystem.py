@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # RemoteSystem model
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ from noc.core.debug import error_report
 from noc.core.mx import send_message, MessageType, MessageMeta, get_subscription_id
 from noc.core.scheduler.scheduler import Scheduler
 from noc.core.etl.remotesystem.base import BaseRemoteSystem, StepResult
-from noc.core.etl.portmapper.loader import loader as portmapper_loader
+from noc.core.etl.portmapper.base import portmapper_loader
 from noc.core.etl.portmapper.base import BasePortMapper
 from noc.core.change.decorator import change
 from noc.aaa.models.apikey import APIKey
@@ -296,7 +296,7 @@ class RemoteSystem(Document):
     def get_portmapper(self) -> "BasePortMapper":
         """Getting portmapper functions"""
         p_name = self.portmapper_name or self.name
-        return portmapper_loader[p_name]
+        return portmapper_loader.get(p_name)
 
     def get_handler(self) -> BaseRemoteSystem:
         """Return BaseRemoteSystem instance"""

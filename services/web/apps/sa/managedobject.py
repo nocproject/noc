@@ -62,7 +62,7 @@ from noc.core.mongo.connection import get_db
 from noc.core.wf.interaction import Interaction
 from noc.core.translation import ugettext as _
 from noc.core.comp import smart_text, smart_bytes
-from noc.core.geocoder.loader import loader as geocoder_loader
+from noc.core.geocoder.base import geocoder_loader
 from noc.core.validators import is_objectid
 from noc.core.debug import error_report
 from noc.core.text import alnum_key
@@ -371,7 +371,7 @@ class ManagedObjectApplication(ExtModelApplication):
             r["administrative_domain__in"] = ad
         if geoaddr:
             scope, query = geoaddr.split(":", 1)
-            geocoder = geocoder_loader.get_class(scope)()
+            geocoder = geocoder_loader.get(scope)()
             addr_ids = set([r.id for r in geocoder.iter_recursive_query(query)][:1])
             addr_mo = set()
             for o in Object.iter_by_address_id(list(addr_ids), scope):

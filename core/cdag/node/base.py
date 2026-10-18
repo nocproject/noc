@@ -14,9 +14,11 @@ from dataclasses import dataclass
 import sys
 
 # Third-party modules
+from gufo.loader import Loader
 from pydantic import BaseModel
 
 # NOC modules
+from noc.config import config
 from ..typing import ValueType
 from ..tx import Transaction
 
@@ -562,3 +564,9 @@ class BaseCDAGNode(metaclass=BaseCDAGNodeMetaclass):
     def req_config_inputs_count(self) -> int:
         """Node Config defined inputs count"""
         return 0
+
+
+node_loader = Loader[type[BaseCDAGNode]](
+    bases=config.iter_customized_bases("noc.core.cdag.node"),
+    exclude=("base", "window"),
+)

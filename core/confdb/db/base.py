@@ -1,14 +1,14 @@
 # ----------------------------------------------------------------------
 # ConfDB
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 # from ..syntax import SYNTAX
 from .node import Node
-from .marshall.loader import loader
+from .marshall.base import marshaller_loader
 
 
 class ConfDB:
@@ -33,9 +33,9 @@ class ConfDB:
             self.insert(tokens)
 
     def marshall(self, marshaller="tree"):
-        mcls = loader.get_class(marshaller)
+        mcls = marshaller_loader.get(marshaller)
         return mcls.marshall(self.db)
 
     def unmarshall(self, data, marshaller):
-        mcls = loader.get_class(marshaller)
+        mcls = marshaller_loader.get(marshaller)
         self.db = mcls.unmarshall(data)

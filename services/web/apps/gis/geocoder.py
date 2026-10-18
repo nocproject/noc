@@ -11,7 +11,7 @@ from django.http import HttpRequest
 # NOC modules
 from noc.config import config
 from noc.services.web.base.extapplication import ExtApplication, api
-from noc.core.geocoder.loader import loader
+from noc.core.geocoder.base import geocoder_loader
 
 
 class GeoCoderApplication(ExtApplication):
@@ -25,7 +25,7 @@ class GeoCoderApplication(ExtApplication):
         fmt = q.get(self.format_param)
         query = q.get(self.query_param)
         scope = config.geocoding.ui_geocoder
-        geocoder = loader.get_class(scope)()
+        geocoder = geocoder_loader.get(scope)()
         g_data = list(geocoder.iter_query(query))
         if start:
             g_data = g_data[start:]

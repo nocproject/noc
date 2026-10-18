@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Report Engine Base Class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -23,9 +23,9 @@ from noc.main.reportsources.loader import loader as r_source_loader
 from noc.core.debug import error_report
 from noc.core.middleware.tls import get_user
 from noc.core.datasources.base import BaseDataSource
-from noc.core.datasources.loader import loader as ds_loader
+from noc.core.datasources.base import data_source_loader
 from noc.core.reporter.band import Band, DataSet
-from noc.core.reporter.formatter.loader import loader as df_loader
+from noc.core.reporter.formatter.base import data_formatter_loader
 from noc.core.reporter.types import (
     Template,
     OutputType,
@@ -149,7 +149,7 @@ class ReportEngine:
         selected_fields: list[str] | None,
     ):
         """Render document"""
-        formatter = df_loader[template.formatter]
+        formatter = data_formatter_loader.get(template.formatter)
         fmt = formatter(band, template, output_type, output_stream, selected_fields)
         fmt.render_document()
 
@@ -309,7 +309,7 @@ class ReportEngine:
             ctx:
             fields:
         """
-        ds: BaseDataSource = ds_loader[query.datasource]
+        ds: BaseDataSource = data_source_loader.get(query.datasource)
         if not ds:
             raise ValueError(f"Unknown DataSource: {query.datasource}")
         if fields:

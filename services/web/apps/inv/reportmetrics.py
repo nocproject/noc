@@ -24,14 +24,14 @@ from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.platform import Platform
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.services.web.base.reportdatasources.loader import loader
+from noc.services.web.base.reportdatasources.base import report_data_source_loader
 from noc.services.web.base.reportdatasources.report_container import ReportContainerData
 from noc.services.web.base.extapplication import ExtApplication, api
 from noc.sa.models.useraccess import UserAccess
 from noc.sa.interfaces.base import StringParameter, BooleanParameter
 from noc.sa.models.administrativedomain import AdministrativeDomain
 from noc.core.translation import ugettext as _
-from noc.core.datasources.loader import loader as ds_loader
+from noc.core.datasources.base import data_source_loader
 
 
 def get_column_width(name):
@@ -185,17 +185,17 @@ class ReportMetricsDetailApplication(ExtApplication):
                 # "object_container": "",
             }
         datasource = self.report_map[reporttype]["datasource"]
-        report = loader[datasource]
+        report = report_data_source_loader.get(datasource)
 
         if (
             use_aggregated_source
             and self.report_map[reporttype].get("aggregated_source")
-            and loader[self.report_map[reporttype]["aggregated_source"]]
+            and report_data_source_loader.get(self.report_map[reporttype]["aggregated_source"])
         ):
             agg_map = {"errors_in": "errors_in_avg", "errors_out": "errors_out_avg"}
             columns = [agg_map.get(c, c) for c in columns]
             datasource = "reportinterfacemetricsagg"
-            report = loader[datasource]
+            report = report_data_source_loader.get(datasource)
 
         fields = ["managed_object"]
         group = ["managed_object"]
@@ -217,7 +217,7 @@ class ReportMetricsDetailApplication(ExtApplication):
         filters = []
         mac_counters = {}
         if "mac_counter" in columns_filter:
-            mac_ds = ds_loader["interfacemacsstatds"]
+            mac_ds = data_source_loader.get("interfacemacsstatds")
             data = mac_ds.query_sync(resolve_managedobject_id=False, start=from_date, end=to_date)
             mac_counters = {
                 (r["managed_object_id"], r["interface_name"]): r["mac_count"]

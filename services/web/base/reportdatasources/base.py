@@ -18,10 +18,12 @@ import itertools
 import logging
 
 # Third-party modules
+from gufo.loader import Loader
 import orjson
 from django.db.models import Q as d_Q
 
 # NOC modules
+from noc.config import config
 from noc.aaa.models.user import User
 from noc.sa.models.managedobject import ManagedObject
 from .report_objectstat import (
@@ -626,3 +628,9 @@ class CHTableReportDataSource(ReportDataSource):
 
     def extract(self):
         yield from self.do_query()
+
+
+report_data_source_loader = Loader[type[ReportDataSource]](
+    bases=config.iter_customized_bases("noc.services.web.base.reportdatasources"),
+    exclude=("base",),
+)

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseMapper class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,11 @@ from dataclasses import dataclass
 from typing import Any
 from collections.abc import Iterable
 
+# Third-party modules
+from gufo.loader import Loader
+
 # NOC modules
+from noc.config import config
 from noc.core.log import PrefixLoggerAdapter
 from noc.inv.models.channel import Channel
 from noc.core.facade.interaction import (
@@ -305,3 +309,9 @@ class BaseMapper:
             swap(edge, "head", "tail")
             # headport <-> tailport
             swap(attrs, "headport", "tailport")
+
+
+mapper_loader = Loader[type[BaseMapper]](
+    bases=config.iter_customized_bases("noc.core.techdomain.mapper"),
+    exclude=("base",),
+)

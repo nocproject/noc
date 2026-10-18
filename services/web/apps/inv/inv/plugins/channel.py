@@ -25,7 +25,7 @@ from noc.sa.interfaces.base import (
     BooleanParameter,
     DictParameter,
 )
-from noc.core.techdomain.controller.loader import loader as controller_loader
+from noc.core.techdomain.controller.base import controller_loader
 from noc.core.techdomain.controller.base import Endpoint, BaseController, ConstraintSet
 from noc.inv.models.channel import Channel
 from noc.inv.models.endpoint import Endpoint as DBEndpoint
@@ -226,7 +226,7 @@ class ChannelPlugin(InvPlugin):
             Build proposals for controller.
             """
             r = []
-            controller: BaseController = controller_loader[controller_name]()
+            controller: BaseController = controller_loader.get(controller_name)()
             is_bidi = controller.topology.is_bidirectional
             seen = set()
             constraints: dict[str, ConstraintSet] = {}  # Start endpoint -> constraints
@@ -353,7 +353,7 @@ class ChannelPlugin(InvPlugin):
             channel = None
         # Run controller
         ep = Endpoint.from_resource(endpoint)
-        ctl = controller_loader[controller]()
+        ctl = controller_loader.get(controller)()
         params = params or {}
         try:
             ch, msg = ctl.sync_ad_hoc_channel(

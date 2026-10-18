@@ -1,9 +1,17 @@
 # ----------------------------------------------------------------------
 # BaseMarshaller
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+
+# Python modules
+
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
 
 
 class BaseMarshaller:
@@ -32,3 +40,9 @@ class BaseMarshaller:
             Node
         """
         raise NotImplementedError()
+
+
+marshaller_loader = Loader[type[BaseMarshaller]](
+    bases=config.iter_customized_bases("noc.core.confdb.db.marshall"),
+    exclude=("base",),
+)

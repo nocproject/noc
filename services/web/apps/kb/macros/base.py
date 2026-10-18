@@ -1,12 +1,19 @@
 # ---------------------------------------------------------------------
 # Macros Framework
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import re
+
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
+
 
 # Args regular expression
 rx_args = re.compile(r"\s*(?P<attr>\S+)\s*=\s*(?P<quote>['\"])(?P<value>.*?)(?P=quote)")
@@ -41,3 +48,9 @@ class BaseMacro:
         to be included in output
         """
         raise NotImplementedError
+
+
+kb_macro_loader = Loader[type[BaseMacro]](
+    bases=config.iter_customized_bases("noc.services.web.apps.kb.macros"),
+    exclude=("base",),
+)

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test URLSessionMiddleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ import pytest
 
 # NOC modules
 from noc.core.script.http.base import HTTP
-from noc.core.script.http.middleware.loader import loader
+from noc.core.script.http.middleware.base import middleware_loader
 
 
 @pytest.mark.parametrize(
@@ -28,7 +28,7 @@ from noc.core.script.http.middleware.loader import loader
 )
 def test_(url, config, expected):
     http = HTTP(None)
-    mw_cls = loader.get_class("urlsession")
+    mw_cls = middleware_loader.get("urlsession")
     middleware = mw_cls(http, **config)
     # No session yet
     r_url, r_body, r_headers = middleware.process_request(url, {}, {})

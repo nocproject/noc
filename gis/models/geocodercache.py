@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Geocoding cache
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from mongoengine.fields import StringField, FloatField, ListField, DateTimeField
 from noc.core.geocoder.base import GeoCoderResult
 from noc.core.geocoder.errors import GeoCoderError
 from noc.config import config
-from noc.core.geocoder.loader import loader
+from noc.core.geocoder.base import geocoder_loader
 from noc.core.comp import smart_bytes, smart_text
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ class GeocoderCache(Document):
         if not cls.geocoders:
             for gc in config.geocoding.order.split(","):
                 gc = gc.strip()
-                h = loader[gc]
+                h = geocoder_loader.get(gc)
                 if h:
                     cls.geocoders.append(h)
         yield from cls.geocoders

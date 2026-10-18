@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseBioSegPolicy class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,11 @@
 import logging
 from django.db import connection
 
+# Third-party modules
+from gufo.loader import Loader
+
 # NOC modules
+from noc.config import config
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import NetworkSegmentProfile
 from noc.inv.models.link import Link
@@ -146,3 +150,9 @@ class BaseBioSegPolicy:
         seg.delete()
         # Invalidate TTL cache
         NetworkSegment._reset_caches(seg.id)
+
+
+bioseg_policy_loader = Loader[type[BaseBioSegPolicy]](
+    bases=config.iter_customized_bases("noc.core.bioseg.policies"),
+    exclude=("base",),
+)

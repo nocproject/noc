@@ -1,13 +1,16 @@
 # ----------------------------------------------------------------------
 # DataFormatter
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2022 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import logging
 from io import BytesIO
+
+# Third-party modules
+from gufo.loader import Loader
 
 # NOC modules
 from noc.core.reporter.band import Band
@@ -70,3 +73,9 @@ class DataFormatter:
         self.output_stream = BytesIO()
         self.render_document()
         return self.output_stream
+
+
+data_formatter_loader = Loader[type[DataFormatter]](
+    bases=config.iter_customized_bases("noc.core.reporter.formatter"),
+    exclude=("base",),
+)

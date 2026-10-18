@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ./noc nri
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.inv.models.interface import Interface
 from noc.inv.models.resourcegroup import ResourceGroup
-from noc.core.etl.portmapper.loader import loader
+from noc.core.etl.portmapper.base import portmapper_loader
 from noc.core.text import alnum_key, format_table
 
 
@@ -38,7 +38,7 @@ class Command(BaseCommand):
                 if not o.remote_system:
                     self.stdout.write(f"{o.name} ({o.address}, {o.platform}) NRI: N/A\n")
                     continue
-                portmapper = loader[o.remote_system.name](o)
+                portmapper = portmapper_loader.get(o.remote_system.name)(o)
                 nri = o.remote_system.name
                 self.stdout.write(f"{o.name} ({o.address}, {o.platform}) NRI: {nri}\n")
                 r = []

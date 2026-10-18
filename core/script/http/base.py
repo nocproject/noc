@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # HTTP methods implementation
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from noc.core.http.sync import HttpClient
 from noc.core.error import NOCError, ERR_HTTP_UNKNOWN
 from noc.core.handler import get_handler
 from .middleware.base import BaseMiddleware
-from .middleware.loader import loader
+from .middleware.base import middleware_loader
 
 
 class HTTPError(NOCError):
@@ -298,5 +298,5 @@ class HTTP:
                 assert issubclass(mw_cls, BaseMiddleware)
             else:
                 # Middleware name
-                mw_cls = loader.get_class(name)
+                mw_cls = middleware_loader.get(name)
             self.request_middleware.append(mw_cls(self, **cfg))

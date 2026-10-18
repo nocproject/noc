@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Creole 1.0 Parser (http://www.wikicreole.org)
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2018 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ from threading import Lock
 import creole
 
 # NOC modules
-from ..macros.loader import loader as macro_loader
+from ..macros.base import kb_macro_loader
 from .base import BaseParser
 from noc.core.comp import smart_text
 
@@ -52,7 +52,7 @@ class CreoleParser(BaseParser):
         with mw_lock:
             if not cls.macro_wrapper:
                 cls.macro_wrapper = MacroWrapper()
-                for mn in macro_loader:
-                    mc = macro_loader[mn]
+                for mn in kb_macro_loader:
+                    mc = kb_macro_loader.get(mn)
                     setattr(cls.macro_wrapper, mn, mc.expand)
             return cls.macro_wrapper

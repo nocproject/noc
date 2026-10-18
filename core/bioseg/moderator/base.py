@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Biosegmentation moderator
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ from noc.inv.models.biosegtrial import BioSegTrial
 from noc.inv.models.networksegment import NetworkSegment
 from noc.inv.models.networksegmentprofile import BioCollisionPolicy
 from noc.sa.models.managedobject import ManagedObject
-from ..policies.loader import loader
+from ..policies.base import bioseg_policy_loader
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ def moderate(
     )
     if not attacker_c_policy:
         return None, "Not matched rule", True
-    attacker_policy = loader.get_class(attacker_c_policy.policy)
+    attacker_policy = bioseg_policy_loader.get(attacker_c_policy.policy)
     if not attacker_policy:
         return None, "Cannot determine attacker policy", True
     logger.info(f"Attacker policy is {attacker_policy.name}")
@@ -132,13 +132,13 @@ def moderate(
     )
     if not target_c_policy:
         return None, "Not matched rule", True
-    target_policy = loader.get_class(target_c_policy.policy)
+    target_policy = bioseg_policy_loader.get(target_c_policy.policy)
     if not target_policy:
         return None, "Cannot determine target policy", False
     logger.info(f"Target policy is {target_policy.name}")
     # Calculate effective policy
     effective_policy_name = target_policy.get_effective_policy_name(target, attacker_policy.name)
-    effective_policy = loader.get_class(effective_policy_name)
+    effective_policy = bioseg_policy_loader.get(effective_policy_name)
     if not effective_policy:
         return None, f"Unknown policy '{effective_policy_name}'", False
     logger.info(f"Effective policy is {effective_policy.name}")

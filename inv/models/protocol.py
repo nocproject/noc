@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Protocol
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -317,7 +317,7 @@ class Protocol(Document):
     def get_discriminator_source(
         self, data: list[ProtocolAttr] | None = None
     ) -> BaseDiscriminatorSource | None:
-        from noc.core.protodcsources.loader import loader
+        from noc.core.protodcsources.base import discriminator_source_loader
 
-        ds = loader[self.discriminator_loader]
+        ds = discriminator_source_loader.get(self.discriminator_loader)
         return ds(self, data)

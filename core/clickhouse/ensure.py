@@ -85,13 +85,13 @@ def ensure_all_pm_scopes() -> bool:
 def ensure_report_ds_scopes(
     connect: ClickhouseClient | None = None, allow_type: bool = False
 ) -> bool:
-    from noc.core.datasources.loader import loader
+    from noc.core.datasources.base import data_source_loader
 
     logger.info("Ensuring Report BI")
     allow_type |= config.clickhouse.enable_migrate_type
     changed = False
-    for ds in loader:
-        ds = loader[ds]
+    for ds in data_source_loader:
+        ds = data_source_loader.get(ds)
         if not hasattr(ds, "name"):
             continue
         if not ds.clickhouse_mirror():

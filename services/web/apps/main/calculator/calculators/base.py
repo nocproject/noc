@@ -5,8 +5,14 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Python modules
+
 # Third-party modules
 from django.http import HttpRequest
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
 
 
 class BaseCalculator:
@@ -42,3 +48,9 @@ class BaseCalculator:
         :return:
         """
         return
+
+
+calculator_loader = Loader[type[BaseCalculator]](
+    bases=config.iter_customized_bases("noc.services.web.apps.main.calculator.calculators"),
+    exclude=("base",),
+)

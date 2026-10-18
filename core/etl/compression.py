@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Compression utilities
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,7 +10,7 @@
 # NOC modules
 from noc.config import config
 from noc.core.compressor.base import BaseCompressor
-from noc.core.compressor.loader import loader
+from noc.core.compressor.base import compressor_loader
 
 
-compressor: type[BaseCompressor] = loader.get_class(config.etl.compression)
+compressor: type[BaseCompressor] = compressor_loader.get(config.etl.compression)

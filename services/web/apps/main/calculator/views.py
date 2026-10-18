@@ -14,7 +14,7 @@ from django.http import HttpRequest
 # NOC modules
 from noc.services.web.base.application import Application, HasPerm, view, api
 from noc.core.translation import ugettext as _
-from .calculators.loader import loader
+from .calculators.base import calculator_loader
 
 
 class CalculatorApplication(Application):
@@ -22,14 +22,14 @@ class CalculatorApplication(Application):
 
     @api.get(r"^$", url_name="index", menu="Calculators", access=HasPerm("view"))
     def api_index(self, request: HttpRequest):
-        r = [(cn, loader[cn].title) for cn in loader]
+        r = [(cn, calculator_loader.get(cn).title) for cn in calculator_loader]
         r = sorted(r, key=operator.itemgetter(1))
         return self.render(request, "index.html", {"calculators": r})
 
     @view(url=r"^(?P<calculator>\S+)/$", url_name="calculate", access=HasPerm("view"))
     def view_calculate(self, request: HttpRequest, calculator):
         try:
-            c = loader[calculator](self)
+            c = calculator_loader.get(calculator)(self)
         except KeyError:
             return self.response_not_found("No calculator found")
         return c.render(request)

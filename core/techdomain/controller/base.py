@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseController class
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,11 @@ from dataclasses import dataclass
 import logging
 from enum import Enum
 
+# Third-party modules
+from gufo.loader import Loader
+
 # NOC modules
+from noc.config import config
 from noc.inv.models.objectmodel import ObjectModelConnection
 from noc.inv.models.object import Object
 from noc.inv.models.techdomain import TechDomain
@@ -465,3 +469,9 @@ class BaseController:
         Convert constraints to list of params.
         """
         return []
+
+
+controller_loader = Loader[type[BaseController]](
+    bases=config.iter_customized_bases("noc.core.techdomain.controller"),
+    exclude=("base",),
+)

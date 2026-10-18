@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Fix ETL format to JSONL
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,8 +10,8 @@ import os
 import csv
 
 # NOC modules
-from noc.core.compressor.loader import loader as comp_loader
-from noc.core.etl.models.loader import loader as model_loader
+from noc.core.compressor.base import compressor_loader
+from noc.core.etl.models.base import etl_model_loader
 from noc.config import config
 
 
@@ -49,7 +49,7 @@ def iter_cleaned(g):
 
 
 def ensure_format(path):
-    comp = comp_loader[config.etl.compression]
+    comp = compressor_loader.get(config.etl.compression)
     if comp.ext:
         if not path.endswith(comp.ext):
             return
@@ -63,7 +63,7 @@ def ensure_format(path):
         name = parts[-2]
     else:
         name = parts[-1]
-    model = model_loader[name]
+    model = etl_model_loader.get(name)
     new_path = comp.get_path(f"{s_path[:-4]}.jsonl")
     with comp(path).open() as f:
         reader = csv.reader(iter_cleaned(f))

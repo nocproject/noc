@@ -15,7 +15,7 @@ from noc.inv.models.endpoint import Endpoint, UsageItem, ConstraintItem
 from noc.core.translation import ugettext as _
 from noc.services.web.base.docinline import DocInline
 from noc.core.resource import resource_label
-from noc.core.techdomain.mapper.loader import loader as mapper_loader
+from noc.core.techdomain.mapper.base import mapper_loader
 from noc.core.feature import Feature
 
 
@@ -54,6 +54,6 @@ class ChannelApplication(ExtDocApplication):
     @api.get("^(?P<id>[0-9a-f]{24})/viz/", access="read")
     def api_viz(self, request: HttpRequest, id: str):
         channel = self.get_object_or_404(Channel, id=id)
-        mapper = mapper_loader[channel.tech_domain.code](channel)
+        mapper = mapper_loader.get(channel.tech_domain.code)(channel)
         data = mapper.to_viz()
         return self.render_json({"data": data})

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # CDAG
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ from typing import Any
 
 # NOC modules
 from .node.base import BaseCDAGNode, ConfigProxy
-from .node.loader import loader
+from .node.base import node_loader
 from .tx import Transaction
 
 
@@ -38,7 +38,7 @@ class CDAG:
     ) -> BaseCDAGNode:
         if node_id in self.nodes:
             raise ValueError(f"Node {node_id} is already configured")
-        node_cls = loader.get_class(node_type)
+        node_cls = node_loader.get(node_type)
         if not node_cls:
             raise ValueError(f"Invalid node type: {node_type}")
         config = config or {}

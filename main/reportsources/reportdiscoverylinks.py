@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # Discovery Links Report
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from noc.main.models.report import Report
 from noc.core.reporter.reportsource import ReportSource
 from noc.core.reporter.band import Band, DataSet
 from noc.core.reporter.types import BandFormat, ColumnFormat
-from noc.core.datasources.loader import loader
+from noc.core.datasources.base import data_source_loader
 from noc.core.translation import ugettext as _
 
 
@@ -47,7 +47,7 @@ class ReportDiscoveryLinks(ReportSource):
 
     def get_data(self, request=None, **kwargs) -> list[Band]:
         data = []
-        ds = loader["managedobjectds"]
+        ds = data_source_loader.get("managedobjectds")
         sql = pl.SQLContext()
         r = ds.query_sync(fields=["pool", "status", "enable_ping", "enable_box", "link_count"])
         sql.register("mo", r.lazy())

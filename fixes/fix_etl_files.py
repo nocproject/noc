@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Fix ETL file/compression format
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,11 +9,13 @@
 import os
 
 # NOC modules
-from noc.core.compressor.loader import loader
+from noc.core.compressor.base import compressor_loader
 from noc.config import config
 
 ext_map = {
-    cc.ext: cc for cc in (loader[c] for c in loader.iter_classes()) if cc and cc.ext is not None
+    cc.ext: cc
+    for cc in (compressor_loader.get(c) for c in compressor_loader.keys())
+    if cc and cc.ext is not None
 }
 
 
@@ -41,7 +43,7 @@ def fix():
 
 
 def ensure_format(path: str) -> None:
-    dst_comp = loader[config.etl.compression]
+    dst_comp = compressor_loader.get(config.etl.compression)
     if path.endswith(dst_comp.ext) and (path.endswith(".csv") and not dst_comp.ext):
         print(f"[{path}] Already compressed")
         return  # Already compressed

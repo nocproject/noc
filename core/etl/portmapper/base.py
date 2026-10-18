@@ -4,7 +4,14 @@
 # Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
+# Python modules
 from typing import Any, cast
+
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
 
 
 class PortMapperBase(type):
@@ -102,3 +109,9 @@ def to_remote(profile=None, platform=None):
         return f
 
     return wrap
+
+
+portmapper_loader = Loader[type[BasePortMapper]](
+    bases=config.iter_customized_bases("noc.core.etl.portmapper"),
+    exclude=("base",),
+)

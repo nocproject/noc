@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Load Metrics DataSource
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -18,7 +18,7 @@ import orjson
 from .base import FieldInfo, FieldType, BaseDataSource, ParamInfo
 from noc.config import config
 from noc.core.clickhouse.connect import connection
-from noc.core.datasources.loader import loader as ds_loader
+from noc.core.datasources.base import data_source_loader
 from noc.inv.models.interfaceprofile import InterfaceProfile
 from noc.inv.models.resourcegroup import ResourceGroup
 from noc.sa.models.managedobject import ManagedObject
@@ -256,7 +256,7 @@ class LoadMetricsDS(BaseDataSource):
         # Prepare data on the number of MAC-addresses
         mac_counters = {}
         if reporttype == "load_interfaces" and (not fields or "mac_counter" in fields):
-            mac_ds = ds_loader["interfacemacsstatds"]
+            mac_ds = data_source_loader.get("interfacemacsstatds")
             data = mac_ds.query_sync(resolve_managedobject_id=False, start=start, end=end)
             mac_counters = {
                 (r["managed_object_id"], r["interface_name"]): r["mac_count"]

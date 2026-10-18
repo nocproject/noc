@@ -18,7 +18,7 @@ from noc.core.mongo.connection import connect
 from noc.inv.models.extnrilink import ExtNRILink
 from noc.sa.models.managedobject import ManagedObject
 from noc.inv.models.interface import Interface
-from noc.core.etl.portmapper.loader import loader
+from noc.core.etl.portmapper.base import portmapper_loader
 
 
 class Command(BaseCommand):
@@ -121,7 +121,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_port_mapper(mo):
         if mo.remote_system:
-            return loader.get_loader(mo.remote_system.name)
+            return portmapper_loader.get(mo.remote_system.name)
         return None
 
     @staticmethod

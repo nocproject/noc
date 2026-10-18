@@ -2,7 +2,7 @@
 # ----------------------------------------------------------------------
 # metrics service
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ import time
 from noc.core.service.base import BaseService
 from noc.core.debug import error_report
 from noc.core.span import Span, PARENT_SAMPLE
-from noc.services.selfmon.loader import loader
+from noc.services.selfmon.collectors.base import collector_loader
 
 
 class SelfMonService(BaseService):
@@ -28,7 +28,11 @@ class SelfMonService(BaseService):
         self.runner_thread = None
 
     async def on_activate(self) -> None:
-        self.collectors = [loader[c](self) for c in loader if loader[c].is_enabled()]
+        self.collectors = [
+            collector_loader.get(name)(self)
+            for name in collector_loader
+            if collector_loader.get(name).is_enabled()
+        ]
         if not self.collectors:
             self.die("No collectors enabled")
         await self.acquire_lock()

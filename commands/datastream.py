@@ -19,7 +19,7 @@ from bson.objectid import ObjectId
 # NOC modules
 from noc.config import config
 from noc.core.management.base import BaseCommand
-from noc.core.datastream.loader import loader
+from noc.core.datastream.base import data_stream_loader
 from noc.core.mongo.connection import connect
 from noc.models import get_model, get_model_id
 from noc.models import is_document
@@ -82,7 +82,7 @@ class Command(BaseCommand):
         getattr(self, f"handle_{cmd}")(*args, **options)
 
     def handle_list(self):
-        for ds_name in sorted(loader.iter_classes()):
+        for ds_name in sorted(data_stream_loader.keys()):
             self.print(ds_name)
 
     def iter_id(self, model, as_bi_id: bool = False):
@@ -154,7 +154,7 @@ class Command(BaseCommand):
             datastream = self.OLD_MAP[datastream]
         model = self.get_model(datastream)
         connect()
-        ds = loader[datastream]
+        ds = data_stream_loader.get(datastream)
         if not ds:
             self.die("Cannot initialize datastream")
         total = self.get_total(model)
@@ -195,7 +195,7 @@ class Command(BaseCommand):
         connect()
         if datastream in self.OLD_MAP:
             datastream = self.OLD_MAP[datastream]
-        ds = loader[datastream]
+        ds = data_stream_loader.get(datastream)
         if not ds:
             self.die("Cannot initialize datastream")
         filter = filter or []
@@ -215,7 +215,7 @@ class Command(BaseCommand):
         ttl = getattr(config.datastream, f"{datastream}_ttl", 0)
         if ttl:
             start_date = datetime.datetime.now() - datetime.timedelta(seconds=ttl)
-            ds = loader[datastream]
+            ds = data_stream_loader.get(datastream)
             collection = ds.get_collection()
             collection.delete_many({"_id": {"$lte": ObjectId.from_datetime(start_date)}})
         self.print("Done")

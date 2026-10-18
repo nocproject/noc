@@ -1,18 +1,18 @@
 # ----------------------------------------------------------------------
 # Test basic auth middleware
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # NOC modules
 from noc.core.script.http.base import HTTP
-from noc.core.script.http.middleware.loader import loader
+from noc.core.script.http.middleware.base import middleware_loader
 
 
 def test_basicauth():
     http = HTTP(None)
-    mw_cls = loader.get_class("basicauth")
+    mw_cls = middleware_loader.get("basicauth")
     middleware = mw_cls(http, user="user", password="password")
     url = "http://127.0.0.1"
     r_url, r_body, r_headers = middleware.process_post(url, {}, {})

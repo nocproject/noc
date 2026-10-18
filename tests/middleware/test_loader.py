@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test middleware loader
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2019 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -9,7 +9,7 @@
 import pytest
 
 # NOC modules
-from noc.core.script.http.middleware.loader import loader
+from noc.core.script.http.middleware.base import middleware_loader
 from noc.core.script.http.middleware.base import BaseMiddleware
 
 
@@ -17,7 +17,7 @@ from noc.core.script.http.middleware.base import BaseMiddleware
     "name", ["urlsession", "urlrequestid", "jsonsession", "jsonrequestid", "basicauth"]
 )
 def test_loader(name):
-    t = loader.get_class(name)
+    t = middleware_loader.get(name)
     assert t is not None
     assert t.name == name
     assert issubclass(t, BaseMiddleware)

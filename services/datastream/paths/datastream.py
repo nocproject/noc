@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Datastream endpoint
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ from pymongo.errors import PyMongoError
 from fastapi import APIRouter, Query, Header, HTTPException, Response, Depends
 
 # NOC modules
-from noc.core.datastream.loader import loader
+from noc.core.datastream.base import data_stream_loader
 from noc.core.datastream.base import DataStream
 from noc.config import config
 from noc.core.ioloop.util import setup_asyncio
@@ -61,10 +61,10 @@ class DatastreamAPI:
     @staticmethod
     def get_datastreams() -> list["DataStream"]:
         r = []
-        for name in loader:
+        for name in data_stream_loader:
             if not getattr(config.datastream, f"enable_{name}", False):
                 continue
-            ds = loader[name]
+            ds = data_stream_loader.get(name)
             if ds:
                 logger.info("[%s] Initializing datastream", name)
                 r.append(ds)
@@ -90,8 +90,8 @@ class DatastreamAPI:
         :return: True if .watch() is working
         """
         # Get one datastream collection
-        dsn = next(loader.iter_classes())
-        ds = loader[dsn]
+        dsn = next(iter(data_stream_loader.keys()))
+        ds = data_stream_loader.get(dsn)
         coll = ds.get_collection()
         # Check pymongo has .watch
         if not hasattr(coll, "watch"):

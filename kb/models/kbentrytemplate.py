@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # KBEntryTemplate model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -15,7 +15,7 @@ from django.db import models
 from noc.core.model.base import NOCModel
 from noc.core.model.fields import AutoCompleteTagsField
 from noc.main.models.language import Language
-from noc.services.web.apps.kb.parsers.loader import loader
+from noc.services.web.apps.kb.parsers.base import kb_parser_loader
 
 
 class KBEntryTemplate(NOCModel):
@@ -40,7 +40,7 @@ class KBEntryTemplate(NOCModel):
         on_delete=models.CASCADE,
     )
     markup_language = models.CharField(
-        "Markup Language", max_length="16", choices=[(x, x) for x in loader]
+        "Markup Language", max_length="16", choices=[(x, x) for x in kb_parser_loader]
     )
     tags = AutoCompleteTagsField("Tags", null=True, blank=True)
 

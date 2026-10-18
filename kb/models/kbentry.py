@@ -1,7 +1,7 @@
 # ---------------------------------------------------------------------
 # KBEntry model
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ from django.contrib.postgres.fields import ArrayField
 from noc.core.model.base import NOCModel
 from noc.main.models.language import Language
 from noc.main.models.label import Label
-from noc.services.web.apps.kb.parsers.loader import loader
+from noc.services.web.apps.kb.parsers.base import kb_parser_loader
 from noc.core.model.decorator import on_delete_check
 
 
@@ -52,7 +52,7 @@ class KBEntry(NOCModel):
         on_delete=models.CASCADE,
     )
     markup_language = models.CharField(
-        "Markup Language", max_length=16, choices=[(x, x) for x in loader]
+        "Markup Language", max_length=16, choices=[(x, x) for x in kb_parser_loader]
     )
     labels = ArrayField(models.CharField(max_length=250), blank=True, null=True, default=list)
     effective_labels = ArrayField(
@@ -91,7 +91,7 @@ class KBEntry(NOCModel):
         """
         Wiki parser class
         """
-        return loader[self.markup_language]
+        return kb_parser_loader.get(self.markup_language)
 
     @property
     def html(self):

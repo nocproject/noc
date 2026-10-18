@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Run tests over tests/confdb/profiles
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ import re
 from noc.core.ip import IP
 from noc.core.handler import get_handler
 from noc.core.profile.loader import loader as profile_loader
-from noc.core.confdb.tokenizer.loader import loader as tokenizer_loader
+from noc.core.confdb.tokenizer.base import tokenizer_loader
 
 
 PREFIX = ("tests", "confdb", "profiles")
@@ -80,7 +80,7 @@ def test_profile(path):
     mo = MockManagedObject(profile=profile)
     # Setup tokenizer
     tokenizer_name, tokenizer_conf = profile.get_config_tokenizer(mo)
-    tokenizer_cls = tokenizer_loader.get_class(tokenizer_name)
+    tokenizer_cls = tokenizer_loader.get(tokenizer_name)
     assert tokenizer_cls, "Tokenizer not found"
     tokenizer = tokenizer_cls(test["config"], **tokenizer_conf)
     # Setup normalizer

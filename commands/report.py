@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # ./noc report command
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2024 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,7 +19,7 @@ from noc.core.management.base import BaseCommand
 from noc.core.mongo.connection import connect
 from noc.core.reporter.reportengine import ReportEngine
 from noc.core.reporter.types import RunParams, OutputType
-from noc.core.datasources.loader import loader
+from noc.core.datasources.base import data_source_loader
 from noc.aaa.models.user import User
 from noc.main.models.report import Report
 
@@ -91,12 +91,12 @@ class Command(BaseCommand):
             # Language params, user param, List all params for report (r - required)
 
     def handle_list_ds(self, **kwargs):
-        for ds in loader:
+        for ds in data_source_loader:
             self.print(f"Datasource: {ds}")
 
     def handle_query_ds(self, datasource, query, arguments, export: str | None = None, **kwargs):
         args = self.get_report_args(arguments)
-        ds = loader[datasource]
+        ds = data_source_loader.get(datasource)
         self.print(f"Running DataSource with arguments: {args}")
         r = ds.query_sync(**args)
         self.print(r.sql(query[0]))

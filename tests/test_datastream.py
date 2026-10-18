@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # noc.core.datastream test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2021 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -17,7 +17,7 @@ import bson
 # NOC modules
 from noc.core.datastream.base import DataStream
 from noc.core.perf import metrics
-from noc.core.datastream.loader import loader
+from noc.core.datastream.base import data_stream_loader
 from .conftest import IN_GITHUB_ACTIONS
 
 
@@ -237,30 +237,30 @@ def test_datastream_clean_id_int():
         DS.clean_id("z")
 
 
-@pytest.fixture(params=list(loader))
+@pytest.fixture(params=list(data_stream_loader))
 def datastream_name(request):
     return request.param
 
 
 def test_loader(datastream_name):
-    ds = loader[datastream_name]
+    ds = data_stream_loader.get(datastream_name)
     assert ds is not None
     assert issubclass(ds, DataStream)
     assert ds.name == datastream_name
 
 
 def test_loader_invalid_name():
-    ds = loader["aaa..bbbb"]
+    ds = data_stream_loader.get("aaa..bbbb")
     assert ds is None
 
 
 def test_loader_error():
-    ds = loader["invalid"]
+    ds = data_stream_loader.get("invalid")
     assert ds is None
 
 
 def test_loader_contains(datastream_name):
-    assert datastream_name in loader
+    assert datastream_name in data_stream_loader
 
 
 @pytest.mark.skipif(IN_GITHUB_ACTIONS, reason="Replica set is disabled")

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BioSeg test
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,7 +12,7 @@ import pytest
 import bson
 
 # NOC modules
-from noc.core.bioseg.policies.loader import loader
+from noc.core.bioseg.policies.base import bioseg_policy_loader
 from noc.core.bioseg.policies.base import BaseBioSegPolicy
 from noc.core.bioseg.policies.keep import KeepBioSegPolicy
 from noc.core.bioseg.policies.merge import MergeBioSegPolicy
@@ -60,7 +60,7 @@ class MockBioSegPolicy(BaseBioSegPolicy):
 
 @pytest.mark.parametrize("name", ["keep", "eat", "feed", "merge", "calcify"])
 def test_loader(name):
-    policy_cls = loader.get_class(name)
+    policy_cls = bioseg_policy_loader.get(name)
     assert policy_cls
     assert policy_cls.name == name
 
@@ -225,12 +225,12 @@ def test_collision_policy_level(match_level, attacker_level, target_level, outco
     ],
 )
 def test_collision_persist(attacker_policy, target_policy, expected):
-    policy = loader.get_class(target_policy)
+    policy = bioseg_policy_loader.get(target_policy)
     profile = NetworkSegmentProfile(name="stub", is_persistent=True)
     target = NetworkSegment(name="target", profile=profile)
     result = policy.get_effective_policy_name(target, attacker_policy)
     assert result == expected
-    assert loader.get_class(result)
+    assert bioseg_policy_loader.get(result)
 
 
 @pytest.mark.parametrize(
@@ -269,9 +269,9 @@ def test_collision_persist(attacker_policy, target_policy, expected):
     ],
 )
 def test_collision_floating(attacker_policy, target_policy, expected):
-    policy = loader.get_class(target_policy)
+    policy = bioseg_policy_loader.get(target_policy)
     profile = NetworkSegmentProfile(name="stub", is_persistent=False)
     target = NetworkSegment(name="target", profile=profile)
     result = policy.get_effective_policy_name(target, attacker_policy)
     assert result == expected
-    assert loader.get_class(result)
+    assert bioseg_policy_loader.get(result)

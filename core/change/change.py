@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Change handler
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -109,11 +109,11 @@ def apply_datastream(ds_changes: dict[str, set[str]] | None = None) -> None:
     :param ds_changes: Changes Items
     :return:
     """
-    from noc.core.datastream.loader import loader
+    from noc.core.datastream.base import data_stream_loader
 
     ds_changes = ds_changes or {}
     for ds_name, items in ds_changes.items():
-        ds = loader[ds_name]
+        ds = data_stream_loader.get(ds_name)
         if not ds:
             logger.error("Invalid datastream: %s", ds_name)
             continue

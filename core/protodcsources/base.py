@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DiscriminatorSource Base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2023 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -10,6 +10,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
 from collections.abc import Iterable
+
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
 
 
 @dataclass(frozen=True)
@@ -57,3 +63,9 @@ class BaseDiscriminatorSource(ABC):
         Getting Discriminator Instance by Code
         :return:
         """
+
+
+discriminator_source_loader = Loader[type[BaseDiscriminatorSource]](
+    bases=config.iter_customized_bases("noc.core.protodcsources"),
+    exclude=("base",),
+)

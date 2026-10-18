@@ -21,7 +21,7 @@ from noc.aaa.models.user import User
 from noc.config import config
 from noc.core.perf import metrics
 from noc.core.error import NOCError, ERR_AUTH_CRED_CHANGE
-from .backends.loader import loader
+from .backends.base import auth_backend_loader
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ def authenticate(credentials: dict[str, Any]) -> str | None:
             c[f] = "***"
     login_error = "No active auth methods"
     for method in iter_methods():
-        bc = loader.get_class(method)
+        bc = auth_backend_loader.get(method)
         if not bc:
             logger.error("Cannot initialize backend '%s'", method)
             continue
@@ -233,7 +233,7 @@ def change_credentials(credentials: dict[str, Any]) -> None:
         if f in c:
             c[f] = "***"
     for method in iter_methods():
-        bc = loader.get_class(method)
+        bc = auth_backend_loader.get(method)
         if not bc:
             logger.error("Cannot initialize backend '%s'", method)
             continue

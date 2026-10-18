@@ -1,12 +1,19 @@
 # ---------------------------------------------------------------------
 # Authentication Backends
 # ---------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
 # Python modules
 import logging
+
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
+
 
 logger = logging.getLogger(__name__)
 
@@ -78,3 +85,9 @@ class BaseAuthBackend:
         if self._user_in_group(user, group):
             self.logger.info("Removing user %s from group %s", user.username, group.name)
             user.groups.remove(group)
+
+
+auth_backend_loader = Loader[type[BaseAuthBackend]](
+    bases=config.iter_customized_bases("noc.services.login.backends"),
+    exclude=("base",),
+)

@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # DataSource Base
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -19,6 +19,7 @@ from typing import Any
 from collections.abc import Iterable, AsyncIterable
 
 # Third-party modules
+from gufo.loader import Loader
 import polars as pl
 
 # NOC modules
@@ -691,3 +692,9 @@ class BaseDataSource:
             ch.execute(post=cls.get_create_view_sql())
             changed = True
         return changed
+
+
+data_source_loader = Loader[type[BaseDataSource]](
+    bases=config.iter_customized_bases("noc.core.datasources"),
+    exclude=("base",),
+)

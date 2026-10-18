@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # BaseETLModel
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -11,10 +11,12 @@ from collections.abc import Iterable
 from itertools import zip_longest
 
 # Third-party modules
+from gufo.loader import Loader
 from pydantic import BaseModel as _BaseModel, ConfigDict
 from pydantic.fields import FieldInfo
 
 # NOC modules
+from noc.config import config
 from .typing import Reference
 
 
@@ -63,3 +65,9 @@ class BaseModel(_BaseModel):
                 return ref.__args__[0].__name__.lower()
 
         return {fn: q(f) for fn, f in cls.model_fields.items() if cls.is_reference(f)}
+
+
+etl_model_loader = Loader[type[BaseModel]](
+    bases=config.iter_customized_bases("noc.core.etl.models"),
+    exclude=("base",),
+)
