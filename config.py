@@ -1228,9 +1228,10 @@ class Config(BaseConfig):
             This method is not package-safe and must be revised.
 
         Args:
-            *args: One or more string path components, in the order expected by
-                :func:`os.path.join`. These form the path relative to the
-                repository root and, when configured, the custom root.
+            *args: Zero or more string path components, in the order expected
+                by :func:`os.path.join`. These form the path relative to the
+                repository root and, when configured, the custom root. When
+                omitted, the repository root is used.
             prefer_custom: If ``True``, return an existing custom path before
                 the repository path. If ``False``, return the repository path
                 first. The custom path is only included when it exists.
@@ -1239,6 +1240,8 @@ class Config(BaseConfig):
             A list of paths as strings. The repository path is always present;
             an existing customized counterpart is included as the other item.
         """
+        # An empty component preserves the historical repository-root behavior.
+        args = args or ("",)
         rpath = os.path.join(*args)
         if not self.path.custom_path:
             return [rpath]

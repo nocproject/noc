@@ -44,7 +44,7 @@ class InterfaceLoader:
                 logger.error("Invalid interface name")
                 return None
             imname = name.lower()
-            for p in config.get_customized_paths("", prefer_custom=True):
+            for p in config.get_customized_paths(prefer_custom=True):
                 if os.path.exists(os.path.join(p, "sa", "interfaces", f"{imname}.py")):
                     if p:
                         # Custom script
@@ -94,7 +94,7 @@ class InterfaceLoader:
         Scan all available scripts
         """
         ns = set()
-        for gx in config.get_customized_paths(os.path.join("sa", "interfaces", "*.py")):
+        for gx in config.get_customized_paths("sa", "interfaces", "*.py"):
             for path in glob.glob(gx):
                 if path in ("base.py", "__init__.py"):
                     continue

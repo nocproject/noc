@@ -33,7 +33,7 @@ class LoaderLoader:
             loader = self.loaders.get(name)
             if not loader:
                 logger.info("Loading loader %s", name)
-                for p in config.get_customized_paths("", prefer_custom=True):
+                for p in config.get_customized_paths(prefer_custom=True):
                     base = "noc.custom" if p else "noc.core"
                     module_name = f"{base}.etl.loader.{name}"
                     try:

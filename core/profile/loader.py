@@ -43,7 +43,7 @@ class ProfileLoader(BaseLoader):
                 if not self.is_valid_name(name):
                     self.logger.error("Invalid profile name")
                     return None
-                for p in config.get_customized_paths("", prefer_custom=True):
+                for p in config.get_customized_paths(prefer_custom=True):
                     path = os.path.join(p, "sa", "profiles", *name.split("."))
                     if not os.path.exists(os.path.join(path, "profile.py")):
                         continue
@@ -81,7 +81,7 @@ class ProfileLoader(BaseLoader):
         Scan all available profiles
         """
         ns = {GENERIC_PROFILE}
-        for px in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
+        for px in config.get_customized_paths("sa", "profiles", prefer_custom=True):
             px = os.path.join(px, "*", "*", "__init__.py")
             for path in glob.glob(px):
                 vendor, system = path.split(os.sep)[-3:-1]

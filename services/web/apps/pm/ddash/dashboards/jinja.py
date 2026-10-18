@@ -31,7 +31,7 @@ class JinjaDashboard(BaseDashboard):
         context = self.get_context()
         self.logger.info(f"Context with data: {context}")
         pm_template_path = []
-        for p in config.get_customized_paths("", prefer_custom=True):
+        for p in config.get_customized_paths(prefer_custom=True):
             if p:
                 pm_template_path.append(os.path.join(p, "templates/ddash/"))
             else:

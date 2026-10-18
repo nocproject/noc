@@ -131,7 +131,7 @@ class BaseLoader:
                 if not self.is_valid_name(name):
                     self.logger.error("Invalid name: %s", name)
                     return None
-                for p in config.get_customized_paths("", prefer_custom=True):
+                for p in config.get_customized_paths(prefer_custom=True):
                     path = self.get_path(p, name)
                     if not os.path.exists(path):
                         continue
@@ -183,7 +183,7 @@ class BaseLoader:
         """
         names = set()
         base_path = cast(tuple[str, ...], self.base_path)
-        for base in config.get_customized_paths("", prefer_custom=True):
+        for base in config.get_customized_paths(prefer_custom=True):
             dn = os.path.join(base or "src/noc", *base_path)
             for fn in os.listdir(dn):
                 if fn.startswith("_") or not fn.endswith(".py"):

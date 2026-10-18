@@ -52,7 +52,7 @@ class ScriptLoader(BaseLoader):
                     self.logger.error('Error in script name "%s": %s', name, e)
                     return None
                 is_generic = False
-                for p in config.get_customized_paths("", prefer_custom=True):
+                for p in config.get_customized_paths(prefer_custom=True):
                     if os.path.exists(
                         os.path.join(p, "sa", "profiles", vendor, system, f"{sn}.py")
                     ):
@@ -104,7 +104,7 @@ class ScriptLoader(BaseLoader):
                     ns.add(f"{GENERIC_PROFILE}.{gn}")
         # Load custom scripts, Load common scripts
         profiles = set()
-        for gx in config.get_customized_paths(os.path.join("sa", "profiles"), prefer_custom=True):
+        for gx in config.get_customized_paths("sa", "profiles", prefer_custom=True):
             gx = os.path.join(gx, "*", "*", "*.py")
             for path in glob.glob(gx):
                 vendor, system, name = path.split(os.sep)[-3:]

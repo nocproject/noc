@@ -211,18 +211,12 @@ class MetricScriptBase(BaseScriptMetaclass):
 
         pp = script.name.rsplit(".", 1)[0]
         if pp == "Generic":
-            paths = list(
-                config.get_customized_paths(
-                    os.path.join("sa", "profiles", "Generic", "snmp_metrics")
-                )
-            )
+            paths = config.get_customized_paths("sa", "profiles", "Generic", "snmp_metrics")
         else:
             v, p = pp.split(".")
             paths = sorted(
-                config.get_customized_paths(
-                    os.path.join("sa", "profiles", "Generic", "snmp_metrics")
-                )
-                + config.get_customized_paths(os.path.join("sa", "profiles", v, p, "snmp_metrics")),
+                config.get_customized_paths("sa", "profiles", "Generic", "snmp_metrics")
+                + config.get_customized_paths("sa", "profiles", v, p, "snmp_metrics"),
                 key=sort_path_key,
             )
         for path in paths:
