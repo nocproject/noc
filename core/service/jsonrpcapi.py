@@ -8,10 +8,12 @@
 # Python modules
 import asyncio
 from collections import namedtuple
+from typing import Any, ClassVar
 
 # Third-party modules
 from fastapi import APIRouter, Header, Depends
 from fastapi.responses import JSONResponse
+import orjson
 
 # NOC modules
 from noc.aaa.models.user import User
@@ -25,6 +27,50 @@ from noc.core.span import Span
 
 
 Redirect = namedtuple("Redirect", ["location", "method", "params"])
+
+
+class NOCJSONRPCResponse(JSONResponse):
+    """JSON response implementation used by NOC's JSON-RPC APIs.
+
+    JSON-RPC methods may return values such as dataclass instances, including
+    nested dataclasses, that the standard-library JSON encoder cannot encode.
+    FastAPI's ``ORJSONResponse`` used to handle these values, but it is
+    deprecated in favor of response-model serialization. JSON-RPC endpoints
+    return a response object directly, so FastAPI's response-model serializer
+    does not process the response content.
+
+    This response keeps the ``JSONResponse`` interface while encoding its
+    content with :func:`orjson.dumps`. The resulting bytes are used directly as
+    the HTTP response body, with the ``application/json`` media type provided
+    by the parent class.
+
+    The content must be supported by ``orjson`` and the options enabled below.
+    Dataclasses and their nested values are supported by the version of
+    ``orjson`` used by NOC. NumPy values and non-string dictionary keys retain
+    the behavior of FastAPI's former ``ORJSONResponse`` implementation.
+    """
+
+    def render(self, content: Any) -> bytes:
+        """Serialize response content to UTF-8 JSON bytes with ``orjson``.
+
+        Starlette calls this method while constructing the response. Returning
+        the bytes from ``orjson.dumps`` avoids an intermediate JSON string or
+        an extra encoding pass.
+
+        Args:
+            content: The JSON-RPC response envelope to serialize.
+
+        Returns:
+            The compact UTF-8 encoded JSON response body.
+
+        Raises:
+            orjson.JSONEncodeError: If the content contains a value that
+                ``orjson`` cannot serialize.
+        """
+        return orjson.dumps(
+            content,
+            option=orjson.OPT_NON_STR_KEYS | orjson.OPT_SERIALIZE_NUMPY,
+        )
 
 
 class JSONRPCAPI:
@@ -45,6 +91,8 @@ class JSONRPCAPI:
     url_path = None
     # Indicates whether the REMOTE-HTTP header is required in the request
     auth_required = False
+    # Response class used for all JSON-RPC response envelopes.
+    Response: ClassVar[type[NOCJSONRPCResponse]] = NOCJSONRPCResponse
 
     def __init__(self, router: APIRouter) -> None:
         self.service = get_service()
@@ -76,7 +124,7 @@ class JSONRPCAPI:
 
         self.current_user = remote_user
         if req.method not in self.methods:
-            return JSONResponse(
+            return self.Response(
                 content={
                     "error": {"message": f"Method not found: '{req.method}'", "code": -32601},
                     "id": req.id,
@@ -111,21 +159,21 @@ class JSONRPCAPI:
                     result = await result
                 if isinstance(result, Redirect):
                     # Redirect protocol extension
-                    return JSONResponse(
+                    return self.Response(
                         content={"method": result.method, "params": result.params, "id": req.id},
                         status_code=307,
                         headers={"location": result.location},
                     )
-                return JSONResponse(content={"result": result, "id": req.id})
+                return self.Response(content={"result": result, "id": req.id})
             except NOCError as e:
                 span.set_error_from_exc(e, e.code)
-                return JSONResponse(
+                return self.Response(
                     content={"error": {"message": f"Failed: {e}", "code": e.code}, "id": req.id}
                 )
             except Exception as e:
                 error_report()
                 span.set_error_from_exc(e)
-                return JSONResponse(
+                return self.Response(
                     content={"error": {"message": f"Failed: {e}", "code": -32000}, "id": req.id}
                 )
 
