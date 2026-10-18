@@ -1,13 +1,13 @@
 # ----------------------------------------------------------------------
 # <describe module here>
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
 import importlib
-import os
+from importlib.resources import files
 
 # Third-party modules
 import pytest
@@ -16,6 +16,9 @@ import pytest
 from noc.core.mib import mib
 from noc.core.snmp.render import render_mac
 from noc.fm.models.mib import MIB
+
+NOC_SRC = files("noc")
+CMIBS = NOC_SRC / "cmibs"
 
 
 @pytest.mark.parametrize(
@@ -42,15 +45,12 @@ def test_mib_lookup(input, expected):
     assert mib[input] == expected
 
 
-@pytest.mark.parametrize(
-    "name", [x for x in os.listdir("cmibs") if x.endswith(".py") and not x.startswith("_")]
-)
-def test_compiled_mib(name):
-    mod_name = name[:-3]
-    mn = f"noc.cmibs.{mod_name}"
+@pytest.mark.parametrize("name", [p.stem for p in CMIBS.glob("*.py") if not p.name.startswith("_")])
+def test_compiled_mib(name: str) -> None:
+    mn = f"noc.cmibs.{name}"
     m = importlib.import_module(mn)
     assert hasattr(m, "NAME")
-    assert mib.mib_to_modname(m.NAME) == mod_name
+    assert mib.mib_to_modname(m.NAME) == name
     assert hasattr(m, "MIB")
     assert isinstance(m.MIB, dict)
     assert m.MIB
