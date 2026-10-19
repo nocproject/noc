@@ -69,7 +69,7 @@ RUN \
     && apt-get install -y --no-install-recommends \
     snmp \
     git \
-    && uv pip install --system -e .[dev,docs,lint,test,testing] \
+    && uv pip install --system build -e .[dev,docs,lint,test,testing] \
     && uv cache clean \
     && (curl -fsSL https://deb.nodesource.com/setup_24.x | bash -)\
     && apt-get install -y --no-install-recommends nodejs \

@@ -17,6 +17,6 @@ Attributes:
 # Activate custom module loaders
 import noc.core.importer  # noqa
 
-__version__ = "26-dev"
+__version__: str = "26-dev"
 
 __all__ = ["__version__"]
