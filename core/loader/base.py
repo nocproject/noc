@@ -11,6 +11,7 @@ import logging
 import inspect
 import threading
 import os
+from importlib.resources import files
 from collections.abc import Iterator
 from typing import cast
 
@@ -99,8 +100,9 @@ class BaseLoader:
         Returns:
             Path to the object's Python source file.
         """
-        p = (base or "src/noc", *cast(tuple[str, ...], self.base_path), f"{name}.py")
-        return os.path.join(*p)
+        if base:
+            return os.path.join(base, *cast(tuple[str, ...], self.base_path), f"{name}.py")
+        return os.path.join(str(files("noc")), *cast(tuple[str, ...], self.base_path), f"{name}.py")
 
     def get_module_name(self, base: str, name: str) -> str:
         """Build the fully qualified module name for an object.
@@ -184,7 +186,7 @@ class BaseLoader:
         names = set()
         base_path = cast(tuple[str, ...], self.base_path)
         for base in config.get_customized_paths(prefer_custom=True):
-            dn = os.path.join(base or "src/noc", *base_path)
+            dn = os.path.join(base or str(files("noc")), *base_path)
             for fn in os.listdir(dn):
                 if fn.startswith("_") or not fn.endswith(".py"):
                     continue

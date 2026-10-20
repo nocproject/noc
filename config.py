@@ -17,6 +17,7 @@ from urllib.parse import quote as urllib_quote
 from pathlib import Path
 from collections.abc import Iterable
 from types import ModuleType
+from importlib.resources import files
 import importlib
 
 # Third-party modules
@@ -1351,6 +1352,25 @@ class Config(BaseConfig):
 
         dcs = get_dcs()
         return run_sync(partial(dcs.get_slot_limit, slot_name))
+
+    @cached_property
+    def noc_base(self) -> Path:
+        """Get the NOC package base directory.
+
+        Returns:
+            Path: Path to the NOC package root, resolving the transitional
+                src/noc layout when present.
+        """
+        base = files("noc")
+        # Transition only!
+        # As long as __init__.py remains in repo root
+        # pytest alters sys.path overriding proper PYTHONPATH for test.
+        # Detect this situation and return to proper path.
+        # Should be removed after step 8 of NEP-0101.
+        alt_base = base / "src" / "noc"
+        if alt_base.is_dir():
+            return alt_base
+        return base
 
 
 config = Config(

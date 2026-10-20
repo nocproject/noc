@@ -7,7 +7,6 @@
 
 # Python modules
 import importlib
-import os
 import ast
 from collections.abc import Iterable
 from pathlib import Path
@@ -16,6 +15,12 @@ from pathlib import Path
 import pytest
 import cachetools
 
+# NOC modules
+from noc.config import config
+
+# Transitonal only guard.
+# Remove after step 8 of NEP-0101
+assert config.noc_base.parts[-2:] == ("src", "noc"), f"Invalid {config.noc_base}"
 
 _ALLOW_XFAIL = {
     "noc.services.login.backends.pam",
@@ -40,13 +45,12 @@ def _allow_xfail(module: str) -> bool:
 
 @cachetools.cached(cache={})
 def get_files() -> list[Path]:
-    """Get list of all python files in src/noc."""
-    r: list[Path] = []
-    for root, _, files in os.walk(Path("src", "noc"), followlinks=True):
-        for f in files:
-            if not f.startswith(".") and f.endswith(".py"):
-                r.append(Path(root) / f)
-    return r
+    """Get list of all Python files in the NOC package."""
+    return [
+        path
+        for path in config.noc_base.rglob("*.py", recurse_symlinks=True)
+        if not path.name.startswith(".")
+    ]
 
 
 INIT_PY = "__init__.py"
@@ -54,7 +58,7 @@ INIT_PY = "__init__.py"
 
 def iter_py_modules() -> Iterable[str]:
     """Iterate over module names."""
-    root = Path("src")
+    root = config.noc_base.parent
     for path in get_files():
         rel = path.relative_to(root)
         if path.name == INIT_PY:

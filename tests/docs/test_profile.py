@@ -5,13 +5,17 @@
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
+# Python modules
 from pathlib import Path
 
+# Third-party modules
 import cachetools
 import pytest
 
-SRC = Path("src", "noc")
-PROFILES_ROOT = SRC / "sa" / "profiles"
+# NOC modules
+from noc.config import config
+
+PROFILES_ROOT = config.noc_base / "sa" / "profiles"
 PROFILE_DOCS_BASE = Path("docs", "profiles-reference")
 XFAIL_VENDORS = {"OS"}
 

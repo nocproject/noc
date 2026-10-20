@@ -7,7 +7,6 @@
 
 # Python modules
 import importlib
-from importlib.resources import files
 
 # Third-party modules
 import pytest
@@ -16,9 +15,10 @@ import pytest
 from noc.core.mib import mib
 from noc.core.snmp.render import render_mac
 from noc.fm.models.mib import MIB
+from noc.config import config
 
-NOC_SRC = files("noc")
-CMIBS = NOC_SRC / "cmibs"
+
+CMIBS = config.noc_base / "cmibs"
 
 
 @pytest.mark.parametrize(

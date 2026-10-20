@@ -43,6 +43,8 @@ class MigrationLoader:
         for mp in config.get_customized_paths(app, "migrations"):
             root = Path(mp)
             is_custom = custom is not None and root.is_relative_to(custom)
+            if not root.is_absolute() and not is_custom:
+                root = config.noc_base / root
             for f_name in root.rglob("*.py"):
                 if f_name.stem == "__init__":
                     continue

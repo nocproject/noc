@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------
 # Test snmp_metrics directory
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2020 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
@@ -12,6 +12,9 @@ import os
 import pytest
 import orjson
 
+# NOC modules
+from noc.config import config
+
 
 def get_json_paths():
     """
@@ -20,7 +23,8 @@ def get_json_paths():
     """
     r = []
     metrics_dirs = []
-    for root, dirs, files in os.walk(os.path.join("src", "noc", "sa", "profiles")):
+    profiles_root = config.noc_base / "sa" / "profiles"
+    for root, dirs, files in os.walk(str(profiles_root)):
         if "snmp_metrics" in dirs:
             metrics_dirs += [os.path.join(root, "snmp_metrics")]
     for root in metrics_dirs:
