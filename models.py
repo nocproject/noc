@@ -70,15 +70,21 @@ def get_model(model_id: str) -> DB_MODEL_TYPE:
     return m
 
 
-def get_object(model_id: str, object_id: int | str | ObjectId) -> DB_MODEL_INSTANCE:
-    """
-    Return an object instance or None
+def get_object(model_id: str, object_id: int | str | ObjectId) -> DB_MODEL_INSTANCE | None:
+    """Retrieve an object by its ID.
+
+    Args:
+        model_id: Model identifier used to resolve the database model.
+        object_id: Unique identifier of the object.
+
+    Returns:
+        The object instance if found, or None if no matching object exists.
+
+    Raises:
+        AssertionError: If the model cannot be resolved.
     """
     m = get_model(model_id)
-    try:
-        return m.objects.get(id=object_id)
-    except m.DoesNotExist:
-        return None
+    return m.objects.filter(id=object_id).first()
 
 
 def load_models() -> None:
