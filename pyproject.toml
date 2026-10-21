@@ -265,6 +265,7 @@ packages = [
   "src/noc",
 ]
 
-# [tool.hatch.build.targets.wheel.force-include]
+[tool.hatch.build.targets.wheel.force-include]
 # "build/docs" = "noc/docs"
 # "build/ui" = "noc/ui"
+"src/noc/services/login/backends/radius.dict" = "noc/services/login/backends/radius.dict"
