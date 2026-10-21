@@ -430,13 +430,16 @@ def my_handler():
     pass
 
 
+HANDLER_PATH = f"{__name__}.my_handler"
+
+
 def test_handler():
     class Config:
         handler = HandlerParameter()
 
     config = Config()
-    config.handler = "noc.tests.test_config.my_handler"
-    assert config.handler == "noc.tests.test_config.my_handler"
+    config.handler = HANDLER_PATH
+    assert config.handler == HANDLER_PATH
 
 
 def test_handler_none():
@@ -449,7 +452,7 @@ def test_handler_none():
 
 def test_handler_default():
     class Config:
-        handler = HandlerParameter(default="noc.tests.test_config.my_handler")
+        handler = HandlerParameter(default=HANDLER_PATH)
 
     config = Config()
-    assert config.handler == "noc.tests.test_config.my_handler"
+    assert config.handler == HANDLER_PATH
