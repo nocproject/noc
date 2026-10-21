@@ -6,9 +6,6 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import importlib
-import os
-import inspect
 import datetime
 import operator
 from typing import Any
@@ -114,24 +111,15 @@ class AlarmApplication(ExtApplication):
 
     def __init__(self, *args, **kwargs) -> None:
         ExtApplication.__init__(self, *args, **kwargs)
-        from .plugins.base import AlarmPlugin
+        from .plugins.base import alarm_plugin_loader
 
         # Load plugins
         self.plugins = {}
-        for f in os.listdir("services/web/apps/fm/alarm/plugins/"):
-            if not f.endswith(".py") or f == "base.py" or f.startswith("_"):
-                continue
-            mn = f"noc.services.web.apps.fm.alarm.plugins.{f[:-3]}"
-            m = importlib.import_module(mn)
-            for on in dir(m):
-                o = getattr(m, on)
-                if (
-                    inspect.isclass(o)
-                    and issubclass(o, AlarmPlugin)
-                    and o.__module__.startswith(mn)
-                ):
-                    assert o.name
-                    self.plugins[o.name] = o(self)
+        for name in alarm_plugin_loader:
+            plugin_cls = alarm_plugin_loader.get(name)
+            if plugin_cls:
+                assert plugin_cls.name
+                self.plugins[plugin_cls.name] = plugin_cls(self)
 
     def cleaned_query(self, q):
         q = q.copy()

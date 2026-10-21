@@ -5,6 +5,12 @@
 # See LICENSE for details
 # ---------------------------------------------------------------------
 
+# Third-party modules
+from gufo.loader import Loader
+
+# NOC modules
+from noc.config import config
+
 
 class AlarmPlugin:
     name = None
@@ -22,3 +28,9 @@ class AlarmPlugin:
         :return: dict of additional data
         """
         return {}
+
+
+alarm_plugin_loader = Loader[type[AlarmPlugin]](
+    bases=config.iter_customized_bases("noc.services.web.apps.fm.alarm.plugins"),
+    exclude=("base",),
+)

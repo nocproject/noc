@@ -10,8 +10,10 @@ import logging
 
 # Third-party modules
 from django.http import HttpRequest
+from gufo.loader import Loader
 
 # NOC modules
+from noc.config import config
 from noc.inv.models.object import Object
 from noc.core.feature import Feature
 from ..views import InvApplication
@@ -46,3 +48,9 @@ class InvPlugin:
 
     def get_data(self, request: HttpRequest, object):
         return None
+
+
+inv_plugin_loader = Loader[type[InvPlugin]](
+    bases=config.iter_customized_bases("noc.services.web.apps.inv.inv.plugins"),
+    exclude=("base",),
+)

@@ -6,10 +6,7 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import importlib
-import inspect
 import operator
-import os
 import threading
 from typing import Any
 from collections.abc import Iterable
@@ -85,19 +82,15 @@ class InvApplication(ExtApplication):
     def __init__(self, *args, **kwargs) -> None:
         ExtApplication.__init__(self, *args, **kwargs)
         # Load plugins
-        from .plugins.base import InvPlugin
+        from .plugins.base import inv_plugin_loader
 
         self.plugins = {}
-        for f in os.listdir("services/web/apps/inv/inv/plugins/"):
-            if not f.endswith(".py") or f == "base.py" or f.startswith("_"):
-                continue
-            mn = f"noc.services.web.apps.inv.inv.plugins.{f[:-3]}"
-            m = importlib.import_module(mn)
-            for on in dir(m):
-                o = getattr(m, on)
-                if inspect.isclass(o) and issubclass(o, InvPlugin) and o.__module__.startswith(mn):
-                    if not o.required_feature or o.required_feature.is_active():
-                        self.plugins[o.name] = o(self)
+        for name in inv_plugin_loader:
+            plugin_cls = inv_plugin_loader.get(name)
+            if plugin_cls and (
+                not plugin_cls.required_feature or plugin_cls.required_feature.is_active()
+            ):
+                self.plugins[plugin_cls.name] = plugin_cls(self)
 
     @api.get("^node/$", access="read")
     def api_node(self, request: HttpRequest):
