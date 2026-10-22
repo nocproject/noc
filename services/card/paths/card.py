@@ -1,15 +1,12 @@
 # ----------------------------------------------------------------------
 # Card API
 # ----------------------------------------------------------------------
-# Copyright (C) 2007-2025 The NOC Project
+# Copyright (C) 2007-2026 The NOC Project
 # See LICENSE for details
 # ----------------------------------------------------------------------
 
 # Python modules
-import importlib
 from importlib.resources import files
-import os
-import inspect
 from threading import Lock
 import operator
 from urllib.parse import unquote
@@ -23,10 +20,9 @@ import orjson
 
 # NOC modules
 from noc.aaa.models.user import User
-from noc.config import config
 from noc.core.debug import error_report, ErrorReport
 from noc.core.perf import metrics
-from noc.services.card.cards.base import BaseCard
+from noc.services.card.cards.base import BaseCard, card_loader
 from noc.services.card.base import BaseAPI
 
 user_lock = Lock()
@@ -34,6 +30,12 @@ user_lock = Lock()
 router = APIRouter()
 
 MIN_SEARCH = 2
+
+
+def get_card_class(name: str) -> type[BaseCard] | None:
+    if name not in card_loader:
+        return None
+    return card_loader[name]
 
 
 class HandlerStub:
@@ -65,14 +67,11 @@ class CardAPI(BaseAPI):
     api_name = "card"
     openapi_tags = ["card API"]
 
-    CARDS = None
-    CARDS_ACTION = None
     CARD_TEMPLATE = None
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, router: APIRouter) -> None:
-        self.load_cards()
         super().__init__(router)
 
     @classmethod
@@ -95,39 +94,6 @@ class CardAPI(BaseAPI):
                 self.CARD_TEMPLATE = Template(f.read())
         return self.CARD_TEMPLATE
 
-    CARDS_PREFIX = os.path.join("services", "card", "cards")
-
-    @classmethod
-    def load_cards(cls):
-        if not cls.CARDS:
-            cls.CARDS = {}
-        for p in config.get_customized_paths(cls.CARDS_PREFIX):
-            b, _ = p.split(cls.CARDS_PREFIX)
-            if not os.path.isdir(p):
-                continue
-            if b:
-                basename = os.path.basename(os.path.dirname(b))
-            else:
-                basename = "noc"
-            for f in os.listdir(p):
-                if not f.endswith(".py"):
-                    continue
-                mn = f"{basename}.{cls.CARDS_PREFIX.replace(os.path.sep, '.')}.{f[:-3]}"
-                m = importlib.import_module(mn)
-                for d in dir(m):
-                    c = getattr(m, d)
-                    if (
-                        inspect.isclass(c)
-                        and issubclass(c, BaseCard)
-                        and c.__module__ == m.__name__
-                        and getattr(c, "name", None)
-                    ):
-                        cls.CARDS[c.name] = c
-                        for a in c.actions or []:
-                            if not cls.CARDS_ACTION:
-                                cls.CARDS_ACTION = {}
-                            cls.CARDS_ACTION[a] = getattr(c, a)
-
     def get_routes(self):
         route_card = {
             "path": "/api/card/view/{card_type}/{card_id}/",
@@ -148,15 +114,23 @@ class CardAPI(BaseAPI):
             "description": "",
         }
         r = [route_card, route_search]
-        for a, endpoint in self.CARDS_ACTION.items():
+        actions = {}
+        for card_name, card_class in card_loader.items():
+            if card_class.name != card_name:
+                raise ValueError(
+                    f"Card module name '{card_name}' does not match card name '{card_class.name}'"
+                )
+            for action in card_class.actions or []:
+                actions[action] = getattr(card_class, action)
+        for action, endpoint in actions.items():
             r.append(
                 {
-                    "path": f"/api/card/resourcepool/{a}/",
+                    "path": f"/api/card/resourcepool/{action}/",
                     "method": "POST",
                     "endpoint": endpoint,
                     "response_class": JSONResponse,
                     "response_model": None,
-                    "name": f"card-{a}",
+                    "name": f"card-{action}",
                     "description": "",
                 }
             )
@@ -174,7 +148,7 @@ class CardAPI(BaseAPI):
             raise HTTPException(404, "Not found")
         is_ajax = card_id == "ajax"
         handler = HandlerStub(current_user, request.query_params)
-        tpl = self.CARDS.get(card_type)
+        tpl = get_card_class(card_type)
         if not tpl:
             raise HTTPException(404, "Card template not found")
         try:
@@ -217,8 +191,10 @@ class CardAPI(BaseAPI):
         query = query.strip()
         if not query or len(query) < MIN_SEARCH:
             raise HTTPException(400, "Query too short")
-        card = self.CARDS.get(scope)
-        if not card or not hasattr(card, "search"):
+        card = get_card_class(scope)
+        if not card:
+            raise HTTPException(404, "Not found")
+        if not hasattr(card, "search"):
             raise HTTPException(404, "Not found")
         handler = HandlerStub(self.get_current_user(remote_user), {})
         return card.search(handler, query)

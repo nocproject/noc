@@ -11,10 +11,12 @@ import operator
 from importlib.resources import files
 
 # Third-party modules
+from gufo.loader import Loader
 from jinja2 import Template, Environment
 from typing import Any
 
 # NOC modules
+from noc.config import config
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
 from noc.core.perf import metrics
@@ -262,3 +264,9 @@ class BaseCard:
                 s[k] += d[k]
             else:
                 s[k] = d[k]
+
+
+card_loader = Loader[type[BaseCard]](
+    bases=config.iter_customized_bases("noc.services.card.cards"),
+    exclude=("base",),
+)
