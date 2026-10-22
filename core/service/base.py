@@ -36,7 +36,7 @@ from starlette.responses import Response, JSONResponse
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError, HTTPException
 from fastapi.encoders import jsonable_encoder
-from fastapi.middleware.wsgi import WSGIMiddleware
+from a2wsgi import WSGIMiddleware
 
 # NOC modules
 from noc.config import config
