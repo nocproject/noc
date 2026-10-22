@@ -261,6 +261,10 @@ path = "src/noc/__init__.py"
 pattern = "__version__: str = \"(?P<version>.+?)\""
 
 [tool.hatch.build.targets.wheel]
+artifacts = [
+  "src/noc/**/py.typed",
+  "src/noc/**/*.j2",
+]
 packages = [
   "src/noc",
 ]

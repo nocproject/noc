@@ -54,10 +54,6 @@ Path service configuration
 
 {{ config_param("path.npkg_root") }}
 
-## card_template_path
-
-{{ config_param("path.card_template_path") }}
-
 ## pm_templates
 
 {{ config_param("path.pm_templates") }}

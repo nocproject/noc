@@ -760,8 +760,6 @@ params:
     default: /var/backup
   path.bi_data_prefix:
     default: /var/lib/noc/bi
-  path.card_template_path:
-    default: services/card/templates/card.html.j2
   path.cdn_url: {}
   path.collection_fm_mibs:
     default: collections/fm.mibs/

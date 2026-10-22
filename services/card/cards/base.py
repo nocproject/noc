@@ -6,9 +6,9 @@
 # ---------------------------------------------------------------------
 
 # Python modules
-import os
 import datetime
 import operator
+from importlib.resources import files
 
 # Third-party modules
 from jinja2 import Template, Environment
@@ -17,7 +17,6 @@ from typing import Any
 # NOC modules
 from noc.core.translation import ugettext as _
 from noc.sa.models.useraccess import UserAccess
-from noc.config import config
 from noc.core.perf import metrics
 
 
@@ -26,7 +25,7 @@ class BaseCard:
     default_template_name = "default"
     template_cache = {}  # name -> Template instance
     actions = []
-    TEMPLATE_PATH = config.get_customized_paths("services", "card", "templates", prefer_custom=True)
+    TEMPLATE_PATH = files("noc.services.card").joinpath("templates")
     model = None
     DEFAULT_MO_TITLE_TEMPLATE = "{{ object.object_profile.name }}: {{ object.name }}"
     DEFAULT_SERVICE_TITLE_TEMPLATE = (
@@ -107,24 +106,22 @@ class BaseCard:
         name = self.get_template_name()
         if name not in self.template_cache:
             self.template_cache[name] = None
-            for p in self.TEMPLATE_PATH:
-                tp = os.path.join(p, name + ".html.j2")
-                if os.path.exists(tp):
-                    env = Environment()
-                    env.filters.update(
-                        {
-                            "managed_object_title": self.f_managed_object_title,
-                            "service_title": self.f_service_title,
-                            "logical_status": self.f_logical_status,
-                            "timestamp": self.f_timestamp,
-                            "glyph_summary": self.f_glyph_summary,
-                            "object_location": self.f_object_location,
-                            "object_console": self.f_object_console,
-                        }
-                    )
-                    with open(tp) as f:
-                        self.template_cache[name] = env.from_string(f.read())
-                    break
+            template_path = self.TEMPLATE_PATH.joinpath(name + ".html.j2")
+            if template_path.is_file():
+                env = Environment()
+                env.filters.update(
+                    {
+                        "managed_object_title": self.f_managed_object_title,
+                        "service_title": self.f_service_title,
+                        "logical_status": self.f_logical_status,
+                        "timestamp": self.f_timestamp,
+                        "glyph_summary": self.f_glyph_summary,
+                        "object_location": self.f_object_location,
+                        "object_console": self.f_object_console,
+                    }
+                )
+                with template_path.open("r", encoding="utf-8") as f:
+                    self.template_cache[name] = env.from_string(f.read())
         return self.template_cache[name]
 
     def render(self):

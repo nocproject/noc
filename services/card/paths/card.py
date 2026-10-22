@@ -7,6 +7,7 @@
 
 # Python modules
 import importlib
+from importlib.resources import files
 import os
 import inspect
 from threading import Lock
@@ -66,15 +67,11 @@ class CardAPI(BaseAPI):
 
     CARDS = None
     CARDS_ACTION = None
-    CARD_TEMPLATE_PATH = config.path.card_template_path
     CARD_TEMPLATE = None
 
     _user_cache = cachetools.TTLCache(maxsize=1000, ttl=60)
 
     def __init__(self, router: APIRouter) -> None:
-        if not self.CARD_TEMPLATE:
-            with open(self.CARD_TEMPLATE_PATH) as f:
-                self.CARD_TEMPLATE = Template(f.read())
         self.load_cards()
         super().__init__(router)
 
@@ -93,7 +90,8 @@ class CardAPI(BaseAPI):
 
     def get_card_template(self):
         if not self.CARD_TEMPLATE:
-            with open(self.CARD_TEMPLATE_PATH) as f:
+            template_path = files("noc.services.card").joinpath("templates", "card.html.j2")
+            with template_path.open("r", encoding="utf-8") as f:
                 self.CARD_TEMPLATE = Template(f.read())
         return self.CARD_TEMPLATE
 
