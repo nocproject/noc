@@ -1,7 +1,8 @@
 # Basic Python image
 FROM python:3.13-slim-trixie AS python
 ENV \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    PYTHONPYCACHEPREFIX=/tmp/noc-pycache
 RUN \
     set -x \
     && apt-get update\
